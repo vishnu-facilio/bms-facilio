@@ -1,4 +1,5 @@
 version: 0.0
+os: ubuntu
 
 files:
   - source: /target/bmsconsole.war
