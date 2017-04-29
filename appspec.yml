@@ -8,5 +8,5 @@ files:
     destination: /home/ubuntu/
 hooks:
   ApplicationStart:
-    - location: deploy_hooks/script.sh
+    - location: /home/ubuntu/script.sh
       timeout: 3600
