@@ -1,0 +1,8 @@
+phases:
+  build:
+    commands:
+      - mvn package
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
