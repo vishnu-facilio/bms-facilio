@@ -6,5 +6,5 @@ phases:
       - mvn package
 artifacts:
   files:
-    - target/bsmconsole.war
+    - target/bmsconsole.war
   discard-paths: yes
