@@ -8,4 +8,5 @@ artifacts:
   files:
     - target/bmsconsole.war
     - appspec.yml
+    - script.sh
   discard-paths: yes
