@@ -1,0 +1,11 @@
+version: 0.1
+
+files:
+  - source: /target/bmsconsole.war
+    destination: /home/ubuntu/var/lib/tomcat7/webapps/
+  - source: /target/script.sh
+    destination: /home/ubuntu/
+hooks:
+  ApplicationStart:
+    - location: deploy_hooks/script.sh
+      timeout: 3600
