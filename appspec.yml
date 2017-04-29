@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 
 files:
-  - source: /target/bmsconsole.war
+  - source: /bmsconsole.war
     destination: /home/ubuntu/var/lib/tomcat7/webapps/
-  - source: /target/script.sh
+  - source: /script.sh
     destination: /home/ubuntu/
 hooks:
   ApplicationStart:
