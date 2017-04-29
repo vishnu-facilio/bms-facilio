@@ -7,5 +7,5 @@ phases:
 artifacts:
   files:
     - target/bmsconsole.war
-    - target/appspec.yml
+    - appspec.yml
   discard-paths: yes
