@@ -1,12 +1,12 @@
-version: 0.0
-os: linux
+version: 0.1
 
-files:
-  - source: /bmsconsole.war
-    destination: /var/lib/tomcat7/webapps/
-  - source: /restart_server.sh
-    destination: /home/ubuntu/
-hooks:
-  ApplicationStart:
-    - location: /restart_server.sh
-      timeout: 3600
+phases:
+  build:
+    commands:
+      - mvn package
+artifacts:
+  files:
+    - target/bmsconsole.war
+    - scripts/restart_server.sh
+    - appspec.yml
+  discard-paths: yes
