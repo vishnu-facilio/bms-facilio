@@ -8,5 +8,5 @@ artifacts:
   files:
     - target/bmsconsole.war
     - appspec.yml
-    - script.sh
+    - scripts/restart_server.sh
   discard-paths: yes
