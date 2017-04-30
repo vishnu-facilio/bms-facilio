@@ -4,7 +4,7 @@ os: linux
 files:
   - source: /bmsconsole.war
     destination: /var/lib/tomcat7/webapps/
-  - source: /script.sh
+  - source: /restart_server.sh
     destination: /home/ubuntu/
 hooks:
   ApplicationStart:
