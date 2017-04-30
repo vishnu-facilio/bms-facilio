@@ -8,5 +8,5 @@ files:
     destination: /home/ubuntu/
 hooks:
   ApplicationStart:
-    - location: /script.sh
+    - location: /restart_server.sh
       timeout: 3600
