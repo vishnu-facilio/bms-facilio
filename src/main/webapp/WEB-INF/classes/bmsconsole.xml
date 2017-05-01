@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="example" namespace="/home"  extends='struts-default,tiles-default'>
+<interceptors>
+         <interceptor name="authinterceptor" class="com.facilio.bmsconsole.interceptors.AuthInterceptor"/>
+        <interceptor-stack name="defaultInterceptor">
+   			 <interceptor-ref name="defaultStack"/>
+            <interceptor-ref name="authinterceptor"/>
+       </interceptor-stack>
+      </interceptors>
+
+<default-interceptor-ref name="defaultInterceptor"/>
+
+
+  <action name="index" class="com.facilio.bmsconsole.actions.HomePageAction">
+            <result  type="tiles">homepage</result>
+        </action>
+
+       
+
+        
+
+    </package>
+</struts>
