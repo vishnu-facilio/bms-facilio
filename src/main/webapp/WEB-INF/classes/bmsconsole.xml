@@ -17,7 +17,7 @@
 <default-interceptor-ref name="defaultInterceptor"/>
 
 
-  <action name="index" class="com.facilio.bmsconsole.actions.HomePageAction">
+  <action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
             <result  type="tiles">homepage</result>
         </action>
 
