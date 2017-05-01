@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-public class HomePageAction extends ActionSupport{
+public class HomePageActions extends ActionSupport{
 static
 {
 	System.out.println("###############Action Class Loaded#############");
