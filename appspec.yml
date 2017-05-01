@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /bmsconsole.war
+  - source: /bms.war
     destination: /var/lib/tomcat7/webapps/
   - source: /restart_server.sh
     destination: /home/ubuntu/
