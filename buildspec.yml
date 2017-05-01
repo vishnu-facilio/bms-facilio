@@ -6,7 +6,7 @@ phases:
       - mvn package
 artifacts:
   files:
-    - target/bmsconsole.war
+    - bmsconsole.war
     - appspec.yml
     - scripts/restart_server.sh
   discard-paths: yes
