@@ -5,7 +5,11 @@
 
 <struts>
 
-    <package name="example" namespace="/home"  extends='struts-default,tiles-default'>
+    <package name="example" namespace="/home"  extends='struts-default'>
+<result-types>
+         <result-type name="tiles" 
+         class="org.apache.struts2.views.tiles.TilesResult" />
+      </result-types>
 <interceptors>
          <interceptor name="authinterceptor" class="com.facilio.bmsconsole.interceptors.AuthInterceptor"/>
         <interceptor-stack name="defaultInterceptor">
