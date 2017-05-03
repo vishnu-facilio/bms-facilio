@@ -2,11 +2,10 @@ version: 0.0
 os: linux
 files:
   - source: /bms.war
-    destination: /var/lib/tomcat8/webapps/
+    destination: tomcat/apache-tomcat-7.0.77/webapps
   - source: /restart_server.sh
     destination: /home/ubuntu/
 hooks:
   ApplicationStart:
     - location: /restart_server.sh
       timeout: 3600
-
