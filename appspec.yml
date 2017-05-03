@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /bms.war
-    destination: /home/ubuntu/tomcat/apache-tomcat-7.0.77/webapps
+    destination: /home/ubuntu/apache-tomcat-7.0.77/webapps
   - source: /restart_server.sh
     destination: /home/ubuntu/
 hooks:
