@@ -66,6 +66,11 @@
     	<artifactId>asm-commons</artifactId>
     	<version>5.1</version>
 	</dependency>
+	<dependency>
+    	<groupId>org.apache.struts</groupId>
+    	<artifactId>struts2-tiles-plugin</artifactId>
+    	<version>2.5.10</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>bms</finalName>
