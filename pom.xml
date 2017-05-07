@@ -71,13 +71,12 @@
     	<artifactId>struts2-tiles-plugin</artifactId>
     	<version>2.5.10</version>
 	</dependency>
-<dependency>
-    <groupId>commons-chain</groupId>
-    <artifactId>commons-chain</artifactId>
-    <version>1.2</version>
-</dependency>
-	
-  </dependencies>
+	<dependency>
+    	<groupId>commons-chain</groupId>
+    	<artifactId>commons-chain</artifactId>
+    	<version>1.2</version>
+	</dependency>
+</dependencies>
   <build>
     <finalName>bms</finalName>
   </build>
