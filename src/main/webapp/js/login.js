@@ -38,11 +38,7 @@ var poolData = {
 function signup(email,password)
 {
 
-	alert(email);
-	alert(password);
-
     var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
-    alert(userPool)	;
 
     var attributeList = [];
 
