@@ -17,9 +17,15 @@ public class LoginAction extends ActionSupport{
 			// not possible
 		}
 		//TODO
-		// create username from the access toke
+		// find username/emaiid and other threadpool data from the access toke
 		String accesstoken = getAccessToken();
+		
+		
+		// First login, store userinfo in localdb
+		// store accesstoken for future user
+		
 		ActionContext.getContext().getSession().put("USERNAME", "yogebabu@gmail.com");
+		// redirect to home
 		
 		return SUCCESS;
 	 
