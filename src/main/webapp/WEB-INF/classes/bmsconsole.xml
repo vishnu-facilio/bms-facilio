@@ -19,7 +19,12 @@
       </interceptors>
 
 <default-interceptor-ref name="defaultInterceptor"/>
-
+<global-results>
+<result name="login" type="redirect">
+  <param name="location">/login.html</param>
+  <param name="parse">false</param>
+</result>
+</global-results>
 
   <action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
             <result  type="tiles">homepage</result>
@@ -29,5 +34,11 @@
 
         
 
+    </package>
+        <package name="unauth" namespace="/login"  extends='struts-default,tiles-default'>
+        <action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
+            <result >/jsps/validateLogin.jsp</result>
+        </action>
+        
     </package>
 </struts>
