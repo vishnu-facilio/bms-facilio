@@ -89,6 +89,13 @@
     <version>3.5</version>
 </dependency>
 
+<dependency>
+    <groupId>com.amazonaws</groupId>
+    <artifactId>aws-java-sdk-cognitoidentity</artifactId>
+    <version>1.11.126</version>
+</dependency>
+
+
 	
 </dependencies>
   <build>
