@@ -88,15 +88,11 @@
     <artifactId>commons-lang3</artifactId>
     <version>3.5</version>
 </dependency>
-
 <dependency>
-    <groupId>com.amazonaws</groupId>
-    <artifactId>aws-java-sdk-cognitoidentity</artifactId>
-    <version>1.11.126</version>
+    <groupId>com.googlecode.json-simple</groupId>
+    <artifactId>json-simple</artifactId>
+    <version>1.1</version>
 </dependency>
-
-
-	
 </dependencies>
   <build>
     <finalName>bms</finalName>
