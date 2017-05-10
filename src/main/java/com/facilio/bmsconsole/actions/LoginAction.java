@@ -1,42 +1,57 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Base64;
 import java.util.Map;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 
 public class LoginAction extends ActionSupport{
 
 	public String execute() throws Exception {
         
-		Map session = ActionContext.getContext().getSession();  
-		String oldusername = (String)session.get("USERNAME");
-		if(oldusername !=null)
+		// get the identity token and decode it.
+		String idToken = getIdToken();
+		Base64.Decoder decoder = Base64.getUrlDecoder();
+		
+		// the identity token has three block 0-header, 1-payload, 2-signature
+		// 1-payload has the actual required user information.
+		String[] payloads = idToken.split("\\.");
+		
+		// decode the payload block and make it as a json object
+		JSONObject jsonObject = ((JSONObject) (JSONValue.parse(new String(decoder.decode(payloads[1]))))); 
+		
+		System.out.println((String)jsonObject.get("email"));
+		
+		Map session = ActionContext.getContext().getSession(); 
+		
+		String userName = (String)jsonObject.get("email");
+		boolean verifiedUser = ((Boolean) jsonObject.get("email_verified")).booleanValue();
+		
+		System.out.println(verifiedUser);
+		
+		if (verifiedUser && userName!=null)
 		{
-			// not possible
+			System.out.println("into if");
+			//start establishing session details
+			ActionContext.getContext().getSession().put("USERNAME", userName);
+			
+			//DB Transactions goes in here
+			//move forward
 		}
-		//TODO
-		// find username/emaiid and other threadpool data from the access toke
-		String accesstoken = getAccessToken();
 		
-		
-		// First login, store userinfo in localdb
-		// store accesstoken for future user
-		
-		ActionContext.getContext().getSession().put("USERNAME", "yogebabu@gmail.com");
-		// redirect to home
+		else 
+		{
+			// else the user is not verified - redirect to the login page.
+		}
 		
 		return SUCCESS;
-	 
 	}
-	public String getJwtToken() {
-		return jwtToken;
-	}
-	public void setJwtToken(String jwtToken) {
-		this.jwtToken = jwtToken;
-	}
-	private String jwtToken;
+	
+	// getter setter for access token
 	public String getAccessToken() {
 		return accessToken;
 	}
@@ -44,4 +59,14 @@ public class LoginAction extends ActionSupport{
 		this.accessToken = accessToken;
 	}
 	private String accessToken;
+	
+	// getter setter for identity token
+	private String idToken;
+	
+	public String getIdToken() {
+		return idToken;
+	}
+	public void setIdToken(String idToken) {
+		this.idToken = idToken;
+	}
 }
