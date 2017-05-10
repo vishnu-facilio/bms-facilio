@@ -87,21 +87,21 @@ function signin(email,password)
 	
 	cognitoUser.authenticateUser(authenticationDetails, {
 	    onSuccess: function (result) {
-	        console.log('access token + ' + result.getAccessToken().getJwtToken());
-	        },
-
-	        // This block does nothing with respect to login, this has to updated according to the requirement
-	        //AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	        //    IdentityPoolId : 'us-west-2_kzN5KrMZU', // your identity pool id here
-	        //    Logins : {
-	                	// Change the key below according to the specific region your user pool is in.
-	        //        	'cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU' : result.getIdToken().getJwtToken()
-	        //        }
-	        //    });
-
-	            // Instantiate aws sdk service objects now that the credentials have been updated.
-	            // example: var s3 = new AWS.S3();
-	        // },
+	    	
+	    	// this response has three token Id,access and refresh
+	    	// id token basically contains the identity information, access token will not 
+	    	// be needed for authenticating the user.
+	    	
+	    	idToken = result.idToken.jwtToken;
+	    	accessToken = result.getAccessToken().getJwtToken();
+	    	
+	        //pass on the idToken now to server side for validation
+	    	
+	    	var http = new XMLHttpRequest();
+	        console.log('openeing a html request');
+	        http.open("POST","login/validate?idToken="+idToken,true);
+	        http.send();
+	    },
 
 	    onFailure: function(err) {
 	        alert(err);
