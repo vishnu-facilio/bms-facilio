@@ -84,7 +84,6 @@ function signin(email,password)
 	};
 
 	var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
-	
 	cognitoUser.authenticateUser(authenticationDetails, {
 	    onSuccess: function (result) {
 	    	
@@ -97,10 +96,18 @@ function signin(email,password)
 	    	
 	        //pass on the idToken now to server side for validation
 	    	
-	    	var http = new XMLHttpRequest();
-	        console.log('openeing a html request');
-	        http.open("POST","login/validate?idToken="+idToken,true);
-	        http.send();
+	    
+	        $.post( "login/validate", { "idToken": idToken })
+	        .done(function( data ) {
+	        	
+	        	window.location.replace("home/index");
+
+	        
+	        });
+	        
+
+	        
+	        
 	    },
 
 	    onFailure: function(err) {

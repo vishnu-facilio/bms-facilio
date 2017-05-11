@@ -24,7 +24,7 @@ public class LoginAction extends ActionSupport{
 		// decode the payload block and make it as a json object
 		JSONObject jsonObject = ((JSONObject) (JSONValue.parse(new String(decoder.decode(payloads[1]))))); 
 		
-		System.out.println((String)jsonObject.get("email"));
+		System.out.println("The JSON Object"+jsonObject);
 		
 		Map session = ActionContext.getContext().getSession(); 
 		
@@ -37,7 +37,7 @@ public class LoginAction extends ActionSupport{
 		{
 			System.out.println("into if");
 			//start establishing session details
-			ActionContext.getContext().getSession().put("USERNAME", userName);
+			session.put("USERNAME", userName);
 			
 			//DB Transactions goes in here
 			//move forward
