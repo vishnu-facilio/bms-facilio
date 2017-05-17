@@ -41,8 +41,14 @@ public class LoginAction extends ActionSupport{
 			
 			//DB Transactions goes in here
 			//move forward
+			response = "success";
 		}
-		
+		else if (!verifiedUser && userName!=null)
+		{
+			//user is not verified
+			response = "unverified_user";
+
+		}
 		else 
 		{
 			// else the user is not verified - redirect to the login page.
@@ -50,7 +56,11 @@ public class LoginAction extends ActionSupport{
 		
 		return SUCCESS;
 	}
-	
+	private String response = null;
+	public String getResponse()
+	{
+		return response;
+	}
 	// getter setter for access token
 	public String getAccessToken() {
 		return accessToken;
