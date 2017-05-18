@@ -10,6 +10,10 @@ import org.json.simple.JSONValue;
 
 
 public class LoginAction extends ActionSupport{
+	static
+	{
+		System.out.println("Login action loaded");
+	}
 
 	public String execute() throws Exception {
         

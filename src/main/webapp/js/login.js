@@ -117,7 +117,7 @@ function signin(email,password)
 	    },
 
 	    onFailure: function(err) {
-	        alert(err);
+	        
 	        showVerificationForm();
 	    },
 
