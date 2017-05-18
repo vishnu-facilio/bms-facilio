@@ -11,31 +11,38 @@ public class Message
     private String content;
 
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return super.toString();
     }
 
-    public String getFrom() {
+    public String getFrom() 
+    {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(String from) 
+    {
         this.from = from;
     }
 
-    public String getTo() {
+    public String getTo() 
+    {
         return to;
     }
 
-    public void setTo(String to) {
+    public void setTo(String to) 
+    {
         this.to = to;
     }
 
-    public String getContent() {
+    public String getContent() 
+    {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(String content) 
+    {
         this.content = content;
     }
 }
