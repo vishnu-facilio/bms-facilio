@@ -101,7 +101,7 @@ function signin(email,password)
 	    
 	        $.post( "login/validate", { "idToken": idToken })
 	        .done(function( data ) {
-	        	alert(data);
+	        	
 	        	if(data.indexOf("success")>-1)
 	        	{
 	        	window.location.replace("home/index");

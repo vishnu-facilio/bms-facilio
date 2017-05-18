@@ -7,9 +7,24 @@
 </head>  
 <body>  
   
-<%@  include file="header.jsp" %>  
-<tiles:insertAttribute name="body" />  
-<%@ include file="footer.jsp" %>  
+  <table style="height: 90px;" width="800px">
+<tbody>
+<tr>
+<td colspan="2"><%@  include file="header.jsp" %>  
+</td>
+</tr>
+<tr>
+<td><img src="../images/leftmenu.png"></img></td>
+<td><tiles:insertAttribute name="body" />  
+</td>
+</tr>
+<tr>
+<td colspan="2"><%@ include file="footer.jsp" %>  
+</td>
+</tr>
+</tbody>
+</table>
+  
   
 </body>  
 </html>   
