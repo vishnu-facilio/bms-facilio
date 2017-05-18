@@ -1,23 +1,22 @@
 var WebMessenger = new function()
 {
-	var ws
+	var ws;
 	var uid;
-	this.register = function(uid)
+	this.subscribe = function(uid, listener)
 	{
 		this.uid = uid;
         ws = new WebSocket("ws://" + document.location.host + "/websocket/chat/" + uid);
-        ws.onmessage = function(event) {
-        	var message = JSON.parse(event.data);
-        	console.log(message);
-        };
+        ws.onmessage = listener;
 	}
 	
-	function send(to, content) 
+	this.send = function(to, content) 
 	{
         var json = JSON.stringify({
-            "to":uid,
+            "to":to,
             "content":content
         });
         ws.send(json);
     }
 }
+//a = function(event) { var message = JSON.parse(event.data);console.log(message);};
+//WebMessenger.subscribe("1", a);

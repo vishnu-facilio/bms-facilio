@@ -3,6 +3,8 @@ package com.facilio.wms.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
@@ -11,12 +13,15 @@ import com.facilio.wms.message.Message;
 
 public class WmsApi
 {
-	public static void sendMessage(Message message) throws IOException, EncodeException
+	private static Logger logger = Logger.getLogger(WmsApi.class.getName());
+	
+	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket/chat";
+	public static void sendMessage(int uid, Message message) throws IOException, EncodeException
 	{
 		try 
         {
             // open websocket
-            final FacilioClientEndpoint clientEndPoint = new FacilioClientEndpoint(new URI("ws://localhost:8080/websocket/chat/100"));
+            final FacilioClientEndpoint clientEndPoint = new FacilioClientEndpoint(new URI(WEBSOCKET_URL + "/" + uid));
 
             // add listener
             clientEndPoint.addMessageHandler(new FacilioClientEndpoint.MessageHandler() 
@@ -30,7 +35,7 @@ public class WmsApi
         } 
         catch (URISyntaxException ex) 
         {
-            System.err.println("URISyntaxException exception: " + ex.getMessage());
+        	logger.log(Level.SEVERE, "URISyntaxException exception: " + ex.getMessage(), ex);
         }
 	}
 }
