@@ -22,8 +22,8 @@
           jmxEnabled="true"
           jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
             org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
-          username="root"
-          password=""
+          username="faciliouser"
+          password="zxcv1212"
           driverClassName="com.mysql.jdbc.Driver"
-          url="jdbc:mysql://localhost:3306/bms"/>
+          url="jdbc:mysql://122.174.83.77:3306/bms"/>
 </Context>
