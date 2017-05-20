@@ -740,6 +740,43 @@ input.search-form:hover {
   margin-left: 15px;
 }
 
+.fd-signup-form { margin-top: 20px;
+    margin-right: 30px;
+    margin-bottom: 0px;
+    margin-left: 100px;text-align: center;width: 600px;padding-left: 1px;border-style: solid;
+    border-color: #0000ff;
+    }
+    
+.text {
+    background-color: transparent;
+    padding: 20px 10px 20px 50px;
+    border-radius: 0;
+    font-weight: 400;
+}
+.textfield {
+    position: relative;
+    vertical-align: middle;
+    zoom: 1;
+    color: #999;
+    width: 100%;
+}
+
+.b-form {
+    position: relative;
+    width: 480px;
+    margin: 10px auto 0;
+    box-shadow: none;
+    background-color: transparent;
+     border: 1px solid #3ead97;
+}
+.domain{position:relative;overflow:hidden}
+.domain-name-fixed {
+    display: inline-block;
+    font-size: 15px;
+}
+.user_row.firstname{width:50%;float:left}
+.user_row.lastname input{padding-left:20px;margin: 10px}
+
 
 
 
