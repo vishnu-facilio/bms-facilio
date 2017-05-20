@@ -25,5 +25,5 @@
           username="faciliouser"
           password="zxcv1212"
           driverClassName="com.mysql.jdbc.Driver"
-          url="jdbc:mysql://122.174.83.77:3306/bms"/>
+          url="jdbc:mysql://34.209.191.151:3306/bms"/>
 </Context>
