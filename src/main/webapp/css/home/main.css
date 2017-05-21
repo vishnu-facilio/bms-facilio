@@ -744,7 +744,7 @@ input.search-form:hover {
     margin-right: 30px;
     margin-bottom: 0px;
     margin-left: 100px;text-align: center;width: 600px;padding-left: 1px;border-style: solid;
-    border-color: #0000ff;
+    border: 1px solid #3ead97;
     }
     
 .text {
@@ -767,15 +767,18 @@ input.search-form:hover {
     margin: 10px auto 0;
     box-shadow: none;
     background-color: transparent;
-     border: 1px solid #3ead97;
 }
-.domain{position:relative;overflow:hidden}
+.domain{width:66%;position:relative;overflow:hidden;display: inline-block;float:left;}
 .domain-name-fixed {
     display: inline-block;
     font-size: 15px;
+    float:left;
+    padding-top:20px;
+    width:33%;
+    text-align:left
 }
-.user_row.firstname{width:50%;float:left}
-.user_row.lastname input{padding-left:20px;margin: 10px}
+.user_row.firstname{width:47%;margin-left:5px;float:left}
+.user_row.lastname input{display: inline-block;width:47%;margin-left:5px;padding-left:10px;float:left}
 
 
 
