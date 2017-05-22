@@ -8,6 +8,8 @@ import java.sql.Statement;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 
@@ -21,6 +23,22 @@ public class FacilioContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 		initDBConnectionPool();
+		
+		try {
+			
+//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60));
+//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120));
+			
+			FacilioScheduler.initScheduler();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		FacilioScheduler.initScheduler();
 	}
 	
 	private void initDBConnectionPool() {
