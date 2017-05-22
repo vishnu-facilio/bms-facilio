@@ -1,4 +1,4 @@
-package com.facilio.tasker;
+package com.facilio.tasker.executor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.tasker.job.JobStore;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class Executor extends Thread {
@@ -37,7 +40,7 @@ public class Executor extends Thread {
 				long startTime = System.currentTimeMillis()/1000;
 				long endTime = startTime+BUFFERPERIOD;
 				
-				List<JobContext> jobs = getJobs(startTime, endTime);
+				List<JobContext> jobs = JobStore.getJobs(startTime, endTime);
 				
 				for(JobContext jc : jobs) {
 					try {
@@ -67,49 +70,4 @@ public class Executor extends Thread {
 		}
 	}
 	
-	private List<JobContext> getJobs(long startTime, long endTime) throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		List<JobContext> jcs = new ArrayList<JobContext>();
-		
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXTEXECUTIONTIME >= ? and NEXTEXECUTIONTIME < ?");
-			pstmt.setLong(1, startTime);
-			pstmt.setLong(2, endTime);
-			
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				long jobId = rs.getLong("JOBID");
-				String orgId = rs.getString("ORGID");
-				String jobName = rs.getString("JOBNAME");
-				boolean isPeriodic = rs.getBoolean("ISPERIODIC");
-				int period = rs.getInt("PERIOD");
-				long nextExecutionTime = rs.getLong("NEXTEXECUTIONTIME");
-				
-				JobContext jc = new JobContext(jobId, orgId, jobName, period, isPeriodic, nextExecutionTime);
-				jcs.add(jc);
-			}
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			if(rs != null) {
-				rs.close();
-			}
-			if(pstmt != null) {
-				pstmt.close();
-			}
-			if(conn != null) {
-				conn.close();
-			}
-		}
-		
-		return jcs;
-	}
-
 }

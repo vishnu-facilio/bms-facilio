@@ -1,6 +1,8 @@
-package com.facilio.tasker;
+package com.facilio.tasker.job;
 
 public class JobContext {
+	
+	public static int INACTIVE = 0, READY = 1, IN_PROGRESS = 2;
 	
 	public JobContext(long jobId, String orgId, String jobName, int period, boolean isPeriodic, long executionTime) {
 		// TODO Auto-generated constructor stub

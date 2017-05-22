@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import com.facilio.tasker.config.SchedulerConf;
+import com.facilio.tasker.executor.Executor;
+import com.facilio.tasker.job.FacilioJob;
 
 public class FacilioScheduler {
 	
