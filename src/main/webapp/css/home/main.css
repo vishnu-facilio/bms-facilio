@@ -754,7 +754,6 @@ input.search-form:hover {
     font-weight: 400;
 }
 .textfield {
-    position: relative;
     vertical-align: middle;
     zoom: 1;
     color: #999;
@@ -777,8 +776,20 @@ input.search-form:hover {
     width:33%;
     text-align:left
 }
-.user_row.firstname{width:47%;margin-left:5px;float:left}
-.user_row.lastname input{display: inline-block;width:47%;margin-left:5px;padding-left:10px;float:left}
+
+.user_row.firstname {
+  width: 47%;
+  margin-left: 5px;
+  float:left
+}
+
+.user_row.lastname {
+  display: inline-block;
+  width: 47%;
+  margin-left: 5px;
+  padding-left:10px;
+  float:left
+}
 
 
 
