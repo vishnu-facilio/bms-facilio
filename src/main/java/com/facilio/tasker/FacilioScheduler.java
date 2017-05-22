@@ -21,7 +21,7 @@ public class FacilioScheduler {
 		jobsMap = getJobObjectsFromConf();
 		System.out.println(jobsMap);
 		
-		Executor executor = new Executor(jobsMap, 15);
+		Executor executor = new Executor("facilio", 15, jobsMap);
 		executor.start();
 	}
 	

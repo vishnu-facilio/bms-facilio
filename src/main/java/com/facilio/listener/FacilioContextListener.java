@@ -26,8 +26,8 @@ public class FacilioContextListener implements ServletContextListener {
 		
 		try {
 			
-//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60));
-//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120));
+//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60, "facilio"));
+//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120, "facilio"));
 			
 			FacilioScheduler.initScheduler();
 		} catch (Exception e) {

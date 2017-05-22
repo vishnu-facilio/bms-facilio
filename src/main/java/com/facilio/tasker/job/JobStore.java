@@ -20,11 +20,11 @@ public class JobStore {
 			  ISPERIODIC BOOLEAN,
 			  PERIOD INT,
 			  NEXTEXECUTIONTIME BIGINT,
-			  STATE INT
+			  EXECUTORNAME VARCHAR(50)
 			)
 	*/
 	
-	public static long addJob(String orgId, String jobName, boolean isPeriodic, int period, long nextExecutionTime) throws Exception {
+	public static long addJob(String orgId, String jobName, boolean isPeriodic, int period, long nextExecutionTime, String executorName) throws Exception {
 		
 		if(orgId == null || orgId.isEmpty()) {
 			throw new IllegalArgumentException("Invalid Org Id");
@@ -34,20 +34,24 @@ public class JobStore {
 			throw new IllegalArgumentException("Invalid JobName");
 		}
 		
+		if(executorName == null || executorName.isEmpty()) {
+			throw new IllegalArgumentException("Invalid Executor Name");
+		}
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Jobs (ORGID, JOBNAME, ISPERIODIC, PERIOD, NEXTEXECUTIONTIME, STATE) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Jobs (ORGID, JOBNAME, ISPERIODIC, PERIOD, NEXTEXECUTIONTIME, EXECUTORNAME) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setString(1, orgId);
 			pstmt.setString(2, jobName);
 			pstmt.setBoolean(3, isPeriodic);
 			pstmt.setInt(4, period);
 			pstmt.setLong(5, nextExecutionTime);
-			pstmt.setInt(6, JobContext.READY);
+			pstmt.setString(6, executorName);
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to schedule");
@@ -100,11 +104,10 @@ public class JobStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set NEXTEXECUTIONTIME = ?, STATE = ? where JOBID = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set NEXTEXECUTIONTIME = ? where JOBID = ?");
 			
 			pstmt.setLong(1, nextExecutionTime);
-			pstmt.setInt(2, JobContext.READY);
-			pstmt.setLong(3, jobId);
+			pstmt.setLong(2, jobId);
 			
 			return pstmt.executeUpdate();
 		}
@@ -140,23 +143,19 @@ public class JobStore {
 		
 	}
 	
-	public static List<JobContext> getJobs(long startTime, long endTime) throws SQLException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime) throws SQLException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
-		PreparedStatement updatePstmt = null;
 		ResultSet rs = null;
 		
 		List<JobContext> jcs = new ArrayList<JobContext>();
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXTEXECUTIONTIME >= ? and NEXTEXECUTIONTIME < ? and STATE = ?");
+			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE NEXTEXECUTIONTIME >= ? and NEXTEXECUTIONTIME < ? and EXECUTORNAME = ?");
 			getPstmt.setLong(1, startTime);
 			getPstmt.setLong(2, endTime);
-			getPstmt.setLong(3, JobContext.READY);
-			
-			updatePstmt = conn.prepareStatement("UPDATE Jobs set STATE = ? where JOBID = ?");
-			updatePstmt.setInt(1, JobContext.IN_PROGRESS);
+			getPstmt.setString(3, executorName);
 			
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
@@ -169,12 +168,7 @@ public class JobStore {
 				
 				JobContext jc = new JobContext(jobId, orgId, jobName, period, isPeriodic, nextExecutionTime);
 				jcs.add(jc);
-				
-				updatePstmt.setLong(2, jobId);
-				updatePstmt.addBatch();
 			}
-			
-			updatePstmt.executeBatch();
 		}
 		catch(SQLException e) {
 			throw e;
@@ -185,9 +179,6 @@ public class JobStore {
 			}
 			if(getPstmt != null) {
 				getPstmt.close();
-			}
-			if(updatePstmt != null) {
-				updatePstmt.close();
 			}
 			if(conn != null) {
 				conn.close();

@@ -1,10 +1,5 @@
 package com.facilio.tasker.executor;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -14,20 +9,21 @@ import java.util.concurrent.TimeUnit;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class Executor extends Thread {
 	
 	private Map<String, FacilioJob> jobsMap;
 	private ScheduledExecutorService executor = null;
+	private String name = null;
 	
-	public Executor(Map<String, FacilioJob> jobsMap, int noOfThreads) {
+	public Executor(String name, int noOfThreads, Map<String, FacilioJob> jobsMap) {
 		// TODO Auto-generated constructor stub
 		this.jobsMap = jobsMap;
+		this.name = name;
 		executor = Executors.newScheduledThreadPool(noOfThreads);
 	}
 	
-	final int BUFFERPERIOD = 1*60; //in Seconds
+	final int BUFFER_PERIOD = 10*60; //in Seconds
 	
 	@Override
 	public void run()
@@ -38,9 +34,11 @@ public class Executor extends Thread {
 			
 			try {
 				long startTime = System.currentTimeMillis()/1000;
-				long endTime = startTime+BUFFERPERIOD;
+				long endTime = startTime+BUFFER_PERIOD;
 				
-				List<JobContext> jobs = JobStore.getJobs(startTime, endTime);
+				System.out.println("Executor::"+startTime+"::"+endTime);
+				
+				List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime);
 				
 				for(JobContext jc : jobs) {
 					try {
@@ -56,8 +54,6 @@ public class Executor extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
 		}
 	}
 	
