@@ -61,11 +61,13 @@ function signup(email,password)
             return;
         }
         cognitoUser = result.user;
-        alert('user name is' + cognitoUser.getUsername());
+    //    alert('user name is' + cognitoUser.getUsername());
+        signin(email,password);
+        //TODO
     });
 
     // display verification form after sign up
-    showVerificationForm();
+   // showVerificationForm();
 }
 
 function signin(email,password)
@@ -100,9 +102,13 @@ function signin(email,password)
 	        $.post( "login/validate", { "idToken": idToken })
 	        .done(function( data ) {
 	        	
+	        	if(data.indexOf("success")>-1)
+	        	{
 	        	window.location.replace("home/index");
-
-	        
+	        }
+	        	else if(data.indexOf("unverified_user")>-1){
+	        		alert("pls verify the username");
+	        	}
 	        });
 	        
 
@@ -111,7 +117,8 @@ function signin(email,password)
 	    },
 
 	    onFailure: function(err) {
-	        alert(err);
+	        
+	        showVerificationForm();
 	    },
 
 	});	

@@ -1,8 +1,6 @@
 package com.facilio.wms.endpoints;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -14,14 +12,13 @@ import javax.websocket.server.ServerEndpoint;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageDecoder;
 import com.facilio.wms.message.MessageEncoder;
-import com.facilio.wms.util.WmsApi;
 
 /**
  *
  * @author Shivaraj
  */
 @ServerEndpoint(
-        value="/chat/{uid}",
+        value="/websocket/{uid}",
         decoders = MessageDecoder.class,
         encoders = MessageEncoder.class
 )
