@@ -12,18 +12,6 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class JobStore {
 	
-	/*
-	create table Jobs (
-			  JOBID BIGINT AUTO_INCREMENT PRIMARY KEY,
-			  ORGID VARCHAR(50),
-			  JOBNAME VARCHAR(50),
-			  ISPERIODIC BOOLEAN,
-			  PERIOD INT,
-			  NEXTEXECUTIONTIME BIGINT,
-			  EXECUTORNAME VARCHAR(50)
-			)
-	*/
-	
 	public static long addJob(String orgId, String jobName, boolean isPeriodic, int period, long nextExecutionTime, String executorName) throws Exception {
 		
 		if(orgId == null || orgId.isEmpty()) {

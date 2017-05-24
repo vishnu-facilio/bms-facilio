@@ -1,5 +1,7 @@
 package com.facilio.listener;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,8 +10,8 @@ import java.sql.Statement;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 
@@ -25,6 +27,7 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		
 		try {
+			createTables();
 			
 //			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60, "facilio"));
 //			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120, "facilio"));
@@ -37,8 +40,10 @@ public class FacilioContextListener implements ServletContextListener {
 		
 	}
 	
-	public static void main(String[] args) throws Exception {
-		FacilioScheduler.initScheduler();
+	private void createTables() throws SQLException, IOException {
+		File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/createTables.sql").getFile());
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, false);
+		scriptRunner.runScript();
 	}
 	
 	private void initDBConnectionPool() {
