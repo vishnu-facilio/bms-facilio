@@ -18,5 +18,5 @@ var WebMessenger = new function()
         ws.send(json);
     }
 }
-a = function(event) { var message = JSON.parse(event.data);console.log(message);};
-WebMessenger.subscribe("1", a);
+//a = function(event) { var message = JSON.parse(event.data);console.log(message);};
+//WebMessenger.subscribe("1", a);

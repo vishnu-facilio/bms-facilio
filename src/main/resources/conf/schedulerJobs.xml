@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scheduler>
-	<job name='test1' classname='test.Test' />
+	<!-- <job name='test1' classname='test.Test' />
 	<job name='test2' classname='test.Test2' />
-	<job classname='test.Test2' />
+	<job classname='test.Test2' /> -->
+	 <job name='SyncIotData' classname='com.facilio.tasker.tasks.SyncIotDataJob' />
 </scheduler>

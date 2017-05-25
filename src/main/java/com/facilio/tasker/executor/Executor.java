@@ -23,7 +23,7 @@ public class Executor extends Thread {
 		executor = Executors.newScheduledThreadPool(noOfThreads);
 	}
 	
-	final int BUFFER_PERIOD = 10*60; //in Seconds
+	final int BUFFER_PERIOD = 10*60;//10*60; //in Seconds
 	
 	@Override
 	public void run()
@@ -63,6 +63,9 @@ public class Executor extends Thread {
 			job.setJobContext(jc);
 			System.out.println("Scheduling : "+jc);
 			executor.schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)), TimeUnit.SECONDS);
+		}
+		else {
+			System.err.println(String.format("No such Job with jobname : %s", jc.getJobName()));
 		}
 	}
 	
