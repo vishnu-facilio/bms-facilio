@@ -64,6 +64,9 @@ public class Executor extends Thread {
 			System.out.println("Scheduling : "+jc);
 			executor.schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)), TimeUnit.SECONDS);
 		}
+		else {
+			System.err.println(String.format("No such Job with jobname : %s", jc.getJobName()));
+		}
 	}
 	
 }
