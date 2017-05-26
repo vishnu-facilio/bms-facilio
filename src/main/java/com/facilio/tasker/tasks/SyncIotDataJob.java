@@ -34,18 +34,12 @@ public class SyncIotDataJob extends FacilioJob{
 	        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	        String xAmzDate = dateFormat.format(new Date());
 	        
-	        String payload = "{\n\"state\":{\n\"desired\":" + AwsUtil.getDeviceData() + "\n},\n\"clientToken\":\"shiva2\",\n\"version\":" + counter + "\n}";
-	        System.out.println("payload :::" +payload);
-	        String signature = AwsUtil.getSignature(secretKey, dateStamp, regionName, serviceName, payload, xAmzDate);
 	        String url = "https://" + AwsUtil.getConfig("host") + "/things/EM/shadow";
-	        
-	        Map<String, String> headers = new HashMap<String, String>();
-	        headers.put("Content-Type", "application/json");
-	        headers.put("Host", AwsUtil.getConfig("host"));
-	        headers.put("X-Amz-Date", xAmzDate);
-	        headers.put("Authorization", "AWS4-HMAC-SHA256 Credential=" + AwsUtil.getConfig("accessKeyId") + "/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + AwsUtil.getConfig("region") + "/" + AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=" + signature);
-	        
+	        String payload = "{\n\"state\":{\n\"desired\":" + AwsUtil.getDeviceData() + "\n},\n\"clientToken\":\"shiva2\",\n\"version\":" + counter + "\n}";
+	        String signature = AwsUtil.getSignature(secretKey, dateStamp, regionName, serviceName, payload, xAmzDate);
+	        Map<String, String> headers = AwsUtil.getAuthHeaders(signature, xAmzDate);
 	        AwsUtil.doHttpPost(url, headers, null, payload);
+	        
 	        counter++;
 		}
 		catch (Exception e) 
