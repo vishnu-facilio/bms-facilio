@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,25 +71,30 @@ public class AwsUtil
         }
     }
     
-    public static String getSignature(String secretKey, String dateStamp, String regionName, String serviceName, String payload, String xAmzDate) throws Exception
+    public static String getSignature(String payload, String xAmzDate, String path) throws Exception
     {
+		String secretKey = AwsUtil.getConfig("secretKeyId");
+        String dateStamp = new SimpleDateFormat("yyyyMMdd").format(new Date()); 	//"20170525";
+        String regionName = AwsUtil.getConfig("region");		//"us-west-2";
+        String serviceName = AwsUtil.AWS_IOT_SERVICE_NAME;
+        
     	byte[] kSecret = ("AWS4" + secretKey).getBytes("UTF8");
         byte[] kDate = HmacSHA256(dateStamp, kSecret);
         byte[] kRegion = HmacSHA256(regionName, kDate);
         byte[] kService = HmacSHA256(serviceName, kRegion);
         byte[] kSigning = HmacSHA256("aws4_request", kService);
         
-        String stringToSign = getStringToSign(payload, xAmzDate);
+        String stringToSign = getStringToSign(payload, xAmzDate, path);
         return bytesToHex(HmacSHA256(stringToSign, kSigning));
     }
     
-    public static String getStringToSign(String payload, String xAmzDate) throws NoSuchAlgorithmException
+    public static String getStringToSign(String payload, String xAmzDate, String path) throws NoSuchAlgorithmException
     {
-    	String canonicalHeader = "content-type:application/json\nhost:a2ak8t6zogzde5.iot.us-west-2.amazonaws.com\nx-amz-date:"+xAmzDate+"\n";
+    	String canonicalHeader = "content-type:application/json\nhost:" + AwsUtil.getConfig("host") + "\nx-amz-date:"+xAmzDate+"\n";
         String signedHeader = "content-type;host;x-amz-date";
-        String canonicalRequest = "POST" + "\n" + "/things/EM/shadow" + "\n" + "" + "\n" + canonicalHeader + "\n" + signedHeader + "\n" + hash256(payload).toLowerCase();
+        String canonicalRequest = "POST" + "\n" + path + "\n" + "" + "\n" + canonicalHeader + "\n" + signedHeader + "\n" + hash256(payload).toLowerCase();
         
-        String scope = "20170525/us-west-2/iotdata/aws4_request";
+        String scope = new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + AwsUtil.getConfig("region") + "/"+ AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request";
         return "AWS4-HMAC-SHA256" + "\n" + xAmzDate + "\n" + scope + "\n" + hash256(canonicalRequest).toLowerCase();
     }
     
@@ -183,7 +186,7 @@ public class AwsUtil
         return result.toString();
     }
 	
-	public static String getDeviceData() throws IOException		//Sample Code
+	public static String getDeviceData() throws IOException	// getDeviceData Sample Code
 	{
 		String user = "admin";
     	String pass = "Admin@1234";
