@@ -12,11 +12,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class JobStore {
 	
-	public static long addJob(String orgId, String jobName, boolean isPeriodic, int period, long nextExecutionTime, String executorName) throws Exception {
-		
-		if(orgId == null || orgId.isEmpty()) {
-			throw new IllegalArgumentException("Invalid Org Id");
-		}
+	public static long addJob(long orgId, String jobName, boolean isPeriodic, int period, long nextExecutionTime, String executorName) throws Exception {
 		
 		if(jobName == null || jobName.isEmpty()) {
 			throw new IllegalArgumentException("Invalid JobName");
@@ -34,7 +30,7 @@ public class JobStore {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO Jobs (ORGID, JOBNAME, ISPERIODIC, PERIOD, NEXTEXECUTIONTIME, EXECUTORNAME) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
-			pstmt.setString(1, orgId);
+			pstmt.setLong(1, orgId);
 			pstmt.setString(2, jobName);
 			pstmt.setBoolean(3, isPeriodic);
 			pstmt.setInt(4, period);
@@ -148,7 +144,7 @@ public class JobStore {
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
 				long jobId = rs.getLong("JOBID");
-				String orgId = rs.getString("ORGID");
+				long orgId = rs.getLong("ORGID");
 				String jobName = rs.getString("JOBNAME");
 				boolean isPeriodic = rs.getBoolean("ISPERIODIC");
 				int period = rs.getInt("PERIOD");
