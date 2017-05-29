@@ -1,0 +1,2 @@
+<beans>
+	<bean name="Tasker" class="com.facilio.tasker.TaskerImpl"></bean></beans>
