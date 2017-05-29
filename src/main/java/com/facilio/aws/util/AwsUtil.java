@@ -36,6 +36,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+
 public class AwsUtil 
 {
 	private static Logger logger = Logger.getLogger(AwsUtil.class.getName());
@@ -69,6 +72,13 @@ public class AwsUtil
         {
             return value;
         }
+    }
+    
+    public static AWSIotMqttClient getAwsIotMqttClient(String clientId) throws AWSIotException
+    {
+    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("clientEndpoint"), clientId, AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+    	awsIotClient.connect();
+		return awsIotClient;
     }
     
     public static String getSignature(String payload, String xAmzDate, String path) throws Exception

@@ -10,6 +10,7 @@ import java.sql.Statement;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -28,6 +29,7 @@ public class FacilioContextListener implements ServletContextListener {
 		
 		try {
 			createTables();
+			BeanFactory.initBeans();
 			
 //			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60, "facilio"));
 //			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120, "facilio"));
