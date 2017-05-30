@@ -34,27 +34,27 @@
       <li class="treeview">
         <a href="#">
           <i class="fa fa-files-o"></i>
-        <span>Layout Options</span>
+        <span>Buildings</span>
           <span class="label label-primary pull-right">4</span>
         </a>
         <ul class="treeview-menu" style="display: none;">
-          <li><a href="#"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Boxed</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Fixed</a></li>
-          <li class=""><a href="#"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Estance</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> Signature</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i> EA</a></li>
+          <li class=""><a href="#"><i class="fa fa-circle-o"></i> White House</a>
           </li>
         </ul>
       </li>
       <li>
         <a href="#">
-          <i class="fa fa-th"></i> <span>Widgets</span>
+          <i class="fa fa-th"></i> <span>Apps</span>
           <small class="label pull-right label-info">new</small>
         </a>
       </li>
       <li class="treeview">
         <a href="#">
           <i class="fa fa-pie-chart"></i>
-        <span>Charts</span>
+        <span>Reports</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
@@ -67,7 +67,7 @@
       <li class="treeview">
         <a href="#">
           <i class="fa fa-laptop"></i>
-        <span>UI Elements</span>
+        <span>Meters</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
