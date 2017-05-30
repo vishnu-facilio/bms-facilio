@@ -31,15 +31,6 @@ public class SchedulerConf {
 		return jobs.toString();
 	}
 	
-	public static void main(String[] args) {
-//		File schedulerXml = new File(classLoader.getResource("conf/scheduler.xml").getFile());
-//		
-//		JAXBContext jaxbContext = JAXBContext.newInstance(SchedulerConf.class);
-//		SchedulerConf schedulerConf = (SchedulerConf) jaxbContext.createUnmarshaller().unmarshal(schedulerXml);
-//		
-//		System.out.println(schedulerConf);
-	}
-	
 	public final static class Job {
 		private String name, className;
 		
