@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.interceptors;
 
+import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -16,10 +18,15 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			String username = (String)ActionContext.getContext().getSession().get("USERNAME");
 
+        	
+        
 	      if(username==null)
 	      {
 	    	  return Action.LOGIN;
 	      }
+	  	OrgInfo.setCurrentOrgInfo(new OrgInfo(100));
+    	UserInfo.setCurrentUser(new UserInfo(username));
+
 	      /* let us call action or next interceptor */
 	      String result = arg0.invoke();
 

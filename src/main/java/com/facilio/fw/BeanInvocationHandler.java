@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 public class BeanInvocationHandler implements InvocationHandler {
 	private Object delegate;
-	long orgid ;
+	long orgid =0;;
 	public BeanInvocationHandler(Object ob,Long orgid)
 
 	{
@@ -19,8 +19,21 @@ public class BeanInvocationHandler implements InvocationHandler {
 		Object result;
         try{
         	// TODO switch context to orgid
+        	ThreadLocal<OrgInfo> thlocal = new ThreadLocal<OrgInfo>();
+        	OrgInfo oldorginfo = OrgInfo.getCurrentOrgInfo();
+        	boolean switchback = false;
+        	if(orgid!=0)
+        	{
+        		OrgInfo.setCurrentOrgInfo(new OrgInfo(orgid));
+        		switchback = true;
+        	}
         	result = method.invoke(delegate, args);
-	    } catch (InvocationTargetException e) {
+        	if(switchback)
+        	{
+        	OrgInfo.setCurrentOrgInfo(oldorginfo);
+        	}
+        	
+        } catch (InvocationTargetException e) {
 	        throw e;
 	    } catch (Exception e) {
 	        throw e;
