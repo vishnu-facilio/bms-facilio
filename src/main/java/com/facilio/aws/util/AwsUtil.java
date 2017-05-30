@@ -36,8 +36,17 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.iot.AWSIot;
+import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
+import com.amazonaws.services.iot.model.AttachPrincipalPolicyResult;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.amazonaws.services.iot.model.CreatePolicyRequest;
 
 public class AwsUtil 
 {
@@ -72,6 +81,20 @@ public class AwsUtil
         {
             return value;
         }
+    }
+    
+    public static CreateKeysAndCertificateResult getCertificateResult()
+    {
+    	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest();
+    	cr.withSetAsActive(true);
+    	BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
+    	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest();
+    	policyResult.setPolicyName("EM-Policy");
+    	policyResult.setPrincipal(certResult.getCertificateArn());
+    	awsIot.attachPrincipalPolicy(policyResult);
+		return certResult;
     }
     
     public static AWSIotMqttClient getAwsIotMqttClient(String clientId) throws AWSIotException
