@@ -43,10 +43,8 @@ import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
-import com.amazonaws.services.iot.model.AttachPrincipalPolicyResult;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.amazonaws.services.iot.model.CreatePolicyRequest;
 
 public class AwsUtil 
 {
@@ -91,7 +89,7 @@ public class AwsUtil
     	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
     	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest();
-    	policyResult.setPolicyName("EM-Policy");
+    	policyResult.setPolicyName("EM-Policy"); //Temp
     	policyResult.setPrincipal(certResult.getCertificateArn());
     	awsIot.attachPrincipalPolicy(policyResult);
 		return certResult;

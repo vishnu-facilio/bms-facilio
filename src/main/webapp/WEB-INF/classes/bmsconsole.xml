@@ -29,6 +29,8 @@
   <action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
             <result  type="tiles">homepage</result>
         </action>
+    <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
+    </action>
 
        
 
