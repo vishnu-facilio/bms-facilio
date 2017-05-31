@@ -32,7 +32,13 @@
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
 
-       
+    <action name="newTicket" class="com.facilio.incidents.actions.NewTicketAction">
+    	<result type="tiles">newTicket</result>
+    </action>
+    
+    <action name="addTicket" class="com.facilio.incidents.actions.AddTicketAction">
+    	<result name="success" type="tiles">successTicket</result>
+    </action>   
 
         
 
