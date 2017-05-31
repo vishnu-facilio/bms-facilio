@@ -30,10 +30,6 @@ public class FacilioContextListener implements ServletContextListener {
 		try {
 			createTables();
 			BeanFactory.initBeans();
-			
-//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test1", 60, 60, "facilio"));
-//			System.out.println("Scheduling=>"+FacilioTimer.schedulePeriodicJob("test2", 60, 120, "facilio"));
-			
 			FacilioScheduler.initScheduler();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

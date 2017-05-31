@@ -24,6 +24,10 @@
   <param name="location">/login.html</param>
   <param name="parse">false</param>
 </result>
+<result name="unauthorized" type="redirect">
+  <param name="location">/jsps/unauthorized.jsp</param>
+  <param name="parse">false</param>
+</result>
 </global-results>
 
   <action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">

@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.interceptors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.Action;
@@ -9,14 +13,30 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class AuthInterceptor extends AbstractInterceptor {
 
+	private static String HOSTNAME = null;
+	@Override
+	public void init() {
+		
+		super.init();
+	}
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-		// TODO Auto-generated method stub
-		/* let us do some pre-processing */
+		
 	      String output = "Pre-Processing"; 
 	      System.out.println(output);
 
 			String username = (String)ActionContext.getContext().getSession().get("USERNAME");
+					
+					HttpServletRequest request = ServletActionContext.getRequest();
+					String subdomain = request.getRemoteHost();
+					
+					if(HOSTNAME==null)
+					{
+						HOSTNAME = (String)ActionContext.getContext().getApplication().get("DOMAINNAME");
+					}
+					subdomain = subdomain.replaceAll(HOSTNAME, "");
+					
+					//ActionContext.getContext().getParameters()
 
         	
         
@@ -24,9 +44,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 	      {
 	    	  return Action.LOGIN;
 	      }
-	  	OrgInfo.setCurrentOrgInfo(new OrgInfo(100));
-    	UserInfo.setCurrentUser(new UserInfo(username));
-
+	  	try {
+			OrgInfo.validateOrgInfo(subdomain, username);
+		} catch (Exception e) {
+			
+			 return "unauthorized";
+		}
 	      /* let us call action or next interceptor */
 	      String result = arg0.invoke();
 

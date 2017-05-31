@@ -1,7 +1,7 @@
 package com.facilio.fw;
 
 public class OrgInfo {
-	public static final String ORGINFO = "ORGINFO";
+	//public static final String ORGINFO = "ORGINFO";
 	private static ThreadLocal<OrgInfo> orglocal = new ThreadLocal<OrgInfo>();
 
 private long orgid;
@@ -30,5 +30,20 @@ public static void setCurrentOrgInfo(OrgInfo orginfo)
 public static void cleanup()
 {
 	orglocal.remove();
+}
+public static void validateOrgInfo(String domainname,String username) throws Exception
+{
+	OrgInfo.setCurrentOrgInfo(new OrgInfo(100));
+	UserInfo.setCurrentUser(new UserInfo(username));
+	if (true)
+	{
+		throw new Exception("Unauthorized access");
+	}
+
+    return ;
+}
+public static void doSignup(String subdomain)
+{
+	
 }
 }

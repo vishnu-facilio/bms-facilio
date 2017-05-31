@@ -10,6 +10,10 @@
       /WEB-INF/tiles.xml
    </param-value>
    </context-param>
+   <context-param>
+        <param-name>DOMAINNAME</param-name>
+        <param-value>.facilio.com</param-value>
+    </context-param>
  <listener>
       <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
     </listener>
