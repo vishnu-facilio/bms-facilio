@@ -8,7 +8,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.aws.util.AwsUtil;
 import com.opensymphony.xwork2.ActionSupport;

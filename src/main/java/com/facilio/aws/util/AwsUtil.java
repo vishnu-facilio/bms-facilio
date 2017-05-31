@@ -83,14 +83,12 @@ public class AwsUtil
     
     public static CreateKeysAndCertificateResult getCertificateResult()
     {
-    	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest();
-    	cr.withSetAsActive(true);
+    	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
     	BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
     	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
-    	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest();
-    	policyResult.setPolicyName("EM-Policy"); //Temp
-    	policyResult.setPrincipal(certResult.getCertificateArn());
+    	
+    	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(certResult.getCertificateArn());
     	awsIot.attachPrincipalPolicy(policyResult);
 		return certResult;
     }
