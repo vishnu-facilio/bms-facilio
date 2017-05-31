@@ -14,7 +14,7 @@ import com.facilio.tasker.job.FacilioJob;
 
 public class FacilioScheduler {
 	
-	private static Map<String, FacilioJob> jobsMap = null;
+	private static Map<String, Class<? extends FacilioJob>> jobsMap = null;
 	
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
@@ -22,10 +22,10 @@ public class FacilioScheduler {
 		System.out.println(jobsMap);
 		
 		Executor executor = new Executor("facilio", 15, jobsMap);
-		executor.start();
+//		executor.start();
 	}
 	
-	private static Map<String, FacilioJob> getJobObjectsFromConf() throws JAXBException {
+	private static Map<String, Class<? extends FacilioJob>> getJobObjectsFromConf() throws JAXBException {
 		//Get file from resources folder
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		File schedulerXml = new File(classLoader.getResource("conf/schedulerJobs.xml").getFile());
@@ -35,15 +35,14 @@ public class FacilioScheduler {
 		
 		System.out.println(schedulerConf);
 		
-		Map<String, FacilioJob> jobsMap = new HashMap<String, FacilioJob>();
+		Map<String, Class<? extends FacilioJob>> jobsMap = new HashMap<>();
 		for(SchedulerConf.Job jobConf : schedulerConf.getJobs()) {
 			String name = jobConf.getName();
 			String className = jobConf.getClassName();
 			if(name != null && !name.isEmpty() && className != null && !className.isEmpty()) { 
 				try {
 					
-					FacilioJob job = (FacilioJob) Class.forName(className).newInstance();
-					jobsMap.put(name, job);
+					jobsMap.put(name, (Class<? extends FacilioJob>) Class.forName(className));
 				}
 				catch(Exception e) {
 					System.err.println("The folowing error occurred while parsing job name : "+name);
