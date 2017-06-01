@@ -4,7 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.incidents.tickets.TicketContext;
-import com.facilio.incidents.tickets.TicketStore;
+import com.facilio.incidents.tickets.TicketApi;
 
 public class AddTicketCommand implements Command {
 
@@ -13,12 +13,8 @@ public class AddTicketCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		TicketContext ticketContext = (TicketContext) context;
-		
-		long ticketId = TicketStore.addTicket(ticketContext);
-		
-		System.out.println("Ticket Id : "+ticketId);
-		
-		context.put("TicketId", ticketId);
+		long ticketId = TicketApi.addTicket(ticketContext);
+		ticketContext.setTicketId(ticketId);
 		
 		return true;
 	}

@@ -15,8 +15,13 @@
    	<put-attribute name="body" value="/jsps/newTicket.jsp" />
    </definition>
    
-   <definition name="successTicket" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="Added Ticket" />
-   	<put-attribute name="body" value="/jsps/ticketSuccess.jsp" />
+   <definition name="viewTicket" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="View Ticket" />
+   	<put-attribute name="body" value="/jsps/viewTicket.jsp" />
+   </definition>
+   	
+   	<definition name="ticketsList" template="/jsps/layouts/basiclayout.jsp">
+   		<put-attribute name="title" value="Tickets" />
+   		<put-attribute name="body" value="/jsps/ticketsList.jsp" />
    </definition>
 </tiles-definitions>  
