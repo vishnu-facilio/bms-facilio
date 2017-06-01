@@ -33,12 +33,13 @@ public static void cleanup()
 }
 public static void validateOrgInfo(String domainname,String username) throws Exception
 {
+	String sqlquery = "select * from Organizations, ORG_Users,Users where Organizations.ORGID =ORG_Users.ORGID and ORG_Users.USERID=Users.USERID and Organizations.FACILIODOMAINNAME =? and EMAIL=?";
+	// if query returns resultset
 	OrgInfo.setCurrentOrgInfo(new OrgInfo(100));
 	UserInfo.setCurrentUser(new UserInfo(username));
-	if (true)
-	{
-		throw new Exception("Unauthorized access");
-	}
+	
+	// no records
+		// throw exception for unauthorized access
 
     return ;
 }
