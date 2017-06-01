@@ -11,6 +11,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -62,30 +63,7 @@ public class FacilioContextListener implements ServletContextListener {
 			e.printStackTrace();
 		}
 		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			DBUtil.closeAll(conn, stmt, rs);
 		}
 	}
 

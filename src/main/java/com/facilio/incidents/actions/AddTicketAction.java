@@ -29,7 +29,8 @@ public class AddTicketAction extends ActionSupport {
 		}
 		
 		if(addTicket.execute(context)) {
-			setResponse(context.get("ticketId")+"");
+			System.out.println("Ticket ID : "+context.getTicketId());
+			setTicketId(context.getTicketId());
 			return SUCCESS;
 		}
 		else {
@@ -86,11 +87,11 @@ public class AddTicketAction extends ActionSupport {
  		this.status = status;
  	}
  	
-	private String response;
-	public String getResponse() {
-		return response;
-	}
-	public void setResponse(String response) {
-		this.response = response;
-	}
+ 	private long ticketId;
+ 	public long getTicketId() {
+ 		return ticketId;
+ 	}
+ 	public void setTicketId(long ticketId) {
+ 		this.ticketId = ticketId;
+ 	}
 }

@@ -36,15 +36,26 @@
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
 
-    <action name="newTicket" class="com.facilio.incidents.actions.NewTicketAction">
+    <action name="tickets/new" class="com.facilio.incidents.actions.NewTicketAction">
     	<result type="tiles">newTicket</result>
     </action>
     
-    <action name="addTicket" class="com.facilio.incidents.actions.AddTicketAction">
-    	<result name="success" type="tiles">successTicket</result>
+    <action name="tickets/add" class="com.facilio.incidents.actions.AddTicketAction">
+    	<result name="success" type="redirectAction">tickets/${ticketId}</result>
     </action>   
 
-        
+	<action name="tickets/" class="com.facilio.incidents.actions.TicketListAction">
+    	<result name="success" type="tiles">ticketsList</result>
+    </action>
+    
+    <action name="tickets" class="com.facilio.incidents.actions.TicketListAction">
+    	<result name="success" type="tiles">ticketsList</result>
+    </action>   
+
+    <action name="tickets/*" class="com.facilio.incidents.actions.ViewTicketAction">
+    	<param name="ticketId">{1}</param>
+    	<result name="success" type="tiles">viewTicket</result>
+    </action>        
 
     </package>
         <package name="unauth" namespace="/login"  extends='struts-default,tiles-default'>
