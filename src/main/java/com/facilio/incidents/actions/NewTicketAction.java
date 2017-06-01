@@ -1,6 +1,5 @@
 package com.facilio.incidents.actions;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.facilio.assets.AssetsAPI;
@@ -38,11 +37,7 @@ public class NewTicketAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		statusList = new LinkedHashMap<>();
-		statusList.put(TicketContext.OPEN, "Open");
-		statusList.put(TicketContext.PENDING, "Pending");
-		statusList.put(TicketContext.RESOLVED, "Resolved");
-		statusList.put(TicketContext.CLOSED, "Closed");
+		statusList = TicketContext.getAllStatus();
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		

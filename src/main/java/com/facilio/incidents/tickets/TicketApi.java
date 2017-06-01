@@ -6,9 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -25,10 +24,10 @@ public class TicketApi {
 			pstmt = conn.prepareStatement("INSERT INTO Tickets (ORGID, REQUESTOR, SUBJECT, DESCRIPTION, STATUS, AGENTID, FAILED_ASSET_ID, DUE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, ticketContext.getOrgId());
-			pstmt.setString(2, ticketContext.getRequestor());
+			pstmt.setString(2, ticketContext.getRequester());
 			pstmt.setString(3,  ticketContext.getSubject());
 			pstmt.setString(4, ticketContext.getDescription());
-			pstmt.setInt(5, ticketContext.getStatus());
+			pstmt.setInt(5, ticketContext.getStatusCode());
 			
 			if(ticketContext.getAgentId() != null) {
 				pstmt.setLong(6, ticketContext.getAgentId());
@@ -65,25 +64,25 @@ public class TicketApi {
 		}
 	}
 	
-	public static Map<Long, String> getTicketIdAndSubject(long orgId) throws SQLException {
+	public static List<TicketContext> getTicketsOfOrg(long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT TICKETID, SUBJECT FROM Tickets WHERE ORGID = ? ORDER BY SUBJECT");
+			pstmt = conn.prepareStatement("SELECT * FROM Tickets WHERE ORGID = ? ORDER BY SUBJECT");
 			pstmt.setLong(1, orgId);
 			
-			Map<Long, String> ticketsIdAndSubject = new LinkedHashMap<>();
+			List<TicketContext> tickets = new ArrayList<>();
 			
 			rs = pstmt.executeQuery();
-			
 			while(rs.next()) {
-				ticketsIdAndSubject.put(rs.getLong("TICKETID"), rs.getString("SUBJECT"));
+				TicketContext tc = getTCObjectFromRS(rs);
+				tickets.add(tc);
 			}
 			
-			return ticketsIdAndSubject;
+			return tickets;
 		}
 		catch(SQLException e) {
 			throw e;
@@ -93,7 +92,7 @@ public class TicketApi {
 		}
 	}
 	
-	public static Map<String, String> getTicketDetails(long ticketId) throws SQLException {
+	public static TicketContext getTicketDetails(long ticketId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -103,21 +102,14 @@ public class TicketApi {
 			pstmt = conn.prepareStatement("SELECT * FROM Tickets WHERE TICKETID = ?");
 			pstmt.setLong(1, ticketId);
 			
-			Map<String, String> ticketProps = new HashMap<>();
-			
 			rs = pstmt.executeQuery();
-			
+			TicketContext tc = null;
 			while(rs.next()) {
-				ticketProps.put("TICKETID", rs.getString("TICKETID"));
-				ticketProps.put("REQUESTOR", rs.getString("REQUESTOR"));
-				ticketProps.put("SUBJECT", rs.getString("SUBJECT"));
-				ticketProps.put("STATUS", rs.getString("STATUS"));
-				ticketProps.put("AGENTID", rs.getString("AGENTID"));
-				ticketProps.put("FAILED_ASSET_ID", rs.getString("FAILED_ASSET_ID"));
-				ticketProps.put("DUE_DATE", rs.getString("DUE_DATE"));
+				tc = getTCObjectFromRS(rs);
+				break;
 			}
 			
-			return ticketProps;
+			return tc;
 		}
 		catch(SQLException e) {
 			throw e;
@@ -125,5 +117,20 @@ public class TicketApi {
 		finally {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
+	}
+	
+	private static TicketContext getTCObjectFromRS(ResultSet rs) throws SQLException {
+		TicketContext tc = new TicketContext();
+		tc.setTicketId(rs.getLong("TICKETID"));
+		tc.setRequester(rs.getString("REQUESTOR"));
+		tc.setSubject(rs.getString("SUBJECT"));
+		tc.setDescription(rs.getString("DESCRIPTION"));
+		tc.setStatusCode(rs.getInt("STATUS"));
+		tc.setAgentId(rs.getLong("AGENTID"));
+		tc.setFailedAssetId(rs.getLong("FAILED_ASSET_ID"));
+		tc.setDueTime(rs.getLong("DUE_DATE"));
+		tc.setOrgId(rs.getLong("ORGID"));
+		
+		return tc;
 	}
 }

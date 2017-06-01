@@ -15,8 +15,9 @@ public class AddTicketAction extends ActionSupport {
 		Command addTicket = IncidentCommandFactory.getAddIncidentCommand();
 		TicketContext context = new TicketContext();
 		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
+		
 		context.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		context.setRequestor(getRequestor());
+		context.setRequester(getRequestor());
 		context.setSubject(getSubject());
 		context.setDescription(getDescription());
 		
@@ -28,14 +29,15 @@ public class AddTicketAction extends ActionSupport {
 			context.setFailedAssetId(getAsset());
 		}
 		
-		if(addTicket.execute(context)) {
+//		try {
+			addTicket.execute(context);
 			System.out.println("Ticket ID : "+context.getTicketId());
 			setTicketId(context.getTicketId());
 			return SUCCESS;
-		}
-		else {
-			return ERROR;
-		}
+//		}
+//		catch(Exception e) {
+//			return ERROR;
+//		}
 	}
 	
 	

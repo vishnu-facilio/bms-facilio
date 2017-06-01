@@ -1,8 +1,7 @@
 package com.facilio.incidents.actions;
 
-import java.util.Map;
-
 import com.facilio.incidents.tickets.TicketApi;
+import com.facilio.incidents.tickets.TicketContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewTicketAction extends ActionSupport {
@@ -11,17 +10,17 @@ public class ViewTicketAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		setTicketProps(TicketApi.getTicketDetails(getTicketId()));
+		setTicket(TicketApi.getTicketDetails(getTicketId()));
 		
 		return SUCCESS;
 	}
 	
-	private Map<String, String> ticketProps;
-	public Map<String, String> getTicketProps() {
-		return ticketProps;
+	private TicketContext ticket;
+	public TicketContext getTicket() {
+		return ticket;
 	}
-	public void setTicketProps(Map<String, String> ticketProps) {
-		this.ticketProps = ticketProps;
+	public void setTicket(TicketContext ticket) {
+		this.ticket = ticket;
 	}
 	
 	
