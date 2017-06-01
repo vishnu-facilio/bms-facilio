@@ -121,6 +121,11 @@
 	    <artifactId>aws-java-sdk-iot</artifactId>
 	    <version>1.11.136</version>
 	</dependency>
+	<dependency>
+	    <groupId>com.amazonaws</groupId>
+	    <artifactId>aws-java-sdk-dynamodb</artifactId>
+	    <version>1.11.136</version>
+	</dependency>
     <!-- Temp -->
     <dependency>
 		<groupId>org.eclipse.paho</groupId>

@@ -167,7 +167,7 @@
 </td>
 
 </tr>
-<tr><td>
+<tr><td style="vertical-align: top;">
 
 <tiles:insertAttribute name="body" />  
 </td>
