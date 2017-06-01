@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class JobStore {
@@ -52,30 +53,7 @@ public class JobStore {
 			throw e;
 		}
 		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		
 	}
@@ -84,7 +62,6 @@ public class JobStore {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -99,30 +76,7 @@ public class JobStore {
 			throw e;
 		}
 		finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			DBUtil.closeAll(conn, pstmt);
 		}
 		
 	}
@@ -158,15 +112,7 @@ public class JobStore {
 			throw e;
 		}
 		finally {
-			if(rs != null) {
-				rs.close();
-			}
-			if(getPstmt != null) {
-				getPstmt.close();
-			}
-			if(conn != null) {
-				conn.close();
-			}
+			DBUtil.closeAll(conn, getPstmt, rs);
 		}
 		
 		return jcs;

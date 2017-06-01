@@ -14,8 +14,13 @@ public class LoginAction extends ActionSupport{
 	{
 		System.out.println("Login action loaded");
 	}
+	private static String HOSTNAME = null;
 
 	public String execute() throws Exception {
+		if(HOSTNAME==null)
+		{
+			HOSTNAME = (String)ActionContext.getContext().getApplication().get("DOMAINNAME");
+		}
         
 		// get the identity token and decode it.
 		String idToken = getIdToken();
@@ -43,8 +48,12 @@ public class LoginAction extends ActionSupport{
 			//start establishing session details
 			session.put("USERNAME", userName);
 			
-			//DB Transactions goes in here
-			//move forward
+			// check the list of subdomain from OrgUsers table
+			// assign default subdomain 
+			// ORG_Users.ISDEFAULT
+			String subdomain = "yoge";
+			String redirecturl =subdomain + HOSTNAME;
+			
 			response = "success";
 		}
 		else if (!verifiedUser && userName!=null)
