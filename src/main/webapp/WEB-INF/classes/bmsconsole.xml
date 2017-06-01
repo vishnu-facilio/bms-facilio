@@ -5,63 +5,65 @@
 
 <struts>
 
-    <package name="example" namespace="/home"  extends='struts-default'>
-<result-types>
-         <result-type name="tiles" 
-         class="org.apache.struts2.views.tiles.TilesResult" />
-      </result-types>
-<interceptors>
-         <interceptor name="authinterceptor" class="com.facilio.bmsconsole.interceptors.AuthInterceptor"/>
-        <interceptor-stack name="defaultInterceptor">
-   			 <interceptor-ref name="defaultStack"/>
-            <interceptor-ref name="authinterceptor"/>
-       </interceptor-stack>
-      </interceptors>
+	<package name="home" namespace="/home" extends='struts-default,json-default'>
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+			</interceptor-stack>
+		</interceptors>
 
-<default-interceptor-ref name="defaultInterceptor"/>
-<global-results>
-<result name="login" type="redirect">
-  <param name="location">/login.html</param>
-  <param name="parse">false</param>
-</result>
-<result name="unauthorized" type="redirect">
-  <param name="location">/jsps/unauthorized.jsp</param>
-  <param name="parse">false</param>
-</result>
-</global-results>
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="redirect">
+				<param name="location">/login.html</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
 
-  <action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
-            <result  type="tiles">homepage</result>
-        </action>
-    <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
-    </action>
+		<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
+			<result type="tiles">homepage</result>
+		</action>
+		<action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
+		</action>
 
-    <action name="tickets/new" class="com.facilio.incidents.actions.NewTicketAction">
-    	<result type="tiles">newTicket</result>
-    </action>
-    
-    <action name="tickets/add" class="com.facilio.incidents.actions.AddTicketAction">
-    	<result name="success" type="redirectAction">tickets/${ticketId}</result>
-    </action>   
+	</package>
 
-	<action name="tickets/" class="com.facilio.incidents.actions.TicketListAction">
-    	<result name="success" type="tiles">ticketsList</result>
-    </action>
-    
-    <action name="tickets" class="com.facilio.incidents.actions.TicketListAction">
-    	<result name="success" type="tiles">ticketsList</result>
-    </action>   
+	<package name="tickets" namespace="/home/tickets" extends="home">
+		<action name="new" class="com.facilio.incidents.actions.NewTicketAction">
+			<result type="tiles">newTicket</result>
+		</action>
 
-    <action name="tickets/*" class="com.facilio.incidents.actions.ViewTicketAction">
-    	<param name="ticketId">{1}</param>
-    	<result name="success" type="tiles">viewTicket</result>
-    </action>        
+		<action name="add" class="com.facilio.incidents.actions.AddTicketAction">
+			<result name="success" type="json">
+				<param name="includeProperties">ticketId</param>
+			</result>
+		</action>
 
-    </package>
-        <package name="unauth" namespace="/login"  extends='struts-default,tiles-default'>
-        <action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
-            <result >/jsps/validateLogin.jsp</result>
-        </action>
-        
-    </package>
+		<action name="" class="com.facilio.incidents.actions.TicketListAction">
+			<result name="success" type="tiles">ticketsList</result>
+		</action>
+
+		<action name="*" class="com.facilio.incidents.actions.ViewTicketAction">
+			<param name="ticketId">{1}</param>
+			<result name="success" type="tiles">viewTicket</result>
+		</action>
+	</package>
+
+	<package name="unauth" namespace="/login" extends='struts-default,tiles-default'>
+		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
+			<result>/jsps/validateLogin.jsp</result>
+		</action>
+
+	</package>
 </struts>
