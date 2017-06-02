@@ -3,6 +3,8 @@ package com.facilio.wms.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,27 +17,37 @@ public class WmsApi
 {
 	private static Logger logger = Logger.getLogger(WmsApi.class.getName());
 	
-	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket/chat";
+	private static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
+	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
+	
 	public static void sendMessage(int uid, Message message) throws IOException, EncodeException
 	{
+		FacilioClientEndpoint clientEndPoint = getFacilioEndPoint(WEBSOCKET_URL + "/" + uid);
+        clientEndPoint.sendMessage(message);
+	}
+	
+	public static FacilioClientEndpoint getFacilioEndPoint(String path)
+	{
+		if(FACILIO_CLIENT_ENDPOINTS.containsKey(path))
+		{
+			return FACILIO_CLIENT_ENDPOINTS.get(path);
+		}
+		FacilioClientEndpoint clientEndPoint = null;
 		try 
         {
-            // open websocket
-            final FacilioClientEndpoint clientEndPoint = new FacilioClientEndpoint(new URI(WEBSOCKET_URL + "/" + uid));
-
-            // add listener
-            clientEndPoint.addMessageHandler(new FacilioClientEndpoint.MessageHandler() 
-            {
-                public void handleMessage(String message) {
-                    //TODO
-                }
-            });
-            // send message to websocket
-            clientEndPoint.sendMessage(message);
-        } 
-        catch (URISyntaxException ex) 
+			clientEndPoint = new FacilioClientEndpoint(new URI(path));
+			clientEndPoint.addMessageHandler(new FacilioClientEndpoint.MessageHandler() 
+	        {
+	            public void handleMessage(String message) {
+	                //TODO
+	            }
+	        });
+			FACILIO_CLIENT_ENDPOINTS.put(path, clientEndPoint);
+        }
+		catch (URISyntaxException ex) 
         {
         	logger.log(Level.SEVERE, "URISyntaxException exception: " + ex.getMessage(), ex);
         }
+		return clientEndPoint;
 	}
 }

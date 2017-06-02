@@ -52,6 +52,8 @@ public class AwsUtil
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
 
 	public static final String AWS_IOT_SERVICE_NAME = "iotdata";
+	
+	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 
     public static String getConfig(String name) 
     {
@@ -96,8 +98,13 @@ public class AwsUtil
     
     public static AWSIotMqttClient getAwsIotMqttClient(String clientId) throws AWSIotException
     {
+    	if(AWS_IOT_MQTT_CLIENTS.containsKey(clientId))
+    	{
+    		return AWS_IOT_MQTT_CLIENTS.get(clientId);
+    	}
     	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("clientEndpoint"), clientId, AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
     	awsIotClient.connect();
+    	AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
 		return awsIotClient;
     }
     
