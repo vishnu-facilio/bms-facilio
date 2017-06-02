@@ -8,52 +8,70 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import com.facilio.tasker.config.SchedulerConf;
+import com.facilio.tasker.config.ExecutorsConf;
+import com.facilio.tasker.config.SchedulerJobConf;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.tasker.job.FacilioJob;
 
 public class FacilioScheduler {
 	
-	private static Map<String, Class<? extends FacilioJob>> jobsMap = null;
+	public static final Map<String, Class<? extends FacilioJob>> JOBS_MAP = new HashMap<>();
 	
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
-		jobsMap = getJobObjectsFromConf();
-		System.out.println(jobsMap);
+		getJobObjectsFromConf();
+		System.out.println(JOBS_MAP);
 		
-		Executor executor = new Executor("facilio", 15, jobsMap);
-//		executor.start();
+//		Executor executor = new Executor("facilio", 15, 600);
+		startExecutors();
 	}
 	
-	private static Map<String, Class<? extends FacilioJob>> getJobObjectsFromConf() throws JAXBException {
+	private static void getJobObjectsFromConf() throws JAXBException {
 		//Get file from resources folder
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		File schedulerXml = new File(classLoader.getResource("conf/schedulerJobs.xml").getFile());
 		
-		JAXBContext jaxbContext = JAXBContext.newInstance(SchedulerConf.class);
-		SchedulerConf schedulerConf = (SchedulerConf) jaxbContext.createUnmarshaller().unmarshal(schedulerXml);
+		JAXBContext jaxbContext = JAXBContext.newInstance(SchedulerJobConf.class);
+		SchedulerJobConf schedulerConf = (SchedulerJobConf) jaxbContext.createUnmarshaller().unmarshal(schedulerXml);
 		
 		System.out.println(schedulerConf);
 		
-		Map<String, Class<? extends FacilioJob>> jobsMap = new HashMap<>();
-		for(SchedulerConf.Job jobConf : schedulerConf.getJobs()) {
-			String name = jobConf.getName();
-			String className = jobConf.getClassName();
-			if(name != null && !name.isEmpty() && className != null && !className.isEmpty()) { 
-				try {
-					
-					jobsMap.put(name, (Class<? extends FacilioJob>) Class.forName(className));
+		if(schedulerConf.getJobs() != null) {
+			for(SchedulerJobConf.Job jobConf : schedulerConf.getJobs()) {
+				String name = jobConf.getName();
+				String className = jobConf.getClassName();
+				if(name != null && !name.isEmpty() && className != null && !className.isEmpty()) { 
+					try {
+						
+						JOBS_MAP.put(name, (Class<? extends FacilioJob>) Class.forName(className));
+					}
+					catch(Exception e) {
+						System.err.println("The folowing error occurred while parsing job name : "+name);
+						e.printStackTrace();
+					}
 				}
-				catch(Exception e) {
-					System.err.println("The folowing error occurred while parsing job name : "+name);
-					e.printStackTrace();
+				else {
+					System.err.println("Invalid job configuration : "+jobConf);
 				}
-			}
-			else {
-				System.err.println("Invalid job configuration : "+jobConf);
 			}
 		}
+	}
+	
+	private static void startExecutors() throws JAXBException {
+		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
+		File executorsXml = new File(classLoader.getResource("conf/executors.xml").getFile());
 		
-		return jobsMap;
+		JAXBContext jaxbContext = JAXBContext.newInstance(ExecutorsConf.class);
+		ExecutorsConf executorsConf = (ExecutorsConf) jaxbContext.createUnmarshaller().unmarshal(executorsXml);
+		
+		System.out.println(executorsConf);
+		
+		if(executorsConf.getExecutors() != null) {
+			for(ExecutorsConf.ExecutorConf executorConf : executorsConf.getExecutors()) {
+				if(executorConf.getName() != null && !executorConf.getName().isEmpty() && executorConf.getPeriod() != -1 && executorConf.getThreads() != -1) {
+					new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod());
+				}
+			}
+		}
 	}
 }
