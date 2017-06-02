@@ -7,15 +7,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="scheduler")
-public class SchedulerConf {
+public class SchedulerJobConf {
 	private List<Job> jobs;
 	
-	public SchedulerConf() {
+	public SchedulerJobConf() {
 		
-	}
-	
-	public SchedulerConf(List<Job> jobs) {
-		this.jobs = jobs;
 	}
 	
 	@XmlElement(name="job")
@@ -28,7 +24,7 @@ public class SchedulerConf {
 	
 	@Override
 	public String toString() {
-		return jobs.toString();
+		return String.valueOf(jobs.toString());
 	}
 	
 	public final static class Job {
@@ -36,11 +32,6 @@ public class SchedulerConf {
 		
 		public Job() {
 			
-		}
-		
-		public Job(String name, String className) {
-			this.name = name;
-			this.className = className;
 		}
 		
 		@XmlAttribute(name="name")

@@ -10,17 +10,24 @@ public class FacilioTimer {
 	}
 
 	public static long schedulePeriodicJob(String jobName, long delay, int period, String executorName) throws Exception {
-		long orgId=OrgInfo.getCurrentOrgInfo().getOrgid();
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
-		return JobStore.addJob(orgId, jobName, true, period, nextExecutionTime, executorName);
+		return JobStore.addJob(getCurrentOrgId(), jobName, true, period, nextExecutionTime, executorName);
 	}
 	
 	public static long scheduleOneTimeJob(String jobName, int delay, String executorName) throws Exception {
-		long orgId=OrgInfo.getCurrentOrgInfo().getOrgid();
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
-		return JobStore.addJob(orgId, jobName, false, delay, nextExecutionTime, executorName);
+		return JobStore.addJob(getCurrentOrgId(), jobName, false, delay, nextExecutionTime, executorName);
+	}
+	
+	private static long getCurrentOrgId() {
+		long orgId = -1;
+		if(OrgInfo.getCurrentOrgInfo() != null) {
+			orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		}
+		
+		return orgId;
 	}
 	
 }
