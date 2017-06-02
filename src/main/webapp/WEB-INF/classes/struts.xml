@@ -5,16 +5,17 @@
 
 <struts>
 
-    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.devMode" value="true" />
-    <constant name="struts.custom.i18n.resources" value="facilioprops" />
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.custom.i18n.resources" value="facilioprops" />
 	<constant name="struts.action.excludePattern" value="/websocket/.*" />
-	
-	<constant name="struts.enable.SlashesInActionNames" value="true"/>
-	<constant name="struts.mapper.alwaysSelectFullNamespace" value="false"/>
-	
-    <include file="bmsconsole.xml"/>
 
-    <!-- Add packages here -->
+	<constant name="struts.mapper.alwaysSelectFullNamespace"
+		value="true" />
+	<!-- constant name="struts.ui.theme" value="simple"/ -->
+
+	<include file="bmsconsole.xml" />
+
+	<!-- Add packages here -->
 
 </struts>

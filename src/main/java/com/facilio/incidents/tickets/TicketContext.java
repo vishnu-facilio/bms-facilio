@@ -1,5 +1,8 @@
 package com.facilio.incidents.tickets;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.impl.ContextBase;
 
 public class TicketContext extends ContextBase {
@@ -20,12 +23,12 @@ public class TicketContext extends ContextBase {
 		this.ticketId = ticketId;
 	}
 	
-	private String requestor;
-	public String getRequestor() {
-		return requestor;
+	private String requester;
+	public String getRequester() {
+		return requester;
 	}
-	public void setRequestor(String requestor) {
-		this.requestor = requestor;
+	public void setRequester(String requester) {
+		this.requester = requester;
 	}
 	
 	private String subject;
@@ -45,12 +48,27 @@ public class TicketContext extends ContextBase {
 	}
 	
 	public static final int OPEN = 1, PENDING = 2, RESOLVED = 3, CLOSED = 4;
-	private int status = OPEN;
-	public int getStatus() {
-		return status;
+	private static final Map<Integer, String> ALL_STATUS = new HashMap<>();
+	
+	static {
+		ALL_STATUS.put(OPEN, "Open");
+		ALL_STATUS.put(PENDING, "Pending");
+		ALL_STATUS.put(RESOLVED, "Resolved");
+		ALL_STATUS.put(CLOSED, "Closed");
+	}
+	public static  Map<Integer, String> getAllStatus() {
+		return ALL_STATUS;
+	}
+	
+	private int statusCode = OPEN;
+	public int getStatusCode() {
+		return statusCode;
 	} 
-	public void setStatus(int status) {
-		this.status = status;
+	public void setStatusCode(int status) {
+		this.statusCode = status;
+	}
+	public String getStatus() {
+		return ALL_STATUS.get(statusCode);
 	}
 	
 	private Long agentId;

@@ -25,7 +25,7 @@ public class Executor implements Runnable {
 		executor.scheduleAtFixedRate(this, 0, BUFFER_PERIOD*1000, TimeUnit.MILLISECONDS);
 	}
 	
-	final int BUFFER_PERIOD = 10*60; //in Seconds
+	final int BUFFER_PERIOD = 10;//10*60; //in Seconds
 	
 	@Override
 	public void run()

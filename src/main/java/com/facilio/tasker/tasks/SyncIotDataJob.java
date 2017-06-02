@@ -16,8 +16,8 @@ public class SyncIotDataJob extends FacilioJob{
 	{
 		try
 		{
+			String clientId = "1"; //TODO
 			String topic = "iotdata";
-			String clientId = "100"; //TODO
             AwsUtil.getAwsIotMqttClient(clientId).publish(topic, AwsUtil.getDeviceData());
 		}
 		catch (Exception e) 
