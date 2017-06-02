@@ -6,26 +6,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 
 public class Executor implements Runnable {
 	
-	private Map<String, Class<? extends FacilioJob>> jobsMap;
 	private ScheduledExecutorService executor = null;
 	private String name = null;
+	private int bufferPeriod;
 	
-	public Executor(String name, int noOfThreads, Map<String, Class<? extends FacilioJob>> jobsMap) {
+	public Executor(String name, int noOfThreads, int bufferPeriod) {
 		// TODO Auto-generated constructor stub
-		this.jobsMap = jobsMap;
 		this.name = name;
-		executor = Executors.newScheduledThreadPool(noOfThreads+1);
+		this.bufferPeriod = bufferPeriod;
 		
-		executor.scheduleAtFixedRate(this, 0, BUFFER_PERIOD*1000, TimeUnit.MILLISECONDS);
+		executor = Executors.newScheduledThreadPool(noOfThreads+1);
+		executor.scheduleAtFixedRate(this, 0, bufferPeriod*1000, TimeUnit.MILLISECONDS);
 	}
-	
-	final int BUFFER_PERIOD = 10*60; //in Seconds
 	
 	@Override
 	public void run()
@@ -34,9 +33,9 @@ public class Executor implements Runnable {
 //		{
 			try {
 				long startTime = System.currentTimeMillis()/1000;
-				long endTime = startTime+BUFFER_PERIOD;
+				long endTime = startTime+bufferPeriod;
 				
-				System.out.println("Executor::"+startTime+"::"+endTime);
+				System.out.println(name+"::"+startTime+"::"+endTime);
 				
 				List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime);
 				
@@ -59,7 +58,7 @@ public class Executor implements Runnable {
 	}
 	
 	void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
-		Class<? extends FacilioJob> jobClass = jobsMap.get(jc.getJobName());
+		Class<? extends FacilioJob> jobClass = FacilioScheduler.JOBS_MAP.get(jc.getJobName());
 		if(jobClass != null) {
 			FacilioJob job = jobClass.newInstance();
 			job.setJobContext(jc);

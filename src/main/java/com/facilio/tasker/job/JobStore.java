@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,12 @@ public class JobStore {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO Jobs (ORGID, JOBNAME, ISPERIODIC, PERIOD, NEXTEXECUTIONTIME, EXECUTORNAME) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
-			pstmt.setLong(1, orgId);
+			if(orgId > 0) {
+				pstmt.setLong(1, orgId);
+			}
+			else {
+				pstmt.setNull(1, Types.BIGINT);
+			}
 			pstmt.setString(2, jobName);
 			pstmt.setBoolean(3, isPeriodic);
 			pstmt.setInt(4, period);
