@@ -10,6 +10,8 @@
 <!-- <link rel="stylesheet" href="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.css"> -->
 
 <link rel="stylesheet" href="<s:url value="/css/sidebar-menu.css"/>">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/js/d3/style.css">
+
 <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 </head>  
 <body>  
@@ -168,7 +170,8 @@
 </td>
 
 </tr>
-<tr style="vertical-align: top;"><td style="padding : 20px;">
+<tr style="vertical-align: top;"><td style="padding : 1px;">
+<div id="tree-container"></div>
 
 <tiles:insertAttribute name="body" />  
 </td>
@@ -181,9 +184,14 @@
 </table>
   
  <script src="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.js"></script> 
+ <script src="https://d3js.org/d3.v3.min.js"></script>
+ 
+  <script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
  
 <script>
-$.sidebarMenu($('.sidebar-menu'))
+$.sidebarMenu($('.sidebar-menu'));
+//loadMeters();
+
 </script>
   
 </body> 
