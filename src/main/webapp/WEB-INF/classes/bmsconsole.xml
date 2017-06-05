@@ -75,6 +75,9 @@
 		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
+	<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction" method="signup">
+			<result>/jsps/validateLogin.jsp</result>
+		</action>
 
 	</package>
 </struts>
