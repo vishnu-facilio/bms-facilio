@@ -45,10 +45,14 @@ public static void validateOrgInfo(String domainname,String username) throws Exc
 	ps.setString(1, domainname);
 	ps.setString(2, username);
 	ResultSet rs = ps.executeQuery();
-	while(rs.next())
+	if(rs.next())
 	{
 	OrgInfo.setCurrentOrgInfo(new OrgInfo(rs.getLong(1)));
 	UserInfo.setCurrentUser(new UserInfo(username));
+	}
+	else
+	{
+		throw new Exception("no org created");
 	}
 	
 	// no records
