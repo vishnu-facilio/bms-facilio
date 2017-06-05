@@ -101,10 +101,10 @@ function signin(email,password)
 	    
 	        $.post( "login/validate", { "idToken": idToken })
 	        .done(function( data ) {
-	        	
-	        	if(data.indexOf("success")>-1)
+	        	alert(data)
+	        	if(data.startsWith("http")>-1)
 	        	{
-	        	window.location.replace("home/index");
+	        	window.location.replace(data);
 	        }
 	        	else if(data.indexOf("unverified_user")>-1){
 	        		alert("pls verify the username");

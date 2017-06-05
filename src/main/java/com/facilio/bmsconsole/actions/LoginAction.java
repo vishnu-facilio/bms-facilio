@@ -4,12 +4,16 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import org.apache.commons.chain.Chain;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -29,6 +33,11 @@ public class LoginAction extends ActionSupport{
         
 		// get the identity token and decode it.
 		String idToken = getIdToken();
+		
+		
+		int tempaccesscode = idToken.hashCode();
+		System.out.println("The temp access code is:"+tempaccesscode);
+		ActionContext.getContext().getApplication().put(tempaccesscode+"", idToken);
 		Base64.Decoder decoder = Base64.getUrlDecoder();
 		
 		// the identity token has three block 0-header, 1-payload, 2-signature
@@ -49,30 +58,14 @@ public class LoginAction extends ActionSupport{
 		
 		if (verifiedUser && userName!=null)
 		{
-			System.out.println("into if");
-			//start establishing session details
+			String subdomain = OrgInfo.getDefaultOrgInfo(userName);
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String redirecturl =request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index?accesscode="+tempaccesscode;
 			
-			// check the list of subdomain from OrgUsers table
-			// assign default subdomain 
-			// ORG_Users.ISDEFAULT
-			String subdomain = "yoge";
-			String redirecturl =subdomain + HOSTNAME;
-			if(isSignup)
-			{
-				// do signup
-				FacilioContext orgsignupcontext = new FacilioContext();
-				orgsignupcontext.put("signupinfo", getSignupInfo());
-				Chain c = FacilioChainFactory.getOrgSignupChain();
-				c.execute(orgsignupcontext);
-				
-			}
-			else
-			{
-				// Noraml login
-			}
+			
 			session.put("USERNAME", userName);
 			
-			response = "success";
+			response = redirecturl;
 		}
 		else if (!verifiedUser && userName!=null)
 		{
@@ -140,7 +133,7 @@ public class LoginAction extends ActionSupport{
 		orgsignupcontext.put("signupinfo", getSignupInfo());
 		Chain c = FacilioChainFactory.getOrgSignupChain();
 		c.execute(orgsignupcontext);
-		response ="signupsuccess";
+		response ="<result>signupsuccess</result>";
 		return "success";
 	}
 }

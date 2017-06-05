@@ -1,5 +1,1 @@
-
-<%@ taglib prefix="s" uri="/struts-tags" %>
-
-<result><s:property value="response" />
-</result>
+<%@ taglib prefix="s" uri="/struts-tags" %><s:property value="response" />
