@@ -53,6 +53,20 @@ function registerUser(){
         	return;
         }
 
+
+var url = "login/signup"; // the script where you handle the form input.
+
+$.ajax({
+       type: "POST",
+       url: url,
+       data: $("#signup").serialize(), // serializes the form's elements.
+       success: function(data)
+       {
+           alert(data); // show response from the php script.
+           signin(userName,password);
+       }
+     });
+
         // get the registered user
        	cognitoUser = result.user;
     });

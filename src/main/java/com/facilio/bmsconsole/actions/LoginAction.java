@@ -1,10 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+
+import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -46,13 +51,26 @@ public class LoginAction extends ActionSupport{
 		{
 			System.out.println("into if");
 			//start establishing session details
-			session.put("USERNAME", userName);
 			
 			// check the list of subdomain from OrgUsers table
 			// assign default subdomain 
 			// ORG_Users.ISDEFAULT
 			String subdomain = "yoge";
 			String redirecturl =subdomain + HOSTNAME;
+			if(isSignup)
+			{
+				// do signup
+				FacilioContext orgsignupcontext = new FacilioContext();
+				orgsignupcontext.put("signupinfo", getSignupInfo());
+				Chain c = FacilioChainFactory.getOrgSignupChain();
+				c.execute(orgsignupcontext);
+				
+			}
+			else
+			{
+				// Noraml login
+			}
+			session.put("USERNAME", userName);
 			
 			response = "success";
 		}
@@ -91,5 +109,38 @@ public class LoginAction extends ActionSupport{
 	}
 	public void setIdToken(String idToken) {
 		this.idToken = idToken;
+	}
+	
+	private HashMap<String,String> signupinfo = new HashMap<String,String>();
+	public boolean isSignup() {
+		return isSignup;
+	}
+	public void setSignup(boolean isSignup) {
+		this.isSignup = isSignup;
+	}
+	private boolean isSignup = false;
+	public void setSignupInfo(String key,String value)
+	{
+		signupinfo.put(key,value);
+	}
+	
+	public HashMap<String,String> getSignupInfo()
+	{
+		return signupinfo;
+	}
+	public String getSignupInfo(String signupkey)
+	{
+		return signupinfo.get(signupkey);
+	}
+	
+	public String signup() throws Exception
+	{
+		FacilioContext orgsignupcontext = new FacilioContext();
+		System.out.println("The parameters list"+ActionContext.getContext().getParameters());
+		orgsignupcontext.put("signupinfo", getSignupInfo());
+		Chain c = FacilioChainFactory.getOrgSignupChain();
+		c.execute(orgsignupcontext);
+		response ="signupsuccess";
+		return "success";
 	}
 }
