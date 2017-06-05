@@ -1,7 +1,7 @@
-package com.facilio.incidents.actions;
+package com.facilio.bmsconsole.actions;
 
-import com.facilio.incidents.tickets.TicketApi;
-import com.facilio.incidents.tickets.TicketContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.TicketApi;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewTicketAction extends ActionSupport {

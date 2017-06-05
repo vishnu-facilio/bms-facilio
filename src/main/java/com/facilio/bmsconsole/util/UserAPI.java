@@ -1,4 +1,4 @@
-package com.facilio.users;
+package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,4 @@
-package com.facilio.incidents.tickets;
+package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 

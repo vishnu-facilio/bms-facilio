@@ -1,11 +1,11 @@
-package com.facilio.incidents.actions;
+package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
 import com.facilio.assets.AssetsAPI;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
-import com.facilio.incidents.tickets.TicketContext;
-import com.facilio.users.UserAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewTicketAction extends ActionSupport {

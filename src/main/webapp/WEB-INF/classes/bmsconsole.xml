@@ -51,21 +51,21 @@
 	</package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
-		<action name="new" class="com.facilio.incidents.actions.NewTicketAction">
+		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">
 			<result type="tiles">newTicket</result>
 		</action>
 
-		<action name="add" class="com.facilio.incidents.actions.AddTicketAction">
+		<action name="add" class="com.facilio.bmsconsole.actions.AddTicketAction">
 			<result name="success" type="json">
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
 
-		<action name="" class="com.facilio.incidents.actions.TicketListAction">
+		<action name="" class="com.facilio.bmsconsole.actions.TicketListAction">
 			<result name="success" type="tiles">ticketsList</result>
 		</action>
 
-		<action name="*" class="com.facilio.incidents.actions.ViewTicketAction">
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
 			<param name="ticketId">{1}</param>
 			<result name="success" type="tiles">viewTicket</result>
 		</action>

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.impl.ChainBase;
 
 public class FacilioChainFactory {
@@ -9,6 +10,14 @@ public class FacilioChainFactory {
 	{
 		Chain c =new ChainBase();
 		c.addCommand(new CreateUserCommand());
+		return c;
+	}
+	
+	public static Command getAddIncidentCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new AddTicketCommand());
+		
 		return c;
 	}
 	

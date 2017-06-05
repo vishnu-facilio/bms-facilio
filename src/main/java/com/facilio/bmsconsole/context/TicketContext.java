@@ -1,11 +1,13 @@
-package com.facilio.incidents.tickets;
+package com.facilio.bmsconsole.context;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.chain.impl.ContextBase;
 
-public class TicketContext extends ContextBase {
+import com.facilio.bmsconsole.commands.FacilioContext;
+
+public class TicketContext extends FacilioContext {
 	
 	private long orgId = 0;
 	public long getOrgId() {

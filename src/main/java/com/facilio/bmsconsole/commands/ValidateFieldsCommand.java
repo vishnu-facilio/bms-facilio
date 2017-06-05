@@ -1,11 +1,11 @@
-package com.facilio.incidents.commands;
+package com.facilio.bmsconsole.commands;
 
 import java.util.Calendar;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.incidents.tickets.TicketContext;
+import com.facilio.bmsconsole.context.TicketContext;
 
 public class ValidateFieldsCommand implements Command {
 

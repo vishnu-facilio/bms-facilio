@@ -1,10 +1,10 @@
-package com.facilio.incidents.commands;
+package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.incidents.tickets.TicketContext;
-import com.facilio.incidents.tickets.TicketApi;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.TicketApi;
 
 public class AddTicketCommand implements Command {
 

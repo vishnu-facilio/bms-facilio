@@ -1,10 +1,10 @@
-package com.facilio.incidents.actions;
+package com.facilio.bmsconsole.actions;
 
 import org.apache.commons.chain.Command;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.fw.OrgInfo;
-import com.facilio.incidents.IncidentCommandFactory;
-import com.facilio.incidents.tickets.TicketContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AddTicketAction extends ActionSupport {
@@ -12,7 +12,7 @@ public class AddTicketAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		Command addTicket = IncidentCommandFactory.getAddIncidentCommand();
+		Command addTicket = FacilioChainFactory.getAddIncidentCommand();
 		TicketContext context = new TicketContext();
 		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
