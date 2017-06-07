@@ -12,9 +12,22 @@ jQuery.cachedScript = function( url, options ) {
   return jQuery.ajax( options );
 };
 
-function loadMeters()
+function loadMeters(parent, width, height)
 {
 	$.cachedScript("../js/d3/collapsibletree.js").done(function( script, textStatus ) {
+		
+		load_chart(parent, width, height);
+		
+		});
+	
+}
+
+function loadMeterPerformance(parent, width, height)
+{
+	$.cachedScript("../js/d3/linechart.js").done(function( script, textStatus ) {
+		
+		line_chart(parent, width, height);
+		
 		});
 	
 }

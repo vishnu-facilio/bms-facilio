@@ -12,7 +12,7 @@
    </context-param>
    <context-param>
         <param-name>DOMAINNAME</param-name>
-        <param-value>.facilio.com</param-value>
+        <param-value>.facilstack.com</param-value>
     </context-param>
  <listener>
       <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
@@ -43,5 +43,12 @@
  	<listener>
  		<listener-class>com.facilio.listener.FacilioContextListener</listener-class>
  	</listener>
+ 	
+ 	<jsp-config> 
+        <taglib> 
+               <taglib-uri>facilio-tags</taglib-uri> 
+               <taglib-location>/WEB-INF/tags/facilio-tags.tld</taglib-location> 
+        </taglib> 
+	</jsp-config>
  
 </web-app>

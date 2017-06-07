@@ -1,5 +1,6 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@taglib uri="/struts-tags" prefix="s" %>  
+<%@taglib uri="facilio-tags" prefix="f" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
  "http://www.w3.org/TR/html4/loose.dtd">  
 <html>  
@@ -13,6 +14,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/d3/style.css">
 
 <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+
+<script src="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.js"></script> 
+ <script src="https://d3js.org/d3.v3.min.js"></script>
+ 
+  <script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 </head>  
 <body>  
   
@@ -171,7 +177,6 @@
 
 </tr>
 <tr style="vertical-align: top;"><td style="padding : 1px;">
-<div id="tree-container"></div>
 
 <tiles:insertAttribute name="body" />  
 </td>
@@ -183,10 +188,7 @@
 </tbody>
 </table>
   
- <script src="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.js"></script> 
- <script src="https://d3js.org/d3.v3.min.js"></script>
  
-  <script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
  
 <script>
 $.sidebarMenu($('.sidebar-menu'));

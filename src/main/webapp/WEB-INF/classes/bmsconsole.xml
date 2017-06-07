@@ -22,7 +22,7 @@
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="redirect">
-				<param name="location">/login.html</param>
+				<param name="location">/signinhome.html</param>
 				<param name="parse">false</param>
 			</result>
 			<result name="unauthorized" type="redirect">

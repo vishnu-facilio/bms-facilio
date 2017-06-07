@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	
+	<tlibversion>1.2</tlibversion>
+	<shortname>Facilio Tags</shortname>
+	<info>Custom tags for Facilio (ex: chart)</info>
+	<uri>facilio-tags</uri>
+	<tag>
+		<name>chart</name>
+		<tag-class>com.facilio.taglib.ChartTag</tag-class>
+		<body-content>empty</body-content>
+		<info>chart widget</info>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
+			<name>width</name>
+			<required>false</required>
+			<type>Integer</type>
+		</attribute>
+		<attribute>
+			<name>height</name>
+			<required>false</required>
+			<type>Integer</type>
+		</attribute>
+	</tag>
+</taglib>
