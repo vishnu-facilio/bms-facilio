@@ -99,29 +99,115 @@ function signin(email,password)
 	        //pass on the idToken now to server side for validation
 	    	
 	    
-	        $.post( "login/validate", { "idToken": idToken })
-	        .done(function( data ) {
-	        	alert(data)
-	        	if(data.startsWith("http")>-1)
-	        	{
-	        	window.location.replace(data);
-	        }
-	        	else if(data.indexOf("unverified_user")>-1){
-	        		alert("pls verify the username");
-	        	}
-	        });
-	        
-
+	    	 $.post( "login/validate", { "idToken": idToken })
+		        .done(function( data ) {
+		        	alert(data)
+		        	if(data.startsWith("http")>-1)
+		        	{
+		        	window.location.replace(data);
+		        }
+		        	else if(data.indexOf("unverified_user")>-1){
+		        		alert("pls verify the username");
+		        	}
+		        });
 	        
 	        
 	    },
 
 	    onFailure: function(err) {
 	        
-	        showVerificationForm();
+	    	$("#signinform form").hide();
+	    	$(".verifyuser-section").show();
+	    	
+	    	$(".verifybtn").click(function() {
+	       		
+	       		var vcode = $("input[name=verification_code]").val();
+	       		if (vcode.trim() == '') {
+	       			alert('Please enter valid verification code.');
+	       		}
+	       		else {
+	       			cognitoUser.confirmRegistration(vcode.trim(), true, function(err, result) {
+	           	        if (err) {
+	           	            alert(err);
+	           	            return;
+	           	        }
+	           	        console.log('call result: ' + result);
+	           	        
+	           	        alert('Your account verified. You can login to your account now.');
+	           	        location.href = "signinhome.html";
+	           	        
+		           	    });
+	       			}
+	       	});
+	    	
+	    	$(".resend-code").click(function() {
+	    		cognitoUser.resendConfirmationCode(function(err, result) {
+		            if (err) {
+		                alert(err);
+		                return;
+		            }
+		            alert('Verification code sent to your mailbox.');
+	    		});
+	        });
 	    },
 
 	});	
+}
+
+function forgotPassword() {
+	
+	$("#signinform form").hide();
+	$(".forgot-password").show();
+	
+	var codeSent = false;
+	$(".resetpwdbtn").click(function() {
+		
+		var email = $("input[name=forgot-email]").val();
+		if (email.trim() === "") {
+			alert('Please enter valid email address');
+			return;
+		}
+		
+		var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
+		var userData = {
+		    Username : email,
+		    Pool : userPool
+		};
+
+		var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+		
+		if (!codeSent) {
+			cognitoUser.forgotPassword({
+		        onSuccess: function () {
+		            // successfully initiated reset password request
+		        },
+		        onFailure: function(err) {
+		            alert(err);
+		        },
+		        //Optional automatic callback
+		        inputVerificationCode: function(data) {
+		            console.log('Code sent to: ' + data);
+		            alert('Verification code sent to '+data.CodeDeliveryDetails.Destination);
+		            
+		            codeSent = true;
+		            
+		            $("input[name=forgot-email]").hide();
+		            $("input[name=forgot-code]").show();
+		            $("input[name=forgot-newpass]").show();
+		            $("input[name=forgot-code]").focus();
+		        }
+		    });
+		}
+		else {
+			var verificationCode = $("input[name=forgot-code]").val();
+            var newPassword = $("input[name=forgot-newpass]").val();
+            
+			cognitoUser.confirmPassword(verificationCode, newPassword, this);
+			
+			alert('Password reset successfully. You can login to your account now.');
+			location.href = "signinhome.html";
+		}
+	});
 }
 
 // confirm user - verification

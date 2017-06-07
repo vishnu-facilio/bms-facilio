@@ -63,11 +63,45 @@ $.ajax({
        success: function(data)
        {
            alert(data); // show response from the php script.
-           signin(userName,password);
+           //signin(userName,password);
        }
      });
 
         // get the registered user
        	cognitoUser = result.user;
+       	
+       	$(".signup-section").hide();
+       	$(".verifyuser-section").show();
+       	
+       	$(".verifybtn").click(function() {
+       		
+       		var vcode = $("input[name=verification_code]").val();
+       		if (vcode.trim() == '') {
+       			alert('Please enter valid verification code.');
+       		}
+       		else {
+       			cognitoUser.confirmRegistration(vcode.trim(), true, function(err, result) {
+           	        if (err) {
+           	            alert(err);
+           	            return;
+           	        }
+           	        console.log('call result: ' + result);
+           	        
+           	        alert('Your account verified. You can login to your account now.');
+           	        location.href = "signinhome.html";
+           	        
+	           	    });
+       			}
+       	});
+       	
+       	$(".resend-code").click(function() {
+    		cognitoUser.resendConfirmationCode(function(err, result) {
+	            if (err) {
+	                alert(err);
+	                return;
+	            }
+	            alert('Verification code sent to your mailbox.');
+    		});
+        });
     });
 }

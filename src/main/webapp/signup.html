@@ -99,7 +99,7 @@
 <div class="container" >
     <h2  style="{color:#cccccc}">Try Facilio free for 30 days</h2>
         <div class="fd-signup-form"> 
-            <section class="b-form">
+            <section class="b-form signup-section">
                 <!-- adding a false statement here to prevent the page from refresh upon submit -->
                 <form id="signup" method="post" autocomplete="off" novalidate="novalidate">
 				    <fieldset>
@@ -149,6 +149,20 @@
                     <div class="align-center small light muted tc-text">By signing up, you agree to our<a href="/terms"> T &amp; C </a> and <a href="/privacy"> privacy policy </a></div>
                 </form>
             </section>
+            <section class="b-form verifyuser-section" style="display:none">
+            	<div id="verify_user">Go and check your mailbox and copy paste the verification code here:
+            	<div class="contianer" style="text-align: center;">
+	            	<div style="padding: 35px 0 15px 0;">
+	            		<label><b>Verification Code</b></label>
+	              		<input type="text" placeholder="Enter Verification code" name="verification_code">
+	              	</div>
+	            	<div class="clearfix">
+	              		<button type="button" style="float:none" class="signupbtn verifybtn">Verify</button>
+	            	</div>
+	            	<a href="javascript:void(0)" style="color: blue;" class="resend-code">Resend verification code</a>
+          		</div>
+        		</div>
+        	</section>
         </div>
 </div>
   
