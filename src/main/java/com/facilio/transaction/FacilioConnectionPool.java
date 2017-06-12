@@ -41,6 +41,10 @@ public enum FacilioConnectionPool {
 		return INSTANCE;
 	}
 	
+	public DataSource getDataSource() {
+		return ds;
+	}
+	
 	public Connection getConnection() throws SQLException {
 		return ds.getConnection();
 	}

@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.sql.DataSource;
 
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -16,6 +17,7 @@ import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
 
+import org.flywaydb.core.Flyway;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -29,7 +31,7 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		
 		try {
-			createTables();
+			migrateSchemaChanges();
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 		} catch (Exception e) {
@@ -39,11 +41,23 @@ public class FacilioContextListener implements ServletContextListener {
 		
 	}
 	
-	private void createTables() throws SQLException, IOException {
+	private void migrateSchemaChanges() {
+		System.out.println("Flyway migration handler started...");
+		
+		DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
+		
+		Flyway flyway = new Flyway();
+		flyway.setDataSource(ds);
+		int mig_status = flyway.migrate();
+		
+		System.out.println("Flyway migration status: "+mig_status);
+	}
+	
+	/*private void createTables() throws SQLException, IOException {
 		File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/createTables.sql").getFile());
 		SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, false);
 		scriptRunner.runScript();
-	}
+	}*/
 	
 	private void initDBConnectionPool() {
 		System.out.println("Initializing DB Connection Pool");
