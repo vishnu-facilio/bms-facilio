@@ -71,6 +71,20 @@
 		</action>
 	</package>
 
+	<package name="internal" namespace="/internal"
+		extends='struts-default,tiles-default,json-default'>
+		<action name="addFromMail"
+			class="com.facilio.bmsconsole.actions.SupportMailParseAction">
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="json">
+				<param name="enableSMD">true</param>
+			</interceptor-ref>
+			<result name="success" type="json">
+				<param name="includeProperties">ticketId</param>
+			</result>
+		</action>
+	</package>
+
 	<package name="unauth" namespace="/login" extends='struts-default,tiles-default'>
 		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
 			<result>/jsps/validateLogin.jsp</result>

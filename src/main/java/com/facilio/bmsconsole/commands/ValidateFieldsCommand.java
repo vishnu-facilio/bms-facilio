@@ -25,9 +25,15 @@ public class ValidateFieldsCommand implements Command {
 		if(ticketContext.getSubject() == null || ticketContext.getSubject().isEmpty()) {
 			throw new IllegalArgumentException("Subejct is invalid");
 		}
+		else {
+			ticketContext.setSubject(ticketContext.getSubject().trim());
+		}
 		
 		if(ticketContext.getDescription() == null || ticketContext.getDescription().isEmpty()) {
 			throw new IllegalArgumentException("ORG ID is invalid");
+		}
+		else {
+			ticketContext.setDescription(ticketContext.getDescription().trim());
 		}
 		
 		if(ticketContext.getDueTime() == null) {
