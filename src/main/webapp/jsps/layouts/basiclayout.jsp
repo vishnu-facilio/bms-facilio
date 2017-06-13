@@ -8,14 +8,11 @@
 <title><tiles:getAsString name="title" /></title>  
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-<!-- <link rel="stylesheet" href="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.css"> -->
-
 <link rel="stylesheet" href="<s:url value="/css/sidebar-menu.css"/>">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/d3/style.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/c3/c3.min.css">
 
 <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
-
 <script src="http://www.jqueryscript.net/demo/Stylish-Multi-level-Sidebar-Menu-Plugin-With-jQuery-sidebar-menu-js/dist/sidebar-menu.js"></script> 
  <script src="https://d3js.org/d3.v3.min.js"></script>
  <script src="${pageContext.request.contextPath}/js/c3/c3.min.js"></script>
@@ -25,13 +22,13 @@
 </head>  
 <body>  
   
-  <table style="height: 90px;" width="1200px" border="1">
+  <table style="height: 90px;" width="1220px" border="1">
 <tbody>
 
 <tr>
-<td rowspan="2" style="width: 200px">
+<td rowspan="2" style="width: 220px" valign="top">
 
-<section style="width: 200px">
+<section style="width: 220px">
     <ul class="sidebar-menu">
       <li class="header">MAIN NAVIGATION</li>
       <li class="treeview">
@@ -65,6 +62,68 @@
       </li>
       <li class="treeview">
         <a href="#">
+          <i class="fa fa-share"></i> <span>Facilities</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li><a href="#"><i class="fa fa-circle-o"></i>Requests<i class="fa fa-angle-left pull-right"></i></a>
+          <ul class="treeview-menu">
+              <li><a href="#"><i class="fa fa-circle-o"></i> Overview</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Create New</a></li>
+              
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Created by me</a></li>
+              
+                            <li><a href="#"><i class="fa fa-circle-o"></i>All Facility Requests</a></li>
+
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Assigned to me</a></li>
+                            
+                         <li><a href="#"><i class="fa fa-circle-o"></i>Open - Unassigned</a></li>
+                            
+            </ul>
+            
+            </li>
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i>Tasks <i class="fa fa-angle-left pull-right"></i></a>
+            <ul class="treeview-menu">
+              <li><a href="#"><i class="fa fa-circle-o"></i>All facility Tasks</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Assigned to me</a></li>
+              
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Open & Unassigned</a></li>
+              
+            </ul>
+          </li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Space Management<i class="fa fa-angle-left pull-right"></i></a>
+          
+          <ul class="treeview-menu">
+              			<li><a href="#"><i class="fa fa-circle-o"></i>Campus</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Buildings</a></li>
+            				<li><a href="#"><i class="fa fa-circle-o"></i>Floors</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Space</a></li>
+                             <li><a href="#"><i class="fa fa-circle-o"></i>Zone</a></li>
+                            
+              
+            </ul>
+          
+          </li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Catalog & Knowledge</a>
+          
+           <ul class="treeview-menu">
+              			<li><a href="#"><i class="fa fa-circle-o"></i> Request Templates</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Request Categories</a></li>
+            				<li><a href="#"><i class="fa fa-circle-o"></i>Knowledge</a></li>
+                          
+                            
+              
+            </ul>
+          </li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Administration</a></li>
+          
+          
+        </ul>
+      </li> 
+      
+      <li class="treeview">
+        <a href="#">
           <i class="fa fa-pie-chart"></i>
         <span>Reports</span>
           <i class="fa fa-angle-left pull-right"></i>
@@ -93,7 +152,7 @@
       </li>
       <li class="treeview">
         <a href="#">
-          <i class="fa fa-edit"></i> <span>Forms</span>
+          <i class="fa fa-edit"></i> <span>Facilities Management</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
@@ -165,10 +224,7 @@
         </ul>
       </li>
       <li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
-      <li class="header">LABELS</li>
-      <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
-      <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
-      <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>
+      
     </ul>
   </section>
 

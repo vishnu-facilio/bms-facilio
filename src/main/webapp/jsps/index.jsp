@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@taglib uri="facilio-tags" prefix="f" %>
-Welcome after sync hello doctor tale Kaala
-
 <f:chart id="eb-meter" type="tree-collapsible" width="900" height="550" />
 
 <br/><br/>
