@@ -98,14 +98,22 @@ function signin(email,password)
 	    	
 	        //pass on the idToken now to server side for validation
 	    	
-	    
-	    	 $.post( "login/validate", { "idToken": idToken })
+	    	var isSAML = false;
+	    	if (window.location.href.indexOf("SAMLRequest=") != -1) {
+	    		isSAML = true;
+	    	}
+	    	
+	    	 $.post( "login/validate", { "idToken": idToken, "isSAML": isSAML })
 		        .done(function( data ) {
 		        	//alert(data)
 		        	if(data.startsWith("http"))
 		        	{
-		        	window.location.replace(data);
-		        }
+		        		window.location.replace(data);
+		        	}
+		        	else if(data.startsWith("reload"))
+		        	{
+		        		window.location.reload();
+		        	}
 		        	else if(data.indexOf("unverified_user")>-1){
 		        		alert("pls verify the username");
 		        	}

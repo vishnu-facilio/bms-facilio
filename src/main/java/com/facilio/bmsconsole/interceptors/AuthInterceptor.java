@@ -56,6 +56,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				username = (String)jsonObject.get("email");
 				Map session = ActionContext.getContext().getSession(); 
 				session.put("USERNAME", username);
+				session.put("USER_ACCESSCODE", tempaccesscode);
 				
 		      }		
 				

@@ -85,8 +85,19 @@
 		</action>
 	</package>
 
+	<package name="login" namespace="/" extends='struts-default,tiles-default'>
+		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="login">
+			<result name="loginpage">/jsps/login.jsp</result>
+			<result name="loginsuccess">/jsps/loginSuccess.jsp</result>
+			<result name="samlresponse">/jsps/samlLoginSuccess.jsp</result>
+		</action>
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="logout">
+			<result>/jsps/logout.jsp</result>
+		</action>
+	</package>
+	
 	<package name="unauth" namespace="/login" extends='struts-default,tiles-default'>
-		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction">
+		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction" method="validateLogin">
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
 	<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction" method="signup">
