@@ -31,5 +31,9 @@
 			<required>false</required>
 			<type>Integer</type>
 		</attribute>
+		<attribute>
+			<name>url</name>
+			<required>false</required>
+		</attribute>
 	</tag>
 </taglib>

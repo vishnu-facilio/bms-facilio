@@ -12,11 +12,11 @@ jQuery.cachedScript = function( url, options ) {
   return jQuery.ajax( options );
 };
 
-function loadMeters(parent, width, height)
+function loadMeters(parent, width, height, data_url)
 {
 	$.cachedScript("../js/d3/collapsibletree.js").done(function( script, textStatus ) {
 		
-		load_chart(parent, width, height);
+		load_chart(parent, width, height, data_url);
 		
 		});
 	

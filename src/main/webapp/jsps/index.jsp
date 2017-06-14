@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@taglib uri="facilio-tags" prefix="f" %>
-<f:chart id="eb-meter" type="tree-collapsible" width="900" height="550" />
+<f:chart id="eb-meter" type="tree-collapsible" width="900" height="550" url="../js/d3/sample.json"/>
 
 <br/><br/>
 <f:chart id="eb-meter-performance" type="line-timeseries" width="900" height="550"/>

@@ -48,6 +48,7 @@ public class FacilioContextListener implements ServletContextListener {
 		
 		Flyway flyway = new Flyway();
 		flyway.setDataSource(ds);
+		flyway.setBaselineOnMigrate(true);
 		int mig_status = flyway.migrate();
 		
 		System.out.println("Flyway migration status: "+mig_status);

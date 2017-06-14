@@ -10,13 +10,14 @@ public class ChartTag extends SimpleTagSupport {
 	private String type;
 	private Integer width;
 	private Integer height;
+	private String url;
 	
 	public void doTag() throws JspException, IOException {
       
 		JspWriter out = getJspContext().getOut();
 		
 		if ("tree-collapsible".equalsIgnoreCase(getType())) {
-			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeters(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+");</script>");
+			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeters(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+", \""+getUrl()+"\");</script>");
 		}
 		else {
 			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeterPerformance(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+");</script>");
@@ -59,5 +60,13 @@ public class ChartTag extends SimpleTagSupport {
 
 	public void setHeight(Integer height) {
 		this.height = height;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }
