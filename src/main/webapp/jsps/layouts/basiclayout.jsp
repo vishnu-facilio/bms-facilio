@@ -164,7 +164,7 @@
         </a>
       </li>
       <li>
-        <a href="#">
+        <a href="../home/showCalendar">
           <i class="fa fa-calendar"></i> <span>Calendar</span>
           <small class="label pull-right label-danger">3</small>
         </a>

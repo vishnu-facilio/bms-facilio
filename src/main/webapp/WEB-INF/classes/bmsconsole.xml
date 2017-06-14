@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
-        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-        "http://struts.apache.org/dtds/struts-2.0.dtd">
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
 
-	<package name="home" namespace="/home" extends='struts-default,json-default'>
+	<package name="home" strict-method-invocation="false" namespace="/home"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
@@ -34,6 +34,10 @@
   	<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
             <result  type="tiles">homepage</result>
         </action>
+     	<action name="*menu" class="com.facilio.bmsconsole.actions.HomePageActions" method="{1}">
+            <result  type="tiles">homepage</result>
+            <allowed-methods>showCalendar</allowed-methods>
+        </action>     
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
     <action name="device" class="com.facilio.bmsconsole.actions.Device" method="show">
