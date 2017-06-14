@@ -29,7 +29,7 @@
 <td rowspan="2" style="width: 220px" valign="top">
 
 <section style="width: 220px">
-    <ul class="sidebar-menu">
+    <ul class="sidebar-menu" style="height:800px">
       <li class="header">MAIN NAVIGATION</li>
       <li class="treeview">
         <a href="#">
@@ -54,12 +54,6 @@
           </li>
         </ul>
       </li>
-      <li>
-        <a href="#">
-          <i class="fa fa-th"></i> <span>Apps</span>
-          <small class="label pull-right label-info">new</small>
-        </a>
-      </li>
       <li class="treeview">
         <a href="#">
           <i class="fa fa-share"></i> <span>Facilities</span>
@@ -68,7 +62,7 @@
         <ul class="treeview-menu">
           <li><a href="#"><i class="fa fa-circle-o"></i>Requests<i class="fa fa-angle-left pull-right"></i></a>
           <ul class="treeview-menu">
-              <li><a href="#"><i class="fa fa-circle-o"></i> Overview</a></li>
+              <li><a href="#"><i class="fa fa-circle-o"></i>Overview</a></li>
                             <li><a href="#"><i class="fa fa-circle-o"></i>Create New</a></li>
               
                             <li><a href="#"><i class="fa fa-circle-o"></i>Created by me</a></li>
@@ -88,7 +82,7 @@
               <li><a href="#"><i class="fa fa-circle-o"></i>All facility Tasks</a></li>
                             <li><a href="#"><i class="fa fa-circle-o"></i>Assigned to me</a></li>
               
-                            <li><a href="#"><i class="fa fa-circle-o"></i>Open & Unassigned</a></li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i>Open &amp; Unassigned</a></li>
               
             </ul>
           </li>
@@ -108,7 +102,7 @@
           <li><a href="#"><i class="fa fa-circle-o"></i>Catalog & Knowledge</a>
           
            <ul class="treeview-menu">
-              			<li><a href="#"><i class="fa fa-circle-o"></i> Request Templates</a></li>
+              			<li><a href="#"><i class="fa fa-circle-o"></i>Request Templates</a></li>
                             <li><a href="#"><i class="fa fa-circle-o"></i>Request Categories</a></li>
             				<li><a href="#"><i class="fa fa-circle-o"></i>Knowledge</a></li>
                           
@@ -121,21 +115,7 @@
           
         </ul>
       </li> 
-      
-      <li class="treeview">
-        <a href="#">
-          <i class="fa fa-pie-chart"></i>
-        <span>Reports</span>
-          <i class="fa fa-angle-left pull-right"></i>
-        </a>
-        <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> ChartJS</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Morris</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Flot</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Inline charts</a></li>
-        </ul>
-      </li>
-      <li class="treeview">
+           <li class="treeview">
         <a href="#">
           <i class="fa fa-laptop"></i>
         <span>Meters</span>
@@ -150,26 +130,38 @@
           <li><a href="#"><i class="fa fa-circle-o"></i> Modals</a></li>
         </ul>
       </li>
+ 
+     
+    
       <li class="treeview">
         <a href="#">
-          <i class="fa fa-edit"></i> <span>Facilities Management</span>
+          <i class="fa fa-pie-chart"></i>
+        <span>Reports</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> General Elements</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Editors</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>View/Run</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Create New</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Scheduled Reports</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Header/Footer Templates</a></li>
         </ul>
       </li>
       <li class="treeview">
         <a href="#">
-          <i class="fa fa-table"></i> <span>Tables</span>
+          <i class="fa fa-edit"></i> <span>Integrations</span>
           <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> Simple tables</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Data tables</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>ServiceNow</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Salesforce</a></li>
+          <li><a href="#"><i class="fa fa-circle-o"></i>Zendesk</a></li>
         </ul>
+      </li>
+        <li>
+        <a href="#">
+          <i class="fa fa-th"></i> <span>Apps</span>
+          <small class="label pull-right label-info">new</small>
+        </a>
       </li>
       <li>
         <a href="#">
@@ -183,46 +175,8 @@
           <small class="label pull-right label-warning">12</small>
         </a>
       </li>
-      <li class="treeview">
-        <a href="#">
-          <i class="fa fa-folder"></i> <span>Examples</span>
-          <i class="fa fa-angle-left pull-right"></i>
-        </a>
-        <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> Invoice</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Profile</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Login</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Register</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Lockscreen</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> 404 Error</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> 500 Error</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Blank Page</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Pace Page</a></li>
-        </ul>
-      </li>
-      <li class="treeview">
-        <a href="#">
-          <i class="fa fa-share"></i> <span>Multilevel</span>
-          <i class="fa fa-angle-left pull-right"></i>
-        </a>
-        <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-          <li>
-            <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
-            <ul class="treeview-menu">
-              <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-              <li>
-                <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-                <ul class="treeview-menu">
-                  <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                  <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-        </ul>
-      </li>
+    
+    
       <li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
       
     </ul>

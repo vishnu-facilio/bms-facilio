@@ -101,7 +101,7 @@ function signin(email,password)
 	    
 	    	 $.post( "login/validate", { "idToken": idToken })
 		        .done(function( data ) {
-		        	alert(data)
+		        	//alert(data)
 		        	if(data.startsWith("http")>-1)
 		        	{
 		        	window.location.replace(data);
