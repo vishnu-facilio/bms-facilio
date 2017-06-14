@@ -102,7 +102,7 @@ function signin(email,password)
 	    	 $.post( "login/validate", { "idToken": idToken })
 		        .done(function( data ) {
 		        	//alert(data)
-		        	if(data.startsWith("http")>-1)
+		        	if(data.startsWith("http"))
 		        	{
 		        	window.location.replace(data);
 		        }
@@ -116,39 +116,44 @@ function signin(email,password)
 
 	    onFailure: function(err) {
 	        
-	    	$("#signinform form").hide();
-	    	$(".verifyuser-section").show();
-	    	
-	    	$(".verifybtn").click(function() {
-	       		
-	       		var vcode = $("input[name=verification_code]").val();
-	       		if (vcode.trim() == '') {
-	       			alert('Please enter valid verification code.');
-	       		}
-	       		else {
-	       			cognitoUser.confirmRegistration(vcode.trim(), true, function(err, result) {
-	           	        if (err) {
-	           	            alert(err);
-	           	            return;
-	           	        }
-	           	        console.log('call result: ' + result);
-	           	        
-	           	        alert('Your account verified. You can login to your account now.');
-	           	        location.href = "signinhome.html";
-	           	        
-		           	    });
-	       			}
-	       	});
-	    	
-	    	$(".resend-code").click(function() {
-	    		cognitoUser.resendConfirmationCode(function(err, result) {
-		            if (err) {
-		                alert(err);
-		                return;
-		            }
-		            alert('Verification code sent to your mailbox.');
-	    		});
-	        });
+	    	if (err.__type === 'UserNotConfirmedException') {
+	    		$("#signinform form").hide();
+		    	$(".verifyuser-section").show();
+		    	
+		    	$(".verifybtn").click(function() {
+		       		
+		       		var vcode = $("input[name=verification_code]").val();
+		       		if (vcode.trim() == '') {
+		       			alert('Please enter valid verification code.');
+		       		}
+		       		else {
+		       			cognitoUser.confirmRegistration(vcode.trim(), true, function(err, result) {
+		           	        if (err) {
+		           	            alert(err);
+		           	            return;
+		           	        }
+		           	        console.log('call result: ' + result);
+		           	        
+		           	        alert('Your account verified. You can login to your account now.');
+		           	        location.href = "signinhome.html";
+		           	        
+			           	    });
+		       			}
+		       	});
+		    	
+		    	$(".resend-code").click(function() {
+		    		cognitoUser.resendConfirmationCode(function(err, result) {
+			            if (err) {
+			                alert(err);
+			                return;
+			            }
+			            alert('Verification code sent to your mailbox.');
+		    		});
+		        });
+	    	}
+	    	else {
+	    		alert(err.message);
+	    	}
 	    },
 
 	});	
