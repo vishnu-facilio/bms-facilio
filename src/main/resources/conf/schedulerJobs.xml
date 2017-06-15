@@ -3,6 +3,6 @@
 	<!-- <job name='test1' classname='test.Test' />
 	<job name='test2' classname='test.Test2' />
 	<job classname='test.Test2' /> -->
-	 <job name='SyncIotData' classname='com.facilio.tasker.tasks.SyncIotDataJob' />
-	 <job name='DynamoDBMySQLSync' classname='com.facilio.tasker.tasks.DynamoDBMySQLSyncJob' />
+	 <job name='DeviceDataExtractor' classname='com.facilio.tasker.tasks.DeviceDataExtractorJob' />
+	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' />
 </scheduler>

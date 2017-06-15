@@ -19,6 +19,7 @@
  <script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
  
   <script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
+  <script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>  
 </head>  
 <body>  
   
@@ -115,20 +116,11 @@
           
         </ul>
       </li> 
-           <li class="treeview">
-        <a href="#">
-          <i class="fa fa-laptop"></i>
-        <span>Meters</span>
-          <i class="fa fa-angle-left pull-right"></i>
+      <li>
+        <a href="../home/device">
+          <i class="fa fa-calendar"></i> <span>Meter</span>
+          <small class="label pull-right label-danger">1</small>
         </a>
-        <ul class="treeview-menu">
-          <li><a href="#"><i class="fa fa-circle-o"></i> General</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Icons</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Buttons</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Sliders</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Timeline</a></li>
-          <li><a href="#"><i class="fa fa-circle-o"></i> Modals</a></li>
-        </ul>
       </li>
  
      

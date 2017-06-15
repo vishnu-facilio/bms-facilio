@@ -51,6 +51,24 @@
     <action name="showDeviceData" class="com.facilio.bmsconsole.actions.Device" method="showDeviceData">
     	<result name="success">/jsps/devicedata.jsp</result>
     </action>
+    
+    <action name="showTree" class="com.facilio.bmsconsole.actions.Device" method="showTree">
+    </action>
+    <action name="showDevices" class="com.facilio.bmsconsole.actions.Device" method="showDevices">
+    	<result name="success">/jsps/devicetree.jsp</result>
+    </action>
+    <action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.Device" method="showConfigureDevice">
+    	<result name="success">/jsps/deviceconf.jsp</result>
+    </action>
+    <action name="showDeviceInfo" class="com.facilio.bmsconsole.actions.Device" method="showDeviceInfo">
+    	<result name="success">/jsps/deviceinfo.jsp</result>
+    </action>
+    <action name="configureDevice" class="com.facilio.bmsconsole.actions.Device" method="configureDevice">
+    </action>
+    <action name="enableDeviceMonitoring" class="com.facilio.bmsconsole.actions.Device" method="enableDeviceMonitoring">
+    </action>
+     <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.Device" method="disableDeviceMonitoring">
+    </action>
 
 	</package>
 

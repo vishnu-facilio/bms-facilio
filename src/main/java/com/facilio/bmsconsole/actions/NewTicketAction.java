@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
-import com.facilio.assets.AssetsAPI;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;

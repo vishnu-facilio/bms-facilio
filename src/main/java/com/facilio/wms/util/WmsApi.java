@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.message.Message;
 
@@ -20,10 +22,10 @@ public class WmsApi
 	private static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	
-	public static void sendMessage(int uid, Message message) throws IOException, EncodeException
+	public static void sendMessage(int uid, int to, JSONObject content) throws IOException, EncodeException
 	{
 		FacilioClientEndpoint clientEndPoint = getFacilioEndPoint(WEBSOCKET_URL + "/" + uid);
-        clientEndPoint.sendMessage(message);
+        clientEndPoint.sendMessage(new Message().setTo(to).setContent(content));
 	}
 	
 	public static FacilioClientEndpoint getFacilioEndPoint(String path)

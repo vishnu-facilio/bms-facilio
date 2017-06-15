@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONTROLLERS>
+	<CONTROLLER Type="1" Name="Distech Controls" Class="com.facilio.bmsconsole.assets.types.DistechControls" MQTT="NO">
+		<AUTH Type="Basic" Path="/api/rest/v1/" />
+		<ATTRIBUTES>
+			<ATTRIBUTE Name="Line Voltage" Unit="V" />
+			<ATTRIBUTE Name="Phase Voltage" Unit="V" />
+			<ATTRIBUTE Name="Line Current" Unit="I" />
+			<ATTRIBUTE Name="Phase Current" Unit="I" />
+			<ATTRIBUTE Name="Power Factor" Unit="" />
+			<ATTRIBUTE Name="Frequency" Unit="Hz" />
+			<ATTRIBUTE Name="Active Power" Unit="W" />
+			<ATTRIBUTE Name="Reactive Power" Unit="W" />
+			<ATTRIBUTE Name="Reactive Power" Unit="W" />
+			<ATTRIBUTE Name="Apparent Power" Unit="W" />
+			<ATTRIBUTE Name="Phase Energy" Unit="kWh" />
+		</ATTRIBUTES>
+	</CONTROLLER>
+</CONTROLLERS>

@@ -21,16 +21,12 @@ import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -49,9 +45,14 @@ import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 public class AwsUtil 
 {
 	private static Logger logger = Logger.getLogger(AwsUtil.class.getName());
+	
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
-
+	
+	public static final String AWS_ACCESS_KEY_ID = "accessKeyId";
+	public static final String AWS_SECRET_KEY_ID = "secretKeyId";
+	
 	public static final String AWS_IOT_SERVICE_NAME = "iotdata";
+	public static final String AWS_IOT_DYNAMODB_TABLE_NAME = "IotData";
 	
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 
@@ -102,7 +103,7 @@ public class AwsUtil
     	{
     		return AWS_IOT_MQTT_CLIENTS.get(clientId);
     	}
-    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("clientEndpoint"), clientId, AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(AwsUtil.getConfig("clientEndpoint"), clientId, AwsUtil.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
     	awsIotClient.connect();
     	AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
 		return awsIotClient;
@@ -145,8 +146,9 @@ public class AwsUtil
         return headers;
     }
     
-    public static void doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
+    public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
     {
+    	StringBuffer result = new StringBuffer();
     	CloseableHttpClient client = HttpClients.createDefault();
     	try
     	{
@@ -183,7 +185,6 @@ public class AwsUtil
 			System.out.println("Response Code : " +  response.getStatusLine().getStatusCode());
 	 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer result = new StringBuffer();
 			String line = "";
 			while ((line = rd.readLine()) != null) 
 			{
@@ -199,6 +200,7 @@ public class AwsUtil
     	{
 			client.close();
 		}
+    	return result.toString();
     }
     
     public static byte[] HmacSHA256(String data, byte[] key) throws Exception 
@@ -222,77 +224,4 @@ public class AwsUtil
         for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
     }
-	
-	public static String getDeviceData() throws IOException	// getDeviceData Sample Code
-	{
-		String user = "admin";
-    	String pass = "Admin@1234";
-    	String ipAddress = "192.168.1.66";
-    	
-    	String authString = user  + ":" + pass;
-		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-		String authStringEnc = new String(authEncBytes);
-    	
-    	String Base64Str = "Basic "+authStringEnc;
-    	String url = "http://"+ipAddress+"/api/rest/v1/";
-    	
-    	CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpClientContext context = HttpClientContext.create();
-        HttpGet method = new HttpGet(url);
-        method.addHeader("Authorization", Base64Str);
-        String cookieName = null;
-        String cookieValue = null;
-        try 
-        {
-        	CloseableHttpResponse response = httpclient.execute(method, context);
-        	BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer result = new StringBuffer();
-			String line = "";
-			while ((line = rd.readLine()) != null) 
-			{
-				result.append(line);
-			}
-		    CookieStore cookieStore = context.getCookieStore();
-		    List<Cookie> cookies = cookieStore.getCookies();
-            cookieName = cookies.get(0).getName();
-            cookieValue = cookies.get(0).getValue();
-            System.out.println(cookieName);
-            System.out.println(cookieValue);
-        }
-        catch (Exception e) 
-        {
-        	logger.log(Level.SEVERE, "Executing getDeveiceData ::::url:::" + url, e);
-        } 
-        finally 
-        {
-        	httpclient.close();
-        }
-        
-        String url2 = "http://"+ipAddress+"/api/rest/v1/info/device";
-        CloseableHttpClient httpclient2 = HttpClients.createDefault();
-        HttpClientContext context2 = HttpClientContext.create();
-        HttpGet method2 = new HttpGet(url2);
-        method2.addHeader("cookie", cookieName+"="+cookieValue);
-        StringBuffer result = new StringBuffer();
-        try 
-        {
-        	CloseableHttpResponse response2 = httpclient2.execute(method2, context2);
-        	BufferedReader rd = new BufferedReader(new InputStreamReader(response2.getEntity().getContent()));
-			String line = "";
-			while ((line = rd.readLine()) != null) 
-			{
-				result.append(line);
-			}
-            System.out.println(result);
-        }
-        catch (Exception e) 
-        {
-        	logger.log(Level.SEVERE, "Executing getDeveiceData ::::url:::" + url2, e);
-        } 
-        finally 
-        {
-        	httpclient2.close();
-        }
-        return result.toString();
-	}
 }

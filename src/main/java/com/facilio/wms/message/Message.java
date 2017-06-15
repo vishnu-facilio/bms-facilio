@@ -1,48 +1,56 @@
 package com.facilio.wms.message;
 
+import org.json.simple.JSONObject;
+
 /**
  * Created by Shivaraj on 16/05/2017.
  */
 public class Message 
 {
+    private int from;
+    private int to;
+    private JSONObject content;
 
-    private String from;
-    private String to;
-    private String content;
-
+    public Message() 
+    {
+    	
+	}
+    
     @Override
     public String toString() 
     {
         return super.toString();
     }
 
-    public String getFrom() 
+    public int getFrom() 
     {
         return from;
     }
 
-    public void setFrom(String from) 
+    public void setFrom(int from) 
     {
         this.from = from;
     }
 
-    public String getTo() 
+    public int getTo() 
     {
         return to;
     }
 
-    public void setTo(String to) 
+    public Message setTo(int to) 
     {
         this.to = to;
+        return this;
     }
 
-    public String getContent() 
+    public JSONObject getContent() 
     {
         return content;
     }
 
-    public void setContent(String content) 
+    public Message setContent(JSONObject content) 
     {
         this.content = content;
+        return this;
     }
 }
