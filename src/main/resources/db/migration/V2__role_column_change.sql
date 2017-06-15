@@ -1,0 +1,2 @@
+-- Add role column
+ALTER TABLE ORG_Users ADD COLUMN ROLE INT DEFAULT 0;

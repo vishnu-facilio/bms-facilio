@@ -74,6 +74,27 @@
 			<result name="success" type="tiles">viewTicket</result>
 		</action>
 	</package>
+	
+	<package name="users" namespace="/home/users" extends="home">
+		<!-- <action name="new" class="com.facilio.bmsconsole.actions.NewUserAction">
+			<result type="tiles">newUser</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.AddUserAction">
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+		</action> -->
+
+		<action name="" class="com.facilio.bmsconsole.actions.UserListAction">
+			<result name="success" type="tiles">usersList</result>
+		</action>
+
+		<!-- <action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction">
+			<param name="userId">{1}</param>
+			<result name="success" type="tiles">viewUser</result>
+		</action> -->
+	</package>
 
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>

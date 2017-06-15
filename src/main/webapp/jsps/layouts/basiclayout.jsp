@@ -175,8 +175,11 @@
           <small class="label pull-right label-warning">12</small>
         </a>
       </li>
-    
-    
+      <li>
+        <a href="/home/users/">
+          <i class="fa fa-user"></i><span>Users</span>
+        </a>
+      </li>
       <li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
       
     </ul>
