@@ -10,11 +10,6 @@
    <put-attribute name="body" value="/jsps/index.jsp"/>   
    </definition>  
    
-   <definition name="device" template="/jsps/layouts/basiclayout.jsp">
-		<put-attribute name="title" value="Device" />
-   		<put-attribute name="body" value="/jsps/device.jsp" />
-   </definition>
-   
    <definition name="newTicket" template="/jsps/layouts/basiclayout.jsp">
    	<put-attribute name="title" value="New Ticket" />
    	<put-attribute name="body" value="/jsps/newTicket.jsp" />

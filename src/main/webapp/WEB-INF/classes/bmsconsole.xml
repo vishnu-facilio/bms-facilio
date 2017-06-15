@@ -41,7 +41,7 @@
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
     <action name="device" class="com.facilio.bmsconsole.actions.Device" method="show">
-    	<result type="tiles">device</result>
+    	<result name="success">/jsps/device.jsp</result>
     </action>
     <action name="newDevice" class="com.facilio.bmsconsole.actions.Device" method="showAdd">
     	<result name="success">/jsps/newdevice.jsp</result>
