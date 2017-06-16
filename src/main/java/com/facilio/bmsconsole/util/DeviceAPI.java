@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -500,9 +501,9 @@ public class DeviceAPI
 		return deviceInstanceList;
 	}
 	
-	public static List<Map<String, Object>> getDevices(Long controllerId) throws SQLException
+	public static Map<Long, Device> getDevices(Long controllerId) throws SQLException
 	{
-		List<Map<String, Object>> deviceList = new ArrayList<Map<String, Object>>();
+		Map<Long, Device> deviceList = new HashMap<>();
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -515,12 +516,12 @@ public class DeviceAPI
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
-				Map<String, Object> deviceMap = new HashMap<>();
-				deviceMap.put("deviceId", rs.getString("DEVICE_ID"));
-				deviceMap.put("name", rs.getString("NAME"));
-				deviceMap.put("status", rs.getInt("STATUS"));
-				deviceMap.put("parentDeviceId", rs.getLong("PARENT_DEVICE_ID"));
-				deviceList.add(deviceMap);
+				Device device = new Device()
+						.setId(rs.getLong("DEVICE_ID"))
+						.setName(rs.getString("NAME"))
+						.setParentId(rs.getLong("PARENT_DEVICE_ID"))
+						.setStatus(rs.getInt("STATUS"));
+				deviceList.put(rs.getLong("DEVICE_ID"), device);
 			}
 		}
 		catch (SQLException e) 

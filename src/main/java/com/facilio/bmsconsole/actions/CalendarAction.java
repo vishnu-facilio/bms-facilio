@@ -4,9 +4,9 @@ import java.util.logging.Logger;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-public class Calendar extends ActionSupport
+public class CalendarAction extends ActionSupport
 {
-	private static Logger logger = Logger.getLogger(Device.class.getName());
+	private static Logger logger = Logger.getLogger(CalendarAction.class.getName());
 	
 	public String show()
 	{
