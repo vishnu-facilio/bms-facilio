@@ -98,7 +98,7 @@
           						<li><a href="#"><i class="fa fa-circle-o"></i>Administration</a></li>
         					</ul>
       					</li> 
-				      	<li>
+				      	<li id="deviceId" url="/bms/home/device">
 				        	<a href="#device">
 				          		<i class="fa fa-calendar"></i> <span>Meter</span>
 				        	</a>
@@ -133,7 +133,7 @@
 				          		<small class="label pull-right label-info">new</small>
 				        	</a>
 				      	</li>
-			     	 	<li>
+			     	 	<li id="calendarId" url="/bms/home/calendar">
 				        	<a href="#calendar">
 				          		<i class="fa fa-calendar"></i> <span>Calendar</span>
 				          		<small class="label pull-right label-danger">3</small>
@@ -172,24 +172,26 @@
 	</table>
 <script>
 $.sidebarMenu($('.sidebar-menu'));
-
+loadUrlFromHash();
 $(window).on('hashchange',function(){ 
-	var module = location.hash.slice(1);
-	$.ajax({
-	      type: "GET",
-	      url: "/bms/home/" + module,   
-	      success: function (response) {
-	    	$('#content').html(response)
-	      }
-	 });
+	loadUrlFromHash();
 });
 
-var module = location.hash.slice(1);
-if(module != "")
+function loadUrlFromHash()
 {	
+	var module = location.hash.slice(1);
+	if(module != "")
+	{	
+		var url = $('#' + module + "Id").attr('url');
+		switchSection(url);
+	}
+}
+
+function switchSection(url)
+{
 	$.ajax({
 	      type: "GET",
-	      url: "/bms/home/" + module,   
+	      url: url,   
 	      success: function (response) {
 	    	$('#content').html(response)
 	      }
