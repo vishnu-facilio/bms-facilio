@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/calendar/fullcalendar.css">
-<script src="${pageContext.request.contextPath}/js/calendar/jquery.min.js"></script> 
 <script src="${pageContext.request.contextPath}/js/calendar/moment.min.js"></script> 
 <script src="${pageContext.request.contextPath}/js/calendar/fullcalendar.js"></script> 
 
