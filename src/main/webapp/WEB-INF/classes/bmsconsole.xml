@@ -38,6 +38,9 @@
             <result  type="tiles">homepage</result>
             <allowed-methods>showCalendar</allowed-methods>
         </action>     
+    <action name="calendar" class="com.facilio.bmsconsole.actions.Calendar" method="show">
+    	<result name="success">/jsps/calendar.jsp</result>
+    </action>    
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
     <action name="device" class="com.facilio.bmsconsole.actions.Device" method="show">
