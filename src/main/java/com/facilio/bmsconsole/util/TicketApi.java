@@ -38,7 +38,7 @@ public class TicketApi {
 			pstmt.setInt(4, ticketContext.getStatusCode());
 			
 			if(ticketContext.getAgentId() != null) {
-				pstmt.setLong(5, ticketContext.getAgentId());
+				pstmt.setLong(5, ticketContext.getAgentId());	
 			}
 			else {
 				pstmt.setNull(5, Types.BIGINT);
@@ -51,12 +51,7 @@ public class TicketApi {
 			}
 			pstmt.setLong(7, ticketContext.getDueTime());
 			
-			for(int i=0; i<customFields.size(); i++) {
-				FacilioCustomField field = customFields.get(i);
-				int paramIndex = DEFAULT_TICKET_FIELDS.length+i;
-				String value = (String) ticketContext.get(field.getFieldName());
-				CFUtil.parseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
-			}
+			CFUtil.appendCustomFieldValues(customFields, DEFAULT_TICKET_FIELDS.length, ticketContext, pstmt);
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add ticket");

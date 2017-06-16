@@ -9,6 +9,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -317,6 +319,15 @@ public class CFUtil {
 				.append(".")
 				.append(whereFields[i])
 				.append(" = ?");
+		}
+	}
+	
+	public static void appendCustomFieldValues(List<FacilioCustomField> customFields, int defaultFieldsLength, Context context, PreparedStatement pstmt) throws SQLException {
+		for(int i=0; i<customFields.size(); i++) {
+			FacilioCustomField field = customFields.get(i);
+			int paramIndex = defaultFieldsLength+(i+1);
+			String value = (String) context.get(field.getFieldName());
+			parseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
 		}
 	}
 	

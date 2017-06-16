@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -27,6 +30,10 @@ public class AddTicketAction extends ActionSupport {
 		
 		if(getAsset() != -1) {
 			context.setFailedAssetId(getAsset());
+		}
+		
+		for(Map.Entry<String, String> entry : customFields.entrySet()) {
+			context.put(entry.getKey(), entry.getValue());
 		}
 		
 //		try {
@@ -87,6 +94,17 @@ public class AddTicketAction extends ActionSupport {
  	}
  	public void setStatus(int status) {
  		this.status = status;
+ 	}
+ 	
+ 	private Map<String, String> customFields = new HashMap<>();
+ 	public Map<String, String> getCustomFields() {
+ 		return customFields;
+ 	}
+ 	public String getCustomFields(String key) {
+ 		return customFields.get(key);
+ 	}
+ 	public void setCustomFields(String key, String value) {
+ 		customFields.put(key, value);
  	}
  	
  	private long ticketId;

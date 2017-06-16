@@ -34,11 +34,11 @@
 				<s:select class="form-control" list="assetList" name="asset" id="inputAsset" headerKey="-1" headerValue="--" />
 			</div>
 	</div>
-	<s:iterator value="customFields">
+	<s:iterator var="customField" value="customFields">
 	<div class="form-group">
-		<label for="input<s:property />" class="col-sm-2 control-label"><s:property /></label>
+		<label for="input<s:property value="customField"/>" class="col-sm-2 control-label"><s:property value="customField"/></label>
 	    	<div class="col-sm-10">
-				<s:textfield name="<s:property />" id="input<s:property />" class="form-control" />
+				<s:textfield name="customFields['%{customField}']" id="input%{customField}" class="form-control" />
 			</div>
 	</div>
 	</s:iterator>
