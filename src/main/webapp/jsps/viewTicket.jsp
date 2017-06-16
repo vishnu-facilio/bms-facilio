@@ -3,7 +3,7 @@
 <%@taglib uri="/struts-tags" prefix="s" %>
 <h3><s:property value="ticket.subject" /></h3>  
 <table class="table">
-	<tr>
+	<%-- <tr>
 		<td class="info">Requester</td>
 		<td><s:property value="ticket.requester" /></td>
 	</tr>
@@ -30,6 +30,13 @@
 	<tr>
 		<td class="info">Due Date</td>
 		<td><s:property value="ticket.dueTime" /></td>
-	</tr>
+	</tr> --%>
+	
+	<s:iterator value="ticket">
+		<tr>
+			<td class="info"><s:property value="key" /></td>
+			<td><s:property value="value" /></td>
+		</tr>
+  	</s:iterator>	
 </table>
 <a class="btn btn-default" href="<s:url action="" />" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tickets</a>

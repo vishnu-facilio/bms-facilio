@@ -12,7 +12,7 @@ public class AddTicketAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		Command addTicket = FacilioChainFactory.getAddIncidentCommand();
+		Command addTicket = FacilioChainFactory.getAddIncidentChain();
 		TicketContext context = new TicketContext();
 		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
 		

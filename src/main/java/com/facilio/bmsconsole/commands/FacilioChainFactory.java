@@ -13,7 +13,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Command getAddIncidentCommand() {
+	public static Chain getAddIncidentChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new AddTicketCommand());
@@ -40,6 +40,14 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		//c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new AddGroupCommand());
+
+		return c;
+	}
+
+	public static Chain getAddCustomFieldChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddPropsToCustomFieldsCommand());
+		c.addCommand(new AddCustomFieldCommand());
 		
 		return c;
 	}

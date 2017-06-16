@@ -74,6 +74,21 @@
     </action>
 
 	</package>
+	<package name="modules" namespace="/home/modules" extends="home">
+		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
+			<result type="tiles">newCF</result>
+		</action>
+		
+		<action name="addCF" class="com.facilio.bmsconsole.actions.AddCFAction">
+			<interceptor-ref name="defaultStack"/>
+         <interceptor-ref name="json">
+            <param name="enableSMD">true</param>
+        </interceptor-ref>
+			<result name="success" type="json">
+				<param name="includeProperties">fieldIds</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">

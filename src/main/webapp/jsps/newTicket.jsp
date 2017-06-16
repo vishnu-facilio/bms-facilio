@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s" %>
-<h3>Submit a Ticket</h3>
+<h3>Submit a <s:property value="moduleName" /></h3>
 <br />
 <s:form id="addTicketForm" action="add" theme="simple" method="post" class="form-horizontal">
 	<div class="form-group">
@@ -34,6 +34,14 @@
 				<s:select class="form-control" list="assetList" name="asset" id="inputAsset" headerKey="-1" headerValue="--" />
 			</div>
 	</div>
+	<s:iterator value="customFields">
+	<div class="form-group">
+		<label for="input<s:property />" class="col-sm-2 control-label"><s:property /></label>
+	    	<div class="col-sm-10">
+				<s:textfield name="<s:property />" id="input<s:property />" class="form-control" />
+			</div>
+	</div>
+	</s:iterator>
 	<div class="form-group">
   		<label for="inputDescription" class="col-sm-2 control-label">Description</label>
 	    	<div class="col-sm-10">
