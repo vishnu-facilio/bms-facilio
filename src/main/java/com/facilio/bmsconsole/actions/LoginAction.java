@@ -37,6 +37,8 @@ import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.saml.SAMLAttribute;
 import com.facilio.saml.SAMLUtil;
@@ -210,7 +212,7 @@ public class LoginAction extends ActionSupport{
 			else {
 				String redirecturl = request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index";
 				if (userAccessCode != null) {
-					redirecturl = redirecturl + "?" + userAccessCode;
+					redirecturl = redirecturl + "?accesscode=" + userAccessCode;
 				}
 				request.setAttribute("redirect_url", redirecturl);
 				
@@ -251,8 +253,12 @@ public class LoginAction extends ActionSupport{
 			url = request.getScheme()+"://"+request.getServerName();
 		}
 
+		UserContext uc = UserAPI.getUser(curUser);
+		
 		JSONObject customAttr = new JSONObject();
-		customAttr.put("facilio_domain", subdomain);
+		customAttr.put("Facilio User Id", uc.getUserId());
+		customAttr.put("Facilio Org Id", uc.getOrgId());
+		customAttr.put("Facilio Domain", subdomain);
 
 		SAMLAttribute samlAttributes = 
 				new SAMLAttribute()
@@ -310,7 +316,7 @@ public class LoginAction extends ActionSupport{
 
 		if (samlAttr.getCustomAttr() != null) {
 			
-			NodeList assertions = document.getElementsByTagNameNS("","Assertion");
+			NodeList assertions = document.getElementsByTagName("Assertion");
 			if (assertions != null && assertions.getLength() > 0) {
 				
 				Element assertion = (Element) assertions.item(0);
@@ -320,7 +326,7 @@ public class LoginAction extends ActionSupport{
 				Element attributeStatement = document.createElement("AttributeStatement");
 				while (keys.hasNext()) {
 					String attr = keys.next();
-					String value =(String) customAttr.get(attr);
+					String value = customAttr.get(attr).toString();
 					Element cuatomAttrElement = newAttrTag(document, attr,value);
 					attributeStatement.appendChild(cuatomAttrElement);
 				}
@@ -334,10 +340,9 @@ public class LoginAction extends ActionSupport{
 		document = signSAMLDocument(document, samlAttr.getPrivateKey() , samlAttr.getX509Certificate());
 		
 		samlResponse = SAMLUtil.convertDomToString(document);
-		System.out.println(samlResponse);
 		
-		String encodedSamlResponse = Base64.getEncoder().encodeToString(samlResponse.getBytes());
-		return encodedSamlResponse;
+		byte[] enc = org.apache.commons.codec.binary.Base64.encodeBase64(samlResponse.getBytes("UTF-8"));
+		return new String(enc, "UTF-8");
 	}
 
 	public static Document signSAMLDocument(Document root, PrivateKey privKey, X509Certificate x509Cert) throws KeyException, CertificateException {
@@ -359,7 +364,7 @@ public class LoginAction extends ActionSupport{
 			ArrayList<Transform> listt = new ArrayList<Transform>();
 			listt.add(transform1);
 			listt.add(transform2);
-			ref = xmlSigFactory.newReference("#"+reference_URI, xmlSigFactory.newDigestMethod(DigestMethod.SHA256, null),listt,null, null);	
+			ref = xmlSigFactory.newReference("#"+reference_URI, xmlSigFactory.newDigestMethod(DigestMethod.SHA1, null),listt,null, null);	
 			signedInfo = xmlSigFactory.newSignedInfo(xmlSigFactory.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE,(C14NMethodParameterSpec) null),xmlSigFactory.newSignatureMethod(SignatureMethod.RSA_SHA1, null),Collections.singletonList(ref));
 
 		} catch (NoSuchAlgorithmException ex) {
@@ -410,7 +415,7 @@ public class LoginAction extends ActionSupport{
 
 	private String decodeSAMLRequest(String encodedStr) {
 		try {
-			byte[] decoded = Base64.getDecoder().decode(encodedStr);
+			byte[] decoded = org.apache.commons.codec.binary.Base64.decodeBase64(encodedStr);
 			Inflater inf = new Inflater(true);
 
 			inf.setInput(decoded);

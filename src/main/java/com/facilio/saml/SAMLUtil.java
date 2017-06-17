@@ -1,191 +1,64 @@
 package com.facilio.saml;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.xml.bind.DatatypeConverter;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class SAMLUtil {
-
-	private static final Pattern pemPattern = Pattern.compile(
-            "-----BEGIN PRIVATE KEY-----" + // File header
-            "(.*\\n)" +                     // Key data
-            "-----END PRIVATE KEY-----" +   // File footer
-            "\\n?",                         // Optional trailing line break
-            Pattern.MULTILINE | Pattern.DOTALL);
 	
-	public static PrivateKey getPemPrivateKey(File f, String algorithm) throws Exception {
-		FileInputStream fis = new FileInputStream(f);
-		DataInputStream dis = new DataInputStream(fis);
-		byte[] privateKey = new byte[(int) f.length()];
-		dis.readFully(privateKey);
-		dis.close();
-
-//		String temp = new String(keyBytes);
-//		String privKeyPEM = temp.replace("-----BEGIN PRIVATE KEY-----", "");
-//		privKeyPEM = privKeyPEM.replace("-----END PRIVATE KEY-----", "");
-//		System.out.println("Private key\n"+privKeyPEM);
-
-		byte[] decodedPrivateKey = privateKey;
-        if (privateKey[0] == '-') {
-            decodedPrivateKey = decodePrivateKey(privateKey);
-        }
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decodedPrivateKey);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        PrivateKey key = kf.generatePrivate(spec);
-        System.out.println("##### PRIVATE KEY OBJECT...");
-        System.out.println(key);
-        return key;
-	}
-	
-	protected static byte[] decodePrivateKey(byte[] data) throws InvalidKeyException {
-        try {
-            String s = new String(data, "UTF-8");
-            Matcher extracter = pemPattern.matcher(s);
-            if (extracter.matches()) {
-                String pemBody = extracter.group(1);
-                return DatatypeConverter.parseBase64Binary(pemBody);
-            } else {
-                throw new InvalidKeyException("Private key should be provided in PEM format!");
-            }
-        } catch (UnsupportedEncodingException exc) {
-            // This should never happen.
-            exc.printStackTrace();
-        }
-        return null;
-    }
-	
-	public static PrivateKey getPrivateKey() {
-		
+	public static String getFileAsString(File file) throws IOException {
+		FileInputStream fis = new FileInputStream(file);
 		try {
-			ClassLoader classLoader = SAMLUtil.class.getClassLoader();
-			File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.pem").getFile());
-			
-			return getPemPrivateKey(privateKeyFile, "RSA");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-//		InputStream in=null;
-//		PrivateKey privatekey=null;
-//		byte[] array=null;
-//		try{
-//			ClassLoader classLoader = SAMLUtil.class.getClassLoader();
-//			File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.der").getFile());
-//
-//			in = new FileInputStream(privateKeyFile);
-//			array=new byte[ 1024*4 ];
-//			while(true)
-//			{
-//				int bytesRead=in.read(array);
-//				if(bytesRead==-1)
-//				{
-//					break;
-//				}
-//			}
-//
-//			PKCS8EncodedKeySpec encodedPrivateKey = new PKCS8EncodedKeySpec(array);
-//			KeyFactory keyFactory = null;
-//			try {
-//				keyFactory = KeyFactory.getInstance("RSA");
-//			} catch (NoSuchAlgorithmException e) {
-//				e.printStackTrace();
-//			}
-//			try {
-//				privatekey = keyFactory.generatePrivate(encodedPrivateKey);
-//			} catch (InvalidKeySpecException e) {
-//				e.printStackTrace();
-//			}
-//			return privatekey; 
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			return null;
-//		}
-//		finally {
-//			if (in != null) {
-//				try {
-//					in.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-	}
-	
-	public static X509Certificate getX509Certificate() {
-		X509Certificate x509Cert = null;
-		try{
-			CertificateFactory fty = CertificateFactory.getInstance("X.509");
-			
-			File certFile = new File(SAMLUtil.class.getClassLoader().getResource("conf/saml/saml.crt").getFile());
-			String certContent = getFileAsString(certFile);
-			
-//			ByteArrayInputStream bais = new ByteArrayInputStream(certContent.getBytes());
-//			ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlEa0RDQ0F2bWdBd0lCQWdJSkFPUllLUHlud3JnNE1BMEdDU3FHU0liM0RRRUJDd1VBTUlHTk1Rc3dDUVlEDQpWUVFHRXdKSlRqRVRNQkVHQTFVRUNCTUtWR0Z0YVd3Z1RtRmtkVEVRTUE0R0ExVUVCeE1IUTJobGJtNWhhVEVRDQpNQTRHQTFVRUNoTUhSbUZqYVd4cGJ6RVFNQTRHQTFVRUN4TUhSbUZqYVd4cGJ6RU1NQW9HQTFVRUF4TURTVVJRDQpNU1V3SXdZSktvWklodmNOQVFrQkZoWnRZV2RsYzJoQWRHaHBibWR6WTJsbGJuUXVZMjl0TUI0WERURTNNRFl4DQpNakE1TVRRMU5Wb1hEVEU0TURZeE1qQTVNVFExTlZvd2dZMHhDekFKQmdOVkJBWVRBa2xPTVJNd0VRWURWUVFJDQpFd3BVWVcxcGJDQk9ZV1IxTVJBd0RnWURWUVFIRXdkRGFHVnVibUZwTVJBd0RnWURWUVFLRXdkR1lXTnBiR2x2DQpNUkF3RGdZRFZRUUxFd2RHWVdOcGJHbHZNUXd3Q2dZRFZRUURFd05KUkZBeEpUQWpCZ2txaGtpRzl3MEJDUUVXDQpGbTFoWjJWemFFQjBhR2x1WjNOamFXVnVkQzVqYjIwd2daOHdEUVlKS29aSWh2Y05BUUVCQlFBRGdZMEFNSUdKDQpBb0dCQUxUbmpxcWxZZnB3bktrQkJWM3lSNHpDRHVOVmtxWkE0Y0EzWjdnZWQrMWV2QVlLQVFSd0UySjJrOFVhDQp0dDg2a2J2dWNnUzFUN1NnQ0pET0F1WG9teFBPNWJVY2dkTnYwZlA2Y0w2bUZDTUFWZ2M0TjlXQlJ1RkhDV1BaDQpjcS9KSmpDVWY1OEVOd2pwNFR2SkF6VDJBbDlPZ053N1dNbk9aT3JGM0Y1N01LeFhBZ01CQUFHamdmVXdnZkl3DQpIUVlEVlIwT0JCWUVGSlBDZUlKRURLYzdOM1ZRN3RZaHhXMXBKaEJvTUlIQ0JnTlZIU01FZ2Jvd2diZUFGSlBDDQplSUpFREtjN04zVlE3dFloeFcxcEpoQm9vWUdUcElHUU1JR05NUXN3Q1FZRFZRUUdFd0pKVGpFVE1CRUdBMVVFDQpDQk1LVkdGdGFXd2dUbUZrZFRFUU1BNEdBMVVFQnhNSFEyaGxibTVoYVRFUU1BNEdBMVVFQ2hNSFJtRmphV3hwDQpiekVRTUE0R0ExVUVDeE1IUm1GamFXeHBiekVNTUFvR0ExVUVBeE1EU1VSUU1TVXdJd1lKS29aSWh2Y05BUWtCDQpGaFp0WVdkbGMyaEFkR2hwYm1kelkybGxiblF1WTI5dGdna0E1RmdvL0tmQ3VEZ3dEQVlEVlIwVEJBVXdBd0VCDQovekFOQmdrcWhraUc5dzBCQVFzRkFBT0JnUUFwT2JTN0VxTDBheTFheTI2REdwU3RsdnpQZ0QwUXVvRXYwRkdzDQpoVDhFa2xSVzFTVGlzVXZ6VHBvNWJDeDNUM205dm52N1VtQnNlbkRDcnpOTyt3NkZiWitjZllVUlZEZjFvdnF6DQplbGV2dDRacFpxV2w1NWpySEFOTlVVN2NXL3BwZG1xSWZtYnoyT2JhQ0ozaENlOXJLRUNzUTZzWmdEUFVVMWYwDQpqN1k4dXc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ=="));
-			FileInputStream fis = new FileInputStream(certFile);
-			
-			x509Cert = (java.security.cert.X509Certificate) fty.generateCertificate(fis);
-//			byte[] bt = x509Cert.getPublicKey().getEncoded();
-//			System.out.println(new String(bt));
-			
-			return x509Cert; 
-		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public static String getFileAsString(File file) throws FileNotFoundException, IOException {
-		StringWriter content = new StringWriter();
-		int readCount = 0;
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-			char[] buf = new char[8192];
-			while ((readCount = reader.read(buf)) > 0) {
-				content.write(buf, 0, readCount);
-			}
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			copyBytes(new BufferedInputStream(fis), bytes);
+
+			return bytes.toString("utf-8");
 		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-			if (content != null) {
-				content.close();
-			}
+			fis.close();
 		}
-		return content.toString();
+	}
+
+	private static void copyBytes(InputStream is, OutputStream bytes) throws IOException {
+		int res = is.read();
+		while (res != -1) {
+			bytes.write(res);
+			res = is.read();
+		}
 	}
 	
 	public static String convertDomToString(Document doc) throws Exception {
@@ -197,14 +70,158 @@ public class SAMLUtil {
 		String docString = writer1.toString();
 		return docString;
 	}
+	
+	public static Document convertStringToDocument(String xmlStr) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory docfactory = DocumentBuilderFactory.newInstance();
+		docfactory.setNamespaceAware(true);
 
-	public static Document convertStringToDocument(String subject) throws Exception {
+		// do not expand entity reference nodes 
+		docfactory.setExpandEntityReferences(false);
 
-		Properties builderProperties = new Properties();
-		builderProperties.setProperty("http://xml.org/sax/features/namespaces", "true");
+		docfactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-		return docBuilder.parse(new InputSource(new StringReader(subject)));
+		// Add various options explicitly to prevent XXE attacks.
+		// (adding try/catch around every setAttribute just in case a specific parser does not support it.
+		try {
+			// do not include external general entities
+			docfactory.setAttribute("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+		} catch (Throwable e) {}
+		try {
+			// do not include external parameter entities or the external DTD subset
+			docfactory.setAttribute("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+		} catch (Throwable e) {}
+		try {
+			docfactory.setAttribute("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+		} catch (Throwable e) {}
+		try {
+			docfactory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
+		} catch (Throwable e) {}
+		try {
+			// ignore the external DTD completely
+			docfactory.setAttribute("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
+		} catch (Throwable e) {}
+		try {
+			// build the grammar but do not use the default attributes and attribute types information it contains
+			docfactory.setAttribute("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", Boolean.FALSE);
+		} catch (Throwable e) {}
+		try {
+			docfactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (Throwable e) {}
+
+		DocumentBuilder builder = docfactory.newDocumentBuilder();
+		Document doc = builder.parse(new InputSource(new StringReader(xmlStr)));
+
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		XPathExpression expr;
+		try {
+			expr = xpath.compile("//*[@ID]");
+
+			NodeList nodeList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Element elem = (Element) nodeList.item(i);
+				Attr attr = (Attr) elem.getAttributes().getNamedItem("ID");
+				elem.setIdAttributeNode(attr, true);
+			}
+		} catch (XPathExpressionException e) {
+			return null;
+		}
+		return doc;
+	}
+	
+	public static String formatCert(String cert, Boolean heads) {
+		String x509cert = "";
+
+		if (cert != null) {		
+			x509cert = cert.replace("\\x0D", "").replace("\r", "").replace("\n", "").replace(" ", "");
+
+			if (x509cert != null && !"".equals(x509cert)) {
+				x509cert = x509cert.replace("-----BEGINCERTIFICATE-----", "").replace("-----ENDCERTIFICATE-----", "");
+			
+				if (heads) {
+					x509cert = "-----BEGIN CERTIFICATE-----\n" + chunkString(x509cert, 64) + "-----END CERTIFICATE-----";
+				}
+			}
+		}
+		return x509cert;
+	}
+	
+	public static String formatPrivateKey(String key, boolean heads) {
+		String xKey = "";
+
+		if (key != null) {
+			xKey = key.replace("\\x0D", "").replace("\r", "").replace("\n", "").replace(" ", "");
+	
+			if (xKey != null && !"".equals(xKey)) {
+				if (xKey.startsWith("-----BEGINPRIVATEKEY-----")) {
+					xKey = xKey.replace("-----BEGINPRIVATEKEY-----", "").replace("-----ENDPRIVATEKEY-----", "");
+	
+					if (heads) {
+						xKey = "-----BEGIN PRIVATE KEY-----\n" + chunkString(xKey, 64) + "-----END PRIVATE KEY-----";
+					}
+				} else {
+	
+					xKey = xKey.replace("-----BEGINRSAPRIVATEKEY-----", "").replace("-----ENDRSAPRIVATEKEY-----", "");
+	
+					if (heads) {
+						xKey = "-----BEGIN RSA PRIVATE KEY-----\n" + chunkString(xKey, 64) + "-----END RSA PRIVATE KEY-----";
+					}
+				}
+			}
+		}
+			
+		return xKey;
+	}	
+
+	private static String chunkString(String str, int chunkSize) {
+		String newStr = "";
+		int stringLength = str.length();
+		for (int i = 0; i < stringLength; i += chunkSize) {
+			if (i + chunkSize > stringLength) {
+				chunkSize = stringLength - i;
+			}
+			newStr += str.substring(i, chunkSize + i) + '\n';
+		}
+		return newStr;
+	}
+
+	public static X509Certificate loadCert() throws CertificateException, IOException {
+		ClassLoader classLoader = SAMLUtil.class.getClassLoader();
+		File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.crt").getFile());
+		String certString = getFileAsString(privateKeyFile);
+		
+		certString = formatCert(certString, true);
+		X509Certificate cert;
+		
+		try {
+			cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
+				new ByteArrayInputStream(certString.getBytes("utf-8")));
+		} catch (IllegalArgumentException e){
+			cert = null;
+		}
+		return cert;
+	}
+
+	public static PrivateKey loadPrivateKey() throws GeneralSecurityException, IOException {
+
+		ClassLoader classLoader = SAMLUtil.class.getClassLoader();
+		File privateKeyFile = new File(classLoader.getResource("conf/saml/saml.pem").getFile());
+		String keyString = getFileAsString(privateKeyFile);
+		
+		keyString = formatPrivateKey(keyString, false);
+		keyString = chunkString(keyString, 64);		
+		KeyFactory kf = KeyFactory.getInstance("RSA");
+		
+		PrivateKey privKey;
+		try {
+			byte[] encoded = org.apache.commons.codec.binary.Base64.decodeBase64(keyString);
+			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+			privKey = (PrivateKey) kf.generatePrivate(keySpec);
+		}
+		catch(IllegalArgumentException e) {
+			privKey = null;
+			e.printStackTrace();
+		}
+
+		return privKey;
 	}
 }

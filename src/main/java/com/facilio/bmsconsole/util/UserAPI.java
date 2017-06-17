@@ -30,7 +30,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Org_Users.ORGID = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
 			
 			pstmt.setLong(1, orgId);
 			
@@ -57,7 +57,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Org_Users.ORGID = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
 			pstmt.setLong(1, orgId);
 			
 			List<UserContext> users = new ArrayList<>();
@@ -76,6 +76,31 @@ public class UserAPI {
 		finally {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
+	}
+	
+	public static UserContext getUser(String email) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.EMAIL = ?");
+			pstmt.setString(1, email);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
 	}
 	
 	public static boolean addOrgUser(long orgId, String orgName, String emailId, String password, int role) throws Exception {

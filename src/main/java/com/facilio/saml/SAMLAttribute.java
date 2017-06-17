@@ -18,10 +18,10 @@ public class SAMLAttribute {
 	private PrivateKey privateKey;
 	private X509Certificate x509Certificate;
 	
-	public SAMLAttribute()
+	public SAMLAttribute() throws Exception
 	{
-		privateKey = SAMLUtil.getPrivateKey();
-		x509Certificate = SAMLUtil.getX509Certificate();
+		privateKey = SAMLUtil.loadPrivateKey();
+		x509Certificate = SAMLUtil.loadCert();
 	}
 	
 	public String getIssuer() {

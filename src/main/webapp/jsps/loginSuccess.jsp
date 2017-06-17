@@ -8,6 +8,5 @@
     <meta http-equiv="refresh" content="0; url=<%=redirectURL %>" />
 </head>
 <body style="{margin: 0; padding: 0;}">
-<p><a href="<%= redirectURL %>">Redirect to Home</a></p>
 </body>
 </html>
