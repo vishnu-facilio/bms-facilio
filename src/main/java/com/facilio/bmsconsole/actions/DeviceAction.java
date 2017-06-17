@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,18 +18,20 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.tasker.FacilioTimer;
+import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
 
-public class Device extends ActionSupport
+public class DeviceAction extends ActionSupport
 {
-	private static Logger logger = Logger.getLogger(Device.class.getName());
+	private static Logger logger = Logger.getLogger(DeviceAction.class.getName());
 	
 	public String show()
 	{
@@ -159,13 +162,24 @@ public class Device extends ActionSupport
 			JSONObject result = new JSONObject();
 			JSONArray childArray = new JSONArray();
 			result.put("name", AssetsAPI.getAssetInfo(controllerId).get("name"));
-			List<Map<String, Object>> devices = DeviceAPI.getDevices(controllerId);
-			for(Map<String, Object> deviceMap : devices)
+			Map<Long, Device> devices = DeviceAPI.getDevices(controllerId);
+			System.out.println(devices);
+			List<Device> deviceTree = new ArrayList<>();
+			for(Device device : devices.values())
 			{
-				JSONObject child = new JSONObject();
-				child.put("name", (String) deviceMap.get("name"));
-				childArray.add(child);
+				if(device.getParentId() != null && devices.containsKey(device.getParentId()))
+				{
+					Device parentDevice = devices.get(device.getParentId());
+					parentDevice.add(device);
+				}
+				else
+				{
+					deviceTree.add(device);
+				}
 			}
+			System.out.println(new Gson().toJson(deviceTree));
+			JSONParser parser = new JSONParser();
+			childArray = (JSONArray) parser.parse(new Gson().toJson(deviceTree));
 			result.put("children", childArray);
 			response.setContentType("application/json");
 		    response.setCharacterEncoding("UTF-8");

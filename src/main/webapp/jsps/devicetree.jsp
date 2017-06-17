@@ -49,8 +49,8 @@ function showDeviceInfo(el)
 				<th></th>
 				<th></th>
 			</tr>
-			<s:iterator var="device" value="%{DEVICES}">
-				<tr id="<s:property value="#device.deviceId" />">
+			<s:iterator var="device" value="%{DEVICES.values}">
+				<tr id="<s:property value="#device.id" />">
 					<td><s:property value="#device.name" /></td>
 					<td>
 						<s:if test="%{#device.status == 1}">

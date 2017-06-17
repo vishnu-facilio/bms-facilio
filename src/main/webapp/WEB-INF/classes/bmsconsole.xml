@@ -38,36 +38,39 @@
             <result  type="tiles">homepage</result>
             <allowed-methods>showCalendar</allowed-methods>
         </action>     
+    <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
+    	<result name="success">/jsps/calendar.jsp</result>
+    </action>    
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
-    <action name="device" class="com.facilio.bmsconsole.actions.Device" method="show">
+    <action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
     	<result name="success">/jsps/device.jsp</result>
     </action>
-    <action name="newDevice" class="com.facilio.bmsconsole.actions.Device" method="showAdd">
+    <action name="newDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showAdd">
     	<result name="success">/jsps/newdevice.jsp</result>
     </action>
-    <action name="addDevice" class="com.facilio.bmsconsole.actions.Device" method="add">
+    <action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
     </action>
-    <action name="showDeviceData" class="com.facilio.bmsconsole.actions.Device" method="showDeviceData">
+    <action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceData">
     	<result name="success">/jsps/devicedata.jsp</result>
     </action>
     
-    <action name="showTree" class="com.facilio.bmsconsole.actions.Device" method="showTree">
+    <action name="showTree" class="com.facilio.bmsconsole.actions.DeviceAction" method="showTree">
     </action>
-    <action name="showDevices" class="com.facilio.bmsconsole.actions.Device" method="showDevices">
+    <action name="showDevices" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDevices">
     	<result name="success">/jsps/devicetree.jsp</result>
     </action>
-    <action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.Device" method="showConfigureDevice">
+    <action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showConfigureDevice">
     	<result name="success">/jsps/deviceconf.jsp</result>
     </action>
-    <action name="showDeviceInfo" class="com.facilio.bmsconsole.actions.Device" method="showDeviceInfo">
+    <action name="showDeviceInfo" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
     	<result name="success">/jsps/deviceinfo.jsp</result>
     </action>
-    <action name="configureDevice" class="com.facilio.bmsconsole.actions.Device" method="configureDevice">
+    <action name="configureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureDevice">
     </action>
-    <action name="enableDeviceMonitoring" class="com.facilio.bmsconsole.actions.Device" method="enableDeviceMonitoring">
+    <action name="enableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="enableDeviceMonitoring">
     </action>
-     <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.Device" method="disableDeviceMonitoring">
+     <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="disableDeviceMonitoring">
     </action>
 
 	</package>
