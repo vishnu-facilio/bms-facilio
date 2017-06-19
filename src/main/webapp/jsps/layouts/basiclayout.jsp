@@ -25,7 +25,7 @@
   	<table style="height: 90px;" width="1220px" border="1">
 		<tbody>
 		<tr>
-			<td rowspan="2" style="width: 220px" valign="top">
+			<td rowspan="2" style="width: 220px; background-color: #222d32;" valign="top">
 				<section style="width: 220px">
     				<ul class="sidebar-menu" style="height:800px">
 				      	<li class="header">MAIN NAVIGATION</li>
@@ -152,6 +152,10 @@
 				      	</li>
       					<li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
     				</ul>
+    				<div class="user-info">
+    					<div>${sessionScope.USERNAME}</div>
+    					<div class="user-info-role">${requestScope.user_role}</div>
+    				</div>
   				</section>
 			</td>
 			<td align="top" style="height:50px">

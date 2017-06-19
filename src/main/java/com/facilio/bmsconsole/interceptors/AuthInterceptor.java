@@ -9,6 +9,8 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.Action;
@@ -68,6 +70,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 					String subdomain = requestdomain.replaceAll(HOSTNAME, "");
 					
+				
+					UserContext context = UserAPI.getUser(username);
+					request.setAttribute("user_role", context.getRoleAsString());
 					//ActionContext.getContext().getParameters()
 
         	

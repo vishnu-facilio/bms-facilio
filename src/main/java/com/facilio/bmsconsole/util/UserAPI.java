@@ -151,7 +151,7 @@ public class UserAPI {
 				AdminCreateUserRequest createUserReq = new AdminCreateUserRequest()
 						.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
 						.withUsername(context.getEmail())
-						.withUserAttributes(new AttributeType().withName("email").withValue(context.getEmail()), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("custom:orgName").withValue(orgName))
+						.withUserAttributes(new AttributeType().withName("email").withValue(context.getEmail()), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("name").withValue(context.getName()), new AttributeType().withName("custom:orgName").withValue(orgName))
 						.withDesiredDeliveryMediums("EMAIL")
 						.withTemporaryPassword(context.getPassword());
 

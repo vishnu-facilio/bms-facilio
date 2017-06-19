@@ -23,6 +23,7 @@ public class AddUserAction extends ActionSupport {
 		if ("add".equalsIgnoreCase(actionName)) {
 			cmd = FacilioChainFactory.getAddUserCommand();
 			
+			context.setName(getName());
 			context.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			context.setEmail(getEmail());
 			context.setInviteAcceptStatus(true);
@@ -56,6 +57,14 @@ public class AddUserAction extends ActionSupport {
 			}
 			return ERROR;
 		}
+	}
+	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	private String email;

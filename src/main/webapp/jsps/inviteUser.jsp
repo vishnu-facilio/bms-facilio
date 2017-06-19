@@ -5,6 +5,12 @@
 <br />
 <s:form id="inviteUserForm" action="add" theme="simple" method="post" class="form-horizontal" style="width:600px;">
 	<div class="form-group">
+  		<label for="name" class="col-sm-2 control-label">Name</label>
+	    	<div class="col-sm-10">  
+				<s:textfield name="name" id="name" class="form-control"/>
+			</div>
+	</div>
+	<div class="form-group">
   		<label for="email_id" class="col-sm-2 control-label">Email</label>
 	    	<div class="col-sm-10">  
 				<s:textfield type="email" name="email" id="email_id" class="form-control" placeholder="xyz@example.com" />

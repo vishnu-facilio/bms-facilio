@@ -4,6 +4,12 @@
 <h3>Edit User</h3>
 <br />
 <s:form id="inviteUserForm" action="add" theme="simple" method="post" class="form-horizontal" style="width:600px;">
+	<%--div class="form-group">
+  		<label for="name" class="col-sm-2 control-label">Name</label>
+	    	<div class="col-sm-10">  
+				<s:textfield name="name" id="name" class="form-control"/>
+			</div>
+	</div--%>
 	<div class="form-group">
   		<label for="email_id" class="col-sm-2 control-label">Email</label>
   			<s:textfield type="hidden" name="userId" id="userId" value="%{user.userId}"/>
