@@ -20,5 +20,19 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
+
+	public static Command getAddUserCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new AddUserCommand());
+		
+		return c;
+	}
 	
+	public static Command getUpdateUserCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateUserCommand());
+		
+		return c;
+	}
 }

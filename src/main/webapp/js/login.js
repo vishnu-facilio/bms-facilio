@@ -122,6 +122,29 @@ function signin(email,password)
 	        
 	    },
 
+	    newPasswordRequired: function(userAttributes, requiredAttributes) {
+	    	
+	    	$("#signinform form").hide();
+	    	$(".change-password").show();
+	    	
+	    	var scope = this;
+	    	$(".updatepwdbtn").click(function() {
+	    		
+	    		var newPass = $("input[name=change-newpass]").val();
+	    		var confirmNewPass = $("input[name=change-confirm-newpass]").val();
+	    		
+	    		console.log(newPass);
+	    		if (newPass != confirmNewPass) {
+	    			alert('Password does not match..');
+	    		}
+	    		else {
+	        		delete userAttributes.email_verified;
+	        		
+	        		cognitoUser.completeNewPasswordChallenge(newPass, userAttributes, scope);
+	    		}
+	    	});
+        },
+	    
 	    onFailure: function(err) {
 	        
 	    	if (err.__type === 'UserNotConfirmedException') {
@@ -143,7 +166,7 @@ function signin(email,password)
 		           	        console.log('call result: ' + result);
 		           	        
 		           	        alert('Your account verified. You can login to your account now.');
-		           	        location.href = "signinhome.html";
+		           	        location.href = "login";
 		           	        
 			           	    });
 		       			}
@@ -218,7 +241,7 @@ function forgotPassword() {
 			cognitoUser.confirmPassword(verificationCode, newPassword, this);
 			
 			alert('Password reset successfully. You can login to your account now.');
-			location.href = "signinhome.html";
+			location.href = "login";
 		}
 	});
 }

@@ -32,6 +32,14 @@ public class UserContext extends FacilioContext {
 		this.email = email;
 	}
 	
+	private String password;
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 	private long invitedTime = 0;
 	public long getInvitedTime() {
 		return invitedTime;
@@ -64,17 +72,8 @@ public class UserContext extends FacilioContext {
 	}
 	
 	public String getRoleAsString() {
-		switch (this.role) {
-		case FacilioConstants.Role.SUPER_ADMIN:
-			return "Super Administrator";
-		case FacilioConstants.Role.ADMIN:
-			return "Administrator";
-		case FacilioConstants.Role.AGENT:
-			return "Agent";
-		case FacilioConstants.Role.REQUESTER:
-			return "Requester";
-		}
-		return "User";
+		
+		return FacilioConstants.Role.ALL_ROLES.get(this.role);
 	}
 	
 	public String getStatusAsString() {
@@ -82,7 +81,7 @@ public class UserContext extends FacilioContext {
 			return "Active";
 		}
 		else {
-			return "Pending";
+			return "Inactive";
 		}
 	}
 }

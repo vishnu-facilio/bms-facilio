@@ -1,49 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="/struts-tags" prefix="s" %>    
-
-<script>
-
-	function showAddDevice()
-	{
-		$.ajax({
-		      type: "GET",
-		      url: "/bms/home/users/new",   
-		      success: function (response) {
-		         $('#maincontent').html(response);
-		      }
-		 });
-	}
-
-	function addDevice()
-	{
-		var dataObject = new Object();
-		dataObject.name = $('input[name=deviceName]').val();
-		dataObject.type = $('select[name=deviceType]').val();
-		dataObject.datasource = $('input[name=datasource]:checked').val();
-		dataObject.publicip = $('input[name=publicip]').val();
-		dataObject.polltime = $('input[name=polltime]').val();
-		$.ajax({
-		      type: "POST",
-		      url: "/bms/home/addDevice",   
-		      data: dataObject,
-		      success: function (response) {
-		         window.location.reload();
-		      }
-		 });
-	}
-	
-	function showDeviceData()
-	{
-		$.ajax({
-		      type: "GET",
-		      url: "/bms/home/showDeviceData",   
-		      success: function (response) {
-		         $('#devicedata').html(response);
-		      }
-		 });
-	}
-
-</script>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 
 <style>
 	#maincontent th
@@ -66,7 +22,7 @@
 <div id="maincontent" style="padding:20px;">
 	<div style="padding-bottom: 20px;width: 800px;">
 		<div style="float: left;font-size: 18px;padding-top: 3px;">Users :</div>
-		<div style=" float:right;"><input onclick="showAddDevice();" style="width: 70px;font-size: 13px;padding: 5px;" type="button" name="submit" value="Add" /></div>
+		<div style=" float:right;"><a class="btn btn-default" href="/home/users/invite" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Invite User</a></div>
 		<div style="clear: both;"></div>
 	</div>
 	<div>
@@ -76,13 +32,19 @@
 			<th>Role</th>
 			<th>Status</th>
 			<th>Added Time</th>
+			<th></th>
 		</tr>
 		<s:iterator var="user" value="%{users}">
 			<tr>
-				<td><s:property value="#user.email" /></td>
+				<td><a href="<s:property value="#user.userId" />"><s:property value="#user.email" /></a></td>
 				<td><s:property value="#user.getRoleAsString()" /></td>
 				<td><s:property value="#user.getStatusAsString()" /></td>
 				<td><s:property value="#user.getInvitedTimeStr()" /></td>
+				<td>
+					<s:if test="%{#user.role!=0}">
+						<a href="edit?id=<s:property value="#user.userId" />" class="edit-user">Edit</a>
+					</s:if>
+				</td>
 			</tr>
 	    </s:iterator>
 	</table>

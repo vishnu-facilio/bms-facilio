@@ -159,7 +159,7 @@
 			</td>
 		</tr>
 		<tr style="vertical-align: top;">
-			<td style="padding : 1px;">
+			<td style="padding : 5px;">
 			<tiles:insertAttribute name="body" />  
 			</td>
 		</tr>

@@ -88,7 +88,7 @@ $.ajax({
            	        console.log('call result: ' + result);
            	        
            	        alert('Your account verified. You can login to your account now.');
-           	        location.href = "signinhome.html";
+           	        location.href = "login";
            	        
 	           	    });
        			}

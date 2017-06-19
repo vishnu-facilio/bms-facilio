@@ -36,4 +36,31 @@ public class OrgApi {
 		
 		return -1;
 	}
+	
+	public static String getOrgDomainFromId(long id) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ?");
+			
+			pstmt.setLong(1, id);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				return rs.getString("FACILIODOMAINNAME");
+			}
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return null;
+	}
 }

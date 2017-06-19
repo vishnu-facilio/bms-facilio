@@ -1,5 +1,8 @@
 package com.facilio.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 
 public class FacilioConstants {
@@ -31,5 +34,14 @@ public class FacilioConstants {
 		public static final int AGENT = 2;
 		
 		public static final int REQUESTER = 3;
+		
+		public static final HashMap<Integer, String> ALL_ROLES = new HashMap<Integer, String>();
+		
+		static {
+			ALL_ROLES.put(SUPER_ADMIN, "Super Administrator");
+			ALL_ROLES.put(ADMIN, "Administrator");
+			ALL_ROLES.put(AGENT, "Agent");
+			ALL_ROLES.put(REQUESTER, "Requester");
+		}
 	}
 }

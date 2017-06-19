@@ -29,4 +29,19 @@
    		<put-attribute name="title" value="Users" />
    		<put-attribute name="body" value="/jsps/usersList.jsp" />
    </definition>
+   
+   <definition name="inviteUser" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="Invite User" />
+   	<put-attribute name="body" value="/jsps/inviteUser.jsp" />
+   </definition>
+   
+   <definition name="viewUser" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="View User" />
+   	<put-attribute name="body" value="/jsps/viewUser.jsp" />
+   </definition>
+   
+   <definition name="editUser" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="Edit User" />
+   	<put-attribute name="body" value="/jsps/editUser.jsp" />
+   </definition>
 </tiles-definitions>  

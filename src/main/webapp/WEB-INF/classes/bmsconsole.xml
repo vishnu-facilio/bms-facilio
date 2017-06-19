@@ -22,7 +22,7 @@
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="redirect">
-				<param name="location">/signinhome.html</param>
+				<param name="location">/login</param>
 				<param name="parse">false</param>
 			</result>
 			<result name="unauthorized" type="redirect">
@@ -97,26 +97,46 @@
 	</package>
 	
 	<package name="users" namespace="/home/users" extends="home">
-		<!-- <action name="new" class="com.facilio.bmsconsole.actions.NewUserAction">
-			<result type="tiles">newUser</result>
+		<action name="invite" class="com.facilio.bmsconsole.actions.NewUserAction">
+			<result type="tiles">inviteUser</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.AddUserAction">
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
 			</result>
-		</action> -->
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.AddUserAction">
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 
 		<action name="" class="com.facilio.bmsconsole.actions.UserListAction">
 			<result name="success" type="tiles">usersList</result>
 		</action>
 
-		<!-- <action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction">
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction">
 			<param name="userId">{1}</param>
 			<result name="success" type="tiles">viewUser</result>
-		</action> -->
+		</action>
+		
+		<action name="edit" class="com.facilio.bmsconsole.actions.EditUserAction">
+			<result name="success" type="tiles">editUser</result>
+		</action>
 	</package>
-
+	
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>
 		<action name="addFromMail"

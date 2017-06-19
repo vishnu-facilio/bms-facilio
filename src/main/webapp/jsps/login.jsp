@@ -60,7 +60,7 @@
 				
                 <div class="collapse navbar-collapse navbar-right">
                     <ul class="nav navbar-nav">
-						<li><a href="signup.html">Signup</a> / <a href="signinhome.html">Login</a></li>
+						<li><a href="signup.html">Signup</a> / <a href="login">Login</a></li>
                         <li class="active"><a href="index.html">Resources</a></li>
                         <li><a href="about-us.html">Partners</a></li>
                         <li><a href="services.html">Community</a></li>
@@ -95,7 +95,7 @@
               <button type="button" class="cancelbtn" onclick="javascript:window.location.href='signup.html'">Sign up</button>
               <button type="button" class="signupbtn" onclick="javascript:signin(this.form.email.value,this.form.psw.value)">Sign In</button>
             </div>
-            <a href="javascript:forgotPassword()" style="color: blue;" class="forgot-password-link">Forgot password?</a></div>
+            <a href="javascript:forgotPassword()" style="color: blue;" class="forgot-password-link">Forgot password?</a>
           </div>
         </form>
         <section class="b-form verifyuser-section" style="display:none">
@@ -123,6 +123,18 @@
 	              	</div>
 	            	<div class="clearfix">
 	              		<button type="button" style="float:none" class="signupbtn resetpwdbtn">Reset</button>
+	            	</div>
+        		</div>
+        	</section>
+        	<section class="b-form change-password" style="display:none">
+            	<div class="contianer" style="text-align: center;">
+	            	<div style="padding: 35px 0 15px 0;">
+	            		<label><b>Change password</b></label>
+	              		<input type="password" placeholder="New password" name="change-newpass">
+	              		<input type="password" placeholder="Reenter new password" name="change-confirm-newpass">
+	              	</div>
+	            	<div class="clearfix">
+	              		<button type="button" style="float:none" class="signupbtn updatepwdbtn">Update</button>
 	            	</div>
         		</div>
         	</section>

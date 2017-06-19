@@ -9,11 +9,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.AdminCreateUserRequest;
 import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
+import com.amazonaws.services.cognitoidp.model.AdminDisableUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminDisableUserResult;
+import com.amazonaws.services.cognitoidp.model.AdminEnableUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminEnableUserResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
@@ -78,6 +85,31 @@ public class UserAPI {
 		}
 	}
 	
+	public static UserContext getUser(long userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.USERID = ?");
+			pstmt.setLong(1, userId);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
 	public static UserContext getUser(String email) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -103,20 +135,25 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static boolean addOrgUser(long orgId, String orgName, String emailId, String password, int role) throws Exception {
+	public static long addUser(UserContext context) throws Exception {
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			if (role != FacilioConstants.Role.REQUESTER) {
-				AWSCognitoIdentityProvider idpProvider = AWSCognitoIdentityProviderClientBuilder.defaultClient();
-
+			String orgName = OrgApi.getOrgDomainFromId(context.getOrgId());
+			
+			if (context.getRole() != FacilioConstants.Role.REQUESTER) {
+				
+				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+				
+				AWSCognitoIdentityProvider idpProvider = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+				
 				AdminCreateUserRequest createUserReq = new AdminCreateUserRequest()
 						.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
-						.withUsername(emailId)
-						.withUserAttributes(new AttributeType().withName("email").withValue(emailId), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("custom:orgName").withValue(orgName))
+						.withUsername(context.getEmail())
+						.withUserAttributes(new AttributeType().withName("email").withValue(context.getEmail()), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("custom:orgName").withValue(orgName))
 						.withDesiredDeliveryMediums("EMAIL")
-						.withTemporaryPassword(password);
+						.withTemporaryPassword(context.getPassword());
 
 				System.out.println("Create user request: "+createUserReq);
 				AdminCreateUserResult result = idpProvider.adminCreateUser(createUserReq);
@@ -125,15 +162,16 @@ public class UserAPI {
 
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			String insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?,?,?)"; 
+			String insertquery = "insert into Users (USER_VERIFIED,EMAIL) values (?,?)"; 
 			PreparedStatement ps = conn.prepareStatement(insertquery);
-			ps.setString(1, "ID");
-			ps.setBoolean(2, true);
-			ps.setString(3, emailId);
+			ps.setBoolean(1, true);
+			ps.setString(2, context.getEmail());
 			ps.addBatch();
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS) values ((select USERID from Users where EMAIL='"+emailId+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+orgName+"'),UNIX_TIMESTAMP() ,true,true)";
+			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE) values ((select USERID from Users where EMAIL='"+context.getEmail()+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+orgName+"'),UNIX_TIMESTAMP() ,true,true, "+context.getRole()+")";
 			ps.addBatch(insertquery);
 			ps.executeBatch();
+			
+			return getUser(context.getEmail()).getUserId();
 		}
 		catch (Exception e) {
 			throw e;
@@ -146,7 +184,69 @@ public class UserAPI {
 				conn.close();
 			}
 		}
-		return true;
+	}
+	
+	public static boolean updateUser(UserContext context) throws Exception {
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			if (context.getRole() != FacilioConstants.Role.REQUESTER) {
+				
+				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+				
+				AWSCognitoIdentityProvider idpProvider = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+				
+				if (context.getInviteAcceptStatus()) {
+					AdminEnableUserRequest enableUserReq = new AdminEnableUserRequest()
+							.withUsername(context.getEmail())
+							.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId());
+					
+					System.out.println("Enable user request: "+enableUserReq);
+					AdminEnableUserResult enableUserResult = idpProvider.adminEnableUser(enableUserReq);
+					System.out.println("Enable user result: "+enableUserResult);
+				}
+				else {
+					AdminDisableUserRequest disableUserReq = new AdminDisableUserRequest()
+							.withUsername(context.getEmail())
+							.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId());
+					
+					System.out.println("Disable user request: "+disableUserReq);
+					AdminDisableUserResult disableUserResult = idpProvider.adminDisableUser(disableUserReq);
+					System.out.println("Disable user result: "+disableUserResult);
+				}
+			}
+
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+
+			String insertquery = "update ORG_Users set INVITATION_ACCEPT_STATUS=?, ROLE=? where USERID=? and ORGID=?"; 
+			
+			PreparedStatement ps = conn.prepareStatement(insertquery);
+			
+			ps.setBoolean(1, context.getInviteAcceptStatus());
+			ps.setInt(2, context.getRole());
+			ps.setLong(3, context.getUserId());
+			ps.setLong(4, context.getOrgId());
+			
+			int cnt = ps.executeUpdate();
+			if (cnt < 0) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			if (pstmt != null) {
+				pstmt.close();
+			}
+			if (conn != null) {
+				conn.close();
+			}
+		}
 	}
 	
 	private static UserContext getUserObjectFromRS(ResultSet rs) throws SQLException {
