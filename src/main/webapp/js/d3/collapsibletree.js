@@ -267,8 +267,10 @@ load_chart = function(parent_elm, width, height, data_url, onClick, onMove) {
 	        d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
 	        updateTempConnector();
 	        if (draggingNode !== null) {
-	        	
-	        	try {
+	            update(root);
+	            centerNode(draggingNode);
+	            
+	            try {
 	        		var drag_obj = {id: draggingNode.id, name: draggingNode.name, parent: draggingNode.parent.id};
 		        	if (typeof(onMove) !== 'undefined' && onMove !== '') {
 		        		window[onMove](drag_obj);
@@ -277,9 +279,6 @@ load_chart = function(parent_elm, width, height, data_url, onClick, onMove) {
 	        	catch (e) {
 	        		console.log(e);
 	        	}
-	        	
-	            update(root);
-	            centerNode(draggingNode);
 	            draggingNode = null;
 	        }
 	    }

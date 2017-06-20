@@ -1,9 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@taglib uri="facilio-tags" prefix="f" %>
-
+<script>
+	function treeOnMove(data) {
+		console.log('Node moved ::: '+JSON.stringify(data));
+	}
+	
+	function treeOnClick(data) {
+		console.log('Node clicked ::: '+JSON.stringify(data));
+	}
+</script>
 <div id="content">
-<f:chart id="eb-meter" type="tree-collapsible" width="900" height="550" url="../js/d3/sample.json"/>
+<f:chart id="eb-meter" type="tree-collapsible" width="900" height="550" url="../js/d3/sample.json" onmove="treeOnMove" onclick="treeOnClick"/>
 
 <br/><br/>
 <f:chart id="eb-meter-performance" type="line-timeseries" width="900" height="550"/>
