@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -21,12 +24,21 @@ public class SQLScriptRunner {
 	private final boolean stopOnError;
 	private final boolean autoCommit;
 	
+	private StrSubstitutor substitutor = null;
 	private File file = null;
 
 	public SQLScriptRunner(File file, boolean autoCommit, boolean stopOnError) {
+		this(file, autoCommit, stopOnError, null);
+	}
+	
+	public SQLScriptRunner(File file, boolean autoCommit, boolean stopOnError, Map<String, String> paramValues) {
 		this.file = file;
 		this.autoCommit = autoCommit;
 		this.stopOnError = stopOnError;
+		
+		if(paramValues != null && paramValues.size() > 0) {
+			substitutor = new StrSubstitutor(paramValues);
+		}
 	}
 
 	public void runScript() throws SQLException, IOException {
@@ -122,13 +134,19 @@ public class SQLScriptRunner {
 	}
 
 	private void execCommand(Connection conn, StringBuilder command, int lineNumber) throws SQLException {
-		System.out.println(command);
 		Statement stmt = null;
 		ResultSet rs = null;
 		boolean hasResults = false;
 		try {
 			stmt = conn.createStatement();
-			hasResults = stmt.execute(command.toString());
+			
+			String sql = null;
+			
+			if(substitutor != null) {
+				sql = substitutor.replace(command.toString());
+			}
+			
+			hasResults = stmt.execute(sql);
 			
 			rs = stmt.getResultSet();
 	        if (hasResults && rs != null) {
