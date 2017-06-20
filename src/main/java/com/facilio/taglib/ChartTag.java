@@ -11,13 +11,17 @@ public class ChartTag extends SimpleTagSupport {
 	private Integer width;
 	private Integer height;
 	private String url;
+	private String onclick;
+	private String onmove;
 	
 	public void doTag() throws JspException, IOException {
       
 		JspWriter out = getJspContext().getOut();
 		
 		if ("tree-collapsible".equalsIgnoreCase(getType())) {
-			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeters(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+", \""+getUrl()+"\");</script>");
+			String onClick = (getOnclick() == null) ? "" : getOnclick();
+			String onMove = (getOnmove() == null) ? "" : getOnmove();
+			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeters(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+", \""+getUrl()+"\", \""+onClick+"\", \""+onMove+"\");</script>");
 		}
 		else {
 			out.println("<div id=\""+getId()+"\"></div><script type=\"text/javascript\">loadMeterPerformance(\"#"+getId()+"\", "+getWidth()+", "+getHeight()+");</script>");
@@ -68,5 +72,21 @@ public class ChartTag extends SimpleTagSupport {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getOnclick() {
+		return onclick;
+	}
+
+	public void setOnclick(String onclick) {
+		this.onclick = onclick;
+	}
+
+	public String getOnmove() {
+		return onmove;
+	}
+
+	public void setOnmove(String onmove) {
+		this.onmove = onmove;
 	}
 }

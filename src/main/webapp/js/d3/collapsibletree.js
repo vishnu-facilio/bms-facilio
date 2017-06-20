@@ -25,7 +25,7 @@ OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
-load_chart = function(parent_elm, width, height, data_url) {
+load_chart = function(parent_elm, width, height, data_url, onClick, onMove) {
 	
 	// Get JSON data
 	treeJSON = d3.json(data_url, function(error, treeData) {
@@ -267,6 +267,17 @@ load_chart = function(parent_elm, width, height, data_url) {
 	        d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
 	        updateTempConnector();
 	        if (draggingNode !== null) {
+	        	
+	        	try {
+	        		var drag_obj = {id: draggingNode.id, name: draggingNode.name, parent: draggingNode.parent.id};
+		        	if (typeof(onMove) !== 'undefined' && onMove !== '') {
+		        		window[onMove](drag_obj);
+		        	}
+	        	}
+	        	catch (e) {
+	        		console.log(e);
+	        	}
+	        	
 	            update(root);
 	            centerNode(draggingNode);
 	            draggingNode = null;
@@ -363,6 +374,16 @@ load_chart = function(parent_elm, width, height, data_url) {
 	        d = toggleChildren(d);
 	        update(d);
 	        centerNode(d);
+	        
+	        try {
+	        	if (typeof(onClick) !== 'undefined' && onClick !== '' && typeof(d.parent) !== 'undefined') {
+	        		var click_obj = {id: d.id, name: d.name, parent: d.parent.id};
+	        		window[onClick](click_obj);
+	        	}
+        	}
+        	catch (e) {
+        		console.log(e);
+        	}
 	    }
 
 	    function update(source) {
