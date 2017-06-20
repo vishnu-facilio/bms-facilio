@@ -23,6 +23,6 @@ public class AddCustomFieldCommand implements Command {
 		
 		context.put("FieldIDs", fieldIds);
 		
-		return true;
+		return false;
 	}
 }
