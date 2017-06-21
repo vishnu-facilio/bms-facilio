@@ -62,7 +62,7 @@
           							<a href="#"><i class="fa fa-circle-o"></i>Requests<i class="fa fa-angle-left pull-right"></i></a>
           							<ul class="treeview-menu">
               							<li><a href="#"><i class="fa fa-circle-o"></i>Overview</a></li>
-                            			<li><a href="#"><i class="fa fa-circle-o"></i>Create New</a></li>
+                            			<li id="newticketId" url="/bms/home/tickets/new?ajax=true"><a href="#newticket"><i class="fa fa-circle-o"></i>Create New</a></li>
 			                            <li><a href="#"><i class="fa fa-circle-o"></i>Created by me</a></li>
 			                            <li><a href="#"><i class="fa fa-circle-o"></i>All Facility Requests</a></li>
 			                            <li><a href="#"><i class="fa fa-circle-o"></i>Assigned to me</a></li>
