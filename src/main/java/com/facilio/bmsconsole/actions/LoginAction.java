@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.zip.Inflater;
@@ -35,13 +37,18 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
+import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.cognito.CognitoUtil;
 import com.facilio.fw.OrgInfo;
 import com.facilio.saml.SAMLAttribute;
 import com.facilio.saml.SAMLUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -109,7 +116,29 @@ public class LoginAction extends ActionSupport{
 
 		if (verifiedUser && userName!=null)
 		{
-			String subdomain = OrgInfo.getDefaultOrgInfo(userName);
+			String subdomain = null;
+			try {
+				subdomain = OrgInfo.getDefaultOrgInfo(userName);
+			} catch (Exception e) {
+				
+				/*  
+				 * If the user exists in Cognito but not exists in the local db, the below code will auto populate the org, user data into local db
+				 */
+				
+				AdminGetUserResult userResult = CognitoUtil.getUser(userName);
+				List<AttributeType> li = userResult.getUserAttributes();
+				for (AttributeType attr : li) {
+					if (attr.getName().equals("custom:orgName")) {
+						subdomain = attr.getValue();
+						break;
+					}
+				}
+				if (subdomain == null || "".equals(subdomain.trim())) {
+					// for local testing only
+					subdomain = "dummy";
+				}
+				checkAndPopulateOrgInfo(subdomain, userName);
+			}
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String redirecturl =request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index?accesscode="+tempaccesscode;
 
@@ -136,6 +165,44 @@ public class LoginAction extends ActionSupport{
 			// else the user is not verified - redirect to the login page.
 		}
 		return SUCCESS;
+	}
+	
+	private boolean checkAndPopulateOrgInfo(String subdomain, String email) throws Exception {
+		java.sql.Connection con = FacilioConnectionPool.INSTANCE.getConnection();
+		
+		long orgId = OrgApi.getOrgIdFromDomain(subdomain);
+		
+		PreparedStatement ps = null;
+		try {
+			if (orgId == -1) {
+				String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
+				PreparedStatement ps1 = con.prepareStatement(insertquery);
+				ps1.setString(1, subdomain);
+				ps1.setString(2, subdomain);
+				ps1.executeUpdate();
+				ps1.close();
+			}
+			
+			String insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?,?,?)";
+			ps = con.prepareStatement(insertquery);
+			ps.setString(1, null);
+			ps.setBoolean(2, true);
+			ps.setString(3, email);
+			ps.addBatch();
+			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS) values ((select USERID from Users where EMAIL='"+email+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),UNIX_TIMESTAMP() ,true,true)";
+			System.out.println("insert query "+insertquery);
+			ps.addBatch(insertquery);
+			ps.executeBatch();
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			ps.close();
+			con.close();
+		}
+		return false;
 	}
 	
 	private String response = null;

@@ -85,6 +85,8 @@ function signin(email,password)
 	    Pool : userPool
 	};
 
+	$(".signupbtn").text("Signing In...").attr("disabled", true);
+	
 	var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
 	cognitoUser.authenticateUser(authenticationDetails, {
 	    onSuccess: function (result) {
@@ -147,6 +149,8 @@ function signin(email,password)
 	    
 	    onFailure: function(err) {
 	        
+	    	$(".signupbtn").text("Sign In").attr("disabled", false);
+	    	
 	    	if (err.__type === 'UserNotConfirmedException') {
 	    		$("#signinform form").hide();
 		    	$(".verifyuser-section").show();
