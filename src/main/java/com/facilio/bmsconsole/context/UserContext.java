@@ -24,6 +24,14 @@ public class UserContext extends FacilioContext {
 		this.userId = userId;
 	}
 	
+	private long orgUserId = 0;
+	public long getOrgUserId() {
+		return orgUserId;
+	}
+	public void setOrgUserId(long orgUserId) {
+		this.orgUserId = orgUserId;
+	}
+	
 	private String name;
 	public String getName() {
 		return name;

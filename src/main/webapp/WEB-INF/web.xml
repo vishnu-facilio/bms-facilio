@@ -12,7 +12,7 @@
    </context-param>
    <context-param>
         <param-name>DOMAINNAME</param-name>
-        <param-value>.facilstack.com</param-value>
+        <param-value>.facilio.dev</param-value>
     </context-param>
  <listener>
       <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>

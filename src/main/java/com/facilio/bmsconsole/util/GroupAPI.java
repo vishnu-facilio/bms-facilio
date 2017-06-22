@@ -212,7 +212,7 @@ public class GroupAPI {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
-			pstmt = conn.prepareStatement("INSERT INTO GroupMembers (GROUPID, USERID, MEMBER_ROLE) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO GroupMembers (GROUPID, ORG_USERID, MEMBER_ROLE) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			for (long userId : members) {
 				pstmt.setLong(1, groupId);
@@ -259,7 +259,7 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM GroupMembers, Users, ORG_Users WHERE GroupMembers.USERID = Users.USERID AND Users.USERID = ORG_Users.USERID AND GroupMembers.GROUPID=?");
+			pstmt = conn.prepareStatement("SELECT * FROM GroupMembers, ORG_Users, Users WHERE GroupMembers.ORG_USERID = ORG_Users.ORG_USERID AND ORG_Users.USERID = Users.USERID AND GroupMembers.GROUPID=?");
 			pstmt.setLong(1, groupId);
 			
 			List<GroupMemberContext> members = new ArrayList<>();
@@ -288,40 +288,16 @@ public class GroupAPI {
 		Map<Long, String> groupUsers = new LinkedHashMap<>();
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT GroupMembers.USERID, Users.EMAIL FROM GroupMembers, Users WHERE GroupMembers.USERID=Users.USERID AND GroupMembers.GROUPID=?");
+			pstmt = conn.prepareStatement("SELECT GroupMembers.ORG_USERID, Users.EMAIL FROM GroupMembers, ORG_Users, Users WHERE GroupMembers.ORG_USERID = ORG_Users.ORG_USERID AND ORG_Users.USERID = Users.USERID AND GroupMembers.GROUPID=?");
 			pstmt.setLong(1, groupId);
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				long userId = rs.getLong("USERID");
+				long userId = rs.getLong("ORG_USERID");
 				String email = rs.getString("EMAIL");
 				groupUsers.put(userId, email);
 			}
 			return groupUsers;
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-	}
-	
-	public static boolean removeGroupMember(long groupId, long userId) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("DELETE FROM GroupMembers WHERE GROUPID = ? AND USERID = ?");
-			pstmt.setLong(1, groupId);
-			pstmt.setLong(2, userId);
-			
-			if (pstmt.executeUpdate() < 1) {
-				return false;
-			}
-			return true;
 		}
 		catch(SQLException e) {
 			throw e;
@@ -337,6 +313,7 @@ public class GroupAPI {
 		memberContext.setGroupId(rs.getLong("GROUPID"));
 		memberContext.setOrgId(rs.getLong("ORGID"));
 		memberContext.setUserId(rs.getLong("USERID"));
+		memberContext.setOrgUserId(rs.getLong("ORG_USERID"));
 		memberContext.setMemberRole(rs.getInt("MEMBER_ROLE"));
 		memberContext.setEmail(rs.getString("EMAIL"));
 		memberContext.setInvitedTime(rs.getLong("INVITEDTIME"));
