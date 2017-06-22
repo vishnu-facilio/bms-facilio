@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.customfields.FacilioCustomField;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewTicketAction extends ActionSupport {
@@ -70,6 +71,15 @@ public class NewTicketAction extends ActionSupport {
 		customFields = new ArrayList<>();
 		for(FacilioCustomField field : cfs) {
 			customFields.add(field.getFieldName());
+		}
+		Map mp = ActionContext.getContext().getParameters();
+		System.out.println(mp.get("ajax").getClass().getName());;
+		String isajax =((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
+		
+		System.out.println("isajaxisajax"+isajax);;
+
+		if(isajax!=null && isajax.equals("true")){
+			return "ajaxsuccess";
 		}
 		
 		return SUCCESS;
