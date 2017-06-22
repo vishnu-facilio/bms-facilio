@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class FacilioChainFactory {
 
@@ -10,6 +12,7 @@ public class FacilioChainFactory {
 		Chain c =new ChainBase();
 		c.addCommand(new CreateUserCommand());
 		c.addCommand(new AddDefaultModulesCommand());
+		addCleanUPCommand(c);
 		return c;
 	}
 	
@@ -57,5 +60,20 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateGroupCommand());
 		
 		return c;
+	}
+	private static void addCleanUPCommand(Chain c)
+	{
+		c.addCommand(new Command(){
+			@Override 
+			public boolean execute(Context arg0) throws Exception
+			{
+				if(arg0 instanceof FacilioContext)
+				{
+					FacilioContext fc = (FacilioContext)arg0;
+					fc.cleanup();
+				}
+				return false;
+			}
+		});
 	}
 }
