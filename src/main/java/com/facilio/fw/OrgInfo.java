@@ -3,6 +3,7 @@ package com.facilio.fw;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class OrgInfo {
@@ -12,6 +13,19 @@ public class OrgInfo {
 private long orgid;
 private String orgName;
 private String orgDomain;
+
+public OrgInfo(long orgid)
+{
+	this.orgid = orgid;
+	try {
+		this.orgDomain = OrgApi.getOrgDomainFromId(orgid);
+		this.orgName = this.orgDomain;
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
 public OrgInfo(long orgid, String orgName, String orgDomain)
 {
 	this.orgid = orgid;
