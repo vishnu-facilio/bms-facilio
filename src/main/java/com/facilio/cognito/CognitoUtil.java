@@ -1,7 +1,14 @@
 package com.facilio.cognito;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentity;
+import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentityClientBuilder;
+import com.amazonaws.services.cognitoidentity.model.GetCredentialsForIdentityRequest;
+import com.amazonaws.services.cognitoidentity.model.GetCredentialsForIdentityResult;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.AdminGetUserRequest;
@@ -11,7 +18,9 @@ import com.facilio.constants.FacilioConstants;
 
 public class CognitoUtil {
 
-	private static AWSCognitoIdentityProvider IDP_PROVIDER = null; 
+	private static AWSCognitoIdentityProvider IDP_PROVIDER = null;
+	
+	private static AmazonCognitoIdentity IDENTITY_CLIENT = null; 
 	
 	public static AWSCognitoIdentityProvider getIdpProvider() {
 		if (IDP_PROVIDER == null) {
@@ -22,10 +31,40 @@ public class CognitoUtil {
 		return IDP_PROVIDER;
 	}
 	
+	public static AmazonCognitoIdentity getIdentityClient() {
+		if (IDENTITY_CLIENT == null) {
+			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+
+			IDENTITY_CLIENT = AmazonCognitoIdentityClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+		}
+		return IDENTITY_CLIENT;
+	}
+	
 	public static AdminGetUserResult getUser(String username) {
 		
 		AdminGetUserRequest adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(username);
 		
 		return getIdpProvider().adminGetUser(adminGetReq);
 	}
+	
+	public static GetCredentialsForIdentityResult getUserCredentials(String idToken) {
+
+		String identityId = "us-west-2:b2258174-23c3-41da-9418-cb3cb99aa14a";
+		
+		Map<String, String> logins = new HashMap<String, String>();
+		logins.put("cognito-idp.us-west-2.amazonaws.com/"+FacilioConstants.CognitoUserPool.getUserPoolId(), idToken);
+
+//		GetIdRequest idReq = new GetIdRequest()
+//				.withAccountId("665371858763")
+//				.withIdentityPoolId(FacilioConstants.CognitoUserPool.getIdentityPoolId())
+//				.withLogins(logins);
+//		
+//		GetIdResult result = client.getId(idReq);
+		
+		GetCredentialsForIdentityRequest req = new GetCredentialsForIdentityRequest()
+				.withIdentityId(identityId);
+		
+		GetCredentialsForIdentityResult result = getIdentityClient().getCredentialsForIdentity(req);
+		return result;
+	}	
 }

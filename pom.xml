@@ -142,6 +142,11 @@
 		    <artifactId>aws-java-sdk-cognitoidp</artifactId>
 		    <version>1.11.136</version>
 		</dependency>
+		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk-cognitoidentity</artifactId>
+		    <version>1.11.136</version>
+		</dependency>
 		<!-- Temp -->
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
