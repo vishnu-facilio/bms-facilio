@@ -35,4 +35,19 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
+	
+	public static Command getAddGroupCommand() {
+		Chain c = new ChainBase();
+		//c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new AddGroupCommand());
+		
+		return c;
+	}
+	
+	public static Command getUpdateGroupCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateGroupCommand());
+		
+		return c;
+	}
 }

@@ -18,7 +18,11 @@
 	    font-size: 13px;
 	}
 </style>
-
+<script>
+	$(document).ready(function() {
+		$(".fc-admin a").trigger( "click" );
+	});
+</script>
 <div id="maincontent" style="padding:20px;">
 	<div style="padding-bottom: 20px;width: 800px;">
 		<div style="float: left;font-size: 18px;padding-top: 3px;">Users :</div>

@@ -44,4 +44,24 @@
    	<put-attribute name="title" value="Edit User" />
    	<put-attribute name="body" value="/jsps/editUser.jsp" />
    </definition>
+   
+   <definition name="newGroup" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="New Group" />
+   	<put-attribute name="body" value="/jsps/groups/newGroup.jsp" />
+   </definition>
+   
+   <definition name="groupsList" template="/jsps/layouts/basiclayout.jsp">
+   		<put-attribute name="title" value="Groups" />
+   		<put-attribute name="body" value="/jsps/groups/groupsList.jsp" />
+   </definition>
+   
+   <definition name="viewGroup" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="View Group" />
+   	<put-attribute name="body" value="/jsps/groups/viewGroup.jsp" />
+   </definition>
+   
+   <definition name="editGroup" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="Edit Group" />
+   	<put-attribute name="body" value="/jsps/groups/editGroup.jsp" />
+   </definition>
 </tiles-definitions>  

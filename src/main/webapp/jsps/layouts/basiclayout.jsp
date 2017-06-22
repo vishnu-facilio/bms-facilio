@@ -145,10 +145,16 @@
 				          		<small class="label pull-right label-warning">12</small>
 				        	</a>
 				      	</li>
-				      	<li>
-				        	<a href="/home/users/">
-				          		<i class="fa fa-user"></i><span>Users</span>
+				      	<li class="treeview fc-admin">
+				      	  	<a href="#">
+				          		<i class="fa fa-wrench"></i>
+				        		<span>Administration</span>
+				          		<i class="fa fa-angle-left pull-right"></i>
 				        	</a>
+					        <ul class="treeview-menu">
+					          	<li class="admin-users"><a href="/home/users/"><i class="fa fa-circle-o"></i>Users</a></li>
+					          	<li class="admin-groups"><a href="/home/groups/"><i class="fa fa-circle-o"></i>Groups</a></li>
+					        </ul>
 				      	</li>
       					<li><a href="#"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
     				</ul>

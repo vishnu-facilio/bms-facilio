@@ -137,6 +137,59 @@
 		</action>
 	</package>
 	
+	<package name="groups" namespace="/home/groups" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.group.actions.NewGroupAction">
+			<result type="tiles">newGroup</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="includeProperties">groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="includeProperties">groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="status">deleted</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="" class="com.facilio.bmsconsole.group.actions.GroupListAction">
+			<result name="success" type="tiles">groupsList</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.group.actions.ViewGroupAction">
+			<param name="groupId">{1}</param>
+			<result name="success" type="tiles">viewGroup</result>
+		</action>
+		
+		<action name="edit" class="com.facilio.bmsconsole.group.actions.EditGroupAction">
+			<result name="success" type="tiles">editGroup</result>
+		</action>
+	</package>
+	
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>
 		<action name="addFromMail"
