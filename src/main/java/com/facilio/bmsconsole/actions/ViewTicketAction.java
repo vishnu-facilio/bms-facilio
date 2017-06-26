@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.util.TaskAPI;
 import com.facilio.bmsconsole.util.TicketApi;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -14,7 +17,8 @@ public class ViewTicketAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		TicketContext tc = TicketApi.getTicketDetails(getTicketId(), OrgInfo.getCurrentOrgInfo().getOrgid());
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		TicketContext tc = TicketApi.getTicketDetails(getTicketId(), orgId);
 		
 		if( tc != null) {
 			ticket = new HashMap<>();
@@ -22,6 +26,11 @@ public class ViewTicketAction extends ActionSupport {
 				if(!key.equals("connection")) {
 					ticket.put((String) key, tc.get(key));
 				}
+			}
+			
+			List<TaskContext> taskList = TaskAPI.getTasksOfTicket(orgId, ticketId);
+			if(taskList != null && taskList.size() > 0) {
+				this.tasks = taskList;
 			}
 		}
 		
@@ -34,6 +43,14 @@ public class ViewTicketAction extends ActionSupport {
 	}
 	public void setTicket(Map<String, Object> ticket) {
 		this.ticket = ticket;
+	}
+	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
 	}
 	
 	

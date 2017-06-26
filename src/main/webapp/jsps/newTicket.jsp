@@ -54,6 +54,7 @@
 			<a class="btn btn-default" href="<s:url action="" />" role="button">Cancel</a>
 		</div>
 	</div>
+	<s:textfield type="hidden" name="moduleName" value="%{moduleName}" />
 </s:form> 
 <script>
 	$(document).ready(function() {

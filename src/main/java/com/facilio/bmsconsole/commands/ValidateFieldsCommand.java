@@ -25,7 +25,7 @@ public class ValidateFieldsCommand implements Command {
 			if(ticketContext.getRequester() == null || ticketContext.getRequester().isEmpty()) {
 				throw new IllegalArgumentException("Requestor is invalid");
 			}
-
+			
 			if(ticketContext.getSubject() == null || ticketContext.getSubject().isEmpty()) {
 				throw new IllegalArgumentException("Subejct is invalid");
 			}
@@ -34,7 +34,7 @@ public class ValidateFieldsCommand implements Command {
 			}
 
 			if(ticketContext.getDescription() == null || ticketContext.getDescription().isEmpty()) {
-				throw new IllegalArgumentException("ORG ID is invalid");
+				throw new IllegalArgumentException("Description is invalid");
 			}
 			else {
 				ticketContext.setDescription(ticketContext.getDescription().trim());

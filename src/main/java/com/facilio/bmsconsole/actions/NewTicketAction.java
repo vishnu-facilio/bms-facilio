@@ -66,7 +66,7 @@ public class NewTicketAction extends ActionSupport {
 		assetList = AssetsAPI.getOrgAssets(orgId);
 		moduleName = CFUtil.getModuleName("Tickets_Objects", orgId);
 		
-		List<FacilioCustomField> cfs = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", moduleName, orgId);
+		List<FacilioCustomField> cfs = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", orgId);
 		
 		customFields = new ArrayList<>();
 		for(FacilioCustomField field : cfs) {

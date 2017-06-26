@@ -138,7 +138,7 @@ public class CFUtil {
 		}
 	}
 	
-	public static List<FacilioCustomField> getCustomFields(String objecTableName, String fieldTableName, String moduleName, long orgId) throws SQLException {
+	public static List<FacilioCustomField> getCustomFields(String objecTableName, String fieldTableName, long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -161,13 +161,10 @@ public class CFUtil {
 				.append(objecTableName)
 				.append(".OBJID WHERE ")
 				.append(objecTableName)
-				.append(".ORGID = ? AND ")
-				.append(objecTableName)
-				.append(".NAME = ?");
+				.append(".ORGID = ?");
 			
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setLong(1, orgId);
-			pstmt.setString(2, moduleName);
 			
 			rs = pstmt.executeQuery();
 			List<FacilioCustomField> fields = new ArrayList<>();
@@ -196,7 +193,7 @@ public class CFUtil {
 	}
 	
 	//ORGID and OBJID are added by default
-	public static String constuctInsertStatement(String objectTableName, String dataTableName, String moduleName, String[] defaultFields, List<FacilioCustomField> customFields, long orgId) {
+	public static String constuctInsertStatement(String objectTableName, String dataTableName, String[] defaultFields, List<FacilioCustomField> customFields, long orgId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ")
 			.append(dataTableName)
@@ -224,9 +221,7 @@ public class CFUtil {
 			.append(objectTableName)
 			.append(" WHERE ORGID = ")
 			.append(orgId)
-			.append(" AND NAME = '")
-			.append(moduleName)
-			.append("')");
+			.append(")");
 			
 		for(int i = 0; i < (defaultFieldsLength+customFieldsLength); i++) {
 			sql.append(", ?");
@@ -237,7 +232,7 @@ public class CFUtil {
 		return sql.toString();
 	}
 	
-	public static String constructSelectStatmenet(String objectTableName, String dataTableName, String moduleName, String[] defaultFields, List<FacilioCustomField> customFields, String[] whereFields, long orgId) {
+	public static String constructSelectStatement(String objectTableName, String dataTableName, String[] defaultFields, List<FacilioCustomField> customFields, String[] whereFields) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ")
 			.append(dataTableName)

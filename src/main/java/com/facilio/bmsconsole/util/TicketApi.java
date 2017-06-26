@@ -27,8 +27,8 @@ public class TicketApi {
 		ResultSet rs = null;
 		
 		try {
-			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", "Tickets", ticketContext.getOrgId());
-			String sql = CFUtil.constuctInsertStatement("Tickets_Objects", "Tickets_Data", "Tickets", DEFAULT_TICKET_FIELDS, customFields, ticketContext.getOrgId());
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", ticketContext.getOrgId());
+			String sql = CFUtil.constuctInsertStatement("Tickets_Objects", "Tickets_Data", DEFAULT_TICKET_FIELDS, customFields, ticketContext.getOrgId());
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -79,8 +79,8 @@ public class TicketApi {
 		ResultSet rs = null;
 		
 		try {
-			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", "Tickets", orgId);
-			String sql = CFUtil.constructSelectStatmenet("Tickets_Objects", "Tickets_Data", "Tickets", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID"}, orgId);
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", orgId);
+			String sql = CFUtil.constructSelectStatement("Tickets_Objects", "Tickets_Data", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID"});
 			
 			System.out.println(sql);
 			
@@ -99,6 +99,7 @@ public class TicketApi {
 			return tickets;
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {
@@ -112,12 +113,13 @@ public class TicketApi {
 		ResultSet rs = null;
 		
 		try {
-			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", "Tickets", orgId);
-			String sql = CFUtil.constructSelectStatmenet("Tickets_Objects", "Tickets_Data", "Tickets", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"TICKETID"}, orgId);
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", orgId);
+			String sql = CFUtil.constructSelectStatement("Tickets_Objects", "Tickets_Data", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID", "TICKETID"});
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setLong(1, ticketId);
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, ticketId);
 			
 			rs = pstmt.executeQuery();
 			TicketContext tc = null;
@@ -129,6 +131,7 @@ public class TicketApi {
 			return tc;
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {
