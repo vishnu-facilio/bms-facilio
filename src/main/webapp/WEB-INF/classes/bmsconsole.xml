@@ -16,6 +16,9 @@
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
 			</interceptor-stack>
 		</interceptors>
 
@@ -80,10 +83,6 @@
 		</action>
 		
 		<action name="addCF" class="com.facilio.bmsconsole.actions.AddCFAction">
-			<interceptor-ref name="defaultStack"/>
-         <interceptor-ref name="json">
-            <param name="enableSMD">true</param>
-        </interceptor-ref>
 			<result name="success" type="json">
 				<param name="includeProperties">fieldIds</param>
 			</result>
@@ -110,6 +109,33 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
 			<param name="ticketId">{1}</param>
 			<result name="success" type="tiles">viewTicket</result>
+		</action>
+	</package>
+	
+	<package name="tasks" namespace="/home/tasks" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.NewTaskAction">
+			<result type="tiles">newTask</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.AddTaskAction">
+			<result name="success" type="json">
+				<param name="includeProperties">taskId</param>
+			</result>
+		</action>
+		
+		<action name="addNote" class="com.facilio.bmsconsole.actions.TaskNotes" method="addNote">
+			<result name="success" type="json">
+				<param name="includeProperties">noteId</param>
+			</result>
+		</action>
+
+		<action name="" class="com.facilio.bmsconsole.actions.TaskListAction">
+			<result name="success" type="tiles">tasksList</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewTaskAction">
+			<param name="taskId">{1}</param>
+			<result name="success" type="tiles">viewTask</result>
 		</action>
 	</package>
 	

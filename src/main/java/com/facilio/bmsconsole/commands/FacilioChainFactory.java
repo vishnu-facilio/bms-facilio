@@ -75,5 +75,38 @@ public class FacilioChainFactory {
 				return false;
 			}
 		});
+	}	
+	
+	public static Chain getAddTaskChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateTasksFieldsCommand());
+		c.addCommand(new AddTaskScheduleCommand());
+		c.addCommand(new AddTaskCommand());
+		
+		return c;
+	}
+	
+	public static Chain getAddScheduleObjectChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateSchedulePropsCommand());
+		c.addCommand(new AddScheduleObjectCommand());
+		
+		return c;
+	}
+	
+	public static Chain getAddTaskNoteChain() {
+		Chain c = new ChainBase();
+		c.addCommand(getAddNoteChain());
+		c.addCommand(new AddTaskNoteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getAddNoteChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateNotePropsCommand());
+		c.addCommand(new AddNoteCommand());
+		
+		return c;
 	}
 }

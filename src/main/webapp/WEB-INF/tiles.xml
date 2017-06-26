@@ -25,6 +25,21 @@
    		<put-attribute name="body" value="/jsps/ticketsList.jsp" />
    </definition>
    
+   <definition name="newTask" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="New Task" />
+   	<put-attribute name="body" value="/jsps/newTask.jsp" />
+   </definition>
+   
+   <definition name="viewTask" template="/jsps/layouts/basiclayout.jsp">
+   	<put-attribute name="title" value="View Task" />
+   	<put-attribute name="body" value="/jsps/viewTask.jsp" />
+   </definition>
+   	
+   	<definition name="tasksList" template="/jsps/layouts/basiclayout.jsp">
+   		<put-attribute name="title" value="Tasks" />
+   		<put-attribute name="body" value="/jsps/tasksList.jsp" />
+   </definition>
+   
    <definition name="usersList" template="/jsps/layouts/basiclayout.jsp">
    		<put-attribute name="title" value="Users" />
    		<put-attribute name="body" value="/jsps/usersList.jsp" />
