@@ -25,6 +25,7 @@ public class AddTaskAction extends ActionSupport {
 		context.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		context.setParent(getParent());
 		context.setSubject(getSubject());
+		context.setAssignmentGroupId(getAssignmentGroup());
 		context.setAssignedToId(getAssignedTo());
 		context.setDescription(getDescription());
 		for(Map.Entry<String, String> entry : customFields.entrySet()) {
@@ -80,6 +81,14 @@ public class AddTaskAction extends ActionSupport {
  	public void setDescription(String description) {
  		this.description = description;
  	}
+ 	
+ 	private long assignmentGroup = 0;
+	public long getAssignmentGroup() {
+		return assignmentGroup;
+	}
+	public void setAssignmentGroup(long assignmentGroup) {
+		this.assignmentGroup = assignmentGroup;
+	}
  	
  	private long assignedTo;
 	public long getAssignedTo() {

@@ -18,6 +18,10 @@
 				    <s:textfield name="subject" id="inputSubject" class="form-control" placeholder="Batmobile is not working" />
 				</div>
 				<div class="form-group">
+				    <label>Assignement Group</label>
+				    <s:select class="form-control" list="assignmentGroupList" name="assignmentGroup" id="inputAssignmentGroup" headerKey="0" headerValue="--" />
+				</div>
+				<div class="form-group">
 				    <label>Assigned To</label>
 				    <s:select class="form-control" list="assignedToList" name="assignedTo" id="inputAssignedTo" headerKey="-1" headerValue="--" />
 				</div>
@@ -141,6 +145,38 @@
 		
 		$("#inputScheduleStart").on("change", updateEndTime);
 		$("#estimatedDuration input").on("change", updateEndTime);
+		
+		var updateSelect = function(selector, members) {
+			var $select = $(selector);
+			$select.find('option:gt(0)').remove();
+			for(var key in members) {
+				$select.append($("<option></option>").attr("value", key).text(members[key]));
+			}
+		}
+		
+		$("#inputAssignmentGroup").on("change", function() {
+			var groupId = $(this).val();
+			
+			if (groupId == 0) {
+				updateSelect("#inputAssignedTo", {});
+				$("#inputAssignedTo").attr("disabled",true);
+			}
+			else {
+				$.ajax({
+					method : "post",
+					url : "<s:url action='getGroupMembers' namespace='/home/groups' />",
+					data : {groupId : groupId}
+				})
+				.done(function(data) {
+					console.log(data);
+					updateSelect("#inputAssignedTo", data);
+					$("#inputAssignedTo").attr("disabled",false);
+				})
+				.fail(function(error) {
+					
+				});
+			}
+		});
 		
 	});
 </script>

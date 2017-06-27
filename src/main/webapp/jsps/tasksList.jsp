@@ -4,7 +4,7 @@
    <div class="col-lg-12">
        <h1 class="page-header">
        	Tasks
-       	<a href="#tasks/new" class="btn btn-outline btn-primary pull-right">
+       	<a href="javascript:void(0);" onclick="addTask();" class="btn btn-outline btn-primary pull-right">
        		<i class="fa fa-plus"></i>
        		New Task
        	</a>
@@ -51,8 +51,21 @@
 	</table>
   </div>
 </div>
+<div class="modal fade" id="newTaskModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+</div>
 <script>
 $('#tasks-list').DataTable({
     responsive: true
 });
+
+function addTask() {
+	$.ajax({
+	      type: "GET",
+	      url: contextPath + "/home/tasks/new",
+	      success: function (response) {
+	    	  $('#newTaskModel').html(response);
+	    	  $("#newTaskModel").modal("show");
+	      }
+	 });
+}
 </script>

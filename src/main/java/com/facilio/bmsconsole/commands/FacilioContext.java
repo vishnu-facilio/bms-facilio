@@ -36,4 +36,19 @@ public class FacilioContext extends ContextBase {
 		isConnectionOpen = false;
 	}
 
+	public void commit() throws Exception {
+  		if(!isAutoCommit){
+  			conn.commit();
+  		}
+  		cleanup();
+  	}
+  	
+  	public void rollback() throws Exception {
+  		if(!isAutoCommit){
+  			conn.rollback();
+  		}
+  		cleanup();
+  	}
 }
+
+
