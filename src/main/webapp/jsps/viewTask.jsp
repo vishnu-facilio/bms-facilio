@@ -35,56 +35,57 @@
 			</div>
 		</s:iterator>
 	</s:if>
-	<a class="btn btn-default" href="<s:url action="" />" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tasks</a>
+	<a class="btn btn-default" href="#tasks" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tasks</a>
 	<button class="btn btn-default" id="addNoteBtn" data-toggle="modal" data-target="#addNoteModal" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Note</button>
 </div>
-
-<div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add Note</h4>
-      </div>
-      <div class="modal-body row">
-	    <s:form id="addNote" action="" theme="simple" method="post">
-			<s:textfield type="hidden" name="taskId" value="%{taskId}" id="taskId" />
-			<div class="form-group">
-	    		<div class="col-sm-12">
-					<s:textarea style="resize : none" class="form-control" name="note" label="inputNote" rows="5" placeholder="Work Notes..." id="noteBody"/>
-				</div>
-			</div>
-		</s:form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="saveNoteBtn">Save</button>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+	        <div class="modal-header">
+	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	            <h4 class="modal-title" id="myModalLabel">Add Note</h4>
+	        </div>
+	        <div class="modal-body">
+	        	<form role="form" id="addNoteForm" method="post" onsubmit="return false;">
+	        		<s:textfield type="hidden" name="taskId" value="%{taskId}" id="taskId" />
+					<div class="form-group">
+					    <textarea style="resize:none" class="form-control" name="note" rows="5" placeholder="Work Notes..." id="noteBody"></textarea>
+					</div>
+				</form>
+	        </div>
+	        <div class="modal-footer">
+	            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	            <button type="submit" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" onclick="saveNote(this);" class="btn btn-primary">Save</button>
+	        </div>
+	    </div>
+	    <!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
 </div>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script>
-	 $(document).ready(function() {
-		$("#saveNoteBtn").click(function() {
-			var noteBody = $("#noteBody").val();
-			var noteTitle = "test";
-			var taskId = $("#taskId").val();
+	function saveNote(btn) {
+		var noteBody = $("#noteBody").val();
+		var noteTitle = "test";
+		var taskId = $("#taskId").val();
+		
+		$(btn).button('loading');
+		
+		$.ajax({
+			method : "post",
+			url : contextPath + "/home/tasks/addNote",
+			data : {body : noteBody, title : noteTitle, taskId : taskId}
+		})
+		.done(function(data) {
+			$('#addNoteModal').modal('hide');
+			FacilioApp.notifyMessage('success', 'Note added successfully!');
 			
-			$.ajax({
-				method : "post",
-				url : "<s:url action='addNote' />",
-				data : {body : noteBody, title : noteTitle, taskId : taskId}
-			})
-			.done(function(data) {
-				console.log(data);
-				$("#addNoteModal").modal('toggle');
-				window.location.reload();
-			})
-			.fail(function(error) {
-				
-			});
-			
+			setTimeout(function() {
+				FacilioApp.refreshView();
+            }, 500);
+		})
+		.fail(function(error) {
+			$(btn).button('reset');
+			alert(JSON.stringify(error.responseJSON.fieldErrors));
 		});
-	}); 
+	}
 </script> 

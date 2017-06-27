@@ -203,7 +203,7 @@ img {
 		
 		$.ajax({
 		      type: "GET",
-		      url: "/home/users/new",
+		      url: contextPath + "/home/users/new",
 		      success: function (response) {
 		    	  $('#newUserModel .modal-body').html(response);
 		      }
@@ -215,7 +215,7 @@ img {
 		
 		$.ajax({
 			method : "post",
-			url : "/home/users/save",
+			url : contextPath + "/home/users/save",
 			data : $("#newUserForm").serialize()
 		})
 		.done(function(data) {
@@ -240,7 +240,7 @@ img {
 		
 		$.ajax({
 		      type: "GET",
-		      url: "/home/users/edit?id="+userId,
+		      url: contextPath + "/home/users/edit?id="+userId,
 		      success: function (response) {
 		    	  $('#editUserModel .modal-body').html(response);
 		      }
@@ -252,7 +252,7 @@ img {
 		
 		$.ajax({
 			method : "post",
-			url : "/home/users/update",
+			url : contextPath + "/home/users/update",
 			data : $("#editUserForm").serialize()
 		})
 		.done(function(data) {
@@ -293,7 +293,7 @@ img {
 			$(btn).button('loading');
 			$.ajax({
 				method : "post",
-				url : "/home/users/resetpassword",
+				url : contextPath + "/home/users/resetpassword",
 				data : $("#resetPassForm").serialize()
 			})
 			.done(function(data) {

@@ -126,7 +126,7 @@
 		
 		$.ajax({
 			method : "post",
-			url : "/home/addDevice",
+			url : contextPath + "/home/addDevice",
 			data : $(form).serialize()
 		})
 		.done(function(data) {
@@ -155,7 +155,7 @@
 		dataObject.deviceId = deviceId;
 		$.ajax({
 		      type: "POST",
-		      url: "/bms/home/enableDeviceMonitoring",   
+		      url: contextPath + "/bms/home/enableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring enabled successfully!');
@@ -175,7 +175,7 @@
 		dataObject.deviceId = deviceId;
 		$.ajax({
 		      type: "POST",
-		      url: "/bms/home/disableDeviceMonitoring",   
+		      url: contextPath + "/bms/home/disableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring disabled successfully!');

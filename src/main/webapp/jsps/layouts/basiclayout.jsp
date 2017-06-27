@@ -72,6 +72,9 @@
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
 		<script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 		<script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>
+		<script>
+			var contextPath = "${pageContext.request.contextPath}";
+		</script>
 </head>
 <body>
 	<div id="wrapper">

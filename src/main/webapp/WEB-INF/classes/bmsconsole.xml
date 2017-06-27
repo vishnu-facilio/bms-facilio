@@ -83,6 +83,10 @@
 	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketListAction">
 		<result name="success">/jsps/ticketsList.jsp</result>
 	</action>
+	
+	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskListAction">
+		<result name="success">/jsps/tasksList.jsp</result>
+	</action>
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
@@ -122,7 +126,7 @@
 	
 	<package name="tasks" namespace="/home/tasks" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.NewTaskAction">
-			<result type="tiles">newTask</result>
+			<result name="success">/jsps/newTask.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.AddTaskAction">
@@ -137,13 +141,9 @@
 			</result>
 		</action>
 
-		<action name="" class="com.facilio.bmsconsole.actions.TaskListAction">
-			<result name="success" type="tiles">tasksList</result>
-		</action>
-
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewTaskAction">
 			<param name="taskId">{1}</param>
-			<result name="success" type="tiles">viewTask</result>
+			<result name="success">/jsps/viewTask.jsp</result>
 		</action>
 	</package>
 	

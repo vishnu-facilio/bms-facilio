@@ -64,7 +64,7 @@
                         <a href="#">Tasks <span class="fa arrow"></span></a>
                         <ul class="nav nav-third-level">
                             <li>
-                                <a href="#">All Tasks</a>
+                                <a href="#tasks">All Tasks</a>
                             </li>
                             <li>
                                 <a href="#">My Tasks</a>

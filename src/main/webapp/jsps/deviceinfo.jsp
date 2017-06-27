@@ -10,7 +10,7 @@
 <div class="row">
    <div class="col-lg-12">
        <h4>Device Tree</h4>
-       <f:chart id="eb-meter" type="tree-collapsible" width="600" height="150" url="/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
+       <f:chart id="eb-meter" type="tree-collapsible" width="600" height="150" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
    </div>
    <!-- /.col-lg-12 -->
 </div>
@@ -94,7 +94,7 @@
 		dataObject.deviceId = $(el).attr('device-id');
 		$.ajax({
 		      type: "POST",
-		      url: "/home/showConfigureDevice",   
+		      url: contextPath + "/home/showConfigureDevice",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  $('#configureDeviceModel .modal-body').html(response);
@@ -117,7 +117,7 @@
 		dataObject.data = JSON.stringify(json);
 		$.ajax({
 			type : "POST",
-			url : "/home/configureDevice",
+			url : contextPath + "/home/configureDevice",
 			data : dataObject,
 			success : function(response) {
 				$('#newDeviceModel').modal('hide');
@@ -136,7 +136,7 @@
 		dataObject.controllerId = controllerId;
 		$.ajax({
 		      type: "GET",
-		      url: "/home/showDeviceData",   
+		      url: contextPath + "/home/showDeviceData",   
 		      data: dataObject,
 		      success: function (response) {
 		    	console.log(response);

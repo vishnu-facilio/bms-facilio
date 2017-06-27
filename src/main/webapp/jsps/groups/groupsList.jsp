@@ -179,7 +179,7 @@ img {
 		
 		$.ajax({
 		      type: "GET",
-		      url: "/home/groups/new",
+		      url: contextPath + "/home/groups/new",
 		      success: function (response) {
 		    	  $('#newGroupModel .modal-body').html(response);
 		      }
@@ -191,7 +191,7 @@ img {
 		
 		$.ajax({
 			method : "post",
-			url : "/home/groups/save",
+			url : contextPath + "/home/groups/save",
 			data : $("#newGroupForm").serialize()
 		})
 		.done(function(data) {
@@ -216,7 +216,7 @@ img {
 		
 		$.ajax({
 		      type: "GET",
-		      url: "/home/groups/edit?id="+groupId,
+		      url: contextPath + "/home/groups/edit?id="+groupId,
 		      success: function (response) {
 		    	  $('#editGroupModel .modal-body').html(response);
 		      }
@@ -228,7 +228,7 @@ img {
 		
 		$.ajax({
 			method : "post",
-			url : "/home/groups/update",
+			url : contextPath + "/home/groups/update",
 			data : $("#editGroupForm").serialize()
 		})
 		.done(function(data) {
@@ -261,7 +261,7 @@ img {
 		var grp_obj = {'groupId': groupId};
 		$.ajax({
 			method : "post",
-			url : "/home/groups/delete",
+			url : contextPath + "/home/groups/delete",
 			data : grp_obj
 		})
 		.done(function(data) {

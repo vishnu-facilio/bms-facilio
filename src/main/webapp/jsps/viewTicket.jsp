@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s" %>
-<h3><s:property value="ticket.subject" /></h3>  
+<h3><s:property value="ticket.subject" /></h3>
+<input type="hidden" name="ticketId" value="<s:property value="ticket.ticketId" />"/>  
 <table class="table">
 	<%-- <tr>
 		<td class="info">Requester</td>
@@ -54,7 +55,7 @@
 			<s:iterator value="tasks">
 				<tr>
 					<td><s:property value="taskId" /></td>
-					<td><a href="${pageContext.request.contextPath}/home/tasks/<s:property value='taskId' />"><s:property value="subject" /></a></td>
+					<td><a href="#tasks/<s:property value='taskId' />"><s:property value="subject" /></a></td>
 				</tr>
 			</s:iterator>
 		</tbody>
@@ -63,15 +64,21 @@
 
 <a class="btn btn-default" href="#tickets" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tickets</a>
 <button class="btn btn-default" id="addTaskBtn" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Task</button>
-<s:form id="addTask" action="/home/tasks/new" theme="simple" method="post">
-	<s:textfield type="hidden" name="ticketId" value="%{ticketId}" />
-</s:form>
-
+<div class="modal fade" id="newTaskModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+</div>
 <script>
 	$(document).ready(function() {
 		$("#addTaskBtn").click(function() {
-			console.log("test");
-			$("#addTask").submit();
+			
+			var ticketId = $('input[name=ticketId]').val();
+			$.ajax({
+			      type: "GET",
+			      url: contextPath + "/home/tasks/new?ticketId="+ticketId,
+			      success: function (response) {
+			    	  $('#newTaskModel').html(response);
+			    	  $("#newTaskModel").modal("show");
+			      }
+			 });
 		});
 	});
 </script> 

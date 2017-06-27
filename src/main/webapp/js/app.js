@@ -19,7 +19,7 @@ FacilioApp = {
 		var module = location.hash.slice(1);
 		if(module != "")
 		{	
-			var url = '/home/' + module;
+			var url = contextPath + '/home/' + module;
 			$('#page-wrapper').load(url);
 		}
 	},
