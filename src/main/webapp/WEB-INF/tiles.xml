@@ -9,21 +9,6 @@
    <put-attribute name="title" value="Welcome Page"/>   
    <put-attribute name="body" value="/jsps/index.jsp"/>   
    </definition>  
-   
-   <definition name="newTicket" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="New Ticket" />
-   	<put-attribute name="body" value="/jsps/newTicket.jsp" />
-   </definition>
-   
-   <definition name="viewTicket" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="View Ticket" />
-   	<put-attribute name="body" value="/jsps/viewTicket.jsp" />
-   </definition>
-   	
-   	<definition name="ticketsList" template="/jsps/layouts/basiclayout.jsp">
-   		<put-attribute name="title" value="Tickets" />
-   		<put-attribute name="body" value="/jsps/ticketsList.jsp" />
-   </definition>
 
    <definition name="newCF" template="/jsps/layouts/basiclayout.jsp">
    		<put-attribute name="title" value="New Custom Fields" />

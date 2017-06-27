@@ -80,6 +80,9 @@
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>
 
+	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketListAction">
+		<result name="success">/jsps/ticketsList.jsp</result>
+	</action>
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
@@ -101,9 +104,8 @@
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">
-			<result type="tiles">newTicket</result>
+			<result name="success">/jsps/newTicket.jsp</result>
 			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
-		
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.AddTicketAction">
@@ -112,13 +114,9 @@
 			</result>
 		</action>
 
-		<action name="" class="com.facilio.bmsconsole.actions.TicketListAction">
-			<result name="success" type="tiles">ticketsList</result>
-		</action>
-
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
 			<param name="ticketId">{1}</param>
-			<result name="success" type="tiles">viewTicket</result>
+			<result name="success">/jsps/viewTicket.jsp</result>
 		</action>
 	</package>
 	

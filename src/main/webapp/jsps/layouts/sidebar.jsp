@@ -40,7 +40,7 @@
                         <a href="#">Requests <span class="fa arrow"></span></a>
                         <ul class="nav nav-third-level">
                             <li>
-                                <a href="#">All Requests</a>
+                                <a href="#tickets">All Requests</a>
                             </li>
                             <li>
                                 <a href="#">All Open Requests</a>

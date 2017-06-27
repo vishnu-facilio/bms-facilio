@@ -61,7 +61,7 @@
 	</table>
 </s:if>
 
-<a class="btn btn-default" href="<s:url action="" />" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tickets</a>
+<a class="btn btn-default" href="#tickets" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Tickets</a>
 <button class="btn btn-default" id="addTaskBtn" role="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Task</button>
 <s:form id="addTask" action="/home/tasks/new" theme="simple" method="post">
 	<s:textfield type="hidden" name="ticketId" value="%{ticketId}" />
