@@ -90,14 +90,14 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Groups WHERE ORGID = ? ORDER BY GROUP_NAME");
+			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 LEFT JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.ORGID = ? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
 			pstmt.setLong(1, orgId);
 			
 			List<GroupContext> groups = new ArrayList<>();
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				GroupContext gc = getGroupObjectFromRS(rs);
+				GroupContext gc = getGroupObjectFromRS(rs, true);
 				groups.add(gc);
 			}
 			
@@ -118,7 +118,7 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Groups WHERE ORGID = ? AND IS_ACTIVE ORDER BY GROUP_NAME");
+			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 LEFT JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.ORGID = ? AND t1.IS_ACTIVE=? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
 			pstmt.setLong(1, orgId);
 			pstmt.setBoolean(2, isActive);
 			
@@ -126,7 +126,7 @@ public class GroupAPI {
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				GroupContext gc = getGroupObjectFromRS(rs);
+				GroupContext gc = getGroupObjectFromRS(rs, true);
 				groups.add(gc);
 			}
 			
@@ -147,13 +147,13 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Groups WHERE GROUPID = ?");
+			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 LEFT JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.ORGID = ? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
 			pstmt.setLong(1, groupId);
 			
 			rs = pstmt.executeQuery();
 			GroupContext gc = null;
 			while(rs.next()) {
-				gc = getGroupObjectFromRS(rs);
+				gc = getGroupObjectFromRS(rs, true);
 				break;
 			}
 			
@@ -190,7 +190,7 @@ public class GroupAPI {
 		}
 	}
 	
-	private static GroupContext getGroupObjectFromRS(ResultSet rs) throws SQLException {
+	private static GroupContext getGroupObjectFromRS(ResultSet rs, boolean withMembersCount) throws SQLException {
 		GroupContext tc = new GroupContext();
 		tc.setGroupId(rs.getLong("GROUPID"));
 		tc.setOrgId(rs.getLong("ORGID"));
@@ -201,6 +201,9 @@ public class GroupAPI {
 		tc.setCreatedTime(rs.getLong("CREATED_TIME"));
 		tc.setCreatedBy(rs.getLong("CREATED_BY"));
 		tc.setParent(rs.getLong("PARENT"));
+		if (withMembersCount) {
+			tc.setMembersCount(rs.getInt("MEMBERS_COUNT"));
+		}
 		return tc;
 	}
 	

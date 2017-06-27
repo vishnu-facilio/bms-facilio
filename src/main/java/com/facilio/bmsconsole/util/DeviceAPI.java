@@ -161,6 +161,40 @@ public class DeviceAPI
 		return deviceList;
 	}
 	
+	public static Map<String, Object> getControllerInfo(long controllerId) throws SQLException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try 
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Controller LEFT JOIN Assets ON Controller.CONTROLLER_ID = Assets.ASSETID WHERE ASSETID = ?");
+			pstmt.setLong(1, controllerId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) 
+			{
+				Map<String, Object> devices = new HashMap<>();
+				devices.put("id", rs.getString("ASSETID"));
+				devices.put("name", rs.getString("NAME"));
+				devices.put("polltime", rs.getString("POLL_TIME"));
+				devices.put("type", rs.getInt("CONTROLLER_TYPE"));
+				devices.put("status", rs.getBoolean("JOB_STATUS"));
+				return devices;
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void discoverDevices(Long controllerId, Long orgId) throws Exception
 	{

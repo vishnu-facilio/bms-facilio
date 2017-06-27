@@ -19,8 +19,7 @@
 	}
 </style>
 <div style="padding:15px 0">
-	<a class="btn btn-default" href="<s:url action="" />" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Groups</a>
-	<a class="btn btn-default" href="edit?id=<s:property value="group.groupId" />" role="button"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a>
+	<a class="btn btn-default" href="#groups" role="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back To Groups</a>
 </div>
 <table class="table">
 	<tr>

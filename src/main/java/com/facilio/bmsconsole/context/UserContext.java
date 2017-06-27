@@ -46,6 +46,8 @@ public class UserContext extends FacilioContext {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+		this.name = this.email.substring(0, email.indexOf("@"));
+		this.name = this.name.substring(0, 1).toUpperCase() + this.name.substring(1);
 	}
 	
 	private String password;
@@ -67,7 +69,7 @@ public class UserContext extends FacilioContext {
 	public String getInvitedTimeStr() {
 		long time = this.invitedTime * 1000;
 		
-		SimpleDateFormat sd = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		SimpleDateFormat sd = new SimpleDateFormat("MMM dd, yyyy");
 		return sd.format(new Date(time));
 	}
 	

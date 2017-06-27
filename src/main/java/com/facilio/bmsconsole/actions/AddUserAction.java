@@ -20,7 +20,7 @@ public class AddUserAction extends ActionSupport {
 		UserContext context = new UserContext();
 		
 		Command cmd = null;
-		if ("add".equalsIgnoreCase(actionName)) {
+		if ("save".equalsIgnoreCase(actionName)) {
 			cmd = FacilioChainFactory.getAddUserCommand();
 			
 			context.setName(getName());
@@ -37,6 +37,12 @@ public class AddUserAction extends ActionSupport {
 			context = UserAPI.getUser(getUserId());
 			context.setInviteAcceptStatus(getStatus());
 			context.setRole(getRole());
+		}
+		else if ("resetpassword".equalsIgnoreCase(actionName)) {
+			
+		}
+		else if ("delete".equalsIgnoreCase(actionName)) {
+			
 		}
 		
 		try {

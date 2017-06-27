@@ -23,7 +23,7 @@ public class AddGroupAction extends ActionSupport {
 		long curUserId = UserAPI.getUser(curUser).getUserId();
 		
 		Command cmd = null;
-		if ("add".equalsIgnoreCase(actionName)) {
+		if ("save".equalsIgnoreCase(actionName)) {
 			cmd = FacilioChainFactory.getAddGroupCommand();
 			
 			context.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());

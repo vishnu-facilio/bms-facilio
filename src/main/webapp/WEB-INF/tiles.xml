@@ -24,44 +24,4 @@
    		<put-attribute name="title" value="Tickets" />
    		<put-attribute name="body" value="/jsps/ticketsList.jsp" />
    </definition>
-   
-   <definition name="usersList" template="/jsps/layouts/basiclayout.jsp">
-   		<put-attribute name="title" value="Users" />
-   		<put-attribute name="body" value="/jsps/usersList.jsp" />
-   </definition>
-   
-   <definition name="inviteUser" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="Invite User" />
-   	<put-attribute name="body" value="/jsps/inviteUser.jsp" />
-   </definition>
-   
-   <definition name="viewUser" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="View User" />
-   	<put-attribute name="body" value="/jsps/viewUser.jsp" />
-   </definition>
-   
-   <definition name="editUser" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="Edit User" />
-   	<put-attribute name="body" value="/jsps/editUser.jsp" />
-   </definition>
-   
-   <definition name="newGroup" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="New Group" />
-   	<put-attribute name="body" value="/jsps/groups/newGroup.jsp" />
-   </definition>
-   
-   <definition name="groupsList" template="/jsps/layouts/basiclayout.jsp">
-   		<put-attribute name="title" value="Groups" />
-   		<put-attribute name="body" value="/jsps/groups/groupsList.jsp" />
-   </definition>
-   
-   <definition name="viewGroup" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="View Group" />
-   	<put-attribute name="body" value="/jsps/groups/viewGroup.jsp" />
-   </definition>
-   
-   <definition name="editGroup" template="/jsps/layouts/basiclayout.jsp">
-   	<put-attribute name="title" value="Edit Group" />
-   	<put-attribute name="body" value="/jsps/groups/editGroup.jsp" />
-   </definition>
 </tiles-definitions>  

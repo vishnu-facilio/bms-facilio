@@ -11,8 +11,11 @@ import com.amazonaws.services.cognitoidentity.model.GetIdRequest;
 import com.amazonaws.services.cognitoidentity.model.GetIdResult;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
+import com.amazonaws.services.cognitoidp.model.AdminCreateUserRequest;
+import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
 import com.amazonaws.services.cognitoidp.model.AdminGetUserRequest;
 import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
+import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 
@@ -39,6 +42,18 @@ public class CognitoUtil {
 		}
 		return IDENTITY_CLIENT;
 	}
+	
+//	public static void createUser(String email, boolean emailVerified, ) {
+//		AdminCreateUserRequest createUserReq = new AdminCreateUserRequest()
+//				.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
+//				.withUsername(context.getEmail())
+//				.withUserAttributes(new AttributeType().withName("email").withValue(context.getEmail()), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("name").withValue(context.getName()), new AttributeType().withName("custom:orgName").withValue(orgName))
+//				.withDesiredDeliveryMediums("EMAIL")
+//				.withTemporaryPassword(context.getPassword());
+//
+//		System.out.println("Create user request: "+createUserReq);
+//		AdminCreateUserResult result = idpProvider.adminCreateUser(createUserReq);
+//	}
 	
 	public static AdminGetUserResult getUser(String username) {
 		

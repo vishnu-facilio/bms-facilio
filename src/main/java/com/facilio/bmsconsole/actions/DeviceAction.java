@@ -59,11 +59,11 @@ public class DeviceAction extends ActionSupport
 	public void add()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String name = request.getParameter("name");
-		String type = request.getParameter("type");
-		String datasource = request.getParameter("datasource");
-		String publicip = request.getParameter("publicip");
-		int polltime = Integer.parseInt(request.getParameter("polltime"));
+		String name = request.getParameter("deviceName");
+		String type = request.getParameter("deviceType");
+		String datasource = request.getParameter("dataSource");
+		String publicip = request.getParameter("publicIp");
+		int polltime = Integer.parseInt(request.getParameter("pollTime"));
 		
 		try 
 		{
@@ -110,6 +110,34 @@ public class DeviceAction extends ActionSupport
 		{
 			logger.log(Level.SEVERE, "Exception while disableDeviceMonitoring" +e.getMessage(), e);
 		}
+	}
+	
+	public String showDeviceInfo() {
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String reqURI = request.getRequestURI();
+		String deviceId = reqURI.substring(reqURI.lastIndexOf("/")+1);
+		
+		try {
+			long controllerId = Long.parseLong(deviceId);
+			
+			ValueStack stack = ActionContext.getContext().getValueStack();
+		    Map<String, Object> context = new HashMap<String, Object>();
+
+		    Map<String, Object> controllerInfo = DeviceAPI.getControllerInfo(controllerId);
+		    
+		    request.setAttribute("CONTROLLER_ID", controllerId);
+		    context.put("CONTROLLER_ID", controllerId);
+		    context.put("CONTROLLER_INFO", controllerInfo);
+		    context.put("DEVICES", DeviceAPI.getDevices(controllerId));
+		    stack.push(context);
+		} 
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while showing device details" +e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
 	}
 	
 	public void showDeviceData()

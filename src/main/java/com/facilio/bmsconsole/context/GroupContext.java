@@ -70,7 +70,7 @@ public class GroupContext extends FacilioContext {
 		return createdTime;
 	}
 	public String getFormattedCreatedTime() {
-		SimpleDateFormat sd = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		SimpleDateFormat sd = new SimpleDateFormat("MMM dd, yyyy");
 		return sd.format(new Date(createdTime));
 	}
 	public void setCreatedTime(long createdTime) {
@@ -94,5 +94,13 @@ public class GroupContext extends FacilioContext {
 	}
 	public void setParent(long parent) {
 		this.parent = parent;
+	}
+	
+	private int membersCount;
+	public int getMembersCount() {
+		return membersCount;
+	}
+	public void setMembersCount(int membersCount) {
+		this.membersCount = membersCount;
 	}
 }
