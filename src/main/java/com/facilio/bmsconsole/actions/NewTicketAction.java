@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.customfields.CFUtil;
 import com.facilio.bmsconsole.customfields.FacilioCustomField;
@@ -14,7 +15,23 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewTicketAction extends ActionSupport {
+	public ActionForm getForm() {
+		return form;
+	}
+	public void setForm(ActionForm form) {
+		this.form = form;
+	}
 	
+	public String getLocationcode() {
+		return locationcode;
+	}
+	public void setLocationcode(String locationcode) {
+		this.locationcode = locationcode;
+	}
+
+	private String locationcode = null;
+
+	private ActionForm form = new ActionForm();
 	private Map<Integer, String> statusList;
 	public Map<Integer, String> getStatusList() {
 		return statusList;
@@ -57,7 +74,6 @@ public class NewTicketAction extends ActionSupport {
 	
 	@Override
 	public String execute() throws Exception {
-		
 		statusList = TicketContext.getAllStatus();
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
