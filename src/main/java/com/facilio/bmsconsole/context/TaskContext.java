@@ -44,6 +44,14 @@ public class TaskContext extends FacilioContext {
 		this.description = description;
 	}
 	
+	private long assignmentGroupId = 0;
+	public long getAssignmentGroupId() {
+		return assignmentGroupId;
+	}
+	public void setAssignmentGroupId(long assignmentGroupId) {
+		this.assignmentGroupId = assignmentGroupId;
+	}
+	
 	private long assignedToId = 0;
 	public long getAssignedToId() {
 		return assignedToId;

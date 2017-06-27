@@ -233,6 +233,16 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		
+		<action name="getGroupMembers" class="com.facilio.bmsconsole.group.actions.GetGroupMembersAction">
+			<result name="success" type="json">
+				<param name="root">members</param>
+			</result>
+		</action>
+		
+		<action name="" class="com.facilio.bmsconsole.group.actions.GroupListAction">
+			<result name="success" type="tiles">groupsList</result>
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.group.actions.ViewGroupAction">
 			<param name="groupId">{1}</param>

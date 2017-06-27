@@ -19,11 +19,18 @@
 	</div>
 	
 	<div class="form-group">
+  		<label for="inputAssignmentGroup" class="col-sm-2 control-label">Assignement Group</label>
+	    	<div class="col-sm-10">
+				<s:select class="form-control" list="assignmentGroupList" name="assignmentGroup" id="inputAssignmentGroup" headerKey="0" headerValue="--" />
+			</div>
+	</div>
+	
+	<div class="form-group">
   		<label for="inputAssignedTo" class="col-sm-2 control-label">Assigned To</label>
 	    	<div class="col-sm-10">
-				<s:select class="form-control" list="assignedToList" name="assignedTo" id="inputAssignedTo" headerKey="-1" headerValue="--" />
+				<s:select class="form-control" list="assignedToList" name="assignedTo" id="inputAssignedTo" headerKey="0" headerValue="--" disabled="true"/>
 			</div>
-	</div>	
+	</div> 	
 
 	<s:iterator var="customFieldName" value="customFieldNames">
 	<div class="form-group">
@@ -150,6 +157,38 @@
 		
 		$("#inputScheduleStart").on("change", updateEndTime);
 		$("#estimatedDuration input").on("change", updateEndTime);
+		
+		var updateSelect = function(selector, members) {
+			var $select = $(selector);
+			$select.find('option:gt(0)').remove();
+			for(var key in members) {
+				$select.append($("<option></option>").attr("value", key).text(members[key]));
+			}
+		}
+		
+		$("#inputAssignmentGroup").on("change", function() {
+			var groupId = $(this).val();
+			
+			if (groupId == 0) {
+				updateSelect("#inputAssignedTo", {});
+				$("#inputAssignedTo").attr("disabled",true);
+			}
+			else {
+				$.ajax({
+					method : "post",
+					url : "<s:url action='getGroupMembers' namespace='/home/groups' />",
+					data : {groupId : groupId}
+				})
+				.done(function(data) {
+					console.log(data);
+					updateSelect("#inputAssignedTo", data);
+					$("#inputAssignedTo").attr("disabled",false);
+				})
+				.fail(function(error) {
+					
+				});
+			}
+		});
 		
 	});
 </script>

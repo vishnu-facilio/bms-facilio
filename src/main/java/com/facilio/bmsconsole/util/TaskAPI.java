@@ -18,7 +18,8 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class TaskAPI {
 	
-	private static final String[] DEFAULT_TASK_FIELDS = new String[] {"PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
+	private static final String[] DEFAULT_INSERT_TASK_FIELDS = new String[] {"PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
+	private static final String[] DEFAULT_SELECT_TASK_FIELDS = new String[] {"TASKID",  "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
 	
 	public static long addTask(TaskContext context) throws SQLException {
 		Connection conn = null;
@@ -28,7 +29,7 @@ public class TaskAPI {
 		try {
 			
 			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tasks_Objects", "Tasks_Fields", context.getOrgId());
-			String sql = CFUtil.constuctInsertStatement("Tasks_Objects", "Tasks_Data", DEFAULT_TASK_FIELDS, customFields, context.getOrgId());
+			String sql = CFUtil.constuctInsertStatement("Tasks_Objects", "Tasks_Data", DEFAULT_INSERT_TASK_FIELDS, customFields, context.getOrgId());
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -37,21 +38,28 @@ public class TaskAPI {
 			pstmt.setString(2, context.getSubject());
 			pstmt.setString(3, context.getDescription());
 			
-			if(context.getAssignedToId() != 0) {
-				pstmt.setLong(4, context.getAssignedToId());
+			if(context.getAssignmentGroupId() != 0) {
+				pstmt.setLong(4, context.getAssignmentGroupId());
 			}
 			else {
 				pstmt.setNull(4, Types.BIGINT);
 			}
 			
-			if(context.getScheduleId() != 0) {
-				pstmt.setLong(5, context.getScheduleId());
+			if(context.getAssignedToId() != 0) {
+				pstmt.setLong(5, context.getAssignedToId());
 			}
 			else {
 				pstmt.setNull(5, Types.BIGINT);
 			}
 			
-			CFUtil.appendCustomFieldValues(customFields, DEFAULT_TASK_FIELDS.length, context, pstmt);
+			if(context.getScheduleId() != 0) {
+				pstmt.setLong(6, context.getScheduleId());
+			}
+			else {
+				pstmt.setNull(6, Types.BIGINT);
+			}
+			
+			CFUtil.appendCustomFieldValues(customFields, DEFAULT_INSERT_TASK_FIELDS.length, context, pstmt);
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add task");
@@ -81,7 +89,7 @@ public class TaskAPI {
 		
 		try {
 			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tasks_Objects", "Tasks_Fields", orgId);
-			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", new String[] {"TASKID",  "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNED_TO_ID", "SCHEDULE_ID"}, customFields, new String[] {"ORGID", "PARENT"});
+			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", DEFAULT_SELECT_TASK_FIELDS, customFields, new String[] {"ORGID", "PARENT"});
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql+" ORDER BY SUBJECT");
@@ -146,7 +154,7 @@ public class TaskAPI {
 		
 		try {
 			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tasks_Objects", "Tasks_Fields", orgId);
-			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", new String[] {"TASKID",  "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNED_TO_ID", "SCHEDULE_ID"}, customFields, new String[] {"ORGID"});
+			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", DEFAULT_SELECT_TASK_FIELDS, customFields, new String[] {"ORGID"});
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql+" ORDER BY SUBJECT");
@@ -178,7 +186,7 @@ public class TaskAPI {
 		
 		try {
 			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tasks_Objects", "Tasks_Fields", orgId);
-			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", new String[] {"TASKID",  "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNED_TO_ID", "SCHEDULE_ID"}, customFields, new String[] {"ORGID", "TASKID"});
+			String sql = CFUtil.constructSelectStatement("Tasks_Objects", "Tasks_Data", DEFAULT_SELECT_TASK_FIELDS, customFields, new String[] {"ORGID", "TASKID"});
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(sql);
@@ -210,6 +218,7 @@ public class TaskAPI {
 		tc.setParent(rs.getLong("PARENT"));
 		tc.setSubject(rs.getString("SUBJECT"));
 		tc.setDescription(rs.getString("DESCRIPTION"));
+		tc.setAssignmentGroupId(rs.getLong("ASSIGNMENT_GROUP_ID"));
 		tc.setAssignedToId(rs.getLong("ASSIGNED_TO_ID"));
 		tc.setScheduleId(rs.getLong("SCHEDULE_ID"));
 		
