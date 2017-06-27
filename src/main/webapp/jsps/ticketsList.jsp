@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s"%>
 <div style="width : 100%; height : 100%; margin : 0; padding: 0; overflow : auto;">
-	<h3>All Tickets</h3>
+	<h3>All <s:property value='moduleName' /></h3>
 	<s:iterator value="tickets">
 		<%-- <a href="tickets/<s:property value='ticketId' />"
 			class="list-group-item"> <span class="badge">14</span>

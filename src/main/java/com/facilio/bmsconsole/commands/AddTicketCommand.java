@@ -16,7 +16,7 @@ public class AddTicketCommand implements Command {
 		long ticketId = TicketApi.addTicket(ticketContext);
 		ticketContext.setTicketId(ticketId);
 		
-		return true;
+		return false;
 	}
 
 }

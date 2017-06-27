@@ -1,7 +1,5 @@
 package com.facilio.listener;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,13 +9,13 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
+
+import com.facilio.bmsconsole.customfields.CFType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
-import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
-
-import org.flywaydb.core.Flyway;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -34,6 +32,7 @@ public class FacilioContextListener implements ServletContextListener {
 			migrateSchemaChanges();
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
+			CFType.init();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

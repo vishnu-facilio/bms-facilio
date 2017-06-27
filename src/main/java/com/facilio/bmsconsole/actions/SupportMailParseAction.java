@@ -15,7 +15,7 @@ public class SupportMailParseAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		
-		Command addTicket = FacilioChainFactory.getAddIncidentCommand();
+		Command addTicket = FacilioChainFactory.getAddIncidentChain();
 		
 		TicketContext context = new TicketContext();
 		

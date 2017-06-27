@@ -36,4 +36,25 @@ public class DBUtil {
 			}
 		}
 	}
+	
+	public static void closeAll(Statement stmt, ResultSet rs) {
+		if(rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }

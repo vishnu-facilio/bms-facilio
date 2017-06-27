@@ -24,4 +24,9 @@
    		<put-attribute name="title" value="Tickets" />
    		<put-attribute name="body" value="/jsps/ticketsList.jsp" />
    </definition>
+
+   <definition name="newCF" template="/jsps/layouts/basiclayout.jsp">
+   		<put-attribute name="title" value="New Custom Fields" />
+   		<put-attribute name="body" value="/jsps/newCFs.jsp" />
+   </definition>
 </tiles-definitions>  

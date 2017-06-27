@@ -72,11 +72,11 @@
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
 		<script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 		<script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>
-	</head>
-	<body>
-    	<div id="wrapper">
+</head>
+<body>
+	<div id="wrapper">
 
-        <%@ include file="header.jsp" %>  
+		<%@ include file="header.jsp" %>
 
         <div id="page-wrapper">
             <tiles:insertAttribute name="body" />  
