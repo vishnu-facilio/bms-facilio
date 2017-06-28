@@ -43,13 +43,15 @@
     </action>    
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
-    <action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
+    <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
     	<result name="success">/jsps/device.jsp</result>
     </action>
     <action name="newDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showAdd">
     	<result name="success">/jsps/newdevice.jsp</result>
     </action>
-    <action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
+    <action name="addController" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
+    </action>
+    <action name="downloadAgent" class="com.facilio.bmsconsole.actions.DeviceAction" method="downloadAgent">
     </action>
     <action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceData">
     	<result name="success">/jsps/devicedata.jsp</result>
@@ -72,7 +74,10 @@
     </action>
      <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="disableDeviceMonitoring">
     </action>
-
+	<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
+    </action>
+    <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
+    </action>
 	</package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">

@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>    
-
+      <script src="${pageContext.request.contextPath}/js/aws/aws-cognito-sdk.min.js"></script>
+      <script src="${pageContext.request.contextPath}/js/aws/amazon-cognito-identity.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 	var chart;
 	function showAddDevice()
@@ -14,20 +16,35 @@
 		 });
 	}
 
-	function addDevice()
+	function addController()
 	{
 		var dataObject = new Object();
-		dataObject.name = $('input[name=deviceName]').val();
-		dataObject.type = $('select[name=deviceType]').val();
+		dataObject.name = $('input[name=controllerName]').val();
+		dataObject.type = $('select[name=controllerType]').val();
 		dataObject.datasource = $('input[name=datasource]:checked').val();
 		dataObject.publicip = $('input[name=publicip]').val();
-		dataObject.polltime = $('input[name=polltime]').val();
+		dataObject.timeinterval = $('input[name=timeinterval]').val();
+		$.ajax({
+		      type: "POST",
+		      url: "/bms/home/addController",   
+		      data: dataObject,
+		      success: function (response) {
+		         window.location.reload();
+		      }
+		 });
+	}
+
+	function addDevice(el)
+	{
+		var dataObject = new Object();
+		dataObject.name = $(el).parent().parent().parent().find('input[name=deviceName]').val();
+		dataObject.controllerId = $(el).parent().parent().parent().find('input[name=controllerId]').val();
 		$.ajax({
 		      type: "POST",
 		      url: "/bms/home/addDevice",   
 		      data: dataObject,
 		      success: function (response) {
-		         window.location.reload();
+		    	  showControllerDevices($(el).parent().parent().parent().find('input[name=controllerId]').val());
 		      }
 		 });
 	}
@@ -62,8 +79,13 @@
 	
 	function showDevices(el)
 	{
+		showControllerDevices($(el).parent().parent().attr('id'));
+	}
+	
+	function showControllerDevices(controllerId)
+	{
 		var dataObject = new Object();
-		dataObject.controllerId = $(el).parent().parent().attr('id');
+		dataObject.controllerId = controllerId;
 		$.ajax({
 		      type: "GET",
 		      url: "/bms/home/showDevices",   
@@ -162,24 +184,29 @@
 		<tr>
 			<th>Name</th>
 			<th>Type</th>
-			<th>Poll Time</th>
-			<th></th>
+			<th>Time Interval</th>
+			<th>Status</th>
 			<th></th>
 		</tr>
 		<s:iterator var="device" value="%{DEVICES}">
 			<tr id="<s:property value="#device.id" />">
-				<td><s:property value="#device.name" /></td>
+				<td><a href="javascript:void(0);" onclick="showDevices(this);"><s:property value="#device.name" /></a></td>
 				<td><s:property value="#device.type" /></td>
-				<td><s:property value="#device.polltime" /></td>
+				<td><s:property value="#device.polltime" /> Seconds</td>
+				<td><s:property value="#device.status" /></td>
 				<td>
-					<s:if test="%{#device.status}">
-						<a href="javascript:void(0);" onclick="disableDeviceMonitoring(this);">Disable</a>
+					<s:if test="%{#device.type != 'Linux'}">
+						<s:if test="%{#device.jobstatus}">
+							<a href="javascript:void(0);" onclick="disableDeviceMonitoring(this);">Disable</a>
+						</s:if>
+						<s:else>
+							<a href="javascript:void(0);" onclick="enableDeviceMonitoring(this);">Enable</a>
+						</s:else>
 					</s:if>
 					<s:else>
-						<a href="javascript:void(0);" onclick="enableDeviceMonitoring(this);">Enable</a>
+						<a href="/bms/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a>
 					</s:else>
 				</td>
-				<td><a href="javascript:void(0);" onclick="showDevices(this);">Show Devices</a></td>
 			</tr>
 	    </s:iterator>
 	</table>

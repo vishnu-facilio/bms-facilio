@@ -98,9 +98,9 @@
           						<li><a href="#"><i class="fa fa-circle-o"></i>Administration</a></li>
         					</ul>
       					</li> 
-				      	<li id="deviceId" url="/bms/home/device">
-				        	<a href="#device">
-				          		<i class="fa fa-calendar"></i> <span>Meter</span>
+				      	<li id="controllerId" url="/bms/home/controller">
+				        	<a href="#controller">
+				          		<i class="fa fa-calendar"></i> <span>Controllers</span>
 				        	</a>
 				      	</li>
 				      	<li class="treeview">

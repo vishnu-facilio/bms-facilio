@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +24,6 @@ import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.mysql.jdbc.Blob;
 
 public class DeviceAPI 
 {
@@ -66,7 +68,35 @@ public class DeviceAPI
 		return attributeMap;
 	}
 	
-	public static void addController(Long controllerId, int controllerType, String ipAddress, Blob certificate, int polltime, Long jobId) throws Exception
+	public static final Map<Integer, String> controllerTypes = new HashMap<>();
+	static
+	{
+		controllerTypes.put(1, "Distech Controller");
+		controllerTypes.put(2, "Linux");
+	}
+	
+	public static Map<Integer, String> getControllerTypes()
+	{
+		return controllerTypes;
+	}
+	
+	public static final Map<Integer, String> controllerStatus = new HashMap<>();
+	static
+	{
+		controllerStatus.put(1, "Waiting for connection");
+		controllerStatus.put(2, "Connected - initial configuration pending");
+		controllerStatus.put(3, "Configured - approval pending");
+		controllerStatus.put(4, "Active");
+		controllerStatus.put(5, "Inactive");
+		controllerStatus.put(6, "Connected - configuration pending");
+	}
+	
+	public static Map<Integer, String> getControllerStatus()
+	{
+		return controllerStatus;
+	}
+	
+	public static void addController(Long controllerId, int controllerType, String ipAddress, int timeinterval, Long jobId) throws Exception
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -74,14 +104,28 @@ public class DeviceAPI
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Controller (CONTROLLER_ID, CONTROLLER_TYPE, IP_ADDRESS, CERTIFICATE, POLL_TIME, JOBID, JOB_STATUS) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			String sqlColumns = "CONTROLLER_ID, CONTROLLER_TYPE, IP_ADDRESS, POLL_TIME, STATUS, JOB_STATUS";
+			String sqlValues = "?, ?, ?, ?, ?, ?";
+			if(jobId != null)
+			{
+				sqlColumns = sqlColumns + ", JOBID";
+				sqlValues = sqlValues + ", ?";
+			}
+			pstmt = conn.prepareStatement("INSERT INTO Controller (" + sqlColumns + ") VALUES (" + sqlValues + ")", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1, controllerId);
 			pstmt.setInt(2, controllerType);
 			pstmt.setString(3, ipAddress);
-			pstmt.setBlob(4, certificate);
-			pstmt.setInt(5, polltime);
-			pstmt.setLong(6, jobId);
-			pstmt.setBoolean(7, true);
+			pstmt.setInt(4, timeinterval);
+			pstmt.setInt(5, 1);
+			if(jobId != null)
+			{
+				pstmt.setBoolean(6, false);
+				pstmt.setLong(7, jobId);
+			}
+			else
+			{
+				pstmt.setBoolean(6, true);
+			}
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add controller");
@@ -144,8 +188,9 @@ public class DeviceAPI
 				devices.put("id", rs.getString("ASSETID"));
 				devices.put("name", rs.getString("NAME"));
 				devices.put("polltime", rs.getString("POLL_TIME"));
-				devices.put("type", rs.getInt("CONTROLLER_TYPE"));
-				devices.put("status", rs.getBoolean("JOB_STATUS"));
+				devices.put("type", getControllerTypes().get(rs.getInt("CONTROLLER_TYPE")));
+				devices.put("jobstatus", rs.getBoolean("JOB_STATUS"));
+				devices.put("status", getControllerStatus().get(rs.getInt("STATUS")));
 				deviceList.add(devices);
 			}
 		}
@@ -164,38 +209,51 @@ public class DeviceAPI
 	@SuppressWarnings("unchecked")
 	public static void discoverDevices(Long controllerId, Long orgId) throws Exception
 	{
-		String userName = "admin";
-    	String password = "Admin@1234";
-		String ipAddress = "192.168.0.148";
-		List<String> deviceNames = new DistechControls(userName, password, ipAddress).getAllDeviceNames();
-		System.out.println(deviceNames);
-		
-		Map<String, Long> deviceMap = new HashMap<>();
-		for(String deviceName : deviceNames)
+		switch((Integer)getControllerDetails(controllerId).get("CONTROLLER_TYPE"))
 		{
-			Long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
-			if(deviceId == null)
+			case 1:
 			{
-				deviceId = AssetsAPI.addAsset(deviceName, orgId);
-				DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);
-			}
-			deviceMap.put(deviceName, deviceId);
-		}
-		Map<String, Map<String, Object>> deviceInstances = getAllDeviceInstances(controllerId);
-		JSONObject dataPoints = new DistechControls(userName, password, ipAddress).getAllDataPoints();
-		Iterator<String> keys = dataPoints.keySet().iterator();
-		while(keys.hasNext())
-		{
-			String key = keys.next();
-			if(!deviceInstances.containsKey(key))
-			{
-				JSONObject json = (JSONObject) dataPoints.get(key);
-				String deviceName = (String) json.get("description");
-				String instanceName = (String) json.get("name");
-				Long deviceId = deviceMap.get(deviceName);
+				String userName = "admin";
+		    	String password = "Admin@1234";
+				String ipAddress = "192.168.0.148";
+				List<String> deviceNames = new DistechControls(userName, password, ipAddress).getAllDeviceNames();
+				System.out.println(deviceNames);
 				
-				addDeviceInstance(deviceId, Integer.parseInt(key), instanceName);
+				Map<String, Long> deviceMap = new HashMap<>();
+				for(String deviceName : deviceNames)
+				{
+					Long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
+					if(deviceId == null)
+					{
+						deviceId = AssetsAPI.addAsset(deviceName, orgId);
+						DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);
+					}
+					deviceMap.put(deviceName, deviceId);
+				}
+				Map<String, Map<String, Object>> deviceInstances = getControllerInstances(controllerId);
+				JSONObject dataPoints = new DistechControls(userName, password, ipAddress).getAllDataPoints();
+				Iterator<String> keys = dataPoints.keySet().iterator();
+				while(keys.hasNext())
+				{
+					String key = keys.next();
+					if(!deviceInstances.containsKey(key))
+					{
+						JSONObject json = (JSONObject) dataPoints.get(key);
+						String deviceName = (String) json.get("description");
+						String instanceName = (String) json.get("name");
+						Long deviceId = deviceMap.get(deviceName);
+						
+						addControllerInstance(deviceId, Integer.parseInt(key), instanceName, controllerId);
+					}
+				}
+				break;
 			}
+			case 2:
+			{
+				break;
+			}
+			default:
+				break;
 		}
 	}
 	
@@ -215,7 +273,7 @@ public class DeviceAPI
 			pstmt.setInt(4, status);
 			if(pstmt.executeUpdate() < 1) 
 			{
-				throw new RuntimeException("Unable to add asset data");
+				throw new RuntimeException("Unable to add device");
 			}
 		}
 		catch(SQLException | RuntimeException e) 
@@ -264,13 +322,13 @@ public class DeviceAPI
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Device_Instance SET COLUMN_NAME = ? WHERE DEVICE_ID = ? and INSTANCE_ID = ?", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("UPDATE Controller_Instance SET COLUMN_NAME = ? WHERE DEVICE_ID = ? and INSTANCE_ID = ?", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, columnName);
 			pstmt.setLong(2, deviceId);
 			pstmt.setInt(3, instanceId);
 			if(pstmt.executeUpdate() < 1) 
 			{
-				throw new RuntimeException("Unable to update device instance");
+				throw new RuntimeException("Unable to update controller instance");
 			}
 		}
 		catch(SQLException | RuntimeException e) 
@@ -284,7 +342,56 @@ public class DeviceAPI
 		}
 	}
 	
-	public static void addDeviceInstance(Long deviceId, int instanceId, String instanceName) throws Exception
+	public static Long addControllerInstance(Long deviceId, int instanceId, String instanceName, Long controllerId) throws Exception
+	{
+		Long deviceInstanceId = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			
+			String sqlColumns = "INSTANCE_ID, INSTANCE_NAME, CONTROLLER_ID";
+			String sqlValues = "?, ?, ?";
+			if(deviceId != null)
+			{
+				sqlColumns = sqlColumns + ", DEVICE_ID";
+				sqlValues = sqlValues + ", ?";
+			}
+
+			pstmt = conn.prepareStatement("INSERT INTO Controller_Instance (" + sqlColumns + ") VALUES (" + sqlValues + ")", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, instanceId);
+			pstmt.setString(2, instanceName);
+			pstmt.setLong(3, controllerId);
+			if(deviceId != null)
+			{
+				pstmt.setLong(4, deviceId);
+			}
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add controller instance");
+			}
+			else 
+			{
+				rs = pstmt.getGeneratedKeys();
+				rs.next();
+				deviceInstanceId = rs.getLong(1);
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while adding controller instance" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return deviceInstanceId;
+	}
+	
+	public static void updateControllerInstances(Long deviceId, JSONArray instances, Long controllerId) throws Exception
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -292,96 +399,112 @@ public class DeviceAPI
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
-			pstmt = conn.prepareStatement("INSERT INTO Device_Instance (DEVICE_ID, INSTANCE_ID, INSTANCE_NAME) VALUES (?, ?, ?)");
-			pstmt.setLong(1, deviceId);
-			pstmt.setInt(2, instanceId);
-			pstmt.setString(3, instanceName);
-			if(pstmt.executeUpdate() < 1) 
+			for (int i=0;i<instances.size();i++)
+			{ 
+				pstmt = conn.prepareStatement("UPDATE Controller_Instance SET DEVICE_ID = ? WHERE CONTROLLER_INSTANCE_ID = ?");
+				if(deviceId == null)
+				{
+					pstmt.setNull(1, Types.BIGINT);
+				}
+				else
+				{
+					pstmt.setLong(1, deviceId);
+				}
+				pstmt.setInt(2, Integer.parseInt((String) instances.get(i)));
+				pstmt.executeUpdate();
+			} 
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while update  device instance" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	public static Map<String, Map<String, Object>> getControllerInstances(Long controllerId) throws SQLException
+	{
+		Map<String, Map<String, Object>> controllerInstances = new HashMap<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try 
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Controller_Instance WHERE CONTROLLER_ID = ?");
+			pstmt.setLong(1, controllerId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) 
 			{
-				throw new RuntimeException("Unable to add asset data");
+				String key = String.valueOf(rs.getInt("INSTANCE_ID"));
+				Map<String, Object> instanceMap = new HashMap<>();
+				instanceMap.put("controllerInstanceId", rs.getLong("CONTROLLER_INSTANCE_ID"));
+				instanceMap.put("deviceId", rs.getLong("DEVICE_ID"));
+				instanceMap.put("instanceName", rs.getString("INSTANCE_NAME"));
+				instanceMap.put("columnName", rs.getString("COLUMN_NAME"));
+				controllerInstances.put(key, instanceMap);
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return controllerInstances;
+	}
+	
+	@SuppressWarnings("resource")
+	public static void addUnmodelledData(Long controllerId, Long timestamp, List<Map<String, Object>> unmodelledInstances) throws Exception
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			Map<String, Map<String, Object>> controllerInstances = getControllerInstances(controllerId);
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			for(Map<String, Object> unmodelledInstance : unmodelledInstances)
+			{
+				Integer instanceId = Integer.parseInt(unmodelledInstance.get("instance").toString());
+				String instanceName = (String) unmodelledInstance.get("instanceName");
+				Long controllerInstanceId = null;
+				if(!controllerInstances.containsKey(instanceId.toString()))
+				{
+					controllerInstanceId = addControllerInstance(null, instanceId, instanceName, controllerId);
+				}
+				else
+				{
+					controllerInstanceId = (Long) controllerInstances.get(instanceId.toString()).get("controllerInstanceId");
+				}
+				Double value = Double.parseDouble(unmodelledInstance.get("currentvalue").toString());
+				
+				pstmt = conn.prepareStatement("INSERT INTO Unmodelled_Data (CONTROLLER_INSTANCE_ID, ADDED_TIME, INSTANCE_VALUE) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt.setLong(1, controllerInstanceId);
+				pstmt.setLong(2, timestamp);
+				pstmt.setDouble(3, value);
+				
+				if(pstmt.executeUpdate() < 1) 
+				{
+					throw new RuntimeException("Unable to add unmodelled instances");
+				}
 			}
 		}
 		catch(SQLException | RuntimeException e) 
 		{
-			logger.log(Level.SEVERE, "Exception while adding device instance" +e.getMessage(), e);
+			logger.log(Level.SEVERE, "Exception while adding device job" +e.getMessage(), e);
 			throw e;
 		}
 		finally 
 		{
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
-	}
-	
-	public static Map<String, Map<String, Object>> getAllDeviceInstances(Long controllerId) throws SQLException
-	{
-		Map<String, Map<String, Object>> deviceInstances = new HashMap<>();
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Device_Instance LEFT JOIN Device ON Device_Instance.DEVICE_ID = Device.DEVICE_ID WHERE CONTROLLER_ID = ?");
-			pstmt.setLong(1, controllerId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				String key = String.valueOf(rs.getInt("INSTANCE_ID"));
-				Map<String, Object> instanceMap = new HashMap<>();
-				instanceMap.put("deviceId", rs.getLong("DEVICE_ID"));
-				instanceMap.put("instanceName", rs.getString("INSTANCE_NAME"));
-				deviceInstances.put(key, instanceMap);
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return deviceInstances;
-	}
-	
-	public static Map<String, Map<String, Object>> getActiveDeviceInstances(Long controllerId) throws SQLException
-	{
-		Map<String, Map<String, Object>> deviceInstances = new HashMap<>();
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Device_Instance LEFT JOIN Device ON Device_Instance.DEVICE_ID = Device.DEVICE_ID WHERE CONTROLLER_ID = ?");
-			pstmt.setLong(1, controllerId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				if(rs.getInt("STATUS") == 1)
-				{
-					continue;
-				}
-				String key = String.valueOf(rs.getInt("INSTANCE_ID"));
-				Map<String, Object> instanceMap = new HashMap<>();
-				instanceMap.put("deviceId", rs.getLong("DEVICE_ID"));
-				instanceMap.put("instanceName", rs.getString("INSTANCE_NAME"));
-				instanceMap.put("columnName", rs.getString("COLUMN_NAME"));
-				deviceInstances.put(key, instanceMap);
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return deviceInstances;
 	}
 	
 	@SuppressWarnings("resource")
@@ -439,6 +562,40 @@ public class DeviceAPI
 		}
 	}
 	
+	public static Map<String, Object> getControllerDetails(Long controllerId) throws SQLException
+	{
+		Map<String, Object> controllerDetails = new HashMap<>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try 
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Controller where CONTROLLER_ID = ?");
+			pstmt.setLong(1, controllerId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) 
+			{
+				controllerDetails.put("CONTROLLER_TYPE", rs.getInt("CONTROLLER_TYPE"));
+				controllerDetails.put("IP_ADDRESS", rs.getString("IP_ADDRESS"));
+				controllerDetails.put("POLL_TIME", rs.getInt("POLL_TIME"));
+				controllerDetails.put("JOBID", rs.getLong("JOBID"));
+				controllerDetails.put("JOB_STATUS", rs.getBoolean("JOB_STATUS"));
+				controllerDetails.put("STATUS", rs.getInt("STATUS"));
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting controller id" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return controllerDetails;
+	}
+	
 	public static Long getControllerId(Long jobId) throws SQLException
 	{
 		Long controllerId = null;
@@ -478,7 +635,7 @@ public class DeviceAPI
 		try 
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Device_Instance WHERE DEVICE_ID = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM Controller_Instance WHERE DEVICE_ID = ?");
 			pstmt.setLong(1, deviceId);
 			rs = pstmt.executeQuery();
 			while(rs.next()) 

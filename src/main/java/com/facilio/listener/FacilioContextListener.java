@@ -15,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 import org.flywaydb.core.Flyway;
@@ -34,6 +35,8 @@ public class FacilioContextListener implements ServletContextListener {
 			migrateSchemaChanges();
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
+			
+			FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

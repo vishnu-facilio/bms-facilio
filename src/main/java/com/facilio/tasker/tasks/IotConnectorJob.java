@@ -1,7 +1,9 @@
 package com.facilio.tasker.tasks;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +54,7 @@ public class IotConnectorJob extends FacilioJob{
 			Table table = dd.getTable(AwsUtil.AWS_IOT_DYNAMODB_TABLE_NAME);
 			RangeKeyCondition rkc = new RangeKeyCondition("timestamp");
 			rkc.gt(String.valueOf(System.currentTimeMillis() - 19999));
-			QuerySpec spec = new QuerySpec().withHashKey("clientId", "6").withRangeKeyCondition(rkc);
+			QuerySpec spec = new QuerySpec().withHashKey("clientId", "100").withRangeKeyCondition(rkc);
 			ItemCollection<QueryOutcome> items = table.query(spec);
 			Iterator<Item> iterator = items.iterator();
 			Item item = null;
@@ -61,25 +63,25 @@ public class IotConnectorJob extends FacilioJob{
 			{
 			    item = iterator.next();
 			    Long timestamp = item.getLong("timestamp");
-			    Map<String, Map<String, String>> payload = item.getMap("payload");
+			    Map<String, Map<String, Object>> payload = item.getMap("payload");
 			    System.out.println(payload);
-			    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId"));
-			    Map<String, Map<String, Object>> deviceInstances = DeviceAPI.getActiveDeviceInstances(controllerId);
+			    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId").toString());
+			    Map<String, Map<String, Object>> controllerInstances = DeviceAPI.getControllerInstances(controllerId);
 			    Iterator<String> dataIterator = payload.keySet().iterator();
 			    
-			    boolean needDeviceConfiguration = false;
+			    List<Map<String, Object>> unmodelledInstances = new ArrayList<Map<String, Object>>();
 			    Map<String, Map<String, Double>> deviceDataMap = new HashMap<>();
 			    while(dataIterator.hasNext())
 			    {
 			    	String key = dataIterator.next();
 			    	if(!"metainfo".equals(key))
 			    	{
-			    		if(!deviceInstances.containsKey(key))
+			    		if(!controllerInstances.containsKey(key) || controllerInstances.get(key).get("deviceId") == null || controllerInstances.get(key).get("columnName") == null)
 			    		{
-			    			needDeviceConfiguration = true;
+			    			unmodelledInstances.add(payload.get(key));
 			    			continue;
 			    		}
-			    		Long deviceId = (Long) deviceInstances.get(key).get("deviceId");
+			    		Long deviceId = (Long) controllerInstances.get(key).get("deviceId");
 			    		Map<String, Double> dataMap;
 			    		if(deviceDataMap.containsKey(deviceId.toString()))
 			    		{
@@ -89,8 +91,8 @@ public class IotConnectorJob extends FacilioJob{
 			    		{
 			    			dataMap = new HashMap<String, Double>();
 			    		}
-			    		String columnName = (String) deviceInstances.get(key).get("columnName");
-			    		Double value = Double.parseDouble(payload.get(key).get("value"));
+			    		String columnName = (String) controllerInstances.get(key).get("columnName");
+			    		Double value = Double.parseDouble(payload.get(key).get("currentvalue").toString());
 			    		dataMap.put(columnName, value);
 			    		deviceDataMap.put(deviceId.toString(), dataMap);
 					    
@@ -98,10 +100,13 @@ public class IotConnectorJob extends FacilioJob{
 						valueArray.add(value);
 			    	}
 			    }
-			    DeviceAPI.addDeviceData(timestamp, deviceDataMap);
-			    if(needDeviceConfiguration)
+			    if(!deviceDataMap.isEmpty())
+			    {
+			    	DeviceAPI.addDeviceData(timestamp, deviceDataMap);
+			    }
+			    if(!unmodelledInstances.isEmpty())
 				{
-					DeviceAPI.discoverDevices(controllerId, 6L);
+			    	DeviceAPI.addUnmodelledData(controllerId, timestamp, unmodelledInstances);
 				}
 			}
 			dataList.put("x", timeArray);

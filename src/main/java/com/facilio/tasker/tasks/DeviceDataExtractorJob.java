@@ -24,7 +24,7 @@ public class DeviceDataExtractorJob extends FacilioJob{
 		{
 			Long controllerId = DeviceAPI.getControllerId(jc.getJobId());
 			Long clientId = AssetsAPI.getOrgId(controllerId);
-			String topic = AwsUtil.AWS_IOT_SERVICE_NAME + "/" + controllerId;
+			String topic = AwsUtil.AWS_IOT_SERVICE_NAME;
 			
 			String userName = "admin";
 	    	String password = "Admin@1234";
@@ -37,7 +37,7 @@ public class DeviceDataExtractorJob extends FacilioJob{
 		}
 		catch (Exception e) 
 		{
-			logger.log(Level.SEVERE, "Exeception while executing DeviceDataExtractorJob :::"+e.getMessage(), e);
+			logger.log(Level.SEVERE, "Exception while executing DeviceDataExtractorJob :::"+e.getMessage(), e);
 		}
 	}
 }
