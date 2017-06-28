@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ScheduleContext;
+import com.facilio.constants.FacilioConstants;
 
 public class ValidateSchedulePropsCommand implements Command {
 	
@@ -11,18 +12,20 @@ public class ValidateSchedulePropsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		ScheduleContext scheduleContext = (ScheduleContext) context;
+		ScheduleContext scheduleContext = (ScheduleContext) context.get(FacilioConstants.ContextNames.SCHEDULE_OBJECT);
 		
-		if(scheduleContext.getOrgId() == -1) {
-			throw new IllegalArgumentException("Invalid Org id");
-		}
-		
-		if(scheduleContext.getScheduledStart() == -1) {
-			throw new IllegalArgumentException("Invalid start time");
-		}
-		
-		if(scheduleContext.getEstimatedEnd() == -1) {
-			throw new IllegalArgumentException("Invalid end time");
+		if(scheduleContext != null) {
+			if(scheduleContext.getOrgId() <= 0) {
+				throw new IllegalArgumentException("Invalid Org id");
+			}
+			
+			if(scheduleContext.getScheduledStart() <= 0) {
+				throw new IllegalArgumentException("Invalid start time");
+			}
+			
+			if(scheduleContext.getEstimatedEnd() <= 0) {
+				throw new IllegalArgumentException("Invalid end time");
+			}
 		}
 		
 		return false;

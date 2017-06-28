@@ -4,7 +4,35 @@
 <div style="width : 100%; height : 100%; margin : 0; padding: 0; overflow : auto;">
 	<h3><s:property value="taskProps.subject" /></h3>  
 	<table class="table">
-		<s:iterator value="taskProps">
+		<tr>
+			<td class="info">Task ID</td>
+			<td><s:property value="task.taskId" /></td>
+		</tr>
+		<tr>
+			<td class="info">Parent</td>
+			<td><s:property value="task.parent" /></td>
+		</tr>
+		<tr>
+			<td class="info">Subject</td>
+			<td><s:property value="task.subject" /></td>
+		</tr>
+		<tr>
+			<td class="info">Description</td>
+			<td><s:property value="task.description" /></td>
+		</tr>
+		<tr>
+			<td class="info">Assignment Group</td>
+			<td><s:property value="task.assignmentGroupId" /></td>
+		</tr>
+		<tr>
+			<td class="info">Assigned To</td>
+			<td><s:property value="task.assignedToId" /></td>
+		</tr>
+		<tr>
+			<td class="info">Schedule ID</td>
+			<td><s:property value="task.scheduleId" /></td>
+		</tr>
+		<s:iterator value="task.customProps">
 			<tr>
 				<td class="info"><s:property value="key" /></td>
 				<td><s:property value="value" /></td>
@@ -12,16 +40,30 @@
 	  	</s:iterator>
 	</table>
 	
-	<s:if test="%{scheduleProps != null}">
+	<s:if test="%{scheduleObj != null}">
 		<hr />
 		<h4>Schedule</h4>
 		<table class="table">
-			<s:iterator value="scheduleProps">
-				<tr>
-					<td class="info"><s:property value="key" /></td>
-					<td><s:property value="value" /></td>
-				</tr>
-		  	</s:iterator>	
+			<tr>
+				<td class="info">Schedule ID</td>
+				<td><s:property value="scheduleObj.scheduleId" /></td>
+			</tr>
+			<tr>
+				<td class="info">Scheduled Start</td>
+				<td><s:property value="scheduleObj.scheduledStart" /></td>
+			</tr>
+			<tr>
+				<td class="info">Estimated End</td>
+				<td><s:property value="scheduleObj.estimatedEnd" /></td>
+			</tr>
+			<tr>
+				<td class="info">Actual Work Start</td>
+				<td><s:property value="scheduleObj.actualWorkStart" /></td>
+			</tr>
+			<tr>
+				<td class="info">Actual Work End</td>
+				<td><s:property value="scheduleObj.actualWorkEnd" /></td>
+			</tr>
 		</table>
 	</s:if>
 	
@@ -49,7 +91,7 @@
 	        	<form role="form" id="addNoteForm" method="post" onsubmit="return false;">
 	        		<s:textfield type="hidden" name="taskId" value="%{taskId}" id="taskId" />
 					<div class="form-group">
-					    <textarea style="resize:none" class="form-control" name="note" rows="5" placeholder="Work Notes..." id="noteBody"></textarea>
+					    <textarea style="resize:none" class="form-control" name="note.body" rows="5" placeholder="Work Notes..." id="noteBody"></textarea>
 					</div>
 				</form>
 	        </div>
@@ -64,16 +106,12 @@
 </div>
 <script>
 	function saveNote(btn) {
-		var noteBody = $("#noteBody").val();
-		var noteTitle = "test";
-		var taskId = $("#taskId").val();
-		
 		$(btn).button('loading');
 		
 		$.ajax({
 			method : "post",
 			url : contextPath + "/home/tasks/addNote",
-			data : {body : noteBody, title : noteTitle, taskId : taskId}
+			data : $("#addNoteForm").serialize()
 		})
 		.done(function(data) {
 			$('#addNoteModal').modal('hide');

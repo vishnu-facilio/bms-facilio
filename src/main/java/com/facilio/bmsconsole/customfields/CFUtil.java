@@ -8,8 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.chain.Context;
+import java.util.Map;
 
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -317,11 +316,11 @@ public class CFUtil {
 		}
 	}
 	
-	public static void appendCustomFieldValues(List<FacilioCustomField> customFields, int defaultFieldsLength, Context context, PreparedStatement pstmt) throws SQLException {
+	public static void appendCustomFieldValues(List<FacilioCustomField> customFields, int defaultFieldsLength, Map<Object, Object> customProp, PreparedStatement pstmt) throws SQLException {
 		for(int i=0; i<customFields.size(); i++) {
 			FacilioCustomField field = customFields.get(i);
 			int paramIndex = defaultFieldsLength+(i+1);
-			String value = (String) context.get(field.getFieldName());
+			String value = (String) customProp.get(field.getFieldName());
 			parseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
 		}
 	}
@@ -370,7 +369,7 @@ public class CFUtil {
 					pstmt.setNull(paramIndex, Types.VARCHAR);
 				}
 				break;
-			case DATE_TIME: ////Leaving as String for now
+			case DATE_TIME: //Leaving as String for now
 				if(value != null) {
 					pstmt.setString(paramIndex, String.valueOf(value));
 				}
@@ -378,6 +377,25 @@ public class CFUtil {
 					pstmt.setNull(paramIndex, Types.VARCHAR);
 				}
 				break;
+		}
+	}
+	
+	public static Object getValueAsPerType(FacilioCustomField cf, ResultSet rs) throws SQLException {
+		switch(cf.getDataType()) {
+			case STRING:
+				return rs.getString(cf.getFieldName());
+			case NUMBER:
+				return rs.getLong(cf.getFieldName());
+			case DECIMAL:
+				return rs.getDouble(cf.getFieldName());
+			case BOOLEAN:
+				return rs.getBoolean(cf.getFieldName());
+			case DATE:
+				return rs.getString(cf.getFieldName()); //String for now
+			case DATE_TIME:
+				return rs.getString(cf.getFieldName());//String for now
+			default:
+				return rs.getString(cf.getFieldName());
 		}
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.util.TaskAPI;
 import com.facilio.bmsconsole.util.TicketApi;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -28,10 +27,10 @@ public class ViewTicketAction extends ActionSupport {
 				}
 			}
 			
-			List<TaskContext> taskList = TaskAPI.getTasksOfTicket(orgId, ticketId);
-			if(taskList != null && taskList.size() > 0) {
-				this.tasks = taskList;
-			}
+//			List<TaskContext> taskList = TaskAPI.getTasksOfTicket(orgId, ticketId, FacilioConnectionPool.INSTANCE.getConnection());
+//			if(taskList != null && taskList.size() > 0) {
+//				this.tasks = taskList;
+//			}
 		}
 		
 		return SUCCESS;

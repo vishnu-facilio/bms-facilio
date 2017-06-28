@@ -30,7 +30,12 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		
 		try {
+			try {
 			migrateSchemaChanges();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			CFType.init();

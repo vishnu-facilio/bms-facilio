@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
-
-public class NoteContext extends FacilioContext {
+public class NoteContext {
 	private long noteId;
 	public long getNoteId() {
 		return noteId;

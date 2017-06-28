@@ -30,10 +30,10 @@
                 <s:select class="form-control" list="form.locations" name="location" id="inputlocation" headerKey="-1" headerValue="--" />
             </div>
          
-                <div class="form-group">
+               <%--  <div class="form-group">
                 <label>Template</label>
                 <s:select class="form-control" list="assetList" name="asset" id="inputAsset" headerKey="-1" headerValue="--" />
-            </div>
+            </div> --%>
             <s:iterator var="customField" value="customFields">
             	<div class="form-group">
 	                <label><s:property value="customField"/></label>
@@ -45,10 +45,12 @@
 	</div>
 <div class="col-lg-6">
 <div class="panel-body">
+<%--
 <div class="form-group">
-         <label for="disabledSelect">Opened</label>
+         <label for="disabledSelect">Status</label>
           <input class="form-control" id="disabledInput" type="text" placeholder="Disabled input" disabled>
 </div>
+ 
 <div class="form-group">
                                 <label>Priority</label>
                                 <select class="form-control">
@@ -59,6 +61,7 @@
                                     <option>5 - Planning</option>
                                 </select>
                             </div>
+                            --%>
     <div class="form-group">
                 <label>Status</label>
                 <s:select class="form-control" list="statusList" name="status" id="inputStatus" disabled="true" />

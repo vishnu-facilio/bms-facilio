@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
-public class ScheduleContext extends FacilioContext {
+public class ScheduleContext {
+	
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 	
 	private long scheduleId;
 	public long getScheduleId() {
@@ -24,7 +27,17 @@ public class ScheduleContext extends FacilioContext {
 	public long getScheduledStart() {
 		return scheduledStart;
 	}
-	public void setScheduledStart(long scheduledStart) {
+	public void setScheduledStart(String scheduledStart) {
+ 		if(scheduledStart != null && !scheduledStart.isEmpty()) {
+ 			try {
+				this.scheduledStart = DATE_FORMAT.parse(scheduledStart).getTime()/1000;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 		}
+ 	}
+	public void setScheduledStartFromTimestamp(long scheduledStart) {
 		this.scheduledStart = scheduledStart;
 	}
 	
@@ -32,7 +45,17 @@ public class ScheduleContext extends FacilioContext {
 	public long getEstimatedEnd() {
 		return estimatedEnd;
 	}
-	public void setEstimatedEnd(long estimatedEnd) {
+	public void setEstimatedEnd(String estimatedEnd) {
+ 		if(estimatedEnd != null && !estimatedEnd.isEmpty()) {
+ 			try {
+				this.estimatedEnd = DATE_FORMAT.parse(estimatedEnd).getTime()/1000;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 		}
+ 	}
+	public void setEstimatedEndFromTimestamp(long estimatedEnd) {
 		this.estimatedEnd = estimatedEnd;
 	}
 	
@@ -40,7 +63,17 @@ public class ScheduleContext extends FacilioContext {
 	public long getActualWorkStart() {
 		return actualWorkStart;
 	}
-	public void setActualWorkStart(long actualWorkStart) {
+	public void setActualWorkStart(String actualWorkStart) {
+ 		if(actualWorkStart != null && !actualWorkStart.isEmpty()) {
+ 			try {
+				this.actualWorkStart = DATE_FORMAT.parse(actualWorkStart).getTime()/1000;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 		}
+ 	}
+	public void setActualWorkStartFromTimestamp(long actualWorkStart) {
 		this.actualWorkStart = actualWorkStart;
 	}
 	
@@ -48,7 +81,17 @@ public class ScheduleContext extends FacilioContext {
 	public long getActualWorkEnd() {
 		return actualWorkEnd;
 	}
-	public void setActualWorkEnd(long actualWorkEnd) {
+	public void setActualWorkEnd(String actualWorkEnd) {
+ 		if(actualWorkEnd != null && !actualWorkEnd.isEmpty()) {
+ 			try {
+				this.actualWorkEnd = DATE_FORMAT.parse(actualWorkEnd).getTime()/1000;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 		}
+ 	}
+	public void setActualWorkEndFromTimestamp(long actualWorkEnd) {
 		this.actualWorkEnd = actualWorkEnd;
 	}
 }

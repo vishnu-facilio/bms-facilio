@@ -51,4 +51,20 @@ public class FacilioConstants {
 			ALL_ROLES.put(REQUESTER, "Requester");
 		}
 	}
+	
+	public static class ContextNames {
+		public static final String TASK = "task";
+		public static final String TASK_LIST = "tasks";
+		
+		public static final String SCHEDULE_OBJECT = "scheduleObject";
+		
+		public static final String NOTE = "note";
+		public static final String NOTE_LIST = "notes";
+		
+		public static final String ACTION_FORM = "actionForm";
+		
+		public static final String MODULE_NAME = "moduleName";
+		
+		public static final String CUSTOM_FIELDS = "customFields";
+	}
 }

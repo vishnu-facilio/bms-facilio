@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.constants.FacilioConstants;
 
 public class ValidateNotePropsCommand implements Command {
 
@@ -11,7 +12,7 @@ public class ValidateNotePropsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		NoteContext noteContext = (NoteContext) context;
+		NoteContext noteContext = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		
 		if(noteContext.getOrgId() <= 0) {
 			throw new IllegalArgumentException("Org ID is invalid");

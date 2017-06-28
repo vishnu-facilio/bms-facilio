@@ -1,3 +1,4 @@
+
 package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
@@ -105,6 +106,14 @@ public class AddTicketAction extends ActionSupport {
  	}
  	public void setCustomFields(String key, String value) {
  		customFields.put(key, value);
+ 	}
+ 	
+ 	private String location;
+ 	public String getLocation() {
+ 		return location;
+ 	}
+ 	public void setLocation(String location) {
+ 		this.location = location;
  	}
  	
  	private long ticketId;
