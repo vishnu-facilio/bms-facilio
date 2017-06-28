@@ -1,13 +1,16 @@
 package com.facilio.constants;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 public class FacilioConstants {
 	
 	public static class CognitoUserPool {
+		
+		public static String getAWSAccountId() {
+			return "665371858763";
+		}
 		
 		public static String getUserPoolId() {
 			return "us-west-2_kzN5KrMZU";

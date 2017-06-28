@@ -164,6 +164,34 @@ public class DeviceAction extends ActionSupport
 		}
 	}
 	
+	public String showDeviceInfo() {
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String reqURI = request.getRequestURI();
+		String deviceId = reqURI.substring(reqURI.lastIndexOf("/")+1);
+		
+		try {
+			long controllerId = Long.parseLong(deviceId);
+			
+			ValueStack stack = ActionContext.getContext().getValueStack();
+		    Map<String, Object> context = new HashMap<String, Object>();
+
+		    Map<String, Object> controllerInfo = DeviceAPI.getControllerInfo(controllerId);
+		    
+		    request.setAttribute("CONTROLLER_ID", controllerId);
+		    context.put("CONTROLLER_ID", controllerId);
+		    context.put("CONTROLLER_INFO", controllerInfo);
+		    context.put("DEVICES", DeviceAPI.getDevices(controllerId));
+		    stack.push(context);
+		} 
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while showing device details" +e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
 	public void showDeviceData()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -385,8 +413,6 @@ public class DeviceAction extends ActionSupport
             }
             out.closeEntry();
             fin2.close();
-            
-            System.out.println(CognitoUtil.getUserCredentials(null).getCredentials());
 		} 
 		catch (Exception e) 
 		{

@@ -1,216 +1,192 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>    
-      <script src="${pageContext.request.contextPath}/js/aws/aws-cognito-sdk.min.js"></script>
-      <script src="${pageContext.request.contextPath}/js/aws/amazon-cognito-identity.min.js"></script>
-      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-	var chart;
-	function showAddDevice()
-	{
-		$.ajax({
-		      type: "GET",
-		      url: "/bms/home/newDevice",   
-		      success: function (response) {
-		         $('#maincontent').html(response);
-		      }
-		 });
-	}
 
-	function addController()
-	{
-		var dataObject = new Object();
-		dataObject.name = $('input[name=controllerName]').val();
-		dataObject.type = $('select[name=controllerType]').val();
-		dataObject.datasource = $('input[name=datasource]:checked').val();
-		dataObject.publicip = $('input[name=publicip]').val();
-		dataObject.timeinterval = $('input[name=timeinterval]').val();
-		$.ajax({
-		      type: "POST",
-		      url: "/bms/home/addController",   
-		      data: dataObject,
-		      success: function (response) {
-		         window.location.reload();
-		      }
-		 });
-	}
-
-	function addDevice(el)
-	{
-		var dataObject = new Object();
-		dataObject.name = $(el).parent().parent().parent().find('input[name=deviceName]').val();
-		dataObject.controllerId = $(el).parent().parent().parent().find('input[name=controllerId]').val();
-		$.ajax({
-		      type: "POST",
-		      url: "/bms/home/addDevice",   
-		      data: dataObject,
-		      success: function (response) {
-		    	  showControllerDevices($(el).parent().parent().parent().find('input[name=controllerId]').val());
-		      }
-		 });
-	}
-	
-	function enableDeviceMonitoring(el)
-	{
-		var dataObject = new Object();
-		dataObject.deviceId = $(el).parent().parent().attr('id');
-		$.ajax({
-		      type: "POST",
-		      url: "/bms/home/enableDeviceMonitoring",   
-		      data: dataObject,
-		      success: function (response) {
-		    	  $(el).parent().html("<a href='javascript:void(0);' onclick='disableDeviceMonitoring(this);'>Disable</a>");
-		      }
-		 });
-	}
-	
-	function disableDeviceMonitoring(el)
-	{
-		var dataObject = new Object();
-		dataObject.deviceId = $(el).parent().parent().attr('id');
-		$.ajax({
-		      type: "POST",
-		      url: "/bms/home/disableDeviceMonitoring",   
-		      data: dataObject,
-		      success: function (response) {
-		         $(el).parent().html("<a href='javascript:void(0);' onclick='enableDeviceMonitoring(this);'>Enable</a>");
-		      }
-		 });
-	}
-	
-	function showDevices(el)
-	{
-		showControllerDevices($(el).parent().parent().attr('id'));
-	}
-	
-	function showControllerDevices(controllerId)
-	{
-		var dataObject = new Object();
-		dataObject.controllerId = controllerId;
-		$.ajax({
-		      type: "GET",
-		      url: "/bms/home/showDevices",   
-		      data: dataObject,
-		      success: function (response) {
-		    	$('#devicetree').html(response)
-		      }
-		 });
-	}
-	
-	function showDeviceData(el)
-	{
-		var dataObject = new Object();
-		dataObject.controllerId = $(el).parent().parent().attr('id');
-		$.ajax({
-		      type: "GET",
-		      url: "/bms/home/showDeviceData",   
-		      data: dataObject,
-		      success: function (response) {
-		    	console.log(response);
-	    		var chart_json = 
-				{
-					'data': 
-						{
-							'x': 'x',
-							'columns': 
-								[
-									response.x,
-									response.y
-								]
-						},
-					'axis': 
-						{
-							'x': 
-								{
-									'label': 'Time',
-									'type': 'timeseries',
-									'tick': {'format': '%H:%M:%S'}
-								},
-							'y': 
-								{
-									'label': 'kW'
-								}
-						}
-				};
-				chart = ChartLibrary.timeseries("#data", chart_json); 
-		      }
-		 });
-	}
-	
-	WebMessenger.subscribe(3, function(event){ 
-		var message = JSON.parse(event.data);
-		console.log(message);
-		console.log(message.content);
-		console.log(message.content.x);
-		console.log(message.content.y);
-		chart.flow(
-			{
-        		columns: 
-        			[
-        				message.content.x,
-        				message.content.y
-	        		]
-    		}
-		);
-	});
-	
-</script>
-
-<style>
-	#maincontent th, #devicetree th
-	{
-		border-bottom: 1px solid #ddd;
-	    background: #f2f2f2;
-	    padding-left: 15px;
-	    height: 30px;
-	    font-size: 13px;
-	}
-	#maincontent td, #devicetree td
-	{
-		border-bottom: 1px solid #ddd;
-	    padding-left: 15px;
-	    height: 30px;
-	    font-size: 13px;
-	}
-</style>
-
-<div id="maincontent" style="padding:20px;">
-	<div style="padding-bottom: 20px;width: 800px;">
-		<div style="float: left;font-size: 18px;padding-top: 3px;">Controllers :</div>
-		<div style=" float:right;"><input onclick="showAddDevice();" style="width: 70px;font-size: 13px;padding: 5px;" type="button" name="submit" value="Add" /></div>
-		<div style="clear: both;"></div>
-	</div>
-	<div>
-	<table style="width: 800px; border: 1px solid #ddd;">
-		<tr>
-			<th>Name</th>
-			<th>Type</th>
-			<th>Time Interval</th>
-			<th>Status</th>
-			<th></th>
-		</tr>
-		<s:iterator var="device" value="%{DEVICES}">
-			<tr id="<s:property value="#device.id" />">
-				<td><a href="javascript:void(0);" onclick="showDevices(this);"><s:property value="#device.name" /></a></td>
-				<td><s:property value="#device.type" /></td>
-				<td><s:property value="#device.polltime" /> Seconds</td>
-				<td><s:property value="#device.status" /></td>
-				<td>
-					<s:if test="%{#device.type != 'Linux'}">
-						<s:if test="%{#device.jobstatus}">
-							<a href="javascript:void(0);" onclick="disableDeviceMonitoring(this);">Disable</a>
-						</s:if>
-						<s:else>
-							<a href="javascript:void(0);" onclick="enableDeviceMonitoring(this);">Enable</a>
-						</s:else>
-					</s:if>
-					<s:else>
-						<a href="/bms/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a>
-					</s:else>
-				</td>
-			</tr>
-	    </s:iterator>
-	</table>
-	</div>
+<div class="row">
+   <div class="col-lg-12">
+       <h1 class="page-header">
+       	Devices
+       	<button data-toggle="modal" data-target="#newDeviceModel" class="btn btn-outline btn-primary pull-right">
+       		<i class="fa fa-plus"></i>
+       		New Device
+       	</button>
+       	</h1>
+   </div>
+   <!-- /.col-lg-12 -->
 </div>
-<div id="devicetree"></div>
-<div id="devicedata" style="padding-top:20px;"><div id="data"></div></div>
+<div class="row">
+   <div class="col-lg-12">
+	<div class="panel-body">
+		<table width="100%" class="table table-striped table-bordered table-hover" id="devices-list">
+	    <thead>
+	        <tr>
+	            <th>ID</th>
+	            <th>Name</th>
+	            <th>Type</th>
+	            <th>Time Interval</th>
+	            <th>Status</th>
+	            <th></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    	<s:iterator var="device" value="%{DEVICES}">
+	    		<tr class="odd gradeX" id="<s:property value="#device.id" />">
+		            <td>#<s:property value="#device.id" /></td>
+		            <td><a href="#device/<s:property value="#device.id" />"><s:property value="#device.name" /></a></td>
+		            <td><s:property value="#device.type" /></td>
+		            <td><s:property value="#device.polltime" /> Seconds</td>
+		            <td><h5><span class="label label-success"><s:property value="#device.status" /></span></h5></td>
+		            <td>
+		            	<div class="btn-group">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-gear"></i> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                            	<s:if test="%{#device.type != 'Linux'}">
+                            	<s:if test="%{#device.status}">
+									<li><a href="javascript:disableDeviceMonitoring(this);" device-id="<s:property value="#device.id" />">Disable Monitoring</a></li>
+								</s:if>
+								<s:else>
+									<li><a href="javascript:enableDeviceMonitoring(this);" device-id="<s:property value="#device.id" />">Enable Monitoring</a></li>
+								</s:else>
+								</s:if>
+								<s:else>
+									<a href="/bms/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a>
+								</s:else>
+								<li><a href="#">Delete</a>
+                            </ul>
+                        </div>
+		            </td>
+		        </tr>
+	    	</s:iterator>
+	    </tbody>
+	</table>
+	<!-- /.table-responsive -->
+	</div>
+	</div>
+	<div class="modal fade" id="newDeviceModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		            <h4 class="modal-title" id="myModalLabel">New Device</h4>
+		        </div>
+		        <div class="modal-body">
+		            <form role="form" id="newDeviceForm" method="post" onsubmit="return false;">
+			            <div class="form-group">
+			                <label>Device Name</label>
+			                <input class="form-control" name="deviceName">
+			                <p class="help-block">Name of the device.</p>
+			            </div>
+			            <div class="form-group">
+			               <label>Device Type</label>
+			               <select class="form-control" name="deviceType">
+			                   <option value="-">-Select-</option>
+			                   <option value="distechcontrols">Distech Controls</option>
+			               </select>
+			            </div>
+			            <div class="form-group">
+			                <label>Data Source</label>
+			                <div class="radio">
+			                    <label>
+			                        <input type="radio" name="dataSource" value="public" checked>Public IP
+			                    </label>
+			                </div>
+			                <div class="radio">
+			                    <label>
+			                        <input type="radio" name="dataSource" value="mqtt">MQTT Client
+			                    </label>
+			                </div>
+			            </div>
+			            <div class="form-group">
+			                <label>Public IP</label>
+			                <input class="form-control" name="publicIp">
+			            </div>
+			            <div class="form-group">
+			                <label>Poll Time</label>
+			                <input class="form-control" name="pollTime">
+			            </div>
+					</form>
+		        </div>
+		        <div class="modal-footer">
+		            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		            <button type="submit" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" onclick="saveDevice(this, $('#newDeviceForm'));" class="btn btn-primary">Save</button>
+		        </div>
+		    </div>
+		    <!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</div>
+<script>
+	
+	function saveDevice(btn, form) {
+		$(btn).button('loading');
+		
+		$.ajax({
+			method : "post",
+			url : contextPath + "/home/addDevice",
+			data : $(form).serialize()
+		})
+		.done(function(data) {
+			$('#newDeviceModel').modal('hide');
+			FacilioApp.notifyMessage('success', 'Device created successfully!');
+			
+			setTimeout(function() {
+				FacilioApp.refreshView();
+            }, 500);
+		})
+		.fail(function(error) {
+			$(btn).button('reset');
+			alert(JSON.stringify(error.responseJSON.fieldErrors));
+		});
+		return false;
+		
+		//resetting the form
+		$(form).trigger('reset');
+	}
+
+	function enableDeviceMonitoring(btn)
+	{
+		var deviceId = $(btn).attr('device-id');
+		
+		var dataObject = new Object();
+		dataObject.deviceId = deviceId;
+		$.ajax({
+		      type: "POST",
+		      url: contextPath + "/bms/home/enableDeviceMonitoring",   
+		      data: dataObject,
+		      success: function (response) {
+		    	  FacilioApp.notifyMessage('success', 'Device monitoring enabled successfully!');
+					
+				  setTimeout(function() {
+						FacilioApp.refreshView();
+		            }, 500);
+		      }
+		 });
+	}
+	
+	function disableDeviceMonitoring(btn)
+	{
+		var deviceId = $(btn).attr('device-id');
+		
+		var dataObject = new Object();
+		dataObject.deviceId = deviceId;
+		$.ajax({
+		      type: "POST",
+		      url: contextPath + "/bms/home/disableDeviceMonitoring",   
+		      data: dataObject,
+		      success: function (response) {
+		    	  FacilioApp.notifyMessage('success', 'Device monitoring disabled successfully!');
+					
+				  setTimeout(function() {
+						FacilioApp.refreshView();
+		            }, 500);
+		      }
+		 });
+	}
+	
+	$('#devices-list').DataTable({
+        responsive: true
+    });
+</script>

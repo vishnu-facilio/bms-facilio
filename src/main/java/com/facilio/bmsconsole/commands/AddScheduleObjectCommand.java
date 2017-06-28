@@ -1,0 +1,21 @@
+package com.facilio.bmsconsole.commands;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.ScheduleContext;
+import com.facilio.bmsconsole.util.ScheduleObjectAPI;
+
+public class AddScheduleObjectCommand implements Command {
+	
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		ScheduleContext scheduleContext = (ScheduleContext) context;
+		long scheduleId = ScheduleObjectAPI.addScheduleObject(scheduleContext);
+		scheduleContext.setScheduleId(scheduleId);
+		
+		return false;
+	}
+}

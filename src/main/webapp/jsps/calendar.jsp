@@ -1,15 +1,11 @@
-<link rel="stylesheet" href="${pageContext.request.contextPath}/js/calendar/fullcalendar.css">
-<script src="${pageContext.request.contextPath}/js/calendar/moment.min.js"></script> 
-<script src="${pageContext.request.contextPath}/js/calendar/fullcalendar.js"></script> 
-
 <style>
 
-h2
+.fc-view-container h2
 {
 	font-size :21px;
 }
 
-a
+.fc-view-container a
 {
 	color:#666;
 }
@@ -34,7 +30,14 @@ $(document).ready(function() {
 });
 
 </script>
-
-<div style="padding:20px;">
-<div id='calendar'></div>
+<div class="row">
+   <div class="col-lg-12">
+       <h1 class="page-header">Calendar</h1>
+   </div>
+   <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<div id="calendar"></div>
+	</div>
 </div>

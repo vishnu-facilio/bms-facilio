@@ -38,7 +38,8 @@ public class CreateUserCommand implements Command {
 		}
 		finally{
 			ps.close();
-			con.close();
+			// it will get closed after chain completion
+			//con.close();
 		}
 		return false;
 	}

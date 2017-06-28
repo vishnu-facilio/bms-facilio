@@ -3,6 +3,7 @@ package com.facilio.fw;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class OrgInfo {
@@ -10,9 +11,26 @@ public class OrgInfo {
 	private static ThreadLocal<OrgInfo> orglocal = new ThreadLocal<OrgInfo>();
 
 private long orgid;
+private String orgName;
+private String orgDomain;
+
 public OrgInfo(long orgid)
 {
 	this.orgid = orgid;
+	try {
+		this.orgDomain = OrgApi.getOrgDomainFromId(orgid);
+		this.orgName = this.orgDomain;
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public OrgInfo(long orgid, String orgName, String orgDomain)
+{
+	this.orgid = orgid;
+	this.orgName = orgName;
+	this.orgDomain = orgDomain;
 }
 
 public long getOrgid() {
@@ -21,6 +39,22 @@ public long getOrgid() {
 
 public void setOrgid(long orgid) {
 	this.orgid = orgid;
+}
+
+public String getOrgName() {
+	return orgName;
+}
+
+public void setOrgName(String orgName) {
+	this.orgName = orgName;
+}
+
+public String getOrgDomain() {
+	return orgDomain;
+}
+
+public void setOrgDomain(String orgDomain) {
+	this.orgDomain = orgDomain;
 }
 
 public static OrgInfo getCurrentOrgInfo()
@@ -39,7 +73,7 @@ public static void cleanup()
 public static void validateOrgInfo(String domainname,String username) throws Exception
 {
 	//TODO Caching to be done
-	String sqlquery = "select Organizations.ORGID from Organizations, ORG_Users,Users where Organizations.ORGID =ORG_Users.ORGID and ORG_Users.USERID=Users.USERID and Organizations.FACILIODOMAINNAME =? and EMAIL=?";
+	String sqlquery = "select Organizations.* from Organizations, ORG_Users,Users where Organizations.ORGID =ORG_Users.ORGID and ORG_Users.USERID=Users.USERID and Organizations.FACILIODOMAINNAME =? and EMAIL=?";
 	java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
 	PreparedStatement ps = con.prepareStatement(sqlquery);
 	ResultSet rs = null;
@@ -51,7 +85,7 @@ public static void validateOrgInfo(String domainname,String username) throws Exc
 		 rs = ps.executeQuery();
 		if(rs.next())
 		{
-		OrgInfo.setCurrentOrgInfo(new OrgInfo(rs.getLong(1)));
+		OrgInfo.setCurrentOrgInfo(new OrgInfo(rs.getLong("ORGID"), rs.getString("ORGNAME"), rs.getString("FACILIODOMAINNAME")));
 		UserInfo.setCurrentUser(new UserInfo(username));
 	      System.out.println("orginfo");
 

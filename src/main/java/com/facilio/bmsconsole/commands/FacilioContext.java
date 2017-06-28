@@ -10,11 +10,16 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class FacilioContext extends ContextBase {
 	java.sql.Connection conn = null;
 	boolean isConnectionOpen = false;
+	boolean isAutoCommit = false;
+	
+	
 	public Connection getConnection() throws SQLException
 	{
 		if(conn==null || !isConnectionOpen)
 		{
 			conn = FacilioConnectionPool.getInstance().getConnection();
+			isAutoCommit = false;
+			conn.setAutoCommit(false);
 			
 		}
 		return conn;
@@ -22,9 +27,28 @@ public class FacilioContext extends ContextBase {
 	
 	public void cleanup() throws Exception
 	{
+		if(!isAutoCommit)
+		{
+		conn.commit();
+		}
 		conn.close();
 		conn =null;
 		isConnectionOpen = false;
 	}
 
+	public void commit() throws Exception {
+  		if(!isAutoCommit){
+  			conn.commit();
+  		}
+  		cleanup();
+  	}
+  	
+  	public void rollback() throws Exception {
+  		if(!isAutoCommit){
+  			conn.rollback();
+  		}
+  		cleanup();
+  	}
 }
+
+

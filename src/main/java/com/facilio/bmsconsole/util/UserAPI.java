@@ -252,6 +252,7 @@ public class UserAPI {
 	private static UserContext getUserObjectFromRS(ResultSet rs) throws SQLException {
 		
 		UserContext uc = new UserContext();
+		uc.setOrgUserId(rs.getLong("ORG_USERID"));
 		uc.setOrgId(rs.getLong("ORGID"));
 		uc.setUserId(rs.getLong("USERID"));
 		uc.setEmail(rs.getString("EMAIL"));

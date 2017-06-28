@@ -16,6 +16,9 @@
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
 			</interceptor-stack>
 		</interceptors>
 
@@ -56,7 +59,6 @@
     <action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceData">
     	<result name="success">/jsps/devicedata.jsp</result>
     </action>
-    
     <action name="showTree" class="com.facilio.bmsconsole.actions.DeviceAction" method="showTree">
     </action>
     <action name="showDevices" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDevices">
@@ -64,9 +66,6 @@
     </action>
     <action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showConfigureDevice">
     	<result name="success">/jsps/deviceconf.jsp</result>
-    </action>
-    <action name="showDeviceInfo" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
-    	<result name="success">/jsps/deviceinfo.jsp</result>
     </action>
     <action name="configureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureDevice">
     </action>
@@ -78,11 +77,45 @@
     </action>
     <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
     </action>
+    
+    <action name="users" class="com.facilio.bmsconsole.actions.UserListAction">
+		<result name="success">/jsps/usersList.jsp</result>
+	</action>
+	
+    <action name="groups" class="com.facilio.bmsconsole.group.actions.GroupListAction">
+		<result name="success">/jsps/groups/groupsList.jsp</result>
+	</action>
+
+	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketListAction">
+		<result name="success">/jsps/ticketsList.jsp</result>
+	</action>
+	
+	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskListAction">
+		<result name="success">/jsps/tasksList.jsp</result>
+	</action>
 	</package>
+	<package name="modules" namespace="/home/modules" extends="home">
+		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
+			<result type="tiles">newCF</result>
+		</action>
+		
+		<action name="addCF" class="com.facilio.bmsconsole.actions.AddCFAction">
+			<result name="success" type="json">
+				<param name="includeProperties">fieldIds</param>
+			</result>
+		</action>
+	</package>
+
+	<package name="devices" namespace="/home/device" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
+    		<result name="success">/jsps/deviceinfo.jsp</result>
+    	</action>
+    </package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">
-			<result type="tiles">newTicket</result>
+			<result name="success">/jsps/newTicket.jsp</result>
+			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.AddTicketAction">
@@ -91,22 +124,41 @@
 			</result>
 		</action>
 
-		<action name="" class="com.facilio.bmsconsole.actions.TicketListAction">
-			<result name="success" type="tiles">ticketsList</result>
-		</action>
-
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
 			<param name="ticketId">{1}</param>
-			<result name="success" type="tiles">viewTicket</result>
+			<result name="success">/jsps/viewTicket.jsp</result>
+		</action>
+	</package>
+	
+	<package name="tasks" namespace="/home/tasks" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.NewTaskAction">
+			<result name="success">/jsps/newTask.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.AddTaskAction">
+			<result name="success" type="json">
+				<param name="includeProperties">taskId</param>
+			</result>
+		</action>
+		
+		<action name="addNote" class="com.facilio.bmsconsole.actions.TaskNotes" method="addNote">
+			<result name="success" type="json">
+				<param name="includeProperties">noteId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewTaskAction">
+			<param name="taskId">{1}</param>
+			<result name="success">/jsps/viewTask.jsp</result>
 		</action>
 	</package>
 	
 	<package name="users" namespace="/home/users" extends="home">
-		<action name="invite" class="com.facilio.bmsconsole.actions.NewUserAction">
-			<result type="tiles">inviteUser</result>
+		<action name="new" class="com.facilio.bmsconsole.actions.NewUserAction">
+			<result name="success">/jsps/inviteUser.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.AddUserAction">
+		<action name="save" class="com.facilio.bmsconsole.actions.AddUserAction">
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
 			</result>
@@ -127,18 +179,80 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-
-		<action name="" class="com.facilio.bmsconsole.actions.UserListAction">
-			<result name="success" type="tiles">usersList</result>
+		
+		<action name="resetpassword" class="com.facilio.bmsconsole.actions.AddUserAction">
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction">
 			<param name="userId">{1}</param>
-			<result name="success" type="tiles">viewUser</result>
+			<result name="success">/jsps/viewUser.jsp</result>
 		</action>
 		
 		<action name="edit" class="com.facilio.bmsconsole.actions.EditUserAction">
-			<result name="success" type="tiles">editUser</result>
+			<result name="success">/jsps/editUser.jsp</result>
+		</action>
+	</package>
+	
+	<package name="groups" namespace="/home/groups" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.group.actions.NewGroupAction">
+			<result name="success">/jsps/groups/newGroup.jsp</result>
+		</action>
+
+		<action name="save" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="includeProperties">groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="includeProperties">groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.group.actions.AddGroupAction">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="status">deleted</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="getGroupMembers" class="com.facilio.bmsconsole.group.actions.GetGroupMembersAction">
+			<result name="success" type="json">
+				<param name="root">members</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.group.actions.ViewGroupAction">
+			<param name="groupId">{1}</param>
+			<result name="success">/jsps/groups/viewGroup.jsp</result>
+		</action>
+		
+		<action name="edit" class="com.facilio.bmsconsole.group.actions.EditGroupAction">
+			<result name="success">/jsps/groups/editGroup.jsp</result>
 		</action>
 	</package>
 	

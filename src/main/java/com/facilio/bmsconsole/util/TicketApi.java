@@ -10,10 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.customfields.CFType;
+import com.facilio.bmsconsole.customfields.CFUtil;
+import com.facilio.bmsconsole.customfields.FacilioCustomField;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class TicketApi {
+	
+	private static final String[] DEFAULT_TICKET_FIELDS = new String[] {"REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"};
+	
 	public static long addTicket(TicketContext ticketContext) throws SQLException {
 		
 		Connection conn = null;
@@ -21,30 +27,31 @@ public class TicketApi {
 		ResultSet rs = null;
 		
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Tickets (ORGID, REQUESTOR, SUBJECT, DESCRIPTION, STATUS, AGENTID, FAILED_ASSET_ID, DUE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", ticketContext.getOrgId());
+			String sql = CFUtil.constuctInsertStatement("Tickets_Objects", "Tickets_Data", DEFAULT_TICKET_FIELDS, customFields, ticketContext.getOrgId());
 			
-			pstmt.setLong(1, ticketContext.getOrgId());
-			pstmt.setString(2, ticketContext.getRequester());
-			pstmt.setString(3,  ticketContext.getSubject());
-			pstmt.setString(4, ticketContext.getDescription());
-			pstmt.setInt(5, ticketContext.getStatusCode());
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, ticketContext.getRequester());
+			pstmt.setString(2,  ticketContext.getSubject());
+			pstmt.setString(3, ticketContext.getDescription());
+			pstmt.setInt(4, ticketContext.getStatusCode());
 			
 			if(ticketContext.getAgentId() != null) {
-				pstmt.setLong(6, ticketContext.getAgentId());
+				pstmt.setLong(5, ticketContext.getAgentId());	
+			}
+			else {
+				pstmt.setNull(5, Types.BIGINT);
+			}
+			if(ticketContext.getFailedAssetId() != null) {
+				pstmt.setLong(6, ticketContext.getFailedAssetId());
 			}
 			else {
 				pstmt.setNull(6, Types.BIGINT);
 			}
+			pstmt.setLong(7, ticketContext.getDueTime());
 			
-			if(ticketContext.getFailedAssetId() != null) {
-				pstmt.setLong(7, ticketContext.getFailedAssetId());
-			}
-			else {
-				pstmt.setNull(7, Types.BIGINT);
-			}
-			
-			pstmt.setLong(8, ticketContext.getDueTime());
+			CFUtil.appendCustomFieldValues(customFields, DEFAULT_TICKET_FIELDS.length, ticketContext, pstmt);
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add ticket");
@@ -58,6 +65,7 @@ public class TicketApi {
 			}
 		}
 		catch(SQLException | RuntimeException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {
@@ -71,21 +79,27 @@ public class TicketApi {
 		ResultSet rs = null;
 		
 		try {
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", orgId);
+			String sql = CFUtil.constructSelectStatement("Tickets_Objects", "Tickets_Data", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID"});
+			
+			System.out.println(sql);
+			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Tickets WHERE ORGID = ? ORDER BY SUBJECT");
+			pstmt = conn.prepareStatement(sql+" ORDER BY SUBJECT");
 			pstmt.setLong(1, orgId);
 			
 			List<TicketContext> tickets = new ArrayList<>();
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				TicketContext tc = getTCObjectFromRS(rs);
+				TicketContext tc = getTCObjectFromRS(rs, customFields);
 				tickets.add(tc);
 			}
 			
 			return tickets;
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {
@@ -93,26 +107,31 @@ public class TicketApi {
 		}
 	}
 	
-	public static TicketContext getTicketDetails(long ticketId) throws SQLException {
+	public static TicketContext getTicketDetails(long ticketId, long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
+			List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tickets_Objects", "Tickets_Fields", orgId);
+			String sql = CFUtil.constructSelectStatement("Tickets_Objects", "Tickets_Data", new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID", "TICKETID"});
+			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Tickets WHERE TICKETID = ?");
-			pstmt.setLong(1, ticketId);
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, ticketId);
 			
 			rs = pstmt.executeQuery();
 			TicketContext tc = null;
 			while(rs.next()) {
-				tc = getTCObjectFromRS(rs);
+				tc = getTCObjectFromRS(rs, customFields);
 				break;
 			}
 			
 			return tc;
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {
@@ -120,7 +139,7 @@ public class TicketApi {
 		}
 	}
 	
-	private static TicketContext getTCObjectFromRS(ResultSet rs) throws SQLException {
+	private static TicketContext getTCObjectFromRS(ResultSet rs, List<FacilioCustomField> customFields) throws SQLException {
 		TicketContext tc = new TicketContext();
 		tc.setTicketId(rs.getLong("TICKETID"));
 		tc.setRequester(rs.getString("REQUESTOR"));
@@ -131,6 +150,12 @@ public class TicketApi {
 		tc.setFailedAssetId(rs.getLong("FAILED_ASSET_ID"));
 		tc.setDueTime(rs.getLong("DUE_DATE"));
 		tc.setOrgId(rs.getLong("ORGID"));
+		
+		if(customFields != null) {
+			for(FacilioCustomField field : customFields) {
+				tc.put(field.getFieldName(), rs.getString(field.getFieldName()));
+			}
+		}
 		
 		return tc;
 	}

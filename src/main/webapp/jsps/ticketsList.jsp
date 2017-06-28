@@ -1,27 +1,62 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@taglib uri="/struts-tags" prefix="s"%>
-<div style="width : 100%; height : 100%; margin : 0; padding: 0; overflow : auto;">
-	<h3>All Tickets</h3>
-	<s:iterator value="tickets">
-		<%-- <a href="tickets/<s:property value='ticketId' />"
-			class="list-group-item"> <span class="badge">14</span>
-			<h4 class="list-group-item-heading">
-				<s:property value="subject" />
-			</h4>
-			<p class="list-group-item-text">
-				<s:property value="description" />
-			</p>
-		</a> --%>
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title"><s:property value="subject" /><span style="float : right;" class="badge text-right">14</span></h3>
-			</div>
-			<a href="<s:property value='ticketId' />" class="list-group-item">
-				<div class="panel-body ">
-						<s:property value="description" />
-				</div>
-			</a>
-		</div>
-	</s:iterator>
-</div>	
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="/struts-tags" prefix="s" %>    
+<div class="row">
+   <div class="col-lg-12">
+       <h1 class="page-header">
+       	Requests
+       	<a href="#tickets/new" class="btn btn-outline btn-primary pull-right">
+       		<i class="fa fa-plus"></i>
+       		New Request
+       	</a>
+       	</h1>
+   </div>
+   <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+   <div class="col-lg-12">
+	<table width="100%" class="table table-striped table-bordered table-hover" id="tickets-list">
+	    <thead>
+	        <tr>
+	            <th>ID</th>
+	            <th>Subject</th>
+	            <th>Description</th>
+	            <th>Requester</th>
+	            <th>Status</th>
+	            <th>Assigned To</th>
+	            <th></th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    	<s:iterator var="ticket" value="tickets">
+				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
+		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
+		            <td><s:property value="#ticket.subject" /></td>
+		            <td><s:property value="#ticket.description" /></td>
+		            <td><s:property value="#ticket.requester" /></td>
+		            <td>
+		            	<h5><span class="label label-success"><s:property value="#ticket.getStatus()" /></span></h5>
+		            </td>
+		            <td><s:property value="#ticket.agentId" /></td>
+		            <td>
+		            	<div class="btn-group">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-gear"></i> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                            	<li><a href="#">Clone</a>
+                            	<li><a href="#">Edit</a>
+								<li><a href="#">Delete</a>
+                            </ul>
+                        </div>
+		            </td>
+		        </tr>
+			</s:iterator>
+		</tbody>
+	</table>
+  </div>
+</div>
+<script>
+$('#tickets-list').DataTable({
+    responsive: true
+});
+</script>
