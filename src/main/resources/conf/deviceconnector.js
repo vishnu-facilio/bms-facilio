@@ -5,8 +5,13 @@ var AWSIoTData = require('aws-iot-device-sdk');
 var cron = require('node-cron');
 var fs = require('fs');
 
+var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+var AuthenticationDetails = AmazonCognitoIdentity.AuthenticationDetails;
+var CognitoUser = AmazonCognitoIdentity.CognitoUser;
+
 var lines = fs.readFileSync('./gru.config','utf8').split('\n').filter(Boolean);
-var config = new Object();
+var config = {};
 config.IdToken='';
 for(var i=0;i<lines.length;i++)
 {
@@ -36,147 +41,167 @@ const mqttClient = AWSIoTData.device({
 	accessKeyId: '',
 	secretKey: '',
 	sessionToken: '',
-	clientId: '100',
+	clientId: config.ClientId,
 	region: AWS.config.region,
 	debug: false,
 	maximumReconnectTimeMs: 8000
 });
 
 var processItems = function(x, resultArray, runProcess){
-	var requestArray = [
-  	{objectIdentifier: {type: 2, instance: x}, propertyReferences: [{propertyIdentifier: 77},{propertyIdentifier: 85}]}
-	];
-client.readPropertyMultiple(config.ControllerIPAddress.trim(), requestArray, function(err, value) {
-if(value.values[0].values[0].value.value != undefined)
-{
-	runProcess = false;
-}
-else
-{
-  	var result = new Object();
-  	result.instance = value.values[0].objectIdentifier.instance;
-  	switch(value.values[0].values[0].propertyIdentifier)
-  	{
-	  	case 77 :
-			result.instanceName =  value.values[0].values[0].value[0].value;
-	  	break;
-
-	  	case 85 :
-			result.currentvalue =  value.values[0].values[0].value[0].value;
-	  	break;
-  	}
- 	switch(value.values[0].values[1].propertyIdentifier)
-  	{
-	  	case 77 :
-			result.instanceName =  value.values[0].values[1].value[0].value;
-	  	break;
-
-	  	case 85 :
-			result.currentvalue =  value.values[0].values[1].value[0].value;
-	  	break;
-  	}
-	resultArray[x] = result;
-	resultArray.metainfo = {controllerId:config.ControllerId.trim()};
-}
-if(runProcess)
-{
-	processItems(x+1, resultArray, runProcess);
-}
-else
-{
-	if(isConnected)
-	{	
-		console.log("Cred4 ::" + AWS.config.credentials.needsRefresh());
-		if(AWS.config.credentials.needsRefresh())
-		{
-			AWS.config.credentials.refresh((error) => {
-        	if (error) 
-        	{
-        		console.error("Error refresh::::");
-            	console.error(error);
-        	} 
-        	else 
-        	{
-            	console.log('Successfully logged!');
-				mqttClient.publish('iotdata', JSON.stringify(resultArray));
-				console.log("Published");
-        	}
-    		});
-    	}
-    	else
-    	{
-			mqttClient.publish('iotdata', JSON.stringify(resultArray));
-			console.log("Published");
-    	}
+	var requestArray = [{objectIdentifier: {type: 2, instance: x}, propertyReferences: [{propertyIdentifier: 77},{propertyIdentifier: 85}]}];
+	client.readPropertyMultiple(config.ControllerIPAddress.trim(), requestArray, function(err, value) {
+	if(value.values[0].values[0].value.value != undefined)
+	{
+		runProcess = false;
 	}
 	else
 	{
-		var cognitoIdentity = new AWS.CognitoIdentity();
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-       		IdentityPoolId: 'us-west-2:ba15c3b0-a6d9-4f33-8841-5b813d55170e',
-       		Logins: {'cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU':config.IdToken}
-    	});
-       	AWS.config.credentials.get(function(err, data) {
-   		if (!err) 
-   		{
-   			console.log('Credentials Updated');
-      		mqttClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId, AWS.config.credentials.secretAccessKey, AWS.config.credentials.sessionToken);
+  		var result = new Object();
+  		result.instance = value.values[0].objectIdentifier.instance;
+  		switch(value.values[0].values[0].propertyIdentifier)
+  		{
+	  		case 77 :
+				result.instanceName =  value.values[0].values[0].value[0].value;
+	  		break;
+
+	  		case 85 :
+				result.currentvalue =  value.values[0].values[0].value[0].value;
+	  		break;
+  		}
+ 		switch(value.values[0].values[1].propertyIdentifier)
+  		{
+	  		case 77 :
+				result.instanceName =  value.values[0].values[1].value[0].value;
+	  		break;
+
+	  		case 85 :
+				result.currentvalue =  value.values[0].values[1].value[0].value;
+	  		break;
+  		}
+		resultArray[x] = result;
+		resultArray.metainfo = {controllerId:config.ControllerId.trim()};
+	}
+	if(runProcess)
+	{
+		processItems(x+1, resultArray, runProcess);
+	}
+	else
+	{
+		if(isConnected)
+		{	
+			console.log("Cred4 ::" + AWS.config.credentials.needsRefresh());
+			if(AWS.config.credentials.needsRefresh())
+			{
+				AWS.config.credentials.refresh((error) => {
+        		if (error) 
+        		{
+        			console.error("Error refresh::::");
+            		console.error(error);
+        		} 
+        		else 
+        		{
+            		console.log('Successfully logged!');
+					mqttClient.publish('iotdata', JSON.stringify(resultArray));
+					console.log("Published");
+        		}
+    			});
+    		}
+    		else
+    		{
+				mqttClient.publish('iotdata', JSON.stringify(resultArray));
+				console.log("Published");
+    		}
 		}
 		else
 		{
-			console.log('Credentials Error');
-			AWS.config.update({
-    			accessKeyId: "AKIAJPM4FLBRC6DFAXIA",
-    			secretAccessKey: "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",
-    			region: "us-west-2" 
-				});
-			var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-			var params = {
-         		AuthFlow: 'REFRESH_TOKEN_AUTH',
-         		ClientId: '74d026sk7dde4vdsgpkhjhj17m',
-         		AuthParameters:{REFRESH_TOKEN:config.RefreshToken,USERNAME:config.UserName}
-      		};
-      		cognitoidentityserviceprovider.initiateAuth(params, function(err, data) {
-  			if (err)
-  			{
-  			 	console.log(err); // an error occurred
-  			}
-  			else     
-  			{	
-  				config.IdToken = data.AuthenticationResult.IdToken;
-  				AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-       				IdentityPoolId: 'us-west-2:ba15c3b0-a6d9-4f33-8841-5b813d55170e',
-       				Logins: {'cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU':config.IdToken}
-    			});
-       			AWS.config.credentials.get(function(err, data) {
-   				if (!err) 
-   				{
-      				mqttClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId, AWS.config.credentials.secretAccessKey, AWS.config.credentials.sessionToken);
+			var cognitoIdentity = new AWS.CognitoIdentity();
+			AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+       			IdentityPoolId: 'us-west-2:ba15c3b0-a6d9-4f33-8841-5b813d55170e',
+       			Logins: {'cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU':config.IdToken}
+    		});
+       		AWS.config.credentials.get(function(err, data) {
+   			if (!err) 
+   			{
+   				console.log('Credentials Updated');
+      			mqttClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId, AWS.config.credentials.secretAccessKey, AWS.config.credentials.sessionToken);
+			}
+			else
+			{
+				console.log('Credentials Error');
+				
+				var poolData = {
+    				UserPoolId : 'us-west-2_kzN5KrMZU', // Your user pool id here
+    				ClientId : '74d026sk7dde4vdsgpkhjhj17m' // Your client id here
+				};
+				var userPool = new CognitoUserPool(poolData);
+				var cognitoUser = userPool.getCurrentUser();
+
+				if (cognitoUser != null) 
+				{
+    				cognitoUser.getSession(function(err, session) {
+        			if (err) 
+        			{
+            			console.log(err);
+            			return;
+        			}
+        			console.log('session id: ' + session.getIdToken().getJwtToken());
+        			console.log('session id: ' + session.getAccessToken().getJwtToken());
+        			console.log('session id: ' + session.getRefreshToken().getToken());
+    				});
 				}
-				});
-  			}
-			});
-		}	
-		});
-    	mqttClient
-  		.on('connect', function() {
-  		isConnected = true;
-    	console.log('connect');
-    	mqttClient.publish('iotdata', JSON.stringify(resultArray));
-    	console.log("Published");
-   	 	});
-		mqttClient
-  		.on('message', function(topic, payload) {
-    	console.log('message', topic, payload.toString());
-  		});
-    }
-}
-});
+				else
+				{
+				
+				var authenticationData = {
+					Username : config.UserName.trim(),
+	    			Password : config.Password.trim(),
+				};
+
+				var authenticationDetails = new AuthenticationDetails(authenticationData);
+				
+				var userData = {
+	    			Username : config.UserName.trim(),
+	    			Pool : userPool
+				};
+				var cognitoUser = new CognitoUser(userData);
+				cognitoUser.authenticateUser(authenticationDetails, {
+	    			onSuccess: function (session) {
+	    				config.IdToken = session.idToken.jwtToken;
+		  				AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		       				IdentityPoolId: 'us-west-2:ba15c3b0-a6d9-4f33-8841-5b813d55170e',
+		       				Logins: {'cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU':config.IdToken}
+		    			});
+		       			AWS.config.credentials.get(function(err, data) {
+		   				if (!err) 
+		   				{
+		      				mqttClient.updateWebSocketCredentials(AWS.config.credentials.accessKeyId, AWS.config.credentials.secretAccessKey, AWS.config.credentials.sessionToken);
+						}
+						});
+	    			},
+	    			onFailure: function(err) {
+	    				console.log(err);
+	    			}
+	    		});
+	    		}
+			}	
+       		});
+	    	mqttClient
+	  		.on('connect', function() {
+		  		isConnected = true;
+		    	console.log('connect');
+		    	mqttClient.publish('iotdata', JSON.stringify(resultArray));
+		    	console.log("Published");
+	   	 	});
+			mqttClient
+	  		.on('message', function(topic, payload) {
+	  			console.log('message', topic, payload.toString());
+	  		});
+		}
+	}
+	});
 };
-//processItems(x, resultArray, runProcess);
 var task = cron.schedule('*/30 * * * * *', function() {
   	console.log(new Date());
   	processItems(x, resultArray, runProcess);
 }, false);
- 
 task.start();

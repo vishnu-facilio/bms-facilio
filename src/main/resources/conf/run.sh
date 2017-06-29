@@ -84,6 +84,15 @@ else
 fi
 
 # local npm packages
+if [ $(npm_package_is_installed amazon-cognito-identity-js) == 1 ]; then
+    echo "amazon-cognito-identity-js already installed"
+else
+	echo "amazon-cognito-identity-js not exist"
+	echo "installing amazon-cognito-identity-js..."
+    npm install --save amazon-cognito-identity-js
+fi
+
+# local npm packages
 if [ $(npm_package_is_installed jsonfile) == 1 ]; then
     echo "jsonfile already installed"
 else

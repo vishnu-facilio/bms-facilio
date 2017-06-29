@@ -429,8 +429,9 @@ public class DeviceAction extends ActionSupport
 					+ "ControllerIPAddress=192.168.0.148\n"
 					+ "Datatypes=2\n"
 					+ "ControllerId=" + controllerId + "\n"
-					+ "RefreshToken=\n"
-					+ "UserName=";
+					+ "UserName=" + UserInfo.getCurrentUser().getEmail() + "\n"
+					+ "Password=\n"
+					+ "ClientId=" + OrgInfo.getCurrentOrgInfo().getOrgid();
 			out.write(config.getBytes(), 0, config.getBytes().length);
 			out.closeEntry();
 			
