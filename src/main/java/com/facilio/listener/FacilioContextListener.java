@@ -35,7 +35,7 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			CFType.init();
 			
-			FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
+			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

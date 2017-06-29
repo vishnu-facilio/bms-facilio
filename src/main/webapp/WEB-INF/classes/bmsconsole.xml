@@ -106,7 +106,7 @@
 		</action>
 	</package>
 
-	<package name="devices" namespace="/home/device" extends="home">
+	<package name="controllers" namespace="/home/controller" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
     		<result name="success">/jsps/deviceinfo.jsp</result>
     	</action>

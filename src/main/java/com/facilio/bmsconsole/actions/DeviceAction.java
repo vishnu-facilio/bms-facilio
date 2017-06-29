@@ -70,8 +70,8 @@ public class DeviceAction extends ActionSupport
 	public void add()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String name = request.getParameter("name");
-		Integer type = Integer.parseInt(request.getParameter("type"));
+		String name = request.getParameter("controllerName");
+		Integer type = Integer.parseInt(request.getParameter("controllerType"));
 		String datasource = request.getParameter("datasource");
 		int timeinterval = Integer.parseInt(request.getParameter("timeinterval"));
 		
@@ -99,7 +99,7 @@ public class DeviceAction extends ActionSupport
 	public void addDevice()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String name = request.getParameter("name");
+		String name = request.getParameter("deviceName");
 		Long controllerId = Long.parseLong(request.getParameter("controllerId"));
 		try 
 		{
@@ -168,20 +168,62 @@ public class DeviceAction extends ActionSupport
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String reqURI = request.getRequestURI();
-		String deviceId = reqURI.substring(reqURI.lastIndexOf("/")+1);
 		
-		try {
-			long controllerId = Long.parseLong(deviceId);
+		try 
+		{
+			Long controllerId = Long.parseLong(reqURI.substring(reqURI.lastIndexOf("/")+1));
 			
 			ValueStack stack = ActionContext.getContext().getValueStack();
 		    Map<String, Object> context = new HashMap<String, Object>();
 
-		    Map<String, Object> controllerInfo = DeviceAPI.getControllerInfo(controllerId);
+		    List<Map<String, Object>> unmodelledInstances = new ArrayList<>();
+		    Map<Long, List<Map<String, Object>>> modelledInstances = new HashMap<>();
+		    Map<String, Map<String, Object>> controllerInstances = DeviceAPI.getControllerInstances(controllerId);
+		    Iterator<String> keys = controllerInstances.keySet().iterator();
+		    while(keys.hasNext())
+		    {
+		    	String key = keys.next();
+		    	Map<String, Object> instance = controllerInstances.get(key);
+		    	if((Long)instance.get("deviceId") == 0L)
+		    	{
+		    		unmodelledInstances.add(instance);
+		    	}
+		    	else
+		    	{
+		    		List<Map<String, Object>> instanceList = new ArrayList<>();
+		    		if(modelledInstances.containsKey((Long)instance.get("deviceId")))
+		    		{
+		    			instanceList = modelledInstances.get((Long)instance.get("deviceId"));
+		    		}
+		    		else
+		    		{
+		    			instanceList = new ArrayList<>();
+		    		}
+		    		instanceList.add(instance);
+		    		modelledInstances.put((Long)instance.get("deviceId"), instanceList);
+		    	}
+		    }
+		    Map<Long, Device> devices = DeviceAPI.getDevices(controllerId);
+		    Iterator<Long> deviceIterator = devices.keySet().iterator();
+		    while(deviceIterator.hasNext())
+		    {
+		    	Long deviceId = deviceIterator.next();
+		    	Device device = devices.get(deviceId);
+		    	if(modelledInstances.containsKey(deviceId))
+		    	{
+		    		for(Map<String, Object> instanceMap: modelledInstances.get(deviceId))
+		    		{
+		    			device.addInstance((Long) instanceMap.get("controllerInstanceId"), (String) instanceMap.get("instanceName"));
+		    		}
+		    	}
+		    }
 		    
 		    request.setAttribute("CONTROLLER_ID", controllerId);
+		    context.put("INSTANCES", unmodelledInstances);
+		    context.put("DEVICES", devices);
+		    
 		    context.put("CONTROLLER_ID", controllerId);
-		    context.put("CONTROLLER_INFO", controllerInfo);
-		    context.put("DEVICES", DeviceAPI.getDevices(controllerId));
+		    context.put("CONTROLLER_INFO", DeviceAPI.getControllerInfo(controllerId));
 		    stack.push(context);
 		} 
 		catch (SQLException e) 
