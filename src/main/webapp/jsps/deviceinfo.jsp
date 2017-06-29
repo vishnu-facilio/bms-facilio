@@ -30,7 +30,7 @@ li.selected {
    </div>
    <!-- /.col-lg-12 -->
 </div>
-<div class="row" style="float:left; width:30%;">
+<div class="row" style="float:left; width:32%;">
    <div class="col-lg-12">
        <h4>Unmodelled Instances</h4>
        	<div id="instances" style=" border:1px solid #ddd;">
@@ -88,7 +88,7 @@ li.selected {
 </div>
 <div style="clear:both;"></div>
 <br/>
-<div class="row">
+<div class="row" style="display:none;">
    <div class="col-lg-12">
        <h4>Energy Usage</h4>
        <div id="device-energy-usage"></div>
@@ -294,7 +294,7 @@ li.selected {
 	
 	$(document).ready(function() {
 		var controllerId = "${requestScope.CONTROLLER_ID}";
-		showDeviceData(controllerId);
+		//showDeviceData(controllerId);
 		
 		$( document ).ready(function() {
 			$("ul").on('click', 'li', function (e) {

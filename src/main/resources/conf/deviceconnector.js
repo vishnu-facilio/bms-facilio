@@ -130,27 +130,10 @@ var processItems = function(x, resultArray, runProcess){
 				console.log('Credentials Error');
 				
 				var poolData = {
-    				UserPoolId : 'us-west-2_kzN5KrMZU', // Your user pool id here
-    				ClientId : '74d026sk7dde4vdsgpkhjhj17m' // Your client id here
+    				UserPoolId : 'us-west-2_kzN5KrMZU',
+    				ClientId : '74d026sk7dde4vdsgpkhjhj17m'
 				};
 				var userPool = new CognitoUserPool(poolData);
-				var cognitoUser = userPool.getCurrentUser();
-
-				if (cognitoUser != null) 
-				{
-    				cognitoUser.getSession(function(err, session) {
-        			if (err) 
-        			{
-            			console.log(err);
-            			return;
-        			}
-        			console.log('session id: ' + session.getIdToken().getJwtToken());
-        			console.log('session id: ' + session.getAccessToken().getJwtToken());
-        			console.log('session id: ' + session.getRefreshToken().getToken());
-    				});
-				}
-				else
-				{
 				
 				var authenticationData = {
 					Username : config.UserName.trim(),
@@ -182,7 +165,6 @@ var processItems = function(x, resultArray, runProcess){
 	    				console.log(err);
 	    			}
 	    		});
-	    		}
 			}	
        		});
 	    	mqttClient
