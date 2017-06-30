@@ -19,11 +19,43 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddIncidentChain() {
+	public static Chain getNewTicketChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddTicketChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new AddTicketCommand());
-		
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getTicketDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
+		c.addCommand(new GetTicketCommand());
+		c.addCommand(new GetTasksOfTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllTicketsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAllTicketsCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 
@@ -72,17 +104,20 @@ public class FacilioChainFactory {
 	
 	public static Chain getNewTaskChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new SetTaskModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
-		c.addCommand(new LoadTaskModuleNameCommand());
-		c.addCommand(new LoadTaskCustomFieldsCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddTaskChain() {
 		Chain c = new ChainBase();
-		c.addCommand(getAddScheduleObjectChain());
 		c.addCommand(new ValidateTasksFieldsCommand());
+		c.addCommand(getAddScheduleObjectChain());
+		c.addCommand(new SetTaskModuleTableNames());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new AddTaskCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -90,7 +125,9 @@ public class FacilioChainFactory {
 	
 	public static Chain getTaskDetailsChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new LoadTaskModuleNameCommand());
+		c.addCommand(new SetTaskModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new GetTaskCommand());
 		c.addCommand(new GetScheduleObjectCommand());
 		c.addCommand(new GetNotesCommand());
@@ -98,9 +135,10 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getTaskListChain() {
+	public static Chain getAllTasksChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new LoadTaskModuleNameCommand());
+		c.addCommand(new SetTaskModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new GetAllTasksCommand());
 		addCleanUpCommand(c);
 		return c;

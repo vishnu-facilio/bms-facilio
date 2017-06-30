@@ -7,6 +7,7 @@ import java.util.List;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.customfields.CFUtil;
 import com.facilio.bmsconsole.customfields.FacilioCustomField;
 
@@ -50,6 +51,27 @@ public class CommonCommandUtil {
 		if(customFields != null) {
 			for(FacilioCustomField field : customFields) {
 				tc.setCustomProp(field.getFieldName(), CFUtil.getValueAsPerType(field, rs));
+			}
+		}
+		
+		return tc;
+	}
+	
+	public static TicketContext getTCObjectFromRS(ResultSet rs, List<FacilioCustomField> customFields) throws SQLException {
+		TicketContext tc = new TicketContext();
+		tc.setTicketId(rs.getLong("TICKETID"));
+		tc.setRequester(rs.getString("REQUESTOR"));
+		tc.setSubject(rs.getString("SUBJECT"));
+		tc.setDescription(rs.getString("DESCRIPTION"));
+		tc.setStatusCode(rs.getInt("STATUS"));
+		tc.setAssignedToId(rs.getLong("AGENTID"));
+		tc.setFailedAssetId(rs.getLong("FAILED_ASSET_ID"));
+		tc.setDueTimeFromTimestamp(rs.getLong("DUE_DATE"));
+		tc.setOrgId(rs.getLong("ORGID"));
+		
+		if(customFields != null) {
+			for(FacilioCustomField field : customFields) {
+				tc.setCustomProp(field.getFieldName(), rs.getString(field.getFieldName()));
 			}
 		}
 		

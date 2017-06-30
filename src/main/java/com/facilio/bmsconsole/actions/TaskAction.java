@@ -96,7 +96,8 @@ public class TaskAction extends ActionSupport {
 		// TODO Auto-generated method stub
 		
 		FacilioContext context = new FacilioContext();
-		context.put(GetTaskCommand.TASK_ID, getTaskId());
+		context.put(FacilioConstants.ContextNames.TASK_ID, getTaskId());
+		
 		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
 		getTaskChain.execute(context);
 		
@@ -146,7 +147,7 @@ public class TaskAction extends ActionSupport {
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
-		Chain getAllTasks = FacilioChainFactory.getTaskListChain();
+		Chain getAllTasks = FacilioChainFactory.getAllTasksChain();
 		getAllTasks.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));

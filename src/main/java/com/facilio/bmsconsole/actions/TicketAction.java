@@ -1,0 +1,159 @@
+package com.facilio.bmsconsole.actions;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+
+public class TicketAction extends ActionSupport {
+	
+	//New Ticket props
+	public String newTicket() throws Exception {
+		statusList = TicketContext.getAllStatus();
+		
+		FacilioContext context = new FacilioContext();
+		Chain newTicket = FacilioChainFactory.getNewTicketChain();
+		newTicket.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		
+		List<FacilioCustomField> cfs = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+		customFieldNames = new ArrayList<>();
+		for(FacilioCustomField field : cfs) {
+			customFieldNames.add(field.getFieldName());
+		}
+		
+		Map mp = ActionContext.getContext().getParameters();
+		System.out.println(mp.get("ajax").getClass().getName());;
+		String isajax =((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
+		
+		System.out.println("isajaxisajax"+isajax);;
+
+		if(isajax!=null && isajax.equals("true")){
+			return "ajaxsuccess";
+		}
+		
+		return SUCCESS;
+	}
+	
+	private ActionForm actionForm;
+	public ActionForm getActionForm() {
+		return actionForm;
+	}
+	public void setActionForm(ActionForm actionForm) {
+		this.actionForm = actionForm;
+	}
+	
+	private Map<Integer, String> statusList;
+	public Map<Integer, String> getStatusList() {
+		return statusList;
+	}
+	public void setStatusList(Map<Integer, String> statusList) {
+		this.statusList = statusList;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	private List<String> customFieldNames;
+	public List<String> getCustomFieldNames() {
+		return customFieldNames;
+	}
+	public void setCustomFieldNames(List<String> customFieldNames) {
+		this.customFieldNames = customFieldNames;
+	}
+	
+	//Add Ticket Props
+	public String addTicket() throws Exception {
+		
+		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
+		ticket.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		
+		Command addTicket = FacilioChainFactory.getAddTicketChain();
+		addTicket.execute(context);
+		setTicketId(ticket.getTicketId());
+		return SUCCESS;
+	}
+ 	
+ 	//View Ticket Props
+	public String viewTicket() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
+		
+		Chain getTicketChain = FacilioChainFactory.getTicketDetailsChain();
+		getTicketChain.execute(context);
+		
+		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
+		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		
+		return SUCCESS;
+	}
+	
+	private TicketContext ticket;
+	public TicketContext getTicket() {
+		return ticket;
+	}
+	public void setTicket(TicketContext ticket) {
+		this.ticket = ticket;
+	}
+	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
+	}
+	
+	private long ticketId;
+ 	public long getTicketId() {
+ 		return ticketId;
+ 	}
+ 	public void setTicketId(long ticketId) {
+ 		this.ticketId = ticketId;
+ 	}
+	
+ 	//Ticket List Props
+ 	public String ticketList() throws Exception {
+		// TODO Auto-generated method stub
+ 		FacilioContext context = new FacilioContext();
+ 		Chain getAllTicketsChain = FacilioChainFactory.getAllTicketsChain();
+ 		getAllTicketsChain.execute(context);
+ 		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setTickets((List<TicketContext>) context.get(FacilioConstants.ContextNames.TICKET_LIST));
+		
+		return SUCCESS;
+	}
+ 	
+ 	private List<TicketContext> tickets = null;
+	public List<TicketContext> getTickets() {
+		return tickets;
+	}
+	public void setTickets(List<TicketContext> tickets) {
+		this.tickets = tickets;
+	}
+}

@@ -4,8 +4,10 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -14,25 +16,24 @@ public class SupportMailParseAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
-		
-		Command addTicket = FacilioChainFactory.getAddIncidentChain();
-		
-		TicketContext context = new TicketContext();
-		
-		
+		TicketContext ticket = new TicketContext();
 		long orgId = OrgApi.getOrgIdFromDomain(getOrgDomain());
 		
 		if(orgId == -1) {
 			throw new IllegalArgumentException("Invalid Org Domain");
 		}
-		context.setOrgId(orgId);
-		context.setRequester((String) getFrom().get("address"));
-		context.setSubject(getSubject());
-		context.setDescription(getBody());
+		ticket.setOrgId(orgId);
+		ticket.setRequester((String) getFrom().get("address"));
+		ticket.setSubject(getSubject());
+		ticket.setDescription(getBody());
 		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		
+		Command addTicket = FacilioChainFactory.getAddTicketChain();
 		addTicket.execute(context);
-		System.out.println("Ticket ID : "+context.getTicketId());
-		setTicketId(context.getTicketId());
+		System.out.println("Ticket ID : "+ticket.getTicketId());
+		setTicketId(ticket.getTicketId());
 		return SUCCESS;
 	}
 	

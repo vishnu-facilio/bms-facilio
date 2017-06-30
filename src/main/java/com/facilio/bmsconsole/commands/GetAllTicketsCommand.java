@@ -11,14 +11,14 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.customfields.CFUtil;
 import com.facilio.bmsconsole.customfields.FacilioCustomField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
-public class GetAllTasksCommand implements Command{
+public class GetAllTicketsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -35,15 +35,15 @@ public class GetAllTasksCommand implements Command{
 			pstmt = conn.prepareStatement("SELECT * FROM "+dataTableName+" WHERE ORGID = ? ORDER BY SUBJECT");
 			pstmt.setLong(1, orgId);
 			
-			List<TaskContext> tasks = new ArrayList<>();
+			List<TicketContext> tickets = new ArrayList<>();
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				TaskContext tc = CommonCommandUtil.getTaskObjectFromRS(rs, null);
-				tasks.add(tc);
+				TicketContext tc = CommonCommandUtil.getTCObjectFromRS(rs, null);
+				tickets.add(tc);
 			}
 			
-			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+			context.put(FacilioConstants.ContextNames.TICKET_LIST, tickets);
 		}
 		catch(SQLException e) {
 			e.printStackTrace();

@@ -16,13 +16,11 @@ import com.facilio.sql.DBUtil;
 
 public class AddTaskNoteCommand implements Command {
 
-	public static final String TASK_ID = "taskId";
-	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long taskId = (long) context.get(TASK_ID);
+		long taskId = (long) context.get(FacilioConstants.ContextNames.TASK_ID);
 		if(taskId <= 0) {
 			throw new IllegalArgumentException("Invalid Task Id");
 		}

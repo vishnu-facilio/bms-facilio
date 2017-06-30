@@ -10,24 +10,22 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.customfields.CFUtil;
 import com.facilio.bmsconsole.customfields.FacilioCustomField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
-public class GetTaskCommand implements Command {
+public class GetTicketCommand implements Command {
 
-	private static final String[] DEFAULT_SELECT_TASK_FIELDS = new String[] {"TASKID",  "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
-	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long taskId = (long) context.get(FacilioConstants.ContextNames.TASK_ID);
+		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
 		
-		if(taskId > 0) {
+		if( ticketId > 0) {
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			String objectTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_OBJECTS_TABLE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
@@ -37,28 +35,21 @@ public class GetTaskCommand implements Command {
 			
 			try {
 				List<FacilioCustomField> customFields = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
-				String sql = CFUtil.constructSelectStatement(objectTableName, dataTableName, DEFAULT_SELECT_TASK_FIELDS, customFields, new String[] {"ORGID", "TASKID"});
+				String sql = CFUtil.constructSelectStatement(objectTableName, dataTableName, new String[] {"TICKETID", "REQUESTOR", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "FAILED_ASSET_ID", "DUE_DATE"}, customFields, new String[] {"ORGID", "TICKETID"});
 				
 				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setLong(1, orgId);
-				pstmt.setLong(2, taskId);
+				pstmt.setLong(2, ticketId);
 				
 				rs = pstmt.executeQuery();
-				TaskContext tc = null;
+				TicketContext ticket = null;
 				while(rs.next()) {
-					tc = CommonCommandUtil.getTaskObjectFromRS(rs, customFields);
+					ticket = CommonCommandUtil.getTCObjectFromRS(rs, customFields);
 					break;
 				}
 				
-				if(tc != null) {
-					context.put(FacilioConstants.ContextNames.TASK, tc);
-					context.put(FacilioConstants.ContextNames.SCHEDULE_ID, tc.getScheduleId());
-					
-					context.put(GetNotesCommand.NOTES_REL_TABLE, "Tasks_Notes");
-					context.put(GetNotesCommand.MODULEID_COLUMN, "TASKID");
-					context.put(GetNotesCommand.MODULE_ID, taskId);
-				}
+				context.put(FacilioConstants.ContextNames.TICKET, ticket);
 			}
 			catch(SQLException e) {
 				e.printStackTrace();
@@ -67,9 +58,9 @@ public class GetTaskCommand implements Command {
 			finally {
 				DBUtil.closeAll(pstmt, rs);
 			}
-;		}
+		}
 		else {
-			throw new IllegalArgumentException("Invalid Task ID : "+taskId);
+			throw new IllegalArgumentException("Invalid Ticket ID : "+ticketId);
 		}
 		
 		return false;

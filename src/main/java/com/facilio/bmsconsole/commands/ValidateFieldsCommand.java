@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.constants.FacilioConstants;
 
 public class ValidateFieldsCommand implements Command {
 
@@ -16,7 +17,7 @@ public class ValidateFieldsCommand implements Command {
 		
 		if (context instanceof TicketContext) {
 
-			TicketContext ticketContext = (TicketContext) context;
+			TicketContext ticketContext = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
 
 			if(ticketContext.getOrgId() == 0) {
 				throw new IllegalArgumentException("ORG ID is invalid");
@@ -40,9 +41,9 @@ public class ValidateFieldsCommand implements Command {
 				ticketContext.setDescription(ticketContext.getDescription().trim());
 			}
 
-			if(ticketContext.getDueTime() == null) {
+			if(ticketContext.getDueTime() == 0) {
 				Calendar cal = Calendar.getInstance();
-				ticketContext.setDueTime((cal.getTimeInMillis()/1000)+TicketContext.DEFAULT_DURATION);
+				ticketContext.setDueTimeFromTimestamp((cal.getTimeInMillis()/1000)+TicketContext.DEFAULT_DURATION);
 			}
 		}
 		else if (context instanceof UserContext) {

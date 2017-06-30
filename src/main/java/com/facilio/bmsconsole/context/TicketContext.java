@@ -1,13 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.chain.impl.ContextBase;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 
-public class TicketContext extends FacilioContext {
+public class TicketContext extends ModuleBaseWithCustomFields {
 	
 	private long orgId = 0;
 	public long getOrgId() {
@@ -73,28 +75,38 @@ public class TicketContext extends FacilioContext {
 		return ALL_STATUS.get(statusCode);
 	}
 	
-	private Long agentId;
-	public Long getAgentId() {
-		return agentId;
+	private long assignedToId = 0;
+	public long getAssignedToId() {
+		return assignedToId;
 	}
-	public void setAgentId(Long agentId) {
-		this.agentId = agentId;
+	public void setAssignedToId(long assignedToId) {
+		this.assignedToId = assignedToId;
 	}
 	
-	private Long failedAssetId;
-	public Long getFailedAssetId() {
+	private long failedAssetId = 0;
+	public long getFailedAssetId() {
 		return failedAssetId;
 	}
-	public void setFailedAssetId(Long failedAssetId) {
+	public void setFailedAssetId(long failedAssetId) {
 		this.failedAssetId = failedAssetId;
 	}
 	
 	public static final long DEFAULT_DURATION = 3*24*60*60; //3 days in seconds
-	private Long dueTime ;
-	public Long getDueTime() {
+	private long dueTime = 0;
+	public long getDueTime() {
 		return dueTime;
 	}
-	public void setDueTime(Long dueTime) {
+	public void setDueTime(String dueTime) {
+		if(dueTime != null && !dueTime.isEmpty()) {
+			try {
+				this.dueTime = FacilioConstants.HTML5_DATE_FORMAT.parse(dueTime).getTime()/1000;
+			}
+			catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public void setDueTimeFromTimestamp(long dueTime) {
 		this.dueTime = dueTime;
 	}
 }

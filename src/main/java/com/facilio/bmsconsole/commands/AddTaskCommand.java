@@ -34,12 +34,15 @@ public class AddTaskCommand implements Command {
 				task.setScheduleId(scheduleObj.getScheduleId());
 			}
 			
+			String objectTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_OBJECTS_TABLE_NAME);
+			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 			
 			try {
-				List<FacilioCustomField> customFields = CFUtil.getCustomFields("Tasks_Objects", "Tasks_Fields", task.getOrgId());
-				String sql = CFUtil.constuctInsertStatement("Tasks_Objects", "Tasks_Data", DEFAULT_INSERT_TASK_FIELDS, customFields, task.getOrgId());
+				List<FacilioCustomField> customFields = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+				String sql = CFUtil.constuctInsertStatement(objectTableName, dataTableName, DEFAULT_INSERT_TASK_FIELDS, customFields, task.getOrgId());
 				
 				Connection conn = ((FacilioContext) context).getConnectionWithTransaction(); 
 				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

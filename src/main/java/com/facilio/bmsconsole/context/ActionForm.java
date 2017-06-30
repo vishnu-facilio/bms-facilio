@@ -42,5 +42,12 @@ public class ActionForm {
 		this.userList = userList;
 	}
 	
+	private Map<Long, String> assetList;
+	public Map<Long, String> getAssetList() {
+		return assetList;
+	}
+	public void setAssetList(Map<Long, String> assetList) {
+		this.assetList = assetList;
+	}
 
 }

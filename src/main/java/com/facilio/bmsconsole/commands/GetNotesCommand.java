@@ -30,7 +30,6 @@ public class GetNotesCommand implements Command {
 		
 		if(moduleId > 0) {
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-//			List<NoteContext> notes = NoteApi.getNotesOfModule("Tasks_Notes", "TASKID", moduleId, orgId, ((FacilioContext) context).getConnectionWithoutTransaction());
 			
 			String moduleRelTable = (String) context.get(NOTES_REL_TABLE);
 			String moduleIdColumn = (String) context.get(MODULEID_COLUMN);

@@ -86,7 +86,7 @@
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>
 
-	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketListAction">
+	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
 		<result name="success">/jsps/ticketsList.jsp</result>
 	</action>
 	
@@ -113,18 +113,18 @@
     </package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">
+		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
 			<result name="success">/jsps/newTicket.jsp</result>
 			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.AddTicketAction">
+		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction" method="addTicket">
 			<result name="success" type="json">
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
 
-		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/viewTicket.jsp</result>
 		</action>
