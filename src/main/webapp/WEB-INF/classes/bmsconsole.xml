@@ -87,6 +87,10 @@
 	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskListAction">
 		<result name="success">/jsps/tasksList.jsp</result>
 	</action>
+	
+	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
+        <result name="success">/jsps/assignmentRules.jsp</result>
+    </action>
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
@@ -144,6 +148,17 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewTaskAction">
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/viewTask.jsp</result>
+		</action>
+	</package>
+	
+	<package name="rules" namespace="/home/rules" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleActions" method="{1}">
+			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
+			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>
+			<result name="addAssignmentRuleSuccess" type="json">
+				<param name="includeProperties">ruleId</param>
+			</result>
+			<allowed-methods>assignmentRules,newAssignmentRule,addAssignmentRule,businessRules</allowed-methods>
 		</action>
 	</package>
 	

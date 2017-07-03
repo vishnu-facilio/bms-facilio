@@ -126,6 +126,18 @@
                     <li>
                         <a href="#groups">Groups</a>
                     </li>
+                    <li>
+                        <a href="#">Rules <span class="fa arrow"></span></a>
+                        <ul class="nav nav-third-level">
+                            <li>
+                                <a href="#rules/assignmentRules">Assignment Rules</a>
+                            </li>
+                            <li>
+                                <a href="#rules/businessRules">Business Rules</a>
+                            </li>
+                        </ul>
+                        <!-- /.nav-third-level -->
+                    </li>
                 </ul>
                 <!-- /.nav-second-level -->
             </li>

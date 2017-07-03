@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ActionForm {
@@ -25,7 +27,14 @@ public class ActionForm {
 	List<String> categories =new ArrayList<String>();
 //	Map<Long,String> categories ;
 
-	
-	
+	private Map<String, String> modules = new HashMap<String, String>();
+	public Map<String,String> getModules() {
+		modules.put("tickets", "Tickets");
+		modules.put("tasks", "Tasks");
+		return modules;
+	}
+	public void setModules(Map<String, String> modules) {
+		this.modules = modules;
+	}
 
 }
