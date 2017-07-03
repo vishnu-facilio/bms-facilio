@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.customfields.CFType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {
@@ -29,10 +30,17 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		
 		try {
+			try {
 			migrateSchemaChanges();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			CFType.init();
+			
+			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

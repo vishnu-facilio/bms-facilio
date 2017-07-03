@@ -8,47 +8,57 @@ import org.apache.commons.chain.impl.ContextBase;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContext extends ContextBase {
-	java.sql.Connection conn = null;
-	boolean isConnectionOpen = false;
-	boolean isAutoCommit = false;
+	private Connection transactedConn = null, readOnlyConn = null;
+	private boolean isTransactedConnOpen = false, isReadOnlyConnOpen = false;
 	
 	
-	public Connection getConnection() throws SQLException
-	{
-		if(conn==null || !isConnectionOpen)
+	public Connection getConnectionWithTransaction() throws SQLException {
+		if(transactedConn == null || !isTransactedConnOpen)
 		{
-			conn = FacilioConnectionPool.getInstance().getConnection();
-			isAutoCommit = false;
-			conn.setAutoCommit(false);
-			
+			transactedConn = FacilioConnectionPool.getInstance().getConnection();
+			isTransactedConnOpen = true;
+			transactedConn.setAutoCommit(false);
 		}
-		return conn;
+		return transactedConn;
 	}
 	
-	public void cleanup() throws Exception
-	{
-		if(!isAutoCommit)
-		{
-		conn.commit();
+	public Connection getConnectionWithoutTransaction() throws SQLException {
+		if(readOnlyConn == null || !isReadOnlyConnOpen) {
+			readOnlyConn = FacilioConnectionPool.getInstance().getConnection();
+			isReadOnlyConnOpen = true;
 		}
-		conn.close();
-		conn =null;
-		isConnectionOpen = false;
+		return readOnlyConn;
 	}
-
+	
 	public void commit() throws Exception {
-  		if(!isAutoCommit){
-  			conn.commit();
-  		}
-  		cleanup();
-  	}
-  	
-  	public void rollback() throws Exception {
-  		if(!isAutoCommit){
-  			conn.rollback();
-  		}
-  		cleanup();
-  	}
+		if(transactedConn != null) {
+			transactedConn.commit();
+		}
+		cleanup();
+	}
+	
+	public void rollback() throws Exception {
+		if(transactedConn != null) {
+			transactedConn.rollback();
+		}
+		cleanup();
+	}
+	
+	private void cleanup() throws Exception
+	{
+		System.out.println("Closing connection ....");
+		if(transactedConn != null) {
+			transactedConn.close();
+			transactedConn = null;
+			isTransactedConnOpen = false;
+		}
+		
+		if(readOnlyConn != null) {
+			readOnlyConn.close();
+			readOnlyConn = null;
+			isReadOnlyConnOpen = false;
+		}
+	}
 }
 
 

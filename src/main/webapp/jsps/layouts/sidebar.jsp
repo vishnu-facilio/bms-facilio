@@ -31,7 +31,7 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
-            	<a href="#device"><i class="fa fa-laptop fa-fw"></i> Devices</a>
+            	<a href="#controller"><i class="fa fa-laptop fa-fw"></i> Controllers</a>
             </li>
             <li>
                 <a href="#"><i class="fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>

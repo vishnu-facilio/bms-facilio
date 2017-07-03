@@ -7,10 +7,12 @@ import java.util.HashMap;
 
 
 public class ActionForm {
-	static
-	{
-		System.out.println("The class is actionform");
+	
+	
+	public Map<Integer, String> getStatusList() {
+		return TicketContext.getAllStatus();
 	}
+	
 	public List< String> getLocations() {
 		return locations;
 	}
@@ -37,4 +39,27 @@ public class ActionForm {
 		this.modules = modules;
 	}
 
+	private Map<Long, String> groupList;
+	public  Map<Long, String> getGroupList() {
+		return groupList;
+	}
+	public void setGroupList( Map<Long, String> groupList) {
+		this.groupList = groupList;
+	}
+	
+	private Map<Long, String> userList;
+	public Map<Long, String> getUserList() {
+		return userList;
+	}
+	public void setUserList(Map<Long, String> userList) {
+		this.userList = userList;
+	}
+	
+	private Map<Long, String> assetList;
+	public Map<Long, String> getAssetList() {
+		return assetList;
+	}
+	public void setAssetList(Map<Long, String> assetList) {
+		this.assetList = assetList;
+	}
 }

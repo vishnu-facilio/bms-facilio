@@ -72,6 +72,8 @@
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
 		<script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 		<script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>
+		
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
 		</script>

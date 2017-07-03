@@ -4,6 +4,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.ScheduleContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.customfields.CFUtil;
+import com.facilio.bmsconsole.customfields.FacilioCustomField;
 
 public class DBUtil {
 	public static void closeAll(Connection conn, Statement stmt, ResultSet rs) {

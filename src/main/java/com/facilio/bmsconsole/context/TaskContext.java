@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
-
-public class TaskContext extends FacilioContext {
+public class TaskContext extends ModuleBaseWithCustomFields {
 	
 	private long orgId = 0;
 	public long getOrgId() {

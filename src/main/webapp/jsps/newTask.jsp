@@ -11,42 +11,44 @@
         	<form role="form" id="addTaskForm" method="post" onsubmit="return false;">
 				<div class="form-group">
 				    <label>Parent</label>
-				    <s:textfield name="parent" id="inputParent" value="%{ticketId}" readonly="true" class="form-control" />
+				    <s:textfield name="task.parent" id="inputParent" value="%{ticketId}" readonly="true" class="form-control" />
 				</div>
 				<div class="form-group">
 				    <label>Subject</label>
-				    <s:textfield name="subject" id="inputSubject" class="form-control" placeholder="Batmobile is not working" />
+				    <s:textfield name="task.subject" id="inputSubject" class="form-control" placeholder="Batmobile is not working" />
 				</div>
 				<div class="form-group">
-				    <label>Assignement Group</label>
-				    <s:select class="form-control" list="assignmentGroupList" name="assignmentGroup" id="inputAssignmentGroup" headerKey="0" headerValue="--" />
+				    <label>Assignment Group</label>
+				    <s:select class="form-control" list="actionForm.groupList" name="task.assignmentGroupId" id="inputAssignmentGroup" headerKey="0" headerValue="--" />
 				</div>
 				<div class="form-group">
 				    <label>Assigned To</label>
-				    <s:select class="form-control" list="assignedToList" name="assignedTo" id="inputAssignedTo" headerKey="-1" headerValue="--" />
+				    <select  class="form-control" name="task.assignedToId" id="inputAssignedTo" disabled=true>
+				    	<option value="0">--</option>
+				    </select>
 				</div>
 				<s:iterator var="customFieldName" value="customFieldNames">
 					<div class="form-group">
 					    <label><s:property value="customFieldName"/></label>
-					    <s:textfield name="customFields['%{customFieldName}']" id="input%{customFieldName}" class="form-control" />
+					    <s:textfield name="task.customProps['%{customFieldName}']" id="input%{customFieldName}" class="form-control" />
 					</div>
 				</s:iterator>
 				<div class="form-group">
 				    <label>Description</label>
-				    <s:textarea class="form-control" name="description" label="inputDescription" rows="3" placeholder="More about the problem..." />
+				    <s:textarea class="form-control" name="task.description" label="inputDescription" rows="3" placeholder="More about the problem..." />
 				</div>
 				<hr />
 				<div class="form-group">
-			  		<label>Schedule Start</label>
+			  		<label>Scheduled Start</label>
 				    	<div>
-							<s:textfield class="form-control" type="datetime-local" name="scheduleStart" id="inputScheduleStart" />
+							<s:textfield class="form-control" type="datetime-local" name="scheduleObj.scheduledStart" id="inputScheduleStart" />
 						</div>
 				</div>
 				
 				<div class="form-group">
 			  		<label>Estimated End</label>
 				    	<div>
-							<s:textfield class="form-control" type="datetime-local" name="estimatedEnd" id="inputEstimatedEnd" readonly="true" />
+							<s:textfield class="form-control" type="datetime-local" name="scheduleObj.estimatedEnd" id="inputEstimatedEnd" readonly="true" />
 						</div>
 				</div>
 				
@@ -55,34 +57,34 @@
 				    <div id="estimatedDuration">
 			    		<div class="input-group col-sm-3">
 		      				<div class="input-group-addon">Days</div>
-							<s:textfield class="form-control" name="durationDays" type="number" value="0"/>
+							<input class="form-control" name="durationDays" type="number" value="0"/>
 						</div>
 						<div class="input-group col-sm-3">
 		      				<div class="input-group-addon">Hours</div>
-							<s:textfield class="form-control" name="durationHours" type="number" value="1" />
+							<input class="form-control" name="durationHours" type="number" value="1" />
 						</div>
 						<div class="input-group col-sm-3">
 		      				<div class="input-group-addon">Mins</div>
-							<s:textfield class="form-control" name="durationMinutes" type="number" value="0" />
+							<input class="form-control" name="durationMinutes" type="number" value="0" />
 						</div>
-						<div class="input-group col-sm-3">
+					<%-- 	<div class="input-group col-sm-3">
 		      				<div class="input-group-addon">Secs</div>
-							<s:textfield class="form-control" name="durationSeconds" type="number" value="0" />
-						</div>
+							<input class="form-control" name="durationSeconds" type="number" value="0" />
+						</div>--%>
 					</div>
 				</div>
 				
 				<div class="form-group">
 			  		<label>Actual Work Start</label>
 				    	<div>
-							<s:textfield class="form-control" type="datetime-local" name="actualWorkStart" id="inputActualWorkStart" />
+							<s:textfield class="form-control" type="datetime-local" name="scheduleObj.actualWorkStart" id="inputActualWorkStart" />
 						</div>
 				</div>
 				
 				<div class="form-group">
 			  		<label>Actual Work End</label>
 				    	<div>
-							<s:textfield class="form-control" type="datetime-local" name="actualWorkEnd" label="inputActualWorkEnd" />
+							<s:textfield class="form-control" type="datetime-local" name="scheduleObj.actualWorkEnd" label="inputActualWorkEnd" />
 						</div>
 				</div>
 			</form>
@@ -121,17 +123,16 @@
 	$(document).ready(function() {
 		
 		var updateEndTime = function() {
-			console.log("test");
 			var days = $("#estimatedDuration input[name=durationDays]").val();
 			var hours = $("#estimatedDuration input[name=durationHours]").val();
 			var min = $("#estimatedDuration input[name=durationMinutes]").val();
-			var sec = $("#estimatedDuration input[name=durationSeconds]").val();
+			//var sec = $("#estimatedDuration input[name=durationSeconds]").val();
 			
 			var date = new Date($("#inputScheduleStart").val());
 			date.setDate(date.getDate() + parseInt(days));
 			date.setHours(date.getHours() + parseInt(hours));
 			date.setMinutes(date.getMinutes() + parseInt(min));
-			date.setSeconds(date.getSeconds() + parseInt(sec));
+			//date.setSeconds(date.getSeconds() + parseInt(sec));
 			
 			var endDay = ("0" + date.getDate()).slice(-2);
 			var endMonth = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -168,7 +169,6 @@
 					data : {groupId : groupId}
 				})
 				.done(function(data) {
-					console.log(data);
 					updateSelect("#inputAssignedTo", data);
 					$("#inputAssignedTo").attr("disabled",false);
 				})

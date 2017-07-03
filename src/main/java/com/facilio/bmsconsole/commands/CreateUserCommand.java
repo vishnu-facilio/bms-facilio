@@ -18,7 +18,7 @@ public class CreateUserCommand implements Command {
 		HashMap<String,String> signupinfomap = (HashMap<String,String>)fc.get(signupinfo);
 		
 		System.out.println("This is the map :-   "+signupinfomap);
-		java.sql.Connection con = fc.getConnection();
+		java.sql.Connection con = fc.getConnectionWithTransaction();
 		String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
 		
 		PreparedStatement ps = con.prepareStatement(insertquery);

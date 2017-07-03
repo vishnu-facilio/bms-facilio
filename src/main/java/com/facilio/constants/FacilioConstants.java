@@ -1,10 +1,13 @@
 package com.facilio.constants;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 
 public class FacilioConstants {
+	
+	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 	
 	public static class CognitoUserPool {
 		
@@ -50,5 +53,32 @@ public class FacilioConstants {
 			ALL_ROLES.put(AGENT, "Agent");
 			ALL_ROLES.put(REQUESTER, "Requester");
 		}
+	}
+	
+	public static class ContextNames {
+		
+		public static final String TICKET_ID = "ticketId";
+		public static final String TICKET = "ticket";
+		public static final String TICKET_LIST = "tickets";
+		
+		public static final String TASK_ID = "taskId";
+		public static final String TASK = "task";
+		public static final String TASK_LIST = "tasks";
+		
+		public static final String SCHEDULE_ID = "scheduleId";
+		public static final String SCHEDULE_OBJECT = "scheduleObject";
+		
+		public static final String NOTE = "note";
+		public static final String NOTE_LIST = "notes";
+		
+		public static final String ACTION_FORM = "actionForm";
+		
+		public static final String MODULE_NAME = "moduleName";
+		
+		public static final String CUSTOM_FIELDS = "customFields";
+		
+		public static final String MODULE_OBJECTS_TABLE_NAME = "moduleObjectsTable";
+		public static final String MODULE_FIELDS_TABLE_NAME = "moduleFieldsTable";
+		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 	}
 }

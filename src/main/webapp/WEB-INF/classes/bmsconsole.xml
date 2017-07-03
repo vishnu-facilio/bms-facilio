@@ -46,13 +46,15 @@
     </action>    
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
-    <action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
+    <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
     	<result name="success">/jsps/device.jsp</result>
     </action>
     <action name="newDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showAdd">
     	<result name="success">/jsps/newdevice.jsp</result>
     </action>
-    <action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
+    <action name="addController" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
+    </action>
+    <action name="downloadAgent" class="com.facilio.bmsconsole.actions.DeviceAction" method="downloadAgent">
     </action>
     <action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceData">
     	<result name="success">/jsps/devicedata.jsp</result>
@@ -71,6 +73,10 @@
     </action>
      <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="disableDeviceMonitoring">
     </action>
+	<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
+    </action>
+    <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
+    </action>
     
     <action name="users" class="com.facilio.bmsconsole.actions.UserListAction">
 		<result name="success">/jsps/usersList.jsp</result>
@@ -80,11 +86,11 @@
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>
 
-	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketListAction">
+	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
 		<result name="success">/jsps/ticketsList.jsp</result>
 	</action>
 	
-	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskListAction">
+	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<result name="success">/jsps/tasksList.jsp</result>
 	</action>
 	
@@ -94,7 +100,7 @@
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
-			<result type="tiles">newCF</result>
+			<result name="success">/jsps/newCFs.jsp</result>
 		</action>
 		
 		<action name="addCF" class="com.facilio.bmsconsole.actions.AddCFAction">
@@ -104,36 +110,36 @@
 		</action>
 	</package>
 
-	<package name="devices" namespace="/home/device" extends="home">
+	<package name="controllers" namespace="/home/controller" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
     		<result name="success">/jsps/deviceinfo.jsp</result>
     	</action>
     </package>
 
 	<package name="tickets" namespace="/home/tickets" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.NewTicketAction">
+		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
 			<result name="success">/jsps/newTicket.jsp</result>
 			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.AddTicketAction">
+		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction" method="addTicket">
 			<result name="success" type="json">
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
 
-		<action name="*" class="com.facilio.bmsconsole.actions.ViewTicketAction">
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/viewTicket.jsp</result>
 		</action>
 	</package>
 	
 	<package name="tasks" namespace="/home/tasks" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.NewTaskAction">
+		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
 			<result name="success">/jsps/newTask.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.AddTaskAction">
+		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
 			<result name="success" type="json">
 				<param name="includeProperties">taskId</param>
 			</result>
@@ -141,11 +147,11 @@
 		
 		<action name="addNote" class="com.facilio.bmsconsole.actions.TaskNotes" method="addNote">
 			<result name="success" type="json">
-				<param name="includeProperties">noteId</param>
+				<param name="includeProperties">note.noteId</param>
 			</result>
 		</action>
 
-		<action name="*" class="com.facilio.bmsconsole.actions.ViewTaskAction">
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/viewTask.jsp</result>
 		</action>
