@@ -23,17 +23,21 @@
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX  || #field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME }">
 					
 					<s:textfield  name="%{#field.name}"
-						id="%{#field.label}" class="form-control"
+						id="%{#field.id}" class="form-control"
 						placeholder="xyz@example.com" type="%{#field.html5Type}" />
 						</s:if>
 			<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
 					
 	<s:select class="form-control" list="actionForm[#field.list]"
-						name="%{#field.name}" id="%{#field.id}" headerKey="0"
+						name="%{#field.id}" id="%{#field.id}" headerKey="0"
 						headerValue="--" />					
 						
 						</s:if>		
-						
+							<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
+							<s:textarea class="form-control" name="%{#field.name}"
+							label="%{#field.id}" rows="3"
+							placeholder="More about the problem..." />
+							</s:if>	
 				</div>
 			
 		</s:iterator>
@@ -44,26 +48,13 @@
 
 <div class="col-lg-12">
 				<div class="panel-body">
-
-					<div class="form-group">
-						<label>Subject</label>
-						<s:textfield name="ticket.subject" id="inputSubject"
-							class="form-control" placeholder="Batmobile is not working" />
-					</div>
-					<s:iterator var="customFieldName" value="customFieldNames">
+	<s:iterator var="customFieldName" value="customFieldNames">
 						<div class="form-group">
 							<label><s:property value="customFieldName" /></label>
 							<s:textfield name="ticket.customProps['%{customFieldName}']"
 								id="input%{customFieldName}" class="form-control" />
 						</div>
 					</s:iterator>
-					<div class="form-group">
-						<label>Description</label>
-						<s:textarea class="form-control" name="ticket.description"
-							label="inputDescription" rows="3"
-							placeholder="More about the problem..." />
-					</div>
-
 					<div class="form-group">
 						<button type="reset" class="btn btn-outline btn-default"
 							onclick="location.href='#tickets';">Go Back</button>
