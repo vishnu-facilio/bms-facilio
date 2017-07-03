@@ -10,76 +10,39 @@
 <form role="form" id="addTicketForm" onsubmit="return false;">
 
 	<div class="row">
+	<s:iterator value="formlayout" status="rowstatus" var="panel">
+	
+	<div class='<s:if test="%{#panel.display == @com.facilio.bmsconsole.context.Panel$Type@HALF }">col-lg-6</s:if><s:else>col-lg-12</s:else>'>
+	<div class="panel-body">
+		<s:iterator value="#panel" status="rowstatus" var="field">
+			
+			
+			
+			<div class="form-group">
+					<label><s:property value="#field.label"/></label>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX  || #field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME }">
+					
+					<s:textfield  name="%{#field.name}"
+						id="%{#field.label}" class="form-control"
+						placeholder="xyz@example.com" type="%{#field.html5Type}" />
+						</s:if>
+			<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
+					
+	<s:select class="form-control" list="actionForm[#field.list]"
+						name="%{#field.name}" id="%{#field.id}" headerKey="0"
+						headerValue="--" />					
+						
+						</s:if>		
+						
+				</div>
+			
+		</s:iterator>
+ </div>
+  </div>
+</s:iterator>
 
-		<div class="col-lg-6">
-			<div class="panel-body">
-				<div class="form-group">
-					<label>Requester</label>
-					<s:textfield type="email" name="ticket.requester"
-						id="inputRequester" class="form-control"
-						placeholder="xyz@example.com" />
-				</div>
-				<div class="form-group">
-					<label>Asset</label>
-					<s:select class="form-control" list="actionForm.assetList"
-						name="ticket.failedAssetId" id="inputAsset" headerKey="0"
-						headerValue="--" />
-				</div>
-				<div class="form-group">
-					<label>Location</label>
-					<s:select class="form-control" list="actionForm.locations"
-						name="location" id="inputlocation" headerKey="0" headerValue="--" />
-				</div>
-				<%--  <div class="form-group">
-                <label>Template</label>
-                <s:select class="form-control" list="assetList" name="asset" id="inputAsset" headerKey="-1" headerValue="--" />
-            </div> --%>
-			</div>
-		</div>
-		<div class="col-lg-6">
-			<div class="panel-body">
-				<div class="form-group">
-					<label>Due Time</label>
-					<div>
-						<s:textfield class="form-control" type="datetime-local"
-							name="ticket.dueTime" id="inputDueTime" />
-					</div>
-				</div>
-				<%--
-<div class="form-group">
-         <label for="disabledSelect">Status</label>
-          <input class="form-control" id="disabledInput" type="text" placeholder="Disabled input" disabled>
-</div>
- 
-<div class="form-group">
-                                <label>Priority</label>
-                                <select class="form-control">
-                                    <option>1 - Critical</option>
-                                    <option>2 - High</option>
-                                    <option>3 - Moderate</option>
-                                    <option>4 - Low</option>
-                                    <option>5 - Planning</option>
-                                </select>
-                            </div>
-                            --%>
-				<div class="form-group">
-					<label>Status</label>
-					<s:select class="form-control" list="statusList"
-						name="ticket.statusCode" id="inputStatus" disabled="true" />
-				</div>
-				<div class="form-group">
-					<label>Assigned To</label>
-					<s:select class="form-control" list="actionForm.userList"
-						name="ticket.assignedToId" id="inputAgent" headerKey="0"
-						headerValue="--" />
-				</div>
 
-			</div>
-
-		</div>
-		<div class="row">
-
-			<div class="col-lg-12">
+<div class="col-lg-12">
 				<div class="panel-body">
 
 					<div class="form-group">
@@ -110,7 +73,7 @@
 				</div>
 			</div>
 
-		</div>
+		
 	</div>
 </form>
 <script>

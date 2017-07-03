@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.awt.Panel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.apache.commons.chain.Command;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.customfields.FacilioCustomField;
@@ -22,7 +24,8 @@ public class TicketAction extends ActionSupport {
 	
 	//New Ticket props
 	public String newTicket() throws Exception {
-		statusList = TicketContext.getAllStatus();
+		
+		
 		
 		FacilioContext context = new FacilioContext();
 		Chain newTicket = FacilioChainFactory.getNewTicketChain();
@@ -38,7 +41,6 @@ public class TicketAction extends ActionSupport {
 		}
 		
 		Map mp = ActionContext.getContext().getParameters();
-		System.out.println(mp.get("ajax").getClass().getName());;
 		String isajax =((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		
 		System.out.println("isajaxisajax"+isajax);;
@@ -49,7 +51,14 @@ public class TicketAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+	public List getFormlayout()
+	{
+		return FormLayout.getNewTicketLayout();
+	}
+	public void setFormlayout(List l)
+	{
+		
+	}
 	private ActionForm actionForm;
 	public ActionForm getActionForm() {
 		return actionForm;
@@ -58,13 +67,7 @@ public class TicketAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	private Map<Integer, String> statusList;
-	public Map<Integer, String> getStatusList() {
-		return statusList;
-	}
-	public void setStatusList(Map<Integer, String> statusList) {
-		this.statusList = statusList;
-	}
+	
 	
 	private String moduleName;
 	public String getModuleName() {

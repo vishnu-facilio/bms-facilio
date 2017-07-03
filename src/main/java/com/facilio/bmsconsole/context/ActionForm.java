@@ -6,10 +6,12 @@ import java.util.ArrayList;
 
 
 public class ActionForm {
-	static
-	{
-		System.out.println("The class is actionform");
+	
+	
+	public Map<Integer, String> getStatusList() {
+		return TicketContext.getAllStatus();
 	}
+	
 	public List< String> getLocations() {
 		return locations;
 	}
