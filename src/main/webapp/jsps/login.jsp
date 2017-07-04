@@ -1,3 +1,6 @@
+<%
+ String staticURL = "http://facilio-static.s3-website-us-west-2.amazonaws.com";
+ %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,25 +10,30 @@
     <meta name="author" content="">
     <title>facilio</title>
 	
-	<!-- core CSS -->
-    <link href="css/home/bootstrap.min.css" rel="stylesheet">
-    <link href="css/home/font-awesome.min.css" rel="stylesheet">
-    <link href="css/home/animate.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="<%=staticURL%>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Custom Fonts -->
+	<link href="<%=staticURL%>/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	    
+	<link href="css/home/animate.min.css" rel="stylesheet">
     <link href="css/home/main.css" rel="stylesheet">
     <link href="css/home/responsive.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/home/sass-compiled.css" />
 	
     <link href="css/styles.css" rel="stylesheet" type="text/css">
-      <script src="http://cognito.budilov.com/assets/js/jsbn.js"></script>
-      <script src="http://cognito.budilov.com/assets/js/jsbn2.js"></script>
-      <script src="http://cognito.budilov.com/assets/js/sjcl.js"></script>
-      <script src="http://cognito.budilov.com/assets/js/aws-cognito-sdk.min.js"></script>
-      <script src="http://cognito.budilov.com/assets/js/amazon-cognito-identity.min.js"></script>
-      <script src="js/login.js"></script>
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>      
+    
+    <!-- jQuery -->
+	<script src="<%=staticURL%>/vendor/jquery/jquery.min.js"></script>
+	
+	<!-- Bootstrap Core JavaScript -->
+	<script src="<%=staticURL%>/vendor/bootstrap/js/bootstrap.min.js"></script>
+	    
+    <!-- AWS Cognito -->
+    <script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/aws-cognito-sdk.min.js"></script>
+    <script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/amazon-cognito-identity.min.js"></script>
+    
+    <script src="js/login.js"></script>      
   </head>
 
 
