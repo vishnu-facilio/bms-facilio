@@ -24,6 +24,13 @@ public class FormLayout {
 
 		fields.add(second);
 		
+		Panel third =  new Panel(Panel.Type.FULL);
+
+		third.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
+		third.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
+
+		fields.add(third);
+		
 		return fields;
 		
 	}
