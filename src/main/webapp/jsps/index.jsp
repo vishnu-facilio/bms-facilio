@@ -132,11 +132,11 @@ $( document ).ready(function() {
                     </div>
                     <div class="col-xs-9 text-right">
                         <div class="huge">26</div>
-                        <div>New Requesters!</div>
+                        <div>Users!</div>
                     </div>
                 </div>
             </div>
-            <a href="#">
+            <a href="#users">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -282,7 +282,7 @@ $( document ).ready(function() {
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
-       <div class="panel panel-default">
+       <%--<div class="panel panel-default">
            <div class="panel-heading">
                <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
            </div>
@@ -394,6 +394,7 @@ $( document ).ready(function() {
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
+        --%>
    </div>
    <!-- /.col-lg-8 -->
    <div class="col-lg-4">
@@ -467,7 +468,7 @@ $( document ).ready(function() {
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
-       <div class="chat-panel panel panel-default">
+       <%--<div class="chat-panel panel panel-default">
            <div class="panel-heading">
                <i class="fa fa-comments fa-fw"></i> Chat
                <div class="btn-group pull-right">
@@ -584,6 +585,7 @@ $( document ).ready(function() {
            <!-- /.panel-footer -->
        </div>
        <!-- /.panel .chat-panel -->
+        --%>
    </div>
    <!-- /.col-lg-4 -->
 </div>
