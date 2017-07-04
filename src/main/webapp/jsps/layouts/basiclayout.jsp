@@ -40,6 +40,8 @@
     	
     	<link href="${pageContext.request.contextPath}/css/sb-admin-2.css" rel="stylesheet">
     	
+    	<link href="${pageContext.request.contextPath}/js/c3/c3.min.css" rel="stylesheet">
+    	
     
 		<!-- jQuery -->
 	    <script src="<%=staticURL%>/vendor/jquery/jquery.min.js"></script>

@@ -1,3 +1,54 @@
+<%@ taglib uri="facilio-tags" prefix="f" %> 
+
+<script>
+
+var chart;
+function showDeviceData(controllerId)
+{
+	var dataObject = new Object();
+	dataObject.controllerId = controllerId;
+	$.ajax({
+	      type: "GET",
+	      url: contextPath + "/home/showDeviceData",   
+	      data: dataObject,
+	      success: function (response) {
+	    	console.log(response);
+    		var chart_json = 
+			{
+				'data': 
+					{
+						'x': 'x',
+						'columns': 
+							[
+								response.x,
+								response.y
+							]
+					},
+				'axis': 
+					{
+						'x': 
+							{
+								'label': 'Time',
+								'type': 'timeseries',
+								'tick': {'format': '%H:%M:%S'}
+							},
+						'y': 
+							{
+								'label': 'kW'
+							}
+					}
+			};
+			chart = ChartLibrary.timeseries("#device-energy-usage", chart_json); 
+	      }
+	 });
+}
+
+$( document ).ready(function() {
+	showDeviceData(1);
+});
+
+</script>
+
 <div class="row">
    <div class="col-lg-12">
        <h1 class="page-header">Dashboard</h1>
@@ -100,7 +151,7 @@
     <div class="col-lg-8">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Area Chart Example
+                <i class="fa fa-bar-chart-o fa-fw"></i> Total Energy Consumption
                 <div class="pull-right">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -123,7 +174,8 @@
             </div>
             <!-- /.panel-heading -->
            <div class="panel-body">
-               <div id="morris-area-chart"></div>
+               <div id="device-energy-usage">
+               </div>
            </div>
            <!-- /.panel-body -->
        </div>

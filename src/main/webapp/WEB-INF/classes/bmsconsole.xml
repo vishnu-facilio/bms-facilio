@@ -78,6 +78,10 @@
     <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
     </action>
     
+   	<action name="admin" class="com.facilio.bmsconsole.actions.AdminAction" method="show">
+		<result name="success">/jsps/admin.jsp</result>
+	</action>
+    
     <action name="users" class="com.facilio.bmsconsole.actions.UserListAction">
 		<result name="success">/jsps/usersList.jsp</result>
 	</action>
@@ -113,6 +117,16 @@
 	<package name="controllers" namespace="/home/controller" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
     		<result name="success">/jsps/deviceinfo.jsp</result>
+    	</action>
+    </package>
+    
+    <package name="admin" namespace="/home/admin" extends="home">
+		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction" method="addJob">
+    	</action>
+    	<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction" method="deleteJob">
+    	</action>
+		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction" method="jobs">
+    		<result name="success">/jsps/adminjobs.jsp</result>
     	</action>
     </package>
 

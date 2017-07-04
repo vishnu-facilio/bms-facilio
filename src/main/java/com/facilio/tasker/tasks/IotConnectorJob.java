@@ -26,6 +26,7 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.device.types.DistechControls;
+import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.OrgApi;
@@ -50,13 +51,18 @@ public class IotConnectorJob extends FacilioJob{
 			timeArray.add("x");
 			valueArray.add("kW");
 			
+			Map<String, Object> jobDetails = AdminAPI.getSystemJob("IotConnector");
+			Long jobId = (Long) jobDetails.get("jobId");
+			Long lastExecutionTime = (Long) jobDetails.get("lastexecutiontime");
+			
 			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
 			AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
 			
 			DynamoDB dd = new DynamoDB(client);
 			Table table = dd.getTable(AwsUtil.AWS_IOT_DYNAMODB_TABLE_NAME);
 			RangeKeyCondition rkc = new RangeKeyCondition("TimeLog");
-			rkc.gt(String.valueOf(System.currentTimeMillis() - ((20 * 1000) - 1)));
+			//rkc.gt(String.valueOf(System.currentTimeMillis() - ((20 * 1000) - 1)));
+			rkc.gt(String.valueOf(lastExecutionTime));
 			
 			List<String> clients = getClients(dd);
 			for(String clientId : clients)
@@ -121,6 +127,7 @@ public class IotConnectorJob extends FacilioJob{
 				WmsApi.sendMessage(2, 3, dataList);
 			}
 			deleteClients(dd, clients);
+			AdminAPI.updateSystemJob(jobId);
 		}
 		catch (Exception e) 
 		{
@@ -128,11 +135,11 @@ public class IotConnectorJob extends FacilioJob{
 		}
 	}
 
-	private List<String> getClients(DynamoDB dd) 
+	private List<String> getClients(DynamoDB dd) throws Exception 
 	{
 		List<String> clients = new ArrayList<>();
-		Table table = dd.getTable("IotDataClients");
-		QuerySpec spec = new QuerySpec().withHashKey("IotDataClients", "IotDataClients");
+		Table table = dd.getTable("IotClient");
+		QuerySpec spec = new QuerySpec().withHashKey("IotClient", "IotClient");
 		ItemCollection<QueryOutcome> items = table.query(spec);
 		Iterator<Item> iterator = items.iterator();
 		Item item = null;
@@ -141,16 +148,25 @@ public class IotConnectorJob extends FacilioJob{
 		{
 		    item = iterator.next();
 		    clients.add(item.getString("ClientId"));
+		    Map<String, Object> payload = item.getMap("payload");
+		    if(((String)payload.get("status")).equals("connected"))
+		    {
+		    	Long controllerId = Long.parseLong(item.getString("ClientId").substring(item.getString("ClientId").lastIndexOf("-") + 1));
+		    	if((Integer)DeviceAPI.getControllerInfo(controllerId).get("status") == 1)
+		    	{
+		    		DeviceAPI.updateControllerStatus(controllerId, 2);
+		    	}
+		    }
 		}
 		return clients;
 	}
 	
 	private void deleteClients(DynamoDB dd, List<String> clients) 
 	{
-		Table table = dd.getTable("IotDataClients");
+		Table table = dd.getTable("IotClient");
 		for(String client : clients)
 		{
-			table.deleteItem("IotDataClients", "IotDataClients", "ClientId", client);
+			table.deleteItem("IotClient", "IotClient", "ClientId", client);
 		}
 	}
 }

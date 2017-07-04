@@ -32,9 +32,13 @@ li.selected {
 </div>
 <div class="row" style="float:left; width:32%;">
    <div class="col-lg-12">
-       <h4>Unmodelled Instances</h4>
+       <h4 style="padding-bottom: 15px;">Unmodelled Instances</h4>
        	<div id="instances" style=" border:1px solid #ddd;">
-		<div style="padding:10px;background:#e1e1e1; border-bottom:1px solid #ddd; ">Name</div>
+		<div style="padding:10px;background:#e1e1e1; border-bottom:1px solid #ddd; ">
+			<div style="float:left;">Name</div>
+			<div style="float:right;"><button type="button" onclick="selectAll();" class="btn btn-outline btn-primary btn-xs">Select All</button></div>
+			<div style="clear:both;"></div>
+		</div>
 		<ul>
 		<s:iterator var="instance" value="%{INSTANCES}">
 			<li instanceId="<s:property value="#instance.controllerInstanceId" />" style="padding:10px;border-bottom:1px solid #ddd; "><s:property value="#instance.instanceName" /></li>
@@ -46,7 +50,11 @@ li.selected {
 </div>
 <div class="row" style="float:left; width:50%;  margin-left:20px;">
    <div class="col-lg-12">
-       <h4>Devices</h4>
+       <div style="float:left;"><h4>Devices</h4></div>
+       <s:if test="%{!DEVICES.values.isEmpty()}">
+       <div onclick="$('#accordion').toggle(); $('#devicetree').toggle();" style="cursor:pointer;float: right;padding: 15px;padding-right: 65px;"><i class="fa fa-sitemap" aria-hidden="true"></i></div>
+       </s:if>
+       <div style="clear:both;"></div>
        	<s:if test="%{DEVICES.values.isEmpty()}">
 		<div id="nodevicefound" style="text-align:center;">No devices found</div>
 		</s:if>
@@ -75,14 +83,10 @@ li.selected {
 		</div>
 		</s:iterator>
 		</div>
+		<div id="devicetree" style="display:none;">
+			<f:chart id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
+		</div>
 		</s:else>
-   </div>
-   <!-- /.col-lg-12 -->
-</div>
-<div class="row" style="float:left; margin-left:20px;margin-top:10px;">
-   <div class="col-lg-12">
-       <h4>Device Tree</h4>
-       <f:chart id="eb-meter" type="tree-collapsible" width="400" height="150" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
    </div>
    <!-- /.col-lg-12 -->
 </div>
@@ -205,6 +209,10 @@ li.selected {
 		    	  $('#configureDeviceModel .modal-body').html(response);
 		      }
 		 });
+	}
+	
+	function selectAll() {
+		
 	}
 	
 	
