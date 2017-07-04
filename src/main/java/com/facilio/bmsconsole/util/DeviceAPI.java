@@ -33,7 +33,7 @@ public class DeviceAPI
 	static
 	{
 		attributeMap.put("LINE_VOLTAGE_R", "R Line Voltage");
-		attributeMap.put("PHASE_VOLTAGE_R", "R Phase Voltage");
+		attributeMap.put("PHASE_VOLTAGE_R", "RY Phase Voltage");
 		attributeMap.put("LINE_CURRENT_R", "R Line Current");
 		attributeMap.put("POWER_FACTOR_R", "R Power Factor");
 		attributeMap.put("FREQUENCY_R", "R Frequency");
@@ -43,7 +43,7 @@ public class DeviceAPI
 		attributeMap.put("PHASE_ENERGY_R", "R Phase Energy");
 
 		attributeMap.put("LINE_VOLTAGE_Y", "Y Line Voltage");
-		attributeMap.put("PHASE_VOLTAGE_Y", "Y Phase Voltage");
+		attributeMap.put("PHASE_VOLTAGE_Y", "YB Phase Voltage");
 		attributeMap.put("LINE_CURRENT_Y", "Y Line Current");
 		attributeMap.put("POWER_FACTOR_Y", "Y Power Factor");
 		attributeMap.put("FREQUENCY_Y", "Y Frequency");
@@ -53,7 +53,7 @@ public class DeviceAPI
 		attributeMap.put("PHASE_ENERGY_Y", "Y Phase Energy");
 		
 		attributeMap.put("LINE_VOLTAGE_B", "B Line Voltage");
-		attributeMap.put("PHASE_VOLTAGE_B", "B Phase Voltage");
+		attributeMap.put("PHASE_VOLTAGE_B", "BR Phase Voltage");
 		attributeMap.put("LINE_CURRENT_B", "B Line Current");
 		attributeMap.put("POWER_FACTOR_B", "B Power Factor");
 		attributeMap.put("FREQUENCY_B", "B Frequency");
@@ -61,6 +61,8 @@ public class DeviceAPI
 		attributeMap.put("REACTIVE_POWER_B", "B Reactive Power");
 		attributeMap.put("APPARENT_POWER_B", "B Apparent Power");
 		attributeMap.put("PHASE_ENERGY_B", "B Phase Energy");
+		
+		attributeMap.put("TOTAL_ENERGY_CONSUMPTION", "Total Energy");
 	}
 	
 	public static Map<String, String> getAttributes()
@@ -129,6 +131,33 @@ public class DeviceAPI
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add controller");
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while adding controller" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	public static void updateControllerStatus(Long controllerId, int status) throws Exception
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE Controller SET STATUS = ? WHERE CONTROLLER_ID = ?", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, status);
+			pstmt.setLong(2, controllerId);
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to update controller");
 			}
 		}
 		catch(SQLException | RuntimeException e) 
@@ -224,7 +253,8 @@ public class DeviceAPI
 				devices.put("name", rs.getString("NAME"));
 				devices.put("polltime", rs.getString("POLL_TIME"));
 				devices.put("type", rs.getInt("CONTROLLER_TYPE"));
-				devices.put("status", rs.getBoolean("JOB_STATUS"));
+				devices.put("jobstatus", rs.getBoolean("JOB_STATUS"));
+				devices.put("status", rs.getInt("STATUS"));
 				return devices;
 			}
 		}
@@ -776,7 +806,7 @@ public class DeviceAPI
 			while(rs.next()) 
 			{
 				timeArray.add(rs.getLong("ADDED_TIME"));
-				valueArray.add(rs.getLong("TOTAL_ENERGY_CONSUMPTION"));
+				valueArray.add(rs.getDouble("TOTAL_ENERGY_CONSUMPTION"));
 			}
 			dataList.put("x", timeArray);
 			dataList.put("y", valueArray);

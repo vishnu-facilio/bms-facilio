@@ -125,6 +125,10 @@ public class DeviceAction extends ActionSupport
 			JSONParser parser = new JSONParser();
 			JSONArray instances = (JSONArray) parser.parse(request.getParameter("instances"));
 			DeviceAPI.updateControllerInstances(request.getParameter("deviceId") != null?Long.parseLong(request.getParameter("deviceId")):null, instances, controllerId);
+			if((Integer)DeviceAPI.getControllerInfo(controllerId).get("status") == 2)
+	    	{
+	    		DeviceAPI.updateControllerStatus(controllerId, 4);
+	    	}
 		}
 		catch (Exception e) 
 		{
@@ -431,7 +435,7 @@ public class DeviceAction extends ActionSupport
 					+ "ControllerId=" + controllerId + "\n"
 					+ "UserName=" + UserInfo.getCurrentUser().getEmail() + "\n"
 					+ "Password=\n"
-					+ "ClientId=" + OrgInfo.getCurrentOrgInfo().getOrgid();
+					+ "ClientId=" + AwsUtil.getConfig("environment") + "-" + OrgInfo.getCurrentOrgInfo().getOrgid() + "-" + controllerId;
 			out.write(config.getBytes(), 0, config.getBytes().length);
 			out.closeEntry();
 			

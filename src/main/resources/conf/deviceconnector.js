@@ -102,6 +102,10 @@ var processItems = function(x, resultArray, runProcess){
         		{
             		console.log('Successfully logged!');
 					mqttClient.publish('iotdata', JSON.stringify(resultArray));
+					
+					var clientJson = {};
+		    		clientJson.status = "connected";
+		    		mqttClient.publish('iotclient', JSON.stringify(clientJson));
 					console.log("Published");
         		}
     			});
@@ -109,6 +113,10 @@ var processItems = function(x, resultArray, runProcess){
     		else
     		{
 				mqttClient.publish('iotdata', JSON.stringify(resultArray));
+				
+				var clientJson = {};
+		    	clientJson.status = "connected";
+		    	mqttClient.publish('iotclient', JSON.stringify(clientJson));
 				console.log("Published");
     		}
 		}
@@ -172,6 +180,11 @@ var processItems = function(x, resultArray, runProcess){
 		  		isConnected = true;
 		    	console.log('connect');
 		    	mqttClient.publish('iotdata', JSON.stringify(resultArray));
+		    	
+		    	var clientJson = {};
+		    	clientJson.status = "connected";
+		    	mqttClient.publish('iotclient', JSON.stringify(clientJson));
+		    	console.log(resultArray);
 		    	console.log("Published");
 	   	 	});
 			mqttClient
