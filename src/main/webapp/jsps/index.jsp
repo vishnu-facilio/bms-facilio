@@ -81,11 +81,11 @@
                     </div>
                     <div class="col-xs-9 text-right">
                         <div class="huge">26</div>
-                        <div>New Requesters!</div>
+                        <div>Users!</div>
                     </div>
                 </div>
             </div>
-            <a href="#">
+            <a href="#users">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -230,7 +230,7 @@
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
-       <div class="panel panel-default">
+       <%--<div class="panel panel-default">
            <div class="panel-heading">
                <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
            </div>
@@ -342,6 +342,7 @@
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
+        --%>
    </div>
    <!-- /.col-lg-8 -->
    <div class="col-lg-4">
@@ -415,7 +416,7 @@
            <!-- /.panel-body -->
        </div>
        <!-- /.panel -->
-       <div class="chat-panel panel panel-default">
+       <%--<div class="chat-panel panel panel-default">
            <div class="panel-heading">
                <i class="fa fa-comments fa-fw"></i> Chat
                <div class="btn-group pull-right">
@@ -532,6 +533,7 @@
            <!-- /.panel-footer -->
        </div>
        <!-- /.panel .chat-panel -->
+        --%>
    </div>
    <!-- /.col-lg-4 -->
 </div>
