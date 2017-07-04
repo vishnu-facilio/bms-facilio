@@ -241,10 +241,13 @@ public class DeviceAction extends ActionSupport
 	public void showDeviceData()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
-		Long controllerId = Long.parseLong(request.getParameter("controllerId"));
+		//Long controllerId = Long.parseLong(request.getParameter("controllerId"));
 		HttpServletResponse response = ServletActionContext.getResponse();
 		try 
 		{
+			System.out.println(DeviceAPI.getAllControllers(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			Long controllerId = (Long) (DeviceAPI.getAllControllers(OrgInfo.getCurrentOrgInfo().getOrgid())).get(0).get("id");
+			
 			response.setContentType("application/json");
 		    response.setCharacterEncoding("UTF-8");
 		    Long deviceId = DeviceAPI.getDeviceId(controllerId);

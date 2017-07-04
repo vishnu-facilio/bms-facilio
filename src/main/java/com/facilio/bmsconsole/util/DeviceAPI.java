@@ -214,7 +214,7 @@ public class DeviceAPI
 			while(rs.next()) 
 			{
 				Map<String, Object> devices = new HashMap<>();
-				devices.put("id", rs.getString("ASSETID"));
+				devices.put("id", rs.getLong("ASSETID"));
 				devices.put("name", rs.getString("NAME"));
 				devices.put("polltime", rs.getString("POLL_TIME"));
 				devices.put("type", getControllerTypes().get(rs.getInt("CONTROLLER_TYPE")));

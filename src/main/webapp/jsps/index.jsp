@@ -6,7 +6,7 @@ var chart;
 function showDeviceData(controllerId)
 {
 	var dataObject = new Object();
-	dataObject.controllerId = controllerId;
+	//dataObject.controllerId = controllerId;
 	$.ajax({
 	      type: "GET",
 	      url: contextPath + "/home/showDeviceData",   
