@@ -30,7 +30,7 @@ public class TaskAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		customFieldNames = new ArrayList<>();
 		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
 			FacilioField field = fields.get(i);

@@ -12,12 +12,10 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.fields.FieldUtil;
 import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddFieldsCommand implements Command {
 	@Override
@@ -30,13 +28,13 @@ public class AddFieldsCommand implements Command {
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		long moduleId = (long) context.get(FacilioConstants.ContextNames.MODULE_ID);
 		for(FacilioField field : fields) {
-			field.setFieldId(addCustomField(field, moduleId, ((FacilioContext) context).getConnectionWithTransaction()));
+			field.setFieldId(addField(field, moduleId, ((FacilioContext) context).getConnectionWithTransaction()));
 		}
 		
 		return false;
 	}
 	
-	private long addCustomField(FacilioField cf, long moduleId, Connection conn) throws SQLException {
+	private long addField(FacilioField cf, long moduleId, Connection conn) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		

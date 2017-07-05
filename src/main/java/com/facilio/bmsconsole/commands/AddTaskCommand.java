@@ -39,7 +39,7 @@ public class AddTaskCommand implements Command {
 			ResultSet rs = null;
 			
 			try {
-				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 				fields.remove(0);
 				
 				String sql = FieldUtil.constuctInsertStatement(moduleName, dataTableName, fields);

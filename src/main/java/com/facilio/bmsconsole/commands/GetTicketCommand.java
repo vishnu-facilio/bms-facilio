@@ -31,8 +31,8 @@ public class GetTicketCommand implements Command {
 			ResultSet rs = null;
 			
 			try {
-				List<FacilioField> customFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
-				String sql = FieldUtil.constructSelectStatement(dataTableName, customFields, new String[] {"ticketId"});
+				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+				String sql = FieldUtil.constructSelectStatement(dataTableName, fields, new String[] {"ticketId"});
 				
 				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 				pstmt = conn.prepareStatement(sql);
@@ -41,7 +41,7 @@ public class GetTicketCommand implements Command {
 				rs = pstmt.executeQuery();
 				TicketContext ticket = null;
 				while(rs.next()) {
-					ticket = CommonCommandUtil.getTCObjectFromRS(rs, customFields);
+					ticket = CommonCommandUtil.getTCObjectFromRS(rs, fields);
 					break;
 				}
 				

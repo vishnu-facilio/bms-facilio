@@ -1,19 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.fields.FieldType;
 import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.fields.FieldType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
 
 public class SetColumnNameForNewCFsCommand implements Command {
 
@@ -21,16 +18,22 @@ public class SetColumnNameForNewCFsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
-		long moduleId = (long) context.get(FacilioConstants.ContextNames.MODULE_ID);
+		List<FacilioField> newFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
+		List<FacilioField> existingFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		
+		Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
 		
 		//Have to be changed to get in minimum number of queries
-		for (FacilioField field : fields) {
+		for (FacilioField field : newFields) {
 			FieldType dataType = FieldType.getCFType(field.getDataTypeCode());
 			
 			if(dataType != null) {
 				field.setDataType(dataType);
-				field.setColumnName(getColumnNameForNewField(moduleId, dataType, ((FacilioContext) context).getConnectionWithTransaction()));
+				String newColumnName = getColumnNameForNewField(dataType, existingColumns.get(dataType));
+				if(newColumnName == null) {
+					throw new Exception("No more columns available.");
+				}
+				field.setColumnName(newColumnName);
 			}
 			else {
 				throw new IllegalArgumentException("Invalid Data Type Value");
@@ -40,60 +43,35 @@ public class SetColumnNameForNewCFsCommand implements Command {
 		return false;
 	}
 	
-	private String getColumnNameForNewField(long moduleId, FieldType type, Connection conn) throws Exception {
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			
-			pstmt = conn.prepareStatement("SELECT ID, COLUMN_NAME FROM Available_Columns WHERE ORGID = ? AND MODULEID = ? AND DATA_TYPE = ? LIMIT 1");
-			pstmt.setLong(1, orgId);
-			pstmt.setLong(2, moduleId);
-			pstmt.setInt(3, type.getTypeAsInt());
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				String columnName = rs.getString("COLUMN_NAME");
-				long colId = rs.getLong("ID");
-				
-				deleteColumn(colId, conn);
-				return columnName;
-			}
-			else {
-				throw new Exception("No more columns available.");
+	private Map<FieldType, List<String>> getColumnNamesGroupedByType(List<FacilioField> fields) {
+		Map<FieldType, List<String>> existingColumns = new HashMap<>();
+		if(fields != null) {
+			for(FacilioField field : fields) {
+				List<String> columns = existingColumns.get(field.getDataType());
+				if(columns == null) {
+					columns = new ArrayList<>();
+					existingColumns.put(field.getDataType(), columns);
+				}
+				columns.add(field.getColumnName());
 			}
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		return existingColumns;
 	}
 	
-	private void deleteColumn(long colId, Connection conn) throws SQLException {
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = conn.prepareStatement("DELETE FROM Available_Columns WHERE ORGID = ? AND ID = ?");
-			pstmt.setLong(1, orgId);
-			pstmt.setLong(2, colId);
-			
-			if(pstmt.executeUpdate() < 1) {
-				throw new RuntimeException("Unable to delete from Available_Columns");
+	private String getColumnNameForNewField(FieldType type, List<String> existingColumns) throws Exception {
+		String[] columns = type.getColumnNames();
+		if(existingColumns == null || existingColumns.size() == 0) {
+			return columns[0];
+		}
+		else {
+			for(String column : columns) {
+				if(!existingColumns.contains(column)) {
+					return column;
+				}
 			}
-			
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, null);
-		}
+		return null;
 	}
+	
+	
 }

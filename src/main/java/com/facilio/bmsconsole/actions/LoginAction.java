@@ -105,7 +105,7 @@ public class LoginAction extends ActionSupport{
 		System.out.println("identityId ======>  "+identityId);
 		
 		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    	AWSIot awsIot = AWSIotClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     	
     	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
     	awsIot.attachPrincipalPolicy(policyResult);
