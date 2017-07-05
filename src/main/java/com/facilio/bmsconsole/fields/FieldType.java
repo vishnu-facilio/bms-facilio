@@ -1,20 +1,21 @@
-package com.facilio.bmsconsole.customfields;
+package com.facilio.bmsconsole.fields;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum CFType {
+public enum FieldType {
 	STRING(1, "String"),
 	NUMBER(2, "Number"),
-	DECIMAL(3, "Decimal"),
-	BOOLEAN(4, "Boolean"),
-	DATE(5, "Date"),
-	DATE_TIME(6, "DateTime");
+	LONG_INTEGER(3, "Long Integer"),
+	DECIMAL(4, "Decimal"),
+	BOOLEAN(5, "Boolean"),
+	DATE(6, "Date"),
+	DATE_TIME(7, "DateTime");
 	
 	private int value;
 	private String typeString;
 	
-	private CFType(int value, String typeString) {
+	private FieldType(int value, String typeString) {
 		// TODO Auto-generated constructor stub
 		this.value = value;
 		this.typeString = typeString;
@@ -28,15 +29,15 @@ public enum CFType {
 		return value;
 	}
 	
-	private static Map<Integer, CFType> typeMap = new HashMap<>();
+	private static Map<Integer, FieldType> typeMap = new HashMap<>();
 	
 	public static void init() {
-		for(CFType type : CFType.values()) {
+		for(FieldType type : FieldType.values()) {
 			typeMap.put(type.getTypeAsInt(), type);
 		}
 	}
 	
-	public static CFType getCFType(int value) {
+	public static FieldType getCFType(int value) {
 		return typeMap.get(value);
 	}
 }

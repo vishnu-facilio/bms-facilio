@@ -13,14 +13,12 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.customfields.CFUtil;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.fields.FieldUtil;
+import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 
 public class AddTaskCommand implements Command {
-	
-	private static final String[] DEFAULT_INSERT_TASK_FIELDS = new String[] {"PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -34,15 +32,17 @@ public class AddTaskCommand implements Command {
 				task.setScheduleId(scheduleObj.getScheduleId());
 			}
 			
-			String objectTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_OBJECTS_TABLE_NAME);
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 			
 			try {
-				List<FacilioCustomField> customFields = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
-				String sql = CFUtil.constuctInsertStatement(objectTableName, dataTableName, DEFAULT_INSERT_TASK_FIELDS, customFields, task.getOrgId());
+				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+				fields.remove(0);
+				
+				String sql = FieldUtil.constuctInsertStatement(moduleName, dataTableName, fields);
 				
 				Connection conn = ((FacilioContext) context).getConnectionWithTransaction(); 
 				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -72,7 +72,7 @@ public class AddTaskCommand implements Command {
 					pstmt.setNull(6, Types.BIGINT);
 				}
 				
-				CFUtil.appendCustomFieldValues(customFields, DEFAULT_INSERT_TASK_FIELDS.length, task.getCustomProps(), pstmt);
+				FieldUtil.appendCustomFieldValues(fields, TaskContext.DEFAULT_TASK_FIELDS.length-1, task.getCustomProps(), pstmt);
 				
 				if(pstmt.executeUpdate() < 1) {
 					throw new RuntimeException("Unable to add task");

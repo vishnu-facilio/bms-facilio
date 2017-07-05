@@ -13,7 +13,8 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -23,28 +24,29 @@ public class AddCFAction extends ActionSupport {
 		// TODO Auto-generated method stub
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String cfDataStr = request.getParameter("cfData");
-		
+		String moduleName = request.getParameter("moduleName");
 		JSONParser parser = new JSONParser();
 		JSONArray cfData = (JSONArray) parser.parse(cfDataStr);
 		
-		List<FacilioCustomField> fields = new ArrayList<>();
-		for(int i = 0; i<cfData.size(); i++) {
-			JSONObject cf = (JSONObject) cfData.get(i);
-			FacilioCustomField field = new FacilioCustomField();
-			field.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-			field.setModuleName((String) cf.get("moduleName"));
-			field.setFieldName((String) cf.get("fieldName"));
-			field.setDataTypeCode(Integer.parseInt((String) cf.get("dataType")));
-			fields.add(field);
+		if(cfData != null && cfData.size() > 0) {
+			List<FacilioField> fields = new ArrayList<>();
+			for(int i = 0; i<cfData.size(); i++) {
+				JSONObject cf = (JSONObject) cfData.get(i);
+				FacilioField field = new FacilioField();
+				field.setName((String) cf.get("fieldName"));
+				field.setDataTypeCode(Integer.parseInt((String) cf.get("dataType")));
+				fields.add(field);
+			}
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+			
+			Command addCF = FacilioChainFactory.getAddFieldsChain();
+			addCF.execute(context);
+			
+			setFieldsIds((List<Long>) context.get("FieldIds"));
 		}
-		
-		FacilioContext context = new FacilioContext();
-		context.put("CustomFields", fields);
-		
-		Command addCF = FacilioChainFactory.getAddCustomFieldChain();
-		addCF.execute(context);
-		
-		setFieldsIds((List<Long>) context.get("FieldIds"));
 		
 		return SUCCESS;
 	}

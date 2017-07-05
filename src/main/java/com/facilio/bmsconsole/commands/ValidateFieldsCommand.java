@@ -14,14 +14,8 @@ public class ValidateFieldsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
-		if (context instanceof TicketContext) {
-
-			TicketContext ticketContext = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
-
-			if(ticketContext.getOrgId() == 0) {
-				throw new IllegalArgumentException("ORG ID is invalid");
-			}
+		TicketContext ticketContext = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
+		if (ticketContext != null) {
 
 			if(ticketContext.getRequester() == null || ticketContext.getRequester().isEmpty()) {
 				throw new IllegalArgumentException("Requestor is invalid");
