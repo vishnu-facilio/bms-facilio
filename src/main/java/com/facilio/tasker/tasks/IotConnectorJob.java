@@ -65,6 +65,9 @@ public class IotConnectorJob extends FacilioJob{
 			rkc.gt(String.valueOf(lastExecutionTime));
 			
 			List<String> clients = getClients(dd);
+			System.out.println("IotConnectorJob lastExecutionTime::::" + lastExecutionTime);
+			System.out.println("IotConnectorJob Cliens::::" + clients);
+			System.out.println("IotConnectorJob jobId::::" + jobId);
 			for(String clientId : clients)
 			{
 				QuerySpec spec = new QuerySpec().withHashKey("ClientId", clientId).withRangeKeyCondition(rkc);
@@ -77,7 +80,7 @@ public class IotConnectorJob extends FacilioJob{
 				    item = iterator.next();
 				    Long timestamp = item.getLong("TimeLog");
 				    Map<String, Map<String, Object>> payload = item.getMap("payload");
-				    System.out.println(payload);
+				    System.out.println("IotConnectorJob Payload:::" + payload);
 				    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId").toString());
 				    Map<String, Map<String, Object>> controllerInstances = DeviceAPI.getControllerInstances(controllerId);
 				    Iterator<String> dataIterator = payload.keySet().iterator();
@@ -124,10 +127,10 @@ public class IotConnectorJob extends FacilioJob{
 				}
 				dataList.put("x", timeArray);
 				dataList.put("y", valueArray);
-				WmsApi.sendMessage(2, 3, dataList);
+				//WmsApi.sendMessage(2, 3, dataList);
 			}
 			deleteClients(dd, clients);
-			AdminAPI.updateSystemJob(jobId);
+			AdminAPI.updateSystemJob(jobId, lastExecutionTime);
 		}
 		catch (Exception e) 
 		{
