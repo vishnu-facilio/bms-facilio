@@ -10,7 +10,7 @@
   	</head>
 <body>
 	<div>
-		<div><a href="/bms/home/admin">Admin Home</a></div>
+		<div><a href="${pageContext.request.contextPath}/home/admin">Admin Home</a></div>
 		<div><br /></div>
 		<div style="width:500px;" id="joblist">
 			<div style="float:left; font-size: 18px;">Jobs :</div>

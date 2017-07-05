@@ -186,7 +186,7 @@ li.selected {
 		dataObject.controllerId = $(el).parent().parent().parent().find('input[name=controllerId]').val();
 		$.ajax({
 		      type: "POST",
-		      url: "/bms/home/addDevice",   
+		      url: contextPath + "/home/addDevice",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  showControllerDevices($(el).parent().parent().parent().find('input[name=controllerId]').val());
@@ -359,7 +359,7 @@ li.selected {
 		    		dataObject.controllerId = $('input[name=controllerId]').val();
 		    		$.ajax({
 		  		      type: "POST",
-		  		      url: "/bms/home/updateControllerInstances",   
+		  		      url: contextPath + "/home/updateControllerInstances",   
 		  		      data: dataObject,
 		  		      success: function (response) {
 		  		         

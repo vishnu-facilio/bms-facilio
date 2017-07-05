@@ -50,7 +50,7 @@
 								</s:else>
 								</s:if>
 								<s:else>
-									<li><a href="/bms/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a></li>
+									<li><a href="${pageContext.request.contextPath}/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a></li>
 								</s:else>
 								<li><a href="#">Delete</a>
                             </ul>
@@ -156,7 +156,7 @@
 		dataObject.deviceId = deviceId;
 		$.ajax({
 		      type: "POST",
-		      url: contextPath + "/bms/home/enableDeviceMonitoring",   
+		      url: contextPath + "/home/enableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring enabled successfully!');
@@ -176,7 +176,7 @@
 		dataObject.deviceId = deviceId;
 		$.ajax({
 		      type: "POST",
-		      url: contextPath + "/bms/home/disableDeviceMonitoring",   
+		      url: contextPath + "/home/disableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring disabled successfully!');

@@ -7,9 +7,9 @@
   	</head>
 <body>
 	<div>
-		<div><a href="/bms/home/admin">Admin Home</a></div>
+		<div><a href="${pageContext.request.contextPath}/home/admin">Admin Home</a></div>
 		<div><br /></div>
-		<div><a href="/bms/home/admin/jobs">System Jobs</a></div>
+		<div><a href="${pageContext.request.contextPath}/home/admin/jobs">System Jobs</a></div>
 	</div>
 </body>
 </html>
