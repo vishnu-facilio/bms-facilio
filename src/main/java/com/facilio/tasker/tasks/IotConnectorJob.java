@@ -45,12 +45,6 @@ public class IotConnectorJob extends FacilioJob{
 	{
 		try
 		{
-			JSONObject dataList = new JSONObject();
-			JSONArray timeArray = new JSONArray();
-			JSONArray valueArray = new JSONArray();
-			timeArray.add("x");
-			valueArray.add("kW");
-			
 			Map<String, Object> jobDetails = AdminAPI.getSystemJob("IotConnector");
 			Long jobId = (Long) jobDetails.get("jobId");
 			Long lastExecutionTime = (Long) jobDetails.get("lastexecutiontime");
@@ -79,55 +73,9 @@ public class IotConnectorJob extends FacilioJob{
 				{
 				    item = iterator.next();
 				    Long timestamp = item.getLong("TimeLog");
-				    lastExecutionTime = timestamp + 1;
-				    Map<String, Map<String, Object>> payload = item.getMap("payload");
-				    System.out.println("IotConnectorJob Payload:::" + payload);
-				    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId").toString());
-				    Map<String, Map<String, Object>> controllerInstances = DeviceAPI.getControllerInstances(controllerId);
-				    Iterator<String> dataIterator = payload.keySet().iterator();
-				    
-				    List<Map<String, Object>> unmodelledInstances = new ArrayList<Map<String, Object>>();
-				    Map<String, Map<String, Double>> deviceDataMap = new HashMap<>();
-				    while(dataIterator.hasNext())
-				    {
-				    	String key = dataIterator.next();
-				    	if(!"metainfo".equals(key))
-				    	{
-				    		if(!controllerInstances.containsKey(key) || controllerInstances.get(key).get("deviceId") == null || controllerInstances.get(key).get("columnName") == null)
-				    		{
-				    			unmodelledInstances.add(payload.get(key));
-				    			continue;
-				    		}
-				    		Long deviceId = (Long) controllerInstances.get(key).get("deviceId");
-				    		Map<String, Double> dataMap;
-				    		if(deviceDataMap.containsKey(deviceId.toString()))
-				    		{
-				    			dataMap = deviceDataMap.get(deviceId.toString());
-				    		}
-				    		else
-				    		{
-				    			dataMap = new HashMap<String, Double>();
-				    		}
-				    		String columnName = (String) controllerInstances.get(key).get("columnName");
-				    		Double value = Double.parseDouble(payload.get(key).get("currentvalue").toString());
-				    		dataMap.put(columnName, value);
-				    		deviceDataMap.put(deviceId.toString(), dataMap);
-						    
-				    		timeArray.add(timestamp);
-							valueArray.add(value);
-				    	}
-				    }
-				    if(!deviceDataMap.isEmpty())
-				    {
-				    	DeviceAPI.addDeviceData(timestamp, deviceDataMap);
-				    }
-				    if(!unmodelledInstances.isEmpty())
-					{
-				    	DeviceAPI.addUnmodelledData(controllerId, timestamp, unmodelledInstances);
-					}
+				    lastExecutionTime = timestamp + 1 > lastExecutionTime?timestamp + 1 : lastExecutionTime;
+				    processPayload(timestamp, item.getMap("payload"));
 				}
-				dataList.put("x", timeArray);
-				dataList.put("y", valueArray);
 				//WmsApi.sendMessage(2, 3, dataList);
 			}
 			deleteClients(dd, clients);
@@ -137,6 +85,51 @@ public class IotConnectorJob extends FacilioJob{
 		{
 			logger.log(Level.SEVERE, "Exeception while executing IotConnectorJob :::"+e.getMessage(), e);
 		}
+	}
+
+	private void processPayload(Long timestamp, Map<String, Map<String, Object>> payload) throws Exception 
+	{
+	    System.out.println("IotConnectorJob Payload:::" + payload);
+	    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId").toString());
+	    Map<String, Map<String, Object>> controllerInstances = DeviceAPI.getControllerInstances(controllerId);
+	    Iterator<String> dataIterator = payload.keySet().iterator();
+	    
+	    List<Map<String, Object>> unmodelledInstances = new ArrayList<Map<String, Object>>();
+	    Map<String, Map<String, Double>> deviceDataMap = new HashMap<>();
+	    while(dataIterator.hasNext())
+	    {
+	    	String key = dataIterator.next();
+	    	if(!"metainfo".equals(key))
+	    	{
+	    		if(!controllerInstances.containsKey(key) || controllerInstances.get(key).get("deviceId") == null || controllerInstances.get(key).get("columnName") == null)
+	    		{
+	    			unmodelledInstances.add(payload.get(key));
+	    			continue;
+	    		}
+	    		Long deviceId = (Long) controllerInstances.get(key).get("deviceId");
+	    		Map<String, Double> dataMap;
+	    		if(deviceDataMap.containsKey(deviceId.toString()))
+	    		{
+	    			dataMap = deviceDataMap.get(deviceId.toString());
+	    		}
+	    		else
+	    		{
+	    			dataMap = new HashMap<String, Double>();
+	    		}
+	    		String columnName = (String) controllerInstances.get(key).get("columnName");
+	    		Double value = Double.parseDouble(payload.get(key).get("currentvalue").toString());
+	    		dataMap.put(columnName, value);
+	    		deviceDataMap.put(deviceId.toString(), dataMap);
+	    	}
+	    }
+	    if(!deviceDataMap.isEmpty())
+	    {
+	    	DeviceAPI.addDeviceData(timestamp, deviceDataMap);
+	    }
+	    if(!unmodelledInstances.isEmpty())
+		{
+	    	DeviceAPI.addUnmodelledData(controllerId, timestamp, unmodelledInstances);
+		}		
 	}
 
 	private List<String> getClients(DynamoDB dd) throws Exception 

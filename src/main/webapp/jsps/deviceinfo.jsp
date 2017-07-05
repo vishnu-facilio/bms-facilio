@@ -84,7 +84,7 @@ li.selected {
 		</s:iterator>
 		</div>
 		<div id="devicetree" style="display:none;">
-			<f:chart id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
+			<f:chart onmove="rearrangeDevices" id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
 		</div>
 		</s:else>
    </div>
@@ -92,13 +92,6 @@ li.selected {
 </div>
 <div style="clear:both;"></div>
 <br/>
-<div class="row" style="display:none;">
-   <div class="col-lg-12">
-       <h4>Energy Usage</h4>
-       <div id="device-energy-usage"></div>
-   </div>
-   <!-- /.col-lg-12 -->
-</div>
 <div class="modal fade" id="newDeviceModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 	    <div class="modal-content">
@@ -151,6 +144,20 @@ li.selected {
 }
 </style>
 <script>
+	
+	function rearrangeDevices(obj)
+	{
+		obj.controllerId=${requestScope.CONTROLLER_ID};
+		console.log(obj);
+		$.ajax({
+		      type: "POST",
+		      url: contextPath + "/home/rearrangeDevices",   
+		      data: obj,
+		      success: function (response) {
+		    	  console.log('Success');
+		      }
+		 });
+	}
 	
 	function saveDevice(btn, form) 
 	{
