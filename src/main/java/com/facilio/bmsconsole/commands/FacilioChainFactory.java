@@ -1,11 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.SQLException;
-
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.chain.Filter;
 import org.apache.commons.chain.impl.ChainBase;
 
 public class FacilioChainFactory {
@@ -45,6 +41,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new GetTicketCommand());
+		c.addCommand(new SetTaskModuleTableNames());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new GetTasksOfTicketCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -54,6 +52,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTicketModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new GetAllTicketsCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -82,11 +81,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	public static Chain getAddCustomFieldChain() {
+	public static Chain getAddFieldsChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new AddPropsToCustomFieldsCommand());
-		c.addCommand(new AddCustomFieldCommand());
-		
+		c.addCommand(new SetModuleIdCommand());
+		c.addCommand(new SetColumnNameForNewCFsCommand());
+		c.addCommand(new AddFieldsCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -139,6 +139,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTaskModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadCustomFieldsCommand());
 		c.addCommand(new GetAllTasksCommand());
 		addCleanUpCommand(c);
 		return c;

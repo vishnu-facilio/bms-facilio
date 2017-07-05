@@ -8,8 +8,8 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.customfields.CFUtil;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.fields.FieldUtil;
+import com.facilio.bmsconsole.fields.FacilioField;
 
 public class CommonCommandUtil {
 	public static ScheduleContext getScheduleContextFromRS(ResultSet rs) throws SQLException {
@@ -37,42 +37,40 @@ public class CommonCommandUtil {
 		return context;
 	}
 	
-	public static TaskContext getTaskObjectFromRS(ResultSet rs, List<FacilioCustomField> customFields) throws SQLException {
+	public static TaskContext getTaskObjectFromRS(ResultSet rs, List<FacilioField> fields) throws SQLException {
 		TaskContext tc = new TaskContext();
-		tc.setTaskId(rs.getLong("TASKID"));
 		tc.setOrgId(rs.getLong("ORGID"));
-		tc.setParent(rs.getLong("PARENT"));
-		tc.setSubject(rs.getString("SUBJECT"));
-		tc.setDescription(rs.getString("DESCRIPTION"));
-		tc.setAssignmentGroupId(rs.getLong("ASSIGNMENT_GROUP_ID"));
-		tc.setAssignedToId(rs.getLong("ASSIGNED_TO_ID"));
-		tc.setScheduleId(rs.getLong("SCHEDULE_ID"));
+		tc.setTaskId(rs.getLong("taskId"));
+		tc.setParent(rs.getLong("parent"));
+		tc.setSubject(rs.getString("subject"));
+		tc.setDescription(rs.getString("description"));
+		tc.setAssignmentGroupId(rs.getLong("assignmentGroupId"));
+		tc.setAssignedToId(rs.getLong("assignedToId"));
+		tc.setScheduleId(rs.getLong("scheduleId"));
 		
-		if(customFields != null) {
-			for(FacilioCustomField field : customFields) {
-				tc.setCustomProp(field.getFieldName(), CFUtil.getValueAsPerType(field, rs));
-			}
+		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
+			FacilioField field = fields.get(i);
+			tc.setCustomProp(field.getName(), FieldUtil.getValueAsPerType(field, rs));
 		}
 		
 		return tc;
 	}
 	
-	public static TicketContext getTCObjectFromRS(ResultSet rs, List<FacilioCustomField> customFields) throws SQLException {
+	public static TicketContext getTCObjectFromRS(ResultSet rs, List<FacilioField> fields) throws SQLException {
 		TicketContext tc = new TicketContext();
-		tc.setTicketId(rs.getLong("TICKETID"));
-		tc.setRequester(rs.getString("REQUESTOR"));
-		tc.setSubject(rs.getString("SUBJECT"));
-		tc.setDescription(rs.getString("DESCRIPTION"));
-		tc.setStatusCode(rs.getInt("STATUS"));
-		tc.setAssignedToId(rs.getLong("AGENTID"));
-		tc.setFailedAssetId(rs.getLong("FAILED_ASSET_ID"));
-		tc.setDueTimeFromTimestamp(rs.getLong("DUE_DATE"));
 		tc.setOrgId(rs.getLong("ORGID"));
+		tc.setTicketId(rs.getLong("ticketId"));
+		tc.setRequester(rs.getString("requester"));
+		tc.setSubject(rs.getString("subject"));
+		tc.setDescription(rs.getString("description"));
+		tc.setStatusCode(rs.getInt("status"));
+		tc.setAssignedToId(rs.getLong("agentId"));
+		tc.setFailedAssetId(rs.getLong("assetId"));
+		tc.setDueTimeFromTimestamp(rs.getLong("dueDate"));
 		
-		if(customFields != null) {
-			for(FacilioCustomField field : customFields) {
-				tc.setCustomProp(field.getFieldName(), rs.getString(field.getFieldName()));
-			}
+		for(int i=TicketContext.DEFAULT_TICKET_FIELDS.length; i<fields.size(); i++) {
+			FacilioField field = fields.get(i);
+			tc.setCustomProp(field.getName(), FieldUtil.getValueAsPerType(field, rs));
 		}
 		
 		return tc;

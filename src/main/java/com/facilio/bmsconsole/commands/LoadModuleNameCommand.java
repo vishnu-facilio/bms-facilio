@@ -19,22 +19,23 @@ public class LoadModuleNameCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		String moduleTable = (String) context.get(FacilioConstants.ContextNames.MODULE_OBJECTS_TABLE_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
-		if(moduleTable != null && !moduleTable.isEmpty()) {
+		if(moduleName != null && !moduleName.isEmpty()) {
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
 			
 			try {
 				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-				pstmt = conn.prepareStatement("SELECT NAME FROM "+moduleTable+" WHERE ORGID=?");
+				pstmt = conn.prepareStatement("SELECT DISPLAY_NAME FROM Modules WHERE ORGID=? and NAME = ?");
 				pstmt.setLong(1, orgId);
+				pstmt.setString(2, moduleName);
 				
 				rs = pstmt.executeQuery();
 				
 				if(rs.next()) {
-					String moduleName =  rs.getString("NAME");
-					context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+					String moduleDisplayName =  rs.getString("DISPLAY_NAME");
+					context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
 				}
 			}
 			catch(SQLException e) {

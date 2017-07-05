@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.customfields.CFType;
+import com.facilio.bmsconsole.fields.FieldType;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewCFAction extends ActionSupport {
@@ -12,7 +12,7 @@ public class NewCFAction extends ActionSupport {
 		// TODO Auto-generated method stub
 		
 		dataTypeList = new HashMap<>();
-		for(CFType type : CFType.values()) {
+		for(FieldType type : FieldType.values()) {
 			dataTypeList.put(type.getTypeAsInt(), type.getTypeAsString());
 		}
 		

@@ -14,10 +14,6 @@ public class ValidateTasksFieldsCommand implements Command {
 		
 		TaskContext taskContext = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		
-		if(taskContext.getOrgId() == 0) {
-			throw new IllegalArgumentException("ORG ID is invalid");
-		}
-		
 		if(taskContext.getParent() == -1) {
 			throw new IllegalArgumentException("Parent Ticket ID is invalid");
 		}

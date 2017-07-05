@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.awt.Panel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
@@ -31,13 +30,14 @@ public class TicketAction extends ActionSupport {
 		Chain newTicket = FacilioChainFactory.getNewTicketChain();
 		newTicket.execute(context);
 		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioCustomField> cfs = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
 		customFieldNames = new ArrayList<>();
-		for(FacilioCustomField field : cfs) {
-			customFieldNames.add(field.getFieldName());
+		for(int i=TicketContext.DEFAULT_TICKET_FIELDS.length; i<fields.size(); i++) {
+			FacilioField field = fields.get(i);
+			customFieldNames.add(field.getName());
 		}
 		
 		Map mp = ActionContext.getContext().getParameters();
@@ -89,7 +89,6 @@ public class TicketAction extends ActionSupport {
 	public String addTicket() throws Exception {
 		
 		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
-		ticket.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
@@ -146,7 +145,7 @@ public class TicketAction extends ActionSupport {
  		Chain getAllTicketsChain = FacilioChainFactory.getAllTicketsChain();
  		getAllTicketsChain.execute(context);
  		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setTickets((List<TicketContext>) context.get(FacilioConstants.ContextNames.TICKET_LIST));
 		
 		return SUCCESS;

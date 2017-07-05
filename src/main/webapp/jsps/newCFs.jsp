@@ -5,14 +5,15 @@
 <br />
 
 <s:form id="addCFForm" theme="simple" method="post" class="form-horizontal">
-
-	<div class="form-inline customFieldData firstone">
-		<div class="form-group">
+	
+	<div class="form-group">
 	  		<label class="col-sm-2 control-label">Module Name</label>
 		    	<div class="col-sm-10">  
-					<s:textfield name="moduleName" class="form-control inputModuleName" placeholder="e.g : Tickets if CF is to be added to Tickets_Fields table" />
+					<s:textfield name="moduleName" class="form-control inputModuleName" placeholder="e.g : Tickets" id="inputModuleName" />
 				</div>
 		</div>
+	
+	<div class="form-inline customFieldData firstone">
 		
 		<div class="form-group">
 	  		<label class="col-sm-2 control-label">Field Name</label>
@@ -53,22 +54,26 @@
 			$(".customFieldData").each(function(index, value) {
 				var cf = {};
 				
-				cf.moduleName = $(value).find(".inputModuleName").val();
 				cf.fieldName = $(value).find(".inputFieldName").val();
 				cf.dataType = $(value).find(".inputDataType").val();
 				data.push(cf);
 			});
 			
+			var moduleName = $("#inputModuleName").val();
+			
 			//console.log(data);
 			$.ajax({
 				method : "post",
 				url : "<s:url action='addCF' />",
-				data : {cfData : JSON.stringify(data)}
+				data : {cfData : JSON.stringify(data), moduleName : moduleName}
 			})
 			.done(function(data) {
 				console.log(data);
-				alert("Successfully Added");
-				window.location.reload();
+				FacilioApp.notifyMessage('success', 'Field(s) created successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+	            }, 500);
 				//window.location.
 			})
 			.fail(function(error) {

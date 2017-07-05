@@ -4,20 +4,11 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.chain.impl.ContextBase;
-
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	
-	private long orgId = 0;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+	public static final String[] DEFAULT_TICKET_FIELDS = new String[] {"TICKETID", "REQUESTER", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "ASSET_ID", "DUE_DATE"};
 	
 	private long ticketId;
 	public long getTicketId() {

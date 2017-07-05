@@ -10,13 +10,11 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.customfields.CFType;
-import com.facilio.bmsconsole.customfields.CFUtil;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.fields.FieldType;
+import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class LoadCustomFieldsCommand implements Command{
 
@@ -24,15 +22,10 @@ public class LoadCustomFieldsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String objectTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_OBJECTS_TABLE_NAME);
-		String fieldTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_FIELDS_TABLE_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
-		if(objectTableName == null || objectTableName.isEmpty()) {
-			throw new IllegalArgumentException("Object Table Name is not set for the module");
-		}
-		
-		if(fieldTableName == null || fieldTableName.isEmpty()) {
-			throw new IllegalArgumentException("Field Table is not set for the module");
+		if(moduleName == null || moduleName.isEmpty()) {
+			throw new IllegalArgumentException("Module Name is not set for the module");
 		}
  		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
@@ -42,38 +35,26 @@ public class LoadCustomFieldsCommand implements Command{
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT FIELDID, ")
-				.append(fieldTableName)
-				.append(".ORGID, ")
-				.append(fieldTableName)
-				.append(".OBJID, FIELDNAME, DATATYPE, COLUMNNUM FROM ")
-				.append(fieldTableName)
-				.append(" INNER JOIN ")
-				.append(objectTableName)
-				.append(" ON ")
-				.append(fieldTableName)
-				.append(".OBJID = ")
-				.append(objectTableName)
-				.append(".OBJID WHERE ")
-				.append(objectTableName)
-				.append(".ORGID = ?");
+			String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
 			
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setLong(1, orgId);
+			pstmt.setString(2, moduleName);
 			
 			rs = pstmt.executeQuery();
-			List<FacilioCustomField> fields = new ArrayList<>();
+			List<FacilioField> fields = new ArrayList<>();
 			
 			while(rs.next()) {
-				FacilioCustomField field = new FacilioCustomField();
+				FacilioField field = new FacilioField();
 				
 				field.setFieldId(rs.getLong("FIELDID"));
 				field.setOrgId(rs.getLong("ORGID"));
-				field.setObjId(rs.getLong("OBJID"));
-				field.setFieldName(rs.getString("FIELDNAME"));
-				field.setColumnNum(rs.getInt("COLUMNNUM"));
-				field.setDataType(CFType.getCFType(rs.getInt("DATATYPE")));
+				field.setModuleId(rs.getLong("MODULEID"));
+				field.setName(rs.getString("NAME"));
+				field.setDisplayName(rs.getString("DISPLAY_NAME"));
+				field.setColumnName(rs.getString("COLUMN_NAME"));
+				field.setSequenceNumber(rs.getInt("SEQUENCE_NUMBER"));
+				field.setDataType(FieldType.getCFType(rs.getInt("DATA_TYPE")));
 				
 				fields.add(field);
 			}

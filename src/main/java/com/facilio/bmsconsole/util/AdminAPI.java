@@ -110,7 +110,7 @@ public class AdminAPI
 		}
 	}
 	
-	public static void updateSystemJob(Long jobId) throws Exception
+	public static void updateSystemJob(Long jobId, Long lastExecutionTime) throws Exception
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -119,7 +119,7 @@ public class AdminAPI
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("UPDATE System_Jobs SET LAST_EXECUTION_TIME = ? WHERE JOBID = ?");
-			pstmt.setLong(1, System.currentTimeMillis());
+			pstmt.setLong(1, lastExecutionTime);
 			pstmt.setLong(2, jobId);
 			if(pstmt.executeUpdate() < 1) 
 			{

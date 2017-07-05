@@ -2,13 +2,7 @@ package com.facilio.bmsconsole.context;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
-	private long orgId = 0;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
 	
 	private long taskId;
 	public long getTaskId() {

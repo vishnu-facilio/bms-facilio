@@ -17,13 +17,15 @@ public class AddDefaultModulesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Map<String, String> signupInfo = (Map<String, String>) context.get(CreateUserCommand.signupinfo);
+//		Map<String, String> signupInfo = (Map<String, String>) context.get(CreateUserCommand.signupinfo);
+		long orgId = (long) context.get(CreateUserCommand.ORG_ID);
+		
 		
 		Map<String, String> paramValues = new HashMap<>(); 
-		paramValues.put("orgId", "(SELECT ORGID from Organizations where FACILIODOMAINNAME='"+signupInfo.get("domainname")+"')");
-		
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, false, true, paramValues);
-		scriptRunner.runScript();
+		//paramValues.put("orgId", "(SELECT ORGID from Organizations where FACILIODOMAINNAME='"+signupInfo.get("domainname")+"')");
+		paramValues.put("orgId", String.valueOf(orgId));
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
+		scriptRunner.runScript(((FacilioContext) context).getConnectionWithTransaction());
 		
 		return false;
 	}

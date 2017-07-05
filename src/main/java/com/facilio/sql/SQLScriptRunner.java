@@ -22,18 +22,12 @@ public class SQLScriptRunner {
 	private static final String DELIMITER = ";";
 	
 	private final boolean stopOnError;
-	private final boolean autoCommit;
 	
 	private StrSubstitutor substitutor = null;
 	private File file = null;
 
-	public SQLScriptRunner(File file, boolean autoCommit, boolean stopOnError) {
-		this(file, autoCommit, stopOnError, null);
-	}
-	
-	public SQLScriptRunner(File file, boolean autoCommit, boolean stopOnError, Map<String, String> paramValues) {
+	public SQLScriptRunner(File file, boolean stopOnError, Map<String, String> paramValues) {
 		this.file = file;
-		this.autoCommit = autoCommit;
 		this.stopOnError = stopOnError;
 		
 		if(paramValues != null && paramValues.size() > 0) {
@@ -41,40 +35,16 @@ public class SQLScriptRunner {
 		}
 	}
 
-	public void runScript() throws SQLException, IOException {
+	public void runScript(Connection conn) throws SQLException, IOException {
 		Reader fileReader = null;
-		Connection conn = null;
 		try {
 			fileReader = new FileReader(file);
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			boolean originalAutoCommit = conn.getAutoCommit();
-			try {
-				if (originalAutoCommit != autoCommit) {
-					conn.setAutoCommit(autoCommit);
-				}
-				runScript(conn, fileReader);
-			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} 
-			finally {
-				conn.setAutoCommit(originalAutoCommit);
-			}
+			runScript(conn, fileReader);
 		} 
 		catch (SQLException | FileNotFoundException e) {
 			throw e;
 		}
 		finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				}
-				catch(SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
 			if(fileReader != null) {
 				try {
 					fileReader.close();
@@ -121,14 +91,8 @@ public class SQLScriptRunner {
 			if (command != null) {
 				execCommand(conn, command, lineReader.getLineNumber());
 			}
-			if (!autoCommit) {
-				conn.commit();
-			}
 		}
 		catch (SQLException e) {
-			if(!autoCommit) {
-				conn.rollback();
-			}
 			throw e;
 		}
 	}
@@ -174,21 +138,7 @@ public class SQLScriptRunner {
 			}
 		}
 		finally {
-	        if(rs != null) {
-	        	try {
-	        		rs.close();
-	        	}
-	        	catch(SQLException e) {
-	        		e.printStackTrace();
-	        	}
-	        }
-	        if(stmt != null) {
-		        try {
-		            stmt.close();
-		        } catch (SQLException e) {
-		        	e.printStackTrace();
-		        }
-	        }
+	        DBUtil.closeAll(stmt, rs);
 		}
     }
 }

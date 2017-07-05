@@ -12,6 +12,8 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.fields.FieldUtil;
+import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
@@ -23,25 +25,24 @@ public class GetTasksOfTicketCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		
 		if(ticketId > 0) {
 		
 			PreparedStatement pstmt = null;
 	  		ResultSet rs = null;
-	  		
+	  		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 	  		try {
-	  			
+	  			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+				String sql = FieldUtil.constructSelectStatement(dataTableName, fields, new String[] {"parent"});
+				
 	  			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-	  			pstmt = conn.prepareStatement("SELECT * FROM Tasks_Data WHERE ORGID = ? AND PARENT = ? ORDER BY SUBJECT");
-	  			pstmt.setLong(1, orgId);
-	  			pstmt.setLong(2, ticketId);
+	  			pstmt = conn.prepareStatement(sql);
+	  			pstmt.setLong(1, ticketId);
 	  			
 	  			List<TaskContext> tasks = new ArrayList<>();
 	  			
 	  			rs = pstmt.executeQuery();
 	  			while(rs.next()) {
-	  				TaskContext tc = CommonCommandUtil.getTaskObjectFromRS(rs, null);
+	  				TaskContext tc = CommonCommandUtil.getTaskObjectFromRS(rs, fields);
 	  				tasks.add(tc);
 	  			}
 	  			

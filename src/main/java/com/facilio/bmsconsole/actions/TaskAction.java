@@ -12,7 +12,8 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.customfields.FacilioCustomField;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -26,13 +27,14 @@ public class TaskAction extends ActionSupport {
 		Chain newTask = FacilioChainFactory.getNewTaskChain();
 		newTask.execute(context);
 		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioCustomField> cfs = (List<FacilioCustomField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
 		customFieldNames = new ArrayList<>();
-		for(FacilioCustomField field : cfs) {
-			customFieldNames.add(field.getFieldName());
+		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
+			FacilioField field = fields.get(i);
+			customFieldNames.add(field.getName());
 		}
 		
 		return SUCCESS;
@@ -74,7 +76,6 @@ public class TaskAction extends ActionSupport {
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
-		task.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		
 		if(scheduleObj.getScheduledStart() != 0) {
@@ -150,7 +151,7 @@ public class TaskAction extends ActionSupport {
 		Chain getAllTasks = FacilioChainFactory.getAllTasksChain();
 		getAllTasks.execute(context);
 		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		
 		return SUCCESS;

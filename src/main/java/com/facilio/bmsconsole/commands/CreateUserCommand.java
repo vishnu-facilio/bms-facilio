@@ -2,15 +2,19 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.sql.DBUtil;
+
 
 public class CreateUserCommand implements Command {
 	
 	public static final String signupinfo = "signupinfo";
+	public static final String ORG_ID = "orgId";
 
 	@Override
 	public boolean execute(Context arg0) throws Exception {
@@ -21,7 +25,8 @@ public class CreateUserCommand implements Command {
 		java.sql.Connection con = fc.getConnectionWithTransaction();
 		String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
 		
-		PreparedStatement ps = con.prepareStatement(insertquery);
+		PreparedStatement ps = con.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
+		ResultSet rs = null;
 		try {
 			ps.setString(1, signupinfomap.get("companyname"));
 			ps.setString(2, signupinfomap.get("domainname"));
@@ -32,12 +37,23 @@ public class CreateUserCommand implements Command {
 			System.out.println("insert query "+insertquery);
 			ps.addBatch(insertquery);
 			ps.executeBatch();
+			
+			rs = ps.getGeneratedKeys();
+			
+			rs.next();
+			long orgId = rs.getLong(1);
+			arg0.put(ORG_ID, orgId);
+			
+			while(rs.next()) {
+				System.out.println(rs.getLong(1));
+			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{
-			ps.close();
+			DBUtil.closeAll(ps, rs);
 			// it will get closed after chain completion
 			//con.close();
 		}

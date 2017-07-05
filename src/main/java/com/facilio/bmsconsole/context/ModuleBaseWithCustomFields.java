@@ -7,6 +7,14 @@ import com.opensymphony.xwork2.util.Element;
 
 public class ModuleBaseWithCustomFields {
 	
+	private long orgId = 0;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
 	@Element( value = java.lang.String.class )
 	private Map<Object, Object> customProps = new HashMap<>();
 	public Map<Object, Object> getCustomProps() {
