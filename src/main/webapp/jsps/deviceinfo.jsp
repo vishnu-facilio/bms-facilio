@@ -39,7 +39,7 @@ li.selected {
 			<div style="float:right;"><button type="button" onclick="selectAll();" class="btn btn-outline btn-primary btn-xs">Select All</button></div>
 			<div style="clear:both;"></div>
 		</div>
-		<ul>
+		<ul style="display:none;" id="instanceUl">
 		<s:iterator var="instance" value="%{INSTANCES}">
 			<li instanceId="<s:property value="#instance.controllerInstanceId" />" style="padding:10px;border-bottom:1px solid #ddd; "><s:property value="#instance.instanceName" /></li>
 	    </s:iterator>
@@ -211,8 +211,9 @@ li.selected {
 		 });
 	}
 	
-	function selectAll() {
-		
+	function selectAll() 
+	{
+		 $('#instanceUl li').addClass("selected")
 	}
 	
 	
@@ -301,6 +302,22 @@ li.selected {
 	});
 	
 	$(document).ready(function() {
+		
+		var items = $('#instanceUl li').get();
+		items.sort(function(a,b){
+		  var keyA = $(a).text();
+		  var keyB = $(b).text();
+
+		  if (keyA < keyB) return -1;
+		  if (keyA > keyB) return 1;
+		  return 0;
+		});
+		var ul = $('#instanceUl');
+		$.each(items, function(i, li){
+		  ul.append(li);
+		});
+		$('#instanceUl').show();
+		
 		var controllerId = "${requestScope.CONTROLLER_ID}";
 		//showDeviceData(controllerId);
 		

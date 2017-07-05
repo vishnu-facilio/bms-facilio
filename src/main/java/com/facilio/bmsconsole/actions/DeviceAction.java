@@ -402,7 +402,7 @@ public class DeviceAction extends ActionSupport
 				String columnName = (String) data.get(key);
 				DeviceAPI.updateDeviceInstance(deviceId, Integer.parseInt(key), columnName);
 			}
-			DeviceAPI.updateDevice(deviceId, 2);
+			//DeviceAPI.updateDevice(deviceId, 2);
 			JSONObject result = new JSONObject();
 			result.put("message", "success");
 			response.setContentType("application/json");
