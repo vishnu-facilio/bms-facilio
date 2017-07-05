@@ -79,6 +79,7 @@ public class IotConnectorJob extends FacilioJob{
 				{
 				    item = iterator.next();
 				    Long timestamp = item.getLong("TimeLog");
+				    lastExecutionTime = timestamp + 1;
 				    Map<String, Map<String, Object>> payload = item.getMap("payload");
 				    System.out.println("IotConnectorJob Payload:::" + payload);
 				    Long controllerId = Long.parseLong(payload.get("metainfo").get("controllerId").toString());
