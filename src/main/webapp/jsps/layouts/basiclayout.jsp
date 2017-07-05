@@ -45,7 +45,9 @@
     
 		<!-- jQuery -->
 	    <script src="<%=staticURL%>/vendor/jquery/jquery.min.js"></script>
-	
+		
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		
 	    <!-- Bootstrap Core JavaScript -->
 	    <script src="<%=staticURL%>/vendor/bootstrap/js/bootstrap.min.js"></script>
 	
@@ -75,7 +77,6 @@
 		<script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 		<script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>
 		
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
 		</script>
