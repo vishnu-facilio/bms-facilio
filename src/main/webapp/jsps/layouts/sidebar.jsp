@@ -154,7 +154,7 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
-                <a href="forms.html"><i class="fa fa-question-circle fa-fw"></i> Help</a>
+                <a href="#help"><i class="fa fa-question-circle fa-fw"></i> Help</a>
             </li>
         </ul>
     </div>
