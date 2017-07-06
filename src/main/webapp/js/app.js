@@ -20,7 +20,11 @@ FacilioApp = {
 		if(module != "")
 		{	
 			var url = contextPath + '/home/' + module;
-			$('#page-wrapper').load(url);
+			$('#page-wrapper').load(url, function(response, status, xhr) {
+				if (response.indexOf("Struts Problem Report") > 0) {
+					$('#page-wrapper').html("<div style='text-align:center;padding-top: 56px;'><i class='fa fa-suitcase fa-5' aria-hidden='true' style='font-size: 4em;'></i><h2>Work in progress.</h2></div>");
+				}
+			});
 		}
 	},
 	
