@@ -101,7 +101,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			}
 		}
 	}
-	@TypeConversion(converter = "java.lang.String")
 	public void setDueDate(long dueTime) {
 		this.dueDate = dueTime;
 	}
