@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -27,6 +28,7 @@ public class LoadActionFormCommand implements Command {
 		actionForm.setGroupList(getGroupList());
 		actionForm.setUserList(getUserList());
 		actionForm.setAssetList(getAssetList());
+		actionForm.setLocations(getLocations());
 		
 		context.put(FacilioConstants.ContextNames.ACTION_FORM, actionForm);
 		
@@ -63,4 +65,8 @@ public class LoadActionFormCommand implements Command {
 		return AssetsAPI.getOrgAssets(orgId);
 	}
 
+	private Map<Long, String> getLocations() throws SQLException {
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		return LocationAPI.getLocations(orgId);
+	}
 }

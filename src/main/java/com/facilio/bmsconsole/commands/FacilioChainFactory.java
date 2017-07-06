@@ -168,4 +168,18 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
+
+	public static Chain getNewLocationChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadActionFormCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddLocationChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddLocationCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }
