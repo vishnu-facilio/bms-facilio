@@ -197,10 +197,14 @@ public class LoginAction extends ActionSupport{
 		try {
 			if (orgId == -1) {
 				String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
-				PreparedStatement ps1 = con.prepareStatement(insertquery);
+				PreparedStatement ps1 = con.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
 				ps1.setString(1, subdomain);
 				ps1.setString(2, subdomain);
 				ps1.executeUpdate();
+				ResultSet rs = ps1.getGeneratedKeys();
+				rs.next();
+				orgId = rs.getLong(1);
+				rs.close();
 				ps1.close();
 				
 				try {
