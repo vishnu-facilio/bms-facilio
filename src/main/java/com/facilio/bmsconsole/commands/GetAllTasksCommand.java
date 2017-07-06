@@ -30,7 +30,7 @@ public class GetAllTasksCommand implements Command{
 		ResultSet rs = null;
 		
 		try {
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			String sql = FieldUtil.constructSelectStatement(dataTableName, fields, null);
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();

@@ -73,8 +73,6 @@ public class FacilioConstants {
 		
 		public static final String ACTION_FORM = "actionForm";
 		
-		public static final String CUSTOM_FIELDS = "customFields";
-
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_ID = "moduleId";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
@@ -82,5 +80,6 @@ public class FacilioConstants {
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
+		public static final String EXISTING_FIELD_LIST = "existingFields";
 	}
 }

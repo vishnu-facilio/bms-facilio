@@ -171,6 +171,40 @@ public class DeviceAPI
 		}
 	}
 	
+	public static void updateDeviceParent(Long deviceId, Long parentDeviceId, Long controllerId) throws Exception
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE Device SET PARENT_DEVICE_ID = ? WHERE DEVICE_ID = ?");
+			if(controllerId.equals(parentDeviceId))
+			{
+				pstmt.setNull(1, Types.BIGINT);
+			}
+			else
+			{
+				pstmt.setLong(1, parentDeviceId);
+			}
+			pstmt.setLong(2, deviceId);
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to updateDeviceParent");
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while updateDeviceParent" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	public static void updateController(Long controllerId, Long jobId, boolean status) throws Exception
 	{
 		Connection conn = null;

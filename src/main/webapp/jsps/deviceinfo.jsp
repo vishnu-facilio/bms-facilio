@@ -39,7 +39,7 @@ li.selected {
 			<div style="float:right;"><button type="button" onclick="selectAll();" class="btn btn-outline btn-primary btn-xs">Select All</button></div>
 			<div style="clear:both;"></div>
 		</div>
-		<ul>
+		<ul style="display:none;" id="instanceUl">
 		<s:iterator var="instance" value="%{INSTANCES}">
 			<li instanceId="<s:property value="#instance.controllerInstanceId" />" style="padding:10px;border-bottom:1px solid #ddd; "><s:property value="#instance.instanceName" /></li>
 	    </s:iterator>
@@ -84,7 +84,7 @@ li.selected {
 		</s:iterator>
 		</div>
 		<div id="devicetree" style="display:none;">
-			<f:chart id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
+			<f:chart onmove="rearrangeDevices" id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
 		</div>
 		</s:else>
    </div>
@@ -92,13 +92,6 @@ li.selected {
 </div>
 <div style="clear:both;"></div>
 <br/>
-<div class="row" style="display:none;">
-   <div class="col-lg-12">
-       <h4>Energy Usage</h4>
-       <div id="device-energy-usage"></div>
-   </div>
-   <!-- /.col-lg-12 -->
-</div>
 <div class="modal fade" id="newDeviceModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 	    <div class="modal-content">
@@ -151,6 +144,20 @@ li.selected {
 }
 </style>
 <script>
+	
+	function rearrangeDevices(obj)
+	{
+		obj.controllerId=${requestScope.CONTROLLER_ID};
+		console.log(obj);
+		$.ajax({
+		      type: "POST",
+		      url: contextPath + "/home/rearrangeDevices",   
+		      data: obj,
+		      success: function (response) {
+		    	  console.log('Success');
+		      }
+		 });
+	}
 	
 	function saveDevice(btn, form) 
 	{
@@ -211,8 +218,9 @@ li.selected {
 		 });
 	}
 	
-	function selectAll() {
-		
+	function selectAll() 
+	{
+		 $('#instanceUl li').addClass("selected")
 	}
 	
 	
@@ -301,6 +309,22 @@ li.selected {
 	});
 	
 	$(document).ready(function() {
+		
+		var items = $('#instanceUl li').get();
+		items.sort(function(a,b){
+		  var keyA = $(a).text();
+		  var keyB = $(b).text();
+
+		  if (keyA < keyB) return -1;
+		  if (keyA > keyB) return 1;
+		  return 0;
+		});
+		var ul = $('#instanceUl');
+		$.each(items, function(i, li){
+		  ul.append(li);
+		});
+		$('#instanceUl').show();
+		
 		var controllerId = "${requestScope.CONTROLLER_ID}";
 		//showDeviceData(controllerId);
 		

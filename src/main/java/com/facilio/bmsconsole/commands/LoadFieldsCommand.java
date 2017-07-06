@@ -16,7 +16,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
-public class LoadCustomFieldsCommand implements Command{
+public class LoadFieldsCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -55,11 +55,12 @@ public class LoadCustomFieldsCommand implements Command{
 				field.setColumnName(rs.getString("COLUMN_NAME"));
 				field.setSequenceNumber(rs.getInt("SEQUENCE_NUMBER"));
 				field.setDataType(FieldType.getCFType(rs.getInt("DATA_TYPE")));
+				field.setDataTypeCode(rs.getInt("DATA_TYPE"));
 				
 				fields.add(field);
 			}
 			
-			context.put(FacilioConstants.ContextNames.CUSTOM_FIELDS, fields);
+			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 		}
 		catch (SQLException e) {
 			throw e;

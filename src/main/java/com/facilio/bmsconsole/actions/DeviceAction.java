@@ -116,6 +116,22 @@ public class DeviceAction extends ActionSupport
 		}
 	}
 	
+	public void rearrangeDevices()
+	{
+		HttpServletRequest request = ServletActionContext.getRequest();
+		Long controllerId = Long.parseLong(request.getParameter("controllerId"));
+		Long deviceId = Long.parseLong(request.getParameter("id"));
+		Long parentDeviceId = Long.parseLong(request.getParameter("parent"));
+		try 
+		{
+			DeviceAPI.updateDeviceParent(deviceId, parentDeviceId, controllerId);
+		}
+		catch (Exception e) 
+		{
+			logger.log(Level.SEVERE, "Exception while rearrangeDevice" +e.getMessage(), e);
+		}
+	}
+	
 	public void updateControllerInstances()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -352,6 +368,7 @@ public class DeviceAction extends ActionSupport
 			JSONParser parser = new JSONParser();
 			childArray = (JSONArray) parser.parse(new Gson().toJson(deviceTree));
 			result.put("children", childArray);
+			result.put("id", controllerId);
 			response.setContentType("application/json");
 		    response.setCharacterEncoding("UTF-8");
 		    response.getWriter().print(result);
@@ -402,7 +419,7 @@ public class DeviceAction extends ActionSupport
 				String columnName = (String) data.get(key);
 				DeviceAPI.updateDeviceInstance(deviceId, Integer.parseInt(key), columnName);
 			}
-			DeviceAPI.updateDevice(deviceId, 2);
+			//DeviceAPI.updateDevice(deviceId, 2);
 			JSONObject result = new JSONObject();
 			result.put("message", "success");
 			response.setContentType("application/json");

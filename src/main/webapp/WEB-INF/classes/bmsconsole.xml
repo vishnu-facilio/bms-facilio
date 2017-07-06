@@ -75,6 +75,8 @@
     </action>
 	<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
     </action>
+    <action name="rearrangeDevices" class="com.facilio.bmsconsole.actions.DeviceAction" method="rearrangeDevices">
+    </action>
     <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
     </action>
     

@@ -90,7 +90,7 @@ class Field
 	String styleclass="form-control";
 	String name;
 	public enum FieldType {
-	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME
+	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL
 	}
 	FieldType displayType;
 	public Field(String label, String id,  String name, FieldType f) {
@@ -121,7 +121,8 @@ class Field
 	{
 		switch(displayType)
 		{
-		case TEXTBOX:return "email";
+		case TEXTBOX:return "text";
+		case EMAIL: return "email";
 		case DATETIME :
 		case DATE :
 			return "datetime-local";

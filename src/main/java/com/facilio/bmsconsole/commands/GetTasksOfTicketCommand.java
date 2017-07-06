@@ -31,7 +31,7 @@ public class GetTasksOfTicketCommand implements Command {
 	  		ResultSet rs = null;
 	  		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 	  		try {
-	  			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.CUSTOM_FIELDS);
+	  			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 				String sql = FieldUtil.constructSelectStatement(dataTableName, fields, new String[] {"parent"});
 				
 	  			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
