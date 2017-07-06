@@ -104,13 +104,13 @@
         <result name="success">/jsps/reports.jsp</result>
     </action>
     
-	<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
+	<!-- action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
         <result name="success">/jsps/locations.jsp</result>
     </action>
     
     <action name="skills" class="com.facilio.bmsconsole.actions.SkillActions">
         <result name="success">/jsps/skills.jsp</result>
-    </action>
+    </action -->
     
 	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
         <result name="success">/jsps/assignmentRules.jsp</result>
@@ -196,7 +196,7 @@
 		</action>
 	</package>
 	
-	<package name="locations" namespace="/home/locations" extends="home">
+	<!-- <package name="locations" namespace="/home/locations" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.LocationActions" method="{1}">
 			<result name="new_location">/jsps/newLocation.jsp</result>
 			<allowed-methods>create</allowed-methods>
@@ -212,7 +212,7 @@
 			</result>
 			<allowed-methods>assignmentRules,newAssignmentRule,addAssignmentRule,businessRules</allowed-methods>
 		</action>
-	</package>
+	</package> -->
 	
 	<package name="users" namespace="/home/users" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.NewUserAction">
