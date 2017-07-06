@@ -54,6 +54,7 @@ import com.facilio.cognito.CognitoUtil;
 import com.facilio.fw.OrgInfo;
 import com.facilio.saml.SAMLAttribute;
 import com.facilio.saml.SAMLUtil;
+import com.facilio.sql.SQLScriptRunner;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -201,6 +202,18 @@ public class LoginAction extends ActionSupport{
 				ps1.setString(2, subdomain);
 				ps1.executeUpdate();
 				ps1.close();
+				
+				try {
+					Map<String, String> paramValues = new HashMap<>(); 
+					paramValues.put("orgId", String.valueOf(orgId));
+					
+					File insertModulesSQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
+					SQLScriptRunner scriptRunner = new SQLScriptRunner(insertModulesSQL, true, paramValues);
+					scriptRunner.runScript(con);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			String insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?,?,?)";
