@@ -1,9 +1,10 @@
-package com.facilio.bmsconsole.fields;
+package com.facilio.bmsconsole.modules;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum FieldType {
+	ID(0, "ID", null),
 	STRING(1, "String", new String[] {"STRING_CF1", "STRING_CF2", "STRING_CF3", "STRING_CF4", "STRING_CF5"}),
 	NUMBER(2, "Number", new String[] {"NUMBER_CF1", "NUMBER_CF2", "NUMBER_CF3", "NUMBER_CF4", "NUMBER_CF5"}),
 	LONG_INTEGER(3, "Long Integer", new String[] {"LONG_INTEGER_CF1", "LONG_INTEGER_CF2", "LONG_INTEGER_CF3", "LONG_INTEGER_CF4", "LONG_INTEGER_CF5"}),

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
@@ -35,9 +36,11 @@ public class TicketAction extends ActionSupport {
 		
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		customFieldNames = new ArrayList<>();
-		for(int i=TicketContext.DEFAULT_TICKET_FIELDS.length; i<fields.size(); i++) {
-			FacilioField field = fields.get(i);
-			customFieldNames.add(field.getName());
+		List<String> defaultFields = Arrays.asList(TicketContext.DEFAULT_TICKET_FIELDS);
+		for(FacilioField field : fields) {
+			if(!defaultFields.contains(field.getName())) {
+				customFieldNames.add(field.getName());
+			}
 		}
 		
 		Map mp = ActionContext.getContext().getParameters();
@@ -88,8 +91,6 @@ public class TicketAction extends ActionSupport {
 	//Add Ticket Props
 	public String addTicket() throws Exception {
 		
-		System.out.println(OrgInfo.getCurrentOrgInfo().getOrgid());
-		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		
@@ -109,7 +110,12 @@ public class TicketAction extends ActionSupport {
 		getTicketChain.execute(context);
 		
 		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
-		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		
+		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		
+		if(tasks != null && tasks.size() > 0) {
+			setTasks(tasks);
+		}
 		
 		return SUCCESS;
 	}

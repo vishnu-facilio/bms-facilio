@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;

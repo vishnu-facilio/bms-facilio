@@ -8,8 +8,8 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.fields.FieldUtil;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class CommonCommandUtil {
 	public static ScheduleContext getScheduleContextFromRS(ResultSet rs) throws SQLException {
@@ -37,42 +37,4 @@ public class CommonCommandUtil {
 		return context;
 	}
 	
-	public static TaskContext getTaskObjectFromRS(ResultSet rs, List<FacilioField> fields) throws SQLException {
-		TaskContext tc = new TaskContext();
-		tc.setOrgId(rs.getLong("ORGID"));
-		tc.setTaskId(rs.getLong("taskId"));
-		tc.setParent(rs.getLong("parent"));
-		tc.setSubject(rs.getString("subject"));
-		tc.setDescription(rs.getString("description"));
-		tc.setAssignmentGroupId(rs.getLong("assignmentGroupId"));
-		tc.setAssignedToId(rs.getLong("assignedToId"));
-		tc.setScheduleId(rs.getLong("scheduleId"));
-		
-		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
-			FacilioField field = fields.get(i);
-			tc.setCustomProp(field.getName(), FieldUtil.getValueAsPerType(field, rs));
-		}
-		
-		return tc;
-	}
-	
-	public static TicketContext getTCObjectFromRS(ResultSet rs, List<FacilioField> fields) throws SQLException {
-		TicketContext tc = new TicketContext();
-		tc.setOrgId(rs.getLong("ORGID"));
-		tc.setTicketId(rs.getLong("ticketId"));
-		tc.setRequester(rs.getString("requester"));
-		tc.setSubject(rs.getString("subject"));
-		tc.setDescription(rs.getString("description"));
-		tc.setStatusCode(rs.getInt("status"));
-		tc.setAssignedToId(rs.getLong("agentId"));
-		tc.setFailedAssetId(rs.getLong("assetId"));
-		tc.setDueTimeFromTimestamp(rs.getLong("dueDate"));
-		
-		for(int i=TicketContext.DEFAULT_TICKET_FIELDS.length; i<fields.size(); i++) {
-			FacilioField field = fields.get(i);
-			tc.setCustomProp(field.getName(), FieldUtil.getValueAsPerType(field, rs));
-		}
-		
-		return tc;
-	}
 }

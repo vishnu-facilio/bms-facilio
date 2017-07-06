@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 
-import com.facilio.bmsconsole.fields.FieldType;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.FacilioScheduler;

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.fields.FacilioField;
-import com.facilio.bmsconsole.fields.FieldType;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 
 public class SetColumnNameForNewCFsCommand implements Command {

@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.fields.FieldType;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
