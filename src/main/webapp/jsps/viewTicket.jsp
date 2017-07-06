@@ -25,15 +25,15 @@
 	</tr>
 	<tr>
 		<td class="info">Agent ID</td>
-		<td><s:property value="ticket.agentId" /></td>
+		<td><s:property value="ticket.assignedToId" /></td>
 	</tr>
 	<tr>
 		<td class="info">Asset ID</td>
-		<td><s:property value="ticket.failedAssetId" /></td>
+		<td><s:property value="ticket.assetId" /></td>
 	</tr>
 	<tr>
 		<td class="info">Due Date</td>
-		<td><s:property value="ticket.dueTime" /></td>
+		<td><s:property value="ticket.dueDate" /></td>
 	</tr>
 
 	<s:iterator value="ticket.customProps">

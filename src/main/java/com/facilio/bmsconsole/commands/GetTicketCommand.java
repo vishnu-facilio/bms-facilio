@@ -11,8 +11,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.fields.FieldUtil;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 
@@ -26,33 +27,21 @@ public class GetTicketCommand implements Command {
 		
 		if( ticketId > 0) {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
+			SelectRecordsBuilder<TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
+																.connection(conn)
+																.dataTableName(dataTableName)
+																.beanClass(TicketContext.class)
+																.select(fields)
+																.where("ticketId = ?", ticketId)
+																.orderBy("ticketId");
 			
-			try {
-				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-				String sql = FieldUtil.constructSelectStatement(dataTableName, fields, new String[] {"ticketId"});
-				
-				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setLong(1, ticketId);
-				
-				rs = pstmt.executeQuery();
-				TicketContext ticket = null;
-				while(rs.next()) {
-					ticket = CommonCommandUtil.getTCObjectFromRS(rs, fields);
-					break;
-				}
-				
+			List<TicketContext> tickets = builder.get();
+			if(tickets.size() > 0) {
+				TicketContext ticket = tickets.get(0);
 				context.put(FacilioConstants.ContextNames.TICKET, ticket);
-			}
-			catch(SQLException e) {
-				e.printStackTrace();
-				throw e;
-			}
-			finally {
-				DBUtil.closeAll(pstmt, rs);
 			}
 		}
 		else {

@@ -9,8 +9,8 @@ import java.util.List;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.fields.FieldUtil;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class DBUtil {
 	public static void closeAll(Connection conn, Statement stmt, ResultSet rs) {

@@ -29,7 +29,7 @@
 			<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
 					
 	<s:select class="form-control" list="actionForm[#field.list]"
-						name="%{#field.id}" id="%{#field.id}" headerKey="0"
+						name="%{#field.name}" id="%{#field.id}" headerKey="0"
 						headerValue="--" />					
 						
 						</s:if>		

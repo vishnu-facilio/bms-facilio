@@ -12,15 +12,15 @@ public class FormLayout {
 		Panel first =  new Panel(Panel.Type.HALF);
 		
 		first.add(new Field("Requester","inputRequester","ticket.requester",Field.FieldType.TEXTBOX));
-		first.add(new Field("Asset","inputAsset","ticket.failedAssetId",Field.FieldType.SELECTBOX).setListName("assetList"));
+		first.add(new Field("Asset","inputAsset","ticket.assetId",Field.FieldType.SELECTBOX).setListName("assetList"));
 		first.add(new Field("Location","inputlocation","location",Field.FieldType.SELECTBOX).setListName("locations"));
 
 		fields.add(first);
 		Panel second =  new Panel(Panel.Type.HALF);
 
-		second.add(new Field("Due Time","inputDueTime","ticket.dueTime",Field.FieldType.DATETIME));
+		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
 		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
-		second.add(new Field("Assigned To","inputAgent","ticket.assignedToId",Field.FieldType.SELECTBOX).setListName("userList"));
+		second.add(new Field("Assigned To","inputAssignedTo","ticket.assignedToId",Field.FieldType.SELECTBOX).setListName("userList"));
 
 		fields.add(second);
 		

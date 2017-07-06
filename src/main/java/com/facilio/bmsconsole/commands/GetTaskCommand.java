@@ -1,21 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.fields.FieldUtil;
-import com.facilio.bmsconsole.fields.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
 
 public class GetTaskCommand implements Command {
 
@@ -27,40 +21,26 @@ public class GetTaskCommand implements Command {
 		
 		if(taskId > 0) {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			
-			try {
-				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-				String sql = FieldUtil.constructSelectStatement(dataTableName, fields, new String[] {"taskId"});
+			SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
+					.connection(conn)
+					.dataTableName(dataTableName)
+					.beanClass(TaskContext.class)
+					.select(fields)
+					.where("taskId = ?", taskId)
+					.orderBy("taskId");
+
+			List<TaskContext> tasks = builder.get();	
+			if(tasks.size() > 0) {
+				TaskContext task = tasks.get(0);
+				context.put(FacilioConstants.ContextNames.TASK, task);
+				context.put(FacilioConstants.ContextNames.SCHEDULE_ID, task.getScheduleId());
 				
-				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setLong(1, taskId);
-				
-				rs = pstmt.executeQuery();
-				TaskContext tc = null;
-				while(rs.next()) {
-					tc = CommonCommandUtil.getTaskObjectFromRS(rs, fields);
-					break;
-				}
-				
-				if(tc != null) {
-					context.put(FacilioConstants.ContextNames.TASK, tc);
-					context.put(FacilioConstants.ContextNames.SCHEDULE_ID, tc.getScheduleId());
-					
-					context.put(GetNotesCommand.NOTES_REL_TABLE, "Tasks_Notes");
-					context.put(GetNotesCommand.MODULEID_COLUMN, "TASKID");
-					context.put(GetNotesCommand.MODULE_ID, taskId);
-				}
-			}
-			catch(SQLException e) {
-				e.printStackTrace();
-				throw e;
-			}
-			finally {
-				DBUtil.closeAll(pstmt, rs);
+				context.put(GetNotesCommand.NOTES_REL_TABLE, "Tasks_Notes");
+				context.put(GetNotesCommand.MODULEID_COLUMN, "TASKID");
+				context.put(GetNotesCommand.MODULE_ID, taskId);
 			}
 ;		}
 		else {

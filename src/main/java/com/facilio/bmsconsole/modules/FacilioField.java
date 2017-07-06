@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.fields;
+package com.facilio.bmsconsole.modules;
 
 public class FacilioField {
 	

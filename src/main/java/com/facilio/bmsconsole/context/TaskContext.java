@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
 	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};

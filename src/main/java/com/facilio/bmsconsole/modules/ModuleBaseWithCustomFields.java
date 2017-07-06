@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.bmsconsole.modules;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +16,17 @@ public class ModuleBaseWithCustomFields {
 	}
 	
 	@Element( value = java.lang.String.class )
-	private Map<Object, Object> customProps = new HashMap<>();
-	public Map<Object, Object> getCustomProps() {
+	private Map<String, Object> customProps = new HashMap<>();
+	public Map<String, Object> getCustomProps() {
 		return customProps;
 	}
-	public void setCustomProps(Map<Object, Object> customProps) {
+	public void setCustomProps(Map<String, Object> customProps) {
 		this.customProps = customProps;
 	}
-	public void setCustomProp(Object key, Object value) {
+	public void setCustomProp(String key, Object value) {
 		customProps.put(key, value);
 	}
-	public Object getCustomProp(Object key) {
+	public Object getCustomProp(String key) {
 		return customProps.get(key);
 	}
 }

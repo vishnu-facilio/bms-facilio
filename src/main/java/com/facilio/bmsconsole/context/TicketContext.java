@@ -4,11 +4,13 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_TICKET_FIELDS = new String[] {"TICKETID", "REQUESTER", "SUBJECT", "DESCRIPTION", "STATUS", "AGENTID", "ASSET_ID", "DUE_DATE"};
+	public static final String[] DEFAULT_TICKET_FIELDS = new String[] {"ticketId", "requester", "subject", "description", "statusCode", "assignedToId", "assetId", "dueDate"};
 	
 	private long ticketId;
 	public long getTicketId() {
@@ -74,30 +76,33 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assignedToId = assignedToId;
 	}
 	
-	private long failedAssetId = 0;
-	public long getFailedAssetId() {
-		return failedAssetId;
+	private long assetId = 0;
+	public long getAssetId() {
+		return assetId;
 	}
-	public void setFailedAssetId(long failedAssetId) {
-		this.failedAssetId = failedAssetId;
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
 	}
 	
 	public static final long DEFAULT_DURATION = 3*24*60*60; //3 days in seconds
-	private long dueTime = 0;
-	public long getDueTime() {
-		return dueTime;
+	
+	private long dueDate = 0;
+	public long getDueDate() {
+		return dueDate;
 	}
-	public void setDueTime(String dueTime) {
-		if(dueTime != null && !dueTime.isEmpty()) {
+	@TypeConversion(converter = "java.lang.String")
+	public void setDueDate(String dueDate) {
+		if(dueDate != null && !dueDate.isEmpty()) {
 			try {
-				this.dueTime = FacilioConstants.HTML5_DATE_FORMAT.parse(dueTime).getTime()/1000;
+				this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime()/1000;
 			}
 			catch (ParseException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	public void setDueTimeFromTimestamp(long dueTime) {
-		this.dueTime = dueTime;
+	@TypeConversion(converter = "java.lang.String")
+	public void setDueDate(long dueTime) {
+		this.dueDate = dueTime;
 	}
 }
