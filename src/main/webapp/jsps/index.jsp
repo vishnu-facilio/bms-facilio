@@ -15,32 +15,38 @@ function showDeviceData(controllerId)
 	      data: dataObject,
 	      success: function (response) {
 	    	console.log(response);
-    		var chart_json = 
-			{
-				'data': 
-					{
-						'x': 'x',
-						'columns': 
-							[
-								response.x,
-								response.y
-							]
-					},
-				'axis': 
-					{
-						'x': 
-							{
-								'label': 'Time',
-								'type': 'timeseries',
-								'tick': {'format': '%H:%M:%S'}
-							},
-						'y': 
-							{
-								'label': 'kW'
-							}
-					}
-			};
-			chart1 = ChartLibrary.timeseries("#device-energy-usage", chart_json);
+	    	if (typeof(response) !== 'undefined' && typeof(response.x) !== 'undefined') {
+	    		var chart_json = 
+				{
+					'data': 
+						{
+							'x': 'x',
+							'columns': 
+								[
+									response.x,
+									response.y
+								]
+						},
+					'axis': 
+						{
+							'x': 
+								{
+									'label': 'Time',
+									'type': 'timeseries',
+									'tick': {'format': '%H:%M:%S'}
+								},
+							'y': 
+								{
+									'label': 'kW'
+								}
+						}
+				};
+	    		chart1 = ChartLibrary.timeseries("#device-energy-usage", chart_json);
+	    	}
+	    	else {
+	    		$("#device-energy-usage").text("No data available.");
+	    	}
+			
 			var chart_json = {
 			    data: {
 			        columns: [
