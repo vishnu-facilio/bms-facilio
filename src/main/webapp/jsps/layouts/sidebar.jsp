@@ -115,7 +115,13 @@
                 <!-- /.nav-second-level -->
             </li>
             <li>
-                <a href="#reports"><i class="fa fa-pie-chart fa-fw"></i> Reports</a>
+                <%--<a href="#reports"><i class="fa fa-pie-chart fa-fw"></i> Reports</a>--%>
+                <a href="#"><i class="fa fa-pie-chart fa-fw"></i> Reports<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#reports">Peak Energy Analysis</a>
+                    </li>
+                 </ul>
             </li>
             <li>
                 <a href="#"><i class="fa fa-wrench fa-fw"></i> Administration<span class="fa arrow"></span></a>
@@ -125,6 +131,12 @@
                     </li>
                     <li>
                         <a href="#groups">Groups</a>
+                    </li>
+                    <li>
+                        <a href="#locations">Locations</a>
+                    </li>
+                    <li>
+                        <a href="#skills">Skills</a>
                     </li>
                     <li>
                         <a href="#">Rules <span class="fa arrow"></span></a>

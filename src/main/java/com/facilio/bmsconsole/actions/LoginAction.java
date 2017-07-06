@@ -101,14 +101,19 @@ public class LoginAction extends ActionSupport{
 			return SUCCESS;
 		}
 		
-		String identityId = CognitoUtil.getIdentityId(idToken);
-		System.out.println("identityId ======>  "+identityId);
-		
-		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-    	
-    	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
-    	awsIot.attachPrincipalPolicy(policyResult);
+		try {
+			String identityId = CognitoUtil.getIdentityId(idToken);
+			System.out.println("identityId ======>  "+identityId);
+
+			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+			AWSIot awsIot = AWSIotClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+
+			AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
+			awsIot.attachPrincipalPolicy(policyResult);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		int tempaccesscode = idToken.hashCode();
 		System.out.println("The temp access code is:"+tempaccesscode);
