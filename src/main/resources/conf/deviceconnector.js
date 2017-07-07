@@ -97,6 +97,9 @@ var processItems = function(x, resultArray, runProcess){
         		{
         			console.error("Error refresh::::");
             		console.error(error);
+            		isConnected = false;
+            		processItems(x, resultArray, runProcess);
+            		return;
         		} 
         		else 
         		{
