@@ -120,8 +120,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			.append(moduleName)
 			.append("')");
 			
-		for(int i = 0; i < fields.size(); i++) {
-			sql.append(", ?");
+		for(FacilioField field : fields) {
+			if(field.getDataType() != FieldType.ID) {
+				sql.append(", ?");
+			}
 		}
 		
 		sql.append(")");
