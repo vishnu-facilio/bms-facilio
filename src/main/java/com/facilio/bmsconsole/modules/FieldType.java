@@ -47,4 +47,8 @@ public enum FieldType {
 	public static FieldType getCFType(int value) {
 		return typeMap.get(value);
 	}
+	public String toString()
+	{
+		return typeString;
+	}
 }

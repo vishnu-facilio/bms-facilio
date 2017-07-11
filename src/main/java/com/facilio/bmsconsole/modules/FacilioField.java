@@ -81,4 +81,8 @@ public class FacilioField {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
+	public String toString()
+	{
+		return "\n"+moduleName + "- "+name + "- " +dataType;
+	}
 }
