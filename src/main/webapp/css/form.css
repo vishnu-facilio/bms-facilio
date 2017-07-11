@@ -1,0 +1,56 @@
+/* TEMP CODE */
+#page-wrapper {
+	background: #f2f2f2;
+	padding: 0px;
+}
+
+.form-header {
+	background: #FFFFFF;
+	box-shadow: -2px 0 15px 0 rgba(0, 0, 0, 0.10);
+	padding: 15px;
+}
+
+.btn.save-btn {
+	background: #50CA7C;
+	border-radius: 100px;
+	color: #ffffff;
+}
+
+.btn.cancel-btn {
+	border: 1px solid #ADADAD;
+	color: #ADADAD;
+}
+
+.btn-circle-sm {
+	width: 23px;
+    height: 23px;
+    text-align: center;
+    padding: 5px 0;
+    font-size: 13px;
+    line-height: 0.1;
+    border-radius: 30px;
+}
+
+.form-content {
+	padding: 18px 15px;
+}
+
+.related-list {
+	background: #ffffff;
+	padding: 20px;
+}
+
+.related-list a {
+	color: #666666;
+	text-decoration: none;
+}
+
+.form-content input, .form-content textarea,
+	.form-content select {
+	border: 1px solid #DCE0E0;
+	border-radius: 2px;
+}
+.action-btn button {
+	margin:0 5px;
+	font-size: 14px;
+}

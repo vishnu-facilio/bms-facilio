@@ -104,4 +104,28 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setDueDate(long dueTime) {
 		this.dueDate = dueTime;
 	}
+	
+	private long openedDate = 0;
+	public long getOpenedDate() {
+		return openedDate;
+	}
+	public void setOpenedDate(long openedDate) {
+		this.openedDate = openedDate;
+	}
+	
+	private int priority;
+	public int getPriority() {
+		return priority;
+	} 
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	private int category;
+	public int getCategory() {
+		return category;
+	} 
+	public void setCategory(int category) {
+		this.category = category;
+	}
 }
