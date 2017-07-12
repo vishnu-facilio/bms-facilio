@@ -39,6 +39,10 @@ FacilioApp = {
 		
 		$(".common-notification-alert .alert").show();
 		$(".common-notification-alert .alert").delay(2000).slideUp(200);
+	},
+	
+	lookupDialog: function(module, additionalParams) {
+		var w = window.open(contextPath + "/popup?module="+module+"&params="+additionalParams, "popupWindow", "width=600, height=400, scrollbars=yes");
 	}
 };
 
