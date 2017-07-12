@@ -72,8 +72,8 @@
 	<label>Tasks</label>
 	<div class="col-lg-12 col-md-12 related-list">
 		<div class="text-left pull-down">
-			<a href="javascript:void(0);">
-				<button type="button" class="btn btn-default btn-circle-sm" style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
+			<a href="#" data-toggle="modal" data-target="#AddNewTask">
+				<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
 	 	&nbsp;Add New Task
 			</a>
 	 	</div>
@@ -94,8 +94,123 @@
 </form>
 </div>
 </div>
+
+<!-- ------------------------------ pop up ---------------------------------->
+
+<div class="modal fade" id="AddNewTask" tabindex="-1" role="dialog"
+	aria-labelledby="helpModalLabel" aria-hidden="true">
+
+	<!--  popup header -->
+
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+
+				<h4 class="modal-title pull-left" id="myModalLabel">Add Task</h4>
+
+				<div class="action-btn text-right">
+					<button type="button" class="btn btn-default btn-circle cancel-btn"
+						data-dismiss="modal">
+						<i class="fa fa-times"></i>
+					</button>
+					<button type="button" class="btn btn-default save-btn">
+						<i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;Done
+					</button>
+				</div>
+
+			</div>
+
+			<!-- pop up body -->
+			<form>
+				<div class="modal-body form-content">
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div class="col-md-8 col-sm-8">
+								<div class="form-group">
+									<label>Title *</label> <input type="text" class="form-control">
+								</div>
+								<div class="form-group">
+									<label>Assigned to</label> <input type="text"
+										class="form-control">
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-4">
+								<div class="form-group">
+									<label>Status</label> <input type="text" class="form-control">
+								</div>
+								<div class="form-group">
+									<label>Due date</label> <input type="text" class="form-control f-date">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12 col-sm-12 hr-dashed-line">
+						
+						</div>
+						</div>
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div class="col-md-4 col-sm-4">
+								<div class="form-group">
+									<label>Scheduled start</label> <input type="text"
+										class="form-control f-datetime">
+								</div>
+								<div class="form-group">
+									<label>Actual task start</label> <input type="text"
+										class="form-control f-datetime">
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-4">
+								<div class="form-group">
+									<label>Estimated end</label> <input type="text"
+										class="form-control f-datetime">
+								</div>
+								<div class="form-group">
+									<label>Actual task end</label> <input type="text"
+										class="form-control f-datetime">
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-4">
+								<div class="form-group">
+								<label>Work duration</label>
+								<div class="row ">
+								<div class="col-md-4 col-sm-4 ">
+								<input type='text' class="form-control" placeholder="H" />
+								</div>
+								<div class="col-md-4 col-sm-4">
+								<input type='text' class="form-control" placeholder="M" />
+								</div>
+								<div class="col-md-4 col-sm-4">
+								<input type='text' class="form-control" placeholder="S"/>
+								</div>
+								
+								</div>
+									
+							</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</form>
+
+
+		</div>
+	</div>
+
+</div>
+
 <script>
 	$(document).ready(function() {
+		
+		$(".f-datetime").datetimepicker();
+		
+		$(".f-date").datetimepicker({
+			format:'MMMM Do YYYY'
+		});
+		
 		$("#addTicketForm").submit(function() {
 			console.log("test");
 			$(".save-btn").button('loading');
