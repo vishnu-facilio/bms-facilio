@@ -3,10 +3,10 @@
 <div class="row">
    <div class="col-lg-12">
        <h1 class="page-header">
-       	Requests
+       	Work Orders
        	<a href="#tickets/new" class="btn btn-outline btn-primary pull-right">
        		<i class="fa fa-plus"></i>
-       		New Request
+       		New Work Order
        	</a>
        	</h1>
    </div>

@@ -11,25 +11,30 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.HALF);
 		
-		first.add(new Field("Requester","inputRequester","ticket.requester",Field.FieldType.TEXTBOX));
-		first.add(new Field("Asset","inputAsset","ticket.assetId",Field.FieldType.SELECTBOX).setListName("assetList"));
+		first.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
+		first.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
+		first.add(new Field("Assigned To","inputAssignedTo","ticket.assignedToId",Field.FieldType.SELECTBOX).setListName("userList"));
 		first.add(new Field("Location","inputlocation","location",Field.FieldType.SELECTBOX).setListName("locations"));
+		first.add(new Field("Asset","inputAsset","ticket.assetId",Field.FieldType.SELECTBOX).setListName("assetList"));
 
 		fields.add(first);
+		
 		Panel second =  new Panel(Panel.Type.HALF);
-
-		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
+		second.add(new Field("Requester","inputRequester","ticket.requester",Field.FieldType.TEXTBOX));
+		second.add(new Field("Opened date","inputOpenedDate","ticket.openedDate",Field.FieldType.DATETIME));
+		second.add(new Field("Priority","inputPriority","ticket.priority",Field.FieldType.SELECTBOX).setListName("statusList"));
 		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
-		second.add(new Field("Assigned To","inputAssignedTo","ticket.assignedToId",Field.FieldType.SELECTBOX).setListName("userList"));
+		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
+		second.add(new Field("Category","inputCategory","ticket.category",Field.FieldType.SELECTBOX).setListName("statusList"));
 
 		fields.add(second);
 		
-		Panel third =  new Panel(Panel.Type.FULL);
-
-		third.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
-		third.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
-
-		fields.add(third);
+//		Panel third =  new Panel(Panel.Type.FULL);
+//
+//		third.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
+//		third.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
+//
+//		fields.add(third);
 		
 		return fields;
 		
