@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.constants.FacilioConstants;
+
 public class FormLayout {
 	
 	public static List<Panel> getNewTicketLayout()
@@ -11,10 +13,10 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.HALF);
 		
-		first.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
+		first.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX).setRequired(true));
 		first.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
 		first.add(new Field("Assigned To","inputAssignedTo","ticket.assignedToId",Field.FieldType.SELECTBOX).setListName("userList"));
-		first.add(new Field("Location","inputlocation","location",Field.FieldType.SELECTBOX).setListName("locations"));
+		first.add(new Field("Location","inputlocation","location",Field.FieldType.LOOKUP).setLookupModule("Locations"));
 		first.add(new Field("Asset","inputAsset","ticket.assetId",Field.FieldType.SELECTBOX).setListName("assetList"));
 
 		fields.add(first);
@@ -216,12 +218,20 @@ class Field
 	public void setList(String list) {
 		this.list = list;
 	}
+	public boolean isRequired() {
+		return required;
+	}
+	public Field setRequired(boolean required) {
+		this.required = required;
+		return this;
+	}
 	String label;
 	String id;
 	String styleclass="form-control";
 	String name;
+	boolean required;
 	public enum FieldType {
-	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL
+	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP
 	}
 	FieldType displayType;
 	public Field(String label, String id,  String name, FieldType f) {
@@ -243,9 +253,25 @@ class Field
 		this.list=list;
 		return this;
 	}
+	String lookupModule;
+	public String getLookupModule() {
+		return lookupModule;
+	}
+	public Field setLookupModule(String lookupModule) {
+		this.lookupModule = lookupModule;
+		return this;
+	}
 	public String toString()
 	{
 		return name +"-"+label;
+	}
+	
+	public String getLookupIcon()
+	{
+		if ("Locations".equalsIgnoreCase(this.lookupModule)) {
+			return "fa fa-map-marker";
+		}
+		return "fa fa-search";
 	}
 	
 	public String getHtml5Type()
