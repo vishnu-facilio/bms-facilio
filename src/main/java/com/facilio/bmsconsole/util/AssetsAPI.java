@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -173,6 +174,40 @@ public class AssetsAPI {
 		finally 
 		{
 			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return assetId;
+	}
+	
+	public static Long addAsset(String name, Long orgId, Connection conn) throws Exception
+	{
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Long assetId = null;
+		try
+		{
+			pstmt = conn.prepareStatement("INSERT INTO Assets (NAME, ORGID) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, name);
+			pstmt.setLong(2, orgId);
+			
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add asset");
+			}
+			else 
+			{
+				rs = pstmt.getGeneratedKeys();
+				rs.next();
+				assetId = rs.getLong(1);
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while adding asset" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(pstmt, rs);
 		}
 		return assetId;
 	}

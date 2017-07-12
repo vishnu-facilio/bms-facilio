@@ -20,6 +20,7 @@ import com.facilio.fw.OrgInfo;
 
 public class LoadActionFormCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub

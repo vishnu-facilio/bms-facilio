@@ -62,9 +62,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			}
 			else {
 				rs = pstmt.getGeneratedKeys();
-				rs.next();
-				long id = rs.getLong(1);
-				System.out.println("Added "+bean.getClass().getName()+" object with id : "+id);
+				long id = 0;
+				if(rs.next())
+				{
+					id = rs.getLong(1);
+					System.out.println("Added "+bean.getClass().getName()+" object with id : "+id);
+				}
 				return id;
 			}
 		}
@@ -120,8 +123,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			.append(moduleName)
 			.append("')");
 			
-		for(int i = 0; i < fields.size(); i++) {
-			sql.append(", ?");
+		for(FacilioField field : fields) {
+			if(field.getDataType() != FieldType.ID) {
+				sql.append(", ?");
+			}
 		}
 		
 		sql.append(")");

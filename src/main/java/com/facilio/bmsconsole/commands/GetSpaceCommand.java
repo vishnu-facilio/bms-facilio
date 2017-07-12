@@ -1,0 +1,57 @@
+package com.facilio.bmsconsole.commands;
+
+import java.sql.Connection;
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.CampusContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
+
+public class GetSpaceCommand implements Command {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		long spaceId = (long) context.get(FacilioConstants.ContextNames.SPACE_ID);
+		
+		if(spaceId > 0) 
+		{
+			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+			
+			SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
+					.connection(conn)
+					.dataTableName(dataTableName)
+					.beanClass(SpaceContext.class)
+					.select(fields)
+					.where("SPACE_ID = ?", spaceId)
+					.orderBy("SPACE_ID");
+
+			List<SpaceContext> spaces = builder.get();	
+			if(spaces.size() > 0) {
+				SpaceContext space = spaces.get(0);
+				context.put(FacilioConstants.ContextNames.SPACE, space);
+				
+				context.put(GetNotesCommand.MODULEID_COLUMN, "SPACE_ID");
+				context.put(GetNotesCommand.MODULE_ID, spaceId);
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Invalid Space ID : "+spaceId);
+		}
+		
+		return false;
+	}
+
+}
