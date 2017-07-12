@@ -27,13 +27,31 @@
 			
 			
 			<div class="form-group">
-					<label><s:property value="#field.label"/></label>
+					<label>
+						<s:property value="#field.label"/>
+						<s:if test="%{#field.required}">
+							<span class="required">*</span>
+						</s:if>
+					</label>
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX  || #field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME }">
 					
-					<s:textfield  name="%{#field.name}"
+					<s:textfield  name="%{#field.name}" required="%{#field.required}"
 						id="%{#field.id}" class="form-control"
-						placeholder="xyz@example.com" type="%{#field.html5Type}" />
-						</s:if>
+						type="%{#field.html5Type}" />
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@LOOKUP}">
+						<div class="input-group">
+							<s:textfield  name="%{#field.name}"
+								id="%{#field.id}" class="form-control"
+								type="%{#field.html5Type}" />
+							<span class="input-group-btn">
+								<button class="btn btn-default btn-md" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule"/>')">
+									<i class="<s:property value="#field.lookupIcon"/>"></i>
+								</button>
+							</span>
+	                    </div>					
+					
+					</s:if>
 			<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
 					
 	<s:select class="form-control" list="actionForm[#field.list]"
