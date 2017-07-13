@@ -4,7 +4,7 @@
    <div class="col-lg-12">
        <h1 class="page-header">
        	Work Orders
-       	<a href="#tickets/new" class="btn btn-outline btn-primary pull-right">
+       	<a href="#ticket/new" class="btn btn-outline btn-primary pull-right">
        		<i class="fa fa-plus"></i>
        		New Work Order
        	</a>
