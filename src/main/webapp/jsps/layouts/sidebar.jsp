@@ -34,7 +34,7 @@
             	<a href="#controller"><i class="fa fa-laptop fa-fw"></i> Controllers</a>
             </li>
             <li>
-            	<a href="#tickets"><i class="fa fa-tasks fa-fw"></i> Work Orders</a>
+            	<a href="#ticket"><i class="fa fa-tasks fa-fw"></i> Work Orders</a>
             </li>
             <li>
                 <a href="#"><i class="fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>
@@ -43,7 +43,7 @@
                         <a href="#">Requests <span class="fa arrow"></span></a>
                         <ul class="nav nav-third-level">
                             <li>
-                                <a href="#tickets">All Requests</a>
+                                <a href="#ticket">All Requests</a>
                             </li>
                             <li>
                                 <a href="#">All Open Requests</a>

@@ -92,7 +92,7 @@
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>
 
-	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
 		<result name="success">/jsps/ticketsList.jsp</result>
 	</action>
 	
@@ -164,10 +164,10 @@
     	</action>
     </package>
 
-	<package name="tickets" namespace="/home/tickets" extends="home">
+	<package name="ticket" namespace="/home/ticket" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
-			<result name="success">/jsps/newTicket.jsp</result>
-			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction" method="addTicket">
