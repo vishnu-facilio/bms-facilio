@@ -85,10 +85,10 @@
                                 <a href="#campus">Campus</a>
                             </li>
                             <li>
-                                <a href="#building">Buildings</a>
+                                <a href="#building">Building</a>
                             </li>
                             <li>
-                                <a href="#floor">Floors</a>
+                                <a href="#floor">Floor</a>
                             </li>
                             <li>
                                 <a href="#space">Space</a>

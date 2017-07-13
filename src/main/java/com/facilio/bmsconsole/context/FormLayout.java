@@ -49,12 +49,12 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Managed by","inputManagedBy","campus.managedBy",Field.FieldType.SELECTBOX).setListName("userList"));
-		second.add(new Field("Location","inputLocation","campus.location",Field.FieldType.SELECTBOX).setListName("locations"));
+		second.add(new Field("Managed By","inputManagedBy","campus.managedBy",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
+		second.add(new Field("Location","inputLocation","campus.location",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
 		second.add(new Field("Gross Area","inputGrossArea","campus.grossArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Usable Area","inputUsableArea","campus.usableArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Assignable Area","inputAssignableArea","campus.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		second.add(new Field("Area Unit","inputAreaUnit","campus.areaUnit",Field.FieldType.TEXTBOX));
+		second.add(new Field("Area Unit","inputAreaUnit","campus.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.HALF);
@@ -79,13 +79,13 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Campus","inputCampus","building.campus",Field.FieldType.SELECTBOX).setListName("locations"));
+		second.add(new Field("Campus","inputCampus","building.campus",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("campus", "Campus")));
 		second.add(new Field("Floors","inputFloors","building.floors",Field.FieldType.TEXTBOX));
-		second.add(new Field("Location","inputLocation","building.location",Field.FieldType.SELECTBOX).setListName("locations"));
+		second.add(new Field("Location","inputLocation","building.location",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
 		second.add(new Field("Assignable Area","inputAssignableArea","building.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		second.add(new Field("Usable Area","inputUsableArea","building.usableArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Gross Area","inputGrossArea","building.grossArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","building.areaUnit",Field.FieldType.TEXTBOX));
+		second.add(new Field("Area Unit","inputAreaUnit","building.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.HALF);
@@ -108,12 +108,12 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuilding","floor.building",Field.FieldType.SELECTBOX).setListName("locations"));
+		second.add(new Field("Building","inputBuilding","floor.building",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
 		second.add(new Field("MainLevel","inputMainLevel","floor.mainLevel",Field.FieldType.TEXTBOX));
 		second.add(new Field("Assignable Area","inputAssignableArea","floor.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		second.add(new Field("Usable Area","inputUsableArea","floor.usableArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Gross Area","inputGrossArea","floor.grossArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","floor.areaUnit",Field.FieldType.TEXTBOX));
+		second.add(new Field("Area Unit","inputAreaUnit","floor.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.HALF);
@@ -137,10 +137,10 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuilding","space.building",Field.FieldType.SELECTBOX).setListName("locations"));
-		second.add(new Field("Floor","inputFloor","space.floor",Field.FieldType.SELECTBOX).setListName("locations"));
+		second.add(new Field("Building","inputBuilding","space.building",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
+		second.add(new Field("Floor","inputFloor","space.floor",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("floor", "Floor")));
 		second.add(new Field("Area","inputArea","space.area",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","space.areaUnit",Field.FieldType.TEXTBOX));
+		second.add(new Field("Area Unit","inputAreaUnit","space.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.HALF);
