@@ -73,6 +73,7 @@ label {
 
 .form-content textarea {
 	height:110px;
+	resize: none;
 }
 
 .action-btn button {
