@@ -48,7 +48,7 @@ label {
 
 .form-content, .view-content {
 	padding: 15px;
-    height: 100%;
+	height: calc(100% - 70px);
 	overflow-y: scroll;
 }
 .related-list {
