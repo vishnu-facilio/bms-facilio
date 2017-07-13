@@ -17,6 +17,7 @@
     	<!-- Bootstrap Core CSS -->
 	    <link href="<%=staticURL%>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	    
+ 
 	    <link rel="stylesheet" href="http://xilinus.com/jquery-addresspicker/demos/themes/base/jquery.ui.all.css">
 	
 		<!-- Social Buttons CSS -->
@@ -37,6 +38,10 @@
     	<!-- DataTables Responsive CSS -->
     	<link href="<%=staticURL%>/vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
     	
+    	 <!-- date picker 4.17 -->
+	    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" /></head>
+	  	   
+    	
     	<!-- FullCalendar CSS -->
     	<link href="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.css" rel="stylesheet">
     	
@@ -47,7 +52,7 @@
     
 		<!-- jQuery -->
 	    <script src="<%=staticURL%>/vendor/jquery/jquery.min.js"></script>
-		
+				
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		
 		<script src="http://maps.google.com/maps/api/js?sensor=false&key=AIzaSyBRto3e31_woKTGsOMqgIjZtWUbX7ILyuw"></script>
@@ -78,6 +83,13 @@
 		<link href="http://ricostacruz.com/nprogress/nprogress.css" rel="stylesheet">
 		
 		<script src="http://square.github.io/cubism/cubism.v1.js"></script>
+	
+		<!-- moment.js plug in -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	
+		<!-- date picker js -->	
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+		
 	
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
 		<script src="${pageContext.request.contextPath}/js/app.js"></script>
