@@ -4,10 +4,15 @@
 	padding: 0px;
 }
 
-.form-header {
+.form-header, .view-header {
 	background: #FFFFFF;
 	box-shadow: -2px 0 15px 0 rgba(0, 0, 0, 0.10);
 	padding: 15px;
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.form-header h4 {
+    padding-left: 15px;
 }
 
 label {
@@ -41,28 +46,34 @@ label {
     border-radius: 30px;
 }
 
-.form-content {
-	padding: 18px 15px;
+.form-content, .view-content {
+	padding: 15px;
+    height: 100%;
+	overflow-y: scroll;
 }
-
 .related-list {
+    padding: 15px 0;
+}
+.related-list-content {
 	background: #ffffff;
 	padding: 20px;
 }
 
-.related-list a {
+.related-list-content a {
 	color: #666666;
 	text-decoration: none;
+	outline:none;
 }
 
 .form-content input, .form-content textarea,
-	.form-content select {
+	.form-content select, .form-content .selectize-input {
 	border: 1px solid #DCE0E0;
 	border-radius: 2px;
 }
 
 .form-content textarea {
 	height:110px;
+	resize: none;
 }
 
 .action-btn button {
@@ -79,4 +90,20 @@ label {
 }
 .required {
 	color: red;
+}
+.form-content .input-group-btn .btn-lookup {
+    width: 45px;
+}
+
+.select-lookup.selectize-control.single .selectize-input:after {
+	border: none;
+}
+
+.form-content .selectize-dropdown.single {
+    top: 32px !important;
+    width: calc(100% - 1px) !important;
+}
+.selectize-input.focus {
+	-webkit-box-shadow: none;
+    box-shadow: none;
 }
