@@ -4,7 +4,8 @@
 
 <link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
 
-<div class="row form-header" >
+<div class="form-header">
+<div class="row">
 <div class="col-sm-12" >
   <h4 class="pull-left">New Work Order</h4>
     <div class="action-btn text-right">
@@ -13,9 +14,11 @@
 	 </div>
   </div>
 </div>
-<div class="row form-content">
+</div>
+<div class="form-content page-content">
+<div class="row">
 <div class="col-lg-12">
-<form role="form" id="addTicketForm" onsubmit="return false;">
+<form role="form" id="addTicketForm" data-toggle="validator">
 
 	<div class="row">
 	<s:iterator value="formlayout" status="rowstatus" var="panel">
@@ -33,86 +36,152 @@
 							<span class="required">*</span>
 						</s:if>
 					</label>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX  || #field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME }">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX}">
+						
+						<input name="<s:property value="#field.name"/>" 
+							id="<s:property value="#field.id"/>" class="form-control" 
+							type="<s:property value="#field.html5Type"/>"
+							placeholder="<s:property value="#field.placeholder"/>"
+							<s:if test="%{#field.required}">
+							required="true"
+							</s:if>
+							/>
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATE}">
 					
-					<s:textfield  name="%{#field.name}" required="%{#field.required}"
-						id="%{#field.id}" class="form-control"
-						type="%{#field.html5Type}" />
+						<div class="input-group">
+							<input name="<s:property value="#field.name"/>" 
+								id="<s:property value="#field.id"/>" class="form-control f-date" 
+								type="<s:property value="#field.html5Type"/>"
+								placeholder="<s:property value="#field.placeholder"/>"
+								<s:if test="%{#field.required}">
+								required="true"
+								</s:if>
+								/>
+							<span class="input-group-btn">
+								<button class="btn btn-default btn-md btn-lookup" type="button">
+									<span class="fa fa-calendar"></span>
+								</button>
+							</span>
+	                    </div>
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME}">
+					
+						<div class="input-group">
+							<input name="<s:property value="#field.name"/>" 
+								id="<s:property value="#field.id"/>" class="form-control f-datetime" 
+								type="<s:property value="#field.html5Type"/>"
+								placeholder="<s:property value="#field.placeholder"/>"
+								<s:if test="%{#field.required}">
+								required="true"
+								</s:if>
+								/>
+							<span class="input-group-btn">
+								<button class="btn btn-default btn-md btn-lookup" type="button">
+									<span class="fa fa-calendar"></span>
+								</button>
+							</span>
+	                    </div>
 					</s:if>
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@LOOKUP}">
 						<div class="input-group">
-							<s:textfield  name="%{#field.name}"
-								id="%{#field.id}" class="form-control"
-								type="%{#field.html5Type}" />
+							<select
+								class="select-lookup"
+								id="<s:property value="#field.id"/>"
+								name="<s:property value="#field.name"/>"
+								placeholder="<s:property value="#field.placeholder"/>"
+								<s:if test="%{#field.required}">
+								required="true"
+								</s:if>
+								>
+								<s:if test="%{#field.lookupModule.preloadedList != null && #field.lookupModule.preloadedList != ''}">
+									<option value="">- None -</option>
+									<s:iterator value="actionForm[#field.lookupModule.preloadedList]" status="rowstatus" var="option">
+										<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
+									</s:iterator>
+								</s:if>
+							</select>
 							<span class="input-group-btn">
-								<button class="btn btn-default btn-md" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule"/>')">
-									<i class="<s:property value="#field.lookupIcon"/>"></i>
+								<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>')">
+									<i class="<s:property value="#field.lookupModule.lookupIcon"/>"></i>
 								</button>
 							</span>
 	                    </div>					
 					
 					</s:if>
-			<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
 					
-	<s:select class="form-control" list="actionForm[#field.list]"
-						name="%{#field.name}" id="%{#field.id}" headerKey="0"
-						headerValue="--" />					
+						<select
+							class="form-control"
+							id="<s:property value="#field.id"/>"
+							name="<s:property value="#field.name"/>"
+							placeholder="<s:property value="#field.placeholder"/>"
+							<s:if test="%{#field.required}">
+							required="true"
+							</s:if>
+							>
+							<option value="">- None -</option>
+							<s:iterator value="actionForm[#field.list]" status="rowstatus" var="option">
+								<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
+							</s:iterator>
+						</select>
 						
-						</s:if>		
-							<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
-							<s:textarea class="form-control" name="%{#field.name}"
-							 rows="5"
-							placeholder="More about the problem..." />
-							</s:if>	
+					</s:if>		
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
+						<textarea class="form-control" name="%{#field.name}"
+							id="<s:property value="#field.id"/>"
+							name="<s:property value="#field.name"/>"
+							placeholder="<s:property value="#field.placeholder"/>"
+							<s:if test="%{#field.required}">
+							required="true"
+							</s:if>
+							></textarea>
+					</s:if>	
 				</div>
 			
 		</s:iterator>
  </div>
   </div>
 </s:iterator>
-
-
-<div class="col-lg-12">
-				<div class="panel-body">
-	<s:iterator var="customFieldName" value="customFieldNames">
-						<div class="form-group">
-							<label><s:property value="customFieldName" /></label>
-							<s:textfield name="ticket.customProps['%{customFieldName}']"
-								id="input%{customFieldName}" class="form-control" />
-						</div>
-					</s:iterator>
-				</div>
-			</div>
-
-		
 	</div>
-	<div class="form-group col-lg-12 col-md-12">
-	<label>Tasks</label>
-	<div class="col-lg-12 col-md-12 related-list">
-		<div class="text-left pull-down">
-			<a href="#" data-toggle="modal" data-target="#AddNewTask">
-				<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
-	 	&nbsp;Add New Task
-			</a>
-	 	</div>
-	</div>
-</div>
-
-<div class="form-group col-lg-12 col-md-12">
-	<label>Attachments</label>
-	<div class="col-lg-12 col-md-12 related-list">
-		<div class="text-left pull-down">
-			<a href="javascript:void(0);">
-				<button type="button" class="btn btn-default btn-circle-sm" style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
-	 	&nbsp;Add Attachment
-			</a>
-	 	</div>
-	</div>
-</div>
 </form>
 </div>
 </div>
-
+<div class="row related-list">
+	<div class="col-lg-12 col-md-12">
+		<div class="col-lg-12 col-md-12 related-list-header">
+			<label><i class="fa fa-tasks" style="color: #0CA4F3;" aria-hidden="true"></i>&nbsp;&nbsp;Tasks</label>
+		</div>
+		<div class="col-lg-12 col-md-12">
+			<div class="related-list-content">
+				<div class="text-left pull-down">
+					<a href="#" data-toggle="modal" data-target="#AddNewTask">
+						<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
+			 	&nbsp;Add New Task
+					</a>
+			 	</div>
+		 	</div>
+		</div>
+	</div>
+</div>
+<div class="row related-list">
+	<div class="col-lg-12 col-md-12">
+		<div class="col-lg-12 col-md-12 related-list-header">
+			<label><i class="fa fa-paperclip" style="color: #0CA4F3; font-size: 17px;" aria-hidden="true"></i>&nbsp;&nbsp;Attachments</label>
+		</div>
+		<div class="col-lg-12 col-md-12">
+			<div class="related-list-content">
+				<div class="text-left pull-down">
+					<a href="#">
+						<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
+			 	&nbsp;Add Attachment
+					</a>
+			 	</div>
+		 	</div>
+		</div>
+	</div>
+</div>
+</div>
 <!-- ------------------------------ pop up ---------------------------------->
 
 <div class="modal fade" id="AddNewTask" tabindex="-1" role="dialog"
@@ -223,28 +292,58 @@
 <script>
 	$(document).ready(function() {
 		
+		// calculating and setting form content height
+		var pgeHeight = $('#page-wrapper').height();
+		var frmHeaderHeight = $('.form-header').height();
+		var frmContentHeight = pgeHeight - frmHeaderHeight;
+		$('#page-wrapper .page-content').css('height', frmContentHeight+'px');
+		
+		$('.form-content').tooltip({
+	        selector: "[data-toggle=tooltip]",
+	        container: "body"
+	    });
+		
+		$('select').selectize();
+		
 		$(".f-datetime").datetimepicker();
 		
-		$(".f-date").datetimepicker({
-			format:'MMMM Do YYYY'
+		$(".f-datetime").closest('div').find('.btn-lookup').click(function() {
+			$(".f-datetime").data("DateTimePicker").toggle();
 		});
 		
-		$("#addTicketForm").submit(function() {
-			console.log("test");
-			$(".save-btn").button('loading');
-			$.ajax({
-				method : "post",
-				url : "<s:url action='add' />",
-				data : $("#addTicketForm").serialize()
-			})
-			.done(function(data) {
-				console.log(data);
-				window.location.href='#tickets/'+data.ticketId;
-			})
-			.fail(function(error) {
-				$(".save-btn").button('reset');
-				console.log(error);
-			});
+		$(".f-date").datetimepicker({
+			format:'DD/MM/YYYY'
+		});
+		$(".f-date").closest('div').find('.btn-lookup').click(function() {
+			$(".f-date").data("DateTimePicker").toggle();
+		});
+		
+		$('#addTicketForm').validator().on('submit', function (e) {
+		  if (e.isDefaultPrevented()) {
+				// handle the invalid form...
+		  }
+		  else {
+				// check if any validation errors
+				if ($(this).find('.form-group').hasClass('has-error')) {
+					return false;
+				}
+				
+				$(".save-btn").button('loading');
+				$.ajax({
+					method : "post",
+					url : "<s:url action='add' />",
+					data : $("#addTicketForm").serialize()
+				})
+				.done(function(data) {
+					console.log(data);
+					window.location.href='#tickets/'+data.ticketId;
+				})
+				.fail(function(error) {
+					$(".save-btn").button('reset');
+					console.log(error);
+				});
+				return false;
+		  	}
 		});
 	});
 </script>
