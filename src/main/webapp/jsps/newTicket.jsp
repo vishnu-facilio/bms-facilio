@@ -292,12 +292,6 @@
 <script>
 	$(document).ready(function() {
 		
-		// calculating and setting form content height
-		var pgeHeight = $('#page-wrapper').height();
-		var frmHeaderHeight = $('.form-header').height();
-		var frmContentHeight = pgeHeight - frmHeaderHeight;
-		$('#page-wrapper .page-content').css('height', frmContentHeight+'px');
-		
 		$('.form-content').tooltip({
 	        selector: "[data-toggle=tooltip]",
 	        container: "body"
