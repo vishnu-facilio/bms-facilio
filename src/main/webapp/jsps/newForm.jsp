@@ -134,7 +134,7 @@
 						
 					</s:if>		
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
-						<textarea class="form-control" name="%{#field.name}"
+						<textarea class="form-control" name="<s:property value="#field.name"/>"
 							id="<s:property value="#field.id"/>"
 							name="<s:property value="#field.name"/>"
 							placeholder="<s:property value="#field.placeholder"/>"
@@ -189,7 +189,7 @@
 								</div>
 							</div>
 							<div class="col-md-12 file-row file-row-template hidden">
-									<input class="file-object" name="object-id" type="hidden"/>
+									<input class="file-object" type="hidden"/>
 									<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
 									<span class="file-name col-md-10 text-left"></span>
 								</div>

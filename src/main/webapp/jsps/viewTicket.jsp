@@ -66,7 +66,7 @@
 	</table>
 </s:if>
 
-<a class="btn btn-default" href="#tickets" role="button"><span
+<a class="btn btn-default" href="#ticket" role="button"><span
 	class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Back
 	To Tickets</a>
 <button class="btn btn-default" id="addTaskBtn" role="button">
