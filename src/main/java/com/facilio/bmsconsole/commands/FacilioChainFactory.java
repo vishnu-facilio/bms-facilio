@@ -182,4 +182,205 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getAllCampusChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetCampusModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetAllCampusCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewCampusChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetCampusModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddCampusChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(new SetCampusModuleTableNames());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new AddCampusCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getCampusDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetCampusModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetCampusCommand());
+		c.addCommand(new GetNotesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllBuildingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetBuildingModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetAllBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewBuildingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetBuildingModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddBuildingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateBuildingFieldsCommand());
+		c.addCommand(new SetBuildingModuleTableNames());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new AddBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getBuildingDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetBuildingModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllFloorChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetFloorModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetAllFloorCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewFloorChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetFloorModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddFloorChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateFloorFieldsCommand());
+		c.addCommand(new SetFloorModuleTableNames());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new AddFloorCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getFloorDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetFloorModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetFloorCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllSpaceChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetSpaceModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetAllSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewSpaceChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetSpaceModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddSpaceChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateSpaceFieldsCommand());
+		c.addCommand(new SetSpaceModuleTableNames());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new AddSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSpaceDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetSpaceModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllZoneChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetZoneModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetAllZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewZoneChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetZoneModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddZoneChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateZoneFieldsCommand());
+		c.addCommand(new SetZoneModuleTableNames());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new AddZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getZoneDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetZoneModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }

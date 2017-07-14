@@ -4,10 +4,15 @@
 	padding: 0px;
 }
 
-.form-header {
+.form-header, .view-header {
 	background: #FFFFFF;
 	box-shadow: -2px 0 15px 0 rgba(0, 0, 0, 0.10);
 	padding: 15px;
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.form-header h4 {
+    padding-left: 15px;
 }
 
 label {
@@ -41,28 +46,23 @@ label {
     border-radius: 30px;
 }
 
-.form-content {
-	padding: 18px 15px;
+.form-content, .view-content {
+	padding: 15px;
+	height: calc(100% - 70px);
+	overflow-y: scroll;
 }
-
 .related-list {
-	background: #ffffff;
-	padding: 20px;
+    padding: 15px 0;
 }
-
-.related-list a {
-	color: #666666;
-	text-decoration: none;
-}
-
 .form-content input, .form-content textarea,
-	.form-content select {
+	.form-content select, .form-content .selectize-input {
 	border: 1px solid #DCE0E0;
 	border-radius: 2px;
 }
 
 .form-content textarea {
 	height:110px;
+	resize: none;
 }
 
 .action-btn button {
@@ -79,4 +79,68 @@ label {
 }
 .required {
 	color: red;
+}
+.form-content .input-group-btn .btn-lookup {
+    width: 45px;
+}
+
+.select-lookup.selectize-control.single .selectize-input:after {
+	border: none;
+}
+
+.form-content .selectize-dropdown.single {
+    top: 32px !important;
+    width: calc(100% - 1px) !important;
+}
+.selectize-input.focus {
+	-webkit-box-shadow: none;
+    box-shadow: none;
+}
+.field-label-icon {
+	color: #0CA4F3;
+	font-size: 17px;
+	padding-right:2px;	
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.file-section .file-add {
+	cursor: pointer;
+}
+.file-section .file-row {
+    padding: 20px;
+    border-top: 1px solid #DCE0E0;
+    border-left: 1px solid #DCE0E0;;
+    border-right: 1px solid #DCE0E0;;
+    background: #ffffff;
+}
+.file-section .file-row.file-add {
+    padding: 20px;
+    border-top: 1px dashed #DCE0E0;
+}
+.file-section .file-row:first-child {
+	border-top: 1px solid #DCE0E0;
+    border-radius: 2px 2px 0px 0px;
+}
+.file-section .file-row:last-child {
+    border-bottom: 1px solid #DCE0E0;
+    border-radius: 0px 0px 2px 2px;
 }

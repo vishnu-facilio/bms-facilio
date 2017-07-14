@@ -92,12 +92,32 @@
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>
 
-	<action name="tickets" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
 		<result name="success">/jsps/ticketsList.jsp</result>
 	</action>
 	
 	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<result name="success">/jsps/tasksList.jsp</result>
+	</action>
+	
+	<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+		<result name="success">/jsps/campusList.jsp</result>
+	</action>
+	
+	<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+		<result name="success">/jsps/buildingList.jsp</result>
+	</action>
+	
+	<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+		<result name="success">/jsps/floorList.jsp</result>
+	</action>
+	
+	<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
+		<result name="success">/jsps/spaceList.jsp</result>
+	</action>
+	
+	<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
+		<result name="success">/jsps/zoneList.jsp</result>
 	</action>
 	
 	<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
@@ -144,10 +164,10 @@
     	</action>
     </package>
 
-	<package name="tickets" namespace="/home/tickets" extends="home">
+	<package name="ticket" namespace="/home/ticket" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
-			<result name="success">/jsps/newTicket.jsp</result>
-			<result name="ajaxsuccess">/jsps/newTicket.jsp</result>
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction" method="addTicket">
@@ -351,5 +371,95 @@
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
 
+	</package>
+	
+	<package name="campus" namespace="/home/campus" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction" method="addCampus">
+			<result name="success" type="json">
+				<param name="includeProperties">campusId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
+			<param name="campusId">{1}</param>
+			<result name="success">/jsps/viewCampus.jsp</result>
+		</action>
+	</package>
+	
+	<package name="building" namespace="/home/building" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction" method="addBuilding">
+			<result name="success" type="json">
+				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
+			<param name="buildingId">{1}</param>
+			<result name="success">/jsps/viewBuilding.jsp</result>
+		</action>
+	</package>
+	
+	<package name="floor" namespace="/home/floor" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction" method="addFloor">
+			<result name="success" type="json">
+				<param name="includeProperties">floorId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
+			<param name="floorId">{1}</param>
+			<result name="success">/jsps/viewFloor.jsp</result>
+		</action>
+	</package>
+	
+	<package name="space" namespace="/home/space" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="addSpace">
+			<result name="success" type="json">
+				<param name="includeProperties">spaceId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
+			<param name="spaceId">{1}</param>
+			<result name="success">/jsps/viewSpace.jsp</result>
+		</action>
+	</package>
+	
+	<package name="zone" namespace="/home/zone" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction" method="addZone">
+			<result name="success" type="json">
+				<param name="includeProperties">zoneId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction" method="viewZone">
+			<param name="zoneId">{1}</param>
+			<result name="success">/jsps/viewZone.jsp</result>
+		</action>
 	</package>
 </struts>

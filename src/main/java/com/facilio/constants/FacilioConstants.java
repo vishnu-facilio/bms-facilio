@@ -81,5 +81,25 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
+		
+		public static final String CAMPUS_ID = "campusId";
+		public static final String CAMPUS = "campus";
+		public static final String CAMPUS_LIST = "campuses";
+		
+		public static final String BUILDING_ID = "buildingId";
+		public static final String BUILDING = "building";
+		public static final String BUILDING_LIST = "buildings";
+		
+		public static final String FLOOR_ID = "floorId";
+		public static final String FLOOR = "floor";
+		public static final String FLOOR_LIST = "floors";
+		
+		public static final String SPACE_ID = "spaceId";
+		public static final String SPACE = "space";
+		public static final String SPACE_LIST = "spaces";
+		
+		public static final String ZONE_ID = "zoneId";
+		public static final String ZONE = "zone";
+		public static final String ZONE_LIST = "zones";
 	}
 }

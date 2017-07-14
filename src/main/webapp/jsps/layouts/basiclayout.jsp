@@ -40,6 +40,9 @@
     	
     	 <!-- date picker 4.17 -->
 	    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" /></head>
+	    
+	    <!--  selectize -->
+	    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css" />
 	  	   
     	
     	<!-- FullCalendar CSS -->
@@ -89,7 +92,12 @@
 	
 		<!-- date picker js -->	
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-		
+	
+		<!--  selectize -->
+	    <script src="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+	    
+	    <!-- bootstrap validator -->
+	    <script src="http://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>	
 	
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
 		<script src="${pageContext.request.contextPath}/js/app.js"></script>
@@ -106,7 +114,7 @@
 
 		<%@ include file="header.jsp" %>
 
-        <div id="page-wrapper">
+        <div id="page-wrapper" style="overflow: hidden;">
             <tiles:insertAttribute name="body" />  
         </div>
         <!-- /#page-wrapper -->

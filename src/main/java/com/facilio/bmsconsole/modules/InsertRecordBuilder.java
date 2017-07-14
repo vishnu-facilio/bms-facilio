@@ -62,9 +62,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			}
 			else {
 				rs = pstmt.getGeneratedKeys();
-				rs.next();
-				long id = rs.getLong(1);
-				System.out.println("Added "+bean.getClass().getName()+" object with id : "+id);
+				long id = 0;
+				if(rs.next())
+				{
+					id = rs.getLong(1);
+					System.out.println("Added "+bean.getClass().getName()+" object with id : "+id);
+				}
 				return id;
 			}
 		}

@@ -11,7 +11,7 @@
  	
     <div class="action-btn text-right">
     	
- 		<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#tickets/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+ 		<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>
   </div>
 </div>

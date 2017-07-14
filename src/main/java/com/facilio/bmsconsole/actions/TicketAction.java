@@ -164,4 +164,9 @@ public class TicketAction extends ActionSupport {
 	public void setTickets(List<TicketContext> tickets) {
 		this.tickets = tickets;
 	}
+	
+	public String getModuleLinkName()
+	{
+		return FacilioConstants.ContextNames.TICKET;
+	}
 }

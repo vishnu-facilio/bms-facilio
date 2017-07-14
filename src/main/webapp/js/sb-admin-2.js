@@ -25,7 +25,8 @@ $(function() {
         height = height - topOffset;
         if (height < 1) height = 1;
         if (height > topOffset) {
-            $("#page-wrapper").css("min-height", (height) + "px");
+            $("#page-wrapper").css("height", (height) + "px");
+            $("#page-wrapper").css("overflow-y", "scroll");
         }
     });
 
