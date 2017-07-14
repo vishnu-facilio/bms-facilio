@@ -1,0 +1,39 @@
+.table>tbody>tr>td{
+    padding: 18px;
+    vertical-align: middle; 
+   
+}
+table.dataTable{
+margin-top: 0px !important;
+}
+table.dataTable tr.odd { background-color: white; }
+table.dataTable tr.even { background-color: white; }
+table.dataTable thead tr{
+ background-color: #6666666;
+}
+table.dataTable thead tr th .checkbox{
+padding-left: 15px;
+}
+
+table.dataTable > tbody:first-of-type > tr > td:first-child
+{
+ background-color: white;
+
+}
+div.dataTables_info {
+    padding-top: 8px;
+    white-space: nowrap;
+    padding-left: 10px;
+}
+
+div.dataTables_info,#tickets-list_paginate{
+	/* padding-top: 10px; */
+	padding: 18px;
+	white-space: nowrap;
+}
+.sectxt-color{
+color: grey;
+}
+h4.row-title {
+    font-size: 1.2em !important;
+    }
