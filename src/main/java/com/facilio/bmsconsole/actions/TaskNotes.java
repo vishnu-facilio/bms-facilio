@@ -18,7 +18,7 @@ public class TaskNotes extends ActionSupport {
 		if(note != null) {
 			note.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			note.setOwnerId(UserInfo.getCurrentUser().getOrgUserId());
-			note.setCreationTime(System.currentTimeMillis()/1000);
+			note.setCreationTime(System.currentTimeMillis());
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.TASK_ID, getTaskId());

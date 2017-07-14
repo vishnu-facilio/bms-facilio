@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,13 +46,15 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public static final int OPEN = 1, PENDING = 2, RESOLVED = 3, CLOSED = 4;
-	private static final Map<Integer, String> ALL_STATUS = new HashMap<>();
+	private static final Map<Integer, String> ALL_STATUS = Collections.unmodifiableMap(initStatusMap());
 	
-	static {
-		ALL_STATUS.put(OPEN, "Open");
-		ALL_STATUS.put(PENDING, "Pending");
-		ALL_STATUS.put(RESOLVED, "Resolved");
-		ALL_STATUS.put(CLOSED, "Closed");
+	private static Map<Integer, String> initStatusMap() {
+		Map<Integer, String> status = new HashMap<>();
+		status.put(OPEN, "Open");
+		status.put(PENDING, "Pending");
+		status.put(RESOLVED, "Resolved");
+		status.put(CLOSED, "Closed");
+		return status;
 	}
 	public static  Map<Integer, String> getAllStatus() {
 		return ALL_STATUS;
@@ -84,7 +87,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assetId = assetId;
 	}
 	
-	public static final long DEFAULT_DURATION = 3*24*60*60; //3 days in seconds
+	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
 	
 	private long dueDate = 0;
 	public long getDueDate() {
@@ -94,7 +97,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setDueDate(String dueDate) {
 		if(dueDate != null && !dueDate.isEmpty()) {
 			try {
-				this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime()/1000;
+				this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime();
 			}
 			catch (ParseException e) {
 				e.printStackTrace();

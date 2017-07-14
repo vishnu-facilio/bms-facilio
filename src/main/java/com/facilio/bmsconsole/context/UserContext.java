@@ -67,10 +67,8 @@ public class UserContext extends FacilioContext {
 	}
 	
 	public String getInvitedTimeStr() {
-		long time = this.invitedTime * 1000;
-		
 		SimpleDateFormat sd = new SimpleDateFormat("MMM dd, yyyy");
-		return sd.format(new Date(time));
+		return sd.format(new Date(invitedTime));
 	}
 	
 	private boolean inviteAcceptStatus;
