@@ -41,8 +41,31 @@ FacilioApp = {
 		$(".common-notification-alert .alert").delay(2000).slideUp(200);
 	},
 	
-	lookupDialog: function(module, additionalParams) {
-		var w = window.open(contextPath + "/popup?module="+module+"&params="+additionalParams, "popupWindow", "width=600, height=400, scrollbars=yes");
+	lookupDialog: function(moduleLinkName, moduleName, criteria, fieldId) {
+		var popup = $('<div id="'+moduleLinkName+'popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title pull-left"></h4><div class="action-btn text-right"><button type="button" class="btn btn-default btn-circle cancel-btn" data-dismiss="modal"><i class="fa fa-times"></i></button><button type="button" class="btn btn-default save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button></div></div><div class="modal-body"></div></div></div></div>');
+		$(popup).find('.modal-body').html("Loading...");
+		$(popup).find('.modal-title').text("All " + moduleName);
+		$(popup).data('fieldId', fieldId);
+		$(popup).modal("show");
+		$.ajax({
+			method : "get",
+			url : contextPath + "/home/" + moduleLinkName + "/popup",
+		})
+		.done(function(data) {
+			$(popup).find('.modal-body').html(data);
+		});
+		$(popup).on('hidden.bs.modal', function () {
+			$(popup).remove();
+		})
+	},
+	
+	selectValue: function(id, label, popup) {
+		var $select = $("#"+$(popup).data('fieldId')).selectize();
+		var selectize = $select[0].selectize;
+		selectize.addOption({value: id, text: label});
+		selectize.refreshOptions();
+		selectize.setValue(id);
+		$(popup).modal('hide');
 	}
 };
 

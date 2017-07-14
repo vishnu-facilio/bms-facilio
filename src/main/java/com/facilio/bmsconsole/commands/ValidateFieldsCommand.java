@@ -37,7 +37,7 @@ public class ValidateFieldsCommand implements Command {
 
 			if(ticketContext.getDueDate() == 0) {
 				Calendar cal = Calendar.getInstance();
-				ticketContext.setDueDate((cal.getTimeInMillis()/1000)+TicketContext.DEFAULT_DURATION);
+				ticketContext.setDueDate((cal.getTimeInMillis())+TicketContext.DEFAULT_DURATION);
 			}
 		}
 		else if (context instanceof UserContext) {
