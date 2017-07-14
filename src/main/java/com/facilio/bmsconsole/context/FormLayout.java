@@ -50,7 +50,7 @@ public class FormLayout {
 		
 		Panel second =  new Panel(Panel.Type.HALF);
 		second.add(new Field("Managed By","inputManagedBy","campus.managedBy",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
-		second.add(new Field("Location","inputLocation","campus.location",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
+		second.add(new Field("Location","inputLocationId","campus.locationId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
 		second.add(new Field("Gross Area","inputGrossArea","campus.grossArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Usable Area","inputUsableArea","campus.usableArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Assignable Area","inputAssignableArea","campus.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
@@ -79,9 +79,9 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Campus","inputCampus","building.campus",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("campus", "Campus")));
+		second.add(new Field("Campus","inputCampusId","building.campusId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("campus", "Campus")));
 		second.add(new Field("Floors","inputFloors","building.floors",Field.FieldType.TEXTBOX));
-		second.add(new Field("Location","inputLocation","building.location",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
+		second.add(new Field("Location","inputLocationId","building.locationId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
 		second.add(new Field("Assignable Area","inputAssignableArea","building.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		second.add(new Field("Usable Area","inputUsableArea","building.usableArea",Field.FieldType.TEXTBOX));
 		second.add(new Field("Gross Area","inputGrossArea","building.grossArea",Field.FieldType.TEXTBOX));
@@ -108,7 +108,7 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuilding","floor.building",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
+		second.add(new Field("Building","inputBuildingId","floor.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
 		second.add(new Field("MainLevel","inputMainLevel","floor.mainLevel",Field.FieldType.TEXTBOX));
 		second.add(new Field("Assignable Area","inputAssignableArea","floor.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		second.add(new Field("Usable Area","inputUsableArea","floor.usableArea",Field.FieldType.TEXTBOX));
@@ -137,8 +137,8 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuilding","space.building",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
-		second.add(new Field("Floor","inputFloor","space.floor",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("floor", "Floor")));
+		second.add(new Field("Building","inputBuildingId","space.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
+		second.add(new Field("Floor","inputFloorId","space.floorId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("floor", "Floor")));
 		second.add(new Field("Area","inputArea","space.area",Field.FieldType.TEXTBOX));
 		second.add(new Field("Area Unit","inputAreaUnit","space.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
@@ -358,6 +358,9 @@ class LookupModule
 		}
 		else if ("groups".equalsIgnoreCase(this.name)) {
 			return "fa fa-users";
+		}
+		else if ("building".equalsIgnoreCase(this.name)) {
+			return "fa fa-building";
 		}
 		return "fa fa-search";
 	}

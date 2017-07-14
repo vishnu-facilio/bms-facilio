@@ -84,7 +84,7 @@
 		<result name="success">/jsps/admin.jsp</result>
 	</action>
     
-    <action name="users" class="com.facilio.bmsconsole.actions.UserListAction">
+    <action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 		<result name="success">/jsps/usersList.jsp</result>
 	</action>
 	
@@ -217,6 +217,9 @@
 	</package>
 	
 	<package name="locations" namespace="/home/locations" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.LocationActions">
+			<result name="success">/jsps/locationsPopup.jsp</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.LocationActions" method="{1}">
 			<result name="new_location">/jsps/newLocation.jsp</result>
 			<result name="add_location_success" type="json">
@@ -236,6 +239,10 @@
 	</package>
 	
 	<package name="users" namespace="/home/users" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<result name="success">/jsps/usersListPopup.jsp</result>
+		</action>
+		
 		<action name="new" class="com.facilio.bmsconsole.actions.NewUserAction">
 			<result name="success">/jsps/inviteUser.jsp</result>
 		</action>
@@ -374,6 +381,10 @@
 	</package>
 	
 	<package name="campus" namespace="/home/campus" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+			<result name="success">/jsps/campusListPopup.jsp</result>
+		</action>
+		
 		<action name="new" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>

@@ -9,7 +9,7 @@
 <div class="col-sm-12" >
   <h4 class="pull-left">New <s:property value="%{moduleName}"/></h4>
     <div class="action-btn text-right">
-    	<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#tickets';"><i class="fa fa-times"></i></button>
+    	<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#<s:property value="%{moduleLinkName}"/>';"><i class="fa fa-times"></i></button>
  		<button type="button" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" class="btn btn-default save-btn" onclick="$('#addForm').submit();"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;Save</button>
 	 </div>
   </div>
@@ -105,7 +105,7 @@
 								</s:if>
 							</select>
 							<span class="input-group-btn">
-								<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>')">
+								<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>', '<s:property value="#field.id"/>')">
 									<i class="<s:property value="#field.lookupModule.lookupIcon"/>"></i>
 								</button>
 							</span>
