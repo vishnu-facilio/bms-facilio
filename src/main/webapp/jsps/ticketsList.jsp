@@ -5,6 +5,7 @@
 <link href="${pageContext.request.contextPath}/css/checkbox.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/view.css" rel="stylesheet">
 
+
 <div class="row form-header" >
 <div class="col-sm-12" >
   <h4 class="pull-left">All Work Orders</h4>
@@ -42,13 +43,13 @@
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
 		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
-		            <td><h4 class="row-title"><s:property value="#ticket.subject" /></h4></div>
+		            <td><h4 class="row-title"><s:property value="#ticket.subject" /></h4>
 		            <small class="sectxt-color"><s:property value="#ticket.description" /></small></td>
 		            <td>
-		            	<h5><span class="text"><s:property value="#ticket.getStatus()" /></span></h5>
+		            	<span class="text"><s:property value="#ticket.getStatus()" /></span>
 		            </td>
 		            <td>
-		            	<h5><span class="label label-success"><s:property value="" /></span></h5>
+		            <span class="label label-success"><s:property value="" /></span>
 		            </td>
 		            <td><s:property value="#ticket.duedate" /></td>
 		            <td><s:property value="#ticket.requester" /></td>
