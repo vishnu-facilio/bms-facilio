@@ -189,7 +189,7 @@
 								</div>
 							</div>
 							<div class="col-md-12 file-row file-row-template hidden">
-									<input class="file-object" name="object-id" type="hidden"/>
+									<input class="file-object" type="hidden"/>
 									<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
 									<span class="file-name col-md-10 text-left"></span>
 								</div>
