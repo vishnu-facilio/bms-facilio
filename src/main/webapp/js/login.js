@@ -110,6 +110,7 @@ function signin(email,password)
 		        	//alert(data)
 		        	if(data.startsWith("http"))
 		        	{
+		        		data = data + location.hash;
 		        		window.location.replace(data);
 		        	}
 		        	else if(data.startsWith("reload"))

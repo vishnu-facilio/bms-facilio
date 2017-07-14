@@ -134,7 +134,7 @@
 						
 					</s:if>		
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
-						<textarea class="form-control" name="%{#field.name}"
+						<textarea class="form-control" name="<s:property value="#field.name"/>"
 							id="<s:property value="#field.id"/>"
 							name="<s:property value="#field.name"/>"
 							placeholder="<s:property value="#field.placeholder"/>"
