@@ -403,6 +403,10 @@
 	</package>
 	
 	<package name="building" namespace="/home/building" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+			<result name="success">/jsps/buildingListPopup.jsp</result>
+		</action>
+		
 		<action name="new" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
@@ -421,6 +425,10 @@
 	</package>
 	
 	<package name="floor" namespace="/home/floor" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+			<result name="success">/jsps/floorListPopup.jsp</result>
+		</action>
+		
 		<action name="new" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
