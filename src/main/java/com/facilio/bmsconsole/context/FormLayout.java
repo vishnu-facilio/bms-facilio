@@ -29,12 +29,9 @@ public class FormLayout {
 
 		fields.add(second);
 		
-//		Panel third =  new Panel(Panel.Type.FULL);
-//
-//		third.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX));
-//		third.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA));
-//
-//		fields.add(third);
+		Panel third =  new Panel(Panel.Type.FULL);
+		third.add(new Field("Attachments","inputAttachment","ticket.attachments",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		fields.add(third);
 		
 		return fields;
 		
@@ -210,6 +207,13 @@ class Field
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getIcon() {
+		return icon;
+	}
+	public Field setIcon(String icon) {
+		this.icon = icon;
+		return this;
+	}
 	public String getPlaceholder() {
 		return placeholder;
 	}
@@ -234,10 +238,11 @@ class Field
 	String id;
 	String styleclass="form-control";
 	String name;
+	String icon;
 	String placeholder;
 	boolean required;
 	public enum FieldType {
-	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP
+	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP, FILE
 	}
 	FieldType displayType;
 	public Field(String label, String id,  String name, FieldType f) {
@@ -265,6 +270,14 @@ class Field
 	}
 	public Field setLookupModule(LookupModule lookupModule) {
 		this.lookupModule = lookupModule;
+		return this;
+	}
+	FileField fileField;
+	public FileField getFileField() {
+		return fileField;
+	}
+	public Field setFileField(FileField fileField) {
+		this.fileField = fileField;
 		return this;
 	}
 	public String toString()
@@ -360,5 +373,55 @@ class LookupModule
 			return "fa fa-users";
 		}
 		return "fa fa-search";
+	}
+}
+class FileField
+{
+	public static final String DISPLAY_TYPE_SIMPLE = "simple";
+	
+	public static final String DISPLAY_TYPE_SECTION = "section";
+	
+	String displayType = DISPLAY_TYPE_SIMPLE; // 'simple' or 'section'
+	int maxFiles = 20; // default 20 files
+	int maxAllowedSize = 5242880; // default 5 MB per file
+	String allowedExtensions = "*"; // default all files
+	public FileField() {
+		super();
+	}
+	
+	public FileField setDisplayType(String displayType) {
+		this.displayType = displayType;
+		return this;
+	}
+	
+	public String getDisplayType() {
+		return this.displayType;
+	}
+	
+	public FileField setMaxFiles(int maxFiles) {
+		this.maxFiles = maxFiles;
+		return this;
+	}
+	
+	public int getMaxFiles() {
+		return this.maxFiles;
+	}
+	
+	public FileField setMaxAllowedSize(int maxAllowedSize) {
+		this.maxAllowedSize = maxAllowedSize;
+		return this;
+	}
+	
+	public int getMaxAllowedSize() {
+		return this.maxAllowedSize;
+	}
+	
+	public FileField setAllowedExtensions(String allowedExtensions) {
+		this.allowedExtensions = allowedExtensions;
+		return this;
+	}
+	
+	public String getAllowedExtensions() {
+		return this.allowedExtensions;
 	}
 }
