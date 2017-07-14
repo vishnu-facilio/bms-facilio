@@ -31,6 +31,9 @@
 			
 			<div class="form-group">
 					<label>
+						<s:if test="%{#field.icon != null && #field.icon != ''}">
+							<i class="<s:property value="#field.icon"/> field-label-icon" aria-hidden="true"></i>
+						</s:if>
 						<s:property value="#field.label"/>
 						<s:if test="%{#field.required}">
 							<span class="required">*</span>
@@ -139,6 +142,58 @@
 							required="true"
 							</s:if>
 							></textarea>
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@FILE }">
+						<s:if test="%{#field.fileField.displayType == 'simple'}">
+							<div class="input-group">
+								<input type="text"
+									class="form-control" 
+									placeholder="<s:property value="#field.placeholder"/>"
+									readonly="true"
+									<s:if test="%{#field.required}">
+									required="true"
+									</s:if>
+									/>
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-md btn-lookup btn-file" type="button">
+										<span class="fa fa-upload"></span>
+										<input type="file" class="file-simple"
+											id="<s:property value="#field.id"/>"
+											name="<s:property value="#field.name"/>"
+											<s:if test="%{#field.required}">
+											required="true"
+											</s:if>
+											<s:if test="%{#field.fileField.maxFiles > 1}">
+											multiple="true"
+											</s:if>
+											/>
+									</button>
+								</span>
+		                    </div>
+						</s:if>
+						<s:else>
+							<div class="file-section">
+								<div class="col-md-12 file-row file-add">
+									<span class="file-action btn btn-success btn-circle-sm col-md-2"><i class="fa fa-1x fa-plus" aria-hidden="true"></i></span>
+									<span class="file-name col-md-10 text-left">Add Attachment</span>									
+									<input type="file" class="hidden"
+										id="<s:property value="#field.id"/>"
+										name="<s:property value="#field.name"/>"
+										<s:if test="%{#field.required}">
+										required="true"
+										</s:if>
+										<s:if test="%{#field.fileField.maxFiles > 1}">
+										multiple="true"
+										</s:if>
+										/>
+								</div>
+							</div>
+							<div class="col-md-12 file-row file-row-template hidden">
+									<input class="file-object" name="object-id" type="hidden"/>
+									<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
+									<span class="file-name col-md-10 text-left"></span>
+								</div>
+						</s:else>
 					</s:if>	
 				</div>
 			
@@ -149,40 +204,6 @@
 	</div>
 </form>
 </div>
-</div>
-<div class="row related-list">
-	<div class="col-lg-12 col-md-12">
-		<div class="col-lg-12 col-md-12 related-list-header">
-			<label><i class="fa fa-tasks" style="color: #0CA4F3;" aria-hidden="true"></i>&nbsp;&nbsp;Tasks</label>
-		</div>
-		<div class="col-lg-12 col-md-12">
-			<div class="related-list-content">
-				<div class="text-left pull-down">
-					<a href="#" data-toggle="modal" data-target="#AddNewTask">
-						<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
-			 	&nbsp;Add New Task
-					</a>
-			 	</div>
-		 	</div>
-		</div>
-	</div>
-</div>
-<div class="row related-list">
-	<div class="col-lg-12 col-md-12">
-		<div class="col-lg-12 col-md-12 related-list-header">
-			<label><i class="fa fa-paperclip" style="color: #0CA4F3; font-size: 17px;" aria-hidden="true"></i>&nbsp;&nbsp;Attachments</label>
-		</div>
-		<div class="col-lg-12 col-md-12">
-			<div class="related-list-content">
-				<div class="text-left pull-down">
-					<a href="#">
-						<button type="button" class="btn btn-default btn-circle-sm" data-toggle="modal"  style="background-color:#50CA7C;"><i class="fa fa-1x fa-plus" style="color:white;" aria-hidden="true"></i></button>
-			 	&nbsp;Add Attachment
-					</a>
-			 	</div>
-		 	</div>
-		</div>
-	</div>
 </div>
 </div>
 <!-- ------------------------------ pop up ---------------------------------->
@@ -314,6 +335,44 @@
 		$(".f-date").closest('div').find('.btn-lookup').click(function() {
 			$(".f-date").data("DateTimePicker").toggle();
 		});
+		
+		$("input[type=file].file-simple").change(function() {
+			var input = $(this),
+	        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+	    	
+	    	var input = $(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+	        if( input.length ) {
+	            input.val(log);
+	        }
+		});
+		
+		$(".file-add .file-action, .file-add .file-name").click(function(e){
+	        e.preventDefault();
+	        var fileElm = $(this).parents('.file-add').find(':file');
+	        $(fileElm).trigger('click');
+	    });
+		
+		$(".file-add input[type=file]").change(function(e){
+			var input = $(this),
+	        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+	        
+	        if (numFiles > 1) {
+	        	
+	        }
+	        else if (numFiles == 1) {
+	        	var parent = $(input).parents('.file-section');
+	        	var duplicate = $('.file-row-template').clone();
+	        	duplicate.removeClass('file-row-template');
+	        	duplicate.removeClass('hidden');
+	        	duplicate.find('.file-name').text(label);
+	        	
+	        	$(duplicate).insertBefore(".file-add");
+	        }
+	    });
 		
 		$('#addForm').validator().on('submit', function (e) {
 		  if (e.isDefaultPrevented()) {
