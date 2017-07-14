@@ -35,7 +35,7 @@
 	            <th>Due Date</th>
 	             <th>Requested by</th>
 	            <th>Assigned To</th>
-	            <th>Action</th>
+	            <th class="sorting_disabled"></th>
 	        </tr>
 	    </thead>
 	    <tbody>
@@ -43,7 +43,7 @@
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
 		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
-		            <td><h4 class="row-title"><s:property value="#ticket.subject" /></h4>
+		            <td><div class="row-title"><s:property value="#ticket.subject" /></div>
 		            <small class="sectxt-color"><s:property value="#ticket.description" /></small></td>
 		            <td>
 		            	<span class="text"><s:property value="#ticket.getStatus()" /></span>
@@ -86,8 +86,17 @@
 	         render: function (data, type, full, meta){
 	             return ' <div class="checkbox checkbox-primary"><input type="checkbox" id="'+meta.row+'_cbox" name="id[]" value="' + $('<div/>').text(data).html() + '"><label for="'+meta.row+'_cbox"></label></div>';
 	         }
+	      },
+	      {
+	         targets: 8,
+	         searchable: false,
+	         orderable: false
+	      },
+	      {
+	         targets: 1,
+	         orderable: false
 	      }],
-	      order: [[1, 'asc']],
+	      order: [[2, 'asc']],
 	      
 	      responsive: true,
 	      searching: false,
