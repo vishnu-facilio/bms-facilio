@@ -29,7 +29,7 @@ public class ScheduleContext {
 	public void setScheduledStart(String scheduledStart) {
  		if(scheduledStart != null && !scheduledStart.isEmpty()) {
  			try {
-				this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime()/1000;
+				this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -47,7 +47,7 @@ public class ScheduleContext {
 	public void setEstimatedEnd(String estimatedEnd) {
  		if(estimatedEnd != null && !estimatedEnd.isEmpty()) {
  			try {
-				this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime()/1000;
+				this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -65,7 +65,7 @@ public class ScheduleContext {
 	public void setActualWorkStart(String actualWorkStart) {
  		if(actualWorkStart != null && !actualWorkStart.isEmpty()) {
  			try {
-				this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime()/1000;
+				this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -83,7 +83,7 @@ public class ScheduleContext {
 	public void setActualWorkEnd(String actualWorkEnd) {
  		if(actualWorkEnd != null && !actualWorkEnd.isEmpty()) {
  			try {
-				this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime()/1000;
+				this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

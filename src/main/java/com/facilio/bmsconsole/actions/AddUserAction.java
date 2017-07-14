@@ -27,7 +27,7 @@ public class AddUserAction extends ActionSupport {
 			context.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			context.setEmail(getEmail());
 			context.setInviteAcceptStatus(true);
-			context.setInvitedTime(System.currentTimeMillis()/1000);
+			context.setInvitedTime(System.currentTimeMillis());
 			context.setRole(getRole());
 			context.setPassword(getPassword());
 		}
