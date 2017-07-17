@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -168,5 +169,20 @@ public class TicketAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.TICKET;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewTicketLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Work Orders";
+	}
+	
+	public List<TicketContext> getRecords() 
+	{
+		return tickets;
 	}
 }

@@ -42,7 +42,7 @@
 	    	<s:iterator var="ticket" value="tickets">
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
-		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
+		            <td><a href="#ticket/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
 		            <td>
 		            	<div class="row-title"><s:property value="#ticket.subject" /></div>
 		            	<div class="row-subtitle"><s:property value="#ticket.description" /></div>
@@ -53,7 +53,7 @@
 		            <td>
 		            <span class="label label-success"><s:property value="" /></span>
 		            </td>
-		            <td><s:property value="#ticket.duedate" /></td>
+		            <td><s:date name="#ticket.duedate" format="dd/MM/yyyy hh:mm" /></td>
 		            <td><s:property value="#ticket.requester" /></td>
 		            <td><s:property value="#ticket.agentId" /></td>
 		            <td>
@@ -98,7 +98,7 @@
 	         targets: 1,
 	         orderable: false
 	      }],
-	      order: [[2, 'asc']],
+	      order: [[5, 'asc']],
 	      
 	      buttons: false,
 	      responsive: true,

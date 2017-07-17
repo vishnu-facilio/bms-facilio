@@ -93,7 +93,7 @@
 	</action>
 
 	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
-		<result name="success">/jsps/ticketsList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
@@ -101,23 +101,23 @@
 	</action>
 	
 	<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
-		<result name="success">/jsps/campusList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
-		<result name="success">/jsps/buildingList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
-		<result name="success">/jsps/floorList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
-		<result name="success">/jsps/spaceList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
-		<result name="success">/jsps/zoneList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
