@@ -16,7 +16,28 @@
 	 </div>
   </div>
 </div>
+<s:if test="%{tickets.isEmpty()}">
 
+       <div class="row content-center">
+        
+      <div class="col-lg-12 col-md-12 text-center ">
+          
+           <img class="center-block"  src="${pageContext.request.contextPath}/images/Edit.svg">
+           <div>&nbsp;</div>
+           <div class="row-title text-bold">No work order yet ...</div>
+                   <div><small class="sectxt-color">Since you have not created any workorders,</small></div>
+           		<div><small class="sectxt-color">Why not create a new one?</small></div>
+           		<div class="action-btn text-center">
+    			<div>&nbsp;</div>
+ 				<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+	 			</div>
+         
+      </div>
+     
+      
+</div>
+</s:if>
+<s:else>
 <div class="row list-content">
    <div class="col-md-12 col-sm-12">
 	<table width="100%" class="table table-striped able-hover " id="tickets-list">
@@ -72,11 +93,10 @@
 	</table>
   </div>
 </div>
-
+</s:else>
 
 <script>
  $(document).ready(function (){
-	 
 	   var table = $('#tickets-list').DataTable({
 	      columnDefs: [{
 	         targets: 0,
