@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.GetTaskCommand;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -165,6 +166,11 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setTasks(List<TaskContext> tasks) {
 		this.tasks = tasks;
+	}
+	
+	public List getFormlayout()
+	{
+		return FormLayout.getNewTaskLayout();
 	}
 	
 	public String getModuleLinkName()

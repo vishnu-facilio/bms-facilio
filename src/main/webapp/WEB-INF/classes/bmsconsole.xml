@@ -184,7 +184,7 @@
 	
 	<package name="task" namespace="/home/task" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
-			<result name="success">/jsps/newTask.jsp</result>
+			<result name="success">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">

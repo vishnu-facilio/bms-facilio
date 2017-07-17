@@ -37,6 +37,41 @@ public class FormLayout {
 		
 	}
 	
+	public static List<Panel> getNewTaskLayout()
+	{
+		List<Panel> fields =new ArrayList<Panel>();
+		
+		Panel first =  new Panel(Panel.Type.TWO_THIRD);
+		first.add(new Field("Title","inputTitle","task.title",Field.FieldType.TEXTBOX).setRequired(true));
+		first.add(new Field("Assigned To","inputAssignedTo","task.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
+		fields.add(first);
+		
+		Panel second =  new Panel(Panel.Type.ONE_THIRD);
+		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
+		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
+		fields.add(second);
+		
+		Panel third =  new Panel(Panel.Type.FULL).setTitle("Scheduling");
+		fields.add(third);
+		
+		Panel fourth =  new Panel(Panel.Type.ONE_THIRD);
+		fourth.add(new Field("Scheduled Start","inputScheduledStart","task.ScheduledStart",Field.FieldType.DATETIME));
+		fourth.add(new Field("Actual Task Start","inputActual TaskStart","task.actualTaskStart",Field.FieldType.DATETIME));
+		fields.add(fourth);
+		
+		Panel fifth =  new Panel(Panel.Type.ONE_THIRD);
+		fifth.add(new Field("Estimated  End","inputEstimatedEnd","task.EstimatedEnd",Field.FieldType.DATETIME));
+		fifth.add(new Field("Actual Task End","inputActualTaskEnd","task.ActualTaskEnd",Field.FieldType.DATETIME));
+		fields.add(fifth);
+		
+		Panel sixth =  new Panel(Panel.Type.ONE_THIRD);
+		sixth.add(new Field("Estimated Work Durations","inputEstimatedWorkDuration","task.EstimatedWorkDuration",Field.FieldType.DATETIME));
+		fields.add(sixth);
+		
+		return fields;
+		
+	}
+	
 	public static List<Panel> getNewCampusLayout()
 	{
 		List<Panel> fields =new ArrayList<Panel>();
@@ -171,7 +206,22 @@ public class FormLayout {
 class Panel extends ArrayList<Field>
 {
 	public enum Type {
-		HALF,FULL,SECTION
+		
+		QUARTER(3),
+		ONE_THIRD(4),
+		HALF(6),
+		TWO_THIRD(8),
+		THREE_FOURTH(9),
+		FULL(12);
+		
+		int value;
+		Type(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return this.value;
+		}
 	}
 	public Type getDisplay() {
 		return display;
@@ -185,14 +235,14 @@ class Panel extends ArrayList<Field>
 		this.display =display;
 	}
 	
-	String sectionTitle;
-	public Panel setSectionTitle(String sectionTitle) {
-		this.sectionTitle = sectionTitle;
+	String title;
+	public Panel setTitle(String title) {
+		this.title = title;
 		return this;
 	}
 	
-	public String getSectionTitle() {
-		return this.sectionTitle;
+	public String getTitle() {
+		return this.title;
 	}
 }
 class Field
