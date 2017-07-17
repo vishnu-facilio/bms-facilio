@@ -171,7 +171,7 @@ public class FormLayout {
 class Panel extends ArrayList<Field>
 {
 	public enum Type {
-		HALF,FULL
+		HALF,FULL,SECTION
 	}
 	public Type getDisplay() {
 		return display;
@@ -183,6 +183,16 @@ class Panel extends ArrayList<Field>
 	public Panel(Type display)
 	{
 		this.display =display;
+	}
+	
+	String sectionTitle;
+	public Panel setSectionTitle(String sectionTitle) {
+		this.sectionTitle = sectionTitle;
+		return this;
+	}
+	
+	public String getSectionTitle() {
+		return this.sectionTitle;
 	}
 }
 class Field
