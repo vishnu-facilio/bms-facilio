@@ -15,16 +15,16 @@
   </div>
 </div>
 <s:if test="%{records.isEmpty()}">
-     <div class="row content-center">
-     <div class="col-lg-12 col-md-12 text-center ">
-          <img class="center-block" src="${pageContext.request.contextPath}/images/noworkorder.svg" />
-          <div>&nbsp;</div>
-                   <div class="no-screen-msg"><div class="row-title text-bold">No work order added yet ...</div><div class="row-subtitle">Since you have not created any workorders,</div><div class="row-subtitle">Why not create a new one?</div></div>
-           		<div class="action-btn text-center">
-    			<div>&nbsp;</div>
- 				<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn" onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
-	 			</div>
-	</div>
+	<div class="row content-center">
+		<div class="col-lg-12 col-md-12 text-center ">
+			<img class="center-block" src="${pageContext.request.contextPath}/images/noworkorder.svg" />
+	     	<div>&nbsp;</div>
+			<div class="no-screen-msg"><div class="row-title text-bold">No work order added yet ...</div><div class="row-subtitle">Since you have not created any workorders,</div><div class="row-subtitle">Why not create a new one?</div></div>
+	 		<div class="action-btn text-center">
+			<div>&nbsp;</div>
+			<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn" onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+			</div>
+		</div>
 	</div>
 </s:if>
 <s:else>
