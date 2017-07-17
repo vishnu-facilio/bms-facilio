@@ -69,3 +69,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before, table
     font-size: 16px;
     line-height: 16px;
 }
+.no-screen-msg .row-title {
+    font-size: 17px;
+    color: #212121;
+    padding:10px 0;
+}
+.no-screen-msg .row-subtitle {
+    font-size: 13px;
+	padding: 1px 0px;
+}
