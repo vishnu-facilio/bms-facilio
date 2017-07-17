@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -163,6 +165,26 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setTasks(List<TaskContext> tasks) {
 		this.tasks = tasks;
+	}
+	
+	public String getModuleLinkName()
+	{
+		return FacilioConstants.ContextNames.TASK;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewTaskLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Tasks";
+	}
+	
+	public List<TaskContext> getRecords() 
+	{
+		return tasks;
 	}
  }
 

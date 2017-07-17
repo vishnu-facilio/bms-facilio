@@ -37,6 +37,9 @@
             	<a href="#ticket"><i class="fa fa-tasks fa-fw"></i> Work Orders</a>
             </li>
             <li>
+            	<a href="#task"><i class="fa fa-tasks fa-fw"></i> Tasks</a>
+            </li>
+            <li>
                 <a href="#"><i class="fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
