@@ -41,12 +41,13 @@ public class FormLayout {
 	{
 		List<Panel> fields =new ArrayList<Panel>();
 		
-		Panel first =  new Panel(Panel.Type.TWO_THIRD);
+		Panel first =  new Panel(Panel.Type.HALF);
 		first.add(new Field("Title","inputTitle","task.title",Field.FieldType.TEXTBOX).setRequired(true));
-		first.add(new Field("Assigned To","inputAssignedTo","task.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
+		first.add(new Field("Description","inputDescription","task.description",Field.FieldType.TEXTAREA).setRequired(true).setPlaceholder("More about the problem.."));
 		fields.add(first);
 		
-		Panel second =  new Panel(Panel.Type.ONE_THIRD);
+		Panel second =  new Panel(Panel.Type.HALF);
+		second.add(new Field("Assigned To","inputAssignedTo","task.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
 		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
 		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
 		fields.add(second);

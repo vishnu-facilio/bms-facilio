@@ -22,11 +22,10 @@
 
 	<div class="row">
 	<s:iterator value="formlayout" status="rowstatus" var="panel">
-	<!-- <div class='<s:if test="%{#panel.display == @com.facilio.bmsconsole.context.Panel$Type@HALF }">col-lg-6</s:if><s:else>col-lg-12</s:else>'> -->
 	<div class='col-lg-<s:property value="#panel.display.value" />'>
 	<div class="panel-body">
 		<s:if test="#panel.title != null">
-			<div class="form-section"><s:property value="#panel.title"/></div>
+			<div class="form-section"><s:property value="#panel.title"/> :</div>
 		</s:if>
 		<s:iterator value="#panel" status="rowstatus" var="field">
 			<div class="form-group">
