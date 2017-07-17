@@ -22,7 +22,7 @@
         
      <div class="col-lg-12 col-md-12 text-center ">
           
-           <img class="center-block" src="/bms/images/Edit.svg">
+           <img class="center-block" src="${pageContext.request.contextPath}/images/noworkorder.svg">
            <div>&nbsp;</div>
            
                    <div class="no-screen-msg"><div class="row-title text-bold">No work order added yet ...</div><div class="row-subtitle">Since you have not created any workorders,</div><div class="row-subtitle">Why not create a new one?</div></div>
