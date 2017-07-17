@@ -129,7 +129,7 @@ public class FormLayout {
 		List<Panel> fields = new ArrayList<Panel>();
 		
 		Panel first =  new Panel(Panel.Type.FULL);
-		first.add(new Field("Display Name","inputDisplayName","space.displayName",Field.FieldType.TEXTBOX));
+		first.add(new Field("Display Name","inputDisplayName","space.displayName",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		first.add(new Field("Name","inputName","space.name",Field.FieldType.TEXTBOX));
 		fields.add(first);
 		
@@ -158,8 +158,12 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.FULL);
 		first.add(new Field("Name","inputName","zone.name",Field.FieldType.TEXTBOX));
-		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTAREA));
+		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTBOX));
 		fields.add(first);
+		
+		Panel second =  new Panel(Panel.Type.FULL);
+		second.add(new Field("Spaces","inputSpace","zone.spaces",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("space", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		fields.add(second);
 		
 		return fields;
 	}
@@ -313,16 +317,30 @@ class Field
 }
 class LookupModule
 {
+	public static final String DISPLAY_TYPE_SIMPLE = "simple";
+	public static final String DISPLAY_TYPE_SECTION = "section";
+	
 	String name;
 	String label;
 	String criteria;
 	String preloadedList;
+	
+	String displayType = DISPLAY_TYPE_SIMPLE; // 'simple' or 'section'	
 	public LookupModule(String name, String label) {
 		super();
 		this.name = name;
 		this.label = label;
 	}
 	
+	public LookupModule setDisplayType(String displayType) {
+		this.displayType = displayType;
+		return this;
+	}
+	
+	public String getDisplayType() {
+		return this.displayType;
+	}
+
 	public LookupModule setName(String name) {
 		this.name = name;
 		return this;

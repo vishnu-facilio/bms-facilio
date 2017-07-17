@@ -90,30 +90,44 @@
 	                    </div>
 					</s:if>
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@LOOKUP}">
-						<div class="input-group">
-							<select
-								class="select-lookup"
-								id="<s:property value="#field.id"/>"
-								name="<s:property value="#field.name"/>"
-								placeholder="<s:property value="#field.placeholder"/>"
-								<s:if test="%{#field.required}">
-								required="true"
-								</s:if>
-								>
-								<s:if test="%{#field.lookupModule.preloadedList != null && #field.lookupModule.preloadedList != ''}">
-									<option value="">- None -</option>
-									<s:iterator value="actionForm[#field.lookupModule.preloadedList]" status="rowstatus" var="option">
-										<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
-									</s:iterator>
-								</s:if>
-							</select>
-							<span class="input-group-btn">
-								<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>', '<s:property value="#field.id"/>')">
-									<i class="<s:property value="#field.lookupModule.lookupIcon"/>"></i>
-								</button>
-							</span>
-	                    </div>					
-					
+						<s:if test="%{#field.lookupModule.displayType == 'simple'}">
+							<div class="input-group">
+								<select
+									class="select-lookup"
+									id="<s:property value="#field.id"/>"
+									name="<s:property value="#field.name"/>"
+									placeholder="<s:property value="#field.placeholder"/>"
+									<s:if test="%{#field.required}">
+									required="true"
+									</s:if>
+									>
+									<s:if test="%{#field.lookupModule.preloadedList != null && #field.lookupModule.preloadedList != ''}">
+										<option value="">- None -</option>
+										<s:iterator value="actionForm[#field.lookupModule.preloadedList]" status="rowstatus" var="option">
+											<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
+										</s:iterator>
+									</s:if>
+								</select>
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>', '<s:property value="#field.id"/>')">
+										<i class="<s:property value="#field.lookupModule.lookupIcon"/>"></i>
+									</button>
+								</span>
+		                    </div>					
+						</s:if>
+						<s:else>
+							<div class="file-section">
+								<div class="col-md-12 file-row file-add">
+									<span class="file-action btn btn-success btn-circle-sm col-md-2"><i class="fa fa-1x fa-plus" aria-hidden="true"></i></span>
+									<span class="file-name col-md-10 text-left">Add <s:property value="#field.lookupModule.label"/></span>									
+								</div>
+							</div>
+							<div class="col-md-12 file-row file-row-template hidden">
+								<input class="file-object" type="hidden"/>
+								<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
+								<span class="file-name col-md-10 text-left"></span>
+							</div>
+						</s:else>
 					</s:if>
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
 					
