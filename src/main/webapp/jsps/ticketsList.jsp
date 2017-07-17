@@ -23,7 +23,7 @@
 	    <thead>
 	        <tr>
 	       		 <th class="dt-body-center">
-	       		 	<div class="checkbox checkbox-primary" style="height: 23px; position: relative; top: 4px;">
+	       		 	<div class="checkbox checkbox-primary">
 	       		 	 	<input type="checkbox" name="select_all" id="ticket-select-all">
 	       		 	 	<label for="ticket-select-all"></label>
 	       		 	 </div>
@@ -43,8 +43,10 @@
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
 		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
-		            <td><div class="row-title"><s:property value="#ticket.subject" /></div>
-		            <small class="sectxt-color"><s:property value="#ticket.description" /></small></td>
+		            <td>
+		            	<div class="row-title"><s:property value="#ticket.subject" /></div>
+		            	<div class="row-subtitle"><s:property value="#ticket.description" /></div>
+		            </td>
 		            <td>
 		            	<span class="text"><s:property value="#ticket.getStatus()" /></span>
 		            </td>
@@ -98,6 +100,7 @@
 	      }],
 	      order: [[2, 'asc']],
 	      
+	      buttons: false,
 	      responsive: true,
 	      searching: false,
 	      lengthChange: false
