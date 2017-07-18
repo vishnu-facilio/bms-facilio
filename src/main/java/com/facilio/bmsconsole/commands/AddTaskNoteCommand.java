@@ -10,7 +10,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 
