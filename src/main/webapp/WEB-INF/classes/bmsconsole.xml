@@ -43,7 +43,10 @@
         </action>     
     <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
     	<result name="success">/jsps/calendar.jsp</result>
-    </action>    
+    </action> 
+    <action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction" method="centraldispatch">
+    	<result name="success">/jsps/centraldispatch.jsp</result>
+    </action>     
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
     <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">

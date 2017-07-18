@@ -103,6 +103,9 @@ gulp.task('copy', function() {
 
     gulp.src(['bower_components/fullcalendar/dist/*'])
         .pipe(gulp.dest(dist.vendor+'/fullcalendar'))
+        
+    gulp.src(['bower_components/fullcalendar-scheduler/dist/*'])
+        .pipe(gulp.dest(dist.vendor+'/fullcalendar-scheduler'))
 
     gulp.src(['bower_components/d3/*'])
         .pipe(gulp.dest(dist.vendor+'/d3'))

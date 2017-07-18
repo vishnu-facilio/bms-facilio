@@ -19,6 +19,9 @@
                 <a href="#calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
             </li>
             <li>
+                <a href="#centraldispatch"><i class="fa fa-calendar fa-fw"></i> Central Dispatch</a>
+            </li>
+            <li>
             	<a href="#controller"><i class="fa fa-laptop fa-fw"></i> Controllers</a>
             </li>
             <li>
