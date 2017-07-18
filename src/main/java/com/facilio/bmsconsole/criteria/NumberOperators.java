@@ -82,7 +82,7 @@ public enum NumberOperators implements Operator {
 		return operator;
 	}
 	
-	private static Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
+	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
 	private static Map<String, Operator> initOperatorMap() {
 		Map<String, Operator> operatorMap = new HashMap<>();
 		for(Operator operator : values()) {
