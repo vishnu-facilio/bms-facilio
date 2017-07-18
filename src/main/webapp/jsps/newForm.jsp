@@ -22,21 +22,12 @@
 
 	<div class="row">
 	<s:iterator value="formlayout" status="rowstatus" var="panel">
-	
-	<s:if test="%{#panel.display == @com.facilio.bmsconsole.context.Panel$Type@SECTION }">
-		<div class="col-lg-12">
-			<div class="panel-body">
-				<div class="form-section"><s:property value="#panel.sectionTitle"/></div>
-			</div>
-		</div>
-	</s:if>
-	<s:else>
-	<div class='<s:if test="%{#panel.display == @com.facilio.bmsconsole.context.Panel$Type@HALF }">col-lg-6</s:if><s:else>col-lg-12</s:else>'>
+	<div class='col-lg-<s:property value="#panel.display.value" />'>
 	<div class="panel-body">
+		<s:if test="#panel.title != null">
+			<div class="form-section"><s:property value="#panel.title"/> :</div>
+		</s:if>
 		<s:iterator value="#panel" status="rowstatus" var="field">
-			
-			
-			
 			<div class="form-group">
 					<label>
 						<s:if test="%{#field.icon != null && #field.icon != ''}">
@@ -220,7 +211,6 @@
 		</s:iterator>
  </div>
   </div>
-  </s:else>
 </s:iterator>
 	</div>
 </form>

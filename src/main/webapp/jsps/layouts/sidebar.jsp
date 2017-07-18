@@ -19,22 +19,13 @@
                 <a href="#calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
             </li>
             <li>
-                <a href="#"><i class="fa fa-building fa-fw"></i> Buildings<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#building/estancia">Estancia</a>
-                    </li>
-                    <li>
-                        <a href="#building/dlf">DLF IT Park</a>
-                    </li>
-                </ul>
-                <!-- /.nav-second-level -->
-            </li>
-            <li>
             	<a href="#controller"><i class="fa fa-laptop fa-fw"></i> Controllers</a>
             </li>
             <li>
             	<a href="#ticket"><i class="fa fa-tasks fa-fw"></i> Work Orders</a>
+            </li>
+            <li>
+            	<a href="#task"><i class="fa fa-tasks fa-fw"></i> Tasks</a>
             </li>
             <li>
                 <a href="#"><i class="fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>

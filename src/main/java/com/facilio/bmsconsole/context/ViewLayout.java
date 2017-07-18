@@ -46,6 +46,19 @@ public class ViewLayout {
 		return viewLayout;
 	}
 	
+	public static ViewLayout getViewTaskLayout()
+	{
+		ViewLayout viewLayout = new ViewLayout();
+		viewLayout.addColumn(new Column("ID", "taskId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
+							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
+							.addColumn(new Column("Description", "description", ColumnType.TEXT))
+							);
+		viewLayout.addColumn(new Column("Assigned To", "assignedToId", ColumnType.TEXT));
+		
+		return viewLayout;
+	}
+	
 	public static ViewLayout getViewCampusLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
