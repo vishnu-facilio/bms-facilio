@@ -31,6 +31,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetTicketModuleTableNames());
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new AddTicketCommand());
+		c.addCommand(new AddAttachmentRelationshipCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -57,7 +58,7 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-
+	
 	public static Command getAddUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
@@ -381,6 +382,19 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new GetZoneCommand());
 		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddAttachmentChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AddAttachmentRelationshipCommand());
+		return c;
+	}
+	
+	public static Chain getDeleteAttachmentChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteAttachmentCommand());
 		return c;
 	}
 }

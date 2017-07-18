@@ -199,8 +199,6 @@
 									<span class="file-action btn btn-success btn-circle-sm col-md-2"><i class="fa fa-1x fa-plus" aria-hidden="true"></i></span>
 									<span class="file-name col-md-10 text-left">Add Attachment</span>									
 									<input type="file" class="hidden"
-										id="<s:property value="#field.id"/>"
-										name="<s:property value="#field.name"/>"
 										<s:if test="%{#field.required}">
 										required="true"
 										</s:if>
@@ -211,7 +209,7 @@
 								</div>
 							</div>
 							<div class="col-md-12 file-row file-row-template hidden">
-									<input class="file-object" type="hidden"/>
+									<input class="file-id" name="attachmentId[]" type="hidden"/>
 									<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
 									<span class="file-name col-md-10 text-left"></span>
 								</div>
@@ -379,22 +377,69 @@
 	    });
 		
 		$(".file-add input[type=file]").change(function(e){
-			var input = $(this),
-	        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-	        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-	        
-	        if (numFiles > 1) {
-	        	
-	        }
-	        else if (numFiles == 1) {
-	        	var parent = $(input).parents('.file-section');
+			
+			var input = $(this);
+			
+			var fileList = input[0].files;
+        	var formData = new FormData();
+        	
+        	var parent = $(input).parents('.file-section');
+        	
+        	var elmList = [];
+        	
+        	var len = fileList.length;
+        	for (var i=0; i < len; i++) {
+        		var file = fileList[i];
+        	
+        		// adding attachment row in UI
 	        	var duplicate = $('.file-row-template').clone();
 	        	duplicate.removeClass('file-row-template');
 	        	duplicate.removeClass('hidden');
-	        	duplicate.find('.file-name').text(label);
+	        	duplicate.find('.file-name').text(file.name);
+	        	
+	        	var curIndex = $(parent).find('.file-row').length - 1;
+	        	duplicate.find('.file-id').attr('name', 'attachmentId['+curIndex+']');
 	        	
 	        	$(duplicate).insertBefore(".file-add");
-	        }
+	        	
+	        	elmList.push(duplicate);
+	        	formData.append('attachment', file);
+	        	
+	        	$(duplicate).find(".file-action.btn-danger").click(function() {
+	    	        var cnfrm = confirm('Are you sure want to remove this attachment?');
+	    	        if (cnfrm) {
+	    	        	
+	    	        	var rowObj = $(this).closest('.file-row');
+	    	        	var fileId = $(rowObj).find('.file-id').val();
+	    	        	var data = {'attachmentId[0]': fileId};
+	    	        	$.ajax({
+	    	        	       url : contextPath + '/home/attachment/delete',
+	    	        	       type : 'POST',
+	    	        	       data : data,
+	    	        	       success : function(data) {
+	    	        	    	   $(rowObj).remove();
+	    	        	       }
+	    	         	});
+	    	        }
+	    	    });
+        	}
+        	
+        	$.ajax({
+       	       url : contextPath + '/home/attachment/add',
+       	       type : 'POST',
+       	       data : formData,
+       	       processData: false,  // tell jQuery not to process the data
+       	       contentType: false,  // tell jQuery not to set contentType
+       	       success : function(data) {
+       	    	   
+       	           var idList = data.attachmentId;
+       	           for (var i=0; i< idList.length; i++) {
+       	        	   var attachmentId = idList[i];
+       	        	   var elm = elmList[i];
+       	        	   $(elm).find('.file-id').val(attachmentId);
+       	           }
+       	       }
+        	});	
 	    });
 		
 		$('#addForm').validator().on('submit', function (e) {

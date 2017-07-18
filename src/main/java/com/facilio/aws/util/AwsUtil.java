@@ -41,6 +41,8 @@ import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 public class AwsUtil 
 {
@@ -55,6 +57,8 @@ public class AwsUtil
 	public static final String AWS_IOT_DYNAMODB_TABLE_NAME = "IotData";
 	
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
+	
+	private static AmazonS3 AWS_S3_CLIENT = null;
 
     public static String getConfig(String name) 
     {
@@ -107,6 +111,14 @@ public class AwsUtil
     	awsIotClient.connect();
     	AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
 		return awsIotClient;
+    }
+    
+    public static AmazonS3 getAmazonS3Client() {
+    	if (AWS_S3_CLIENT == null) {
+    		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    	}
+    	return AWS_S3_CLIENT;
     }
     
     public static String getSignature(String payload, String xAmzDate, String path) throws Exception

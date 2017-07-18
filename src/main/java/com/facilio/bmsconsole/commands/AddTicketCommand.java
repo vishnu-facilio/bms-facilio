@@ -39,6 +39,8 @@ public class AddTicketCommand implements Command {
 																.connection(conn);
 			long ticketId = builder.insert(ticket);
 			ticket.setTicketId(ticketId);
+			
+			context.put(FacilioConstants.ContextNames.RECORD_ID, ticketId);
 		}
 		else {
 			throw new IllegalArgumentException("Ticket Object cannot be null");

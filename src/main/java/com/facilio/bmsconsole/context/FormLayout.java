@@ -30,7 +30,7 @@ public class FormLayout {
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.FULL);
-		third.add(new Field("Attachments","inputAttachment","ticket.attachments",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		third.add(new Field("Attachments","inputAttachment","attachmentId",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
 		fields.add(third);
 		
 		return fields;

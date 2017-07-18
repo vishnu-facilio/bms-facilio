@@ -57,6 +57,8 @@ public class FacilioConstants {
 	
 	public static class ContextNames {
 		
+		public static final String RECORD_ID = "recordId";
+		
 		public static final String TICKET_ID = "ticketId";
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
@@ -71,12 +73,20 @@ public class FacilioConstants {
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
 		
+		public static final String ATTACHMENT = "attachment";
+		public static final String ATTACHMENT_LIST = "attachments";
+		public static final String ATTACHMENT_FILE_LIST = "attachmentFiles";
+		public static final String ATTACHMENT_CONTENT_TYPE = "attachmentContentType";
+		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
+		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
+		
 		public static final String ACTION_FORM = "actionForm";
 		
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_ID = "moduleId";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
+		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
@@ -101,5 +111,19 @@ public class FacilioConstants {
 		public static final String ZONE_ID = "zoneId";
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
+		
+		public static String getPKColumn(String module) {
+			if ("Tickets".equalsIgnoreCase(module)) {
+				return "TICKETID";
+			}
+			return null;
+		}
+		
+		public static String getAttachmentTableName(String module) {
+			if ("Tickets".equalsIgnoreCase(module)) {
+				return "Ticket_Attachment";
+			}
+			return null;
+		}
 	}
 }

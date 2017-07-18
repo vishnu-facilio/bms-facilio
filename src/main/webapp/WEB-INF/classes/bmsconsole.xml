@@ -182,6 +182,31 @@
 		</action>
 	</package>
 	
+	<package name="attachment" namespace="/home/attachment" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+		
+		<action name="view" class="com.facilio.bmsconsole.actions.AttachmentAction" method="viewAttachment">
+			<result name="success" type="stream">
+		      <param name="contentType">${fileInfo.contentType}</param>
+		      <param name="inputName">downloadStream</param>
+		      <param name="contentDisposition">attachment;filename="${fileInfo.fileName}"</param>
+		      <param name="contentLength">${fileInfo.fileSize}</param>
+		      <param name="bufferSize">4096</param>
+		    </result>
+		    <result name="error">/jsps/viewAttachmentError.jsp</result>
+		</action>
+	</package>
+	
 	<package name="tasks" namespace="/home/tasks" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
 			<result name="success">/jsps/newTask.jsp</result>

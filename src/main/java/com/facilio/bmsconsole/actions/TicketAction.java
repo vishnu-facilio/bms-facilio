@@ -71,8 +71,6 @@ public class TicketAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	
-	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -89,11 +87,20 @@ public class TicketAction extends ActionSupport {
 		this.customFieldNames = customFieldNames;
 	}
 	
+	private List<Long> attachmentId;
+	public List<Long> getAttachmentId() {
+		return attachmentId;
+	}
+	public void setAttachmentId(List<Long> attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+	
 	//Add Ticket Props
 	public String addTicket() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Command addTicket = FacilioChainFactory.getAddTicketChain();
 		addTicket.execute(context);
