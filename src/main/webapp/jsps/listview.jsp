@@ -8,7 +8,7 @@
 
 <div class="row form-header" >
 <div class="col-sm-12" >
-  <h4 class="pull-left"><s:property value="%{viewName}" /></h4>
+  <h4 class="pull-left"><s:property value="%{viewDisplayName}" /></h4>
     <div class="action-btn text-right">
  		<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#<s:property value="%{moduleLinkName}" />/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>

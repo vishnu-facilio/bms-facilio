@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -151,11 +152,18 @@ public class TaskAction extends ActionSupport {
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
-		Chain getAllTasks = FacilioChainFactory.getAllTasksChain();
-		getAllTasks.execute(context);
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		
+		Chain taskListChain = FacilioChainFactory.getTaskListChain();
+		taskListChain.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		
+		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		if(cv != null) {
+			setViewDisplayName(cv.getDisplayName());
+		}
 		
 		return SUCCESS;
 	}
@@ -183,14 +191,25 @@ public class TaskAction extends ActionSupport {
 		return ViewLayout.getViewTaskLayout();
 	}
 	
-	public String getViewName()
-	{
-		return "All Tasks";
-	}
-	
 	public List<TaskContext> getRecords() 
 	{
 		return tasks;
+	}
+	
+	private String viewName = null;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
+	private String displayName = "All Tasks";
+	public String getViewDisplayName() {
+		return displayName;
+	}
+	public void setViewDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
  }
 

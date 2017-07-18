@@ -179,6 +179,13 @@
 			</result>
 		</action>
 
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="ticketSummary" namespace="/home/ticket/summary" extends="ticket">
 		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/viewTicket.jsp</result>
@@ -226,7 +233,14 @@
 				<param name="includeProperties">note.noteId</param>
 			</result>
 		</action>
-
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="taskSummary" namespace="/home/task/summary" extends="task">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/viewTask.jsp</result>
