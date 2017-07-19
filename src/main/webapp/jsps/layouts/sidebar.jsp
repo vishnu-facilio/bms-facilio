@@ -127,6 +127,9 @@
                         <a href="#users">Users</a>
                     </li>
                     <li>
+                        <a href="#role">Roles</a>
+                    </li>
+                    <li>
                         <a href="#groups">Groups</a>
                     </li>
                     <li>

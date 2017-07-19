@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
@@ -8,18 +9,18 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class NewUserAction extends ActionSupport {
 	
-	private Map<Integer, String> roles;
-	public Map<Integer, String> getRoles() {
+	private List<String> roles;
+	public List<String> getRoles() {
 		return roles;
 	}
-	public void setRoles(Map<Integer, String> roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 	
 	@Override
 	public String execute() throws Exception {
 		
-		roles = (HashMap<Integer, String>) FacilioConstants.Role.ALL_ROLES.clone();
+		roles = (List<String>) FacilioConstants.Role.ALL_ROLES;
 		roles.remove(0);
 		
 		return SUCCESS;

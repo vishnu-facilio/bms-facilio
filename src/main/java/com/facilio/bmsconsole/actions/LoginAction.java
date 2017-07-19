@@ -228,7 +228,13 @@ public class LoginAction extends ActionSupport{
 			ps.setBoolean(2, true);
 			ps.setString(3, email);
 			ps.addBatch();
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS) values ((select USERID from Users where EMAIL='"+email+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),UNIX_TIMESTAMP() ,true,true)";
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Administrator','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Dispatcher','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Technician','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values ((select USERID from Users where EMAIL='"+email+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),UNIX_TIMESTAMP() ,true,true,(select ROLE_ID from Role where NAME='Administrator'))";
 			System.out.println("insert query "+insertquery);
 			ps.addBatch(insertquery);
 			ps.executeBatch();

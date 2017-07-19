@@ -262,7 +262,7 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM GroupMembers, ORG_Users, Users WHERE GroupMembers.ORG_USERID = ORG_Users.ORG_USERID AND ORG_Users.USERID = Users.USERID AND GroupMembers.GROUPID=?");
+			pstmt = conn.prepareStatement("SELECT * FROM GroupMembers, ORG_Users, Users, Role WHERE GroupMembers.ORG_USERID = ORG_Users.ORG_USERID AND ORG_Users.USERID = Users.USERID AND GroupMembers.GROUPID=? and ORG_Users.ROLE_ID = Role.ROLE_ID");
 			pstmt.setLong(1, groupId);
 			
 			List<GroupMemberContext> members = new ArrayList<>();
@@ -321,7 +321,7 @@ public class GroupAPI {
 		memberContext.setEmail(rs.getString("EMAIL"));
 		memberContext.setInvitedTime(rs.getLong("INVITEDTIME"));
 		memberContext.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		memberContext.setRole(rs.getInt("ROLE"));
+		memberContext.setRole(rs.getString("NAME"));
 		return memberContext;
 	}
 }

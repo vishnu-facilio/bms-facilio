@@ -79,17 +79,12 @@ public class UserContext extends FacilioContext {
 		this.inviteAcceptStatus = inviteAcceptStatus;
 	}
 	
-	private int role = 0;
-	public int getRole() {
+	private String role;
+	public String getRole() {
 		return role;
 	}
-	public void setRole(int role) {
+	public void setRole(String role) {
 		this.role = role;
-	}
-	
-	public String getRoleAsString() {
-		
-		return FacilioConstants.Role.ALL_ROLES.get(this.role);
 	}
 	
 	public String getStatusAsString() {

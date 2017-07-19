@@ -72,7 +72,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					
 				
 					UserContext context = UserAPI.getUser(username);
-					request.setAttribute("user_role", context.getRoleAsString());
+					request.setAttribute("user_role", context.getRole());
 					//ActionContext.getContext().getParameters()
 
         	

@@ -1,7 +1,9 @@
 package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -37,22 +39,22 @@ public class FacilioConstants {
 	
 	public static class Role {
 		
-		public static final int ADMIN = 0;
+		public static final String ADMINISTRATOR 	= "Administrator";
+		public static final String DISPATCHER 		= "Dispatcher";
+		public static final String TECHNICIAN 		= "Technician";
 		
-		public static final int MANAGER = 1;
-		
-		public static final int AGENT = 2;
-		
-		public static final int REQUESTER = 3;
-		
-		public static final HashMap<Integer, String> ALL_ROLES = new HashMap<Integer, String>();
+		public static final List<String> ALL_ROLES 	= new ArrayList<>();
 		
 		static {
-			ALL_ROLES.put(ADMIN, "Administrator");
-			ALL_ROLES.put(MANAGER, "Manager");
-			ALL_ROLES.put(AGENT, "Agent");
-			ALL_ROLES.put(REQUESTER, "Requester");
+			ALL_ROLES.add(ADMINISTRATOR);
+			ALL_ROLES.add(DISPATCHER);
+			ALL_ROLES.add(TECHNICIAN);
 		}
+		
+		public static final int WORKORDER_ALL 	= 0x1;
+		public static final int WORKORDER_OWN 	= 0x2;
+		public static final int TASK_ALL 		= 0x4;
+		public static final int TASK_OWN 		= 0x8;
 	}
 	
 	public static class ContextNames {

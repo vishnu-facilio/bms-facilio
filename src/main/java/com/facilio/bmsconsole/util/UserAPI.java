@@ -21,6 +21,7 @@ import com.amazonaws.services.cognitoidp.model.AdminEnableUserRequest;
 import com.amazonaws.services.cognitoidp.model.AdminEnableUserResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
@@ -57,6 +58,34 @@ public class UserAPI {
 		}
 	}
 	
+	public static List<RoleContext> getRolesOfOrg(long orgId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Role where Role.ORGID = ?");
+			pstmt.setLong(1, orgId);
+			
+			List<RoleContext> roles = new ArrayList<>();
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				RoleContext tc = getRoleObjectFromRS(rs);
+				roles.add(tc);
+			}
+			
+			return roles;
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	public static List<UserContext> getUsersOfOrg(long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -64,7 +93,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.RLE_ID = Role.ROLE_ID ORDER BY EMAIL");
 			pstmt.setLong(1, orgId);
 			
 			List<UserContext> users = new ArrayList<>();
@@ -117,7 +146,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.EMAIL = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID");
 			pstmt.setString(1, email);
 			
 			rs = pstmt.executeQuery();
@@ -142,7 +171,7 @@ public class UserAPI {
 		try {
 			String orgName = OrgApi.getOrgDomainFromId(context.getOrgId());
 			
-			if (context.getRole() != FacilioConstants.Role.REQUESTER) {
+			if (context.getRole() != FacilioConstants.Role.TECHNICIAN) {
 				
 				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
 				
@@ -191,7 +220,7 @@ public class UserAPI {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			if (context.getRole() != FacilioConstants.Role.REQUESTER) {
+			if (context.getRole() != FacilioConstants.Role.TECHNICIAN) {
 				
 				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
 				
@@ -219,14 +248,13 @@ public class UserAPI {
 
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 
-			String insertquery = "update ORG_Users set INVITATION_ACCEPT_STATUS=?, ROLE=? where USERID=? and ORGID=?"; 
+			String insertquery = "update ORG_Users set INVITATION_ACCEPT_STATUS=? where USERID=? and ORGID=?"; 
 			
 			PreparedStatement ps = conn.prepareStatement(insertquery);
 			
 			ps.setBoolean(1, context.getInviteAcceptStatus());
-			ps.setInt(2, context.getRole());
-			ps.setLong(3, context.getUserId());
-			ps.setLong(4, context.getOrgId());
+			ps.setLong(2, context.getUserId());
+			ps.setLong(3, context.getOrgId());
 			
 			int cnt = ps.executeUpdate();
 			if (cnt < 0) {
@@ -258,8 +286,19 @@ public class UserAPI {
 		uc.setEmail(rs.getString("EMAIL"));
 		uc.setInvitedTime(rs.getLong("INVITEDTIME"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		uc.setRole(rs.getInt("ROLE"));
+		uc.setRole(rs.getString("NAME"));
 		
 		return uc;
+	}
+	
+	private static RoleContext getRoleObjectFromRS(ResultSet rs) throws SQLException {
+		
+		RoleContext rc = new RoleContext();
+		rc.setOrgId(rs.getLong("ORGID"));
+		rc.setRoleId(rs.getLong("ROLE_ID"));
+		rc.setName(rs.getString("NAME"));
+		rc.setDescription(rs.getString("DESCRIPTION"));
+		
+		return rc;
 	}
 }

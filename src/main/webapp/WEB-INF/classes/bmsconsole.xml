@@ -91,6 +91,10 @@
 		<result name="success">/jsps/usersList.jsp</result>
 	</action>
 	
+	<action name="role" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
+		<result name="success">/jsps/roleList.jsp</result>
+	</action>
+	
     <action name="groups" class="com.facilio.bmsconsole.group.actions.GroupListAction">
 		<result name="success">/jsps/groups/groupsList.jsp</result>
 	</action>

@@ -89,11 +89,11 @@ public class AddUserAction extends ActionSupport {
 		this.password = password;
 	}
 	
-	private int role;
-	public int getRole() {
+	private String role;
+	public String getRole() {
 		return role;
 	}
- 	public void setRole(int role) {
+ 	public void setRole(String role) {
  		this.role = role;
  	}
  	
