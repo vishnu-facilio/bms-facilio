@@ -12,7 +12,6 @@ import org.json.simple.JSONValue;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;

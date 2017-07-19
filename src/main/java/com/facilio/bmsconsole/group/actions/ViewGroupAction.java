@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.group.actions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.GroupMemberContext;

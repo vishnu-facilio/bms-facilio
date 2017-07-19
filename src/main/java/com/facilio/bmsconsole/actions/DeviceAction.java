@@ -2,9 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +14,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.rowset.serial.SerialBlob;
 
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -28,10 +24,8 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.device.Device;
-import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.cognito.CognitoUtil;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.tasker.FacilioTimer;

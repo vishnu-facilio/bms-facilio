@@ -2,6 +2,7 @@ package com.facilio.wms.endpoints;
 
 import java.io.IOException;
 import java.net.URI;
+
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;

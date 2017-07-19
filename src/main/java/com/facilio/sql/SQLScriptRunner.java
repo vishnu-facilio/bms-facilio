@@ -15,8 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-import com.facilio.transaction.FacilioConnectionPool;
-
 public class SQLScriptRunner {
 
 	private static final String DELIMITER = ";";
