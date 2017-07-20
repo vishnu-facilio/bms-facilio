@@ -58,6 +58,31 @@ public class UserAPI {
 		}
 	}
 	
+	public static RoleContext getRole(String name) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Role where Role.NAME = ?");
+			pstmt.setString(1, name);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				RoleContext tc = getRoleObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
 	public static List<RoleContext> getRolesOfOrg(long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -298,6 +323,7 @@ public class UserAPI {
 		rc.setRoleId(rs.getLong("ROLE_ID"));
 		rc.setName(rs.getString("NAME"));
 		rc.setDescription(rs.getString("DESCRIPTION"));
+		rc.setPermissions(rs.getString("PERMISSIONS"));
 		
 		return rc;
 	}

@@ -35,20 +35,15 @@
 		</global-results>
 
   	<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
-            <result  type="tiles">homepage</result>
-        </action>
-     	<action name="*menu" class="com.facilio.bmsconsole.actions.HomePageActions" method="{1}">
-            <result  type="tiles">homepage</result>
-            <allowed-methods>showCalendar</allowed-methods>
-        </action>     
+		<param name="permission">dashboard</param>
+        <result  type="tiles">homepage</result>
+    </action>
     <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
     	<result name="success">/jsps/calendar.jsp</result>
     </action> 
     <action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction" method="centraldispatch">
     	<result name="success">/jsps/centraldispatch.jsp</result>
     </action>     
-    <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
-    </action>
     <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
     	<result name="success">/jsps/device.jsp</result>
     </action>
@@ -100,6 +95,7 @@
 	</action>
 
 	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+		<param name="permission">workorderviewall</param>
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	

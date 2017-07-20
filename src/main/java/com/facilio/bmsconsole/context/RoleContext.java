@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 
 public class RoleContext extends FacilioContext {
 	
@@ -34,5 +35,22 @@ public class RoleContext extends FacilioContext {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	private String permissions;
+	public String getPermissions() {
+		return permissions;
+	}
+	public void setPermissions(String permissions) {
+		this.permissions = permissions;
+	}
+	
+	public boolean hasPermission(int permission)
+	{
+		if(name.equals(FacilioConstants.Role.ADMINISTRATOR))
+		{
+			return true;
+		}
+		return (Integer.parseInt(permissions, 16) & permission) == permission;
 	}
 }
