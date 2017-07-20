@@ -1,4 +1,4 @@
-package com.facilio.saml;
+package com.facilio.fw.auth;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

@@ -1,5 +1,5 @@
 //$Id$
-package com.facilio.saml;
+package com.facilio.fw.auth;
 
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
