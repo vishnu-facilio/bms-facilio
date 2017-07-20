@@ -136,6 +136,10 @@ public class FacilioConstants {
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
 		
+		public static final String SKILL_ID = "skillId";
+		public static final String SKILL = "skill";
+		public static final String SKILL_LIST = "skills";
+		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
 				return "TICKETID";

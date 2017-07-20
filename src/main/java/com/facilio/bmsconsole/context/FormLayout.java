@@ -203,6 +203,19 @@ public class FormLayout {
 		
 		return fields;
 	}
+	
+	public static List<Panel> getNewSkillLayout()
+	{
+		List<Panel> fields = new ArrayList<Panel>();
+		
+		Panel first =  new Panel(Panel.Type.FULL);
+		first.add(new Field("Name","inputName","skill.name",Field.FieldType.TEXTBOX).setRequired(true));
+		first.add(new Field("Description","inputDescription","skill.description",Field.FieldType.TEXTAREA));
+		first.add(new Field("Active","inputActive","skill.isActive",Field.FieldType.DECISION_BOX));
+		fields.add(first);
+		
+		return fields;
+	}
 }
 class Panel extends ArrayList<Field>
 {
@@ -306,8 +319,9 @@ class Field
 	String icon;
 	String placeholder;
 	boolean required;
+	
 	public enum FieldType {
-	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP, FILE
+	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP, FILE, DECISION_BOX
 	}
 	FieldType displayType;
 	public Field(String label, String id,  String name, FieldType f) {
@@ -356,6 +370,7 @@ class Field
 		{
 		case TEXTBOX:return "text";
 		case EMAIL: return "email";
+		case DECISION_BOX: return "checkbox";
 		case DATETIME :
 		case DATE :
 			return "text";

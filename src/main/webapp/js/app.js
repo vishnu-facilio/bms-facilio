@@ -66,6 +66,46 @@ FacilioApp = {
 		selectize.refreshOptions();
 		selectize.setValue(id);
 		$(popup).modal('hide');
+	},
+	
+	createRecordDialog: function(moduleName, callback) {
+		 $.ajax({
+			type : "GET",
+			url : contextPath + '/home/'+moduleName+'/newDialog',
+			success : function(response) {
+				$('#newRecordModel').html(response);
+				$("#newRecordModel").modal("show");
+				
+				// handle save record on dialog
+				$('#addFormDialog').validator().on('submit', function (e) {
+				  if (e.isDefaultPrevented()) {
+						// handle the invalid form...
+				  }
+				  else {
+						// check if any validation errors
+						if ($(this).find('.form-group').hasClass('has-error')) {
+							return false;
+						}
+						
+						$(this).find(".save-btn").button('loading');
+						$.ajax({
+							method : "post",
+							url : contextPath + '/home/'+moduleName+'/add',
+							data : $("#addFormDialog").serialize()
+						})
+						.done(function(data) {
+							$('#newRecordModel').modal('hide');
+							callback(data, null);
+						})
+						.fail(function(error) {
+							$(".save-btn").button('reset');
+							callback(null, error);
+						});
+						return false;
+				  	}
+				});
+			}
+		});
 	}
 };
 

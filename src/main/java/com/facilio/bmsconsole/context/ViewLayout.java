@@ -108,6 +108,16 @@ public class ViewLayout {
 		
 		return viewLayout;
 	}
+	
+	public static ViewLayout getViewSkillLayout()
+	{
+		ViewLayout viewLayout = new ViewLayout();
+		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Status", "isActive", ColumnType.TEXT));
+		
+		return viewLayout;
+	}
 }
 class Column
 {
