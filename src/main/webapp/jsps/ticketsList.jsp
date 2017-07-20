@@ -12,7 +12,7 @@
  	
     <div class="action-btn text-right">
     	
- 		<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+ 		<button type="button" class="btn btn-default save-btn"  onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>
   </div>
 </div>
@@ -34,6 +34,7 @@
          
      
       
+</div>
 </div>
 </s:if>
 <s:else>
@@ -62,7 +63,7 @@
 	    	<s:iterator var="ticket" value="tickets">
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
-		            <td><a href="#tickets/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
+		            <td><a href="#ticket/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
 		            <td>
 		            	<div class="row-title"><s:property value="#ticket.subject" /></div>
 		            	<div class="row-subtitle"><s:property value="#ticket.description" /></div>

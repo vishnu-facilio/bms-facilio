@@ -33,6 +33,13 @@ label {
 	border-color: #50CA7C;
 }
 
+.btn.edit{
+    border-radius: 100px;
+    border-color: #50CA7C;
+    color: #666666;
+}
+
+
 .btn.cancel-btn {
 	border: 1px solid #ADADAD;
 	color: #ADADAD;
@@ -170,3 +177,4 @@ label {
 .file-section .file-name {
     line-height: 22px;
 }
+

@@ -1,0 +1,65 @@
+ .table>tbody>tr>th,  .table>thead>tr>td, .table>thead>tr>th{
+	border-top:0px;
+	color:#999999;
+	    font-weight: 400;
+}
+.table{
+	    max-width: 50%;
+}
+.table>tbody>tr>td{
+	border-top:0px;
+	color:#333333;
+}
+.ticket-form{
+	background-color: white;
+}
+.left-th {
+    border-top: 0px !important;
+}
+.row-out{
+	background-color: #F8F8F8;
+	padding-top: 35px;
+    padding-right: 80px;
+    padding-left: 55px;
+    padding-bottom: 0px;
+}
+.row-in{
+	background-color:  #FFFFFF;
+	border: 1px solid #DCE0E0;
+}
+
+.row-in-2x{
+	background-color:  #FFFFFF;
+	border: 0px solid #FFFFFF;
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.plus-btn{
+	padding: 0px 0px;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 9px;
+    line-height: 1.428571429;
+    background: #50CA7C;
+    color: white;
+    border-color: #DCE0E0;
+}
+.row-footer{
+	padding-bottom: 20px;
+    padding-left: 15px;
+    padding-top: 0px;
+	}
+.row-header-out{
+	background-color: #F8F8F8;
+    padding-left: 5px;
+    padding-bottom: 8px;
+	
+	}
+.icon-out-2x {
+    font-size: large;
+    color: #0E99E3;
+}	
+
