@@ -7,7 +7,7 @@
 <title>Unauthorized access</title>
 </head>
 <body>
-<h1> You are not authorized to access the application</h1>
+<h1> You are not authorized to access this page</h1>
 
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.ServletActionContext;
@@ -19,7 +20,7 @@ public class EditUserAction extends ActionSupport {
 		String userId = ServletActionContext.getRequest().getParameter("id");
 		setUserId(Long.parseLong(userId));
 		
-		roles = (HashMap<Integer, String>) FacilioConstants.Role.ALL_ROLES.clone();
+		roles = (List<String>) FacilioConstants.Role.ALL_ROLES;
 		roles.remove(0);
 		
 		Map<Integer, String> statusList =  new HashMap<Integer, String>();
@@ -34,11 +35,11 @@ public class EditUserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private Map<Integer, String> roles;
-	public Map<Integer, String> getRoles() {
+	private List<String> roles;
+	public List<String> getRoles() {
 		return roles;
 	}
-	public void setRoles(Map<Integer, String> roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 	

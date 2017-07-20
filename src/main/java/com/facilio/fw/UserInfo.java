@@ -21,7 +21,7 @@ public class UserInfo {
 	private String email;
 	private String username;
 	private String name;
-	private int role;
+	private String role;
 	private boolean isActive;
 
 	private static ThreadLocal<UserInfo> userlocal = new ThreadLocal<UserInfo>();
@@ -104,16 +104,16 @@ public class UserInfo {
 		this.name = name;
 	}
 
-	public int getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(int role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 	
-	public boolean hasRole(int role) {
-		if (this.role == role) {
+	public boolean hasRole(String role) {
+		if (this.role.equals(role)) {
 			return true;
 		}
 		return false;

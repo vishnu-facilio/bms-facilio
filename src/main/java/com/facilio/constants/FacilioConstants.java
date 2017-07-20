@@ -1,7 +1,10 @@
 package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -35,23 +38,44 @@ public class FacilioConstants {
 		}
 	}
 	
-	public static class Role {
+	public static class Role 
+	{
+		public static final String ADMINISTRATOR 	= "Administrator";
+		public static final String DISPATCHER 		= "Dispatcher";
+		public static final String TECHNICIAN 		= "Technician";
+		public static final String REQUESTOR 		= "Requestor";
 		
-		public static final int ADMIN = 0;
+		public static final List<String> ALL_ROLES 	= new ArrayList<>();
 		
-		public static final int MANAGER = 1;
+		static 
+		{
+			ALL_ROLES.add(ADMINISTRATOR);
+			ALL_ROLES.add(DISPATCHER);
+			ALL_ROLES.add(TECHNICIAN);
+			ALL_ROLES.add(REQUESTOR);
+		}
 		
-		public static final int AGENT = 2;
+		public static final int DASHBOARD 					= 0x1;
+		public static final int WORKORDER_MODULE 			= 0x2;
+		public static final int WORKORDER_VIEW_ALL 			= 0x4;
+		public static final int WORKORDER_VIEW_OWN 			= 0x8;
+		public static final int WORKORDER_VIEW_UNASSIGNED 	= 0x10;
 		
-		public static final int REQUESTER = 3;
+		public static final String PERMISSION_DASHBOARD						= "dashboard";
+		public static final String PERMISSION_WORKORDER_MODULE				= "workorder";
+		public static final String PERMISSION_WORKORDER_VIEW_ALL 			= "workorderviewall";
+		public static final String PERMISSION_WORKORDER_VIEW_OWN 			= "workorderviewown";
+		public static final String PERMISSION_WORKORDER_VIEW_UNASSIGNED 	= "workorderviewunassigned";
 		
-		public static final HashMap<Integer, String> ALL_ROLES = new HashMap<Integer, String>();
+		public static final Map<String, Integer> permissionsMap 	= new HashMap<>();
 		
-		static {
-			ALL_ROLES.put(ADMIN, "Administrator");
-			ALL_ROLES.put(MANAGER, "Manager");
-			ALL_ROLES.put(AGENT, "Agent");
-			ALL_ROLES.put(REQUESTER, "Requester");
+		static 
+		{
+			permissionsMap.put(PERMISSION_DASHBOARD, DASHBOARD);
+			permissionsMap.put(PERMISSION_WORKORDER_MODULE, WORKORDER_MODULE);
+			permissionsMap.put(PERMISSION_WORKORDER_VIEW_ALL, WORKORDER_VIEW_ALL);
+			permissionsMap.put(PERMISSION_WORKORDER_VIEW_OWN, WORKORDER_VIEW_OWN);
+			permissionsMap.put(PERMISSION_WORKORDER_VIEW_UNASSIGNED, WORKORDER_VIEW_UNASSIGNED);
 		}
 	}
 	

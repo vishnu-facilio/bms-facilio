@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.interceptors;
 
+import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ import org.json.simple.JSONValue;
 
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -71,17 +74,25 @@ public class AuthInterceptor extends AbstractInterceptor {
 					
 				
 					UserContext context = UserAPI.getUser(username);
-					request.setAttribute("user_role", context.getRoleAsString());
+					request.setAttribute("user_role", context.getRole());
 					//ActionContext.getContext().getParameters()
 
         	
         
 	   
-	  	try {
+	  	try 
+	  	{
 			OrgInfo.validateOrgInfo(subdomain, username);
-		} catch (Exception e) {
+			System.out.println("Permission:::" +ActionContext.getContext().getParameters().get("permission").getValue());
+			if(!isAuthorizedAccess(ActionContext.getContext().getParameters().get("permission").getValue()))
+		  	{
+		  		 return "unauthorized";
+		  	}
+		} 
+	  	catch (Exception e) 
+	  	{
 			e.printStackTrace();
-			 return "unauthorized";
+			return "unauthorized";
 		}
 	      /* let us call action or next interceptor */
 	      String result = arg0.invoke();
@@ -91,6 +102,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 	      System.out.println(output);
 
 	      return result;
+	}
+	
+	private boolean isAuthorizedAccess(String permission) throws SQLException
+	{
+		System.out.println("Current Role:::" +UserInfo.getCurrentUser().getRole());
+		return UserAPI.getRole(UserInfo.getCurrentUser().getRole()).hasPermission(FacilioConstants.Role.permissionsMap.get(permission));
 	}
 
 }

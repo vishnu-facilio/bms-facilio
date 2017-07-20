@@ -33,7 +33,13 @@ public class CreateUserCommand implements Command {
 			ps.addBatch();
 			insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values ("+signupinfomap.get("COGNITO_ID")+",true,'"+signupinfomap.get("email")+"')";
 			ps.addBatch(insertquery);
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS) values ((select USERID from Users where EMAIL='"+signupinfomap.get("email")+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),UNIX_TIMESTAMP() ,true,true)";
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Administrator','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Dispatcher','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Technician','0')";
+			ps.addBatch(insertquery);
+			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values ((select USERID from Users where EMAIL='"+signupinfomap.get("email")+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),UNIX_TIMESTAMP() ,true,true,(select ROLE_ID from Role where NAME='Administrator'))";
 			System.out.println("insert query "+insertquery);
 			ps.addBatch(insertquery);
 			ps.executeBatch();

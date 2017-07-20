@@ -80,7 +80,7 @@ $(function() { // document ready
 		header: {
 			left: 'today prev,next',
 			center: 'title',
-			right: 'timelineDay,timelineThreeDays,timelineWeek,timelineMonth'
+			right: 'timelineDay,timelineThreeDays,timelineWeek'
 		},
 		defaultView: 'timelineDay',
 		views: {
