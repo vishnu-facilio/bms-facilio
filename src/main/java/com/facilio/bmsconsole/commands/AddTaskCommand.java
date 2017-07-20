@@ -1,11 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -14,10 +9,8 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
 
 public class AddTaskCommand implements Command {
 	

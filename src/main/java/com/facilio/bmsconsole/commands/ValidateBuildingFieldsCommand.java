@@ -4,8 +4,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.CampusContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ValidateBuildingFieldsCommand implements Command {

@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 
 public class FacilioConstants {
 	
-	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
+	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 	
 	public static class CognitoUserPool {
 		
@@ -129,5 +129,8 @@ public class FacilioConstants {
 			}
 			return null;
 		}
+
+		public static final String CV_NAME = "cvName";
+		public static final String CUSTOM_VIEW = "customView";
 	}
 }

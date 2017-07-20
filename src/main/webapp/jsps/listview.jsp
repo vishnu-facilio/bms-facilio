@@ -8,7 +8,7 @@
 
 <div class="row form-header" >
 <div class="col-sm-12" >
-  <h4 class="pull-left"><s:property value="%{viewName}" /></h4>
+  <h4 class="pull-left"><s:property value="%{viewDisplayName}" /></h4>
     <div class="action-btn text-right">
  		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>

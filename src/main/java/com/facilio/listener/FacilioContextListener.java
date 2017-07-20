@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.FacilioScheduler;
@@ -37,7 +36,6 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
-			FieldType.init();
 			
 			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {

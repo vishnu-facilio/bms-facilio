@@ -1,25 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
 
-public class GetAllTasksCommand implements Command{
+public class GetTaskListCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -28,6 +22,7 @@ public class GetAllTasksCommand implements Command{
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.connection(conn)
@@ -35,6 +30,11 @@ public class GetAllTasksCommand implements Command{
 				.beanClass(TaskContext.class)
 				.select(fields)
 				.orderBy("taskId");
+		
+		if(view != null) {
+			Criteria criteria = view.getCriteria();
+			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
+		}
 
 		List<TaskContext> tasks = builder.get();
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);

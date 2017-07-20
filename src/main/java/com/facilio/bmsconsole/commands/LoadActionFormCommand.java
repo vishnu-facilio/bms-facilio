@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.LocationAPI;

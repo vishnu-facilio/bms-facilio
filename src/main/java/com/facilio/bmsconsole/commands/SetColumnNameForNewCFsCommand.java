@@ -60,13 +60,15 @@ public class SetColumnNameForNewCFsCommand implements Command {
 	
 	private String getColumnNameForNewField(FieldType type, List<String> existingColumns) throws Exception {
 		String[] columns = type.getColumnNames();
-		if(existingColumns == null || existingColumns.size() == 0) {
-			return columns[0];
-		}
-		else {
-			for(String column : columns) {
-				if(!existingColumns.contains(column)) {
-					return column;
+		if(columns != null && columns.length > 0) {
+			if(existingColumns == null || existingColumns.size() == 0) {
+				return columns[0];
+			}
+			else {
+				for(String column : columns) {
+					if(!existingColumns.contains(column)) {
+						return column;
+					}
 				}
 			}
 		}
