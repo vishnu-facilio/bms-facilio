@@ -10,9 +10,9 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.CampusContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -157,5 +157,20 @@ public class CampusAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.CAMPUS;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewCampusLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Campus";
+	}
+	
+	public List<CampusContext> getRecords() 
+	{
+		return campuses;
 	}
 }

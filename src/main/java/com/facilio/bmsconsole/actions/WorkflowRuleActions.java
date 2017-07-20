@@ -4,11 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkflowRuleContext;
 import com.facilio.bmsconsole.context.WorkflowRuleContext.EventType;
 import com.facilio.bmsconsole.util.GroupAPI;

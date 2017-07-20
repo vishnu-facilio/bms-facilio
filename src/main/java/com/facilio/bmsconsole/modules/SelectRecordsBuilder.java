@@ -85,9 +85,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		
 		try {
 			String sql = constructSelectStatement();
-			System.out.println("Shiva select Records :::sql " + sql);
-			System.out.println("Shiva select Records :::whereValues " + whereValues);
-			
 			pstmt = conn.prepareStatement(sql);
 			
 			if(whereValues != null) {

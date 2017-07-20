@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -156,5 +157,20 @@ public class BuildingAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.BUILDING;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewBuildingLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Buildings";
+	}
+	
+	public List<BuildingContext> getRecords() 
+	{
+		return buildings;
 	}
 }

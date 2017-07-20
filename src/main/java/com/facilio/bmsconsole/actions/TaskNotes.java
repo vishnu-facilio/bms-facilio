@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.bmsconsole.commands.AddTaskNoteCommand;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.NoteContext;

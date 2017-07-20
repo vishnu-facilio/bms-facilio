@@ -81,6 +81,7 @@ public class FieldUtil {
 			case LONG_INTEGER:	
 			case DATE:
 			case DATE_TIME:
+			case USER:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					long val;
 					if(value instanceof Long) {
@@ -116,6 +117,7 @@ public class FieldUtil {
 			case LONG_INTEGER:	
 			case DATE:
 			case DATE_TIME:
+			case USER:
 				return rs.getLong(cf.getName());
 			default:
 				return rs.getString(cf.getName());

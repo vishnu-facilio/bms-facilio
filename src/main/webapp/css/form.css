@@ -67,8 +67,7 @@ label {
 
 .form-content .form-section {
     color: #6f7175;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 18px;
     margin: 8px 0;
 }
 
@@ -79,7 +78,7 @@ label {
 }
 
 .form-content textarea {
-	height: 110px;
+	height: 100px;
 	resize: none;
 }
 

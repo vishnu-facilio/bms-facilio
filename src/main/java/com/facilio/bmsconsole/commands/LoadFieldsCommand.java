@@ -10,8 +10,8 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
@@ -45,19 +45,7 @@ public class LoadFieldsCommand implements Command{
 			List<FacilioField> fields = new ArrayList<>();
 			
 			while(rs.next()) {
-				FacilioField field = new FacilioField();
-				
-				field.setFieldId(rs.getLong("FIELDID"));
-				field.setOrgId(rs.getLong("ORGID"));
-				field.setModuleId(rs.getLong("MODULEID"));
-				field.setName(rs.getString("NAME"));
-				field.setDisplayName(rs.getString("DISPLAY_NAME"));
-				field.setColumnName(rs.getString("COLUMN_NAME"));
-				field.setSequenceNumber(rs.getInt("SEQUENCE_NUMBER"));
-				field.setDataType(FieldType.getCFType(rs.getInt("DATA_TYPE")));
-				field.setDataTypeCode(rs.getInt("DATA_TYPE"));
-				
-				fields.add(field);
+				fields.add(CommonCommandUtil.getFieldFromRS(rs));
 			}
 			
 			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);

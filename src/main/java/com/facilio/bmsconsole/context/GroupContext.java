@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

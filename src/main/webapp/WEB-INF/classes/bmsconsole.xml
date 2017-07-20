@@ -43,7 +43,10 @@
         </action>     
     <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
     	<result name="success">/jsps/calendar.jsp</result>
-    </action>    
+    </action> 
+    <action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction" method="centraldispatch">
+    	<result name="success">/jsps/centraldispatch.jsp</result>
+    </action>     
     <action name="certificate" class="com.facilio.bmsconsole.actions.Certificate">
     </action>
     <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
@@ -93,31 +96,31 @@
 	</action>
 
 	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
-		<result name="success">/jsps/ticketsList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
-	<action name="tasks" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
-		<result name="success">/jsps/tasksList.jsp</result>
+	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
-		<result name="success">/jsps/campusList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
-		<result name="success">/jsps/buildingList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
-		<result name="success">/jsps/floorList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
-		<result name="success">/jsps/spaceList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
-		<result name="success">/jsps/zoneList.jsp</result>
+		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
 	<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
@@ -128,8 +131,8 @@
         <result name="success">/jsps/locations.jsp</result>
     </action>
     
-    <action name="skills" class="com.facilio.bmsconsole.actions.SkillActions">
-        <result name="success">/jsps/skills.jsp</result>
+    <action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
+        <result name="success">/jsps/listview.jsp</result>
     </action>
     
 	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
@@ -176,15 +179,47 @@
 			</result>
 		</action>
 
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="ticketSummary" namespace="/home/ticket/summary" extends="ticket">
 		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/viewTicket.jsp</result>
 		</action>
 	</package>
 	
-	<package name="tasks" namespace="/home/tasks" extends="home">
+	<package name="attachment" namespace="/home/attachment" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+		
+		<action name="view" class="com.facilio.bmsconsole.actions.AttachmentAction" method="viewAttachment">
+			<result name="success" type="stream">
+		      <param name="contentType">${fileInfo.contentType}</param>
+		      <param name="inputName">downloadStream</param>
+		      <param name="contentDisposition">attachment;filename="${fileInfo.fileName}"</param>
+		      <param name="contentLength">${fileInfo.fileSize}</param>
+		      <param name="bufferSize">4096</param>
+		    </result>
+		    <result name="error">/jsps/viewAttachmentError.jsp</result>
+		</action>
+	</package>
+	
+	<package name="task" namespace="/home/task" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
-			<result name="success">/jsps/newTask.jsp</result>
+			<result name="success">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
@@ -198,7 +233,14 @@
 				<param name="includeProperties">note.noteId</param>
 			</result>
 		</action>
-
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="taskSummary" namespace="/home/task/summary" extends="task">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/viewTask.jsp</result>
@@ -229,12 +271,19 @@
 		</action>
 	</package>
 	
-	<package name="skills" namespace="/home/skills" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.SkillActions" method="{1}">
-			<result name="add_skill_success" type="json">
+	<package name="skill" namespace="/home/skill" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
+			<result name="success">/jsps/newForm.jsp</result>
+		</action>
+		
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkillDialog">
+			<result name="success">/jsps/newFormDialog.jsp</result>
+		</action>
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
 			</result>
-			<allowed-methods>add</allowed-methods>
 		</action>
 	</package>
 	

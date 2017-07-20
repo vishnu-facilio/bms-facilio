@@ -10,10 +10,8 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -159,5 +157,20 @@ public class ZoneAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.ZONE;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewZoneLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Zones";
+	}
+	
+	public List<ZoneContext> getRecords() 
+	{
+		return zones;
 	}
 }

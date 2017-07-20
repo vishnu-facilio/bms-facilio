@@ -1,12 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -14,9 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
 
 public class AddTicketCommand implements Command {
 
@@ -39,6 +32,8 @@ public class AddTicketCommand implements Command {
 																.connection(conn);
 			long ticketId = builder.insert(ticket);
 			ticket.setTicketId(ticketId);
+			
+			context.put(FacilioConstants.ContextNames.RECORD_ID, ticketId);
 		}
 		else {
 			throw new IllegalArgumentException("Ticket Object cannot be null");

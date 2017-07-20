@@ -14,7 +14,7 @@
     
     	<title><tiles:getAsString name="title" /></title>  
     
-    	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     	
     	<!-- Bootstrap Core CSS -->
 	    <link href="<%=staticURL%>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -49,6 +49,7 @@
     	
     	<!-- FullCalendar CSS -->
     	<link href="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+    	<link href="${pageContext.request.contextPath}/js/scheduler.min.css" rel="stylesheet">
     	
     	<link href="${pageContext.request.contextPath}/css/sb-admin-2.css" rel="stylesheet">
     	
@@ -81,6 +82,7 @@
 	    
 	    <script src="<%=staticURL%>/vendor/moment/moment.min.js"></script>
 	    <script src="<%=staticURL%>/vendor/fullcalendar/fullcalendar.min.js"></script>
+	    <script src="${pageContext.request.contextPath}/js/scheduler.min.js"></script>
 	    <script src="https://d3js.org/d3.v3.min.js"></script>
 		<script src="${pageContext.request.contextPath}/js/c3/c3.min.js"></script>
     	

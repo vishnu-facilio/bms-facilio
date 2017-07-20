@@ -12,4 +12,9 @@ public class CalendarAction extends ActionSupport
 	{
 		return SUCCESS;
 	}
+	
+	public String centraldispatch()
+	{
+		return SUCCESS;
+	}
 }

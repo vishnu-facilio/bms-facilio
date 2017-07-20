@@ -1,6 +1,5 @@
 package com.facilio.tasker.config;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;

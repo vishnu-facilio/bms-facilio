@@ -14,9 +14,10 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -70,8 +71,6 @@ public class TicketAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	
-	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -88,11 +87,20 @@ public class TicketAction extends ActionSupport {
 		this.customFieldNames = customFieldNames;
 	}
 	
+	private List<Long> attachmentId;
+	public List<Long> getAttachmentId() {
+		return attachmentId;
+	}
+	public void setAttachmentId(List<Long> attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+	
 	//Add Ticket Props
 	public String addTicket() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Command addTicket = FacilioChainFactory.getAddTicketChain();
 		addTicket.execute(context);
@@ -148,11 +156,19 @@ public class TicketAction extends ActionSupport {
  	public String ticketList() throws Exception {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
- 		Chain getAllTicketsChain = FacilioChainFactory.getAllTicketsChain();
- 		getAllTicketsChain.execute(context);
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		
+		System.out.println("View Name : "+getViewName());
+ 		Chain ticketListChain = FacilioChainFactory.getTicketListChain();
+ 		ticketListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setTickets((List<TicketContext>) context.get(FacilioConstants.ContextNames.TICKET_LIST));
+		
+		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		if(cv != null) {
+			setViewDisplayName(cv.getDisplayName());
+		}
 		
 		return SUCCESS;
 	}
@@ -168,5 +184,31 @@ public class TicketAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.TICKET;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewTicketLayout();
+	}
+	
+	public List<TicketContext> getRecords() 
+	{
+		return tickets;
+	}
+	
+	private String viewName = null;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
+	private String displayName = "All Work Orders";
+	public String getViewDisplayName() {
+		return displayName;
+	}
+	public void setViewDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 }

@@ -10,10 +10,9 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -158,5 +157,20 @@ public class SpaceAction extends ActionSupport {
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.SPACE;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewSpaceLayout();
+	}
+	
+	public String getViewName()
+	{
+		return "All Spaces";
+	}
+	
+	public List<SpaceContext> getRecords() 
+	{
+		return spaces;
 	}
 }

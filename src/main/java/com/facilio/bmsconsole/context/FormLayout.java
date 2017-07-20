@@ -30,8 +30,44 @@ public class FormLayout {
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.FULL);
-		third.add(new Field("Attachments","inputAttachment","ticket.attachments",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		third.add(new Field("Attachments","inputAttachment","attachmentId",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
 		fields.add(third);
+		
+		return fields;
+		
+	}
+	
+	public static List<Panel> getNewTaskLayout()
+	{
+		List<Panel> fields =new ArrayList<Panel>();
+		
+		Panel first =  new Panel(Panel.Type.HALF);
+		first.add(new Field("Title","inputTitle","task.title",Field.FieldType.TEXTBOX).setRequired(true));
+		first.add(new Field("Description","inputDescription","task.description",Field.FieldType.TEXTAREA).setRequired(true).setPlaceholder("More about the problem.."));
+		fields.add(first);
+		
+		Panel second =  new Panel(Panel.Type.HALF);
+		second.add(new Field("Assigned To","inputAssignedTo","task.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
+		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
+		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
+		fields.add(second);
+		
+		Panel third =  new Panel(Panel.Type.FULL).setTitle("Scheduling");
+		fields.add(third);
+		
+		Panel fourth =  new Panel(Panel.Type.ONE_THIRD);
+		fourth.add(new Field("Scheduled Start","inputScheduledStart","task.ScheduledStart",Field.FieldType.DATETIME));
+		fourth.add(new Field("Actual Task Start","inputActual TaskStart","task.actualTaskStart",Field.FieldType.DATETIME));
+		fields.add(fourth);
+		
+		Panel fifth =  new Panel(Panel.Type.ONE_THIRD);
+		fifth.add(new Field("Estimated  End","inputEstimatedEnd","task.EstimatedEnd",Field.FieldType.DATETIME));
+		fifth.add(new Field("Actual Task End","inputActualTaskEnd","task.ActualTaskEnd",Field.FieldType.DATETIME));
+		fields.add(fifth);
+		
+		Panel sixth =  new Panel(Panel.Type.ONE_THIRD);
+		sixth.add(new Field("Estimated Work Durations","inputEstimatedWorkDuration","task.EstimatedWorkDuration",Field.FieldType.DATETIME));
+		fields.add(sixth);
 		
 		return fields;
 		
@@ -129,7 +165,7 @@ public class FormLayout {
 		List<Panel> fields = new ArrayList<Panel>();
 		
 		Panel first =  new Panel(Panel.Type.FULL);
-		first.add(new Field("Display Name","inputDisplayName","space.displayName",Field.FieldType.TEXTBOX));
+		first.add(new Field("Display Name","inputDisplayName","space.displayName",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		first.add(new Field("Name","inputName","space.name",Field.FieldType.TEXTBOX));
 		fields.add(first);
 		
@@ -158,7 +194,24 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.FULL);
 		first.add(new Field("Name","inputName","zone.name",Field.FieldType.TEXTBOX));
-		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTAREA));
+		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTBOX));
+		fields.add(first);
+		
+		Panel second =  new Panel(Panel.Type.FULL);
+		second.add(new Field("Spaces","inputSpace","zone.spaces",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("space", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		fields.add(second);
+		
+		return fields;
+	}
+	
+	public static List<Panel> getNewSkillLayout()
+	{
+		List<Panel> fields = new ArrayList<Panel>();
+		
+		Panel first =  new Panel(Panel.Type.FULL);
+		first.add(new Field("Name","inputName","skill.name",Field.FieldType.TEXTBOX).setRequired(true));
+		first.add(new Field("Description","inputDescription","skill.description",Field.FieldType.TEXTAREA));
+		first.add(new Field("Active","inputActive","skill.isActive",Field.FieldType.DECISION_BOX));
 		fields.add(first);
 		
 		return fields;
@@ -167,7 +220,22 @@ public class FormLayout {
 class Panel extends ArrayList<Field>
 {
 	public enum Type {
-		HALF,FULL,SECTION
+		
+		QUARTER(3),
+		ONE_THIRD(4),
+		HALF(6),
+		TWO_THIRD(8),
+		THREE_FOURTH(9),
+		FULL(12);
+		
+		int value;
+		Type(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return this.value;
+		}
 	}
 	public Type getDisplay() {
 		return display;
@@ -181,14 +249,14 @@ class Panel extends ArrayList<Field>
 		this.display =display;
 	}
 	
-	String sectionTitle;
-	public Panel setSectionTitle(String sectionTitle) {
-		this.sectionTitle = sectionTitle;
+	String title;
+	public Panel setTitle(String title) {
+		this.title = title;
 		return this;
 	}
 	
-	public String getSectionTitle() {
-		return this.sectionTitle;
+	public String getTitle() {
+		return this.title;
 	}
 }
 class Field
@@ -251,8 +319,9 @@ class Field
 	String icon;
 	String placeholder;
 	boolean required;
+	
 	public enum FieldType {
-	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP, FILE
+	    TEXTBOX, SELECTBOX, RADIO, TEXTAREA,DATE,DATETIME, EMAIL, LOOKUP, FILE, DECISION_BOX
 	}
 	FieldType displayType;
 	public Field(String label, String id,  String name, FieldType f) {
@@ -301,6 +370,7 @@ class Field
 		{
 		case TEXTBOX:return "text";
 		case EMAIL: return "email";
+		case DECISION_BOX: return "checkbox";
 		case DATETIME :
 		case DATE :
 			return "text";
@@ -323,16 +393,30 @@ class Field
 }
 class LookupModule
 {
+	public static final String DISPLAY_TYPE_SIMPLE = "simple";
+	public static final String DISPLAY_TYPE_SECTION = "section";
+	
 	String name;
 	String label;
 	String criteria;
 	String preloadedList;
+	
+	String displayType = DISPLAY_TYPE_SIMPLE; // 'simple' or 'section'	
 	public LookupModule(String name, String label) {
 		super();
 		this.name = name;
 		this.label = label;
 	}
 	
+	public LookupModule setDisplayType(String displayType) {
+		this.displayType = displayType;
+		return this;
+	}
+	
+	public String getDisplayType() {
+		return this.displayType;
+	}
+
 	public LookupModule setName(String name) {
 		this.name = name;
 		return this;
