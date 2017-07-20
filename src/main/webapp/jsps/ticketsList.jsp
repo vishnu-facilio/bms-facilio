@@ -63,7 +63,7 @@
 	    	<s:iterator var="ticket" value="tickets">
 				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
 					<td></td>
-		            <td><a href="#ticket/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
+		            <td><a href="#ticket/summary/<s:property value="#ticket.ticketId" />">#<s:property value="#ticket.ticketId" /></a></td>
 		            <td>
 		            	<div class="row-title"><s:property value="#ticket.subject" /></div>
 		            	<div class="row-subtitle"><s:property value="#ticket.description" /></div>
