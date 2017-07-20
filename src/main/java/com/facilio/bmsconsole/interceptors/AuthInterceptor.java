@@ -10,6 +10,7 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
@@ -107,6 +108,11 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private boolean isAuthorizedAccess(String permission) throws SQLException
 	{
 		System.out.println("Current Role:::" +UserInfo.getCurrentUser().getRole());
+		// Temp code
+		if(FacilioConstants.Role.ADMINISTRATOR.equalsIgnoreCase(UserInfo.getCurrentUser().getRole()))
+		{
+			return true;
+		}
 		return UserAPI.getRole(UserInfo.getCurrentUser().getRole()).hasPermission(FacilioConstants.Role.permissionsMap.get(permission));
 	}
 
