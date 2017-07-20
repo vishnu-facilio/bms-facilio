@@ -36,7 +36,7 @@
 	       		<th class="dt-body-center">
 	       			<div class="checkbox checkbox-primary">
 	       		 	 	<input type="checkbox" name="select_all" id="record-select-all">
-	       		 	 	<label for="ticket-select-all"></label>
+	       		 	 	<label for="record-select-all"></label>
 	       		 	</div>
 	       		</th>
 	       		<s:iterator var="column" value="viewlayout.columns">
@@ -137,6 +137,8 @@
 	      }
 	   });
 
+	   
+	   
 	   $(".new-btn").click(function() {
 		   var moduleLinkName = '<s:property value="%{moduleLinkName}" />';
 		   var actionType = '<s:property value="%{newActionType}"/>';
