@@ -130,7 +130,7 @@
                         <a href="#locations">Locations</a>
                     </li>
                     <li>
-                        <a href="#skills">Skills</a>
+                        <a href="#skill">Skills</a>
                     </li>
                     <li>
                         <a href="#">Rules <span class="fa arrow"></span></a>

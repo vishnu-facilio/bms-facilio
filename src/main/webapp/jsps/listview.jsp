@@ -10,19 +10,19 @@
 <div class="col-sm-12" >
   <h4 class="pull-left"><s:property value="%{viewName}" /></h4>
     <div class="action-btn text-right">
- 		<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn"  onclick="location.href='#<s:property value="%{moduleLinkName}" />/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+ 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>
   </div>
 </div>
-<s:if test="%{records.isEmpty()}">
+<s:if test="%{records == null || records.isEmpty()}">
 	<div class="row content-center">
 		<div class="col-lg-12 col-md-12 text-center ">
 			<img class="center-block" src="${pageContext.request.contextPath}/images/noworkorder.svg" />
 	     	<div>&nbsp;</div>
-			<div class="no-screen-msg"><div class="row-title text-bold">No work order added yet ...</div><div class="row-subtitle">Since you have not created any workorders,</div><div class="row-subtitle">Why not create a new one?</div></div>
+			<div class="no-screen-msg"><div class="row-title text-bold">No record created yet ...</div><div class="row-subtitle">Since you have not created any records,</div><div class="row-subtitle">Why not create a new one?</div></div>
 	 		<div class="action-btn text-center">
 			<div>&nbsp;</div>
-			<button type="button" data-loading-text="<i class='fa fa-plus fa-plus-1x '></i> Saving" class="btn btn-default save-btn" onclick="location.href='#ticket/new';"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+			<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 			</div>
 		</div>
 	</div>
@@ -86,6 +86,10 @@
 </div>
 </s:else>
 
+<!-- new record popup -->
+<div class="modal fade" id="newRecordModel" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true"></div>
+
 <script>
  $(document).ready(function (){
 	 
@@ -133,5 +137,25 @@
 	      }
 	   });
 
+	   $(".new-btn").click(function() {
+		   var moduleLinkName = '<s:property value="%{moduleLinkName}" />';
+		   var actionType = '<s:property value="%{newActionType}"/>';
+		   
+		   if (actionType === 'dialog') {
+			   
+			   FacilioApp.createRecordDialog(moduleLinkName, function(result, error) {
+				   if (result != null) {
+					   FacilioApp.notifyMessage('success', 'Record created successfully!');
+					   
+					   setTimeout(function() {
+						   FacilioApp.refreshView();
+					   }, 500);
+				   }
+			   });
+		   }
+		   else {
+			   location.href = '#<s:property value="%{moduleLinkName}" />/new';
+		   }
+		});
 	});
 </script>

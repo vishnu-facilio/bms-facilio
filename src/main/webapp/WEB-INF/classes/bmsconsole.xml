@@ -128,8 +128,8 @@
         <result name="success">/jsps/locations.jsp</result>
     </action>
     
-    <action name="skills" class="com.facilio.bmsconsole.actions.SkillActions">
-        <result name="success">/jsps/skills.jsp</result>
+    <action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
+        <result name="success">/jsps/listview.jsp</result>
     </action>
     
 	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
@@ -254,12 +254,19 @@
 		</action>
 	</package>
 	
-	<package name="skills" namespace="/home/skills" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.SkillActions" method="{1}">
-			<result name="add_skill_success" type="json">
+	<package name="skill" namespace="/home/skill" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
+			<result name="success">/jsps/newForm.jsp</result>
+		</action>
+		
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkillDialog">
+			<result name="success">/jsps/newFormDialog.jsp</result>
+		</action>
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
 			</result>
-			<allowed-methods>add</allowed-methods>
 		</action>
 	</package>
 	
