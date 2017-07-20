@@ -217,7 +217,7 @@
 
 <script>
  $(document).ready(function (){
-	   var table = $('#tickets-list').DataTable({
+	 /*  var table = $('#tickets-list').DataTable({
 	      columnDefs: [{
 	         targets: 0,
 	         searchable: false,
@@ -261,7 +261,7 @@
 	     
 	   });
 
-	   
+	 */
    
 	});
  
