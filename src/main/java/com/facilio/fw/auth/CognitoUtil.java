@@ -1,4 +1,4 @@
-package com.facilio.cognito;
+package com.facilio.fw.auth;
 
 import java.util.HashMap;
 import java.util.Map;

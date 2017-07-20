@@ -41,7 +41,7 @@
  	
  	<!--  Context Listener -->
  	<listener>
- 		<listener-class>com.facilio.listener.FacilioContextListener</listener-class>
+ 		<listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
  	</listener>
  	
  	<jsp-config> 
