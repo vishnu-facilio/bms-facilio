@@ -6,6 +6,9 @@ FacilioApp = {
 	init: function() {
 		var self = this;
 		
+		if (location.hash.trim() == "") {
+			location.hash = '#dashboard';
+		}
 		self.loadUrlFromHash();
 		$(window).on('hashchange',function(){ 
 			self.loadUrlFromHash();
@@ -16,6 +19,10 @@ FacilioApp = {
 	},
 	
 	loadUrlFromHash: function() {	
+		if ($('.sidebar ul li a[href="'+location.hash+'"]').length > 0) {
+			$('.sidebar ul li a').removeClass('active');
+			$('.sidebar ul li a[href="'+location.hash+'"]').addClass('active');
+		}
 		var module = location.hash.slice(1);
 		if(module != "")
 		{	

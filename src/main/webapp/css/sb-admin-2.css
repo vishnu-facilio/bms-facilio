@@ -144,15 +144,14 @@ ul#side-menu {
 	border-left: 3px solid #323941;
 	letter-spacing:0.03em;
 }
-.sidebar ul li a:HOVER,sidebar ul li a:FOCUS {
-	
+.sidebar ul li a:HOVER,.sidebar ul li a:FOCUS,.sidebar ul li a.active {
 	opacity: 0.9;
 	color: #0BA4F4;
 	background-color: #1F2224;
 	border-left: 3px solid #1F2224;
  }
  
- .sidebar ul li a:FOCUS{
+ .sidebar ul li a:FOCUS, .sidebar ul li a.active{
  	border-left: 3px solid #0BA4F4;
  
  }

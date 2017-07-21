@@ -1,6 +1,6 @@
 <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse">
-        <ul class="nav" id="side-menu">
+        <ul class="nav metismenu" id="side-menu">
         <!-- 
             <li class="sidebar-search">
                 <div class="input-group custom-search-form">
@@ -15,7 +15,7 @@
             </li>
             -->
             <li>
-                <a href="index"><i class=" sidebar-icon fa fa-dashboard fa-fw "></i> Dashboard</a>
+                <a href="#dashboard"><i class=" sidebar-icon fa fa-dashboard fa-fw "></i> Dashboard</a>
             </li>
             <li>
                 <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
