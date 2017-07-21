@@ -1,6 +1,7 @@
 <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse">
         <ul class="nav" id="side-menu">
+        <!-- 
             <li class="sidebar-search">
                 <div class="input-group custom-search-form">
                     <input type="text" class="form-control" placeholder="Search...">
@@ -10,28 +11,78 @@
                     </button>
                 </span>
                 </div>
-                <!-- /input-group -->
+               
+            </li>
+            -->
+            <li>
+                <a href="index"><i class=" sidebar-icon fa fa-dashboard fa-fw "></i> Dashboard</a>
             </li>
             <li>
-                <a href="index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
             </li>
             <li>
-                <a href="#calendar"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+                <a href="#centraldispatch"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i> Central Dispatch</a>
+            </li>
+           <!-- <li>
+            	<a href="#controller"><i class="sidebar-icon fa fa-laptop fa-fw"></i> Controllers</a>
+            </li> -->
+              <li>
+               
+                <a href="#"><i class="sidebar-icon fa fa-briefcase fa-fw"></i>  Work Orders<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#ticket">All Work Orders</a>
+                    </li>
+                    <li>
+                        <a href="#ticket/allopentickets">All Open Work Orders</a>
+                    </li>
+                     <li>
+                        <a href="#ticket/mytickets">My Work Orders</a>
+                    </li>
+                     <li>
+                        <a href="#ticket/myopentickets">My Open Work Orders</a>
+                    </li>
+                     <li>
+                        <a href="#ticket/overduetickets">Overdue Work Orders</a>
+                    </li>
+                     <li>
+                        <a href="#ticket/myoverduetickets">My Overdue Work Orders</a>
+                    </li>
+                 </ul>
             </li>
             <li>
-                <a href="#centraldispatch"><i class="fa fa-calendar fa-fw"></i> Central Dispatch</a>
+               <a href="#"><i class="sidebar-icon fa fa-tasks fa-fw"></i>  Tasks<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#task">All Tasks</a>
+                    </li>
+                    <li>
+                        <a href="#task/mytasks">My Tasks</a>
+                    </li>
+                  </ul>
             </li>
-            <li>
-            	<a href="#controller"><i class="fa fa-laptop fa-fw"></i> Controllers</a>
+			<li>
+               <a href="#"><i class="sidebar-icon fa fa-globe fa-fw"></i> Space Management<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+               		<li>
+                        <a href="#campus">Campus</a>
+                    </li>
+                    <li>
+                        <a href="#building">Building</a>
+                    </li>
+                    <li>
+                        <a href="#floor">Floor</a>
+                    </li>
+                    <li>
+                        <a href="#space">Space</a>
+                    </li>
+                    <li>
+                        <a href="#zone">Zone</a>
+                    </li>
+                  </ul>
             </li>
-            <li>
-            	<a href="#ticket"><i class="fa fa-tasks fa-fw"></i> Work Orders</a>
-            </li>
-            <li>
-            	<a href="#task"><i class="fa fa-tasks fa-fw"></i> Tasks</a>
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>
+         <%--    <li>
+                <a href="#"><i class="sidebar-icon fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="#">Requests <span class="fa arrow"></span></a>
@@ -111,9 +162,9 @@
                 </ul>
                 <!-- /.nav-second-level -->
             </li>
+             --%>
             <li>
-                <%--<a href="#reports"><i class="fa fa-pie-chart fa-fw"></i> Reports</a>--%>
-                <a href="#"><i class="fa fa-pie-chart fa-fw"></i> Reports<span class="fa arrow"></span></a>
+                <a href="#"><i class="sidebar-icon fa fa-pie-chart fa-fw"></i> Reports<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="#reports">Peak Energy Analysis</a>
@@ -131,6 +182,9 @@
                     </li>
                     <li>
                         <a href="#groups">Groups</a>
+                    </li>
+                    <li>
+                        <a href="#controller">Controllers</a>
                     </li>
                     <li>
                         <a href="#locations">Locations</a>
