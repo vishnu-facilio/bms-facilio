@@ -58,9 +58,9 @@ String FILE_NAME  =null;
                     Cell currentCell = cellIterator.next();
                     //getCellTypeEnum shown as deprecated for version 3.15
                     //getCellTypeEnum ill be renamed to getCellType starting from version 4.0
-                    if (currentCell.getCellTypeEnum() == CellType.STRING) {
+                    if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
                         System.out.print(currentCell.getStringCellValue() + "--");
-                    } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+                    } else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                         System.out.print(currentCell.getNumericCellValue() + "--");
                     }
 
@@ -91,7 +91,7 @@ String FILE_NAME  =null;
 	    }
 	    for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
 	        Cell cell = row.getCell(cellNum);
-	        if (cell != null && cell.getCellTypeEnum() != CellType.BLANK && StringUtils.isNotBlank(cell.toString())) {
+	        if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK && StringUtils.isNotBlank(cell.toString())) {
 	            return false;
 	        }
 	    }
