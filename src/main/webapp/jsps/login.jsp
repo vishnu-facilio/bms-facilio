@@ -114,7 +114,7 @@
 	              		<input type="text" placeholder="Enter Verification code" name="verification_code">
 	              	</div>
 	            	<div class="clearfix">
-	              		<button type="button" style="float:none" class="signupbtn verifybtn">Verify</button>
+	              		<button type="button" style="float:none" class="verifybtn">Verify</button>
 
 	            	</div>
           		<a href="javascript:void(0)" style="color: blue;" class="resend-code">Resend verification code</a></div>
@@ -130,7 +130,7 @@
 	              		<input type="password" placeholder="Enter new password" name="forgot-newpass" style="display:none">
 	              	</div>
 	            	<div class="clearfix">
-	              		<button type="button" style="float:none" class="signupbtn resetpwdbtn">Reset</button>
+	              		<button type="button" style="float:none" class="resetpwdbtn">Reset</button>
 	            	</div>
         		</div>
         	</section>
@@ -142,7 +142,7 @@
 	              		<input type="password" placeholder="Reenter new password" name="change-confirm-newpass">
 	              	</div>
 	            	<div class="clearfix">
-	              		<button type="button" style="float:none" class="signupbtn updatepwdbtn">Update</button>
+	              		<button type="button" style="float:none" class="updatepwdbtn">Update</button>
 	            	</div>
         		</div>
         	</section>

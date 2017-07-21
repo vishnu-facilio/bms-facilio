@@ -195,7 +195,6 @@ public class LoginAction extends ActionSupport{
 		
 		long orgId = OrgApi.getOrgIdFromDomain(subdomain);
 		
-		PreparedStatement ps = null;
 		try {
 			if (orgId == -1) {
 				String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
@@ -222,29 +221,48 @@ public class LoginAction extends ActionSupport{
 				}
 			}
 			
-			String insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?,?,?)";
-			ps = con.prepareStatement(insertquery);
-			ps.setString(1, null);
-			ps.setBoolean(2, true);
-			ps.setString(3, email);
-			ps.addBatch();
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Administrator','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Dispatcher','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),'Technician','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values ((select USERID from Users where EMAIL='"+email+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+subdomain+"'),UNIX_TIMESTAMP() ,true,true,(select ROLE_ID from Role where NAME='Administrator'))";
-			System.out.println("insert query "+insertquery);
-			ps.addBatch(insertquery);
-			ps.executeBatch();
+			String insertquery1 = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?)";
+			PreparedStatement ps1 = con.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
+			ps1.setString(1, null);
+			ps1.setBoolean(2, true);
+			ps1.setString(3, email);
+			ps1.executeUpdate();
+			ResultSet rs1 = ps1.getGeneratedKeys();
+			rs1.next();
+			long userId = rs1.getLong(1);
+			ps1.close();
+			
+			String insertquery2 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
+			PreparedStatement ps2 = con.prepareStatement(insertquery2);
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Administrator");
+			ps2.setString(3, "0");
+			ps2.addBatch();
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Dispatcher");
+			ps2.setString(3, "0");
+			ps2.addBatch();
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Technician");
+			ps2.setString(3, "0");
+			ps2.executeBatch();
+			ps2.close();
+			
+			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,UNIX_TIMESTAMP(),true,true,(select ROLE_ID from Role where NAME='Administrator' limit 1))";
+			PreparedStatement ps3 = con.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);
+			ps3.setLong(1,userId);
+			ps3.setLong(2, orgId);
+			ps3.executeUpdate();
+			ResultSet rs3 = ps1.getGeneratedKeys();
+			rs3.next();
+			long orgUserId = rs3.getLong(1);
+			ps3.close();
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{
-			ps.close();
 			con.close();
 		}
 		return false;
