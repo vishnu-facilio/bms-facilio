@@ -23,43 +23,61 @@ public class CreateUserCommand implements Command {
 		
 		System.out.println("This is the map :-   "+signupinfomap);
 		java.sql.Connection con = fc.getConnectionWithTransaction();
-		String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
 		
-		PreparedStatement ps = con.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
-		ResultSet rs = null;
 		try {
+			String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
+			PreparedStatement ps = con.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, signupinfomap.get("companyname"));
 			ps.setString(2, signupinfomap.get("domainname"));
-			ps.addBatch();
-			insertquery = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values ("+signupinfomap.get("COGNITO_ID")+",true,'"+signupinfomap.get("email")+"')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Administrator','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Dispatcher','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into Role (ORGID,NAME,PERMISSIONS) values ((select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),'Technician','0')";
-			ps.addBatch(insertquery);
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values ((select USERID from Users where EMAIL='"+signupinfomap.get("email")+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+signupinfomap.get("domainname")+"'),UNIX_TIMESTAMP() ,true,true,(select ROLE_ID from Role where NAME='Administrator'))";
-			System.out.println("insert query "+insertquery);
-			ps.addBatch(insertquery);
-			ps.executeBatch();
-			
-			rs = ps.getGeneratedKeys();
-			
+			ps.executeUpdate();
+			ResultSet rs = ps.getGeneratedKeys();
 			rs.next();
 			long orgId = rs.getLong(1);
 			arg0.put(ORG_ID, orgId);
+			ps.close();
 			
-			while(rs.next()) {
-				System.out.println(rs.getLong(1));
-			}
+			String insertquery1 = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?)";
+			PreparedStatement ps1 = con.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
+			ps1.setString(1, signupinfomap.get("COGNITO_ID"));
+			ps1.setBoolean(2, true);
+			ps1.setString(3, signupinfomap.get("email"));
+			ps1.executeUpdate();
+			ResultSet rs1 = ps1.getGeneratedKeys();
+			rs1.next();
+			long userId = rs1.getLong(1);
+			ps1.close();
+			
+			String insertquery2 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
+			PreparedStatement ps2 = con.prepareStatement(insertquery2);
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Administrator");
+			ps2.setString(3, "0");
+			ps2.addBatch();
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Dispatcher");
+			ps2.setString(3, "0");
+			ps2.addBatch();
+			ps2.setLong(1, orgId);
+			ps2.setString(2, "Technician");
+			ps2.setString(3, "0");
+			ps2.executeBatch();
+			ps2.close();
+			
+			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,UNIX_TIMESTAMP(),true,true,(select ROLE_ID from Role where NAME='Administrator' limit 1))";
+			PreparedStatement ps3 = con.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);
+			ps3.setLong(1,userId);
+			ps3.setLong(2, orgId);
+			ps3.executeUpdate();
+			ResultSet rs3 = ps1.getGeneratedKeys();
+			rs3.next();
+			long orgUserId = rs3.getLong(1);
+			ps3.close();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{
-			DBUtil.closeAll(ps, rs);
 			// it will get closed after chain completion
 			//con.close();
 		}

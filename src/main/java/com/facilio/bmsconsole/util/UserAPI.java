@@ -118,7 +118,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.RLE_ID = Role.ROLE_ID ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.ROLE_ID = Role.ROLE_ID ORDER BY EMAIL");
 			pstmt.setLong(1, orgId);
 			
 			List<UserContext> users = new ArrayList<>();
