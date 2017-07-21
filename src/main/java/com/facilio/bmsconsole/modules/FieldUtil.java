@@ -24,26 +24,6 @@ public class FieldUtil {
 					pstmt.setNull(paramIndex, Types.VARCHAR);
 				}
 				break;
-			case NUMBER:
-				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					int val;
-					if(value instanceof Integer) {
-						val = (int) value;
-					}
-					else {
-						val = Integer.parseInt(value.toString());
-					}
-					if(val != 0) {
-						pstmt.setInt(paramIndex, val);
-					}
-					else {
-						pstmt.setNull(paramIndex, Types.INTEGER);
-					}
-				}
-				else {
-					pstmt.setNull(paramIndex, Types.INTEGER);
-				}
-				break;
 			case DECIMAL:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					double val;
@@ -78,7 +58,7 @@ public class FieldUtil {
 				}
 				break;
 			case ID:
-			case LONG_INTEGER:	
+			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
 			case USER:
@@ -107,14 +87,12 @@ public class FieldUtil {
 		switch(cf.getDataType()) {
 			case STRING:
 				return rs.getString(cf.getName());
-			case NUMBER:
-				return rs.getInt(cf.getName());
 			case DECIMAL:
 				return rs.getDouble(cf.getName());
 			case BOOLEAN:
 				return rs.getBoolean(cf.getName());
 			case ID:
-			case LONG_INTEGER:	
+			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
 			case USER:
