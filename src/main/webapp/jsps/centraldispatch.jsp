@@ -71,7 +71,7 @@ $(function() { // document ready
 	/* initialize the calendar
 	-----------------------------------------------------------------*/
 
-	$('#calendar').fullCalendar({
+	$('#calendar_dispatch').fullCalendar({
 		now: '2017-05-07',
 		editable: true, // enable draggable events
 		droppable: true, // this allows things to be dropped onto the calendar
@@ -133,6 +133,7 @@ $(function() { // document ready
    </div>
    <!-- /.col-lg-12 -->
 </div>
+<div class="temp-view-content">
 <div class="row">
 	<div class="col-lg-12">
 		<div id='wrap'>
@@ -144,8 +145,9 @@ $(function() { // document ready
 			<div class='fc-event'>My Event 4</div>
 			<div class='fc-event'>My Event 5</div>
 		</div>
-		<div id='calendar'></div>
+		<div id='calendar_dispatch'></div>
 		<div style='clear:both'></div>
 	</div>
 	</div>
+</div>
 </div>

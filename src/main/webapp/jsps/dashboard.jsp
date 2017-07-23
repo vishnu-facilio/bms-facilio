@@ -96,6 +96,7 @@ $( document ).ready(function() {
    <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+<div class="temp-view-content">
 <div class="row">
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-red">
@@ -577,5 +578,6 @@ $( document ).ready(function() {
         --%>
    </div>
    <!-- /.col-lg-4 -->
+</div>
 </div>
 <!-- /.row -->
