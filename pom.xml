@@ -7,6 +7,21 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bms Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	
+	<!-- Facilio Internal Maven Repository -->
+	<repositories>
+        <repository>
+            <id>facilio-s3-release-repo</id>
+			<name>Facilio Release Repository</name>
+			<url>s3://repo.facilstack.com/releases</url>
+        </repository>
+        <repository>
+            <id>facilio-s3-snapshot-repo</id>
+			<name>Facilio Snapshot Repository</name>
+			<url>s3://repo.facilstack.com/snapshots</url>
+        </repository>
+    </repositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -169,8 +184,20 @@
 		    <artifactId>flyway-core</artifactId>
 		    <version>4.2.0</version>
 		</dependency>
+		<dependency>
+            <groupId>com.facilio</groupId>
+            <artifactId>fedge</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 	</dependencies>
 	<build>
+		<extensions>
+			<extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>5.0.0.RELEASE</version>
+            </extension>
+	    </extensions>
 		<finalName>bms</finalName>
 	</build>
 	<properties>
