@@ -406,4 +406,14 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain processImportData() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetZoneModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new GetZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }

@@ -12,7 +12,7 @@ body {
   overflow:hidden;
 }
 body {
-    font-family: 'Roboto', Helvetica Neue,Segoe UI,Helvetica,Arial,sans-serif !important;
+    font-family: 'Lato', Helvetica Neue,Segoe UI,Helvetica,Arial,sans-serif !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
     text-rendering: optimizeLegibility !important;
@@ -138,7 +138,6 @@ width: 25px;
 .sidebar ul li a {
   padding: 16px 15px;
   opacity: 0.9;
-  font-size: 14px;
 	color: #FFFFFF;
 	background-color: #323941;
 	border-left: 3px solid #323941;

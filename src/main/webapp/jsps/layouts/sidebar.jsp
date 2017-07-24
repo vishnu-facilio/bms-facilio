@@ -17,12 +17,6 @@
             <li>
                 <a href="#dashboard"><i class=" sidebar-icon fa fa-dashboard fa-fw "></i> Dashboard</a>
             </li>
-            <li>
-                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
-            </li>
-            <li>
-                <a href="#centraldispatch"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i> Central Dispatch</a>
-            </li>
            <!-- <li>
             	<a href="#controller"><i class="sidebar-icon fa fa-laptop fa-fw"></i> Controllers</a>
             </li> -->
@@ -59,6 +53,12 @@
                     <li>
                         <a href="#task/mytasks">My Tasks</a>
                     </li>
+                    <li>
+		                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
+		            </li>
+                    <li>
+		                <a href="#centraldispatch"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i> Central Dispatch</a>
+		            </li>
                   </ul>
             </li>
 			<li>
