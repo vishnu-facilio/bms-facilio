@@ -164,7 +164,7 @@ public class SpaceAction extends ActionSupport {
 		return ViewLayout.getViewSpaceLayout();
 	}
 	
-	public String getViewName()
+	public String getViewDisplayName()
 	{
 		return "All Spaces";
 	}

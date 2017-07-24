@@ -399,4 +399,11 @@ public class FacilioChainFactory {
 		c.addCommand(new DeleteAttachmentCommand());
 		return c;
 	}
+	
+	public static Chain getAllAreaChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAllAreaCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }

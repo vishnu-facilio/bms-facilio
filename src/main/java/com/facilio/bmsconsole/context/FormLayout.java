@@ -7,16 +7,14 @@ public class FormLayout {
 	
 	public static List<Panel> getNewTicketLayout()
 	{
-		List<Panel> fields =new ArrayList<Panel>();
+		List<Panel> fields = new ArrayList<Panel>();
 		
 		Panel first =  new Panel(Panel.Type.HALF);
-		
 		first.add(new Field("Subject","inputSubject","ticket.subject",Field.FieldType.TEXTBOX).setRequired(true));
 		first.add(new Field("Description","inputDescription","ticket.description",Field.FieldType.TEXTAREA).setRequired(true).setPlaceholder("More about the problem.."));
 		first.add(new Field("Assigned To","inputAssignedTo","ticket.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
-		first.add(new Field("Location","inputlocation","location",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
 		first.add(new Field("Asset","inputAsset","ticket.assetId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("assets", "Assets").setPreloadedList("assetList")));
-
+		first.add(new Field("Space","inputAreaId","ticket.areaId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("area", "Space")));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
@@ -26,7 +24,6 @@ public class FormLayout {
 		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
 		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
 		second.add(new Field("Category","inputCategory","ticket.category",Field.FieldType.SELECTBOX).setListName("statusList"));
-
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.FULL);

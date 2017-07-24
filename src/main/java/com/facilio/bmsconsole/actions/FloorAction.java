@@ -164,7 +164,7 @@ public class FloorAction extends ActionSupport {
 		return ViewLayout.getViewFloorLayout();
 	}
 	
-	public String getViewName()
+	public String getViewDisplayName()
 	{
 		return "All Floors";
 	}

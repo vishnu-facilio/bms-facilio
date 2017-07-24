@@ -164,7 +164,7 @@ public class CampusAction extends ActionSupport {
 		return ViewLayout.getViewCampusLayout();
 	}
 	
-	public String getViewName()
+	public String getViewDisplayName()
 	{
 		return "All Campus";
 	}

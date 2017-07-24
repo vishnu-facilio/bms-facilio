@@ -164,7 +164,7 @@ public class BuildingAction extends ActionSupport {
 		return ViewLayout.getViewBuildingLayout();
 	}
 	
-	public String getViewName()
+	public String getViewDisplayName()
 	{
 		return "All Buildings";
 	}

@@ -164,7 +164,7 @@ public class ZoneAction extends ActionSupport {
 		return ViewLayout.getViewZoneLayout();
 	}
 	
-	public String getViewName()
+	public String getViewDisplayName()
 	{
 		return "All Zones";
 	}

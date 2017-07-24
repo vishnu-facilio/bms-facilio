@@ -9,7 +9,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 
 public class AddSpaceCommand implements Command {
 	
@@ -21,9 +23,12 @@ public class AddSpaceCommand implements Command {
 		SpaceContext space = (SpaceContext) context.get(FacilioConstants.ContextNames.SPACE);
 		if(space != null) 
 		{
+			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			Long areaId = SpaceAPI.addArea(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+			space.setSpaceId(areaId);
+			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			InsertRecordBuilder<SpaceContext> builder = new InsertRecordBuilder<SpaceContext>()
@@ -31,8 +36,7 @@ public class AddSpaceCommand implements Command {
 															.dataTableName(dataTableName)
 															.fields(fields)
 															.connection(conn);
-			long spaceId = builder.insert(space);
-			space.setSpaceId(spaceId);
+			builder.insert(space);
 		}
 		else 
 		{

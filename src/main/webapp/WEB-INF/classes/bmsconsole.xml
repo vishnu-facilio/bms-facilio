@@ -453,21 +453,25 @@
 	
 	<package name="campus" namespace="/home/campus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/campusListPopup.jsp</result>
 		</action>
 		
 		<action name="new" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction" method="addCampus">
+			<param name="permission">workorderviewall</param>
 			<result name="success" type="json">
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
+			<param name="permission">workorderviewall</param>
 			<param name="campusId">{1}</param>
 			<result name="success">/jsps/viewCampus.jsp</result>
 		</action>
@@ -475,21 +479,25 @@
 	
 	<package name="building" namespace="/home/building" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/buildingListPopup.jsp</result>
 		</action>
 		
 		<action name="new" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction" method="addBuilding">
+			<param name="permission">workorderviewall</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
+			<param name="permission">workorderviewall</param>
 			<param name="buildingId">{1}</param>
 			<result name="success">/jsps/viewBuilding.jsp</result>
 		</action>
@@ -497,21 +505,25 @@
 	
 	<package name="floor" namespace="/home/floor" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/floorListPopup.jsp</result>
 		</action>
 		
 		<action name="new" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction" method="addFloor">
+			<param name="permission">workorderviewall</param>
 			<result name="success" type="json">
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
+			<param name="permission">workorderviewall</param>
 			<param name="floorId">{1}</param>
 			<result name="success">/jsps/viewFloor.jsp</result>
 		</action>
@@ -519,17 +531,20 @@
 	
 	<package name="space" namespace="/home/space" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="addSpace">
+			<param name="permission">workorderviewall</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
 			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
+			<param name="permission">workorderviewall</param>
 			<param name="spaceId">{1}</param>
 			<result name="success">/jsps/viewSpace.jsp</result>
 		</action>
@@ -537,19 +552,29 @@
 	
 	<package name="zone" namespace="/home/zone" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
+			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction" method="addZone">
+			<param name="permission">workorderviewall</param>
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction" method="viewZone">
+			<param name="permission">workorderviewall</param>
 			<param name="zoneId">{1}</param>
 			<result name="success">/jsps/viewZone.jsp</result>
 		</action>
 	</package>
+	
+	<package name="area" namespace="/home/area" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.AreaAction" method="areaList">
+			<param name="permission">workorderviewall</param>
+			<result name="success">/jsps/areaListPopup.jsp</result>
+		</action>
+	</package>	
 </struts>
