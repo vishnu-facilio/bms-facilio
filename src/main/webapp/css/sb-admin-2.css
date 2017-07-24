@@ -542,6 +542,7 @@ i.sidebar-icon{
 }
 
 .temp-view-content {
+	position:relative;
     height: calc(100% - 100px);
     overflow-y: scroll;
 }
