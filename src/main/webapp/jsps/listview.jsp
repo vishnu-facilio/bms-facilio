@@ -36,7 +36,7 @@
 	       		<th class="dt-body-center">
 	       			<div class="checkbox checkbox-primary">
 	       		 	 	<input type="checkbox" name="select_all" id="record-select-all">
-	       		 	 	<label for="ticket-select-all"></label>
+	       		 	 	<label for="record-select-all"></label>
 	       		 	</div>
 	       		</th>
 	       		<s:iterator var="column" value="viewlayout.columns">
@@ -52,7 +52,7 @@
 					<s:iterator var="column" value="viewlayout.columns">
 						<td>
 							<s:if test="#column.isPrimaryColumn">
-								<a href="#<s:property value="%{moduleLinkName}" />/<s:property value="#record[#column.id]" />"><s:property value="#record[#column.id]" /></a>
+								<a href="#<s:property value="%{moduleLinkName}" />/summary/<s:property value="#record[#column.id]" />"><s:property value="#record[#column.id]" /></a>
 							</s:if>
 							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@MULTICOLUMN}">
 								<div class="row-title"><s:property value="#record[#column.columns.get(0).id]" /></div>
@@ -137,6 +137,8 @@
 	      }
 	   });
 
+	   
+	   
 	   $(".new-btn").click(function() {
 		   var moduleLinkName = '<s:property value="%{moduleLinkName}" />';
 		   var actionType = '<s:property value="%{newActionType}"/>';

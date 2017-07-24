@@ -14,7 +14,7 @@
     
     	<title><tiles:getAsString name="title" /></title>  
     
-    	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     	
     	<!-- Bootstrap Core CSS -->
 	    <link href="<%=staticURL%>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">

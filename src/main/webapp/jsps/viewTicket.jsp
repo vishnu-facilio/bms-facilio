@@ -22,6 +22,7 @@
 </div>
 
 <!--------------------------- progress bar ------------------------>
+<div class="view-content">
 <div class=" row">
   <div class=" col-lg-12 container">
             <div class="row bs-wizard" style="border-bottom:0;">
@@ -212,12 +213,13 @@
 	</div>
 	<div class="row row-out">
 	</div>
+</div>
 
 
 
 <script>
  $(document).ready(function (){
-	   var table = $('#tickets-list').DataTable({
+	 /*  var table = $('#tickets-list').DataTable({
 	      columnDefs: [{
 	         targets: 0,
 	         searchable: false,
@@ -261,7 +263,7 @@
 	     
 	   });
 
-	   
+	 */
    
 	});
  

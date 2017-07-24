@@ -16,7 +16,7 @@
 
 $(document).ready(function() {
 
-	$('#calendar').fullCalendar({
+	$('#calendar_view').fullCalendar({
 		header: {
 			left: 'prev,next today',
 			center: 'title',
@@ -36,8 +36,10 @@ $(document).ready(function() {
    </div>
    <!-- /.col-lg-12 -->
 </div>
+<div class="temp-view-content">
 <div class="row">
 	<div class="col-lg-12">
-		<div id="calendar"></div>
+		<div id="calendar_view"></div>
 	</div>
+</div>
 </div>

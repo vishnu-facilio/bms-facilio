@@ -38,6 +38,10 @@
 		<param name="permission">dashboard</param>
         <result  type="tiles">homepage</result>
     </action>
+    <action name="dashboard" class="com.facilio.bmsconsole.actions.HomePageActions">
+		<param name="permission">dashboard</param>
+        <result name="success">/jsps/dashboard.jsp</result>
+    </action>
     <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
     	<param name="permission">workorderviewall</param>
     	<result name="success">/jsps/calendar.jsp</result>

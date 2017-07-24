@@ -6,16 +6,33 @@ FacilioApp = {
 	init: function() {
 		var self = this;
 		
+		if (location.hash.trim() == "") {
+			location.hash = '#dashboard';
+		}
 		self.loadUrlFromHash();
 		$(window).on('hashchange',function(){ 
 			self.loadUrlFromHash();
+		});
+		
+		$('.sidebar ul li a').click(function(e) {
+			e.preventDefault();
+			console.log('clicked..');
+			var href = $(this).attr("href");
+			console.log('clicked.. '+href);
+			location.href = href;
 		});
 		
 		$(document).on('ajaxStart', function() { NProgress.start(); });
 		$(document).on('ajaxStop',   function() { NProgress.done();  });
 	},
 	
-	loadUrlFromHash: function() {	
+	loadUrlFromHash: function() {
+		var hashVal = location.hash;
+		if ($('.sidebar ul li a[href="'+hashVal+'"]').length > 0) {
+			$('.sidebar ul li a').removeClass('active');
+			$('.sidebar ul li a[href="'+location.hash+'"]').addClass('active');
+		}
+
 		var module = location.hash.slice(1);
 		if(module != "")
 		{	
