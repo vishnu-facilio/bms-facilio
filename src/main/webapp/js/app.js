@@ -74,7 +74,14 @@ FacilioApp = {
 	},
 	
 	lookupDialog: function(moduleLinkName, moduleName, criteria, fieldId) {
-		var popup = $('<div id="'+moduleLinkName+'popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title pull-left"></h4><div class="action-btn text-right"><button type="button" class="btn btn-default btn-circle cancel-btn" data-dismiss="modal"><i class="fa fa-times"></i></button><button type="button" class="btn btn-default save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button></div></div><div class="modal-body"></div></div></div></div>');
+		var headerHtml = '<div id="'+moduleLinkName+'popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title pull-left"></h4><div class="action-btn text-right"><button type="button" class="btn btn-default btn-circle cancel-btn" data-dismiss="modal"><i class="fa fa-times"></i></button>';
+		if(moduleLinkName != 'area')
+		{
+			headerHtml = headerHtml + '<button type="button" class="btn btn-default save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>';
+		}	
+		headerHtml = headerHtml + '</div></div><div class="modal-body"></div></div></div></div>';
+		
+		var popup = $(headerHtml);
 		$(popup).find('.modal-body').html("Loading...");
 		$(popup).find('.modal-title').text("All " + moduleName);
 		$(popup).data('fieldId', fieldId);
