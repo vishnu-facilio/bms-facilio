@@ -6,6 +6,8 @@ FacilioApp = {
 	init: function() {
 		var self = this;
 		
+		$('.sidebar').perfectScrollbar();    
+		
 		if (location.hash.trim() == "") {
 			location.hash = '#dashboard';
 		}
@@ -40,6 +42,19 @@ FacilioApp = {
 			$('#page-wrapper').load(url, function(response, status, xhr) {
 				if (response.indexOf("Struts Problem Report") > 0) {
 					$('#page-wrapper').html("<div style='text-align:center;padding-top: 56px;'><i class='fa fa-suitcase fa-5' aria-hidden='true' style='font-size: 4em;'></i><h2>Work in progress.</h2></div>");
+				}
+				else {
+					if ($(this).find('.form-content').length > 0) {
+						$(this).find('.form-content').perfectScrollbar();
+					}
+					else if ($(this).find('.view-content').length > 0) {
+						$(this).find('.view-content').perfectScrollbar();
+
+					}
+					else if ($(this).find('.temp-view-content').length > 0) {
+						$(this).find('.temp-view-content').perfectScrollbar();
+
+					}
 				}
 			});
 		}

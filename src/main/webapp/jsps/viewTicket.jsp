@@ -271,12 +271,16 @@
  
  
  var stages = ['Open', 'Awaiting', 'Approved', 'WIP', 'Closed'];
- var currentStage = 'Approved';
+ var currentStage = 'Awaiting';
  var lastStage = ["Closed"];
+ 
+
 
  for (var i=0; i< stages.length; i++) {
 	 var stage = stages[i];
-	 
+	 if((currentStage == null) | (currentStage == '')  ){
+		 break;
+	 }
 	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
 	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
 

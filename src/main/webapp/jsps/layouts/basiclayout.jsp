@@ -55,6 +55,11 @@
     	
     	<link href="${pageContext.request.contextPath}/js/c3/c3.min.css" rel="stylesheet">
     	
+    	<!-- scroll bar -->
+    	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/css/perfect-scrollbar.min.css" />
+    	
+    	
+    	
     
 		<!-- jQuery -->
 	    <script src="<%=staticURL%>/vendor/jquery/jquery.min.js"></script>
@@ -103,6 +108,9 @@
 	    <!-- bootstrap validator -->
 	    <script src="http://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>	
 	
+		<!-- scroll bar js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/js/perfect-scrollbar.jquery.min.js"></script>
+		
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
 		<script src="${pageContext.request.contextPath}/js/app.js"></script>
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>

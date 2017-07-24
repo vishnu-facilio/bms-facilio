@@ -56,6 +56,7 @@ label {
 }
 
 .form-content, .view-content {
+	position:relative;
 	padding: 15px;
 	height: calc(100% - 70px);
 	overflow-y: scroll;
