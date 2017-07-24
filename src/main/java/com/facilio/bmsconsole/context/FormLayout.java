@@ -18,7 +18,7 @@ public class FormLayout {
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Requester","inputRequester","ticket.requester",Field.FieldType.TEXTBOX));
+		second.add(new Field("Requester","inputRequester","ticket.requester",Field.FieldType.TEXTBOX).setRequired(true));
 		second.add(new Field("Opened date","inputOpenedDate","ticket.openedDate",Field.FieldType.DATE));
 		second.add(new Field("Priority","inputPriority","ticket.priority",Field.FieldType.SELECTBOX).setListName("statusList"));
 		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
