@@ -171,6 +171,7 @@
                     </li>
                  </ul>
             </li>
+            <!-- 
             <li>
                 <a href="#"><i class="fa fa-wrench fa-fw"></i> Administration<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -202,14 +203,13 @@
                                 <a href="#rules/businessRules">Business Rules</a>
                             </li>
                         </ul>
-                        <!-- /.nav-third-level -->
                     </li>
                 </ul>
-                <!-- /.nav-second-level -->
             </li>
             <li>
                 <a href="#help"><i class="fa fa-question-circle fa-fw"></i> Help</a>
             </li>
+            -->
         </ul>
     </div>
     <!-- /.sidebar-collapse -->

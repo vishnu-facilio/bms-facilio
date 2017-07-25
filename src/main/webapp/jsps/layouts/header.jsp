@@ -21,13 +21,13 @@
 
         </li>
         <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="dropdown-toggle" href="#help">
                <i class="fa fa-question-circle icon-head-2x" aria-hidden="true"></i>
             </a>
          
         </li>
         <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="dropdown-toggle" href="#setup">
                <i class="fa fa-gear icon-head-2x"></i>
             </a>
         </li>

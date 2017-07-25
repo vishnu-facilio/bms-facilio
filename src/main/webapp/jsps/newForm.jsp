@@ -9,8 +9,9 @@
 <div class="col-sm-12" >
   <h4 class="pull-left">New <s:property value="%{moduleName}"/></h4>
     <div class="action-btn text-right">
-    	<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#<s:property value="%{moduleLinkName}"/>';"><i class="fa fa-times"></i></button>
  		<button type="button" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" class="btn btn-default save-btn" onclick="$('#addForm').submit();"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;Save</button>
+	    <button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#<s:property value="%{moduleLinkName}"/>';"><i class="fa fa-times"></i></button>
+	 
 	 </div>
   </div>
 </div>
