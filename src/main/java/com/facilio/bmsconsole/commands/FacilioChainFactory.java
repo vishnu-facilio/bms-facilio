@@ -222,7 +222,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new GetCampusCommand());
-		c.addCommand(new GetNotesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class FloorContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_FLOOR_FIELDS = new String[] {"floorId", "name", "buildingId", "mainLevel", "assignableArea", "usableArea", "grossArea", "areaUnit", "currentOccupancy", "maxOccupancy", "percentOccupied", "utilizationMin", "utilizationMax"};
+	public static final String[] DEFAULT_FLOOR_FIELDS = new String[] {"floorId", "name", "buildingId", "mainLevel", "area", "currentOccupancy", "maxOccupancy"};
 	
 	private long floorId;
 	public long getFloorId() {
@@ -46,44 +46,12 @@ public class FloorContext extends ModuleBaseWithCustomFields {
 		this.maxOccupancy = maxOccupancy;
 	}
 	
-	private int percentOccupied;
-	public int getPercentOccupied() {
-		return percentOccupied;
-	} 
-	public void setPercentOccupied(int percentOccupied) {
-		this.percentOccupied = percentOccupied;
+	private long area;
+	public long getArea() {
+		return area;
 	}
-	
-	private long grossArea;
-	public long getGrossArea() {
-		return grossArea;
-	}
-	public void setGrossArea(long grossArea) {
-		this.grossArea = grossArea;
-	}
-	
-	private long usableArea;
-	public long getUsableArea() {
-		return usableArea;
-	}
-	public void setUsableArea(long usableArea) {
-		this.usableArea = usableArea;
-	}
-	
-	private long assignableArea;
-	public long getAssignableArea() {
-		return assignableArea;
-	}
-	public void setAssignableArea(long assignableArea) {
-		this.assignableArea = assignableArea;
-	}
-	
-	private int areaUnit;
-	public int getAreaUnit() {
-		return areaUnit;
-	}
-	public void setAreaUnit(int areaUnit) {
-		this.areaUnit = areaUnit;
+	public void setArea(long area) {
+		this.area = area;
 	}
 	
 	private boolean mainLevel;
@@ -92,21 +60,5 @@ public class FloorContext extends ModuleBaseWithCustomFields {
 	}
 	public void setMainLevel(boolean mainLevel) {
 		this.mainLevel = mainLevel;
-	}
-	
-	private int utilizationMin;
-	public int getUtilizationMin() {
-		return utilizationMin;
-	}
-	public void setUtilizationMin(int utilizationMin) {
-		this.utilizationMin = utilizationMin;
-	}
-	
-	private int utilizationMax;
-	public int getUtilizationMax() {
-		return utilizationMax;
-	}
-	public void setUtilizationMax(int utilizationMax) {
-		this.utilizationMax = utilizationMax;
 	}
 }

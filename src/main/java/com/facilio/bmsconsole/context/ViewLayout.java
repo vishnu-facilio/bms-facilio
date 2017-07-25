@@ -64,7 +64,10 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.addColumn(new Column("ID", "campusId", ColumnType.NUMBER).setIsPrimaryColumn(true));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Managed By", "managedBy", ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -74,7 +77,11 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.addColumn(new Column("ID", "buildingId", ColumnType.NUMBER).setIsPrimaryColumn(true));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Campus", "campusId", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -84,7 +91,11 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.addColumn(new Column("ID", "floorId", ColumnType.NUMBER).setIsPrimaryColumn(true));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -93,8 +104,13 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.addColumn(new Column("ID", "spaceId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.addColumn(new Column("Display Name", "displayName", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Category", "spaceCategoryId", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Occupiable", "occupiable", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
 		
 		return viewLayout;
 	}
