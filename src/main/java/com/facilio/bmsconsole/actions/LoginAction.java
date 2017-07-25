@@ -160,7 +160,7 @@ public class LoginAction extends ActionSupport{
 					// for local testing only
 					subdomain = "dummy";
 				}
-				checkAndPopulateOrgInfo(subdomain, userName);
+				subdomain = checkAndPopulateOrgInfo(subdomain, userName);
 			}
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String redirecturl =request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index?accesscode="+tempaccesscode;
@@ -190,8 +190,13 @@ public class LoginAction extends ActionSupport{
 		return SUCCESS;
 	}
 	
-	private boolean checkAndPopulateOrgInfo(String subdomain, String email) throws Exception {
+	private String checkAndPopulateOrgInfo(String subdomain, String email) throws Exception {
 		java.sql.Connection con = FacilioConnectionPool.INSTANCE.getConnection();
+		
+		String emailDomain = email.split("@")[1].split(".")[0];
+		if ("facilio".equalsIgnoreCase(emailDomain)) {
+			subdomain = emailDomain;
+		}
 		
 		long orgId = OrgApi.getOrgIdFromDomain(subdomain);
 		
@@ -257,7 +262,7 @@ public class LoginAction extends ActionSupport{
 			rs3.next();
 			long orgUserId = rs3.getLong(1);
 			ps3.close();
-			return true;
+			return subdomain;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -265,7 +270,7 @@ public class LoginAction extends ActionSupport{
 		finally{
 			con.close();
 		}
-		return false;
+		return subdomain;
 	}
 	
 	private String response = null;
