@@ -47,6 +47,7 @@ a, abbr, acronym, address, applet, big, blockquote, body, cite, code, dd, del, d
     margin: 0 0 0 220px;
     padding: 0 30px;
     border-left: 1px solid #e7e7e7;
+    transition: all .4s;
   }
 }
 
@@ -118,21 +119,18 @@ width: 25px;
   right: 0;
   left: auto;
 }
-.sidebar .sidebar-nav.navbar-collapse {
-  padding-left: 0;
-  padding-right: 0;
-  background-color: #323941;
-  color:black;
-}
+
 .sidebar .sidebar-search {
   padding: 15px;
 }
 .sidebar ul li {
   border-bottom: none;
 }
-.sidebar ul {
+#side-menu{
 	padding-top:10px;
+
 }
+
 .sidebar {
 	background-color: #323941;
 	height: calc(100% - 51px);
@@ -146,6 +144,7 @@ width: 25px;
 	background-color: #323941;
 	border-left: 3px solid #323941;
 	letter-spacing:0.03em;
+	white-space: nowrap;
 }
 .sidebar ul li a:HOVER,.sidebar ul li a:FOCUS,.sidebar ul li a.active {
 	opacity: 0.9;
@@ -199,6 +198,7 @@ width: 25px;
     z-index: 1;
     position: absolute;
     width: 220px;
+    transition: all .4s;
   }
      
   .navbar-top-links .dropdown-messages,
@@ -529,7 +529,7 @@ table.dataTable thead .sorting:after {
 }
 
 .navbar-top-links li a {
-	color:  cadetblue;;
+	color:  #202224;;
 	
 }
 .navbar-top-links li a:hover,.navbar-top-links li a:FOCUS {
@@ -563,4 +563,53 @@ i.sidebar-icon{
     border-right: 4px solid transparent;
     border-left: 4px solid transparent;
     margin-bottom: 11px;
+}
+@media screen and (min-width: 600px){
+.sidebar.fc-navbar-collapse,.sidebar.fc-navbar-collapse .sidebar-footer-btn{
+	width: 50px;
+	transition: all .4s;
+}
+.sidebar span.nav-title {
+	transition: all .4s;
+}
+.sidebar.fc-navbar-collapse span.nav-title,.sidebar.fc-navbar-collapse span.arrow{
+	display: none;
+}
+.sidebar.fc-navbar-collapse .sidebar-footer-btn .fa-angle-left{
+	display: none;
+}
+.sidebar.fc-navbar-collapse .sidebar-footer-btn .fa-angle-right{
+	display: block !important;
+}
+	#side-menu{
+	
+	padding-bottom: 40px;
+}
+.nav.sidebar-footer-btn {
+    position: fixed;
+    bottom: 0px;
+    background-color: #323941;
+    width: 220px;
+    padding: 5px;
+     text-align: center;
+}
+.nav.sidebar-footer-btn:HOVER {
+    color:#ffff00;
+}
+.nav.sidebar-footer-btn a  {
+	color:white;
+	font-size: 1.15em;
+    text-decoration: none;
+}
+.col-lg-12.col-centered {
+    text-align: center;
+}
+}
+@media screen and (max-width: 600px){
+.nav.sidebar-footer-btn {
+
+   display: none;
+}
+
+
 }

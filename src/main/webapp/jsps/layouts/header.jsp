@@ -16,7 +16,7 @@
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="fa fa-envelope icon-head-2x"></i>
+              <i class="fa fa-bell icon-head-2x" aria-hidden="true"></i>
             </a>
 
         </li>
