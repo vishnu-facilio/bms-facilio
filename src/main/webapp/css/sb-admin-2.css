@@ -591,7 +591,8 @@ i.sidebar-icon{
     background-color: #323941;
     width: 220px;
     padding: 5px;
-     text-align: center;
+    text-align: center;
+    transition: all .4s;
 }
 .nav.sidebar-footer-btn:HOVER {
     color:#ffff00;
