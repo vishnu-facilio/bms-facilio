@@ -193,9 +193,14 @@ public class LoginAction extends ActionSupport{
 	private String checkAndPopulateOrgInfo(String subdomain, String email) throws Exception {
 		java.sql.Connection con = FacilioConnectionPool.INSTANCE.getConnection();
 		
-		String emailDomain = email.split("@")[1].split(".")[0];
-		if ("facilio".equalsIgnoreCase(emailDomain)) {
-			subdomain = emailDomain;
+		try {
+			String emailDomain = email.split("@")[1];
+			emailDomain = emailDomain.split("\\.")[0];
+			if ("facilio".equalsIgnoreCase(emailDomain)) {
+				subdomain = emailDomain;
+			}
+		} catch (Exception e) {
+			
 		}
 		
 		long orgId = OrgApi.getOrgIdFromDomain(subdomain);
