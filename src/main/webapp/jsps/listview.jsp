@@ -51,14 +51,11 @@
 					<td></td>
 					<s:iterator var="column" value="viewlayout.columns">
 						<td>
-							<s:if test="#column.isPrimaryColumn">
-								<input type="hidden" class="summary-url" value="<s:property value="%{moduleLinkName}" />/summary/<s:property value="#record[#column.id]" />">
-								<s:property value="#record[#column.id]" />
-							</s:if>
-							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@MULTICOLUMN}">
+							<input type="hidden" class="summary-url" value="<s:property value="%{moduleLinkName}" />/summary/<s:property value="#record[viewlayout.pkColumnId]" />">
+							<s:if test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@MULTICOLUMN}">
 								<div class="row-title"><s:property value="#record[#column.columns.get(0).id]" /></div>
 		            			<div class="row-subtitle"><s:property value="#record[#column.columns.get(1).id]" /></div>
-							</s:elseif>
+							</s:if>
 							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@DATETIME}">
 								<s:date name="#record[#column.id]" format="dd/MM/yyyy hh:mm" />
 							</s:elseif>

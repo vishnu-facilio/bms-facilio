@@ -57,9 +57,18 @@ label {
 
 .form-content, .view-content {
 	position:relative;
-	padding: 15px;
 	height: calc(100% - 70px);
+	padding:15px;
 	overflow-y: scroll;
+}
+
+.record-content {
+	background: white;
+	padding-top:0px;
+}
+
+.record-progress-content {
+	background: #f2f2f2;
 }
 
 .form-content .panel-body {

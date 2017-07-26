@@ -10,8 +10,10 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -207,6 +209,16 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setViewDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryTaskLayout();
+	}
+	
+	public TaskContext getRecord() 
+	{
+		return task;
 	}
  }
 

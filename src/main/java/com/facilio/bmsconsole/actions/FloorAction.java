@@ -10,8 +10,10 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -172,5 +174,15 @@ public class FloorAction extends ActionSupport {
 	public List<FloorContext> getRecords() 
 	{
 		return floors;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryFloorLayout();
+	}
+	
+	public FloorContext getRecord() 
+	{
+		return floor;
 	}
 }

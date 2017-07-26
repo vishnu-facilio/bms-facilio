@@ -10,7 +10,9 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -172,5 +174,15 @@ public class SpaceAction extends ActionSupport {
 	public List<SpaceContext> getRecords() 
 	{
 		return spaces;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummarySpaceLayout();
+	}
+	
+	public SpaceContext getRecord() 
+	{
+		return space;
 	}
 }

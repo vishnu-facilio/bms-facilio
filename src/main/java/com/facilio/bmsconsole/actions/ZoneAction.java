@@ -11,6 +11,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -172,5 +174,15 @@ public class ZoneAction extends ActionSupport {
 	public List<ZoneContext> getRecords() 
 	{
 		return zones;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryZoneLayout();
+	}
+	
+	public ZoneContext getRecord() 
+	{
+		return zone;
 	}
 }

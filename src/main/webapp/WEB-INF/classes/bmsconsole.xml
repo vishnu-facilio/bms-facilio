@@ -214,7 +214,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="permission">workorderviewall</param>
 			<param name="ticketId">{1}</param>
-			<result name="success">/jsps/viewTicket.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -272,8 +272,9 @@
 	
 	<package name="taskSummary" namespace="/home/task/summary" extends="task">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
+			<param name="permission">workorderviewall</param>
 			<param name="taskId">{1}</param>
-			<result name="success">/jsps/viewTask.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -477,11 +478,13 @@
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
-
+	</package>
+	
+	<package name="campusSummary" namespace="/home/campus/summary" extends="campus">
 		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
 			<param name="permission">workorderviewall</param>
 			<param name="campusId">{1}</param>
-			<result name="success">/jsps/viewCampus.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -503,11 +506,13 @@
 				<param name="includeProperties">buildingId</param>
 			</result>
 		</action>
-
+	</package>
+	
+	<package name="buildingSummary" namespace="/home/building/summary" extends="building">
 		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
 			<param name="permission">workorderviewall</param>
 			<param name="buildingId">{1}</param>
-			<result name="success">/jsps/viewBuilding.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -529,11 +534,13 @@
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
-
+	</package>
+	
+	<package name="floorSummary" namespace="/home/floor/summary" extends="floor">
 		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
 			<param name="permission">workorderviewall</param>
 			<param name="floorId">{1}</param>
-			<result name="success">/jsps/viewFloor.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -550,11 +557,13 @@
 				<param name="includeProperties">spaceId</param>
 			</result>
 		</action>
-
+	</package>
+	
+	<package name="spaceSummary" namespace="/home/space/summary" extends="space">
 		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
 			<param name="permission">workorderviewall</param>
 			<param name="spaceId">{1}</param>
-			<result name="success">/jsps/viewSpace.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	
@@ -571,11 +580,13 @@
 				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
-
+	</package>
+	
+	<package name="zoneSummary" namespace="/home/zone/summary" extends="zone">
 		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction" method="viewZone">
 			<param name="permission">workorderviewall</param>
 			<param name="zoneId">{1}</param>
-			<result name="success">/jsps/viewZone.jsp</result>
+			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
 	

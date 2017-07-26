@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.CampusContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -164,6 +165,11 @@ public class CampusAction extends ActionSupport {
 		return ViewLayout.getViewCampusLayout();
 	}
 	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryCampusLayout();
+	}
+	
 	public String getViewDisplayName()
 	{
 		return "All Campus";
@@ -172,5 +178,10 @@ public class CampusAction extends ActionSupport {
 	public List<CampusContext> getRecords() 
 	{
 		return campuses;
+	}
+	
+	public CampusContext getRecord() 
+	{
+		return campus;
 	}
 }

@@ -15,7 +15,7 @@
 .bs-wizard > .bs-wizard-step {padding: 0; position: relative; padding-top: 16px}
 .bs-wizard > .bs-wizard-step + .bs-wizard-step {}
 .bs-wizard > .bs-wizard-step .bs-wizard-stepnum {color: #595959; font-size: 16px; margin-bottom: 5px;}
-.bs-wizard > .bs-wizard-step .bs-wizard-info {color: #666666; font-size: 14px;}
+.bs-wizard > .bs-wizard-step .bs-wizard-info {color: #666666; font-size: 13px;}
 .bs-wizard > .bs-wizard-step > .bs-wizard-dot 
 {
 	position: absolute;

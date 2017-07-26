@@ -11,7 +11,9 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.CampusContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -172,5 +174,15 @@ public class BuildingAction extends ActionSupport {
 	public List<BuildingContext> getRecords() 
 	{
 		return buildings;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryBuildingLayout();
+	}
+	
+	public BuildingContext getRecord() 
+	{
+		return building;
 	}
 }

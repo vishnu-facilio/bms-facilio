@@ -29,10 +29,22 @@ public class ViewLayout {
 		return this.columns;
 	}
 	
+	private String pkColumnId;
+	public ViewLayout setPkColumnId(String pkColumnId) 
+	{
+		this.pkColumnId = pkColumnId;
+		return this;
+	}
+	public String getPkColumnId() 
+	{
+		return this.pkColumnId;
+	}
+	
 	public static ViewLayout getViewTicketLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "ticketId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("ticketId");
+		viewLayout.addColumn(new Column("ID", "ticketId", ColumnType.NUMBER));
 		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
 							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
 							.addColumn(new Column("Description", "description", ColumnType.TEXT))
@@ -49,7 +61,8 @@ public class ViewLayout {
 	public static ViewLayout getViewTaskLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "taskId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("taskId");
+		viewLayout.addColumn(new Column("ID", "taskId", ColumnType.NUMBER));
 		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
 							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
 							.addColumn(new Column("Description", "description", ColumnType.TEXT))
@@ -63,7 +76,7 @@ public class ViewLayout {
 	public static ViewLayout getViewCampusLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "campusId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("campusId");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
@@ -76,7 +89,7 @@ public class ViewLayout {
 	public static ViewLayout getViewBuildingLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "buildingId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("buildingId");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Campus", "campusId", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
@@ -90,7 +103,7 @@ public class ViewLayout {
 	public static ViewLayout getViewFloorLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "floorId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("floorId");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
@@ -104,7 +117,7 @@ public class ViewLayout {
 	public static ViewLayout getViewSpaceLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "spaceId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("spaceId");
 		viewLayout.addColumn(new Column("Display Name", "displayName", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Category", "spaceCategoryId", ColumnType.TEXT));
@@ -119,7 +132,7 @@ public class ViewLayout {
 	public static ViewLayout getViewZoneLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("ID", "zoneId", ColumnType.NUMBER).setIsPrimaryColumn(true));
+		viewLayout.setPkColumnId("zoneId");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Short Description", "shortDescription", ColumnType.TEXT));
 		
@@ -136,6 +149,7 @@ public class ViewLayout {
 		return viewLayout;
 	}
 }
+
 class Column
 {
 	String label;
@@ -153,17 +167,6 @@ class Column
 	}
 	public void setId(String id) {
 		this.id = id;
-	}
-	
-	boolean isPrimaryColumn = false;
-	public Column setIsPrimaryColumn(boolean isPrimaryColumn) 
-	{
-		this.isPrimaryColumn = isPrimaryColumn;
-		return this;
-	}
-	public boolean getIsPrimaryColumn() 
-	{
-		return this.isPrimaryColumn;
 	}
 	
 	public ColumnType getColumnType()

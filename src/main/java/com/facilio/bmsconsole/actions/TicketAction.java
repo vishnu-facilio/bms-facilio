@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -210,5 +211,15 @@ public class TicketAction extends ActionSupport {
 	}
 	public void setViewDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+	
+	public RecordSummaryLayout getRecordSummaryLayout()
+	{
+		return RecordSummaryLayout.getRecordSummaryTicketLayout();
+	}
+	
+	public TicketContext getRecord() 
+	{
+		return ticket;
 	}
 }
