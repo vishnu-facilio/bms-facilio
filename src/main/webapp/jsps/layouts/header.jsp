@@ -27,7 +27,7 @@
          
         </li>
         <li class="dropdown">
-            <a class="dropdown-toggle" href="setup">
+            <a class="dropdown-toggle" href="setuphome">
                <i class="fa fa-gear icon-head-2x"></i>
             </a>
         </li>

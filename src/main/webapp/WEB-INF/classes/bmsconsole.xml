@@ -38,6 +38,17 @@
 		<param name="permission">dashboard</param>
         <result  type="tiles">homepage</result>
     </action>
+    
+    <action name="setuphome" class="com.facilio.bmsconsole.actions.SetupActions">
+		<param name="permission">setup</param>
+        <result  type="tiles">setuphome</result>
+    </action>
+    
+    <action name="setup" class="com.facilio.bmsconsole.actions.SetupActions">
+		<param name="permission">setup</param>
+        <result  type="tiles">setup</result>
+    </action>
+    
     <action name="dashboard" class="com.facilio.bmsconsole.actions.HomePageActions">
 		<param name="permission">dashboard</param>
         <result name="success">/jsps/dashboard.jsp</result>
@@ -188,6 +199,18 @@
     		<result name="success">/jsps/adminjobs.jsp</result>
     	</action>
     </package>
+    
+    <package name="setup" namespace="/home/setup" extends="home">
+		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions" method="mySettings">
+			<param name="permission">setup</param>
+			<result name="success">/jsps/setup/mysettings.jsp</result>
+		</action>
+
+		<action name="orgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
+			<param name="permission">setup</param>
+			<result name="success">/jsps/setup/orgsettings.jsp</result>
+		</action>
+	</package>
 
 	<package name="ticket" namespace="/home/ticket" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">

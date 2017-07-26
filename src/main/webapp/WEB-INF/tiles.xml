@@ -8,5 +8,12 @@
    <definition name="homepage" template="/jsps/layouts/basiclayout.jsp">   
    <put-attribute name="title" value="Welcome Page"/>   
    <put-attribute name="body" value="/jsps/index.jsp"/>   
+   </definition>
+   <definition name="setuphome" template="/jsps/layouts/setuphomelayout.jsp">
+   <put-attribute name="title" value="Setup Home"/>   
+   </definition>
+   <definition name="setup" template="/jsps/layouts/setuplayout.jsp">   
+   <put-attribute name="title" value="Setup Page"/>   
+   <put-attribute name="body" value="/jsps/setup/container.jsp"/>   
    </definition>  
 </tiles-definitions>  
