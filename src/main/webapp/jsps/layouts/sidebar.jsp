@@ -1,5 +1,5 @@
-<div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav navbar-collapse">
+<div class="navbar-default sidebar " role="navigation">
+    <div class="sidebar-nav ">
         <ul class="nav metismenu" id="side-menu">
         <!-- 
             <li class="sidebar-search">
@@ -15,14 +15,21 @@
             </li>
             -->
             <li>
-                <a href="#dashboard"><i class=" sidebar-icon fa fa-dashboard fa-fw "></i> Dashboard</a>
+                <a href="#dashboard">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-dashboard fa-fw "></i> </span>
+                <span class="nav-title">Dashboard</span>
+                </a>
             </li>
            <!-- <li>
             	<a href="#controller"><i class="sidebar-icon fa fa-laptop fa-fw"></i> Controllers</a>
             </li> -->
               <li>
                
-                <a href="#"><i class="sidebar-icon fa fa-briefcase fa-fw"></i>  Work Orders<span class="fa arrow"></span></a>
+                <a href="#"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
+                <span class="nav-title"> Work Orders</span>
+                <span class="fa arrow"></span>
+                </a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="#ticket">All Work Orders</a>
@@ -45,7 +52,9 @@
                  </ul>
             </li>
             <li>
-               <a href="#"><i class="sidebar-icon fa fa-tasks fa-fw"></i>  Tasks<span class="fa arrow"></span></a>
+               <a href="#"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
+               <span class="nav-title">Tasks</span>
+               <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="#task">All Tasks</a>
@@ -62,7 +71,11 @@
                   </ul>
             </li>
 			<li>
-               <a href="#"><i class="sidebar-icon fa fa-globe fa-fw"></i> Space Management<span class="fa arrow"></span></a>
+               <a href="#">
+               <span class="nav-icon"><i class="sidebar-icon fa fa-globe fa-fw"></i></span> 
+               <span class="nav-title">Space Management</span>
+               <span class="fa arrow"></span>
+               </a>
                 <ul class="nav nav-second-level">
                		<li>
                         <a href="#campus">Campus</a>
@@ -164,7 +177,10 @@
             </li>
              --%>
             <li>
-                <a href="#"><i class="sidebar-icon fa fa-pie-chart fa-fw"></i> Reports<span class="fa arrow"></span></a>
+                <a href="#">
+                <span class="nav-icon"><i class="sidebar-icon fa fa-pie-chart fa-fw"></i></span>
+                 <span class="nav-title">Reports</span>
+                 <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="#reports">Peak Energy Analysis</a>
@@ -211,6 +227,17 @@
             </li>
             -->
         </ul>
+        
+       <div class="nav  sidebar-footer-btn  ">
+        <div class="col-lg-12 col-centered">
+		<a href="#"><span class="icon-head-2x">
+			<i class="fa fa-angle-left"></i>
+			<i class="fa fa-angle-right hidden"></i>
+			</span></a>
+        </div>
+        </div>
+  
     </div>
     <!-- /.sidebar-collapse -->
+
 </div>

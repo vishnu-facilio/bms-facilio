@@ -24,6 +24,17 @@ FacilioApp = {
 			location.href = href;
 		});
 		
+		$('.sidebar .sidebar-footer-btn').click(function() {
+			if ($('.sidebar').hasClass('fc-navbar-collapse')) {
+				$('.sidebar').removeClass('fc-navbar-collapse');
+				$('#page-wrapper').css('margin', '0 0 0 220px');
+			}
+			else {
+				$('.sidebar').addClass('fc-navbar-collapse');
+				$('#page-wrapper').css('margin', '0 0 0 50px');
+			}
+		});
+		
 		$(document).on('ajaxStart', function() { NProgress.start(); });
 		$(document).on('ajaxStop',   function() { NProgress.done();  });
 	},
