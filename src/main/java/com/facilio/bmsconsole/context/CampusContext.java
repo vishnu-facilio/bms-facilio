@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class CampusContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_CAMPUS_FIELDS = new String[] {"campusId", "name", "currentOccupancy", "maxOccupancy", "percentOccupied", "grossArea", "usableArea", "assignableArea", "areaUnit", "locationId", "managedBy"};
+	public static final String[] DEFAULT_CAMPUS_FIELDS = new String[] {"campusId", "name", "description", "currentOccupancy", "maxOccupancy", "area", "locationId", "managedBy"};
 	
 	private long campusId;
 	public long getCampusId() {
@@ -38,44 +38,12 @@ public class CampusContext extends ModuleBaseWithCustomFields {
 		this.maxOccupancy = maxOccupancy;
 	}
 	
-	private int percentOccupied;
-	public int getPercentOccupied() {
-		return percentOccupied;
-	} 
-	public void setPercentOccupied(int percentOccupied) {
-		this.percentOccupied = percentOccupied;
+	private long area;
+	public long getArea() {
+		return area;
 	}
-	
-	private long grossArea;
-	public long getGrossArea() {
-		return grossArea;
-	}
-	public void setGrossArea(long grossArea) {
-		this.grossArea = grossArea;
-	}
-	
-	private long usableArea;
-	public long getUsableArea() {
-		return usableArea;
-	}
-	public void setUsableArea(long usableArea) {
-		this.usableArea = usableArea;
-	}
-	
-	private long assignableArea;
-	public long getAssignableArea() {
-		return assignableArea;
-	}
-	public void setAssignableArea(long assignableArea) {
-		this.assignableArea = assignableArea;
-	}
-	
-	private int areaUnit;
-	public int getAreaUnit() {
-		return areaUnit;
-	}
-	public void setAreaUnit(int areaUnit) {
-		this.areaUnit = areaUnit;
+	public void setArea(long area) {
+		this.area = area;
 	}
 	
 	private long locationId;
@@ -92,5 +60,13 @@ public class CampusContext extends ModuleBaseWithCustomFields {
 	}
 	public void setManagedBy(long managedBy) {
 		this.managedBy = managedBy;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

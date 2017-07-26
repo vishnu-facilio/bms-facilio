@@ -72,30 +72,20 @@ public class FormLayout {
 	
 	public static List<Panel> getNewCampusLayout()
 	{
-		List<Panel> fields =new ArrayList<Panel>();
+		List<Panel> fields = new ArrayList<Panel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
+		Panel first =  new Panel(Panel.Type.HALF);
 		first.add(new Field("Name","inputName","campus.name",Field.FieldType.TEXTBOX));
+		first.add(new Field("Location","inputLocationId","campus.locationId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
+		first.add(new Field("Description","inputDescription","campus.description",Field.FieldType.TEXTAREA));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
 		second.add(new Field("Managed By","inputManagedBy","campus.managedBy",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
-		second.add(new Field("Location","inputLocationId","campus.locationId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
-		second.add(new Field("Gross Area","inputGrossArea","campus.grossArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Usable Area","inputUsableArea","campus.usableArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Assignable Area","inputAssignableArea","campus.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		second.add(new Field("Area Unit","inputAreaUnit","campus.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
+		second.add(new Field("Max Occupancy","inputMaxOccupancy","campus.maxOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
+		second.add(new Field("Current Occupancy","inputCurrentOccupany","campus.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
+		second.add(new Field("Area","inputarea","campus.area",Field.FieldType.TEXTBOX));
 		fields.add(second);
-		
-		Panel third =  new Panel(Panel.Type.HALF);
-		third.add(new Field("Current Occupancy","inputCurrentOccupany","campus.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Max Occupancy","inputMaxOccupancy","campus.maxOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Percent Occupied","inputPercentOccupied","campus.percentOccupied",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		fields.add(third);
-		
-		Panel fourth =  new Panel(Panel.Type.FULL);
-		fourth.add(new Field("Notes","inputNotes","campus.notes",Field.FieldType.TEXTAREA));
-		fields.add(fourth);
 		
 		return fields;
 	}
@@ -112,18 +102,12 @@ public class FormLayout {
 		second.add(new Field("Campus","inputCampusId","building.campusId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("campus", "Campus")));
 		second.add(new Field("Floors","inputFloors","building.floors",Field.FieldType.TEXTBOX));
 		second.add(new Field("Location","inputLocationId","building.locationId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("locations", "Locations").setPreloadedList("locations")));
-		second.add(new Field("Assignable Area","inputAssignableArea","building.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		second.add(new Field("Usable Area","inputUsableArea","building.usableArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Gross Area","inputGrossArea","building.grossArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","building.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.HALF);
-		third.add(new Field("Current Occupancy","inputCurrentOccupany","building.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		third.add(new Field("Max Occupancy","inputMaxOccupancy","building.maxOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Percent Occupied","inputPercentOccupied","building.percentOccupied",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Utilization Min","inputUtilizationMin","building.utilizationMin",Field.FieldType.TEXTBOX));
-		third.add(new Field("Utilization Max","inputUtilizationMax","building.utilizationMax",Field.FieldType.TEXTBOX));
+		third.add(new Field("Current Occupancy","inputCurrentOccupany","building.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
+		third.add(new Field("Area","inputArea","building.area",Field.FieldType.TEXTBOX));
 		fields.add(third);
 		
 		return fields;
@@ -133,26 +117,17 @@ public class FormLayout {
 	{
 		List<Panel> fields = new ArrayList<Panel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
+		Panel first =  new Panel(Panel.Type.HALF);
 		first.add(new Field("Name","inputName","floor.name",Field.FieldType.TEXTBOX));
+		first.add(new Field("Building","inputBuildingId","floor.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
+		first.add(new Field("Area","inputArea","floor.area",Field.FieldType.TEXTBOX));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuildingId","floor.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
-		second.add(new Field("MainLevel","inputMainLevel","floor.mainLevel",Field.FieldType.TEXTBOX));
-		second.add(new Field("Assignable Area","inputAssignableArea","floor.assignable",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		second.add(new Field("Usable Area","inputUsableArea","floor.usableArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Gross Area","inputGrossArea","floor.grossArea",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","floor.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
+		second.add(new Field("Main Level","inputMainLevel","floor.mainLevel",Field.FieldType.DECISION_BOX));
+		second.add(new Field("Current Occupancy","inputCurrentOccupany","floor.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
+		second.add(new Field("Max Occupancy","inputMaxOccupancy","floor.maxOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		fields.add(second);
-		
-		Panel third =  new Panel(Panel.Type.HALF);
-		third.add(new Field("Current Occupancy","inputCurrentOccupany","floor.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Max Occupancy","inputMaxOccupancy","floor.maxOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Percent Occupied","inputPercentOccupied","floor.percentOccupied",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Utilization Min","inputUtilizationMin","floor.utilizationMin",Field.FieldType.TEXTBOX));
-		third.add(new Field("Utilization Max","inputUtilizationMax","floor.utilizationMax",Field.FieldType.TEXTBOX));
-		fields.add(third);
 		
 		return fields;
 	}
@@ -161,26 +136,21 @@ public class FormLayout {
 	{
 		List<Panel> fields = new ArrayList<Panel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
+		Panel first =  new Panel(Panel.Type.HALF);
 		first.add(new Field("Display Name","inputDisplayName","space.displayName",Field.FieldType.TEXTBOX).setIsDisabled(true));
 		first.add(new Field("Name","inputName","space.name",Field.FieldType.TEXTBOX));
+		first.add(new Field("Building","inputBuildingId","space.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
+		first.add(new Field("Floor","inputFloorId","space.floorId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("floor", "Floor")));
+		first.add(new Field("Area","inputArea","space.area",Field.FieldType.TEXTBOX));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
-		second.add(new Field("Building","inputBuildingId","space.buildingId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("building", "Building")));
-		second.add(new Field("Floor","inputFloorId","space.floorId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("floor", "Floor")));
-		second.add(new Field("Area","inputArea","space.area",Field.FieldType.TEXTBOX));
-		second.add(new Field("Area Unit","inputAreaUnit","space.areaUnit",Field.FieldType.SELECTBOX).setListName("statusList"));
+		second.add(new Field("Occupiable","inputOccupiable","space.occupiable",Field.FieldType.DECISION_BOX));
+		second.add(new Field("Availability","inputAvailability","space.availability",Field.FieldType.SELECTBOX).setListName("spaceAvailabilityList"));
+		second.add(new Field("Max Occupancy","inputMaxOccupancy","space.maxOccupancy",Field.FieldType.TEXTBOX));
+		second.add(new Field("Current Occupancy","inputCurrentOccupany","space.currentOccupancy",Field.FieldType.TEXTBOX));
+		second.add(new Field("Category","inputSpaceCategoryId","space.spaceCategoryId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("space_category", "Space Category")));
 		fields.add(second);
-		
-		Panel third =  new Panel(Panel.Type.HALF);
-		third.add(new Field("Status","inputStatus","space.status",Field.FieldType.TEXTBOX));
-		third.add(new Field("Availability","inputAvailability","space.availability",Field.FieldType.TEXTBOX));
-		third.add(new Field("Current Occupancy","inputCurrentOccupany","space.currentOccupancy",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Max Occupancy","inputMaxOccupancy","space.maxOccupancy",Field.FieldType.TEXTBOX));
-		third.add(new Field("Percent Occupied","inputPercentOccupied","space.percentOccupied",Field.FieldType.TEXTBOX).setIsDisabled(true));
-		third.add(new Field("Occupiable","inputOccupiable","space.occupiable",Field.FieldType.TEXTBOX));
-		fields.add(third);
 		
 		return fields;
 	}
@@ -191,11 +161,11 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.FULL);
 		first.add(new Field("Name","inputName","zone.name",Field.FieldType.TEXTBOX));
-		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTBOX));
+		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTAREA));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.FULL);
-		second.add(new Field("Spaces","inputSpace","zone.spaces",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("space", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		second.add(new Field("Area","inputAreaId","zone.areaId",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("area", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
 		fields.add(second);
 		
 		return fields;
