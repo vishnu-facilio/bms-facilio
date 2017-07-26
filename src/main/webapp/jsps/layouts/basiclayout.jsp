@@ -125,6 +125,8 @@
 	<div id="wrapper">
 
 		<%@ include file="header.jsp" %>
+		
+		<%@ include file="sidebar.jsp" %>
 
         <div id="page-wrapper" style="overflow: hidden;">
             <tiles:insertAttribute name="body" />  

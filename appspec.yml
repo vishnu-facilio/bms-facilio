@@ -3,9 +3,14 @@ os: linux
 files:
   - source: /bms.war
     destination: /home/ubuntu/apache-tomcat-9.0.0.M21/webapps
-  - source: /restart_server.sh
+  - source: /kill_server.sh
+    destination: /home/ubuntu/
+  - source: /start_server.sh
     destination: /home/ubuntu/
 hooks:
+  BeforeInstall:
+    - location: /kill_server.sh
+      timeout: 3600
   ApplicationStart:
-    - location: /restart_server.sh
+    - location: /start_server.sh
       timeout: 3600

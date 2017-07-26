@@ -15,15 +15,7 @@ FacilioApp = {
 		$(window).on('hashchange',function(){ 
 			self.loadUrlFromHash();
 		});
-		
-		$('.sidebar ul li a').click(function(e) {
-			e.preventDefault();
-			console.log('clicked..');
-			var href = $(this).attr("href");
-			console.log('clicked.. '+href);
-			location.href = href;
-		});
-		
+				
 		$('.sidebar .sidebar-footer-btn').click(function() {
 			if ($('.sidebar').hasClass('fc-navbar-collapse')) {
 				$('.sidebar').removeClass('fc-navbar-collapse');

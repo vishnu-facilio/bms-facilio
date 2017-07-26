@@ -9,6 +9,7 @@ artifacts:
   files:
     - target/bms.war
     - appspec.yml
-    - scripts/restart_server.sh
+    - scripts/kill_server.sh
+    - scripts/start_server.sh
   discard-paths: yes
 

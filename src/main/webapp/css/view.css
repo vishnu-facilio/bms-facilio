@@ -1,3 +1,4 @@
+
 table.dataTable > tbody > tr > td {
 	padding: 10px;
 	vertical-align: middle;
@@ -67,6 +68,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before, table
 	background-color: #50CA7C;
     font-size: 16px;
     line-height: 16px;
+    display:none;
 }
 .no-screen-msg .row-title {
     font-size: 17px;
@@ -76,4 +78,20 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before, table
 .no-screen-msg .row-subtitle {
     font-size: 13px;
 	padding: 1px 0px;
+}
+
+.dataTable tbody tr.selected {
+	background: rgba(14,153,227, 0.1);
+}
+.record-list, .record-summary {
+	padding:0;
+	transition: all .3s;
+}
+
+.record-summary {
+	border-left: 1px solid #D8D8D8;
+}
+
+.record-summary .form-header {
+	margin-left:0px;
 }

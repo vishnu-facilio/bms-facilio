@@ -27,7 +27,7 @@
          
         </li>
         <li class="dropdown">
-            <a class="dropdown-toggle" href="#setup">
+            <a class="dropdown-toggle" href="setup">
                <i class="fa fa-gear icon-head-2x"></i>
             </a>
         </li>
@@ -39,9 +39,9 @@
 
             </a>
             <ul class="dropdown-menu dropdown-user">
-                <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                <li><a href="#"><i class="fa fa-user fa-fw"></i> My Profile</a>
                 </li>
-                <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                <li><a href="#"><i class="fa fa-gear fa-fw"></i> Notification Settings</a>
                 </li>
                 <li class="divider"></li>
                 <li><a href="${pageContext.request.contextPath}/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
@@ -52,6 +52,3 @@
  </div>
     <!-- /.navbar-top-links -->
 </nav>
-<%@ include file="sidebar.jsp" %>
-    
-<!-- /.navbar-static-side -->

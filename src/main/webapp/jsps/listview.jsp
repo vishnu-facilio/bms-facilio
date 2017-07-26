@@ -5,7 +5,7 @@
 <link href="${pageContext.request.contextPath}/css/checkbox.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/view.css" rel="stylesheet">
 
-
+<div class="col-md-12 col-lg-12 record-list">
 <div class="row form-header" >
 <div class="col-sm-12" >
   <h4 class="pull-left"><s:property value="%{viewDisplayName}" /></h4>
@@ -52,7 +52,8 @@
 					<s:iterator var="column" value="viewlayout.columns">
 						<td>
 							<s:if test="#column.isPrimaryColumn">
-								<a href="#<s:property value="%{moduleLinkName}" />/summary/<s:property value="#record[#column.id]" />"><s:property value="#record[#column.id]" /></a>
+								<input type="hidden" class="summary-url" value="<s:property value="%{moduleLinkName}" />/summary/<s:property value="#record[#column.id]" />">
+								<s:property value="#record[#column.id]" />
 							</s:if>
 							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@MULTICOLUMN}">
 								<div class="row-title"><s:property value="#record[#column.columns.get(0).id]" /></div>
@@ -85,6 +86,8 @@
   </div>
 </div>
 </s:else>
+</div>
+<div class="col-md-8 col-lg-8 record-summary" style="display:none"></div>
 
 <!-- new record popup -->
 <div class="modal fade" id="newRecordModel" tabindex="-1" role="dialog"
@@ -113,6 +116,12 @@
 	         orderable: false
 	      }],
 	      order: [[1, 'asc']],
+	      language: {
+	    	  paginate: {
+	    		  previous: "<",
+	    		  next: ">"
+	    	  }
+	      },
 	      
 	      buttons: false,
 	      responsive: true,
@@ -137,7 +146,41 @@
 	      }
 	   });
 
-	   
+	   var hideCols = null;
+	   $('#record-list tbody tr').click(function(e) {
+		   
+		   $('.dataTable tbody tr').removeClass('selected');   
+		   $(this).addClass('selected');
+		   var summaryURL = $(this).find('.summary-url').val();
+		  
+		   var screenWidth = $( window ).width();
+		   console.log(screenWidth);
+		   if (screenWidth < 600) {
+			   // Mobile view -> In mobile phones, we will preview record in full view
+			   location.href = '#' + summaryURL;
+		   }
+		   else {
+			   // Web view
+			   var url = contextPath + '/home/' + summaryURL;
+			   $('.record-summary').load(url, function(response, status, xhr) {
+				   
+				   showRecordPreview();
+				   
+				   $('.record-summary .cancel-btn').click(function(e) {
+					   e.preventDefault();
+					   
+					   hideRecordPreview();
+					   $('.dataTable tbody tr').removeClass('selected');
+				   });
+				   
+				   var ht = $( window ).height();
+				   $('.record-list').css('height', (ht-70)+'px');
+				   $('.record-summary .view-content').css('height', (ht-60)+'px');
+				   $('.record-summary .view-content').css('padding-bottom', '60px');
+				   $('.record-summary .view-content').perfectScrollbar();
+			   });
+		   }
+	   });
 	   
 	   $(".new-btn").click(function() {
 		   var moduleLinkName = '<s:property value="%{moduleLinkName}" />';
@@ -159,5 +202,43 @@
 			   location.href = '#<s:property value="%{moduleLinkName}" />/new';
 		   }
 		});
+	   
+	   var showRecordPreview = function() {
+		   if(!$('.record-summary').is(':visible')) {
+			   if (table.columns()[0].length > 3) {
+				   hideCols = table.columns()[0].slice(3);
+			   }
+			   else {
+				   hideCols = [];
+			   }
+			   for (var i=0; i< hideCols.length; i++) {
+				   var col = table.column(hideCols[i]);
+				   col.visible(false);
+			   }
+			   
+			   $('.record-list').removeClass('col-md-12').removeClass('col-lg-12').addClass('col-md-4').addClass('col-lg-4');
+			   $('.record-summary').show();
+		   }
+	   };
+	   
+	   var hideRecordPreview = function() {
+		   if($('.record-summary').is(':visible')) {
+			   if (table.columns()[0].length > 3) {
+				   hideCols = table.columns()[0].slice(3);
+			   }
+			   else {
+				   hideCols = [];
+			   }
+			   for (var i=0; i< hideCols.length; i++) {
+				   var col = table.column(hideCols[i]);
+				   col.visible(true);
+			   }
+			   
+			   $('.record-list').removeClass('col-md-4').removeClass('col-lg-4').addClass('col-md-12').addClass('col-lg-12');
+			   $('.record-summary').hide();
+		   }
+	   };
 	});
+ 
+ 	
 </script>
