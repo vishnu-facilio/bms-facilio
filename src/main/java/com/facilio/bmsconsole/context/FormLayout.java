@@ -161,11 +161,11 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.FULL);
 		first.add(new Field("Name","inputName","zone.name",Field.FieldType.TEXTBOX));
-		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTBOX));
+		first.add(new Field("Short Description","inputShortDescription","zone.shortDescription",Field.FieldType.TEXTAREA));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.FULL);
-		second.add(new Field("Spaces","inputSpace","zone.spaces",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("space", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+		second.add(new Field("Area","inputAreaId","zone.areaId",Field.FieldType.LOOKUP).setIcon("fa fa-building").setLookupModule(new LookupModule("area", "Space").setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
 		fields.add(second);
 		
 		return fields;

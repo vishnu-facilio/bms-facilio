@@ -1,3 +1,5 @@
+<link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
+
 <style>
 
 .fc-view-container h2
@@ -30,11 +32,12 @@ $(document).ready(function() {
 });
 
 </script>
-<div class="row">
-   <div class="col-lg-12">
-       <h1 class="page-header">Calendar</h1>
-   </div>
-   <!-- /.col-lg-12 -->
+<div class="row form-header" >
+	<div class="col-sm-12" >
+  <h4 class="pull-left">Calendar</h4>
+  <div class="action-btn text-right">
+  </div>
+  </div>
 </div>
 <div class="temp-view-content">
 <div class="row">

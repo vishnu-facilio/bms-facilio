@@ -63,12 +63,12 @@
                         <a href="#task/mytasks">My Tasks</a>
                     </li>
                     <li>
-		                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
-		            </li>
-                    <li>
 		                <a href="#centraldispatch"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i> Central Dispatch</a>
 		            </li>
                   </ul>
+            </li>
+            <li>
+                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
             </li>
 			<li>
                <a href="#">
