@@ -79,7 +79,7 @@ public class TaskAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		
-		if(scheduleObj.getScheduledStart() != 0) {
+		if(scheduleObj != null && scheduleObj.getScheduledStart() != 0) {
 			scheduleObj.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, scheduleObj);
 			task.setSchedule(scheduleObj);

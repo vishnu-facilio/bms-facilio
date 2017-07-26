@@ -165,7 +165,7 @@
 	<div class="col-md-12 col-sm-12 hr-dashed-line">			
 	</div>
 	<div class="row row-footer">
-	<div class="col-md-6 col-sm-6">
+	<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('task');">
 	<button type="button" class="btn btn-default  plus-btn" onclick="location.href='#';"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New Task
 	</div>
 	</div>
