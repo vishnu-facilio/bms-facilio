@@ -54,6 +54,7 @@ public class ViewLayout {
 							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
 							.addColumn(new Column("Description", "description", ColumnType.TEXT))
 							);
+		viewLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Assigned To", "assignedToId", ColumnType.TEXT));
 		
 		return viewLayout;

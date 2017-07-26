@@ -70,4 +70,12 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.schedule = schedule;
 	}
 	
+	private int statusCode = 1;
+	public int getStatusCode() {
+		return statusCode;
+	} 
+	public void setStatusCode(int status) {
+		this.statusCode = status;
+	}
+	
 }

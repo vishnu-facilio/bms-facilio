@@ -36,35 +36,31 @@ public class FormLayout {
 	
 	public static List<Panel> getNewTaskLayout()
 	{
-		List<Panel> fields =new ArrayList<Panel>();
+		List<Panel> fields = new ArrayList<Panel>();
 		
 		Panel first =  new Panel(Panel.Type.HALF);
-		first.add(new Field("Title","inputTitle","task.title",Field.FieldType.TEXTBOX).setRequired(true));
+		first.add(new Field("Title","inputSubject","task.subject",Field.FieldType.TEXTBOX).setRequired(true));
 		first.add(new Field("Description","inputDescription","task.description",Field.FieldType.TEXTAREA).setRequired(true).setPlaceholder("More about the problem.."));
 		fields.add(first);
 		
 		Panel second =  new Panel(Panel.Type.HALF);
+		second.add(new Field("Assignment Group","inputAssignmentGroupId","task.assignmentGroupId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
 		second.add(new Field("Assigned To","inputAssignedTo","task.assignedToId",Field.FieldType.LOOKUP).setLookupModule(new LookupModule("users", "Users").setPreloadedList("userList")));
-		second.add(new Field("Status","inputStatus","ticket.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
-		second.add(new Field("Due Date","inputDueDate","ticket.dueDate",Field.FieldType.DATETIME));
+		second.add(new Field("Status","inputStatus","task.statusCode",Field.FieldType.SELECTBOX).setListName("statusList"));
 		fields.add(second);
 		
 		Panel third =  new Panel(Panel.Type.FULL).setTitle("Scheduling");
 		fields.add(third);
 		
-		Panel fourth =  new Panel(Panel.Type.ONE_THIRD);
-		fourth.add(new Field("Scheduled Start","inputScheduledStart","task.ScheduledStart",Field.FieldType.DATETIME));
-		fourth.add(new Field("Actual Task Start","inputActual TaskStart","task.actualTaskStart",Field.FieldType.DATETIME));
+		Panel fourth =  new Panel(Panel.Type.HALF);
+		fourth.add(new Field("Scheduled Start","inputScheduledStart","task.schedule.ScheduledStart",Field.FieldType.DATETIME));
+		fourth.add(new Field("Actual Task Start","inputActual TaskStart","task.schedule.actualTaskStart",Field.FieldType.DATETIME));
 		fields.add(fourth);
 		
-		Panel fifth =  new Panel(Panel.Type.ONE_THIRD);
-		fifth.add(new Field("Estimated  End","inputEstimatedEnd","task.EstimatedEnd",Field.FieldType.DATETIME));
-		fifth.add(new Field("Actual Task End","inputActualTaskEnd","task.ActualTaskEnd",Field.FieldType.DATETIME));
+		Panel fifth =  new Panel(Panel.Type.HALF);
+		fifth.add(new Field("Estimated  End","inputEstimatedEnd","task.schedule.EstimatedEnd",Field.FieldType.DATETIME));
+		fifth.add(new Field("Actual Task End","inputActualTaskEnd","task.schedule.ActualTaskEnd",Field.FieldType.DATETIME));
 		fields.add(fifth);
-		
-		Panel sixth =  new Panel(Panel.Type.ONE_THIRD);
-		sixth.add(new Field("Estimated Work Durations","inputEstimatedWorkDuration","task.EstimatedWorkDuration",Field.FieldType.DATETIME));
-		fields.add(sixth);
 		
 		return fields;
 		
