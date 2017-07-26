@@ -119,6 +119,10 @@
 		
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
+			
+			$(document).ready(function() {
+				FacilioApp.init();
+			});
 		</script>
 </head>
 <body>

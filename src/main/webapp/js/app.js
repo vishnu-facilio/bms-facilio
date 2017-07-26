@@ -31,7 +31,24 @@ FacilioApp = {
 		$(document).on('ajaxStop',   function() { NProgress.done();  });
 	},
 	
-	loadUrlFromHash: function() {
+	initSetup: function() {
+		var self = this;
+		
+		$('.sidebar').perfectScrollbar();    
+		
+		if (location.hash.trim() == "") {
+			location.hash = '#mysettings';
+		}
+		self.loadUrlFromHash(true);
+		$(window).on('hashchange',function(){ 
+			self.loadUrlFromHash(true);
+		});
+		
+		$(document).on('ajaxStart', function() { NProgress.start(); });
+		$(document).on('ajaxStop',   function() { NProgress.done();  });
+	},
+	
+	loadUrlFromHash: function(is_setup) {
 		var hashVal = location.hash;
 		if ($('.sidebar ul li a[href="'+hashVal+'"]').length > 0) {
 			$('.sidebar ul li a').removeClass('active');
@@ -42,6 +59,9 @@ FacilioApp = {
 		if(module != "")
 		{	
 			var url = contextPath + '/home/' + module;
+			if (is_setup) {
+				url = contextPath + '/home/setup/' + module;
+			}
 			$('#page-wrapper').load(url, function(response, status, xhr) {
 				if (response.indexOf("Struts Problem Report") > 0) {
 					$('#page-wrapper').html("<div style='text-align:center;padding-top: 56px;'><i class='fa fa-suitcase fa-5' aria-hidden='true' style='font-size: 4em;'></i><h2>Work in progress.</h2></div>");
@@ -150,7 +170,3 @@ FacilioApp = {
 		});
 	}
 };
-
-$(document).ready(function() {
-	FacilioApp.init();
-});

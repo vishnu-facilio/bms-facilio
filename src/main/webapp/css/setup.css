@@ -1,0 +1,16 @@
+
+.sidebar-search .setup-search {
+	background: #323941;
+	color: #fff;
+	border: 1px solid #555;
+}
+
+.back-to-product {
+    padding: 15px 0 0 0;
+}
+
+.back-to-product a {
+    font-size: 15px;
+    color: #fff;
+    text-decoration: none;
+}
