@@ -4,6 +4,8 @@
 <link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/checkbox.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/view.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/css/perfect-scrollbar.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/js/perfect-scrollbar.jquery.min.js"></script>
 
 <div class="col-md-12 col-lg-12 record-list">
 <div class="row form-header" >
@@ -29,7 +31,7 @@
 </s:if>
 <s:else>
 <div class="row list-content">
-   <div class="col-md-12 col-sm-12">
+   <div class="fc-list-table col-md-12 col-sm-12 ">
 	<table width="100%" class="table table-striped able-hover " id="record-list">
 	    <thead>
 	        <tr>
@@ -93,7 +95,13 @@
 <script>
  $(document).ready(function (){
 	 
-	   var table = $('#record-list').DataTable({
+	
+	 	 
+	 var table = $('#record-list').DataTable({ 
+		   
+		   	
+		   
+	   
 	      columnDefs: [{
 	         targets: 0,
 	         searchable: false,
@@ -104,7 +112,7 @@
 	         }
 	      },
 	      {
-	         targets: <s:property value="viewlayout.columns.size() + 1" />,
+	         targets: '<s:property value="viewlayout.columns.size() + 1" />',
 	         searchable: false,
 	         orderable: false
 	      },
@@ -120,11 +128,17 @@
 	    	  }
 	      },
 	      
+	      
 	      buttons: false,
 	      responsive: true,
 	      searching: false,
-	      lengthChange: false
+	      lengthChange: false,
+	    /*scrollY : "200px"*/
+	      
 	   });
+	
+
+
 
 	   // Handle click on "Select all" control
 	   $('#record-select-all').on('click', function(){
@@ -235,6 +249,8 @@
 			   $('.record-summary').hide();
 		   }
 	   };
+	   
+	 
 	});
  
  	

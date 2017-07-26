@@ -13,4 +13,101 @@
     font-size: 15px;
     color: #fff;
     text-decoration: none;
+    font-size:10px;
 }
+
+.fc-back-to-product {
+    padding: 15px 0 0 0;
+}
+
+.fc-back-to-product a {
+
+    color: #999999;
+	    text-transform: uppercase;
+    text-decoration: none;
+}
+
+
+#setuphome-wrapper{
+	 overflow: hidden;
+	 padding-left: 100px;
+	 padding-right: 100px;
+	
+}
+
+@media (max-width: 768px) {
+#setuphome-wrapper{
+overflow-y: scroll ;
+}
+}
+
+.setup-header{
+	    padding-top: 15px;
+    padding-bottom: 15px;	
+}
+.setup-header div {
+	padding:0;
+}
+
+button.btn.btn-default.btn-circle.cancel-btn{
+	background: #FFFFFF;
+	color: #D8D8D8;
+}
+
+.setup-header-text{
+    font-weight: 200;
+    font-size: 18px;
+}
+
+.setup-header div.action-btn.text-right {
+    padding-top: 35px;
+}
+
+.setup-body ul{
+	list-style: none;
+    text-align: left;
+    padding-left: 0px;
+    width: 150px;
+    margin: 0 auto;
+}
+.row.form-group.setup-body-out{
+	background: white;
+	padding-bottom: 80px;
+}
+.setup-body{
+	
+background: white;
+    text-align: center;
+    padding: 50px;
+}
+
+.setup-body-thead{
+	padding-top: 10px;
+	padding-bottom: 10px;
+     color: #999999;
+     text-transform: uppercase;
+	letter-spacing: 0.64px;
+	}
+
+
+
+.setup-body-tbody{
+letter-spacing: 0.29px;
+padding: 5px 1px;
+	
+}
+
+.setup-body-tbody a:focus {
+    color: black;
+    text-decoration: none;
+}
+.setup-body-tbody a:hover {
+    color: #80ff80;
+    text-decoration: none;
+}
+
+.setup-body-tbody a {
+	color: #333333;
+    text-decoration: none;
+}
+

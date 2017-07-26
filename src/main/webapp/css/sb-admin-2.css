@@ -146,8 +146,20 @@ width: 25px;
 	letter-spacing:0.03em;
 	white-space: nowrap;
 }
-.sidebar ul li a:HOVER,.sidebar ul li a:FOCUS,.sidebar ul li a.active {
+.sidebar ul li a:HOVER {
 	opacity: 0.9;
+	color: #0BA4F4;
+	background-color: #1F2224;
+	border-left: 3px solid #1F2224;
+ }
+ .sidebar ul li a:FOCUS{
+ 	opacity: 0.9;
+	color: #0BA4F4;
+	background-color: #1F2224;
+	border-left: 3px solid #1F2224;
+ }
+ .sidebar ul li a.active {
+ 	opacity: 0.9;
 	color: #0BA4F4;
 	background-color: #1F2224;
 	border-left: 3px solid #1F2224;
@@ -261,6 +273,7 @@ width: 25px;
   height: 350px;
   overflow-y: scroll;
 }
+
 .login-panel {
   margin-top: 25%;
 }

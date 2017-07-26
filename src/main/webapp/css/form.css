@@ -54,12 +54,27 @@ label {
 	line-height: 0.1;
 	border-radius: 30px;
 }
+.list-content{
+	
+		position:relative;
+		height: calc(100% - 70px);
+		overflow-y: scroll ;
+		overflow-x: hidden;	
+		width: 100%;
+		margin-right: 0px;
+    	margin-left: 0px;
+}
 
+.fc-list-table{
+	padding-right: 0px;
+	padding-left: 0px;
+}
 .form-content, .view-content {
 	position:relative;
 	height: calc(100% - 70px);
 	padding:15px;
 	overflow-y: scroll;
+	width:100%;
 }
 
 .record-content {

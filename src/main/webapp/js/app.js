@@ -20,12 +20,14 @@ FacilioApp = {
 			if ($('.sidebar').hasClass('fc-navbar-collapse')) {
 				$('.sidebar').removeClass('fc-navbar-collapse');
 				$('#page-wrapper').css('margin', '0 0 0 220px');
+				
 			}
 			else {
 				$('.sidebar').addClass('fc-navbar-collapse');
 				$('#page-wrapper').css('margin', '0 0 0 50px');
 			}
 		});
+		
 		
 		$(document).on('ajaxStart', function() { NProgress.start(); });
 		$(document).on('ajaxStop',   function() { NProgress.done();  });
@@ -68,14 +70,26 @@ FacilioApp = {
 				}
 				else {
 					if ($(this).find('.form-content').length > 0) {
-						$(this).find('.form-content').perfectScrollbar();
+						$(this).find('.form-content').perfectScrollbar({
+					
+						});
 					}
 					else if ($(this).find('.view-content').length > 0) {
-						$(this).find('.view-content').perfectScrollbar();
+						$(this).find('.view-content').perfectScrollbar({
+							
+						});
 
 					}
 					else if ($(this).find('.temp-view-content').length > 0) {
-						$(this).find('.temp-view-content').perfectScrollbar();
+						$(this).find('.temp-view-content').perfectScrollbar(
+								 {}	
+						);
+
+					}
+					else if ($(this).find('.list-content').length > 0) {
+						   $('.list-content').perfectScrollbar({
+								 suppressScrollX : true
+							 });
 
 					}
 				}

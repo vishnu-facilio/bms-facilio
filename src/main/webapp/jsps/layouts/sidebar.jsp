@@ -68,7 +68,10 @@
                   </ul>
             </li>
             <li>
-                <a href="#calendar"><i class="sidebar-icon fa fa-calendar fa-fw"></i> Calendar</a>
+                <a href="#calendar">
+                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
+                <span class="nav-title">Calendar
+                </span></a>
             </li>
 			<li>
                <a href="#">
