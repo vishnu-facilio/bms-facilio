@@ -247,6 +247,10 @@
 		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
 			<result name="success">/jsps/newForm.jsp</result>
 		</action>
+		
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
+			<result name="success">/jsps/newFormDialog.jsp</result>
+		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
 			<result name="success" type="json">

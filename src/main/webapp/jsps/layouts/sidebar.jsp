@@ -63,7 +63,7 @@
                         <a href="#task/mytasks">My Tasks</a>
                     </li>
                     <li>
-		                <a href="#centraldispatch"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i> Central Dispatch</a>
+		                <a href="#centraldispatch">Central Dispatch</a>
 		            </li>
                   </ul>
             </li>
