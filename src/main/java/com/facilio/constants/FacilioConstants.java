@@ -94,6 +94,7 @@ public class FacilioConstants {
 		public static final String SCHEDULE_ID = "scheduleId";
 		public static final String SCHEDULE_OBJECT = "scheduleObject";
 		
+		public static final String NOTE_ID = "noteId";
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
 		

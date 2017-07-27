@@ -117,7 +117,12 @@ public class RecordSummaryLayout {
 							.addColumn(new Column("ID", "fileId", ColumnType.NUMBER).setShowColumn(false))
 							.addColumn(new Column("Name", "fileName", ColumnType.TEXT))
 							);
-		recordSummaryLayout.addRelatedModule(new RelatedModule("NOTES", "notes", "Note", "note").setIcon("fa fa-sticky-note").setShowHeader(false));
+		recordSummaryLayout.addRelatedModule(new RelatedModule("NOTES", "notes", "Note", "note")
+							.setIcon("fa fa-sticky-note")
+							.setShowHeader(false)
+							.addColumn(new Column("ID", "noteId", ColumnType.NUMBER).setShowColumn(false))
+							.addColumn(new Column("Content", "body", ColumnType.TEXT))
+							);
 		return recordSummaryLayout;
 	}
 
@@ -215,13 +220,13 @@ class RelatedModule
 	String displayName;
 	String listName;
 	String moduleName;
-	String moduleLinkName;
-	RelatedModule(String displayName, String listName, String moduleName, String moduleLinkName)
+	String linkName;
+	RelatedModule(String displayName, String listName, String moduleName, String linkName)
 	{
 		this.displayName = displayName;
 		this.listName = listName;
 		this.moduleName = moduleName;
-		this.moduleLinkName = moduleLinkName;
+		this.linkName = linkName;
 	}
 	
 	public String getDisplayName()
@@ -239,9 +244,9 @@ class RelatedModule
 		return this.moduleName;
 	}
 	
-	public String getModuleLinkName()
+	public String getLinkName()
 	{
-		return this.moduleLinkName;
+		return this.linkName;
 	}
 	
 	String icon;

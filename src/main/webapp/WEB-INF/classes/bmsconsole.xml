@@ -281,15 +281,21 @@
 			</result>
 		</action>
 		
-		<action name="addNote" class="com.facilio.bmsconsole.actions.TaskNotes" method="addNote">
-			<result name="success" type="json">
-				<param name="includeProperties">note.noteId</param>
-			</result>
-		</action>
-		
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="note" namespace="/home/note" extends="home">
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.NoteAction" method="newNote">
+			<result name="success">/jsps/newFormDialog.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="addNote">
+			<result name="success" type="json">
+				<param name="includeProperties">noteId</param>
+			</result>
 		</action>
 	</package>
 	

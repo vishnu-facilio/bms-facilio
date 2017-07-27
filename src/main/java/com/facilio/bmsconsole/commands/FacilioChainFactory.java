@@ -161,14 +161,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddNoteChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ValidateNotePropsCommand());
-		c.addCommand(new AddNoteCommand());
-		
-		return c;
-	}
-
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadActionFormCommand());
@@ -409,6 +401,14 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new GetZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddNoteChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ValidateNotePropsCommand());
+		c.addCommand(new AddNoteCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

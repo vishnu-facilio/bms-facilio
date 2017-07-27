@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.context.AreaContext;
 import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.sql.DBUtil;
 
@@ -44,6 +45,40 @@ public class TicketAPI {
 		catch(SQLException | RuntimeException e) 
 		{
 			logger.log(Level.SEVERE, "Exception while ticket task" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(pstmt, rs);
+		}
+		return areaId;
+	}
+	
+	public static Long addTicketNote(Long ticketId, Long noteId, Connection conn) throws Exception
+	{
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Long areaId = null;
+		try
+		{
+			pstmt = conn.prepareStatement("INSERT INTO Ticket_Note (TICKET_ID, NOTE_ID) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setLong(1, ticketId);
+			pstmt.setLong(2, noteId);
+			
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add ticket note");
+			}
+			else 
+			{
+				rs = pstmt.getGeneratedKeys();
+				rs.next();
+				areaId = rs.getLong(1);
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while ticket note" +e.getMessage(), e);
 			throw e;
 		}
 		finally 
@@ -86,6 +121,38 @@ public class TicketAPI {
 			DBUtil.closeAll(pstmt, rs);
 		}
 		return tasks;
+	}
+	
+	public static List<NoteContext> getRelatedNotes(long ticketId, Connection conn) throws SQLException 
+	{
+		List<NoteContext> notes = new ArrayList<>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try 
+		{
+			pstmt = conn.prepareStatement("SELECT * FROM Notes "
+					+ " INNER JOIN Ticket_Note ON Notes.NOTEID = Ticket_Note.NOTE_ID"
+					+ " WHERE Ticket_Note.TICKET_ID = ?");
+			pstmt.setLong(1, ticketId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) 
+			{
+				NoteContext nc = new NoteContext();
+				nc.setNoteId(rs.getLong("NOTE_ID"));
+				nc.setBody(rs.getString("BODY"));
+				notes.add(nc);
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting all tasks" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(pstmt, rs);
+		}
+		return notes;
 	}
 	
 	public static List<FileContext> getRelatedAttachments(long ticketId, Connection conn) throws SQLException 

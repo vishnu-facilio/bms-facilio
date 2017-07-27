@@ -179,6 +179,17 @@ public class FormLayout {
 		
 		return fields;
 	}
+	
+	public static List<Panel> getNewNoteLayout()
+	{
+		List<Panel> fields = new ArrayList<Panel>();
+		
+		Panel first =  new Panel(Panel.Type.FULL);
+		first.add(new Field("Content","inputBody","note.body", Field.FieldType.TEXTAREA));
+		fields.add(first);
+		
+		return fields;
+	}
 }
 class Panel extends ArrayList<Field>
 {

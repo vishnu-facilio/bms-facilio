@@ -39,6 +39,7 @@ public class GetTicketCommand implements Command {
 				context.put(FacilioConstants.ContextNames.TICKET, ticket);
 				
 				ticket.setTasks(TicketAPI.getRelatedTasks(ticket.getTicketId(), conn));
+				ticket.setNotes(TicketAPI.getRelatedNotes(ticket.getTicketId(), conn));
 				ticket.setAttachments(TicketAPI.getRelatedAttachments(ticket.getTicketId(), conn));
 			}
 		}

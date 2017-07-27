@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 public class NoteContext {
+	
 	private long noteId;
 	public long getNoteId() {
 		return noteId;
@@ -17,19 +18,19 @@ public class NoteContext {
 		this.orgId = orgId;
 	}
 	
-	private long ownerId = 0;
-	public long getOwnerId() {
+	private Long ownerId;
+	public Long getOwnerId() {
 		return ownerId;
 	}
-	public void setOwnerId(long ownerId) {
+	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
 	
-	private long creationTime;
-	public long getCreationTime() {
+	private Long creationTime;
+	public Long getCreationTime() {
 		return creationTime;
 	}
-	public void setCreationTime(long creationTime) {
+	public void setCreationTime(Long creationTime) {
 		this.creationTime = creationTime;
 	}
 	
@@ -47,5 +48,21 @@ public class NoteContext {
 	}
 	public void setBody(String body) {
 		this.body = body;
+	}
+	
+	private long parentId = 0;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+	
+	private String parentModuleLinkName;
+	public String getParentModuleLinkName() {
+		return parentModuleLinkName;
+	}
+	public void setParentModuleLinkName(String parentModuleLinkName) {
+		this.parentModuleLinkName = parentModuleLinkName;
 	}
 }

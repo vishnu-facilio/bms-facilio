@@ -14,18 +14,6 @@ public class ValidateNotePropsCommand implements Command {
 		
 		NoteContext noteContext = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		
-		if(noteContext.getOrgId() <= 0) {
-			throw new IllegalArgumentException("Org ID is invalid");
-		}
-		
-		if(noteContext.getOwnerId() <= 0) {
-			throw new IllegalArgumentException("Owner ID is invalid");
-		}
-		
-		if(noteContext.getCreationTime() <= 0) {
-			throw new IllegalArgumentException("Creation Time is invalid");
-		}
-		
 		if(noteContext.getBody() != null && !noteContext.getBody().isEmpty()) {
 			noteContext.setBody(noteContext.getBody().trim());
 		}
