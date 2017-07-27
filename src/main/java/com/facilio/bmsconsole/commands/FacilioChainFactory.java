@@ -42,9 +42,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new GetTicketCommand());
-		c.addCommand(new SetTaskModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
-		c.addCommand(new GetTasksOfTicketCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -13,14 +13,6 @@ public class ValidateTasksFieldsCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		TaskContext taskContext = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-		
-		if(taskContext.getParent() == -1) {
-			throw new IllegalArgumentException("Parent Ticket ID is invalid");
-		}
-		else {
-			//Check ownership
-		}
-		
 		if(taskContext.getSubject() == null || taskContext.getSubject().isEmpty()) {
 			throw new IllegalArgumentException("Subject is invalid");
 		}

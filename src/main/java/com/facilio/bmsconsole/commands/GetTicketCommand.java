@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetTicketCommand implements Command {
@@ -36,6 +37,9 @@ public class GetTicketCommand implements Command {
 			if(tickets.size() > 0) {
 				TicketContext ticket = tickets.get(0);
 				context.put(FacilioConstants.ContextNames.TICKET, ticket);
+				
+				ticket.setTasks(TicketAPI.getRelatedTasks(ticket.getTicketId(), conn));
+				ticket.setAttachments(TicketAPI.getRelatedAttachments(ticket.getTicketId(), conn));
 			}
 		}
 		else {

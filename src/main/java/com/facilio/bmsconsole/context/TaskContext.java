@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
+	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
 	
 	private long taskId;
 	public long getTaskId() {
@@ -14,12 +14,20 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.taskId = taskId;
 	}
 	
-	private long parent = 0;
-	public long getParent() {
-		return parent;
+	private long parentId = 0;
+	public long getParentId() {
+		return parentId;
 	}
-	public void setParent(long parent) {
-		this.parent = parent;
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+	
+	private String parentModuleLinkName;
+	public String getParentModuleLinkName() {
+		return parentModuleLinkName;
+	}
+	public void setParentModuleLinkName(String parentModuleLinkName) {
+		this.parentModuleLinkName = parentModuleLinkName;
 	}
 	
 	private String subject;

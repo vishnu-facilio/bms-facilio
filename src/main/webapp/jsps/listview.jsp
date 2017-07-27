@@ -94,14 +94,7 @@
 
 <script>
  $(document).ready(function (){
-	 
-	
-	 	 
 	 var table = $('#record-list').DataTable({ 
-		   
-		   	
-		   
-	   
 	      columnDefs: [{
 	         targets: 0,
 	         searchable: false,
@@ -136,9 +129,6 @@
 	    /*scrollY : "200px"*/
 	      
 	   });
-	
-
-
 
 	   // Handle click on "Select all" control
 	   $('#record-select-all').on('click', function(){

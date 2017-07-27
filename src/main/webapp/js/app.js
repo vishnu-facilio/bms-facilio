@@ -144,12 +144,17 @@ FacilioApp = {
 		$(popup).modal('hide');
 	},
 	
-	createRecordDialog: function(moduleName, callback) {
+	createRecordDialog: function(moduleLinkName, callback, parentModuleLinkName, parentId) {
 		 $.ajax({
 			type : "GET",
-			url : contextPath + '/home/'+moduleName+'/newDialog',
+			url : contextPath + '/home/'+moduleLinkName+'/newDialog',
 			success : function(response) {
 				$('#newRecordModel').html(response);
+				if(parentModuleLinkName != undefined)
+				{
+					$('#addFormDialog').find('input[name='+moduleLinkName+'\\.parentModuleLinkName]').val(parentModuleLinkName);
+					$('#addFormDialog').find('input[name='+moduleLinkName+'\\.parentId]').val(parentId);
+				}
 				$("#newRecordModel").modal("show");
 				
 				// handle save record on dialog
@@ -166,7 +171,7 @@ FacilioApp = {
 						$(this).find(".save-btn").button('loading');
 						$.ajax({
 							method : "post",
-							url : contextPath + '/home/'+moduleName+'/add',
+							url : contextPath + '/home/'+moduleLinkName+'/add',
 							data : $("#addFormDialog").serialize()
 						})
 						.done(function(data) {

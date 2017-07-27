@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -130,5 +131,38 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	} 
 	public void setCategory(int category) {
 		this.category = category;
+	}
+	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks()
+	{
+		return this.tasks;
+	}
+	
+	public void setTasks(List<TaskContext> tasks)
+	{
+		this.tasks = tasks;
+	}
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes()
+	{
+		return this.notes;
+	}
+	
+	public void setNotes(List<NoteContext> notes)
+	{
+		this.notes = notes;
+	}
+	
+	private List<FileContext> attachments;
+	public List<FileContext> getAttachments()
+	{
+		return this.attachments;
+	}
+	
+	public void setAttachments(List<FileContext> attachments)
+	{
+		this.attachments = attachments;
 	}
 }

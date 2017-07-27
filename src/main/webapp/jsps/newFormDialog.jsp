@@ -20,7 +20,8 @@
         </div>
         <div class="modal-body form-content">
         	<form role="form" id="addFormDialog" data-toggle="validator">
-        		
+        		<input type="hidden" name="<s:property value="%{moduleLinkName}"/>.parentModuleLinkName" />
+        		<input type="hidden" name="<s:property value="%{moduleLinkName}"/>.parentId" />
         		<%-- Include form layout generator jsp --%>
         		<%@include file="formLayout.jsp" %>
         		

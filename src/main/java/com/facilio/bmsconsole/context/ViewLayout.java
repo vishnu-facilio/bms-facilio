@@ -200,4 +200,16 @@ class Column
 		this.id = id;
 		this.columnType = columnType;
 	}
+
+	boolean showColumn = true;
+	public Column setShowColumn(boolean showColumn) 
+	{
+		this.showColumn = showColumn;
+		return this;
+	}
+	
+	public boolean getShowColumn()
+	{
+		return this.showColumn;
+	}
 }
