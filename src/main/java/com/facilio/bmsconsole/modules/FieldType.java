@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.criteria.UserOperators;
 
 public enum FieldType {
 	STRING(1, "String", new String[] {"STRING_CF1", "STRING_CF2", "STRING_CF3", "STRING_CF4", "STRING_CF5"}, StringOperators.getAllOperators()),

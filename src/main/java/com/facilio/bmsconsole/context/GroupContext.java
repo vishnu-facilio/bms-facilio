@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.apache.commons.chain.impl.ContextBase;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.UserAPI;
 
 public class GroupContext extends ContextBase {

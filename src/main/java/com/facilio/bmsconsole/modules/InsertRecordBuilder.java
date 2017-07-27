@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,15 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.AreaContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;

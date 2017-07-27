@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.constants.FacilioConstants;
-
 public class FacilioField {
 	
 	private long fieldId;

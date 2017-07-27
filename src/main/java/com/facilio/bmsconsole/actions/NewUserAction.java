@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;

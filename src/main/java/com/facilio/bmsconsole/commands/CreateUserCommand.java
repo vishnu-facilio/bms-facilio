@@ -8,8 +8,6 @@ import java.util.HashMap;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.sql.DBUtil;
-
 
 public class CreateUserCommand implements Command {
 	
