@@ -96,18 +96,18 @@ public class TicketAPI {
 		try 
 		{
 			pstmt = conn.prepareStatement("SELECT * FROM Tasks "
-					+ " INNER JOIN Ticket_Task ON Tasks.TASKID = Ticket_Task.TASK_ID"
+					+ " INNER JOIN Ticket_Task ON Tasks.ID = Ticket_Task.TASK_ID"
 					+ " WHERE Ticket_Task.TICKET_ID = ?");
 			pstmt.setLong(1, ticketId);
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
 				TaskContext tc = new TaskContext();
-				tc.setTaskId(rs.getLong("TASK_ID"));
+				tc.setId(rs.getLong("ID"));
 				tc.setSubject(rs.getString("SUBJECT"));
 				tc.setDescription(rs.getString("Description"));
-				tc.setStatusCode(rs.getInt("STATUS"));
-				tc.setAssignedToId(rs.getLong("ASSIGNED_TO_ID"));
+//				tc.setStatusCode(rs.getInt("STATUS"));
+//				tc.setAssignedToId(rs.getLong("ASSIGNED_TO_ID"));
 				tasks.add(tc);
 			}
 		}

@@ -27,9 +27,9 @@ public class GetAllCampusCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(CampusContext.class)
 				.select(fields)
-				.orderBy("CAMPUS_ID");
+				.orderBy("ID");
 
-		List<CampusContext> campuses = builder.get();
+		List<CampusContext> campuses = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.CAMPUS_LIST, campuses);
 		
 		return false;

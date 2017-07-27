@@ -26,9 +26,9 @@ public class GetAllZoneCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(ZoneContext.class)
 				.select(fields)
-				.orderBy("ZONE_ID");
+				.orderBy("ID");
 
-		List<ZoneContext> zones = builder.get();
+		List<ZoneContext> zones = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.ZONE_LIST, zones);
 		
 		return false;

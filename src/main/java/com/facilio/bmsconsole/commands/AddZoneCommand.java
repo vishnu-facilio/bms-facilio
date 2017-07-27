@@ -32,7 +32,7 @@ public class AddZoneCommand implements Command {
 															.fields(fields)
 															.connection(conn);
 			long zoneId = builder.insert(zone);
-			zone.setZoneId(zoneId);
+			zone.setId(zoneId);
 		}
 		else 
 		{

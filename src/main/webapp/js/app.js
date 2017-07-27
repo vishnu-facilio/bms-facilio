@@ -136,7 +136,7 @@ FacilioApp = {
 	},
 	
 	selectValue: function(id, label, popup) {
-		var $select = $("#"+$(popup).data('fieldId')).selectize();
+		var $select = $("select[name='"+$(popup).data('fieldId')+"']").selectize();
 		var selectize = $select[0].selectize;
 		selectize.addOption({value: id, text: label});
 		selectize.refreshOptions();

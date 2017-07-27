@@ -33,15 +33,12 @@ public class TaskAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
-			FacilioField field = fields.get(i);
-			customFieldNames.add(field.getName());
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		return SUCCESS;
 	}
+	
+	private List<FacilioField> fields;
 	
 	private long ticketId;
 	public long getTicketId() {
@@ -67,14 +64,6 @@ public class TaskAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	private List<String> customFieldNames;
-	public List<String> getCustomFieldNames() {
-		return customFieldNames;
-	}
-	public void setCustomFieldNames(List<String> customFieldNames) {
-		this.customFieldNames = customFieldNames;
-	}
-	
 	//Add Task Props
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
@@ -90,7 +79,7 @@ public class TaskAction extends ActionSupport {
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		
-		setTaskId(task.getTaskId());
+		setTaskId(task.getId());
 		
 		return SUCCESS;
 	}
@@ -100,7 +89,7 @@ public class TaskAction extends ActionSupport {
 		// TODO Auto-generated method stub
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TASK_ID, getTaskId());
+		context.put(FacilioConstants.ContextNames.ID, getTaskId());
 		
 		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
 		getTaskChain.execute(context);
@@ -177,7 +166,7 @@ public class TaskAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewTaskLayout();
+		return FormLayout.getNewTaskLayout(fields);
 	}
 	
 	public String getModuleLinkName()

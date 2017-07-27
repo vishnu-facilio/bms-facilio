@@ -4,16 +4,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
-	
-	private long taskId;
-	public long getTaskId() {
-		return taskId;
-	}
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
-	}
-	
 	private long parentId = 0;
 	public long getParentId() {
 		return parentId;
@@ -46,20 +36,20 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private long assignmentGroupId = 0;
-	public long getAssignmentGroupId() {
-		return assignmentGroupId;
+	private GroupContext assignmentGroup;
+	public GroupContext getAssignmentGroup() {
+		return assignmentGroup;
 	}
-	public void setAssignmentGroupId(long assignmentGroupId) {
-		this.assignmentGroupId = assignmentGroupId;
+	public void setAssignmentGroup(GroupContext assignmentGroup) {
+		this.assignmentGroup = assignmentGroup;
 	}
 	
-	private long assignedToId = 0;
-	public long getAssignedToId() {
-		return assignedToId;
+	private UserContext assignedTo;
+	public UserContext getAssignedTo() {
+		return assignedTo;
 	}
-	public void setAssignedToId(long assignedToId) {
-		this.assignedToId = assignedToId;
+	public void setAssignedTo(UserContext assignedTo) {
+		this.assignedTo = assignedTo;
 	}
 	
 	private long scheduleId = 0;
@@ -78,12 +68,12 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.schedule = schedule;
 	}
 	
-	private int statusCode = 1;
-	public int getStatusCode() {
-		return statusCode;
+	private TicketStatusContext status;
+	public TicketStatusContext getStatus() {
+		return status;
 	} 
-	public void setStatusCode(int status) {
-		this.statusCode = status;
+	public void setStatus(TicketStatusContext status) {
+		this.status = status;
 	}
 	
 }

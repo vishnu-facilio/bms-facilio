@@ -17,7 +17,7 @@ public class GetTasksOfTicketCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
+		long ticketId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if(ticketId > 0) {
 		
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
@@ -32,7 +32,7 @@ public class GetTasksOfTicketCommand implements Command {
 					.where("parent = ?", ticketId)
 					.orderBy("taskId");
 
-			List<TaskContext> tasks = builder.get();
+			List<TaskContext> tasks = builder.getAsBean();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		}
 		else {

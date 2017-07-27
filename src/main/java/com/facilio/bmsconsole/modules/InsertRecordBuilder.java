@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,10 +110,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			.append(" (ORGID, MODULEID");
 		
 		for(FacilioField field : fields) {
-			if(field.getDataType() != FieldType.ID) {
-				sql.append(", ")
-					.append(field.getColumnName());
-			}
+			sql.append(", ")
+				.append(field.getColumnName());
 		}
 		
 		sql.append(") VALUES (")
@@ -124,9 +123,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			.append("')");
 			
 		for(FacilioField field : fields) {
-			if(field.getDataType() != FieldType.ID) {
-				sql.append(", ?");
-			}
+			sql.append(", ?");
 		}
 		
 		sql.append(")");
@@ -137,11 +134,19 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	private void appendFieldValues(Map<String, Object> properties, PreparedStatement pstmt) throws SQLException {
 		int paramIndex = 1;
 		for(FacilioField field : fields) {
-			if(field.getDataType() != FieldType.ID) {
-				Object value = properties.get(field.getName());
-				FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
-				paramIndex++;
+			Object value = null;
+			if(field.getDataType() == FieldType.LOOKUP) {
+				Map<String, Object> moduleProps = (Map<String, Object>) properties.get(field.getName()); 
+				if(moduleProps != null) {
+					value = moduleProps.get("id");
+				}
 			}
+			else {
+				value = properties.get(field.getName());
+			}
+			
+			FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
+			paramIndex++;
 		}
 	}
 	

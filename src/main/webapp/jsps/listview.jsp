@@ -61,6 +61,9 @@
 							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@DATETIME}">
 								<s:date name="#record[#column.id]" format="dd/MM/yyyy hh:mm" />
 							</s:elseif>
+							<s:elseif test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@LOOKUP}">
+								<s:property value="#record[#column.id][#column.lookupId]" />
+							</s:elseif>
 							<s:else>
 								<s:property value="#record[#column.id]" />
 							</s:else>

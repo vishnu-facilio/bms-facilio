@@ -6,12 +6,12 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAllTicketsCommand implements Command {
+public class GetTicketStatusListCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -21,15 +21,14 @@ public class GetAllTicketsCommand implements Command {
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
-		SelectRecordsBuilder<TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
 														.connection(conn)
 														.dataTableName(dataTableName)
-														.beanClass(TicketContext.class)
+														.beanClass(TicketStatusContext.class)
 														.select(fields)
-														.orderBy("ticketId");
-
-		List<TicketContext> tickets = builder.get();
-		context.put(FacilioConstants.ContextNames.TICKET_LIST, tickets);
+														.orderBy("ID");
+		List<TicketStatusContext> statuses = builder.getAsBean();
+		context.put(FacilioConstants.ContextNames.TICKET_STATUS_LIST, statuses);
 		
 		return false;
 	}

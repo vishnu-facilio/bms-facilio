@@ -3,10 +3,12 @@ package com.facilio.bmsconsole.context;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.chain.impl.ContextBase;
+
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.UserAPI;
 
-public class GroupContext extends FacilioContext {
+public class GroupContext extends ContextBase {
 	
 	private long orgId = 0;
 	public long getOrgId() {
@@ -22,6 +24,13 @@ public class GroupContext extends FacilioContext {
 	}
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
+	}
+	
+	public long getId() {
+		return groupId;
+	}
+	public void setId(long id) {
+		this.groupId = id;
 	}
 	
 	private String name;

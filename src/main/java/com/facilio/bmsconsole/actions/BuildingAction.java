@@ -46,16 +46,7 @@ public class BuildingAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(BuildingContext.DEFAULT_BUILDING_FIELDS);
-		for(FacilioField field : fields) 
-		{
-			if(!defaultFields.contains(field.getName())) 
-			{
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax = ((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		if(isajax!=null && isajax.equals("true"))
@@ -65,6 +56,8 @@ public class BuildingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String addBuilding() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
@@ -73,7 +66,7 @@ public class BuildingAction extends ActionSupport {
 		Chain addBuilding = FacilioChainFactory.getAddBuildingChain();
 		addBuilding.execute(context);
 		
-		setBuildingId(building.getBuildingId());
+		setBuildingId(building.getId());
 		
 		return SUCCESS;
 	}
@@ -81,7 +74,7 @@ public class BuildingAction extends ActionSupport {
 	public String viewBuilding() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.BUILDING_ID, getBuildingId());
+		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		
 		Chain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
 		getBuildingChain.execute(context);
@@ -93,7 +86,7 @@ public class BuildingAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewBuildingLayout();
+		return FormLayout.getNewBuildingLayout(fields);
 	}
 	
 	private String moduleName;

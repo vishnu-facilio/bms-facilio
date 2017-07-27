@@ -26,9 +26,9 @@ public class GetAllSpaceCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(SpaceContext.class)
 				.select(fields)
-				.orderBy("SPACE_ID");
+				.orderBy("ID");
 
-		List<SpaceContext> spaces = builder.get();
+		List<SpaceContext> spaces = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.SPACE_LIST, spaces);
 		
 		return false;

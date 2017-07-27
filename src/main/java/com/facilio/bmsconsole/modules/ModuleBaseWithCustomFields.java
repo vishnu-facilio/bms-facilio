@@ -15,6 +15,22 @@ public class ModuleBaseWithCustomFields {
 		this.orgId = orgId;
 	}
 	
+	private long moduleId = 0;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+	
+	private long id = 0;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 	@Element( value = java.lang.String.class )
 	private Map<String, Object> customProps = new HashMap<>();
 	public Map<String, Object> getCustomProps() {

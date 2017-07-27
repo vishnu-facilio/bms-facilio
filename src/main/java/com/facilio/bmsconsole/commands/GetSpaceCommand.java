@@ -18,7 +18,7 @@ public class GetSpaceCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long spaceId = (long) context.get(FacilioConstants.ContextNames.SPACE_ID);
+		long spaceId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(spaceId > 0) 
 		{
@@ -31,10 +31,10 @@ public class GetSpaceCommand implements Command {
 					.dataTableName(dataTableName)
 					.beanClass(SpaceContext.class)
 					.select(fields)
-					.where("SPACE_ID = ?", spaceId)
-					.orderBy("SPACE_ID");
+					.where("ID = ?", spaceId)
+					.orderBy("ID");
 
-			List<SpaceContext> spaces = builder.get();	
+			List<SpaceContext> spaces = builder.getAsBean();	
 			if(spaces.size() > 0) {
 				SpaceContext space = spaces.get(0);
 				context.put(FacilioConstants.ContextNames.SPACE, space);

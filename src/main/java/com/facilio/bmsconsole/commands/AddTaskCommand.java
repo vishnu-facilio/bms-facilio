@@ -38,7 +38,7 @@ public class AddTaskCommand implements Command {
 															.fields(fields)
 															.connection(conn);
 			long taskId = builder.insert(task);
-			task.setTaskId(taskId);
+			task.setId(taskId);
 			
 			if(task.getParentModuleLinkName() != null && task.getParentModuleLinkName().equals("ticket"))
 			{

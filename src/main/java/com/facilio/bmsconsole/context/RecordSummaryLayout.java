@@ -91,17 +91,16 @@ public class RecordSummaryLayout {
 	public static RecordSummaryLayout getRecordSummaryTicketLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("ticketId");
+		recordSummaryLayout.setTitleColumnId("id");
 		recordSummaryLayout.setHasProgressBar(true);
 		recordSummaryLayout.setRecordTitleColumnId("subject");
-		recordSummaryLayout.setPkColumnId("ticketId");
-		
+		recordSummaryLayout.setPkColumnId("id");
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Priority", "priority", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Status", "status.status", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Priority", "priority.priority", ColumnType.TEXT));
 		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
 		recordSummaryLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignToId", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignTo.email", ColumnType.TEXT));
 		
 		recordSummaryLayout.addRelatedModule(new RelatedModule("TASKS", "tasks", "Task", "task")
 							.setIcon("fa fa-tasks")
@@ -129,7 +128,7 @@ public class RecordSummaryLayout {
 	public static RecordSummaryLayout getRecordSummaryTaskLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("taskId");
+		recordSummaryLayout.setTitleColumnId("id");
 		recordSummaryLayout.setHasProgressBar(true);
 		recordSummaryLayout.setRecordTitleColumnId("subject");
 		

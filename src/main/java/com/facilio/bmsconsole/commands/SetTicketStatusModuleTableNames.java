@@ -5,14 +5,13 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 
-public class SetFloorModuleTableNames implements Command {
+public class SetTicketStatusModuleTableNames implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "floor");
-		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Floor");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "ticketstatus");
+		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "TicketStatus");
 		
 		return false;
 	}

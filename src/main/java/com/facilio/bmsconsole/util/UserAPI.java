@@ -164,6 +164,31 @@ public class UserAPI {
 		return null;
 	}
 	
+	public static UserContext getUserFromOrgUserId(long orgUserId)throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORG_USERID  = ?");
+			pstmt.setLong(1, orgUserId);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	} 
+	
 	public static UserContext getUser(String email) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -311,7 +336,7 @@ public class UserAPI {
 		uc.setEmail(rs.getString("EMAIL"));
 		uc.setInvitedTime(rs.getLong("INVITEDTIME"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		uc.setRole(rs.getString("NAME"));
+		uc.setRole("Administrator");
 		
 		return uc;
 	}

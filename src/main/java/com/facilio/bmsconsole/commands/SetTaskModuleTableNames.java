@@ -11,7 +11,7 @@ public class SetTaskModuleTableNames implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "Tasks");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "task");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Tasks");
 		
 		return false;

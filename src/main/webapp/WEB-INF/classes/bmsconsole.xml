@@ -119,6 +119,10 @@
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
+	<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+		<result name="success">/jsps/listview.jsp</result>
+	</action>
+	
 	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<param name="permission">workorderviewall</param>
 		<result name="success">/jsps/listview.jsp</result>
@@ -168,6 +172,13 @@
 		<param name="permission">setup</param>
         <result name="success">/jsps/assignmentRules.jsp</result>
     </action>
+    
+    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+		<result name="success" type="json">
+			<param name="root">pickList</param>
+		</result>
+	</action>
+    
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
@@ -238,6 +249,12 @@
 			<param name="permission">workorderviewall</param>
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
+		</action>
+	</package>
+	
+	<package name="ticketstatus" namespace="/home/ticketstatus" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
 	
@@ -318,7 +335,7 @@
 		</action>
 	</package>
 	
-	<package name="locations" namespace="/home/locations" extends="home">
+	<package name="location" namespace="/home/location" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.LocationActions">
 			<result name="success">/jsps/locationsPopup.jsp</result>
 		</action>

@@ -15,12 +15,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getPickListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadMainFieldCommand());
+		c.addCommand(new GetPickListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewTicketChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTicketModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -29,7 +37,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new SetTicketModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTicketCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		addCleanUpCommand(c);
@@ -40,7 +48,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTicketModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTicketCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -51,8 +59,18 @@ public class FacilioChainFactory {
 		c.addCommand(new SetTicketModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTicketListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getTicketStatusListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketStatusModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetTicketStatusListCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -83,7 +101,7 @@ public class FacilioChainFactory {
 	public static Chain getAddFieldsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new SetModuleIdCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new SetColumnNameForNewCFsCommand());
 		c.addCommand(new AddFieldsCommand());
 		addCleanUpCommand(c);
@@ -107,7 +125,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetTaskModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -117,7 +135,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateTasksFieldsCommand());
 		c.addCommand(getAddScheduleObjectChain());
 		c.addCommand(new SetTaskModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -127,7 +145,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTaskModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskCommand());
 		c.addCommand(new GetScheduleObjectCommand());
 		c.addCommand(new GetNotesCommand());
@@ -140,7 +158,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetTaskModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -179,7 +197,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetCampusModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllCampusCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -190,7 +208,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetCampusModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -199,7 +217,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
 		c.addCommand(new SetCampusModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddCampusCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -209,7 +227,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetCampusModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetCampusCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -219,7 +237,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetBuildingModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllBuildingCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -230,7 +248,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetBuildingModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -239,7 +257,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateBuildingFieldsCommand());
 		c.addCommand(new SetBuildingModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddBuildingCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -249,7 +267,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetBuildingModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetBuildingCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -259,7 +277,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetFloorModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllFloorCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -270,7 +288,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetFloorModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -279,7 +297,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFloorFieldsCommand());
 		c.addCommand(new SetFloorModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddFloorCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -289,7 +307,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetFloorModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetFloorCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -299,7 +317,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetSpaceModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -310,7 +328,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetSpaceModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -319,7 +337,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateSpaceFieldsCommand());
 		c.addCommand(new SetSpaceModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -329,7 +347,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetSpaceModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetSpaceCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -339,7 +357,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetZoneModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllZoneCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -350,7 +368,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetZoneModuleTableNames());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -359,7 +377,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateZoneFieldsCommand());
 		c.addCommand(new SetZoneModuleTableNames());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddZoneCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -369,7 +387,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetZoneModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetZoneCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -399,7 +417,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new SetZoneModuleTableNames());
 		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadFieldsCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetZoneCommand());
 		addCleanUpCommand(c);
 		return c;

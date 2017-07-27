@@ -147,14 +147,6 @@
 		$("#inputScheduleStart").on("change", updateEndTime);
 		$("#estimatedDuration input").on("change", updateEndTime);
 		
-		var updateSelect = function(selector, members) {
-			var $select = $(selector);
-			$select.find('option:gt(0)').remove();
-			for(var key in members) {
-				$select.append($("<option></option>").attr("value", key).text(members[key]));
-			}
-		}
-		
 		$("#inputAssignmentGroup").on("change", function() {
 			var groupId = $(this).val();
 			
@@ -169,7 +161,7 @@
 					data : {groupId : groupId}
 				})
 				.done(function(data) {
-					updateSelect("#inputAssignedTo", data);
+					FacilioApp.updateSelect("#inputAssignedTo", data);
 					$("#inputAssignedTo").attr("disabled",false);
 				})
 				.fail(function(error) {

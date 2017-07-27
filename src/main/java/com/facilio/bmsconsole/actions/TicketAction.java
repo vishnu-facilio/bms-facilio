@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +34,7 @@ public class TicketAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(TicketContext.DEFAULT_TICKET_FIELDS);
-		for(FacilioField field : fields) {
-			if(!defaultFields.contains(field.getName())) {
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax =((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
@@ -56,9 +47,12 @@ public class TicketAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	private List<FacilioField> fields;
+	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewTicketLayout();
+		return FormLayout.getNewTicketLayout(fields);
 	}
 	public void setFormlayout(List l)
 	{
@@ -80,14 +74,6 @@ public class TicketAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 	
-	private List<String> customFieldNames;
-	public List<String> getCustomFieldNames() {
-		return customFieldNames;
-	}
-	public void setCustomFieldNames(List<String> customFieldNames) {
-		this.customFieldNames = customFieldNames;
-	}
-	
 	private List<Long> attachmentId;
 	public List<Long> getAttachmentId() {
 		return attachmentId;
@@ -105,7 +91,7 @@ public class TicketAction extends ActionSupport {
 		
 		Command addTicket = FacilioChainFactory.getAddTicketChain();
 		addTicket.execute(context);
-		setTicketId(ticket.getTicketId());
+		setTicketId(ticket.getId());
 		return SUCCESS;
 	}
  	
@@ -113,7 +99,7 @@ public class TicketAction extends ActionSupport {
 	public String viewTicket() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
+		context.put(FacilioConstants.ContextNames.ID, getTicketId());
 		
 		Chain getTicketChain = FacilioChainFactory.getTicketDetailsChain();
 		getTicketChain.execute(context);

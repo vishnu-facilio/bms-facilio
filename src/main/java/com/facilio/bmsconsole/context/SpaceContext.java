@@ -8,8 +8,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class SpaceContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_SPACE_FIELDS = new String[] {"spaceId", "displayName", "name", "buildingId", "floorId", "area", "availability", "currentOccupancy", "maxOccupancy", "spaceCategoryId", "occupiable"};
-	
 	private static final Map<Integer, String> ALL_AVAILABILITY = Collections.unmodifiableMap(initAvailabilityMap());
 	
 	private static Map<Integer, String> initAvailabilityMap() {
@@ -25,20 +23,12 @@ public class SpaceContext extends ModuleBaseWithCustomFields {
 		return ALL_AVAILABILITY;
 	}
 	
-	private long spaceId;
-	public long getSpaceId() {
-		return spaceId;
+	private BuildingContext building;
+	public BuildingContext getBuilding() {
+		return building;
 	}
-	public void setSpaceId(long spaceId) {
-		this.spaceId = spaceId;
-	}
-	
-	private long buildingId;
-	public long getBuildingId() {
-		return buildingId;
-	}
-	public void setBuildingId(long buildingId) {
-		this.buildingId = buildingId;
+	public void setBuilding(BuildingContext building) {
+		this.building = building;
 	}
 	
 	private String displayName;
@@ -57,12 +47,12 @@ public class SpaceContext extends ModuleBaseWithCustomFields {
 		this.name = name;
 	}
 	
-	private long floorId;
-	public long getFloorId() {
-		return floorId;
+	private FloorContext floor;
+	public FloorContext getFloor() {
+		return floor;
 	}
-	public void setFloorId(long floorId) {
-		this.floorId = floorId;
+	public void setFloor(FloorContext floor) {
+		this.floor = floor;
 	}
 	
 	private int currentOccupancy;
@@ -81,12 +71,12 @@ public class SpaceContext extends ModuleBaseWithCustomFields {
 		this.maxOccupancy = maxOccupancy;
 	}
 	
-	private long spaceCategoryId;
-	public long getSpaceCategoryId() {
-		return spaceCategoryId;
+	private SpaceCategoryContext spaceCategory;
+	public SpaceCategoryContext getSpaceCategory() {
+		return spaceCategory;
 	} 
-	public void setSpaceCategoryId(long spaceCategoryId) {
-		this.spaceCategoryId = spaceCategoryId;
+	public void setSpaceCategory(SpaceCategoryContext spaceCategory) {
+		this.spaceCategory = spaceCategory;
 	}
 	
 	private long area;

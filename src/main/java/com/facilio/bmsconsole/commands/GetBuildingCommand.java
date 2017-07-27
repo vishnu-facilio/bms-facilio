@@ -18,7 +18,7 @@ public class GetBuildingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long buildingId = (long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
+		long buildingId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(buildingId > 0) 
 		{
@@ -31,10 +31,10 @@ public class GetBuildingCommand implements Command {
 					.dataTableName(dataTableName)
 					.beanClass(BuildingContext.class)
 					.select(fields)
-					.where("BUILDING_ID = ?", buildingId)
-					.orderBy("BUILDING_ID");
+					.where("ID = ?", buildingId)
+					.orderBy("ID");
 
-			List<BuildingContext> buildings = builder.get();	
+			List<BuildingContext> buildings = builder.getAsBean();	
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
 				context.put(FacilioConstants.ContextNames.BUILDING, building);

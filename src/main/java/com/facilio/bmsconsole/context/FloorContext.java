@@ -4,22 +4,12 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class FloorContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_FLOOR_FIELDS = new String[] {"floorId", "name", "buildingId", "mainLevel", "area", "currentOccupancy", "maxOccupancy"};
-	
-	private long floorId;
-	public long getFloorId() {
-		return floorId;
+	private BuildingContext building;
+	public BuildingContext getBuilding() {
+		return building;
 	}
-	public void setFloorId(long floorId) {
-		this.floorId = floorId;
-	}
-	
-	private long buildingId;
-	public long getBuildingId() {
-		return buildingId;
-	}
-	public void setBuildingId(long buildingId) {
-		this.buildingId = buildingId;
+	public void setBuilding(BuildingContext building) {
+		this.building = building;
 	}
 	
 	private String name;

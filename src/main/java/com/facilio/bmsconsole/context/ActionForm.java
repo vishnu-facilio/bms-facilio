@@ -9,9 +9,13 @@ import java.util.Map;
 public class ActionForm {
 	
 	
-	public Map<Integer, String> getStatusList() {
-		return TicketContext.getAllStatus();
-	}
+//	public Map<Integer, String> getStatusList() {
+//		Map<Integer, String> statusList = new HashMap<>();
+//		for(TicketContext.Status status : TicketContext.Status.values()) {
+//			statusList.put(status.getStatusAsInt(), status.getStatusAsString());
+//		}
+//		return statusList;
+//	}
 	
 	private Map<Long, String> locations;
 	public Map<Long, String> getLocations() {

@@ -26,9 +26,9 @@ public class GetAllBuildingCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(BuildingContext.class)
 				.select(fields)
-				.orderBy("BUILDING_ID");
+				.orderBy("ID");
 
-		List<BuildingContext> buildings = builder.get();
+		List<BuildingContext> buildings = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
 		
 		return false;

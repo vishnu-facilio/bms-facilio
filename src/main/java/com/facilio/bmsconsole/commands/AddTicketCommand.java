@@ -31,7 +31,7 @@ public class AddTicketCommand implements Command {
 																.fields(fields)
 																.connection(conn);
 			long ticketId = builder.insert(ticket);
-			ticket.setTicketId(ticketId);
+			ticket.setId(ticketId);
 			
 			context.put(FacilioConstants.ContextNames.RECORD_ID, ticketId);
 		}

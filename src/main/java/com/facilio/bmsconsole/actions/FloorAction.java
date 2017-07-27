@@ -46,16 +46,7 @@ public class FloorAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(FloorContext.DEFAULT_FLOOR_FIELDS);
-		for(FacilioField field : fields) 
-		{
-			if(!defaultFields.contains(field.getName())) 
-			{
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax = ((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		if(isajax!=null && isajax.equals("true"))
@@ -65,6 +56,8 @@ public class FloorAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String addFloor() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
@@ -73,7 +66,7 @@ public class FloorAction extends ActionSupport {
 		Chain addFloor = FacilioChainFactory.getAddFloorChain();
 		addFloor.execute(context);
 		
-		setFloorId(floor.getFloorId());
+		setFloorId(floor.getId());
 		
 		return SUCCESS;
 	}
@@ -81,7 +74,7 @@ public class FloorAction extends ActionSupport {
 	public String viewFloor() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FLOOR_ID, getFloorId());
+		context.put(FacilioConstants.ContextNames.ID, getFloorId());
 		
 		Chain getFloorChain = FacilioChainFactory.getFloorDetailsChain();
 		getFloorChain.execute(context);
@@ -93,7 +86,7 @@ public class FloorAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewFloorLayout();
+		return FormLayout.getNewFloorLayout(fields);
 	}
 	
 	private String moduleName;

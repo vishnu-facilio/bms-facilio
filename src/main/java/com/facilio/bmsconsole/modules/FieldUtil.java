@@ -1,9 +1,21 @@
 package com.facilio.bmsconsole.modules;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.DBUtil;
 
 public class FieldUtil {
 	
@@ -57,11 +69,10 @@ public class FieldUtil {
 					pstmt.setNull(paramIndex, Types.BOOLEAN);
 				}
 				break;
-			case ID:
+			case LOOKUP:
 			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
-			case USER:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					long val;
 					if(value instanceof Long) {
@@ -91,14 +102,78 @@ public class FieldUtil {
 				return rs.getDouble(cf.getName());
 			case BOOLEAN:
 				return rs.getBoolean(cf.getName());
-			case ID:
+			case LOOKUP:
 			case NUMBER:	
 			case DATE:
 			case DATE_TIME:
-			case USER:
 				return rs.getLong(cf.getName());
 			default:
 				return rs.getString(cf.getName());
+		}
+	}
+	
+	public static List<FacilioField> getAllFields(String moduleName, Connection conn) throws SQLException, IllegalAccessException, InvocationTargetException {
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			
+			String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
+			
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setLong(1, orgId);
+			pstmt.setString(2, moduleName);
+			
+			rs = pstmt.executeQuery();
+			List<FacilioField> fields = new ArrayList<>();
+			
+			while(rs.next()) {
+				FacilioField field = CommonCommandUtil.getFieldFromRS(rs);
+				if(field.getDataType() == FieldType.LOOKUP) {
+					field = getLookupField(field, conn);
+				}
+				field.setModuleName(moduleName);
+				fields.add(field);
+			}
+			
+			return fields;
+		}
+		catch (SQLException | IllegalAccessException | InvocationTargetException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(pstmt, rs);
+		}
+	}
+	
+	private static LookupField getLookupField(FacilioField field, Connection conn) throws IllegalAccessException, InvocationTargetException, SQLException {
+		LookupField lookupField = new LookupField();
+		BeanUtils.copyProperties(lookupField, field);
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			String sql = "SELECT Modules.MODULEID, Modules.ORGID, Modules.NAME, Modules.DISPLAY_NAME, Modules.TABLE_NAME, LookupFields.SPECIAL_TYPE FROM LookupFields LEFT JOIN Modules ON LookupFields.LOOKUP_MODULE_ID = Modules.MODULEID WHERE LookupFields.FIELDID = ?";
+			
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setLong(1, field.getFieldId());
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				lookupField.setSpecialType(rs.getString("SPECIAL_TYPE"));
+				lookupField.setLookupModule(CommonCommandUtil.getModuleFromRS(rs));
+			}
+			else {
+				return null;
+			}
+			return lookupField;
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(pstmt, rs);
 		}
 	}
 }

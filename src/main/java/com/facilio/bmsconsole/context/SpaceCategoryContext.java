@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class SkillContext extends ModuleBaseWithCustomFields {
+public class SpaceCategoryContext extends ModuleBaseWithCustomFields {
 	
 	private String name;
 	public String getName() {
@@ -18,13 +18,5 @@ public class SkillContext extends ModuleBaseWithCustomFields {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
-	private boolean isActive;
-	public boolean isActive() {
-		return isActive;
-	}
-	public void setIsActive(boolean isActive) {
-		this.isActive = isActive;
 	}
 }
