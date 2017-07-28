@@ -37,7 +37,7 @@ public class UserContext {
 	
 	private String name;
 	public String getName() {
-		if (this.name == null) {
+		if (this.name == null && this.email != null) {
 			this.name = this.email.substring(0, email.indexOf("@"));
 			this.name = this.name.substring(0, 1).toUpperCase() + this.name.substring(1);
 		}

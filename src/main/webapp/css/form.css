@@ -139,8 +139,12 @@ label {
 }
 
 .form-content .selectize-dropdown.single {
-	top: 32px !important;
+	top: -1px !important;
 	width: calc(100% - 1px) !important;
+}
+
+.input-group-btn {
+	vertical-align: top;
 }
 
 .selectize-input.focus {
