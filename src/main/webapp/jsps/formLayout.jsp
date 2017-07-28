@@ -115,7 +115,7 @@
 									<option value="">- None -</option>
 								</select>
 								<span class="input-group-btn">
-									<s:if test="%{#field.specialType == 'users'">
+									<s:if test="%{#field.specialType == 'users'}">
 										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('users', 'Users', '<s:property value="#field.inputName"/>')">
 									</s:if>
 									<s:elseif test="%{#field.specialType == 'groups'}">

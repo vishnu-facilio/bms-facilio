@@ -110,7 +110,7 @@ FacilioApp = {
 		$(".common-notification-alert .alert").delay(2000).slideUp(200);
 	},
 	
-	lookupDialog: function(moduleLinkName, moduleName, criteria, fieldId) {
+	lookupDialog: function(moduleLinkName, moduleName, fieldId) {
 		var headerHtml = '<div id="'+moduleLinkName+'popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title pull-left"></h4><div class="action-btn text-right"><button type="button" class="btn btn-default btn-circle cancel-btn" data-dismiss="modal"><i class="fa fa-times"></i></button>';
 		if(moduleLinkName != 'area')
 		{

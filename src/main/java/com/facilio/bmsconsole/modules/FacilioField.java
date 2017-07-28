@@ -102,12 +102,12 @@ public class FacilioField {
 		this.required = isRequired;
 	}
 	
-	private boolean disbabled;
+	private boolean disabled;
 	public boolean isDisabled() {
-		return disbabled;
+		return disabled;
 	}
 	public void setDisabled(boolean isDisabled) {
-		this.disbabled = isDisabled;
+		this.disabled = isDisabled;
 	}
 	
 	private String displayName;
