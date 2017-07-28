@@ -53,7 +53,7 @@ public class ViewLayout {
 		viewLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		viewLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
 		viewLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP));
+		viewLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}

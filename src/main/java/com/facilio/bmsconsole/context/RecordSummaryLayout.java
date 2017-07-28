@@ -100,7 +100,7 @@ public class RecordSummaryLayout {
 		recordSummaryLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
 		recordSummaryLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
 		
 		recordSummaryLayout.addRelatedModule(new RelatedModule("TASKS", "tasks", "Task", "task")
 							.setIcon("fa fa-tasks")

@@ -34,7 +34,6 @@
 	     </div>  
 	</div>
 </s:if>
-
 <div class="row  row-in-2x">
 	<div class="col-lg-12 col-md-12 ticket-form">
 		<div class="form-group">
@@ -196,7 +195,7 @@ var relatedModuleAddCallBack = function(result, error)
 	</s:iterator>  
 	var i = 1;
 	var currentStage = '<s:property value="record.status.status" />';
-	var lastStage = ["Closed"];
+	var lastStage = ["<s:property value='record.statuses[record.statuses.size-1].status' />"];
 	
 	for (var i=0; i< stages.length; i++) {
 		var stage = stages[i];
