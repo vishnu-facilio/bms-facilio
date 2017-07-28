@@ -23,7 +23,7 @@
 			    <label>Accessible Spaces</label>
 			    <span class="required">*</span>
 			    <select name="user.timezone" class="form-control">
-			    	<option> -- </option>
+			    	<option> - All - </option>
 			    </select>
 			</div>
 		</div>
@@ -31,7 +31,7 @@
 			<div class="form-group">
 			    <label>Time zone</label>
 			    <select name="user.timezone" class="form-control">
-			    	<option>All</option>
+			    	<option> -- </option>
 			    </select>
 			</div>
 			<div class="form-group">
@@ -77,7 +77,7 @@
 					.fail(function(error) {
 						$(".save-btn").button('reset');
 						console.log(error);
-						alert(JSON.stringify(error));
+						alert(JSON.stringify(error.responseJSON.fieldErrors));
 					});
 					return false;
 			  	}

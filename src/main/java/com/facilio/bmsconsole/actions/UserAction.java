@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 
+import com.amazonaws.services.cognitoidp.model.InvalidParameterException;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -103,7 +104,15 @@ public class UserAction extends ActionSupport {
 		}
 		catch (Exception e) {
 			if (e instanceof UsernameExistsException) {
-				addFieldError("email", "This user already exists in your organization.");
+				if (UserAPI.getUser(user.getEmail()).getOrgId() == OrgInfo.getCurrentOrgInfo().getOrgid()) {
+					addFieldError("email", "This user already exists in your organization.");
+				}
+				else {
+					addFieldError("email", "This user already exists in other organization.");
+				}
+			}
+			else if (e instanceof InvalidParameterException) {
+				addFieldError("phone", "Invalid phone number format.");
 			}
 			return ERROR;
 		}
