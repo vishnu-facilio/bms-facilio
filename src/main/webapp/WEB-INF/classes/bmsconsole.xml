@@ -712,10 +712,10 @@
 		</action>
 	</package>
 	
-	<package name="area" namespace="/home/area" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.AreaAction" method="areaList">
+	<package name="area" namespace="/home/basespace" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
 			<param name="permission">workorderviewall</param>
-			<result name="success">/jsps/areaListPopup.jsp</result>
+			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>	
 </struts>

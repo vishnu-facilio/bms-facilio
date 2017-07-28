@@ -71,14 +71,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assetId = assetId;
 	}
 	
-	private long areaId = 0;
-	public long getAreaId() {
-		return areaId;
-	}
-	public void setAreaId(long areaId) {
-		this.areaId = areaId;
-	}
-	
 	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
 	
 	private long dueDate = 0;

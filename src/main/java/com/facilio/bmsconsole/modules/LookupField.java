@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class LookupField extends FacilioField {
@@ -22,11 +23,8 @@ public class LookupField extends FacilioField {
 	
 	public String getLookupIcon() {
 		
-		if (FacilioConstants.ContextNames.USERS.equalsIgnoreCase(specialType)) {
-			return "fa fa-user";
-		}
-		else if (FacilioConstants.ContextNames.GROUPS.equalsIgnoreCase(specialType)) {
-			return "fa fa-users";
+		if(LookupSpecialTypeUtil.isSpecialType(specialType)) {
+			return LookupSpecialTypeUtil.getLookupIcon(specialType);
 		}
 		
 		String lookupModuleName = lookupModule.getName();

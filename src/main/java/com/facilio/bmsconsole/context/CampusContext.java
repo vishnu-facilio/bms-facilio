@@ -4,6 +4,14 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class CampusContext extends ModuleBaseWithCustomFields {
 	
+	private long baseSpaceId;
+	public long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+	
 	private String name;
 	public String getName() {
 		return name;

@@ -17,6 +17,9 @@ public class FormLayout {
 		Panel second =  new Panel(Panel.Type.HALF);
 		
 		for(FacilioField field : fields) {
+			if(field.getName().equals("assetId")) {
+				continue;
+			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("spaceId")) {
 				if(field.getName().equals("assetId"))
 				{
@@ -117,6 +120,9 @@ public class FormLayout {
 		Panel second =  new Panel(Panel.Type.HALF);
 		
 		for(FacilioField field : fields) {
+			if(field.getName().equals("baseSpaceId")) {
+				continue;
+			}
 			if(field.getName().equals("name") || field.getName().equals("location") || field.getName().equals("description")) {
 				first.add(field);
 			}
@@ -140,16 +146,19 @@ public class FormLayout {
 		Panel third =  new Panel(Panel.Type.HALF);
 		 
 		for(FacilioField field : fields) {
-				if(field.getName().equals("name")) {
-					first.add(field);
-				}
-				else if(field.getName().equals("campus") || field.getName().equals("floors") || field.getName().equals("location")){
-					second.add(field);
-				}
-				else {
-					third.add(field);
-				}
+			if(field.getName().equals("baseSpaceId")) {
+				continue;
 			}
+			if(field.getName().equals("name")) {
+				first.add(field);
+			}
+			else if(field.getName().equals("campus") || field.getName().equals("floors") || field.getName().equals("location")){
+				second.add(field);
+			}
+			else {
+				third.add(field);
+			}
+		}
 		panels.add(first);
 		panels.add(second);
 		panels.add(third);
@@ -164,6 +173,9 @@ public class FormLayout {
 		Panel second =  new Panel(Panel.Type.HALF);
 		
 		for(FacilioField field : fields) {
+			if(field.getName().equals("baseSpaceId")) {
+				continue;
+			}
 			if(field.getName().equals("name") || field.getName().equals("building") || field.getName().equals("area")) {
 				first.add(field);
 			}
@@ -184,6 +196,9 @@ public class FormLayout {
 		Panel second =  new Panel(Panel.Type.HALF);
 		
 		for(FacilioField field : fields) {
+			if(field.getName().equals("baseSpaceId")) {
+				continue;
+			}
 			if(field.getName().equals("name") || field.getName().equals("displayName") || field.getName().equals("building") || field.getName().equals("floor") || field.getName().equals("area")) {
 				first.add(field);
 			}

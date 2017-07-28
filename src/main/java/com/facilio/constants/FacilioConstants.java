@@ -166,7 +166,8 @@ public class FacilioConstants {
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";
 		
-		public static final String AREA_LIST = "areas";
+		public static final String BASE_SPACE_LIST = "basespaces";
+		public static final String BASE_SPACE = "basespace";
 		
 		public static final String PICKLIST = "pickList";
 		

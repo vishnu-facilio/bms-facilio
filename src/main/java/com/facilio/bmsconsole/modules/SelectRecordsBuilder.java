@@ -14,6 +14,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -155,11 +156,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 			if(level <= LEVEL) {
 				long id = (long) FieldUtil.getValueAsPerType(field, rs);
 				LookupField lookupField = (LookupField) field;
-				if(FacilioConstants.ContextNames.USERS.equals(lookupField.getSpecialType())) {
-					return UserAPI.getUserFromOrgUserId(id);
-				}
-				else if(FacilioConstants.ContextNames.GROUPS.equals(lookupField.getSpecialType())) {
-					return GroupAPI.getGroup(id);
+				if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+					return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
 				}
 				else {
 					Class moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());

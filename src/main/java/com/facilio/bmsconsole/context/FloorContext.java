@@ -4,6 +4,14 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class FloorContext extends ModuleBaseWithCustomFields {
 	
+	private long baseSpaceId;
+	public long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+	
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		return building;

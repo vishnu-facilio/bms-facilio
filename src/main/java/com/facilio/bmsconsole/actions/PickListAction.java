@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -22,16 +23,8 @@ public class PickListAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		
-		if(moduleName.equals(FacilioConstants.ContextNames.USERS)) {
-			setPickList(UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid()));
-		}
-		else if(moduleName.equals(FacilioConstants.ContextNames.GROUPS)) {
-			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), false);
-			Map<Long, String> groupList = new HashMap<>();
-			for(GroupContext group : groups) {
-				groupList.put(group.getGroupId(), group.getName());
-			}
-			setPickList(groupList);
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			setPickList(LookupSpecialTypeUtil.getPickList(moduleName));
 		}
 		else {
 			Context context = new FacilioContext();

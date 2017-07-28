@@ -23,6 +23,14 @@ public class SpaceContext extends ModuleBaseWithCustomFields {
 		return ALL_AVAILABILITY;
 	}
 	
+	private long baseSpaceId;
+	public long getBaseSpaceId() {
+		return baseSpaceId;
+	}
+	public void setBaseSpaceId(long baseSpaceId) {
+		this.baseSpaceId = baseSpaceId;
+	}
+	
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		return building;

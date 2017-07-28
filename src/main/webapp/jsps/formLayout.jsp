@@ -102,7 +102,7 @@
 									class="form-control select-lookup"
 									name="<s:property value="#field.inputName"/>"
 									placeholder="<s:property value="#field.placeHolder"/>"
-									<s:if test="%{#field.specialType == 'users' || #field.specialType == 'groups'}">
+									<s:if test="%{#field.specialType == 'users' || #field.specialType == 'groups' || #field.specialType == 'basespace'}">
 										data-module-name="<s:property value="#field.specialType"/>"
 									</s:if>
 										data-module-name="<s:property value="#field.lookupModule.name"/>"

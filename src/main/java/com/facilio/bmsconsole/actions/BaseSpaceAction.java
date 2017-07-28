@@ -7,22 +7,22 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.AreaContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
-public class AreaAction extends ActionSupport {
+public class BaseSpaceAction extends ActionSupport {
 	
 	@SuppressWarnings("unchecked")
-	public String areaList() throws Exception 
+	public String baseSpaceList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
 		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);
 		
-		setModuleName("Area");
-		setAreas((List<AreaContext>) context.get(FacilioConstants.ContextNames.AREA_LIST));
+		setModuleName("Base Space");
+		setBasespaces((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
 		
 		return SUCCESS;
 	}
@@ -57,14 +57,14 @@ public class AreaAction extends ActionSupport {
 		this.customFieldNames = customFieldNames;
 	}
 	
-	private List<AreaContext> areas;
-	public List<AreaContext> getAreas() 
+	private List<BaseSpaceContext> basespaces;
+	public List<BaseSpaceContext> getBasespaces() 
 	{
-		return areas;
+		return basespaces;
 	}
-	public void setAreas(List<AreaContext> areas) 
+	public void setBasespaces(List<BaseSpaceContext> basespaces) 
 	{
-		this.areas = areas;
+		this.basespaces = basespaces;
 	}
 	
 	public String getViewDisplayName()
@@ -72,8 +72,8 @@ public class AreaAction extends ActionSupport {
 		return "All Spaces";
 	}
 	
-	public List<AreaContext> getRecords() 
+	public List<BaseSpaceContext> getRecords() 
 	{
-		return areas;
+		return basespaces;
 	}
 }
