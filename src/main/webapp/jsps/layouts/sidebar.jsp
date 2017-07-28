@@ -1,5 +1,5 @@
 <div class="navbar-default sidebar " role="navigation">
-    <div class="sidebar-nav ">
+    <div class="sidebar-nav navbar-collapse">
         <ul class="nav metismenu" id="side-menu">
         <!-- 
             <li class="sidebar-search">
@@ -26,51 +26,29 @@
             </li> -->
               <li>
                
-                <a href="#"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
-                <span class="nav-title"> Work Orders</span>
-                <span class="fa arrow"></span>
+               
+                <a href="#ticket"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
+                <span class="nav-title all-workorder"> Work Orders</span>
+               <span class="nav-icon-right add-new-workorder pull-right fc-plus">+</span>
                 </a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#ticket">All Work Orders</a>
-                    </li>
-                    <li>
-                        <a href="#ticket/allopentickets">All Open Work Orders</a>
-                    </li>
-                     <li>
-                        <a href="#ticket/mytickets">My Work Orders</a>
-                    </li>
-                     <li>
-                        <a href="#ticket/myopentickets">My Open Work Orders</a>
-                    </li>
-                     <li>
-                        <a href="#ticket/overduetickets">Overdue Work Orders</a>
-                    </li>
-                     <li>
-                        <a href="#ticket/myoverduetickets">My Overdue Work Orders</a>
-                    </li>
-                 </ul>
             </li>
+            
             <li>
-               <a href="#"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
-               <span class="nav-title">Tasks</span>
-               <span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#task">All Tasks</a>
-                    </li>
-                    <li>
-                        <a href="#task/mytasks">My Tasks</a>
-                    </li>
-                    <li>
-		                <a href="#centraldispatch">Central Dispatch</a>
-		            </li>
-                  </ul>
+               <a href="#task"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
+               <span class="nav-title all-task">Tasks</span>
+               <span class="nav-icon-right add-new-task pull-right fc-plus">+</span></a>
+             
             </li>
             <li>
                 <a href="#calendar">
                 <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
                 <span class="nav-title">Calendar
+                </span></a>
+            </li>
+             <li>
+                <a href="#centraldispatch">
+                <span class="nav-icon"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
+                <span class="nav-title">Central Dispatch
                 </span></a>
             </li>
 			<li>

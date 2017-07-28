@@ -10,8 +10,36 @@
 <div class="col-md-12 col-lg-12 record-list">
 <div class="row form-header" >
 <div class="col-sm-12" >
-  <h4 class="pull-left"><s:property value="%{viewDisplayName}" /></h4>
-    <div class="action-btn text-right">
+		            	
+		            	<h4 class="pull-left" style="cursor:pointer" data-toggle="dropdown"><s:property value="%{viewDisplayName}" />
+		            	
+   						 <span class="caret"></span></h4>
+   						 
+			<s:if
+				test="%{moduleLinkName == 'ticket'}">
+
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#ticket">All Work Orders</a></li>
+					<li><a href="#ticket/allopentickets">All Open Work Orders</a>
+					</li>
+					<li><a href="#ticket/mytickets">My Work Orders</a></li>
+					<li><a href="#ticket/myopentickets">My Open Work Orders</a></li>
+					<li><a href="#ticket/overduetickets">Overdue Work Orders</a></li>
+					<li><a href="#ticket/myoverduetickets">My Overdue Work
+							Orders</a></li>
+				</ul>
+			</s:if>
+			<s:elseif
+				test="%{moduleLinkName == 'task'}">
+
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="#task">All Tasks</a></li>
+					<li><a href="#task/mytasks">My Tasks</a></li>
+				</ul>
+			</s:elseif>
+
+
+			<div class="action-btn text-right">
  		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
 	 </div>
   </div>

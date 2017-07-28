@@ -28,7 +28,17 @@ FacilioApp = {
 			}
 		});
 		
+		$('.sidebar .add-new-workorder').click(function(e) {
+			e.preventDefault();
+			
+			location.href = '#ticket/new';
+		});
 		
+		$('.sidebar .add-new-task').click(function(e) {
+			e.preventDefault();
+		
+			location.href = '#task/new';
+		});
 		$(document).on('ajaxStart', function() { NProgress.start(); });
 		$(document).on('ajaxStop',   function() { NProgress.done();  });
 	},

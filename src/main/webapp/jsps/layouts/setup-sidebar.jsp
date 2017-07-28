@@ -1,4 +1,4 @@
-<div class="navbar-default sidebar" role="navigation">
+<div class="navbar-default sidebar navbar-collapse" role="navigation">
 	<div class="nav back-to-product">
 		<div class="col-lg-12">
 			<a href="index">
