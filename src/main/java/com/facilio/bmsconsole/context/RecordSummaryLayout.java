@@ -133,7 +133,7 @@ public class RecordSummaryLayout {
 		recordSummaryLayout.setRecordTitleColumnId("subject");
 		
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
 		
 		return recordSummaryLayout;

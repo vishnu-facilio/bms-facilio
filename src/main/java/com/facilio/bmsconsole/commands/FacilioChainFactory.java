@@ -179,6 +179,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getTaskStatusListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTaskStatusModuleTableNames());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetTaskStatusListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadActionFormCommand());

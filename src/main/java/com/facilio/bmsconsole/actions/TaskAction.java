@@ -68,10 +68,9 @@ public class TaskAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		
-		if(scheduleObj != null && scheduleObj.getScheduledStart() != 0) {
-			scheduleObj.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, scheduleObj);
-			task.setSchedule(scheduleObj);
+		if(task.getSchedule() != null && task.getSchedule().getScheduledStart() != 0) {
+			task.getSchedule().setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, task.getSchedule());
 		}
 		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
@@ -93,7 +92,6 @@ public class TaskAction extends ActionSupport {
 		getTaskChain.execute(context);
 		
 		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
-		setScheduleObj((ScheduleContext) context.get(FacilioConstants.ContextNames.SCHEDULE_OBJECT));
 		List<NoteContext> taskNotes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
 		if(taskNotes != null && taskNotes.size() > 0) {
 			setNotes(taskNotes);
@@ -108,14 +106,6 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setTask(TaskContext task) {
 		this.task = task;
-	}
-	
-	private ScheduleContext scheduleObj;
-	public ScheduleContext getScheduleObj() {
-		return scheduleObj;
-	}
-	public void setScheduleObj(ScheduleContext scheduleObj) {
-		this.scheduleObj = scheduleObj;
 	}
 	
 	private List<NoteContext> notes;

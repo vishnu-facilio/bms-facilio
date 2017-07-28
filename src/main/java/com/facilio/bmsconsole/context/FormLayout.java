@@ -72,6 +72,7 @@ public class FormLayout {
 		scheduleStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		scheduleStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		scheduleStart.setModuleName("task.schedule");
+		scheduleStart.setDefault(true);
 		fourth.add(scheduleStart);
 	 
 		FacilioField actualWorkStart = new FacilioField();
@@ -80,28 +81,30 @@ public class FormLayout {
 		actualWorkStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		actualWorkStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		actualWorkStart.setModuleName("task.schedule");
+		actualWorkStart.setDefault(true);
 		fourth.add(actualWorkStart);
-	 
 		panels.add(fourth);
 		
 		Panel fifth =  new Panel(Panel.Type.HALF);
-	 
 		FacilioField estimatedEnd = new FacilioField();
-		estimatedEnd.setName("estimatedEndt");
+		estimatedEnd.setName("estimatedEnd");
 		estimatedEnd.setDisplayName("Estimated End");
 		estimatedEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		estimatedEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		estimatedEnd.setModuleName("task.schedule");
+		estimatedEnd.setDefault(true);
 		fifth.add(estimatedEnd);
 	 
 		FacilioField actualWorkEnd = new FacilioField();
-		actualWorkEnd.setName("estimatedEndt");
-		actualWorkEnd.setDisplayName("Estimated End");
+		actualWorkEnd.setName("actualWorkEnd");
+		actualWorkEnd.setDisplayName("Actual Work End");
 		actualWorkEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		actualWorkEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		actualWorkEnd.setModuleName("task.schedule");
+		actualWorkEnd.setDefault(true);
 		fifth.add(actualWorkEnd);
 		panels.add(fifth);
+		
 		return panels;
 		
 	}

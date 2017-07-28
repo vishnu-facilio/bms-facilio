@@ -1,6 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.constants.FacilioConstants;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
@@ -68,12 +75,20 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.schedule = schedule;
 	}
 	
-	private TicketStatusContext status;
-	public TicketStatusContext getStatus() {
+	private TaskStatusContext status;
+	public TaskStatusContext getStatus() {
 		return status;
 	} 
-	public void setStatus(TicketStatusContext status) {
+	public void setStatus(TaskStatusContext status) {
 		this.status = status;
 	}
 	
+	public List<TaskStatusContext> getStatuses() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		Chain statusListChain = FacilioChainFactory.getTaskStatusListChain();
+		statusListChain.execute(context);
+		
+		return (List<TaskStatusContext>) context.get(FacilioConstants.ContextNames.TASK_STATUS_LIST);
+	}
 }

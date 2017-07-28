@@ -10,6 +10,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskStatusContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -103,6 +104,9 @@ public class FacilioConstants {
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
 		
+		public static final String TASK_STATUS = "taskstatus";
+		public static final String TASK_STATUS_LIST = "taskstatuses";
+		
 		public static final String SCHEDULE_ID = "scheduleId";
 		public static final String SCHEDULE_OBJECT = "scheduleObject";
 		
@@ -180,6 +184,7 @@ public class FacilioConstants {
 			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
+			classMap.put(TASK_STATUS, TaskStatusContext.class);
 			
 			return classMap;
 		}
