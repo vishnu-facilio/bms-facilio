@@ -53,7 +53,12 @@
     	
     	<link href="${pageContext.request.contextPath}/css/sb-admin-2.css" rel="stylesheet">
     	
+    	<link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
+    	<link href="${pageContext.request.contextPath}/css/view.css" rel="stylesheet">
+    	<link href="${pageContext.request.contextPath}/css/toggleswitch.css" rel="stylesheet">
+    	<link href="${pageContext.request.contextPath}/css/checkbox.css" rel="stylesheet">
     	<link href="${pageContext.request.contextPath}/css/setup.css" rel="stylesheet">
+    	<link href="${pageContext.request.contextPath}/css/avatar.css" rel="stylesheet">
     	
     	<link href="${pageContext.request.contextPath}/js/c3/c3.min.css" rel="stylesheet">
     	
@@ -110,6 +115,8 @@
 		<!-- scroll bar js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/js/perfect-scrollbar.jquery.min.js"></script>
 		
+		<script src="http://www.jqueryscript.net/demo/jQuery-Plugin-To-Create-Text-Avatars-From-User-Names-Avatarme/src/jquery.avatarme-1.0.min.js"></script>
+		
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
 		<script src="${pageContext.request.contextPath}/js/app.js"></script>
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
@@ -131,7 +138,7 @@
 		
 		<%@ include file="setup-sidebar.jsp" %>
 
-        <div id="page-wrapper" style="overflow: hidden;">
+        <div id="page-wrapper" class="setup-wrapper">
             Loading...
         </div>
         <!-- /#page-wrapper -->

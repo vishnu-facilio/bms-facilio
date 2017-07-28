@@ -13,7 +13,52 @@
    <put-attribute name="title" value="Setup Home"/>   
    </definition>
    <definition name="setup" template="/jsps/layouts/setuplayout.jsp">   
-   <put-attribute name="title" value="Setup Page"/>   
-   <put-attribute name="body" value="/jsps/setup/container.jsp"/>   
-   </definition>  
+   <put-attribute name="title" value="Setup Page"/>
+   </definition>
+   
+   <!-- Setup Pages -->
+   	<definition name="userList" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Users"/>   
+   		<put-attribute name="body" value="/jsps/usersList.jsp"/>   
+   	</definition>
+   	
+   	<definition name="newUser" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="New User"/>   
+   		<put-attribute name="body" value="/jsps/inviteUser.jsp"/>   
+   	</definition>
+   	
+   	<definition name="editUser" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Edit User"/>   
+   		<put-attribute name="body" value="/jsps/editUser.jsp"/>   
+   	</definition>
+   	
+   	<definition name="groupList" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Groups"/>   
+   		<put-attribute name="body" value="/jsps/groups/groupsList.jsp"/>   
+   	</definition>
+   	
+   	<definition name="newGroup" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="New Group"/>   
+   		<put-attribute name="body" value="/jsps/groups/newGroup.jsp"/>   
+   	</definition>
+   	
+   	<definition name="editGroup" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Edit Group"/>   
+   		<put-attribute name="body" value="/jsps/groups/editGroup.jsp"/>   
+   	</definition>
+   	
+   	<definition name="roleList" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Roles"/>   
+   		<put-attribute name="body" value="/jsps/roleList.jsp"/>   
+   	</definition>
+   	
+   	<definition name="newRole" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="New Role"/>   
+   		<put-attribute name="body" value="/jsps/newRole.jsp"/>   
+   	</definition>
+   	
+   	<definition name="editRole" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Edit Role"/>   
+   		<put-attribute name="body" value="/jsps/editRole"/>   
+   	</definition>
 </tiles-definitions>  

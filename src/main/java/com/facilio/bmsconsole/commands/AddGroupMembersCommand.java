@@ -5,23 +5,21 @@ import java.sql.Connection;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class UpdateGroupCommand implements Command {
+public class AddGroupMembersCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-
-		GroupContext group = (GroupContext) context.get(FacilioConstants.ContextNames.GROUP);
 		
-		if (group != null) {
+		Long groupId = (Long) context.get(FacilioConstants.ContextNames.GROUP_ID);
+		Long[] memberIds = (Long[]) context.get(FacilioConstants.ContextNames.GROUP_MEMBER_IDS);
+		
+		if (groupId != null && memberIds != null) {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			GroupAPI.updateGroup(group, conn);
-			
-			context.put(FacilioConstants.ContextNames.GROUP_ID, group.getGroupId());
+			GroupAPI.updateGroupMembers(groupId, memberIds, 1, conn);
 		}
 		else {
 			throw new IllegalArgumentException("Group Object cannot be null");

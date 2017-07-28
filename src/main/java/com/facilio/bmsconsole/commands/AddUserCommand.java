@@ -1,22 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.Connection;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.constants.FacilioConstants;
 
 public class AddUserCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
 		
-		UserContext userContext = (UserContext) context;
-		long userId = UserAPI.addUser(userContext);
-		userContext.setUserId(userId);
+		UserContext user = (UserContext) context.get(FacilioConstants.ContextNames.USER);
 		
-		return true;
+		if (user != null) {
+			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			
+			long userId = UserAPI.addUser(user, conn);
+			
+			context.put(FacilioConstants.ContextNames.USER_ID, userId);
+		}
+		else {
+			throw new IllegalArgumentException("User Object cannot be null");
+		}
+		return false;
 	}
-
 }

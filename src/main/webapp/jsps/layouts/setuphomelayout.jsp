@@ -120,6 +120,13 @@
 		
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
+			
+			$(document).ready(function() {
+				$('#setuphome-wrapper').perfectScrollbar();
+				
+				var ht = $(window).height();
+				//$('#setuphome-wrapper').css('height', (ht-100)+'px');
+			});
 		</script>
 </head>
 <body>
@@ -128,95 +135,78 @@
 		<%@ include file="header.jsp" %>
 
         <div id="setuphome-wrapper">
-        <div class="row setup-header">
-        <div class="col-lg-12 col-sm-12">
-         <div class="col-lg-6 col-sm-6">
-         <div class="pull-left">
-         <div class="nav fc-back-to-product">
-		<div >
-		<a href="index">
-		<span class="icon-head-2x"><i class="fa fa-angle-left"></i></span>&nbsp;&nbsp;Back to Product
-		</a>
-        </div>
-   		 </div>
-         <div class="setup-header-text">Settings</div>
-         </div>
-         </div>
-        <div class="col-lg-6 col-sm-6">
-     	<div class="action-btn pull-right">
-     	<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#';"><i class="fa fa-times"></i></button>
-	 	</div>
-	 	</div>
-        
+        	<div class="row setup-header">
+        		<div class="col-lg-12 col-sm-12">
+        			<div class="col-lg-6 col-sm-6">
+	        			<div class="pull-left">
+		       				<div class="mini-header">
+		       					<a href="index"><span class="icon-head-2x"><i class="fa fa-angle-left"></i></span>&nbsp;&nbsp;Back to Product</a>
+		       				</div>
+		       				<div class="setup-header-text">Settings</div>
+		      			</div>
+		      		</div>
+	      			<div class="col-lg-6 col-sm-6">
+				     	<div class="action-btn pull-right">
+				     	<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='index';"><i class="fa fa-times"></i></button>
+					 	</div>
+					 </div>
+	      		</div>
+	      	</div>
        
-        </div>
-        </div>
-       
-       <!-- body -->
-        
-        <div class="row form-group setup-body-out">
-        <div class="fc-setup-body">
-        <div class="col-lg-12 col-sm-12 setup-body">
-        <div class="row form-group">
-        
-        <div class="col-lg-4 col-sm-4 ">
-        <ul class="list-unstyled">
-        <li class="setup-body-thead">Users & Groups</li>
- 		<li class="setup-body-tbody"><a href="#">Users</a></li>
- 		<li class="setup-body-tbody"><a href="#">Groups</a></li>
-  		<li class="setup-body-tbody"><a href="#">Roles</a></li>
-		</ul>
-        </div>
-        
-        <div class="col-lg-4 col-sm-4 form-group">
-        <ul class="list-unstyled">
-        <li class="setup-body-thead">General Settings</li>
- 		<li class="setup-body-tbody"><a href="#">Org Settings</a></li>
- 		<li class="setup-body-tbody"><a href="#">Profiles Settings</a></li>
-  		<li class="setup-body-tbody"><a href="#">Subscriptions</a></li>
-		</ul>
-        </div>
-        
-        
-        <div class="col-lg-4 col-sm-4 form-group">
-        <ul class="list-unstyled">
-        <li class="setup-body-thead">Work Order</li>
- 		<li class="setup-body-tbody"><a href="#">Custom Fields</a></li>
- 		<li class="setup-body-tbody"><a href="#">Notifications</a></li>
-  		<li class="setup-body-tbody"><a href="#">Emails</a></li>
-		</ul>
-        </div>
-        
- 		</div>  
- 		
- 		<div class="row form-group">
- 		 		
- 		<div class="col-lg-4 col-sm-4 form-group">
-        <ul class="list-unstyled">
-        <li class="setup-body-thead">Subscriptions</li>
- 		<li class="setup-body-tbody"><a href="#">Plans & Billings</a></li>
- 		</ul>
-        </div>
- 		 		
-        <div class="col-lg-4 col-sm-4 form-group">
-        <ul class="list-unstyled">
-        <li class="setup-body-thead">App Settings</li>
- 		<li class="setup-body-tbody"><a href="#">Integrations</a></li>
- 		<li class="setup-body-tbody"><a href="#">Customer Portal</a></li>
-  		<li class="setup-body-tbody"><a href="#">Workflow automations</a></li>
-		</ul>
-        </div>
-             
-        
- 		</div>    
- 		  
-
-        </div>
-        </div>
-        </div>
+       		<!-- body -->
+        	<div class="row">
+        		<div class="col-lg-12 col-sm-12 setup-body">
+       				<div class="row">
+       					<div class="col-lg-4 col-sm-4">
+       						<ul class="list-unstyled">
+       							<li class="setup-body-thead">General</li>
+       							<li class="setup-body-tbody"><a href="setup#mysettings">Personal Settings</a></li>
+       							<li class="setup-body-tbody"><a href="setup#orgsettings">Company Settings</a></li>
+       						</ul>
+       					</div>
+       					
+       					<div class="col-lg-4 col-sm-4">
+       						<ul class="list-unstyled">
+       							<li class="setup-body-thead">Users & Groups</li>
+       							<li class="setup-body-tbody"><a href="setup#users">Users</a></li>
+       							<li class="setup-body-tbody"><a href="setup#groups">Groups</a></li>
+       							<li class="setup-body-tbody"><a href="setup#roles">Roles</a></li>
+       						</ul>
+       					</div>
+       					
+       					<div class="col-lg-4 col-sm-4">
+       						<ul class="list-unstyled">
+       							<li class="setup-body-thead">Work Order</li>
+       							<li class="setup-body-tbody"><a href="#">Custom Fields</a></li>
+       							<li class="setup-body-tbody"><a href="#">Notifications</a></li>
+       							<li class="setup-body-tbody"><a href="#">Emails</a></li>
+       						</ul>
+       					</div>
+       				</div>
+       				
+       				<div class="row">
+       					<div class="col-lg-4 col-sm-4">
+       						<ul class="list-unstyled">
+       							<li class="setup-body-thead">Subscriptions</li>
+       							<li class="setup-body-tbody"><a href="#">Plans & Billings</a></li>
+       						</ul>
+       					</div>
+       					
+       					<div class="col-lg-4 col-sm-4">
+       						<ul class="list-unstyled">
+       							<li class="setup-body-thead">Automation</li>
+       							<li class="setup-body-tbody"><a href="#">Assignment Rules</a></li>
+       							<li class="setup-body-tbody"><a href="#">Workflow Rules</a></li>
+       							<li class="setup-body-tbody"><a href="#">SLA Esclation Rules</a></li>
+       						</ul>
+       					</div>
+       				</div>
+        		</div>
+        	</div>
         </div>
         
         <%@ include file="footer.jsp" %>
+        
     </div>
 </body>
 </html>

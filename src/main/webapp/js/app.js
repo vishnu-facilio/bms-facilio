@@ -182,5 +182,87 @@ FacilioApp = {
 				});
 			}
 		});
+	},
+	
+	userPickList: function(selector, options) {
+		/*
+		 *  options: {
+		 *  	all: true, --> return's all users from the organization
+		 *  	assign: <module>, --> return's assignable users for module (work order)
+		 *  	group: <group_id>, --> return's group members
+		 *  	default_value: [] --> default values
+		 *  }
+		 */
+		
+		var ajaxURL = '/home/users';
+		if (options.group) {
+			ajaxURL = '/home/users?groupId='+options.group;
+		}
+		 $.ajax({
+				type : "GET",
+				url : contextPath + ajaxURL,
+				success : function(response) {
+					
+					var REGEX_EMAIL = '([a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@' +
+			        '(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)';
+
+					var selObj = $(selector).selectize({
+						persist: false,
+						maxItems: null,
+						valueField: 'orgUserId',
+						labelField: 'name',
+						searchField: ['name', 'email'],
+						options: response,
+						render: {
+							item: function(item, escape) {
+								return '<div>' +
+								(item.name ? '<span class="name">' + escape(item.name) + '</span>' : '') +
+								(item.email ? '<span class="email">' + escape(item.email) + '</span>' : '') +
+								'</div>';
+							},
+							option: function(item, escape) {
+								var label = item.name || item.email;
+								var caption = item.name ? item.email : null;
+								return '<div>' +
+								'<span class="label1">' + escape(label) + '</span>' +
+								(caption ? '<span class="caption">' + escape(caption) + '</span>' : '') +
+								'</div>';
+							}
+						},
+						createFilter: function(input) {
+							var match, regex;
+
+							// email@address.com
+							regex = new RegExp('^' + REGEX_EMAIL + '$', 'i');
+							match = input.match(regex);
+							if (match) return !this.options.hasOwnProperty(match[0]);
+
+							// name <email@address.com>
+							regex = new RegExp('^([^<]*)\<' + REGEX_EMAIL + '\>$', 'i');
+							match = input.match(regex);
+							if (match) return !this.options.hasOwnProperty(match[2]);
+
+							return false;
+						},
+						create: function(input) {
+							if ((new RegExp('^' + REGEX_EMAIL + '$', 'i')).test(input)) {
+								return {email: input};
+							}
+							var match = input.match(new RegExp('^([^<]*)\<' + REGEX_EMAIL + '\>$', 'i'));
+							if (match) {
+								return {
+									email : match[2],
+									name  : $.trim(match[1])
+								};
+							}
+							alert('Invalid email address.');
+							return false;
+						}
+					});
+					if (options.default_value) {
+						selObj[0].selectize.setValue(options.default_value);
+					}
+				}
+		 });
 	}
 };

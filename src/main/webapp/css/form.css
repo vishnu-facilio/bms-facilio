@@ -206,3 +206,8 @@ label {
     line-height: 22px;
 }
 
+.normal-btn {
+	border-radius: 100px
+	border-color: #50CA7C
+	color: #666666;
+}

@@ -3,10 +3,9 @@ package com.facilio.bmsconsole.context;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.UserAPI;
 
-public class GroupContext extends FacilioContext {
+public class GroupContext {
 	
 	private long orgId = 0;
 	public long getOrgId() {

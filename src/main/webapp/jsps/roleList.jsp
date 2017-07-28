@@ -1,86 +1,106 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>
-<div class="row">
-   <div class="col-lg-12">
-       <h1 class="page-header">
-       	Roles
-       	</h1>
-   </div>
-   <!-- /.col-lg-12 -->
-</div>
-<div class="row role-list">
-	<div class="col-lg-12">
-   		<table class="table table-hover">
-   			<thead>
-   				<tr>
-   					<th class="col-md-1 sortable">Name</th>
-   					<th class="col-md-3 sortable"><span class="line"></span>Description</th>
-   				</tr>
-   			</thead>
-   			<tbody>
-   				<s:iterator var="role" value="%{roles}">
-					<tr>
-	   					<td>
-	                        <a href="#role/<s:property value="#role.roleId" />" class="name"><s:property value="#role.name" /></a>
-	                    </td>
-	                    <td><s:property value="#role.description" /></td>
-	                </tr>
-			    </s:iterator>
-             </tbody>
-      </table>
-  </div>
-</div>
-<style>
-.role-list .table {
-	border: 1px solid #ddd;
-}
-
-.role-list .table td {
-	padding:15px;
-}
-
-.role-list .table img.avatar {
-    float: left;
-    margin-right: 14px;
-    max-width: 45px;
-    position: relative;
-    top: 5px;
-}
-
-.img-circle {
-    border-radius: 50%;
-}
-
-img {
-    vertical-align: middle;
-}
-
-img {
-    border: 0;
-}
-
-.role-list .table a.name {
-    display: block;
-    font-size: 14px;
-    margin: 8px 0 0 0;
-}
-.role-list .table .subtext {
-    font-size: 12px;
-    margin-left: 0;
-    color: #778391;
-    font-style: italic;
-    margin-top: 0;
-}
-.role-list .table td {
-    vertical-align: middle;
-    font-size: 13px;
-}
-</style>
+<table width="100%" class="table table-striped able-hover" id="record-list">
+    <thead>
+        <tr>
+        	<th>
+        		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        		Name
+        	</th>
+        	<th>Description</th>
+        	<th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    	<s:iterator var="role" value="%{roles}">
+			<tr class="odd gradeX" data-role-id="<s:property value="#role.roleId" />">
+  					<td>
+                       <span class="user-name"><s:property value="#role.name" /></span>
+                   </td>
+                   <td>
+                   	<s:property value="#role.description" />
+                   </td>
+                   <td>Jul 28, 2017</td>
+                   <td class="center">
+                   		<div class="dropdown more-actions">
+	                   		<a data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h"></i></a>
+	                   		<ul class="dropdown-menu" role="menu">
+	                           	<li><a class="edit">Edit</a>
+	                           	<li><a class="clone">Clone</a>
+								<li><a class="delete">Delete</a>
+	                        </ul>
+                        </div>
+                   </td>
+               </tr>
+	    </s:iterator>
+	</tbody>
+</table>
 <script>
-	$(".role-list table").dataTable();
-
-	$('.role-list').tooltip({
-        selector: "[data-toggle=tooltip]",
-        container: "body"
-    });
+	jQuery(function($) {
+		var $userName = $('.user-name');
+		if ($userName.length) {
+			$userName.avatarMe({
+				avatarClass: 'avatar-me',
+				max: 2
+	  		});
+		}
+	});
+	
+	$(".setup-list-container table").dataTable({
+		order: [[0, 'asc']],
+	      language: {
+	    	  paginate: {
+	    		  previous: "<",
+	    		  next: ">"
+	    	  }
+	      },
+	      
+	      columnDefs: [{
+	    	  targets: 1,
+	    	  orderable: false
+	      },
+	      {
+	    	  targets: 3,
+	    	  orderable: false
+	      }],
+	      
+	      buttons: false,
+	      responsive: true,
+	      searching: false,
+	      paging: false,
+	      lengthChange: false,
+	});
+	
+	$(".action-btn .new-btn").click(function() {
+		location.href = '#roles/new';
+	});
+	
+	$(".more-actions .edit").click(function() {
+		// edit role
+		var roleId = $(this).closest('tr').data('role-id');
+		location.href = '#roles/edit?roleId='+roleId;
+	})
+	
+	$(".more-actions .delete").click(function() {
+		// delete role
+		var roleId = $(this).closest('tr').data('role-id');
+		
+		var cnfm = confirm('Are you sure want to delete this role?');
+		if (cnfm) {
+			var grp_obj = {'roleId': roleId};
+			$.ajax({
+				method : "post",
+				url : contextPath + "/home/setup/roles/delete",
+				data : grp_obj
+			})
+			.done(function(data) {
+				FacilioApp.notifyMessage('success', 'Role deleted successfully!');
+				FacilioApp.refreshView();
+			})
+			.fail(function(error) {
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			});
+		}
+	})
 </script>

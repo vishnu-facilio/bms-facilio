@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class UpdateUserCommand implements Command {
+public class ChangeUserStatusCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -19,12 +19,11 @@ public class UpdateUserCommand implements Command {
 		if (user != null) {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			UserAPI.updateUser(user, conn);
+			UserAPI.changeUserStatus(user, conn);
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");
 		}
 		return false;
 	}
-
 }

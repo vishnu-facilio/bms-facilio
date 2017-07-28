@@ -4,26 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.AdminCreateUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminCreateUserResult;
-import com.amazonaws.services.cognitoidp.model.AdminDisableUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminDisableUserResult;
-import com.amazonaws.services.cognitoidp.model.AdminEnableUserRequest;
-import com.amazonaws.services.cognitoidp.model.AdminEnableUserResult;
-import com.amazonaws.services.cognitoidp.model.AttributeType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -83,6 +72,31 @@ public class UserAPI {
 		return null;
 	}
 	
+	public static RoleContext getRole(long roleId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Role where Role.ROLE_ID = ?");
+			pstmt.setLong(1, roleId);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				RoleContext tc = getRoleObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
 	public static List<RoleContext> getRolesOfOrg(long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -118,14 +132,14 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.ROLE_ID = Role.ROLE_ID ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.ROLE_ID = Role.ROLE_ID ORDER BY EMAIL");
 			pstmt.setLong(1, orgId);
 			
 			List<UserContext> users = new ArrayList<>();
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				UserContext tc = getUserObjectFromRS(rs);
+				UserContext tc = getUserObjectFromRS1(rs);
 				users.add(tc);
 			}
 			
@@ -147,6 +161,31 @@ public class UserAPI {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.USERID = ?");
+			pstmt.setLong(1, userId);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
+	public static UserContext getUserByOrgUserId(long userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORG_USERID = ?");
 			pstmt.setLong(1, userId);
 			
 			rs = pstmt.executeQuery();
@@ -189,115 +228,128 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static long addUser(UserContext context) throws Exception {
+	public static long addUser(UserContext context, Connection conn) throws Exception {
 
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+		boolean isLocalConn = false;
 		try {
 			String orgName = OrgApi.getOrgDomainFromId(context.getOrgId());
 			
-			if (context.getRole() != FacilioConstants.Role.TECHNICIAN) {
-				
-				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-				
-				AWSCognitoIdentityProvider idpProvider = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-				
-				AdminCreateUserRequest createUserReq = new AdminCreateUserRequest()
-						.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId())
-						.withUsername(context.getEmail())
-						.withUserAttributes(new AttributeType().withName("email").withValue(context.getEmail()), new AttributeType().withName("email_verified").withValue("true"), new AttributeType().withName("name").withValue(context.getName()), new AttributeType().withName("custom:orgName").withValue(orgName))
-						.withDesiredDeliveryMediums("EMAIL")
-						.withTemporaryPassword(context.getPassword());
-
-				System.out.println("Create user request: "+createUserReq);
-				AdminCreateUserResult result = idpProvider.adminCreateUser(createUserReq);
-				System.out.println("Create user response: "+result);
-			}
-
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
-			String insertquery = "insert into Users (USER_VERIFIED,EMAIL) values (?,?)"; 
-			PreparedStatement ps = conn.prepareStatement(insertquery);
-			ps.setBoolean(1, true);
-			ps.setString(2, context.getEmail());
-			ps.addBatch();
-			insertquery = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE) values ((select USERID from Users where EMAIL='"+context.getEmail()+"'),(select ORGID from Organizations where FACILIODOMAINNAME='"+orgName+"'),UNIX_TIMESTAMP() ,true,true, "+context.getRole()+")";
-			ps.addBatch(insertquery);
-			ps.executeBatch();
+			boolean createUserStatus = CognitoUtil.createUser(context.getName(), context.getEmail(), context.getEmail(), true, context.getPassword(), context.getPhone(), orgName);
 			
-			return getUser(context.getEmail()).getUserId();
+			if (createUserStatus) {
+				if (conn == null) {
+					conn = FacilioConnectionPool.INSTANCE.getConnection();
+					isLocalConn = true;
+				}
+				
+				String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?, ?)";
+				PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
+				ps1.setString(1, context.getName());
+				ps1.setString(2, null);
+				ps1.setBoolean(3, true);
+				ps1.setString(4, context.getEmail());
+				ps1.executeUpdate();
+				ResultSet rs1 = ps1.getGeneratedKeys();
+				rs1.next();
+				long userId = rs1.getLong(1);
+				ps1.close();
+				
+				String insertquery2 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,USER_STATUS,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,?,?,?,?,?)";
+				PreparedStatement ps2 = conn.prepareStatement(insertquery2, Statement.RETURN_GENERATED_KEYS);
+				ps2.setLong(1,userId);
+				ps2.setLong(2, context.getOrgId());
+				ps2.setLong(3, System.currentTimeMillis());
+				ps2.setBoolean(4, true);
+				ps2.setBoolean(5, true);
+				ps2.setBoolean(6, true);
+				ps2.setLong(7, context.getRoleId());
+				ps2.executeUpdate();
+				ResultSet rs2 = ps2.getGeneratedKeys();
+				rs2.next();
+				long orgUserId = rs2.getLong(1);
+				ps2.close();
+
+				context.setUserId(userId);
+				context.setOrgUserId(orgUserId);
+				return userId;
+			}
 		}
 		catch (Exception e) {
 			throw e;
 		}
 		finally {
-			if (pstmt != null) {
-				pstmt.close();
+			if (isLocalConn) {
+				DBUtil.closeAll(conn, null);
 			}
-			if (conn != null) {
-				conn.close();
+		}
+		return -1;
+	}
+
+	public static boolean changeUserStatus(UserContext context, Connection conn) throws Exception {
+
+		boolean isLocalConn = false;
+		PreparedStatement psmt = null;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isLocalConn = true;
+			}
+
+			String insertquery = "update ORG_Users set USER_STATUS=? where ORG_USERID=?";
+			psmt = conn.prepareStatement(insertquery);
+			psmt.setBoolean(1, context.getUserStatus());
+			psmt.setLong(2, context.getOrgUserId());
+			psmt.executeUpdate();
+
+			return true;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			if (isLocalConn) {
+				DBUtil.closeAll(conn, null);
+			}
+			if (psmt != null) {
+				DBUtil.closeAll(null, psmt);
 			}
 		}
 	}
 	
-	public static boolean updateUser(UserContext context) throws Exception {
+	public static boolean updateUser(UserContext context, Connection conn) throws Exception {
 
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+		boolean isLocalConn = false;
 		try {
-			if (context.getRole() != FacilioConstants.Role.TECHNICIAN) {
-				
-				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-				
-				AWSCognitoIdentityProvider idpProvider = AWSCognitoIdentityProviderClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-				
-				if (context.getInviteAcceptStatus()) {
-					AdminEnableUserRequest enableUserReq = new AdminEnableUserRequest()
-							.withUsername(context.getEmail())
-							.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId());
-					
-					System.out.println("Enable user request: "+enableUserReq);
-					AdminEnableUserResult enableUserResult = idpProvider.adminEnableUser(enableUserReq);
-					System.out.println("Enable user result: "+enableUserResult);
-				}
-				else {
-					AdminDisableUserRequest disableUserReq = new AdminDisableUserRequest()
-							.withUsername(context.getEmail())
-							.withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId());
-					
-					System.out.println("Disable user request: "+disableUserReq);
-					AdminDisableUserResult disableUserResult = idpProvider.adminDisableUser(disableUserReq);
-					System.out.println("Disable user result: "+disableUserResult);
-				}
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isLocalConn = true;
 			}
+			
+			// updating user attributes in cognito 
+			CognitoUtil.updateUserAttributes(context.getEmail(), context.getPhone());
 
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-
-			String insertquery = "update ORG_Users set INVITATION_ACCEPT_STATUS=? where USERID=? and ORGID=?"; 
+			String insertquery1 = "update Users set NAME=? where USERID=?";
+			PreparedStatement ps1 = conn.prepareStatement(insertquery1);
+			ps1.setString(1, context.getName());
+			ps1.setLong(2, context.getUserId());
+			ps1.executeUpdate();
+			ps1.close();
 			
-			PreparedStatement ps = conn.prepareStatement(insertquery);
+			String insertquery2 = "update ORG_Users set ROLE_ID=? where ORG_USERID=?";
+			PreparedStatement ps2 = conn.prepareStatement(insertquery2);
+			ps2.setLong(1, context.getRoleId());
+			ps2.setLong(2, context.getOrgUserId());
+			ps2.executeUpdate();
+			ps2.close();
 			
-			ps.setBoolean(1, context.getInviteAcceptStatus());
-			ps.setLong(2, context.getUserId());
-			ps.setLong(3, context.getOrgId());
-			
-			int cnt = ps.executeUpdate();
-			if (cnt < 0) {
-				return false;
-			}
-			else {
-				return true;
-			}
+			return true;
 		}
 		catch (Exception e) {
 			throw e;
 		}
 		finally {
-			if (pstmt != null) {
-				pstmt.close();
-			}
-			if (conn != null) {
-				conn.close();
+			if (isLocalConn) {
+				DBUtil.closeAll(conn, null);
 			}
 		}
 	}
@@ -308,10 +360,36 @@ public class UserAPI {
 		uc.setOrgUserId(rs.getLong("ORG_USERID"));
 		uc.setOrgId(rs.getLong("ORGID"));
 		uc.setUserId(rs.getLong("USERID"));
+		uc.setName(rs.getString("NAME"));
 		uc.setEmail(rs.getString("EMAIL"));
 		uc.setInvitedTime(rs.getLong("INVITEDTIME"));
+		uc.setUserStatus(rs.getBoolean("USER_STATUS"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		uc.setRole(rs.getString("NAME"));
+		uc.setRoleId(rs.getLong("ROLE_ID"));
+		
+		return uc;
+	}
+	
+	private static UserContext getUserObjectFromRS1(ResultSet rs) throws SQLException {
+		
+		UserContext uc = new UserContext();
+		uc.setOrgUserId(rs.getLong("ORG_USERID"));
+		uc.setOrgId(rs.getLong("ORGID"));
+		uc.setUserId(rs.getLong("USERID"));
+		uc.setName(rs.getString("NAME"));
+		uc.setEmail(rs.getString("EMAIL"));
+		uc.setInvitedTime(rs.getLong("INVITEDTIME"));
+		uc.setUserStatus(rs.getBoolean("USER_STATUS"));
+		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
+		uc.setRoleId(rs.getLong("ROLE_ID"));
+		
+		RoleContext rc = new RoleContext();
+		rc.setRoleId(rs.getLong("ROLE_ID"));
+		rc.setName(rs.getString("ROLE_NAME"));
+		rc.setDescription(rs.getString("ROLE_DESC"));
+		rc.setPermissions(rs.getString("ROLE_PERMISSIONS"));
+		
+		uc.setRole(rc);
 		
 		return uc;
 	}

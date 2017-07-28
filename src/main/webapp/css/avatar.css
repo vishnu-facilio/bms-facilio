@@ -1,0 +1,31 @@
+.avatar-me-wrapper {
+  overflow: hidden;
+  padding-left: 42px;
+  position: relative;
+}
+
+.avatar-me {
+  background-color: #5CCE9C;
+  color: #fff;
+  display: block;
+  height: 30px;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  top: 0;
+  white-space: nowrap;
+  width: 30px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.avatar-me, .user-name, .group-name {
+  line-height: 30px;
+}

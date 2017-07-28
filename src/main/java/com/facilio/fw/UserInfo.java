@@ -21,7 +21,7 @@ public class UserInfo {
 	private String email;
 	private String username;
 	private String name;
-	private String role;
+	private String role="Administrator";
 	private boolean isActive;
 
 	private static ThreadLocal<UserInfo> userlocal = new ThreadLocal<UserInfo>();
@@ -37,7 +37,7 @@ public class UserInfo {
 		setEmail(context.getEmail());
 		setUsername(context.getEmail());
 		setName(context.getName());
-		setRole(context.getRole());
+		//setRoleId(context.getRoleId());
 		setActive(context.getInviteAcceptStatus());
 	}
 

@@ -1,12 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.facilio.bmsconsole.util.UserAPI;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-
-public class UserContext extends FacilioContext {
+public class UserContext {
 	
 	private long orgId = 0;
 	public long getOrgId() {
@@ -34,6 +30,10 @@ public class UserContext extends FacilioContext {
 	
 	private String name;
 	public String getName() {
+		if (this.name == null) {
+			this.name = this.email.substring(0, email.indexOf("@"));
+			this.name = this.name.substring(0, 1).toUpperCase() + this.name.substring(1);
+		}
 		return name;
 	}
 	public void setName(String name) {
@@ -46,8 +46,6 @@ public class UserContext extends FacilioContext {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-		this.name = this.email.substring(0, email.indexOf("@"));
-		this.name = this.name.substring(0, 1).toUpperCase() + this.name.substring(1);
 	}
 	
 	private String password;
@@ -66,9 +64,12 @@ public class UserContext extends FacilioContext {
 		this.invitedTime = invitedTime;
 	}
 	
-	public String getInvitedTimeStr() {
-		SimpleDateFormat sd = new SimpleDateFormat("MMM dd, yyyy");
-		return sd.format(new Date(invitedTime));
+	private boolean userStatus;
+	public boolean getUserStatus() {
+		return userStatus;
+	}
+	public void setUserStatus(boolean userStatus) {
+		this.userStatus = userStatus;
 	}
 	
 	private boolean inviteAcceptStatus;
@@ -79,20 +80,38 @@ public class UserContext extends FacilioContext {
 		this.inviteAcceptStatus = inviteAcceptStatus;
 	}
 	
-	private String role;
-	public String getRole() {
+	private long roleId;
+	public long getRoleId() {
+		return roleId;
+	}
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
+	}
+	
+	private RoleContext role;
+	public RoleContext getRole() throws Exception {
+		if (this.role == null) {
+			this.role = UserAPI.getRole(this.roleId);
+		}
 		return role;
 	}
-	public void setRole(String role) {
+	public void setRole(RoleContext role) {
 		this.role = role;
 	}
 	
-	public String getStatusAsString() {
-		if (this.inviteAcceptStatus) {
-			return "Active";
-		}
-		else {
-			return "Inactive";
-		}
+	private String timezone;
+	public String getTimezone() {
+		return timezone;
+	}
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+	
+	private String phone;
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 }

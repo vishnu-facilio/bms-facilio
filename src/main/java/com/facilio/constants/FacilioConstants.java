@@ -55,6 +55,8 @@ public class FacilioConstants {
 			ALL_ROLES.add(REQUESTOR);
 		}
 		
+		// general permissions
+		public static final int CAN_ADMINISTER_ORGANIZATION = 0x1;
 		public static final int DASHBOARD 					= 0x1;
 		public static final int WORKORDER_MODULE 			= 0x2;
 		public static final int WORKORDER_VIEW_ALL 			= 0x4;
@@ -83,9 +85,20 @@ public class FacilioConstants {
 		
 		public static final String RECORD_ID = "recordId";
 		
+		public static final String USER_ID = "userId";
+		public static final String USER = "user";
+		
+		public static final String GROUP_ID = "groupId";
+		public static final String GROUP = "group";
+		public static final String GROUP_MEMBER_IDS = "groupMembers";
+		
+		public static final String ROLE_ID = "roleId";
+		public static final String ROLE = "role";
+		
 		public static final String TICKET_ID = "ticketId";
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
+		public static final String ASSIGNED_TO_ID = "assignedTo";
 		
 		public static final String TASK_ID = "taskId";
 		public static final String TASK = "task";

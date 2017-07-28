@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class RoleContext extends FacilioContext {
+public class RoleContext {
 	
 	private long orgId = 0;
 	public long getOrgId() {

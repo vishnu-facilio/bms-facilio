@@ -119,13 +119,39 @@ public class TicketAction extends ActionSupport {
 		getTicketChain.execute(context);
 		
 		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		
+		TicketContext tc =this.ticket;
 		
 		if(tasks != null && tasks.size() > 0) {
 			setTasks(tasks);
 		}
 		
+		return SUCCESS;
+	}
+	
+	public String deleteTicket() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
+
+		Chain deleteTicketChain = FacilioChainFactory.getDeleteTicketChain();
+		deleteTicketChain.execute(context);
+
+		return SUCCESS;
+	}
+	
+	public String assignTicket() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
+		context.put(FacilioConstants.ContextNames.ASSIGNED_TO_ID, getAssignedTo());
+
+		Chain assignTicketChain = FacilioChainFactory.getAssignTicketChain();
+		assignTicketChain.execute(context);
+
 		return SUCCESS;
 	}
 	
@@ -151,6 +177,14 @@ public class TicketAction extends ActionSupport {
  	}
  	public void setTicketId(long ticketId) {
  		this.ticketId = ticketId;
+ 	}
+ 	
+ 	private long assignedTo;
+ 	public long getAssignedTo() {
+ 		return assignedTo;
+ 	}
+ 	public void setAssignedTo(long assignedTo) {
+ 		this.assignedTo = assignedTo;
  	}
 	
  	//Ticket List Props

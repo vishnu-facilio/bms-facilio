@@ -39,6 +39,7 @@ public class FacilioChainFactory {
 	public static Chain getTicketDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadFieldsCommand());
 		c.addCommand(new GetTicketCommand());
@@ -60,26 +61,65 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteTicketChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new DeleteTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAssignTicketChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new SetTicketModuleTableNames());
+		c.addCommand(new AssignTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getAddUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new AddUserCommand());
-		
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getChangeUserStatusCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new ChangeUserStatusCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Command getUpdateUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateUserCommand());
-		
+		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Command getAddGroupCommand() {
 		Chain c = new ChainBase();
-		//c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new AddGroupCommand());
-
+		c.addCommand(new AddGroupMembersCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getUpdateGroupCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateGroupCommand());
+		c.addCommand(new AddGroupMembersCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getDeleteGroupCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteGroupCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 
@@ -90,13 +130,6 @@ public class FacilioChainFactory {
 		c.addCommand(new SetColumnNameForNewCFsCommand());
 		c.addCommand(new AddFieldsCommand());
 		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Command getUpdateGroupCommand() {
-		Chain c = new ChainBase();
-		c.addCommand(new UpdateGroupCommand());
-		
 		return c;
 	}
 	

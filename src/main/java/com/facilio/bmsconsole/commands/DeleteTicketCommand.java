@@ -1,0 +1,50 @@
+package com.facilio.bmsconsole.commands;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
+
+public class DeleteTicketCommand implements Command {
+
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		Long ticketId = (Long) context.get(FacilioConstants.ContextNames.TICKET_ID);
+		
+		if(ticketId != null) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			
+			Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+			
+			PreparedStatement pstmt = null;
+			try {
+				pstmt = conn.prepareStatement("DELETE FROM Tickets WHERE TICKETID=?");
+				pstmt.setLong(1, ticketId);
+				
+				if (pstmt.executeUpdate() < 1) {
+					return false;
+				}
+				return true;
+			}
+			catch(SQLException e) {
+				throw e;
+			}
+			finally {
+				DBUtil.closeAll(conn, pstmt);
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Ticket ID cannot be null");
+		}
+	}
+
+}

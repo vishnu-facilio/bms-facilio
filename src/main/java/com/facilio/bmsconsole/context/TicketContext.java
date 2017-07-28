@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -77,6 +79,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setAssignedToId(long assignedToId) {
 		this.assignedToId = assignedToId;
+	}
+	
+	public String getAssignedToName() throws Exception {
+		if (this.assignedToId > 0) {
+			String s = UserAPI.getUser(this.assignedToId).getEmail();
+			return s;
+		}
+		return "Unassigned";
 	}
 	
 	private long assetId = 0;

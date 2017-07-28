@@ -6,33 +6,41 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.GroupMemberContext;
+import com.facilio.fw.UserInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GroupAPI {
 	
-	public static long addGroup(GroupContext groupContext) throws Exception {
-		Connection conn = null;
+	public static long addGroup(GroupContext groupContext, Connection conn) throws Exception {
+		
+		boolean localConn = false;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				localConn = true;
+			}
+			
 			pstmt = conn.prepareStatement("INSERT INTO Groups (ORGID, GROUP_NAME, GROUP_EMAIL, GROUP_DESC, IS_ACTIVE, CREATED_TIME, CREATED_BY, PARENT) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, groupContext.getOrgId());
 			pstmt.setString(2, groupContext.getName());
 			pstmt.setString(3,  groupContext.getEmail());
 			pstmt.setString(4, groupContext.getDescription());
-			pstmt.setBoolean(5, groupContext.isActive());
-			pstmt.setLong(6, groupContext.getCreatedTime());
-			pstmt.setLong(7, groupContext.getCreatedBy());
+			pstmt.setBoolean(5, true);
+			pstmt.setLong(6, System.currentTimeMillis());
+			pstmt.setLong(7, UserInfo.getCurrentUser().getOrgUserId());
 			pstmt.setLong(8, groupContext.getParent());
 			
 			if(pstmt.executeUpdate() < 1) {
@@ -50,25 +58,31 @@ public class GroupAPI {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (localConn) {
+				DBUtil.closeAll(conn, pstmt, rs);
+			}
+			else {
+				DBUtil.closeAll(null, pstmt, rs);
+			}
 		}
 	}
 	
-	public static boolean updateGroup(GroupContext groupContext) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	public static boolean updateGroup(GroupContext groupContext, Connection conn) throws Exception {
 		
+		boolean localConn = false;
+		PreparedStatement pstmt = null;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Groups SET GROUP_NAME=?, GROUP_EMAIL=?, GROUP_DESC=?, IS_ACTIVE=?, PARENT=? WHERE GROUPID=?");
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				localConn = true;
+			}
+			
+			pstmt = conn.prepareStatement("UPDATE Groups SET GROUP_NAME=?, GROUP_EMAIL=?, GROUP_DESC=? WHERE GROUPID=?");
 			
 			pstmt.setString(1, groupContext.getName());
 			pstmt.setString(2,  groupContext.getEmail());
 			pstmt.setString(3, groupContext.getDescription());
-			pstmt.setBoolean(4, groupContext.isActive());
-			pstmt.setLong(5, groupContext.getParent());
-			pstmt.setLong(6, groupContext.getGroupId());
+			pstmt.setLong(4, groupContext.getGroupId());
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update group");
@@ -79,7 +93,12 @@ public class GroupAPI {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (localConn) {
+				DBUtil.closeAll(conn, pstmt);	
+			}
+			else {
+				DBUtil.closeAll(null, pstmt);
+			}
 		}
 	}
 	
@@ -147,7 +166,7 @@ public class GroupAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 LEFT JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.ORGID = ? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
+			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 LEFT JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.GROUPID = ? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
 			pstmt.setLong(1, groupId);
 			
 			rs = pstmt.executeQuery();
@@ -167,13 +186,16 @@ public class GroupAPI {
 		}
 	}
 	
-	public static boolean deleteGroup(long groupId) throws Exception {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+	public static boolean deleteGroup(long groupId, Connection conn) throws Exception {
 		
+		boolean localConn = false;
+		PreparedStatement pstmt = null;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				localConn = true;
+			}
+			
 			pstmt = conn.prepareStatement("DELETE FROM Groups WHERE GROUPID = ?");
 			pstmt.setLong(1, groupId);
 			
@@ -186,7 +208,12 @@ public class GroupAPI {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (localConn) {
+				DBUtil.closeAll(conn, pstmt);
+			}
+			else {
+				DBUtil.closeAll(null, pstmt);
+			}
 		}
 	}
 	
@@ -205,6 +232,74 @@ public class GroupAPI {
 			tc.setMembersCount(rs.getInt("MEMBERS_COUNT"));
 		}
 		return tc;
+	}
+	
+	public static boolean updateGroupMembers(long groupId, Long[] members, int memberRole, Connection conn) throws Exception {
+		
+		boolean localConn = false;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				localConn = true;
+			}
+			
+			List<Long> addMembers = new ArrayList<>();
+			List<Long> removeMembers = new ArrayList<>();
+			
+			
+			Map<Long, String> membersMap = getGroupMembersMap(groupId);
+			membersMap = (membersMap == null) ? new HashMap<>() : membersMap;
+			
+			for (long memberId : members) {
+				if (membersMap.containsKey(memberId)) {
+					membersMap.remove(memberId);
+				}
+				else {
+					addMembers.add(memberId);
+				}
+			}
+			Iterator<Long> itr = membersMap.keySet().iterator();
+			while (itr.hasNext()) {
+				long id = itr.next();
+				removeMembers.add(id);
+			}
+			
+			if (addMembers.size() > 0) {
+				String query = "INSERT INTO GroupMembers (GROUPID, ORG_USERID, MEMBER_ROLE) VALUES (?, ?, ?)";
+				PreparedStatement ps = conn.prepareStatement(query);
+
+				for (long userId : addMembers) {
+					ps.setLong(1, groupId);
+					ps.setLong(2, userId);
+					ps.setInt(3, memberRole);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				ps.close();
+			}
+			
+			if (removeMembers.size() > 0) {
+				String query = "DELETE FROM GroupMembers WHERE GROUPID=? AND ORG_USERID=?";
+				PreparedStatement ps = conn.prepareStatement(query);
+
+				for (long userId : addMembers) {
+					ps.setLong(1, groupId);
+					ps.setLong(2, userId);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+				ps.close();
+			}
+			return true;
+		}
+		catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			if (localConn) {
+				DBUtil.closeAll(conn, null);
+			}
+		}
 	}
 	
 	public static boolean addGroupMember(long groupId, long members[], int memberRole) throws Exception {
@@ -319,9 +414,10 @@ public class GroupAPI {
 		memberContext.setOrgUserId(rs.getLong("ORG_USERID"));
 		memberContext.setMemberRole(rs.getInt("MEMBER_ROLE"));
 		memberContext.setEmail(rs.getString("EMAIL"));
+		memberContext.setName(rs.getString("NAME"));
 		memberContext.setInvitedTime(rs.getLong("INVITEDTIME"));
 		memberContext.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		memberContext.setRole(rs.getString("NAME"));
+		memberContext.setRoleId(rs.getLong("ROLE_ID"));
 		return memberContext;
 	}
 }

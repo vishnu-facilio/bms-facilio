@@ -1,118 +1,57 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>
-<div class="row">
-   <div class="col-lg-12">
-       <h1 class="page-header">
-       	Users
-       	<button data-toggle="modal" onclick="newUser();" class="btn btn-outline btn-primary pull-right">
-       		<i class="fa fa-plus"></i>
-       		New User
-       	</button>
-       	</h1>
-   </div>
-   <!-- /.col-lg-12 -->
-</div>
-<div class="row users-list">
-	<div class="col-lg-12">
-   		<table class="table table-hover">
-   			<thead>
-   				<tr>
-   					<th class="col-md-3 sortable">Name</th>
-   					<th class="col-md-3 sortable align-right"><span class="line"></span>Email</th>
-   					<th class="col-md-2 sortable"><span class="line"></span>Created</th>
-   					<th class="col-md-2 sortable"><span class="line"></span>Status</th>
-   					<th class="col-md-2 sortable"></th>
-   				</tr>
-   			</thead>
-   			<tbody>
-   				<s:iterator var="user" value="%{users}">
-					<tr>
-	   					<td>
-	                        <img src="https://www.shareicon.net/download/2016/09/15/829473_man.svg" alt="contact" class="img-circle avatar hidden-phone">
-	                        <a href="#users/<s:property value="#user.userId" />" class="name"><s:property value="#user.name" /></a>
-	                        <span class="subtext"><s:property value="#user.getRoleAsString()" /></span>
-	                    </td>
-	                    <td>
-	                    	<a href="mailto:<s:property value="#user.email" />"><s:property value="#user.email" /></a></td>
-	                    <td><s:property value="#user.getInvitedTimeStr()" /></td>
-	                    <td>
-	                    	<s:if test="%{#user.inviteAcceptStatus}">
-								<h5><span class="label label-success">Active</span></h5>
-							</s:if>
-							<s:else>
-								<h5><span class="label label-danger">Inactive</span></h5>
-							</s:else>
-	                    </td>
-	                    <td class="center">
-	                    	<div class="btn-group">
-	                    		<s:if test="%{#user.role == 0}">
-									<button type="button" class="btn btn-outline btn-primary btn-md disabled">
-		                    			<i class="fa fa-key"></i>
-		                    		</button>
-									<button type="button" class="btn btn-outline btn-primary btn-md disabled">
-		                    			<i class="fa fa-pencil"></i>
-		                    		</button>
-		                    		<button type="button" class="btn btn-outline btn-danger btn-md disabled">
-		                    			<i class="fa fa-trash"></i>
-		                    		</button>
-								</s:if>
-								<s:else>
-									<button type="button" user-id="<s:property value="#user.userId" />" data-toggle="tooltip" data-placement="left" title="Reset password" onclick="resetPass(this);" class="btn btn-outline btn-primary btn-md">
-		                    			<i class="fa fa-key"></i>
-		                    		</button>
-									<button type="button" user-id="<s:property value="#user.userId" />" data-toggle="tooltip" data-placement="top" title="Edit user" onclick="editUser(this);" class="btn btn-outline btn-primary btn-md">
-		                    			<i class="fa fa-pencil"></i>
-		                    		</button>
-		                    		<button type="button" user-id="<s:property value="#user.userId" />" data-toggle="tooltip" data-placement="right" title="Delete user" onclick="deleteUser(this);" class="btn btn-outline btn-danger btn-md">
-		                    			<i class="fa fa-trash"></i>
-		                    		</button>
-								</s:else>
-	                    	</div>
-	                    </td>
-	                </tr>
-			    </s:iterator>
-             </tbody>
-      </table>
-  </div>
-</div>
-<div class="modal fade" id="newUserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	        <div class="modal-header">
-	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	            <h4 class="modal-title" id="myModalLabel">New User</h4>
-	        </div>
-	        <div class="modal-body">
-	        </div>
-	        <div class="modal-footer">
-	            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	            <button type="submit" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" onclick="saveUser(this);" class="btn btn-primary">Save</button>
-	        </div>
-	    </div>
-	    <!-- /.modal-content -->
-	</div>
-	<!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-<div class="modal fade" id="editUserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	        <div class="modal-header">
-	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	            <h4 class="modal-title" id="myModalLabel">Edit User</h4>
-	        </div>
-	        <div class="modal-body">
-	        </div>
-	        <div class="modal-footer">
-	            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	            <button type="submit" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" onclick="updateUser(this);" class="btn btn-primary">Save</button>
-	        </div>
-	    </div>
-	    <!-- /.modal-content -->
-	</div>
-	<!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+<table width="100%" class="table table-striped able-hover" id="record-list">
+    <thead>
+        <tr>
+        	<th>
+        		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        		Name
+        	</th>
+        	<th>Email</th>
+        	<th>Role</th>
+        	<th>Created</th>
+        	<th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    	<s:iterator var="user" value="%{users}">
+			<tr class="odd gradeX" data-user-id="<s:property value="#user.orgUserId" />">
+  					<td>
+                       <span class="user-name"><s:property value="#user.name" /></span>
+                   </td>
+                   <td>
+                       <s:property value="#user.email" />
+                   </td>
+                   <td>
+                       <s:property value="#user.role.name" />
+                   </td>
+                   <td><s:property value="#user.getInvitedTimeStr()" /></td>
+                   <td>
+                   		<div class="toggle-switch">
+                   			<s:if test="%{#user.userStatus}">
+                   				<input type="checkbox" id="<s:property value="#user.orgUserId" />_status" class="checkbox hidden userstatus" checked/>
+                   			</s:if>
+                   			<s:else>
+                   				<input type="checkbox" id="<s:property value="#user.orgUserId" />_status" class="checkbox hidden userstatus"/>
+                   			</s:else>
+                   			<label for="<s:property value="#user.orgUserId" />_status"></label>
+                   		</div>
+                   </td>
+                   <td class="center">
+                   		<div class="dropdown more-actions">
+	                   		<a data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h"></i></a>
+	                   		<ul class="dropdown-menu" role="menu">
+	                           	<li><a class="resetpwd">Reset password</a>
+	                           	<li><a class="edit">Edit</a>
+								<li><a class="delete">Delete</a>
+	                        </ul>
+                        </div>
+                   </td>
+               </tr>
+	    </s:iterator>
+	</tbody>
+</table>
 <div class="modal fade" id="resetPassModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 	    <div class="modal-content">
@@ -142,129 +81,104 @@
 	<!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-<style>
-.users-list .table {
-	border: 1px solid #ddd;
-}
-
-.users-list .table td {
-	padding:15px;
-}
-
-.users-list .table img.avatar {
-    float: left;
-    margin-right: 14px;
-    max-width: 45px;
-    position: relative;
-    top: 5px;
-}
-
-.img-circle {
-    border-radius: 50%;
-}
-
-img {
-    vertical-align: middle;
-}
-
-img {
-    border: 0;
-}
-
-.users-list .table a.name {
-    display: block;
-    font-size: 14px;
-    margin: 8px 0 0 0;
-}
-.users-list .table .subtext {
-    font-size: 12px;
-    margin-left: 0;
-    color: #778391;
-    font-style: italic;
-    margin-top: 0;
-}
-.users-list .table td {
-    vertical-align: middle;
-    font-size: 13px;
-}
-</style>
 <script>
-	$(".users-list table").dataTable();
 
-	$('.users-list').tooltip({
-        selector: "[data-toggle=tooltip]",
-        container: "body"
-    });
-    
-	function newUser() {
+	jQuery(function($) {
+		var $userName = $('.user-name');
+		if ($userName.length) {
+			$userName.avatarMe({
+				avatarClass: 'avatar-me',
+				max: 2
+      		});
+    	}
+	});
+  
+	$(".setup-list-container table").dataTable({
+		order: [[0, 'asc']],
+	      language: {
+	    	  paginate: {
+	    		  previous: "<",
+	    		  next: ">"
+	    	  }
+	      },
+	      
+	      columnDefs: [{
+	    	  targets: 1,
+	    	  orderable: false
+	      },
+	      {
+	    	  targets: 2,
+	    	  orderable: false
+	      },
+	      {
+	    	  targets: 4,
+	    	  searchable: false,
+	    	  orderable: false
+	      },
+	      {
+	    	  targets: 5,
+	    	  searchable: false,
+	    	  orderable: false
+	      }],
+	      
+	      buttons: false,
+	      responsive: true,
+	      searching: false,
+	      paging: false,
+	      lengthChange: false,
+	});
+
+	$(".userstatus").change(function() {
 		
-		$("#newUserModel").modal("show");
-		$('#newUserModel .modal-body').html("Loading...");
-		
-		$.ajax({
-		      type: "GET",
-		      url: contextPath + "/home/users/new",
-		      success: function (response) {
-		    	  $('#newUserModel .modal-body').html(response);
-		      }
-		 });
-	}
+		console.log('aaaa');
+		var userId = $(this).closest('tr').data('user-id');
+		var checked = this.checked;
+		if (!checked) {
+			var cnfm = confirm('Are you sure want to deactivate this user?');
+			if (cnfm) {
+				// deactivate the user
+				console.log(userId);
+				changeStatus(userId, false);
+			}
+			else {
+				this.checked = true;
+			}
+		}
+		else {
+			changeStatus(userId, true);
+		}
+	});
 	
-	function saveUser(btn) {
-		$(btn).button('loading');
-		
+	$(".action-btn .new-btn").click(function() {
+		location.href = '#users/new';
+	});
+	
+	$(".more-actions .resetpwd").click(function() {
+		// reset password
+		console.log('reset password');
+	})
+	
+	$(".more-actions .edit").click(function() {
+		// edit user
+		var userId = $(this).closest('tr').data('user-id');
+		location.href = '#users/edit?userId='+userId;
+	})
+	
+	$(".more-actions .delete").click(function() {
+		// delete user
+		console.log('delete user');
+	})
+	
+	function changeStatus(userId, userStatus) {
 		$.ajax({
 			method : "post",
-			url : contextPath + "/home/users/save",
-			data : $("#newUserForm").serialize()
+			url : contextPath + "/home/setup/users/changestatus",
+			data : {'user.orgUserId': userId, 'user.userStatus': userStatus}
 		})
 		.done(function(data) {
-			$('#newUserModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'User created successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
+			FacilioApp.notifyMessage('success', 'User status changed successfully!');
 		})
 		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
-		});
-	}
-	
-	function editUser(btn) {
-		var userId = $(btn).attr('user-id');
-		
-		$("#editUserModel").modal("show");
-		$('#editUserModel .modal-body').html("Loading...");
-		
-		$.ajax({
-		      type: "GET",
-		      url: contextPath + "/home/users/edit?id="+userId,
-		      success: function (response) {
-		    	  $('#editUserModel .modal-body').html(response);
-		      }
-		 });
-	}
-	
-	function updateUser(btn) {
-		$(btn).button('loading');
-		
-		$.ajax({
-			method : "post",
-			url : contextPath + "/home/users/update",
-			data : $("#editUserForm").serialize()
-		})
-		.done(function(data) {
-			$('#editUserModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'User updated successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
 			alert(JSON.stringify(error.responseJSON.fieldErrors));
 		});
 	}
