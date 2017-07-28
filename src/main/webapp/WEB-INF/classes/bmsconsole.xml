@@ -111,6 +111,10 @@
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
+	<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+		<result name="success">/jsps/listview.jsp</result>
+	</action>
+	
 	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<param name="permission">workorderviewall</param>
 		<result name="success">/jsps/listview.jsp</result>
@@ -160,6 +164,13 @@
 		<param name="permission">setup</param>
         <result name="success">/jsps/assignmentRules.jsp</result>
     </action>
+    
+    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+		<result name="success" type="json">
+			<param name="root">pickList</param>
+		</result>
+	</action>
+    
 	</package>
 	<package name="modules" namespace="/home/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
@@ -262,6 +273,12 @@
 		</action>
 	</package>
 	
+	<package name="ticketstatus" namespace="/home/ticketstatus" extends="home">
+		<action name="popup" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
 	<package name="attachment" namespace="/home/attachment" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<result name="success" type="json">
@@ -302,15 +319,21 @@
 			</result>
 		</action>
 		
-		<action name="addNote" class="com.facilio.bmsconsole.actions.TaskNotes" method="addNote">
-			<result name="success" type="json">
-				<param name="includeProperties">note.noteId</param>
-			</result>
-		</action>
-		
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="note" namespace="/home/note" extends="home">
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.NoteAction" method="newNote">
+			<result name="success">/jsps/newFormDialog.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="addNote">
+			<result name="success" type="json">
+				<param name="includeProperties">noteId</param>
+			</result>
 		</action>
 	</package>
 	
@@ -333,7 +356,7 @@
 		</action>
 	</package>
 	
-	<package name="locations" namespace="/home/locations" extends="home">
+	<package name="location" namespace="/home/location" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.LocationActions">
 			<result name="success">/jsps/locationsPopup.jsp</result>
 		</action>

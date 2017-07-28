@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -13,7 +12,6 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -33,15 +31,12 @@ public class TaskAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		for(int i=TaskContext.DEFAULT_TASK_FIELDS.length; i<fields.size(); i++) {
-			FacilioField field = fields.get(i);
-			customFieldNames.add(field.getName());
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		return SUCCESS;
 	}
+	
+	private List<FacilioField> fields;
 	
 	private long ticketId;
 	public long getTicketId() {
@@ -67,30 +62,21 @@ public class TaskAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	private List<String> customFieldNames;
-	public List<String> getCustomFieldNames() {
-		return customFieldNames;
-	}
-	public void setCustomFieldNames(List<String> customFieldNames) {
-		this.customFieldNames = customFieldNames;
-	}
-	
 	//Add Task Props
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		
-		if(scheduleObj != null && scheduleObj.getScheduledStart() != 0) {
-			scheduleObj.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, scheduleObj);
-			task.setSchedule(scheduleObj);
+		if(task.getSchedule() != null && task.getSchedule().getScheduledStart() != 0) {
+			task.getSchedule().setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, task.getSchedule());
 		}
 		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		
-		setTaskId(task.getTaskId());
+		setTaskId(task.getId());
 		
 		return SUCCESS;
 	}
@@ -100,13 +86,12 @@ public class TaskAction extends ActionSupport {
 		// TODO Auto-generated method stub
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TASK_ID, getTaskId());
+		context.put(FacilioConstants.ContextNames.ID, getTaskId());
 		
 		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
 		getTaskChain.execute(context);
 		
 		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
-		setScheduleObj((ScheduleContext) context.get(FacilioConstants.ContextNames.SCHEDULE_OBJECT));
 		List<NoteContext> taskNotes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
 		if(taskNotes != null && taskNotes.size() > 0) {
 			setNotes(taskNotes);
@@ -121,14 +106,6 @@ public class TaskAction extends ActionSupport {
 	}
 	public void setTask(TaskContext task) {
 		this.task = task;
-	}
-	
-	private ScheduleContext scheduleObj;
-	public ScheduleContext getScheduleObj() {
-		return scheduleObj;
-	}
-	public void setScheduleObj(ScheduleContext scheduleObj) {
-		this.scheduleObj = scheduleObj;
 	}
 	
 	private List<NoteContext> notes;
@@ -177,7 +154,7 @@ public class TaskAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewTaskLayout();
+		return FormLayout.getNewTaskLayout(fields);
 	}
 	
 	public String getModuleLinkName()

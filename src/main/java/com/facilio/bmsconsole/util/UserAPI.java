@@ -178,15 +178,15 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static UserContext getUserByOrgUserId(long userId) throws SQLException {
+	public static UserContext getUserFromOrgUserId(long orgUserId)throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORG_USERID = ?");
-			pstmt.setLong(1, userId);
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORG_USERID  = ?");
+			pstmt.setLong(1, orgUserId);
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -388,7 +388,6 @@ public class UserAPI {
 		rc.setName(rs.getString("ROLE_NAME"));
 		rc.setDescription(rs.getString("ROLE_DESC"));
 		rc.setPermissions(rs.getString("ROLE_PERMISSIONS"));
-		
 		uc.setRole(rc);
 		
 		return uc;

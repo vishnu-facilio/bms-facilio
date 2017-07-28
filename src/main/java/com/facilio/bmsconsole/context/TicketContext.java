@@ -2,26 +2,18 @@ package com.facilio.bmsconsole.context;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
-	
-	public static final String[] DEFAULT_TICKET_FIELDS = new String[] {"ticketId", "requester", "subject", "description", "statusCode", "assignedToId", "assetId", "dueDate"};
-	
-	private long ticketId;
-	public long getTicketId() {
-		return ticketId;
-	}
-	public void setTicketId(long ticketId) {
-		this.ticketId = ticketId;
-	}
 	
 	private String requester;
 	public String getRequester() {
@@ -47,38 +39,28 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	public static final int OPEN = 1, PENDING = 2, RESOLVED = 3, CLOSED = 4;
-	private static final Map<Integer, String> ALL_STATUS = Collections.unmodifiableMap(initStatusMap());
+	private UserContext assignedTo;
+	public UserContext getAssignedTo() {
+		return assignedTo;
+	}
+	public void setAssignedTo(UserContext assignedTo) {
+		this.assignedTo = assignedTo;
+	}
 	
-	private static Map<Integer, String> initStatusMap() {
-		Map<Integer, String> status = new HashMap<>();
-		status.put(OPEN, "Open");
-		status.put(PENDING, "Pending");
-		status.put(RESOLVED, "Resolved");
-		status.put(CLOSED, "Closed");
+	private TicketStatusContext status;
+	public TicketStatusContext getStatus() {
 		return status;
 	}
-	public static  Map<Integer, String> getAllStatus() {
-		return ALL_STATUS;
+	public void setStatus(TicketStatusContext status) {
+		this.status = status;
 	}
 	
-	private int statusCode = OPEN;
-	public int getStatusCode() {
-		return statusCode;
-	} 
-	public void setStatusCode(int status) {
-		this.statusCode = status;
+	private TicketPriorityContext priority;
+	public TicketPriorityContext getPriority() {
+		return priority;
 	}
-	public String getStatus() {
-		return ALL_STATUS.get(statusCode);
-	}
-	
-	private long assignedToId = 0;
-	public long getAssignedToId() {
-		return assignedToId;
-	}
-	public void setAssignedToId(long assignedToId) {
-		this.assignedToId = assignedToId;
+	public void setPriority(TicketPriorityContext priority) {
+		this.priority = priority;
 	}
 	
 	public String getAssignedToName() throws Exception {
@@ -95,6 +77,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
+	}
+	
+	private long areaId = 0;
+	public long getAreaId() {
+		return areaId;
+	}
+	public void setAreaId(long areaId) {
+		this.areaId = areaId;
 	}
 	
 	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
@@ -124,21 +114,47 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setOpenedDate(long openedDate) {
 		this.openedDate = openedDate;
+	}	
+		
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks()
+	{
+		return this.tasks;
 	}
 	
-	private int priority;
-	public int getPriority() {
-		return priority;
-	} 
-	public void setPriority(int priority) {
-		this.priority = priority;
+	public void setTasks(List<TaskContext> tasks)
+	{
+		this.tasks = tasks;
 	}
-
-	private int category;
-	public int getCategory() {
-		return category;
-	} 
-	public void setCategory(int category) {
-		this.category = category;
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes()
+	{
+		return this.notes;
+	}
+	
+	public void setNotes(List<NoteContext> notes)
+	{
+		this.notes = notes;
+	}
+	
+	private List<FileContext> attachments;
+	public List<FileContext> getAttachments()
+	{
+		return this.attachments;
+	}
+	
+	public void setAttachments(List<FileContext> attachments)
+	{
+		this.attachments = attachments;
+	}
+	
+	public List<TicketStatusContext> getStatuses() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
+		statusListChain.execute(context);
+		
+		return (List<TicketStatusContext>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST);
 	}
 }

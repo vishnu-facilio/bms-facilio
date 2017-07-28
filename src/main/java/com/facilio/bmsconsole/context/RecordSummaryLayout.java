@@ -45,6 +45,17 @@ public class RecordSummaryLayout {
 		return this.recordTitleColumnId;
 	}
 	
+	private String pkColumnId;
+	public RecordSummaryLayout setPkColumnId(String pkColumnId) 
+	{
+		this.pkColumnId = pkColumnId;
+		return this;
+	}
+	public String getPkColumnId() 
+	{
+		return this.pkColumnId;
+	}
+	
 	List<RelatedModule> relatedModules;
 	public RecordSummaryLayout addRelatedModule(RelatedModule relatedModule)
 	{
@@ -80,33 +91,50 @@ public class RecordSummaryLayout {
 	public static RecordSummaryLayout getRecordSummaryTicketLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("ticketId");
+		recordSummaryLayout.setTitleColumnId("id");
 		recordSummaryLayout.setHasProgressBar(true);
 		recordSummaryLayout.setRecordTitleColumnId("subject");
-		
-		recordSummaryLayout.addColumn(new Column("ID", "ticketId", ColumnType.NUMBER));
+		recordSummaryLayout.setPkColumnId("id");
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Priority", "priority", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
+		recordSummaryLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
 		recordSummaryLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignToId", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
 		
-		recordSummaryLayout.addRelatedModule(new RelatedModule());
+		recordSummaryLayout.addRelatedModule(new RelatedModule("TASKS", "tasks", "Task", "task")
+							.setIcon("fa fa-tasks")
+							.setShowHeader(true)
+							.addColumn(new Column("ID", "id", ColumnType.NUMBER))
+							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
+							.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP))
+							.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP))
+							);
+		recordSummaryLayout.addRelatedModule(new RelatedModule("ATTACHMENTS", "attachments", "Attachment", "attachment")
+							.setIcon("fa fa-paperclip")
+							.setShowHeader(false)
+							.addColumn(new Column("ID", "fileId", ColumnType.NUMBER).setShowColumn(false))
+							.addColumn(new Column("Name", "fileName", ColumnType.TEXT))
+							);
+		recordSummaryLayout.addRelatedModule(new RelatedModule("NOTES", "notes", "Note", "note")
+							.setIcon("fa fa-sticky-note")
+							.setShowHeader(false)
+							.addColumn(new Column("ID", "noteId", ColumnType.NUMBER).setShowColumn(false))
+							.addColumn(new Column("Content", "body", ColumnType.TEXT))
+							);
 		return recordSummaryLayout;
 	}
 
 	public static RecordSummaryLayout getRecordSummaryTaskLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("taskId");
+		recordSummaryLayout.setTitleColumnId("id");
 		recordSummaryLayout.setHasProgressBar(true);
 		recordSummaryLayout.setRecordTitleColumnId("subject");
 		
-		recordSummaryLayout.addColumn(new Column("ID", "tasktId", ColumnType.NUMBER));
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignToId", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
 		
 		return recordSummaryLayout;
 	}
@@ -181,12 +209,82 @@ public class RecordSummaryLayout {
 		
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
 		
-		recordSummaryLayout.addRelatedModule(new RelatedModule());
+		recordSummaryLayout.addRelatedModule(new RelatedModule("SPACES", "spaces", "Space", "space"));
 		return recordSummaryLayout;
 	}
 }
 
 class RelatedModule
 {
+	String displayName;
+	String listName;
+	String moduleName;
+	String linkName;
+	RelatedModule(String displayName, String listName, String moduleName, String linkName)
+	{
+		this.displayName = displayName;
+		this.listName = listName;
+		this.moduleName = moduleName;
+		this.linkName = linkName;
+	}
 	
+	public String getDisplayName()
+	{
+		return this.displayName;
+	}
+	
+	public String getListName()
+	{
+		return this.listName;
+	}
+	
+	public String getModuleName()
+	{
+		return this.moduleName;
+	}
+	
+	public String getLinkName()
+	{
+		return this.linkName;
+	}
+	
+	String icon;
+	public RelatedModule setIcon(String icon)
+	{
+		this.icon = icon;
+		return this;
+	}
+	
+	public String getIcon()
+	{
+		return this.icon;
+	}
+	
+	boolean showHeader = false;
+	public RelatedModule setShowHeader(boolean showHeader)
+	{
+		this.showHeader = showHeader;
+		return this;
+	}
+	
+	public boolean getShowHeader()
+	{
+		return this.showHeader;
+	}
+	
+	List<Column> columns;
+	public RelatedModule addColumn(Column column)
+	{
+		if(this.columns == null)
+		{
+			columns = new ArrayList<>();
+		}
+		columns.add(column);
+		return this;
+	}
+	
+	public List<Column> getColumns()
+	{
+		return this.columns;
+	}
 }

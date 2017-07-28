@@ -39,8 +39,6 @@
 	        container: "body"
 	    });
 		
-		$('select').selectize();
-		
 		$(".f-datetime").datetimepicker();
 		
 		$(".f-datetime").closest('div').find('.btn-lookup').click(function() {

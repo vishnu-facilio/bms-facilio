@@ -1,25 +1,30 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.constants.FacilioConstants;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_TASK_FIELDS = new String[] {"TASKID", "PARENT", "SUBJECT", "DESCRIPTION", "ASSIGNMENT_GROUP_ID", "ASSIGNED_TO_ID", "SCHEDULE_ID"};
-	
-	private long taskId;
-	public long getTaskId() {
-		return taskId;
+	private long parentId = 0;
+	public long getParentId() {
+		return parentId;
 	}
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
 	}
 	
-	private long parent = 0;
-	public long getParent() {
-		return parent;
+	private String parentModuleLinkName;
+	public String getParentModuleLinkName() {
+		return parentModuleLinkName;
 	}
-	public void setParent(long parent) {
-		this.parent = parent;
+	public void setParentModuleLinkName(String parentModuleLinkName) {
+		this.parentModuleLinkName = parentModuleLinkName;
 	}
 	
 	private String subject;
@@ -38,20 +43,20 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private long assignmentGroupId = 0;
-	public long getAssignmentGroupId() {
-		return assignmentGroupId;
+	private GroupContext assignmentGroup;
+	public GroupContext getAssignmentGroup() {
+		return assignmentGroup;
 	}
-	public void setAssignmentGroupId(long assignmentGroupId) {
-		this.assignmentGroupId = assignmentGroupId;
+	public void setAssignmentGroup(GroupContext assignmentGroup) {
+		this.assignmentGroup = assignmentGroup;
 	}
 	
-	private long assignedToId = 0;
-	public long getAssignedToId() {
-		return assignedToId;
+	private UserContext assignedTo;
+	public UserContext getAssignedTo() {
+		return assignedTo;
 	}
-	public void setAssignedToId(long assignedToId) {
-		this.assignedToId = assignedToId;
+	public void setAssignedTo(UserContext assignedTo) {
+		this.assignedTo = assignedTo;
 	}
 	
 	private long scheduleId = 0;
@@ -70,12 +75,20 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.schedule = schedule;
 	}
 	
-	private int statusCode = 1;
-	public int getStatusCode() {
-		return statusCode;
+	private TaskStatusContext status;
+	public TaskStatusContext getStatus() {
+		return status;
 	} 
-	public void setStatusCode(int status) {
-		this.statusCode = status;
+	public void setStatus(TaskStatusContext status) {
+		this.status = status;
 	}
 	
+	public List<TaskStatusContext> getStatuses() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		Chain statusListChain = FacilioChainFactory.getTaskStatusListChain();
+		statusListChain.execute(context);
+		
+		return (List<TaskStatusContext>) context.get(FacilioConstants.ContextNames.TASK_STATUS_LIST);
+	}
 }

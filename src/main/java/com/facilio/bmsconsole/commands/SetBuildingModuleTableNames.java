@@ -11,7 +11,7 @@ public class SetBuildingModuleTableNames implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "Building");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "building");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Building");
 		
 		return false;

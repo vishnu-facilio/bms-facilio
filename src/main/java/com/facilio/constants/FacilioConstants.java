@@ -2,11 +2,18 @@ package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskStatusContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketPriorityContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 
 public class FacilioConstants {
 	
@@ -96,17 +103,28 @@ public class FacilioConstants {
 		public static final String ROLE = "role";
 		
 		public static final String TICKET_ID = "ticketId";
+		public static final String ID = "Id";
+		
+		public static final String TICKET_STATUS = "ticketstatus";
+		public static final String TICKET_STATUS_LIST = "ticketstatuses";
+		
+		public static final String TICKET_PRIORITY = "ticketpriority";
+		public static final String TICKET_PRIORITY_LIST = "ticketpriorities";
+		
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		
-		public static final String TASK_ID = "taskId";
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
+		
+		public static final String TASK_STATUS = "taskstatus";
+		public static final String TASK_STATUS_LIST = "taskstatuses";
 		
 		public static final String SCHEDULE_ID = "scheduleId";
 		public static final String SCHEDULE_OBJECT = "scheduleObject";
 		
+		public static final String NOTE_ID = "noteId";
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
 		
@@ -128,32 +146,33 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
+		public static final String DEFAULT_FIELD = "defaultField";
 		
-		public static final String CAMPUS_ID = "campusId";
 		public static final String CAMPUS = "campus";
 		public static final String CAMPUS_LIST = "campuses";
 		
-		public static final String BUILDING_ID = "buildingId";
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
 		
-		public static final String FLOOR_ID = "floorId";
 		public static final String FLOOR = "floor";
 		public static final String FLOOR_LIST = "floors";
 		
-		public static final String SPACE_ID = "spaceId";
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
 		
-		public static final String ZONE_ID = "zoneId";
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
 		
-		public static final String SKILL_ID = "skillId";
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";
 		
 		public static final String AREA_LIST = "areas";
+		
+		public static final String PICKLIST = "pickList";
+		
+		public static final String USERS = "users";
+		
+		public static final String GROUPS = "groups";
 		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
@@ -171,5 +190,21 @@ public class FacilioConstants {
 
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
+		
+		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
+		private static Map<String, Class> initClassMap() {
+			Map<String, Class> classMap = new HashMap<>();
+			classMap.put(TICKET_STATUS, TicketStatusContext.class);
+			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
+			classMap.put(TICKET, TicketContext.class);
+			classMap.put(TASK, TaskContext.class);
+			classMap.put(TASK_STATUS, TaskStatusContext.class);
+			
+			return classMap;
+		}
+		
+		public static Class getClassFromModuleName(String moduleName) {
+			return classMap.get(moduleName);
+		}
 	}
 }

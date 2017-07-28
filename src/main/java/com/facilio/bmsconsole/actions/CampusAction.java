@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -45,16 +43,7 @@ public class CampusAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(CampusContext.DEFAULT_CAMPUS_FIELDS);
-		for(FacilioField field : fields) 
-		{
-			if(!defaultFields.contains(field.getName())) 
-			{
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax = ((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		if(isajax!=null && isajax.equals("true"))
@@ -64,6 +53,8 @@ public class CampusAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String addCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
@@ -72,7 +63,7 @@ public class CampusAction extends ActionSupport {
 		Chain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
 		
-		setCampusId(campus.getCampusId());
+		setCampusId(campus.getId());
 		
 		return SUCCESS;
 	}
@@ -80,7 +71,7 @@ public class CampusAction extends ActionSupport {
 	public String viewCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CAMPUS_ID, getCampusId());
+		context.put(FacilioConstants.ContextNames.ID, getCampusId());
 		
 		Chain getCampusChain = FacilioChainFactory.getCampusDetailsChain();
 		getCampusChain.execute(context);
@@ -92,7 +83,7 @@ public class CampusAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewCampusLayout();
+		return FormLayout.getNewCampusLayout(fields);
 	}
 	
 	private String moduleName;
@@ -113,16 +104,6 @@ public class CampusAction extends ActionSupport {
 	public void setActionForm(ActionForm actionForm) 
 	{
 		this.actionForm = actionForm;
-	}
-	
-	private List<String> customFieldNames;
-	public List<String> getCustomFieldNames() 
-	{
-		return customFieldNames;
-	}
-	public void setCustomFieldNames(List<String> customFieldNames) 
-	{
-		this.customFieldNames = customFieldNames;
 	}
 	
 	private CampusContext campus;

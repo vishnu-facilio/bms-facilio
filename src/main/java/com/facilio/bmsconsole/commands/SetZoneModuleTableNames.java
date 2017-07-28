@@ -11,7 +11,7 @@ public class SetZoneModuleTableNames implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "Zone");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Zone");
 		
 		return false;

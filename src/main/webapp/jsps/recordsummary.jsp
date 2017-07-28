@@ -18,41 +18,21 @@
   	</div>
 </div>
 
-<!--------------------------- progress bar ------------------------>
 <div class="view-content record-content">
 <s:if test="%{recordSummaryLayout.hasProgressBar}">
 	<div class="row record-progress-content">
 	 	<div class=" col-lg-12 container">
 			<div class="row bs-wizard" style="border-bottom:0;">
-	        	<div class="col-xs-2 bs-wizard-step disabled">
-	            	<div class="progress"><div class="progress-bar"></div></div>
+	        	<s:iterator var="status" value="record.statuses">	
+	        		<div class="col-xs-2 bs-wizard-step disabled">
+	            		<div class="progress"><div class="progress-bar"></div></div>
 	                  	<a href="#" class="bs-wizard-dot"></a>
-	                  	<div class="bs-wizard-info text-center">Open</div>
+	                  	<div class="bs-wizard-info text-center"><s:property value="#status.status" /></div>
 	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- complete -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Awaiting for approval</div>
-	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- complete -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Approved</div>
-	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- active -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center"> WIP</div>
-	                </div>
-	            	<div class="col-xs-2 bs-wizard-step disabled">
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Closed</div>
-	                </div> 
+	            </s:iterator>    
 	           </div> 
 	     </div>  
 	</div>
-<!-- ----------------------------------------------------- -->
 </s:if>
 <div class="row  row-in-2x">
 	<div class="col-lg-12 col-md-12 ticket-form">
@@ -68,7 +48,14 @@
 					<s:iterator var="column" value="recordSummaryLayout.columns">
 						<tr>
 							<th class="left-th"><s:property value="#column.label" /></th>
-							<td><s:property value="record[#column.id]" /></td>
+							<td>
+							<s:if test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@LOOKUP}">
+								<s:property value="record[#column.id][#column.lookupId]" />
+							</s:if>
+							<s:else>
+								<s:property value="record[#column.id]" />
+							</s:else>
+							</td>
 						</tr>
 					</s:iterator>
 				</table>
@@ -78,111 +65,81 @@
 </div>
 
 <s:if test="%{!recordSummaryLayout.relatedModules.isEmpty()}">
-
-<!-- --------------------------------------------------------------------- -->
-<div class="row row-out">
-	<div class="row ">
-	<div class="col-md-12 col-sm-12 row-header-out " style="text-center">	
-	<i class="fa fa-tasks icon-out-2x" aria-hidden="true"></i>&nbsp;&nbsp;TASKS
-	</div>
-	</div>
-<div class="row row-in">
-<div class="row list-content table-style">
-   <div class="col-md-12 col-sm-12">
-	<table width="100%" class="table table-striped able-hover " id="tickets-list">
-	    <thead>
-	        <tr>
-	       		 <th>Name</th>
-	            <th>Status</th>
-	            <th>Due Date</th>
-	            <th>Task start time</th>
-	            <th>Task end time</th>
-	            
-	        </tr>
-	      </thead>  
-	
-	    
-	    
-	    <!-- 
-	    <tbody>
-	    	<s:iterator var="ticket" value="tickets">
-	   				<tr class="odd gradeX" id="<s:property value="#ticket.ticketId" />">
-		            <td><a href="#ticket/<s:property value="#ticket.ticketId" />#"><s:property value="#ticket.ticketId" /></a></td>
-		            <td>
-		            	<div class="row-title"><s:property value="#ticket.subject" /></div>
-		            	<div class="row-subtitle"><s:property value="#ticket.description" /></div>
-		            </td>
-		            <td>
-		            	<span class="text"><s:property value="#ticket.getStatus()" /></span>
-		            </td>
-		            <td>
-		            <span class="label label-success"><s:property value="" /></span>
-		            </td>
-			        </tr>
-			</s:iterator>
-			</tbody>
-			-->
-		
-		
-	</table>
-	
-	<div class="col-md-12 col-sm-12 hr-dashed-line">			
-	</div>
-	<div class="row row-footer">
-	<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('task');">
-	<button type="button" class="btn btn-default  plus-btn" onclick="location.href='#';"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New Task
-	</div>
-	</div>
-	
-  </div>
-</div>
-</div>
-</div>
+	<div  style="padding-bottom:20px;">
+	<s:iterator var="relatedModule" value="recordSummaryLayout.relatedModules">
 	<div class="row row-out">
-	<div class="row ">
-	<div class="col-md-12 col-sm-12 row-header-out " style="text-center">	
-	<i class="fa fa-paperclip icon-out-2x" aria-hidden="true"></i>&nbsp;&nbsp;ATTACHMENTS
+		<div class="row ">
+			<div class="col-md-12 col-sm-12 row-header-out ">	
+				<i class="<s:property value="#relatedModule.icon" /> icon-out-2x" aria-hidden="true"></i>&nbsp;&nbsp;<s:property value="#relatedModule.displayName" />
+			</div>
+		</div>
+		<s:if test="record[#relatedModule.listName] == null || record[#relatedModule.listName].isEmpty()">
+		<div class="row row-in">
+			<div class="col-md-12 col-sm-12 form-group"><br></div>
+			<div class="row row-footer">
+				<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('<s:property value="#relatedModule.linkName" />', relatedModuleAddCallBack, '<s:property value="%{moduleLinkName}" />', '<s:property value="%{record[recordSummaryLayout.pkColumnId]}" />');">
+					<button type="button" class="btn btn-default  plus-btn"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New <s:property value="#relatedModule.moduleName" />
+				</div>
+			</div>
+		</div>
+		</s:if>
+		<s:else>
+		<div class="row row-in">
+			<div class="row list-content table-style">
+	   			<div>
+					<table width="100%" class="table table-striped able-hover">
+		    			<s:if test="#relatedModule.showHeader">
+		    			<thead>
+		        		<tr>
+		        			<s:iterator var="column" value="#relatedModule.columns">
+		       		 			<th><s:property value="#column.label" /></th>
+		       		 		</s:iterator>
+		        		</tr>
+		      			</thead>  
+		      			</s:if>
+		      			<tbody>
+		      				<s:iterator var="relatedrecord" value="record[#relatedModule.listName]">
+		      				<tr>
+		      					<s:iterator var="column" value="#relatedModule.columns">
+		      					<s:if test="#column.showColumn">
+		      						<td><s:property value="#relatedrecord[#column.id]" /></td>
+		      					</s:if>	
+		      					</s:iterator>
+		      				</tr>
+		      				</s:iterator>
+		      			</tbody>
+					</table>
+				</div>	
+				<div class="col-md-12 col-sm-12 hr-dashed-line"></div>
+				<div class="row row-footer">
+					<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('<s:property value="#relatedModule.linkName" />', relatedModuleAddCallBack, '<s:property value="moduleLinkName" />', '<s:property value="%{record[recordSummaryLayout.pkColumnId]}" />');">
+						<button type="button" class="btn btn-default  plus-btn"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New <s:property value="#relatedModule.moduleName" />
+					</div>
+				</div>
+			</div>
+		</div>
+		</s:else>
 	</div>
+	</s:iterator>
 	</div>
-	
-	<div class="row row-in">
-	<div class="col-md-12 col-sm-12 form-group" style="text-center"><br>
-	Mitsubishi_lift_technician_guide.pdf		
-	</div>
-	<div class="col-md-12 col-sm-12 hr-dashed-line">			
-	</div>
-	<div class="row row-footer">
-	<div class="col-md-6 col-sm-6 ">
-	<button type="button" class="btn btn-default  plus-btn" onclick="location.href='#';"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New file
-	</div>
-	</div>
-	</div>
-	</div>
-	
-	<div class="row row-out">
-	<div class="row ">
-	<div class="col-md-12 col-sm-12 row-header-out " style="text-center">	
-	<i class="fa fa-sticky-note icon-out-2x" aria-hidden="true"></i>&nbsp;&nbsp;NOTES
-	</div>
-	</div>
-	<div class="row row-in">
-	<div class="col-md-12 col-sm-12 form-group" style="text-center"><br>
-	</div>
-	<div class="row row-footer">
-	<div class="col-md-6 col-sm-6 ">
-	<button type="button" class="btn btn-default  plus-btn" onclick="location.href='#';"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;Add Notes
-	</div>
-	</div>
-	</div>
-	</div>
-	<div class="row row-out">
-	</div>
-	</s:if>
+</s:if>
 </div>
 
 
 
 <script>
+
+var relatedModuleAddCallBack = function(result, error)
+	{
+	   if (result != null) {
+		   FacilioApp.notifyMessage('success', 'Record created successfully!');
+		   
+		   setTimeout(function() {
+			   $('#record-list').find('tr.selected').trigger("click");
+		   }, 500);
+	   }
+	}
+
  $(document).ready(function (){
 	 /*  var table = $('#tickets-list').DataTable({
 	      columnDefs: [{
@@ -231,37 +188,37 @@
 	 */
    
 	});
- 
- var i = 1;
- 
- 
- var stages = ['Open', 'Awaiting', 'Approved', 'WIP', 'Closed'];
- var currentStage = 'Awaiting';
- var lastStage = ["Closed"];
- 
-
-
- for (var i=0; i< stages.length; i++) {
-	 var stage = stages[i];
-	 if((currentStage == null) | (currentStage == '')  ){
-		 break;
-	 }
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
-
-	   	   
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('disabled').addClass('active');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
-	 
-	 if (lastStage.indexOf(stage) != -1) {
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('active').addClass('complete ');
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
-   	 }
-	 
-	 if (currentStage == stage) {
-		 break;
-	 }
- }
+<s:if test="%{recordSummaryLayout.hasProgressBar}">
+	var stages = []; 
+ 	<s:iterator var="status" value="record.statuses">	
+ 		stages.push('<s:property value="#status.status" />');
+	</s:iterator>  
+	var i = 1;
+	var currentStage = '<s:property value="record.status.status" />';
+	var lastStage = ["<s:property value='record.statuses[record.statuses.size-1].status' />"];
+	
+	for (var i=0; i< stages.length; i++) {
+		var stage = stages[i];
+		if((currentStage == null) | (currentStage == '')  ){
+			 break;
+		}
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
+	
+		   	   
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('disabled').addClass('active');
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
+		 
+		if (lastStage.indexOf(stage) != -1) {
+			 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('active').addClass('complete ');
+			 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
+	   	}
+		 
+		if (currentStage == stage) {
+			 break;
+		}
+	}
+</s:if>
  
 </script>
 

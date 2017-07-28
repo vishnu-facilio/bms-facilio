@@ -29,14 +29,14 @@ public class GetTaskListCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(TaskContext.class)
 				.select(fields)
-				.orderBy("taskId");
+				.orderBy("ID");
 		
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
 		}
 
-		List<TaskContext> tasks = builder.get();
+		List<TaskContext> tasks = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		
 		return false;

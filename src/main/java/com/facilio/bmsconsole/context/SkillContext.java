@@ -1,22 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-public class SkillContext {
-	
-	private long skillId;
-	public long getSkillId() {
-		return skillId;
-	}
-	public void setSkillId(long skillId) {
-		this.skillId = skillId;
-	}
-	
-	private long orgId = 0;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class SkillContext extends ModuleBaseWithCustomFields {
 	
 	private String name;
 	public String getName() {

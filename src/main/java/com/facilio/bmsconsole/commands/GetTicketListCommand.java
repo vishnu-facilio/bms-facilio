@@ -29,14 +29,14 @@ public class GetTicketListCommand implements Command {
 														.dataTableName(dataTableName)
 														.beanClass(TicketContext.class)
 														.select(fields)
-														.orderBy("ticketId");
+														.orderBy("ID");
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
 		}
 		
-		List<TicketContext> tickets = builder.get();
+		List<TicketContext> tickets = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.TICKET_LIST, tickets);
 		
 		return false;

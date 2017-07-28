@@ -11,7 +11,7 @@ public class SetSpaceModuleTableNames implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "Space");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "space");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Space");
 		
 		return false;

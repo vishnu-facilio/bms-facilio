@@ -25,7 +25,7 @@ public class AddCampusCommand implements Command {
 		{
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			Long areaId = SpaceAPI.addArea(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
-			campus.setCampusId(areaId);
+			campus.setId(areaId);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);

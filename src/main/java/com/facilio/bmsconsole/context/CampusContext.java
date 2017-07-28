@@ -4,16 +4,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class CampusContext extends ModuleBaseWithCustomFields {
 	
-	public static final String[] DEFAULT_CAMPUS_FIELDS = new String[] {"campusId", "name", "description", "currentOccupancy", "maxOccupancy", "area", "locationId", "managedBy"};
-	
-	private long campusId;
-	public long getCampusId() {
-		return campusId;
-	}
-	public void setCampusId(long campusId) {
-		this.campusId = campusId;
-	}
-	
 	private String name;
 	public String getName() {
 		return name;
@@ -46,19 +36,19 @@ public class CampusContext extends ModuleBaseWithCustomFields {
 		this.area = area;
 	}
 	
-	private long locationId;
-	public long getLocationId() {
-		return locationId;
+	private LocationContext location;
+	public LocationContext getLocation() {
+		return location;
 	}
-	public void setLocationId(long locationId) {
-		this.locationId = locationId;
+	public void setLocation(LocationContext location) {
+		this.location = location;
 	}
 	
-	private long managedBy;
-	public long getManagedBy() {
+	private UserContext managedBy;
+	public UserContext getManagedBy() {
 		return managedBy;
 	}
-	public void setManagedBy(long managedBy) {
+	public void setManagedBy(UserContext managedBy) {
 		this.managedBy = managedBy;
 	}
 	

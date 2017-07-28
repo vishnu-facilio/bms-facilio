@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -43,7 +42,7 @@ public class ViewFactory {
 		Condition ticketOpen = new Condition();
 		ticketOpen.setField(statusField);
 		ticketOpen.setOperator(NumberOperators.EQUALS);
-		ticketOpen.setValue(String.valueOf(TicketContext.OPEN));
+	//	ticketOpen.setValue(String.valueOf(TicketContext.Status.SUBMITTED.getStatusAsInt()));
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, ticketOpen);
@@ -133,7 +132,7 @@ public class ViewFactory {
 		FacilioField userField = new FacilioField();
 		userField.setName("assignedToId");
 		userField.setColumnName("ASSIGNED_TO_ID");
-		userField.setDataType(FieldType.USER);
+		userField.setDataType(FieldType.LOOKUP);
 		
 		Condition myUserCondition = new Condition();
 		myUserCondition.setField(userField);

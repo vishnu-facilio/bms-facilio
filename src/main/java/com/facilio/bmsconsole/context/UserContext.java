@@ -28,6 +28,13 @@ public class UserContext {
 		this.orgUserId = orgUserId;
 	}
 	
+	public long getId() {
+		return orgUserId;
+	}
+	public void setId(long id) {
+		this.orgUserId = id;
+	}
+	
 	private String name;
 	public String getName() {
 		if (this.name == null) {

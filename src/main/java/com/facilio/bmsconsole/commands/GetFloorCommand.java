@@ -18,7 +18,7 @@ public class GetFloorCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long floorId = (long) context.get(FacilioConstants.ContextNames.FLOOR_ID);
+		long floorId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(floorId > 0) 
 		{
@@ -31,10 +31,10 @@ public class GetFloorCommand implements Command {
 					.dataTableName(dataTableName)
 					.beanClass(FloorContext.class)
 					.select(fields)
-					.where("FLOOR_ID = ?", floorId)
-					.orderBy("FLOOR_ID");
+					.where("ID = ?", floorId)
+					.orderBy("ID");
 
-			List<FloorContext> floors = builder.get();	
+			List<FloorContext> floors = builder.getAsBean();	
 			if(floors.size() > 0) {
 				FloorContext floor = floors.get(0);
 				context.put(FacilioConstants.ContextNames.FLOOR, floor);

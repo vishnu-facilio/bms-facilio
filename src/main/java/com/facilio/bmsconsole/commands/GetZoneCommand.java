@@ -18,7 +18,7 @@ public class GetZoneCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long zoneId = (long) context.get(FacilioConstants.ContextNames.ZONE_ID);
+		long zoneId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(zoneId > 0) 
 		{
@@ -31,10 +31,10 @@ public class GetZoneCommand implements Command {
 					.dataTableName(dataTableName)
 					.beanClass(ZoneContext.class)
 					.select(fields)
-					.where("ZONE_ID = ?", zoneId)
-					.orderBy("ZONE_ID");
+					.where("ID = ?", zoneId)
+					.orderBy("ID");
 
-			List<ZoneContext> zones = builder.get();	
+			List<ZoneContext> zones = builder.getAsBean();	
 			if(zones.size() > 0) {
 				ZoneContext zone = zones.get(0);
 				context.put(FacilioConstants.ContextNames.ZONE, zone);

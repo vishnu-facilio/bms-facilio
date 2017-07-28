@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AddTaskCommand implements Command {
@@ -37,7 +38,12 @@ public class AddTaskCommand implements Command {
 															.fields(fields)
 															.connection(conn);
 			long taskId = builder.insert(task);
-			task.setTaskId(taskId);
+			task.setId(taskId);
+			
+			if(task.getParentModuleLinkName() != null && task.getParentModuleLinkName().equals("ticket"))
+			{
+				TicketAPI.addTicketTask(task.getParentId(), taskId, conn);
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Task Object cannot be null");

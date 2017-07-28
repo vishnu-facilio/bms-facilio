@@ -110,7 +110,7 @@ FacilioApp = {
 		$(".common-notification-alert .alert").delay(2000).slideUp(200);
 	},
 	
-	lookupDialog: function(moduleLinkName, moduleName, criteria, fieldId) {
+	lookupDialog: function(moduleLinkName, moduleName, fieldId) {
 		var headerHtml = '<div id="'+moduleLinkName+'popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title pull-left"></h4><div class="action-btn text-right"><button type="button" class="btn btn-default btn-circle cancel-btn" data-dismiss="modal"><i class="fa fa-times"></i></button>';
 		if(moduleLinkName != 'area')
 		{
@@ -136,7 +136,7 @@ FacilioApp = {
 	},
 	
 	selectValue: function(id, label, popup) {
-		var $select = $("#"+$(popup).data('fieldId')).selectize();
+		var $select = $("select[name='"+$(popup).data('fieldId')+"']").selectize();
 		var selectize = $select[0].selectize;
 		selectize.addOption({value: id, text: label});
 		selectize.refreshOptions();
@@ -144,12 +144,17 @@ FacilioApp = {
 		$(popup).modal('hide');
 	},
 	
-	createRecordDialog: function(moduleName, callback) {
+	createRecordDialog: function(moduleLinkName, callback, parentModuleLinkName, parentId) {
 		 $.ajax({
 			type : "GET",
-			url : contextPath + '/home/'+moduleName+'/newDialog',
+			url : contextPath + '/home/'+moduleLinkName+'/newDialog',
 			success : function(response) {
 				$('#newRecordModel').html(response);
+				if(parentModuleLinkName != undefined)
+				{
+					$('#addFormDialog').find('input[name='+moduleLinkName+'\\.parentModuleLinkName]').val(parentModuleLinkName);
+					$('#addFormDialog').find('input[name='+moduleLinkName+'\\.parentId]').val(parentId);
+				}
 				$("#newRecordModel").modal("show");
 				
 				// handle save record on dialog
@@ -166,7 +171,7 @@ FacilioApp = {
 						$(this).find(".save-btn").button('loading');
 						$.ajax({
 							method : "post",
-							url : contextPath + '/home/'+moduleName+'/add',
+							url : contextPath + '/home/'+moduleLinkName+'/add',
 							data : $("#addFormDialog").serialize()
 						})
 						.done(function(data) {

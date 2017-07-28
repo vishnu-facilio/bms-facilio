@@ -31,8 +31,8 @@ public class SupportMailParseAction extends ActionSupport {
 		
 		Command addTicket = FacilioChainFactory.getAddTicketChain();
 		addTicket.execute(context);
-		System.out.println("Ticket ID : "+ticket.getTicketId());
-		setTicketId(ticket.getTicketId());
+		System.out.println("Ticket ID : "+ticket.getId());
+		setTicketId(ticket.getId());
 		return SUCCESS;
 	}
 	

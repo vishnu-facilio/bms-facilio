@@ -11,46 +11,46 @@
 						<s:if test="%{#field.icon != null && #field.icon != ''}">
 							<i class="<s:property value="#field.icon"/> field-label-icon" aria-hidden="true"></i>
 						</s:if>
-						<s:property value="#field.label"/>
+						<s:property value="#field.displayName"/>
 						<s:if test="%{#field.required}">
 							<span class="required">*</span>
 						</s:if>
 					</label>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTBOX}">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@TEXTBOX || #field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@EMAIL || #field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@NUMBER}">
 						
-						<input name="<s:property value="#field.name"/>" 
-							id="<s:property value="#field.id"/>" class="form-control" 
-							type="<s:property value="#field.html5Type"/>"
-							placeholder="<s:property value="#field.placeholder"/>"
+						<input name="<s:property value="#field.inputName"/>" 
+							class="form-control" 
+							type="<s:property value="#field.displayType.html5Type"/>"
+							placeholder="<s:property value="#field.placeHolder"/>"
 							<s:if test="%{#field.required}">
 							required="true"
 							</s:if>
-							<s:if test="%{#field.isDisabled}">
+							<s:if test="%{#field.disabled}">
 							disabled="disabled"
 							</s:if>
 							/>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DECISION_BOX}">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@DECISION_BOX}">
 						
-						<input name="<s:property value="#field.name"/>" 
-							id="<s:property value="#field.id"/>" class="form-control" 
-							type="<s:property value="#field.html5Type"/>"
-							checked="true"
+						<input name="<s:property value="#field.inputName"/>" 
+							class="form-control" 
+							type="<s:property value="#field.displayType.html5Type"/>"
+							placeholder="<s:property value="#field.placeHolder"/>"
 							<s:if test="%{#field.required}">
 							required="true"
 							</s:if>
-							<s:if test="%{#field.isDisabled}">
+							<s:if test="%{#field.disabled}">
 							disabled="disabled"
 							</s:if>
 							/>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATE}">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@DATE}">
 					
 						<div class="input-group">
-							<input name="<s:property value="#field.name"/>" 
-								id="<s:property value="#field.id"/>" class="form-control f-date" 
-								type="<s:property value="#field.html5Type"/>"
-								placeholder="<s:property value="#field.placeholder"/>"
+							<input name="<s:property value="#field.inputName"/>"
+								class="form-control f-date" 
+								type="<s:property value="#field.displayType.html5Type"/>"
+								placeholder="<s:property value="#field.placeHolder"/>"
 								<s:if test="%{#field.required}">
 								required="true"
 								</s:if>
@@ -62,13 +62,13 @@
 							</span>
 	                    </div>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@DATETIME}">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@DATETIME}">
 					
 						<div class="input-group">
-							<input name="<s:property value="#field.name"/>" 
-								id="<s:property value="#field.id"/>" class="form-control f-datetime" 
-								type="<s:property value="#field.html5Type"/>"
-								placeholder="<s:property value="#field.placeholder"/>"
+							<input name="<s:property value="#field.inputName"/>"
+								class="form-control f-datetime" 
+								type="<s:property value="#field.displayType.html5Type"/>"
+								placeholder="<s:property value="#field.placeHolder"/>"
 								<s:if test="%{#field.required}">
 								required="true"
 								</s:if>
@@ -80,33 +80,56 @@
 							</span>
 	                    </div>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@LOOKUP}">
-						<s:if test="%{#field.lookupModule.displayType == 'simple'}">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@LOOKUP_SIMPLE}">
+						<select
+							class="form-control"
+							name="<s:property value="#field.inputName"/>"
+							placeholder="<s:property value="#field.placeHolder"/>"
+							data-module-name="<s:property value="#field.lookupModule.name"/>"
+							<s:if test="%{#field.required}">
+							required="true"
+							</s:if>
+							>
+							<option value="">- None -</option>
+							<s:iterator value="actionForm[#field.list]" status="rowstatus" var="option">
+								<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
+							</s:iterator>
+						</select>
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@LOOKUP_POPUP}">
 							<div class="input-group">
 								<select
-									class="select-lookup"
-									id="<s:property value="#field.id"/>"
-									name="<s:property value="#field.name"/>"
-									placeholder="<s:property value="#field.placeholder"/>"
+									class="form-control select-lookup"
+									name="<s:property value="#field.inputName"/>"
+									placeholder="<s:property value="#field.placeHolder"/>"
+									<s:if test="%{#field.specialType == 'users' || #field.specialType == 'groups'}">
+										data-module-name="<s:property value="#field.specialType"/>"
+									</s:if>
+										data-module-name="<s:property value="#field.lookupModule.name"/>"
+									<s:else>
+									</s:else>
 									<s:if test="%{#field.required}">
 									required="true"
 									</s:if>
 									>
-									<s:if test="%{#field.lookupModule.preloadedList != null && #field.lookupModule.preloadedList != ''}">
-										<option value="">- None -</option>
-										<s:iterator value="actionForm[#field.lookupModule.preloadedList]" status="rowstatus" var="option">
-											<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
-										</s:iterator>
-									</s:if>
+									<option value="">- None -</option>
 								</select>
 								<span class="input-group-btn">
-									<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.label"/>', '<s:property value="#field.lookupModule.criteria"/>', '<s:property value="#field.id"/>')">
-										<i class="<s:property value="#field.lookupModule.lookupIcon"/>"></i>
+									<s:if test="%{#field.specialType == 'users'}">
+										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('users', 'Users', '<s:property value="#field.inputName"/>')">
+									</s:if>
+									<s:elseif test="%{#field.specialType == 'groups'}">
+										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('groups', 'Groups', '<s:property value="#field.inputName"/>')">
+									</s:elseif>
+									<s:else>
+										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.displayName"/>', '<s:property value="#field.inputName"/>')">
+									</s:else>
+										<i class="<s:property value="#field.lookupIcon"/>"></i>
 									</button>
 								</span>
 		                    </div>					
-						</s:if>
-						<s:else>
+					</s:if>
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@LOOKUP_SECTION}">
 							<div class="file-section">
 								<div class="col-md-12 file-row file-add">
 									<span class="file-action btn btn-success btn-circle-sm col-md-2"><i class="fa fa-1x fa-plus" aria-hidden="true"></i></span>
@@ -118,15 +141,13 @@
 								<span class="file-action btn btn-danger btn-circle-sm col-md-2"><i class="fa fa-1x fa-minus" aria-hidden="true"></i></span>
 								<span class="file-name col-md-10 text-left"></span>
 							</div>
-						</s:else>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@SELECTBOX }">
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@SELECTBOX }">
 					
 						<select
 							class="form-control"
-							id="<s:property value="#field.id"/>"
-							name="<s:property value="#field.name"/>"
-							placeholder="<s:property value="#field.placeholder"/>"
+							name="<s:property value="#field.inputName"/>"
+							placeholder="<s:property value="#field.placeHolder"/>"
 							<s:if test="%{#field.required}">
 							required="true"
 							</s:if>
@@ -138,17 +159,17 @@
 						</select>
 						
 					</s:if>		
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@TEXTAREA }">
-						<textarea class="form-control" name="<s:property value="#field.name"/>"
-							id="<s:property value="#field.id"/>"
-							name="<s:property value="#field.name"/>"
-							placeholder="<s:property value="#field.placeholder"/>"
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@TEXTAREA }">
+						<textarea class="form-control"
+							name="<s:property value="#field.inputName"/>"
+							placeholder="<s:property value="#field.placeHolder"/>"
 							<s:if test="%{#field.required}">
 							required="true"
 							</s:if>
 							></textarea>
 					</s:if>
-					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.context.Field$FieldType@FILE }">
+					<%-- 
+					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@FILE }">
 						<s:if test="%{#field.fileField.displayType == 'simple'}">
 							<div class="input-group">
 								<input type="text"
@@ -198,6 +219,7 @@
 								</div>
 						</s:else>
 					</s:if>	
+					--%>
 				</div>
 			
 		</s:iterator>
@@ -205,3 +227,30 @@
   </div>
 </s:iterator>
 </div>
+<script>
+	$(document).ready(function() {
+		$('select').selectize({
+			preload : true,
+			load : function(query, callback) {
+				console.log(this);
+				var moduleName = this.$input.data("module-name");
+				console.log(moduleName);
+				$.ajax({
+					method : "post",
+					url : "<s:url action='picklist' namespace='/home' />",
+					data : {moduleName : moduleName}
+				})
+				.done(function(data) {
+					var dataArr = [];
+					for(var key in data) {
+						dataArr.push({value : key, text : data[key]});
+					}
+					callback(dataArr);
+				})
+				.fail(function(error) {
+					
+				});
+			}
+		});
+	});
+</script>

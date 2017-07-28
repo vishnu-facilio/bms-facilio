@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +8,6 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -46,16 +43,7 @@ public class SpaceAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(SpaceContext.DEFAULT_SPACE_FIELDS);
-		for(FacilioField field : fields) 
-		{
-			if(!defaultFields.contains(field.getName())) 
-			{
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax = ((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		if(isajax!=null && isajax.equals("true"))
@@ -65,6 +53,8 @@ public class SpaceAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String addSpace() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
@@ -73,7 +63,7 @@ public class SpaceAction extends ActionSupport {
 		Chain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
 		
-		setSpaceId(space.getSpaceId());
+		setSpaceId(space.getId());
 		
 		return SUCCESS;
 	}
@@ -81,7 +71,7 @@ public class SpaceAction extends ActionSupport {
 	public String viewSpace() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACE_ID, getSpaceId());
+		context.put(FacilioConstants.ContextNames.ID, getSpaceId());
 		
 		Chain getSpaceChain = FacilioChainFactory.getSpaceDetailsChain();
 		getSpaceChain.execute(context);
@@ -93,7 +83,7 @@ public class SpaceAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewSpaceLayout();
+		return FormLayout.getNewSpaceLayout(fields);
 	}
 	
 	private String moduleName;

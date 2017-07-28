@@ -17,7 +17,7 @@ public class GetCampusCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		long campusId = (long) context.get(FacilioConstants.ContextNames.CAMPUS_ID);
+		long campusId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(campusId > 0) {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
@@ -29,10 +29,10 @@ public class GetCampusCommand implements Command {
 					.dataTableName(dataTableName)
 					.beanClass(CampusContext.class)
 					.select(fields)
-					.where("CAMPUS_ID = ?", campusId)
-					.orderBy("CAMPUS_ID");
+					.where("ID = ?", campusId)
+					.orderBy("ID");
 
-			List<CampusContext> campuses = builder.get();	
+			List<CampusContext> campuses = builder.getAsBean();	
 			if(campuses.size() > 0) {
 				CampusContext campus = campuses.get(0);
 				context.put(FacilioConstants.ContextNames.CAMPUS, campus);

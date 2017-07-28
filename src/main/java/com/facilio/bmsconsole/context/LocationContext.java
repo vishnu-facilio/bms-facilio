@@ -1,22 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-public class LocationContext {
-	
-	private long locationId;
-	public long getLocationId() {
-		return locationId;
-	}
-	public void setLocationId(long locationId) {
-		this.locationId = locationId;
-	}
-	
-	private long orgId = 0;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class LocationContext extends ModuleBaseWithCustomFields {
 	
 	private String name;
 	public String getName() {

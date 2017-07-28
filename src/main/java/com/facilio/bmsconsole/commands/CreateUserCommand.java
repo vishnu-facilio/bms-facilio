@@ -8,8 +8,6 @@ import java.util.HashMap;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.sql.DBUtil;
-
 
 public class CreateUserCommand implements Command {
 	
@@ -68,9 +66,6 @@ public class CreateUserCommand implements Command {
 			ps3.setLong(1,userId);
 			ps3.setLong(2, orgId);
 			ps3.executeUpdate();
-			ResultSet rs3 = ps3.getGeneratedKeys();
-			rs3.next();
-			long orgUserId = rs3.getLong(1);
 			ps3.close();
 			
 		} catch (Exception e) {

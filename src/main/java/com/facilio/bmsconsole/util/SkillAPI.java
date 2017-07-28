@@ -118,7 +118,7 @@ public class SkillAPI {
 			pstmt.setString(1, skillContext.getName());
 			pstmt.setString(2, skillContext.getDescription());
 			pstmt.setBoolean(3, skillContext.isActive());
-			pstmt.setLong(4, skillContext.getSkillId());
+			pstmt.setLong(4, skillContext.getId());
 			pstmt.setLong(5, skillContext.getOrgId());
 			
 			if(pstmt.executeUpdate() < 1) {
@@ -137,7 +137,7 @@ public class SkillAPI {
 	private static SkillContext getSkillObjectFromRS(ResultSet rs) throws SQLException {
 		
 		SkillContext sc = new SkillContext();
-		sc.setSkillId(rs.getLong("SKILL_ID"));
+		sc.setId(rs.getLong("SKILL_ID"));
 		sc.setOrgId(rs.getLong("ORGID"));
 		sc.setName(rs.getString("NAME"));
 		sc.setDescription(rs.getString("DESCRIPTION"));

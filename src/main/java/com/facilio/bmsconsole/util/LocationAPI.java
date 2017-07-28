@@ -134,7 +134,7 @@ public class LocationAPI {
 			pstmt.setLong(9, locationContext.getContact());
 			pstmt.setString(10, locationContext.getPhone());
 			pstmt.setString(11, locationContext.getFaxPhone());
-			pstmt.setLong(12, locationContext.getLocationId());
+			pstmt.setLong(12, locationContext.getId());
 			pstmt.setLong(13, locationContext.getOrgId());
 			
 			if(pstmt.executeUpdate() < 1) {
@@ -153,7 +153,7 @@ public class LocationAPI {
 	private static LocationContext getLocationObjectFromRS(ResultSet rs) throws SQLException {
 		
 		LocationContext lc = new LocationContext();
-		lc.setLocationId(rs.getLong("LOCATION_ID"));
+		lc.setId(rs.getLong("LOCATION_ID"));
 		lc.setOrgId(rs.getLong("ORGID"));
 		lc.setName(rs.getString("NAME"));
 		lc.setStreet(rs.getString("STREET"));

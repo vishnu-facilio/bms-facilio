@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SkillActions extends ActionSupport {
@@ -40,19 +44,55 @@ public class SkillActions extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String newSkill() throws Exception {
 		
-		setModuleName("Skill");
-		setFormlayout(FormLayout.getNewSkillLayout());
-		
+		Connection conn = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			fields = FieldUtil.getAllFields("skill", conn);
+			setModuleName("Skill");
+			setFormlayout(FormLayout.getNewSkillLayout(fields));
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				}
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	    return SUCCESS;
 	}
 	
 	public String newSkillDialog() throws Exception {
 		
-		setModuleName("Skill");
-		setFormlayout(FormLayout.getNewSkillLayout());
-		
+		Connection conn = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			fields = FieldUtil.getAllFields("skill", conn);
+			setModuleName("Skill");
+			setFormlayout(FormLayout.getNewSkillLayout(fields));
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				}
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	    return SUCCESS;
 	}
 	

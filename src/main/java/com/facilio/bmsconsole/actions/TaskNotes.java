@@ -20,7 +20,7 @@ public class TaskNotes extends ActionSupport {
 			note.setCreationTime(System.currentTimeMillis());
 			
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.TASK_ID, getTaskId());
+			context.put(FacilioConstants.ContextNames.ID, getTaskId());
 			context.put(FacilioConstants.ContextNames.NOTE, note);
 			
 			Chain addTaskNote = FacilioChainFactory.getAddTaskNoteChain();

@@ -23,6 +23,13 @@ public class GroupContext {
 		this.groupId = groupId;
 	}
 	
+	public long getId() {
+		return groupId;
+	}
+	public void setId(long id) {
+		this.groupId = id;
+	}
+	
 	private String name;
 	public String getName() {
 		return name;

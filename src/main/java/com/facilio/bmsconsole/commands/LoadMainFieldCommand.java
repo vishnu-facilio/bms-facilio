@@ -1,11 +1,9 @@
-package com.facilio.bmsconsole.commands;
+ package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -16,7 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
-public class LoadFieldsCommand implements Command{
+public class LoadMainFieldCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -35,20 +33,22 @@ public class LoadFieldsCommand implements Command{
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
+			String sql = "SELECT Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? AND IS_MAIN_FIELD = true";
 			
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setLong(1, orgId);
 			pstmt.setString(2, moduleName);
 			
 			rs = pstmt.executeQuery();
-			List<FacilioField> fields = new ArrayList<>();
+			FacilioField defaultField = null;
 			
-			while(rs.next()) {
-				fields.add(CommonCommandUtil.getFieldFromRS(rs));
+			if(rs.next()) {
+				defaultField = CommonCommandUtil.getFieldFromRS(rs);
+				defaultField.setModuleName(moduleName);
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, rs.getString("TABLE_NAME"));
+				context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
 			}
 			
-			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 		}
 		catch (SQLException e) {
 			throw e;
@@ -58,6 +58,7 @@ public class LoadFieldsCommand implements Command{
 		}
 		
 		return false;
+		
 	}
 
 }

@@ -26,9 +26,9 @@ public class GetAllFloorCommand implements Command{
 				.dataTableName(dataTableName)
 				.beanClass(FloorContext.class)
 				.select(fields)
-				.orderBy("FLOOR_ID");
+				.orderBy("ID");
 
-		List<FloorContext> floors = builder.get();
+		List<FloorContext> floors = builder.getAsBean();
 		context.put(FacilioConstants.ContextNames.FLOOR_LIST, floors);
 		
 		return false;

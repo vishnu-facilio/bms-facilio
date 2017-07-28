@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +10,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -46,16 +43,7 @@ public class ZoneAction extends ActionSupport {
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		customFieldNames = new ArrayList<>();
-		List<String> defaultFields = Arrays.asList(ZoneContext.DEFAULT_ZONE_FIELDS);
-		for(FacilioField field : fields) 
-		{
-			if(!defaultFields.contains(field.getName())) 
-			{
-				customFieldNames.add(field.getName());
-			}
-		}
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map mp = ActionContext.getContext().getParameters();
 		String isajax = ((org.apache.struts2.dispatcher.Parameter)mp.get("ajax")).getValue();
 		if(isajax!=null && isajax.equals("true"))
@@ -65,6 +53,8 @@ public class ZoneAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> fields;
+	
 	public String addZone() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
@@ -73,7 +63,7 @@ public class ZoneAction extends ActionSupport {
 		Chain addZone = FacilioChainFactory.getAddZoneChain();
 		addZone.execute(context);
 		
-		setZoneId(zone.getZoneId());
+		setZoneId(zone.getId());
 		
 		return SUCCESS;
 	}
@@ -81,7 +71,7 @@ public class ZoneAction extends ActionSupport {
 	public String viewZone() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ZONE_ID, getZoneId());
+		context.put(FacilioConstants.ContextNames.ID, getZoneId());
 		
 		Chain getZoneChain = FacilioChainFactory.getZoneDetailsChain();
 		getZoneChain.execute(context);
@@ -93,7 +83,7 @@ public class ZoneAction extends ActionSupport {
 	
 	public List getFormlayout()
 	{
-		return FormLayout.getNewZoneLayout();
+		return FormLayout.getNewZoneLayout(fields);
 	}
 	
 	private String moduleName;
