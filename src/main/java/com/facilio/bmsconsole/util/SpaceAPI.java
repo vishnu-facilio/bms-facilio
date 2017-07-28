@@ -11,9 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class SpaceAPI {
 	

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 

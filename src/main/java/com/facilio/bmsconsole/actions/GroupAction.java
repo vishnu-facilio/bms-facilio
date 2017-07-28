@@ -9,8 +9,8 @@ import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;

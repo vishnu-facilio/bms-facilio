@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
 
 public class LookupField extends FacilioField {
 	
