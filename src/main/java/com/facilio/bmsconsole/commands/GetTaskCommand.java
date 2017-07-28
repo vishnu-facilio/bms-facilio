@@ -39,7 +39,7 @@ public class GetTaskCommand implements Command {
 				context.put(FacilioConstants.ContextNames.SCHEDULE_ID, task.getScheduleId());
 				
 				context.put(GetNotesCommand.NOTES_REL_TABLE, "Task_Note");
-				context.put(GetNotesCommand.MODULEID_COLUMN, "TASK_ID");
+				context.put(GetNotesCommand.MODULEID_COLUMN, "TASKID");
 				context.put(GetNotesCommand.MODULE_ID, taskId);
 			}
 ;		}

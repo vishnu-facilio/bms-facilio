@@ -69,8 +69,8 @@ public class ViewLayout {
 	public static ViewLayout getViewTaskLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("taskId");
-		viewLayout.addColumn(new Column("ID", "taskId", ColumnType.NUMBER));
+		viewLayout.setPkColumnId("id");
+		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
 		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
 							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
 							.addColumn(new Column("Description", "description", ColumnType.TEXT))
@@ -84,7 +84,7 @@ public class ViewLayout {
 	public static ViewLayout getViewCampusLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("campusId");
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
@@ -97,7 +97,7 @@ public class ViewLayout {
 	public static ViewLayout getViewBuildingLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("buildingId");
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Campus", "campusId", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
@@ -111,7 +111,7 @@ public class ViewLayout {
 	public static ViewLayout getViewFloorLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("floorId");
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
@@ -125,7 +125,7 @@ public class ViewLayout {
 	public static ViewLayout getViewSpaceLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("spaceId");
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Display Name", "displayName", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Category", "spaceCategoryId", ColumnType.TEXT));
@@ -140,7 +140,7 @@ public class ViewLayout {
 	public static ViewLayout getViewZoneLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("zoneId");
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Short Description", "shortDescription", ColumnType.TEXT));
 		

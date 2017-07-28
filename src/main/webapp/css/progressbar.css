@@ -10,7 +10,7 @@
 }
 
 /*Form Wizard*/
-.bs-wizard {border-bottom: solid 1px #e0e0e0; padding-left: 5pc;
+.bs-wizard {border-bottom: solid 1px #e0e0e0; padding-left: 5px;
     padding-bottom: 25px;}
 .bs-wizard > .bs-wizard-step {padding: 0; position: relative; padding-top: 16px}
 .bs-wizard > .bs-wizard-step + .bs-wizard-step {}

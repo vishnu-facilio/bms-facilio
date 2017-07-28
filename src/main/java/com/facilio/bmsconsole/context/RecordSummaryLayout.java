@@ -96,19 +96,19 @@ public class RecordSummaryLayout {
 		recordSummaryLayout.setRecordTitleColumnId("subject");
 		recordSummaryLayout.setPkColumnId("id");
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status.status", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Priority", "priority.priority", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
+		recordSummaryLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
 		recordSummaryLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignTo.email", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP));
 		
 		recordSummaryLayout.addRelatedModule(new RelatedModule("TASKS", "tasks", "Task", "task")
 							.setIcon("fa fa-tasks")
 							.setShowHeader(true)
-							.addColumn(new Column("ID", "taskId", ColumnType.NUMBER))
+							.addColumn(new Column("ID", "id", ColumnType.NUMBER))
 							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
-							.addColumn(new Column("Status", "status", ColumnType.TEXT))
-							.addColumn(new Column("Assigned To", "assignToId", ColumnType.TEXT))
+							.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP))
+							.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP))
 							);
 		recordSummaryLayout.addRelatedModule(new RelatedModule("ATTACHMENTS", "attachments", "Attachment", "attachment")
 							.setIcon("fa fa-paperclip")
@@ -134,7 +134,7 @@ public class RecordSummaryLayout {
 		
 		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
 		recordSummaryLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignToId", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
 		
 		return recordSummaryLayout;
 	}

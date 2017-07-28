@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -133,5 +137,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setAttachments(List<FileContext> attachments)
 	{
 		this.attachments = attachments;
+	}
+	
+	public List<TicketStatusContext> getStatuses() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
+		statusListChain.execute(context);
+		
+		return (List<TicketStatusContext>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST);
 	}
 }

@@ -18,42 +18,23 @@
   	</div>
 </div>
 
-<!--------------------------- progress bar ------------------------>
 <div class="view-content record-content">
 <s:if test="%{recordSummaryLayout.hasProgressBar}">
 	<div class="row record-progress-content">
 	 	<div class=" col-lg-12 container">
 			<div class="row bs-wizard" style="border-bottom:0;">
-	        	<div class="col-xs-2 bs-wizard-step disabled">
-	            	<div class="progress"><div class="progress-bar"></div></div>
+	        	<s:iterator var="status" value="record.statuses">	
+	        		<div class="col-xs-2 bs-wizard-step disabled">
+	            		<div class="progress"><div class="progress-bar"></div></div>
 	                  	<a href="#" class="bs-wizard-dot"></a>
-	                  	<div class="bs-wizard-info text-center">Open</div>
+	                  	<div class="bs-wizard-info text-center"><s:property value="#status.status" /></div>
 	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- complete -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Awaiting for approval</div>
-	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- complete -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Approved</div>
-	                </div>
-	                <div class="col-xs-2 bs-wizard-step disabled"><!-- active -->
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center"> WIP</div>
-	                </div>
-	            	<div class="col-xs-2 bs-wizard-step disabled">
-	                  <div class="progress"><div class="progress-bar"></div></div>
-	                  <a href="#" class="bs-wizard-dot"></a>
-	                  <div class="bs-wizard-info text-center">Closed</div>
-	                </div> 
+	            </s:iterator>    
 	           </div> 
 	     </div>  
 	</div>
-<!-- ----------------------------------------------------- -->
 </s:if>
+
 <div class="row  row-in-2x">
 	<div class="col-lg-12 col-md-12 ticket-form">
 		<div class="form-group">
@@ -68,7 +49,14 @@
 					<s:iterator var="column" value="recordSummaryLayout.columns">
 						<tr>
 							<th class="left-th"><s:property value="#column.label" /></th>
-							<td><s:property value="record[#column.id]" /></td>
+							<td>
+							<s:if test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@LOOKUP}">
+								<s:property value="record[#column.id][#column.lookupId]" />
+							</s:if>
+							<s:else>
+								<s:property value="record[#column.id]" />
+							</s:else>
+							</td>
 						</tr>
 					</s:iterator>
 				</table>
@@ -201,37 +189,37 @@ var relatedModuleAddCallBack = function(result, error)
 	 */
    
 	});
- 
- var i = 1;
- 
- 
- var stages = ['Open', 'Awaiting', 'Approved', 'WIP', 'Closed'];
- var currentStage = 'Awaiting';
- var lastStage = ["Closed"];
- 
-
-
- for (var i=0; i< stages.length; i++) {
-	 var stage = stages[i];
-	 if((currentStage == null) | (currentStage == '')  ){
-		 break;
-	 }
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
-
-	   	   
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('disabled').addClass('active');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
-	 
-	 if (lastStage.indexOf(stage) != -1) {
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('active').addClass('complete ');
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
-   	 }
-	 
-	 if (currentStage == stage) {
-		 break;
-	 }
- }
+<s:if test="%{recordSummaryLayout.hasProgressBar}">
+	var stages = []; 
+ 	<s:iterator var="status" value="record.statuses">	
+ 		stages.push('<s:property value="#status.status" />');
+	</s:iterator>  
+	var i = 1;
+	var currentStage = '<s:property value="record.status.status" />';
+	var lastStage = ["Closed"];
+	
+	for (var i=0; i< stages.length; i++) {
+		var stage = stages[i];
+		if((currentStage == null) | (currentStage == '')  ){
+			 break;
+		}
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
+	
+		   	   
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('disabled').addClass('active');
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
+		 
+		if (lastStage.indexOf(stage) != -1) {
+			 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('active').addClass('complete ');
+			 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
+	   	}
+		 
+		if (currentStage == stage) {
+			 break;
+		}
+	}
+</s:if>
  
 </script>
 

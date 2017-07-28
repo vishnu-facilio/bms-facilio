@@ -24,9 +24,6 @@ public class TicketAction extends ActionSupport {
 	
 	//New Ticket props
 	public String newTicket() throws Exception {
-		
-		
-		
 		FacilioContext context = new FacilioContext();
 		Chain newTicket = FacilioChainFactory.getNewTicketChain();
 		newTicket.execute(context);
@@ -44,7 +41,6 @@ public class TicketAction extends ActionSupport {
 		if(isajax!=null && isajax.equals("true")){
 			return "ajaxsuccess";
 		}
-		
 		return SUCCESS;
 	}
 	

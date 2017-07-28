@@ -44,7 +44,7 @@ public class GetNotesCommand implements Command {
 					.append(moduleRelTable)
 					.append(" ON Notes.NOTEID = ")
 					.append(moduleRelTable)
-					.append(".NOTE_ID WHERE ORGID = ? AND ")
+					.append(".NOTEID WHERE ORGID = ? AND ")
 					.append(moduleRelTable)
 					.append(".")
 					.append(moduleIdColumn)
