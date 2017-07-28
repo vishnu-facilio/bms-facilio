@@ -229,6 +229,27 @@ public class LoginAction extends ActionSupport{
 				catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				String insertquery2 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
+				PreparedStatement ps2 = con.prepareStatement(insertquery2);
+				ps2.setLong(1, orgId);
+				ps2.setString(2, "Administrator");
+				ps2.setString(3, "0");
+				ps2.addBatch();
+				ps2.setLong(1, orgId);
+				ps2.setString(2, "Manager");
+				ps2.setString(3, "0");
+				ps2.addBatch();
+				ps2.setLong(1, orgId);
+				ps2.setString(2, "Dispatcher");
+				ps2.setString(3, "0");
+				ps2.addBatch();
+				ps2.setLong(1, orgId);
+				ps2.setString(2, "Technician");
+				ps2.setString(3, "0");
+				ps2.addBatch();
+				ps2.executeBatch();
+				ps2.close();
 			}
 			
 			String insertquery1 = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?)";
@@ -241,22 +262,6 @@ public class LoginAction extends ActionSupport{
 			rs1.next();
 			long userId = rs1.getLong(1);
 			ps1.close();
-			
-			String insertquery2 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
-			PreparedStatement ps2 = con.prepareStatement(insertquery2);
-			ps2.setLong(1, orgId);
-			ps2.setString(2, "Administrator");
-			ps2.setString(3, "0");
-			ps2.addBatch();
-			ps2.setLong(1, orgId);
-			ps2.setString(2, "Dispatcher");
-			ps2.setString(3, "0");
-			ps2.addBatch();
-			ps2.setLong(1, orgId);
-			ps2.setString(2, "Technician");
-			ps2.setString(3, "0");
-			ps2.executeBatch();
-			ps2.close();
 			
 			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,UNIX_TIMESTAMP(),true,true,(select ROLE_ID from Role where NAME='Administrator' limit 1))";
 			PreparedStatement ps3 = con.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);

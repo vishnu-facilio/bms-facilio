@@ -48,18 +48,18 @@ public class FacilioConstants {
 	public static class Role 
 	{
 		public static final String ADMINISTRATOR 	= "Administrator";
+		public static final String MANAGER 		= "Manager";
 		public static final String DISPATCHER 		= "Dispatcher";
 		public static final String TECHNICIAN 		= "Technician";
-		public static final String REQUESTOR 		= "Requestor";
 		
 		public static final List<String> ALL_ROLES 	= new ArrayList<>();
 		
 		static 
 		{
 			ALL_ROLES.add(ADMINISTRATOR);
+			ALL_ROLES.add(MANAGER);
 			ALL_ROLES.add(DISPATCHER);
 			ALL_ROLES.add(TECHNICIAN);
-			ALL_ROLES.add(REQUESTOR);
 		}
 		
 		// general permissions

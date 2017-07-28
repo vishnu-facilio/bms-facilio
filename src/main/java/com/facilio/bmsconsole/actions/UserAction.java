@@ -129,7 +129,7 @@ public class UserAction extends ActionSupport {
 	public String editUser() throws Exception {
 				
 		setSetup(SetupLayout.getEditUserLayout());
-		setUser(UserAPI.getUserByOrgUserId(getUserId()));
+		setUser(UserAPI.getUserFromOrgUserId(getUserId()));
 		setRoles(FacilioConstants.Role.ALL_ROLES);
 		
 		return SUCCESS;

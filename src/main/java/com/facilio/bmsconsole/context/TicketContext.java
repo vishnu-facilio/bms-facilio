@@ -63,14 +63,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.priority = priority;
 	}
 	
-	public String getAssignedToName() throws Exception {
-		if (this.assignedToId > 0) {
-			String s = UserAPI.getUser(this.assignedToId).getEmail();
-			return s;
-		}
-		return "Unassigned";
-	}
-	
 	private long assetId = 0;
 	public long getAssetId() {
 		return assetId;

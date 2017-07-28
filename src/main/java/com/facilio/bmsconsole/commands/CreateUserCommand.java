@@ -52,12 +52,17 @@ public class CreateUserCommand implements Command {
 			ps2.setString(3, "0");
 			ps2.addBatch();
 			ps2.setLong(1, orgId);
+			ps2.setString(2, "Manager");
+			ps2.setString(3, "0");
+			ps2.addBatch();
+			ps2.setLong(1, orgId);
 			ps2.setString(2, "Dispatcher");
 			ps2.setString(3, "0");
 			ps2.addBatch();
 			ps2.setLong(1, orgId);
 			ps2.setString(2, "Technician");
 			ps2.setString(3, "0");
+			ps2.addBatch();
 			ps2.executeBatch();
 			ps2.close();
 			

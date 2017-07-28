@@ -87,6 +87,7 @@ button.btn.btn-default.btn-circle.cancel-btn {
 	color: #999999;
 	text-transform: uppercase;
 	letter-spacing: 0.64px;
+	font-size: 15px;
 }
 
 .setup-body-tbody {
@@ -98,6 +99,7 @@ button.btn.btn-default.btn-circle.cancel-btn {
 .setup-body-tbody a {
 	color: #333333;
 	text-decoration: none;
+	font-size: 15px;
 }
 
 .setup-body-tbody a:hover {
