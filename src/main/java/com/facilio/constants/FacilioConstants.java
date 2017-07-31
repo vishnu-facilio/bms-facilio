@@ -41,6 +41,10 @@ public class FacilioConstants {
 			return "us-west-2:ba15c3b0-a6d9-4f33-8841-5b813d55170e";
 		}
 		
+		public static String getIssURL() {
+			return "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_kzN5KrMZU";
+		}
+		
 		public static String getClientId() {
 			return "74d026sk7dde4vdsgpkhjhj17m";
 		}

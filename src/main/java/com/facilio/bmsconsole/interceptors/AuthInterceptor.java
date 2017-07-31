@@ -1,20 +1,17 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
-import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
+import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.fw.auth.CognitoUtil.CognitoUser;
+import com.facilio.fw.auth.LoginUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -25,94 +22,77 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private static String HOSTNAME = null;
 	@Override
 	public void init() {
-		
+
 		super.init();
 	}
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-		
-	      String output = "Pre-Processing"; 
-	      System.out.println(output);
 
-			String username = (String)ActionContext.getContext().getSession().get("USERNAME");
+		String output = "Pre-Processing"; 
+		System.out.println(output);
+
+		try {
+			// Step 1: Validating ID Token
 			HttpServletRequest request = ServletActionContext.getRequest();
-			 if(username==null)
-		      {
-				String tempaccesscode =  request.getParameter("accesscode");
-				if(tempaccesscode==null)
-				{
-			    	  return Action.LOGIN;
 
-				}
-				String idToken = (String)ActionContext.getContext().getApplication().get(tempaccesscode);
-				if(idToken==null)
-				{
-					return Action.LOGIN;
-				}
-				// Generate username from idtoken
-				String[] payloads = idToken.split("\\.");
-				Base64.Decoder decoder = Base64.getUrlDecoder();
+			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
 
-				// decode the payload block and make it as a json object
-				JSONObject jsonObject = ((JSONObject) (JSONValue.parse(new String(decoder.decode(payloads[1]))))); 
-				
-				System.out.println("The JSON Object"+jsonObject);
-				username = (String)jsonObject.get("email");
-				Map session = ActionContext.getContext().getSession(); 
-				session.put("USERNAME", username);
-				session.put("USER_ACCESSCODE", tempaccesscode);
-				
-		      }		
-				
-					String requestdomain = request.getServerName();
-					  	
-					if(HOSTNAME==null)
-					{
-						HOSTNAME = (String)ActionContext.getContext().getApplication().get("DOMAINNAME");
-					}
-					String subdomain = requestdomain.replaceAll(HOSTNAME, "");
-					
-				
-					UserContext context = UserAPI.getUser(username);
-					request.setAttribute("user_role", context.getRole());
-					//ActionContext.getContext().getParameters()
+			CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
+			if (cognitoUser == null) {
+				return Action.LOGIN;
+			}
 
-        	
-        
-	   
-	  	try 
-	  	{
-			OrgInfo.validateOrgInfo(subdomain, username);
-			System.out.println("Permission:::" +ActionContext.getContext().getParameters().get("permission").getValue());
-			if(!isAuthorizedAccess(ActionContext.getContext().getParameters().get("permission").getValue()))
-		  	{
-		  		 return "unauthorized";
-		  	}
-		} 
-	  	catch (Exception e) 
-	  	{
-			e.printStackTrace();
-			return "unauthorized";
+			// Step 2: Setting current user in session
+			UserInfo userInfo = (UserInfo) ActionContext.getContext().getSession().get("USER_INFO");
+			if (userInfo == null) {
+				userInfo = LoginUtil.getUserInfo(cognitoUser);
+				ActionContext.getContext().getSession().put("USER_INFO", userInfo);
+			}
+
+			// Step 3: Validating subdomain
+			String serverName = request.getServerName();
+			if (HOSTNAME == null) {
+				HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
+			}
+			String requestSubdomain = serverName.replaceAll(HOSTNAME, "");
+			if (!requestSubdomain.equalsIgnoreCase(userInfo.getSubdomain())) {
+				return "unauthorized";
+			}
+
+			// Step 4: Setting threadlocal variables
+			UserInfo.setCurrentUser(userInfo);
+			OrgInfo.setCurrentOrgInfo(OrgApi.getOrgInfo(userInfo.getOrgId()));
+
+			// Step 5: Checking permission for current resource
+			String permission = ActionContext.getContext().getParameters().get("permission").getValue();
+			if (!isAuthorizedAccess(permission)) {
+				return "unauthorized";
+			}
 		}
-	      /* let us call action or next interceptor */
-	      String result = arg0.invoke();
+		catch (Exception e) {
+			e.printStackTrace();
+			return Action.LOGIN;
+		}
 
-	      /* let us do some post-processing */
-	      output = "Post-Processing"; 
-	      System.out.println(output);
+		/* let us call action or next interceptor */
+		String result = arg0.invoke();
 
-	      return result;
+		/* let us do some post-processing */
+		output = "Post-Processing"; 
+		System.out.println(output);
+
+		return result;
 	}
-	
+
 	private boolean isAuthorizedAccess(String permission) throws SQLException
 	{
 		System.out.println("Current Role:::" +UserInfo.getCurrentUser().getRole());
 		// Temp code
-		if(FacilioConstants.Role.ADMINISTRATOR.equalsIgnoreCase(UserInfo.getCurrentUser().getRole()))
-		{
-			return true;
-		}
-		return UserAPI.getRole(UserInfo.getCurrentUser().getRole()).hasPermission(FacilioConstants.Role.permissionsMap.get(permission));
+		//		if(FacilioConstants.Role.ADMINISTRATOR.equalsIgnoreCase(UserInfo.getCurrentUser().getRole()))
+		//		{
+		//			return true;
+		//		}
+		//		return UserAPI.getRole(UserInfo.getCurrentUser().getRole()).hasPermission(FacilioConstants.Role.permissionsMap.get(permission));
+		return true;
 	}
-
 }

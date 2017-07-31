@@ -32,8 +32,41 @@
     <!-- AWS Cognito -->
     <script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/aws-cognito-sdk.min.js"></script>
     <script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/amazon-cognito-identity.min.js"></script>
-    
-    <script src="js/login.js"></script>      
+    <script src="${pageContext.request.contextPath}/js/cognitoutil.js"></script>
+    <script src="js/login.js"></script>
+    <script>
+    	$(document).ready(function() {
+    		var cogUtil = new CognitoUtil();
+        	var currentUser = cogUtil.getCurrentUser();
+        	if (currentUser != null) {
+    			cogUtil.getTokens(function(result, err) {
+    				
+    				if (result != null && typeof(result.idToken) !== 'undefined') {
+    					
+    					$('#signinform').html('Signing in...');
+    					
+    					var isSAML = false;
+    			    	if (window.location.href.indexOf("SAMLRequest=") != -1) {
+    			    		isSAML = true;
+    			    	}
+    			    	
+    					$.post( "validateuser", { "idToken": result.idToken, "accessToken": result.accessToken, "isSAML": isSAML })
+    				        .done(function( data ) {
+    				        	if(data.startsWith("http"))
+    				        	{
+    				        		data = data + location.hash;
+    				        		window.location.replace(data);
+    				        	}
+    				        	else if(data.startsWith("reload"))
+    				        	{
+    				        		window.location.reload();
+    				        	}
+    				        });
+    				}
+        		});
+        	}
+    	});
+    </script>      
   </head>
 
 

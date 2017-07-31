@@ -7,23 +7,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
@@ -42,15 +37,12 @@ import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
-import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
@@ -58,17 +50,15 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.fw.auth.CognitoUtil.CognitoUser;
+import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
-import com.facilio.sql.SQLScriptRunner;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
 
 public class LoginAction extends ActionSupport{
 	static
@@ -78,233 +68,29 @@ public class LoginAction extends ActionSupport{
 	private static String HOSTNAME = null;
 	
 	private static final SimpleDateFormat SAML_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-	public String execute() throws Exception {
-		
-		if(HOSTNAME==null)
-		{
-			HOSTNAME = (String)ActionContext.getContext().getApplication().get("DOMAINNAME");
-		}
-        
-		return SUCCESS;
-	}
-	
-	public String validateLogin() throws Exception {
-		
-		if(HOSTNAME==null)
-		{
-			HOSTNAME = (String)ActionContext.getContext().getApplication().get("DOMAINNAME");
-		}
-		
-		// get the identity token and decode it.
-		String idToken = getIdToken();
-		if (idToken == null) {
-			return SUCCESS;
-		}
-		
-		try {
-			String identityId = CognitoUtil.getIdentityId(idToken);
-			System.out.println("identityId ======>  "+identityId);
-
-			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-			AWSIot awsIot = AWSIotClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-
-			AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
-			awsIot.attachPrincipalPolicy(policyResult);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		int tempaccesscode = idToken.hashCode();
-		System.out.println("The temp access code is:"+tempaccesscode);
-		ActionContext.getContext().getApplication().put(tempaccesscode+"", idToken);
-		Base64.Decoder decoder = Base64.getUrlDecoder();
-
-		// the identity token has three block 0-header, 1-payload, 2-signature
-		// 1-payload has the actual required user information.
-		String[] payloads = idToken.split("\\.");
-
-		// decode the payload block and make it as a json object
-		JSONObject jsonObject = ((JSONObject) (JSONValue.parse(new String(decoder.decode(payloads[1]))))); 
-
-		System.out.println("The JSON Object"+jsonObject);
-
-		Map session = ActionContext.getContext().getSession(); 
-
-		String userName = (String)jsonObject.get("email");
-		boolean verifiedUser = ((Boolean) jsonObject.get("email_verified")).booleanValue();
-
-		System.out.println(verifiedUser);
-
-		if (verifiedUser && userName!=null)
-		{
-			String subdomain = null;
-			try {
-				subdomain = OrgInfo.getDefaultOrgInfo(userName);
-			} catch (Exception e) {
-				
-				/*  
-				 * If the user exists in Cognito but not exists in the local db, the below code will auto populate the org, user data into local db
-				 */
-				
-				AdminGetUserResult userResult = CognitoUtil.getUser(userName);
-				List<AttributeType> li = userResult.getUserAttributes();
-				for (AttributeType attr : li) {
-					if (attr.getName().equals("custom:orgName")) {
-						subdomain = attr.getValue();
-						break;
-					}
-				}
-				if (subdomain == null || "".equals(subdomain.trim())) {
-					// for local testing only
-					subdomain = "dummy";
-				}
-				subdomain = checkAndPopulateOrgInfo(subdomain, userName);
-			}
-			HttpServletRequest request = ServletActionContext.getRequest();
-			String redirecturl =request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index?accesscode="+tempaccesscode;
-
-			session.put("USERNAME", userName);
-			session.put("USER_ACCESSCODE", tempaccesscode+"");
-
-			String samlRequest = request.getParameter("isSAML");
-			
-			if (samlRequest != null && Boolean.parseBoolean(samlRequest)) {
-				response = "reload";
-			}
-			else {
-				response = redirecturl;
-			}
-		}
-		else if (!verifiedUser && userName!=null)
-		{
-			//user is not verified
-			response = "unverified_user";
-
-		}
-		else 
-		{
-			// else the user is not verified - redirect to the login page.
-		}
-		return SUCCESS;
-	}
-	
-	private String checkAndPopulateOrgInfo(String subdomain, String email) throws Exception {
-		java.sql.Connection con = FacilioConnectionPool.INSTANCE.getConnection();
-		
-		try {
-			String emailDomain = email.split("@")[1];
-			emailDomain = emailDomain.split("\\.")[0];
-			if ("facilio".equalsIgnoreCase(emailDomain)) {
-				subdomain = emailDomain;
-			}
-		} catch (Exception e) {
-			
-		}
-		
-		long orgId = OrgApi.getOrgIdFromDomain(subdomain);
-		
-		try {
-			if (orgId == -1) {
-				String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
-				PreparedStatement ps1 = con.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
-				ps1.setString(1, subdomain);
-				ps1.setString(2, subdomain);
-				ps1.executeUpdate();
-				ResultSet rs = ps1.getGeneratedKeys();
-				rs.next();
-				orgId = rs.getLong(1);
-				rs.close();
-				ps1.close();
-				
-				try {
-					Map<String, String> paramValues = new HashMap<>(); 
-					paramValues.put("orgId", String.valueOf(orgId));
-					
-					File insertModulesSQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
-					SQLScriptRunner scriptRunner = new SQLScriptRunner(insertModulesSQL, true, paramValues);
-					scriptRunner.runScript(con);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				String insertquery2 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
-				PreparedStatement ps2 = con.prepareStatement(insertquery2);
-				ps2.setLong(1, orgId);
-				ps2.setString(2, "Administrator");
-				ps2.setString(3, "0");
-				ps2.addBatch();
-				ps2.setLong(1, orgId);
-				ps2.setString(2, "Manager");
-				ps2.setString(3, "0");
-				ps2.addBatch();
-				ps2.setLong(1, orgId);
-				ps2.setString(2, "Dispatcher");
-				ps2.setString(3, "0");
-				ps2.addBatch();
-				ps2.setLong(1, orgId);
-				ps2.setString(2, "Technician");
-				ps2.setString(3, "0");
-				ps2.addBatch();
-				ps2.executeBatch();
-				ps2.close();
-			}
-			
-			String insertquery1 = "insert into Users (COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?)";
-			PreparedStatement ps1 = con.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
-			ps1.setString(1, null);
-			ps1.setBoolean(2, true);
-			ps1.setString(3, email);
-			ps1.executeUpdate();
-			ResultSet rs1 = ps1.getGeneratedKeys();
-			rs1.next();
-			long userId = rs1.getLong(1);
-			ps1.close();
-			
-			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,UNIX_TIMESTAMP(),true,true,(select ROLE_ID from Role where NAME='Administrator' limit 1))";
-			PreparedStatement ps3 = con.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);
-			ps3.setLong(1,userId);
-			ps3.setLong(2, orgId);
-			ps3.executeUpdate();
-			ResultSet rs3 = ps3.getGeneratedKeys();
-			rs3.next();
-			long orgUserId = rs3.getLong(1);
-			ps3.close();
-			return subdomain;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally{
-			con.close();
-		}
-		return subdomain;
-	}
 	
 	private String response = null;
 	public String getResponse()
 	{
 		return response;
 	}
-	// getter setter for access token
-	public String getAccessToken() {
-		return accessToken;
-	}
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-	private String accessToken;
 	
 	// getter setter for identity token
 	private String idToken;
-	
 	public String getIdToken() {
 		return idToken;
 	}
 	public void setIdToken(String idToken) {
 		this.idToken = idToken;
+	}
+		
+	// getter setter for access token
+	private String accessToken;
+	public String getAccessToken() {
+		return accessToken;
+	}
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 	
 	private HashMap<String,String> signupinfo = new HashMap<String,String>();
@@ -331,45 +117,132 @@ public class LoginAction extends ActionSupport{
 	
 	public String login() throws Exception {
 		
-		String userName = (String)ActionContext.getContext().getSession().get("USERNAME");
-		String userAccessCode = (String)ActionContext.getContext().getSession().get("USER_ACCESSCODE");
-		if (userName != null) {
-			// already login
+		if (HOSTNAME == null) {
+			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
+		}
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse httpResp = ServletActionContext.getResponse();
+		httpResp.addHeader("FC-Login-State", "1"); // to handle login page in ajax response
+		
+		String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
+		
+		try {
+			CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
 			
-			String subdomain = OrgInfo.getDefaultOrgInfo(userName);
-			
-			HttpServletRequest request = ServletActionContext.getRequest();
-			
-			String samlRequest = request.getParameter("SAMLRequest");
-			String relay = request.getParameter("relayUrl");
-			
-			if (samlRequest != null && !"".equals(samlRequest.trim())) {
-				
-				boolean status = handleSAMLLogin(userName, subdomain, samlRequest, relay);
-				
-				if (status) {
-					return "samlresponse";
+			if (cognitoUser != null) {
+
+				UserInfo userInfo = LoginUtil.getUserInfo(cognitoUser);
+
+				String samlRequest = request.getParameter("SAMLRequest");
+				String relay = request.getParameter("relayUrl");
+
+				if (samlRequest != null && !"".equals(samlRequest.trim())) {
+
+					boolean status = handleSAMLLogin(cognitoUser.getEmail(), userInfo.getSubdomain(), samlRequest, relay);
+
+					if (status) {
+						return "samlresponse";
+					}
+					else {
+						return "loginpage";
+					}
 				}
 				else {
-					return "loginpage";
+
+					String redirectURL = request.getScheme() + "://" + userInfo.getSubdomain() + HOSTNAME + ":" + request.getServerPort();
+
+					String nextURL = request.getParameter("redirect");
+					if (nextURL == null || nextURL.trim().equals("")) {
+						redirectURL = redirectURL + request.getContextPath() +"/app/index"; 
+					}
+					else {
+						nextURL = (nextURL.startsWith("/") ? nextURL : "/" + nextURL);
+						redirectURL = redirectURL + nextURL;
+					}
+					request.setAttribute("redirect_url", redirectURL);
+
+					return "loginsuccess";
 				}
-			}
-			else {
-				String redirecturl = request.getScheme()+"://"+subdomain + HOSTNAME+":"+request.getServerPort()+request.getContextPath() +"/home/index";
-				if (userAccessCode != null) {
-					redirecturl = redirecturl + "?accesscode=" + userAccessCode;
-				}
-				request.setAttribute("redirect_url", redirecturl);
-				
-				return "loginsuccess";
 			}
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		return "loginpage";
+	}
+	
+	public String validateUser() throws Exception {
+		
+		if (HOSTNAME == null) {
+			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
+		}
+		
+		// get the identity token and decode it.
+		String idToken = getIdToken();
+		if (idToken == null) {
+			response = "idToken_missing";
+		}
+		else {
+			// Temp identity id generation code
+			/*try {
+			String identityId = CognitoUtil.getIdentityId(idToken);
+			System.out.println("identityId ======>  "+identityId);
+
+			BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+			AWSIot awsIot = AWSIotClientBuilder.standard().withRegion("us-west-2").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+
+			AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(identityId);
+			awsIot.attachPrincipalPolicy(policyResult);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}*/
+
+			CognitoUtil.CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
+			UserInfo userInfo = LoginUtil.getUserInfo(cognitoUser);
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			HttpServletResponse httpResp = ServletActionContext.getResponse();
+
+			// setting id token cookie
+			LoginUtil.addUserCookie(httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, idToken, HOSTNAME);
+
+			String redirectURL = request.getScheme() + "://" + userInfo.getSubdomain() + HOSTNAME + ":" + request.getServerPort();
+
+			String nextURL = request.getParameter("redirect");
+			if (nextURL == null || nextURL.trim().equals("")) {
+				redirectURL = redirectURL + request.getContextPath() +"/app/index"; 
+			}
+			else {
+				nextURL = (nextURL.startsWith("/") ? nextURL : "/" + nextURL);
+				redirectURL = redirectURL + nextURL;
+			}
+
+			String samlRequest = request.getParameter("isSAML");
+			if (samlRequest != null && Boolean.parseBoolean(samlRequest)) {
+				response = "reload";
+			}
+			else {
+				response = redirectURL;
+			}
+		}
+		return SUCCESS;
 	}
 	
 	public String logout() {
 		
-		ActionContext.getContext().getSession().remove("USERNAME");
+		if (HOSTNAME == null) {
+			HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
+		}
+		
+		HttpServletRequest httpReq = ServletActionContext.getRequest();
+		HttpServletResponse httpResp = ServletActionContext.getResponse();
+		
+		LoginUtil.eraseUserCookie(httpReq, httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, HOSTNAME);
+		
+		ActionContext.getContext().getSession().remove("USER_INFO");
 		
 		return SUCCESS;
 	}

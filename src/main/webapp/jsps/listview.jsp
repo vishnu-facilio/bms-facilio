@@ -193,7 +193,7 @@
 		   }
 		   else {
 			   // Web view
-			   var url = contextPath + '/home/' + summaryURL;
+			   var url = contextPath + '/app/' + summaryURL;
 			   $('.record-summary').load(url, function(response, status, xhr) {
 				   
 				   showRecordPreview();

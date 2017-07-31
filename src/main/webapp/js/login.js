@@ -105,7 +105,7 @@ function signin(email,password)
 	    		isSAML = true;
 	    	}
 	    	
-	    	 $.post( "login/validate", { "idToken": idToken, "isSAML": isSAML })
+	    	 $.post( "validateuser", { "idToken": idToken, "accessToken": accessToken, "isSAML": isSAML })
 		        .done(function( data ) {
 		        	//alert(data)
 		        	if(data.startsWith("http"))

@@ -125,22 +125,22 @@
 	function saveNote(btn) {
 		$(btn).button('loading');
 		
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/tasks/addNote",
-			data : $("#addNoteForm").serialize()
-		})
-		.done(function(data) {
-			$('#addNoteModal').modal('hide');
-			FacilioApp.notifyMessage('success', 'Note added successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/tasks/addNote",
+			data : $("#addNoteForm").serialize(),
+			done: function(data) {
+				$('#addNoteModal').modal('hide');
+				FacilioApp.notifyMessage('success', 'Note added successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+	            }, 500);
+			},
+			fail: function(error) {
+				$(btn).button('reset');
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			} 
 		});
 	}
 </script>

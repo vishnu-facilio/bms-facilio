@@ -55,19 +55,19 @@
 					}
 					
 					$(".save-btn").button('loading');
-					$.ajax({
+					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/home/setup/groups/update",
+						url : contextPath + "/app/setup/groups/update",
 						data : $("#editGroupForm").serialize()
-					})
-					.done(function(data) {
-						FacilioApp.notifyMessage('success', 'Group update successfully!');
-						location.href = '#groups';
-					})
-					.fail(function(error) {
-						$(".save-btn").button('reset');
-						console.log(error);
-						alert(error);
+						done: function(data) {
+							FacilioApp.notifyMessage('success', 'Group update successfully!');
+							location.href = '#groups';
+						},
+						fail: function(error) {
+							$(".save-btn").button('reset');
+							console.log(error);
+							alert(error);
+						} 
 					});
 					return false;
 			  	}

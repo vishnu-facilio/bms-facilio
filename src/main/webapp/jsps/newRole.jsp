@@ -144,19 +144,19 @@
 					}
 					
 					$(".save-btn").button('loading');
-					$.ajax({
+					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/home/setup/roles/add",
-						data : $("#newRoleForm").serialize()
-					})
-					.done(function(data) {
-						FacilioApp.notifyMessage('success', 'Role created successfully!');
-						location.href = '#roles';
-					})
-					.fail(function(error) {
-						$(".save-btn").button('reset');
-						console.log(error);
-						alert(error);
+						url : contextPath + "/app/setup/roles/add",
+						data : $("#newRoleForm").serialize(),
+						done: function(data) {
+							FacilioApp.notifyMessage('success', 'Role created successfully!');
+							location.href = '#roles';
+						},
+						fail: function(error) {
+							$(".save-btn").button('reset');
+							console.log(error);
+							alert(error);
+						} 
 					});
 					return false;
 			  	}

@@ -417,6 +417,7 @@ public class GroupAPI {
 		memberContext.setName(rs.getString("NAME"));
 		memberContext.setInvitedTime(rs.getLong("INVITEDTIME"));
 		memberContext.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
+		memberContext.setUserStatus(rs.getBoolean("USER_STATUS"));
 		memberContext.setRoleId(rs.getLong("ROLE_ID"));
 		return memberContext;
 	}

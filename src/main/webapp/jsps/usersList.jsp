@@ -170,16 +170,16 @@
 	})
 	
 	function changeStatus(userId, userStatus) {
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/setup/users/changestatus",
-			data : {'user.orgUserId': userId, 'user.userStatus': userStatus}
-		})
-		.done(function(data) {
-			FacilioApp.notifyMessage('success', 'User status changed successfully!');
-		})
-		.fail(function(error) {
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/setup/users/changestatus",
+			data : {'user.orgUserId': userId, 'user.userStatus': userStatus},
+			done: function(data) {
+				FacilioApp.notifyMessage('success', 'User status changed successfully!');
+			},
+			fail: function(error) {
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			} 
 		});
 	}
 	
@@ -205,20 +205,20 @@
 		}
 		else {
 			$(btn).button('loading');
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
-				url : contextPath + "/home/users/resetpassword",
-				data : $("#resetPassForm").serialize()
-			})
-			.done(function(data) {
-				$(btn).button('reset');
-				$('#resetPassModel').modal('hide');
-				FacilioApp.notifyMessage('success', 'User password reset successfully!');
-			})
-			.fail(function(error) {
-				$(btn).button('reset');
-				$(btn).button('reset');
-				alert(JSON.stringify(error.responseJSON.fieldErrors));
+				url : contextPath + "/app/users/resetpassword",
+				data : $("#resetPassForm").serialize(),
+				done: function(data) {
+					$(btn).button('reset');
+					$('#resetPassModel').modal('hide');
+					FacilioApp.notifyMessage('success', 'User password reset successfully!');
+				},
+				fail: function(error) {
+					$(btn).button('reset');
+					$(btn).button('reset');
+					alert(JSON.stringify(error.responseJSON.fieldErrors));
+				} 
 			});
 		}
 	}

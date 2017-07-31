@@ -50,7 +50,7 @@
 								</s:else>
 								</s:if>
 								<s:else>
-									<li><a href="${pageContext.request.contextPath}/home/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a></li>
+									<li><a href="${pageContext.request.contextPath}/app/downloadAgent?controllerId=<s:property value="#device.id" />">Download Agent</a></li>
 								</s:else>
 								<li><a href="#">Delete</a>
                             </ul>
@@ -125,22 +125,22 @@
 	{
 		//$(btn).button('loading');
 		
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/addController",
-			data : $(form).serialize()
-		})
-		.done(function(data) {
-			$('#newControllerModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'Controller created successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/addController",
+			data : $(form).serialize(),
+			done: function(data) {
+				$('#newControllerModel').modal('hide');
+				FacilioApp.notifyMessage('success', 'Controller created successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+	            }, 500);
+			},
+			fail: function(error) {
+				$(btn).button('reset');
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			}
 		});
 		return false;
 		
@@ -154,9 +154,9 @@
 		
 		var dataObject = new Object();
 		dataObject.deviceId = deviceId;
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: contextPath + "/home/enableDeviceMonitoring",   
+		      url: contextPath + "/app/enableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring enabled successfully!');
@@ -174,9 +174,9 @@
 		
 		var dataObject = new Object();
 		dataObject.deviceId = deviceId;
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: contextPath + "/home/disableDeviceMonitoring",   
+		      url: contextPath + "/app/disableDeviceMonitoring",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  FacilioApp.notifyMessage('success', 'Device monitoring disabled successfully!');

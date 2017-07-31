@@ -8,9 +8,9 @@ function showConfigureDevice(el)
 {
 	var dataObject = new Object();
 	dataObject.deviceId = $(el).parent().parent().attr('deviceId');
-	$.ajax({
+	FacilioApp.ajax({
 	      type: "POST",
-	      url: "/bms/home/showConfigureDevice",   
+	      url: "/bms/app/showConfigureDevice",   
 	      data: dataObject,
 	      success: function (response) {
 	    	  $('#deviceconf').html(response);
@@ -22,9 +22,9 @@ function showDeviceInfo(el)
 {
 	var dataObject = new Object();
 	dataObject.deviceId = $(el).parent().parent().attr('id');
-	$.ajax({
+	FacilioApp.ajax({
 	      type: "POST",
-	      url: "/bms/home/showDeviceInfo",   
+	      url: "/bms/app/showDeviceInfo",   
 	      data: dataObject,
 	      success: function (response) {
 	    	  $('#deviceinfo').html(response);
@@ -95,9 +95,9 @@ $( document ).ready(function() {
         	
     		dataObject.instances = JSON.stringify(json);
     		dataObject.controllerId = $('input[name=controllerId]').val();
-    		$.ajax({
+    		FacilioApp.ajax({
   		      type: "POST",
-  		      url: "/bms/home/updateControllerInstances",   
+  		      url: "/bms/app/updateControllerInstances",   
   		      data: dataObject,
   		      success: function (response) {
   		         
@@ -196,7 +196,7 @@ $( document ).ready(function() {
 </div>
 <div style="float:left;">
 	<div style="padding:20px; width:402px;">
-	<f:chart onmove="test" onclick="test2" id="eb-meter" type="tree-collapsible" width="402" height="150" url="/bms/home/showTree?controllerId=${param.controllerId}"/>
+	<f:chart onmove="test" onclick="test2" id="eb-meter" type="tree-collapsible" width="402" height="150" url="/bms/app/showTree?controllerId=${param.controllerId}"/>
 	</div>
 </div>	
 <div id="deviceconf" style="padding:20px; float:left; width:400px;"></div>

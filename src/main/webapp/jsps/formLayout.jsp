@@ -235,20 +235,19 @@
 				console.log(this);
 				var moduleName = this.$input.data("module-name");
 				console.log(moduleName);
-				$.ajax({
+				FacilioApp.ajax({
 					method : "post",
-					url : "<s:url action='picklist' namespace='/home' />",
-					data : {moduleName : moduleName}
-				})
-				.done(function(data) {
-					var dataArr = [];
-					for(var key in data) {
-						dataArr.push({value : key, text : data[key]});
+					url : "<s:url action='picklist' namespace='/app' />",
+					data : {moduleName : moduleName},
+					done: function(data) {
+						var dataArr = [];
+						for(var key in data) {
+							dataArr.push({value : key, text : data[key]});
+						}
+						callback(dataArr);
+					},
+					fail: function(error) {
 					}
-					callback(dataArr);
-				})
-				.fail(function(error) {
-					
 				});
 			}
 		});

@@ -178,18 +178,18 @@ $('#addLocationForm').tooltip({
 		$("#addLocationForm").submit(function() {
 			$("#addLocationForm button[type=submit]").button('loading');
 			
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
 				url : "<s:url action='add' />",
-				data : $("#addLocationForm").serialize()
-			})
-			.done(function(data) {
-				console.log(data);
-				window.location.href='#locations';
-				FacilioApp.notifyMessage('success', 'Location created successfully!');
-			})
-			.fail(function(error) {
-				console.log(error);
+				data : $("#addLocationForm").serialize(),
+				done: function(data) {
+					console.log(data);
+					window.location.href='#locations';
+					FacilioApp.notifyMessage('success', 'Location created successfully!');
+				},
+				fail: function(error) {
+					console.log(error);
+				} 
 			});
 		});
 	});

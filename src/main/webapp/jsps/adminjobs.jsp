@@ -10,7 +10,7 @@
   	</head>
 <body>
 	<div>
-		<div><a href="${pageContext.request.contextPath}/home/admin">Admin Home</a></div>
+		<div><a href="${pageContext.request.contextPath}/app/admin">Admin Home</a></div>
 		<div><br /></div>
 		<div style="width:500px;" id="joblist">
 			<div style="float:left; font-size: 18px;">Jobs :</div>
@@ -82,9 +82,9 @@
 			dataObject.period = period;
 		}
 		
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: "/bms/home/admin/addJob",   
+		      url: "${pageContext.request.contextPath}/app/admin/addJob",   
 		      data: dataObject,
 		      success: function (response) {
 		    	 window.location.reload();
@@ -102,9 +102,9 @@
 	{
 		var dataObject = new Object();
 		dataObject.jobId = jobId;
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: "/bms/home/admin/deleteJob",   
+		      url: "${pageContext.request.contextPath}/app/admin/deleteJob",   
 		      data: dataObject,
 		      success: function (response) {
 		    	 window.location.reload();

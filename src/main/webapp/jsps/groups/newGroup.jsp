@@ -46,19 +46,19 @@
 					}
 					
 					$(".save-btn").button('loading');
-					$.ajax({
+					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/home/setup/groups/add",
-						data : $("#newGroupForm").serialize()
-					})
-					.done(function(data) {
-						FacilioApp.notifyMessage('success', 'Group created successfully!');
-						location.href = '#groups';
-					})
-					.fail(function(error) {
-						$(".save-btn").button('reset');
-						console.log(error);
-						alert(error);
+						url : contextPath + "/app/setup/groups/add",
+						data : $("#newGroupForm").serialize(),
+						done: function(data) {
+							FacilioApp.notifyMessage('success', 'Group created successfully!');
+							location.href = '#groups';
+						},
+						fail: function(error) {
+							$(".save-btn").button('reset');
+							console.log(error);
+							alert(error);
+						}
 					});
 					return false;
 			  	}
