@@ -9,11 +9,19 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.CampusContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.SkillContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskStatusContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.ZoneContext;
 
 public class FacilioConstants {
 	
@@ -160,6 +168,8 @@ public class FacilioConstants {
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
 		
+		public static final String SPACE_CATEGORY = "spacecategory";
+		
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
 		
@@ -174,6 +184,8 @@ public class FacilioConstants {
 		public static final String USERS = "users";
 		
 		public static final String GROUPS = "groups";
+		
+		public static final String LOCATION = "location";
 		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
@@ -200,6 +212,14 @@ public class FacilioConstants {
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(TASK_STATUS, TaskStatusContext.class);
+			classMap.put(CAMPUS, CampusContext.class);
+			classMap.put(BUILDING, BuildingContext.class);
+			classMap.put(FLOOR, FloorContext.class);
+			classMap.put(SPACE, SpaceContext.class);
+			classMap.put(ZONE, ZoneContext.class);
+			classMap.put(SPACE_CATEGORY, SpaceCategoryContext.class);
+			classMap.put(LOCATION, LocationContext.class);
+			classMap.put(SKILL, SkillContext.class);
 			
 			return classMap;
 		}
