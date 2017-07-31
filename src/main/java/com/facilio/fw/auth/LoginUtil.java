@@ -70,7 +70,7 @@ public class LoginUtil {
 				if (cookie.getName().equalsIgnoreCase(key)) {
 					cookie.setValue("");
 					cookie.setPath("/");
-					cookie.setDomain("facilio.dev");
+					cookie.setDomain(domain);
 					cookie.setMaxAge(0);
 					response.addCookie(cookie);
 					return true;
@@ -84,7 +84,7 @@ public class LoginUtil {
 		
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
-		cookie.setDomain("facilio.dev");
+		cookie.setDomain(domain);
 		response.addCookie(cookie);
 	}
 }
