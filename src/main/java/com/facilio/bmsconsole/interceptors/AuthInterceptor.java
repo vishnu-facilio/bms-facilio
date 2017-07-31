@@ -20,6 +20,8 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class AuthInterceptor extends AbstractInterceptor {
 
 	private static String HOSTNAME = null;
+	private static String MOBILE_HOSTNAME = null;
+
 	@Override
 	public void init() {
 
@@ -54,7 +56,26 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if (HOSTNAME == null) {
 				HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
 			}
-			String requestSubdomain = serverName.replaceAll(HOSTNAME, "");
+			if(MOBILE_HOSTNAME==null)
+			{
+				MOBILE_HOSTNAME = (String)ActionContext.getContext().getApplication().get("M_DOMAINNAME");
+			}
+			String requestSubdomain = null;//serverName.replaceAll(HOSTNAME, "");
+			
+			if(serverName.endsWith(HOSTNAME))
+			{
+				requestSubdomain = serverName.replaceAll(HOSTNAME, "");
+				 request.setAttribute("isMobile", false);
+				 System.out.println("desktop");
+			}
+			else
+			{
+				requestSubdomain = serverName.replaceAll(MOBILE_HOSTNAME, "");
+				request.setAttribute("isMobile", true);
+				 System.out.println("mobile");
+
+			}
+			
 			if (!requestSubdomain.equalsIgnoreCase(userInfo.getSubdomain())) {
 				return "unauthorized";
 			}
