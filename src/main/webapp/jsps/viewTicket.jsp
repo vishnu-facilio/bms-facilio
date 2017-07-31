@@ -12,10 +12,11 @@
 <!-- Header -->
 <div class="row form-header" >
 <div class="col-sm-12" >
+	<input type="hidden" name="recordId" value="<s:property value="ticket.ticketId" />"/>
   <h4 class="pull-left"><s:property value="ticket.ticketId" /></h4>
  	
     <div class="action-btn text-right">
-     		<button type="button"  class="btn btn-default edit" style=" border-radius: 100px;border-color: #50CA7C;color: #666666;" onclick="location.href='#';"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;Edit</button>
+     		<button type="button"  class="btn btn-default delete" style="border-radius: 100px;border-color: #50CA7C;color: #666666;"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;&nbsp;Delete</button>
      		<button type="button" class="btn btn-default btn-circle cancel-btn" onclick="location.href='#ticket';"><i class="fa fa-times"></i></button>
 	 </div>
   </div>
@@ -88,7 +89,17 @@
 	</tr>
 	<tr>
 		<th class="left-th">Assigned to</th>
-		<td><s:property value="ticket.agentId" /></td>
+		<td>
+			<div class="assignedTo dropdown" style="cursor:pointer">
+		        <a data-toggle="dropdown" class="dropdown-toggle"><s:property value="ticket.getAssignedToName()" /></a>
+		        <ul class="dropdown-menu">
+		        	<li><a id="0">Unassigned</a></li>
+		            <s:iterator value="actionForm['userList']" status="rowstatus" var="option">
+		            	<li><a id="<s:property value="#option.key"/>"><s:property value="#option.value"/></a></li>
+					</s:iterator>
+		        </ul>
+		    </div>
+		</td>
 	</tr>
 	<tr>
 		<th class="left-th">Opened Date</th>
@@ -216,88 +227,73 @@
 </div>
 
 
-
+<style>
+	.selectize-control, .selectize-input {
+		width: 200px;
+	}
+</style>
 <script>
  $(document).ready(function (){
-	 /*  var table = $('#tickets-list').DataTable({
-	      columnDefs: [{
-	         targets: 0,
-	         searchable: false,
-	         orderable: false,
-	      },
-	      {
-	         targets: 6,
-	         searchable: false,
-	         orderable: false
-	      },
-	      {
-		         targets: 5,
-		         orderable: false
-		  },
-		  {
-			     targets: 4,
-			     orderable: false
-		  },
-		  {
-		         targets: 3,
-		         orderable: false
-		   },
-		   {
-		         targets: 2,
-		         orderable: false
-		   },
-	      {
-	         targets: 1,
-	         orderable: false
-	      },
-		   {
-		         targets: 0,
-		         orderable: true
-		      }],
-	      order: [[2, 'asc']],
-	      
-	      buttons: false,
-	      responsive: true,
-	      searching: false,
-	      lengthChange: false,
-	     
-	   });
-
-	 */
-   
+	 
+	 $('.assignedTo .dropdown-menu li a').click(function() {
+		var recordId = $('input[name=recordId]').val();
+		var userId = $(this).attr('id');
+		var userName = $(this).text();
+		
+		FacilioApp.ajax({
+			method : "post",
+			url : contextPath + '/app/ticket/assign',
+			data : {'ticketId': recordId, 'assignedTo': userId},
+			done: function(data) {
+				
+				$('.assignedTo .dropdown-toggle').text(userName);
+				FacilioApp.notifyMessage('success', 'Work Order assigned successfully!');
+				
+			},
+			fail: function(error) {
+				FacilioApp.notifyMessage('danger', 'Assign failed, please try again later.');
+			}
+		});
+	 });
+	 
 	});
- 
- var i = 1;
- 
- 
- var stages = ['Open', 'Awaiting', 'Approved', 'WIP', 'Closed'];
- var currentStage = 'Awaiting';
- var lastStage = ["Closed"];
- 
 
+	var i = 1;
 
- for (var i=0; i< stages.length; i++) {
-	 var stage = stages[i];
-	 if((currentStage == null) | (currentStage == '')  ){
-		 break;
-	 }
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass('active').addClass('complete ');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
+	var stages = [ 'Open', 'Awaiting', 'Approved', 'WIP', 'Closed' ];
+	var currentStage = 'Awaiting';
+	var lastStage = [ "Closed" ];
 
-	   	   
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('disabled').addClass('active');
-	 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
-	 
-	 if (lastStage.indexOf(stage) != -1) {
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ')').removeClass('active').addClass('complete ');
-		 $('.bs-wizard .bs-wizard-step:nth-of-type(' + (i+1) + ') .bs-wizard-dot').html('<i class="fa fa-check" aria-hidden="true"></i>');
-   	 }
-	 
-	 if (currentStage == stage) {
-		 break;
-	 }
- }
- 
+	for (var i = 0; i < stages.length; i++) {
+		var stage = stages[i];
+		if ((currentStage == null) | (currentStage == '')) {
+			break;
+		}
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ')').removeClass(
+				'active').addClass('complete ');
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + i + ') .bs-wizard-dot')
+				.html('<i class="fa fa-check" aria-hidden="true"></i>');
+
+		$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i + 1) + ')')
+				.removeClass('disabled').addClass('active');
+		$(
+				'.bs-wizard .bs-wizard-step:nth-of-type(' + (i + 1)
+						+ ') .bs-wizard-dot').html(
+				'<i class="fa fa-dot-circle-o" aria-hidden="true"></i>');
+
+		if (lastStage.indexOf(stage) != -1) {
+			$('.bs-wizard .bs-wizard-step:nth-of-type(' + (i + 1) + ')')
+					.removeClass('active').addClass('complete ');
+			$(
+					'.bs-wizard .bs-wizard-step:nth-of-type(' + (i + 1)
+							+ ') .bs-wizard-dot').html(
+					'<i class="fa fa-check" aria-hidden="true"></i>');
+		}
+
+		if (currentStage == stage) {
+			break;
+		}
+	}
 </script>
 
 

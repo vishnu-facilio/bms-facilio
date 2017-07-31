@@ -98,22 +98,22 @@
 	function saveSkill(btn) {
 		$(btn).button('loading');
 		
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/skills/add",
-			data : $("#newSkillForm").serialize()
-		})
-		.done(function(data) {
-			$('#newSkillModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'Skill created successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/skills/add",
+			data : $("#newSkillForm").serialize(),
+			done: function(data) {
+				$('#newSkillModel').modal('hide');
+				FacilioApp.notifyMessage('success', 'Skill created successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+	            }, 500);
+			},
+			fail: function(error) {
+				$(btn).button('reset');
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			}
 		});
 	}
 </script>

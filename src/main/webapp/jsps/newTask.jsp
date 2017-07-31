@@ -101,22 +101,22 @@
 	function saveTask(btn) {
 		$(btn).button('loading');
 		
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/tasks/add",
-			data : $("#addTaskForm").serialize()
-		})
-		.done(function(data) {
-			$('#newTaskModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'Task created successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-            }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/tasks/add",
+			data : $("#addTaskForm").serialize(),
+			done: function(data) {
+				$('#newTaskModel').modal('hide');
+				FacilioApp.notifyMessage('success', 'Task created successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+	            }, 500);
+			},
+			fail: function(error) {
+				$(btn).button('reset');
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			} 
 		});
 	}
 	
@@ -155,17 +155,16 @@
 				$("#inputAssignedTo").attr("disabled",true);
 			}
 			else {
-				$.ajax({
+				FacilioApp.ajax({
 					method : "post",
-					url : "<s:url action='getGroupMembers' namespace='/home/groups' />",
-					data : {groupId : groupId}
-				})
-				.done(function(data) {
-					FacilioApp.updateSelect("#inputAssignedTo", data);
-					$("#inputAssignedTo").attr("disabled",false);
-				})
-				.fail(function(error) {
-					
+					url : "<s:url action='getGroupMembers' namespace='/app/groups' />",
+					data : {groupId : groupId},
+					done: function(data) {
+						FacilioApp.updateSelect("#inputAssignedTo", data);
+						$("#inputAssignedTo").attr("disabled",false);
+					},
+					fail: function(error) {
+					} 
 				});
 			}
 		});

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@taglib uri="/struts-tags" prefix="s" %>  
 <%@taglib uri="facilio-tags" prefix="f" %>
+<%@page import="com.opensymphony.xwork2.ActionContext" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
  "http://www.w3.org/TR/html4/loose.dtd">  
  <%
@@ -111,6 +112,12 @@
 		<!-- scroll bar js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.7.0/js/perfect-scrollbar.jquery.min.js"></script>
 		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+		
+		<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/aws-cognito-sdk.min.js"></script>
+    	<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/amazon-cognito-identity.min.js"></script>
+    	<script src="${pageContext.request.contextPath}/js/cognitoutil.js"></script>
+		
 		<script src="${pageContext.request.contextPath}/js/sb-admin-2.js"></script>
 		<script src="${pageContext.request.contextPath}/js/app.js"></script>
 		<script src="${pageContext.request.contextPath}/js/chart.lib.js"></script>
@@ -119,6 +126,8 @@
 		
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
+			
+			var _DOMAINNAME = "<%= ActionContext.getContext().getApplication().get("DOMAINNAME").toString().substring(1) %>";
 			
 			$(document).ready(function() {
 				FacilioApp.init();

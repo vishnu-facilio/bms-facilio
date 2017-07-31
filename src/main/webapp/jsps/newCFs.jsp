@@ -62,23 +62,23 @@
 			var moduleName = $("#inputModuleName").val();
 			
 			//console.log(data);
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
 				url : "<s:url action='addCF' />",
-				data : {cfData : JSON.stringify(data), moduleName : moduleName}
-			})
-			.done(function(data) {
-				console.log(data);
-				FacilioApp.notifyMessage('success', 'Field(s) created successfully!');
-				
-				setTimeout(function() {
-					FacilioApp.refreshView();
-	            }, 500);
-				//window.location.
-			})
-			.fail(function(error) {
-				alert("Error occurred. Please try again later");
-				console.log(error);
+				data : {cfData : JSON.stringify(data), moduleName : moduleName},
+				done: function(data) {
+					console.log(data);
+					FacilioApp.notifyMessage('success', 'Field(s) created successfully!');
+					
+					setTimeout(function() {
+						FacilioApp.refreshView();
+		            }, 500);
+					//window.location.
+				},
+				fail: function(error) {
+					alert("Error occurred. Please try again later");
+					console.log(error);
+				} 
 			}); 
 		});
 		

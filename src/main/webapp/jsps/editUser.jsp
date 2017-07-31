@@ -58,19 +58,19 @@
 					}
 					
 					$(".save-btn").button('loading');
-					$.ajax({
+					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/home/setup/users/update",
-						data : $("#newUserForm").serialize()
-					})
-					.done(function(data) {
-						FacilioApp.notifyMessage('success', 'User updated successfully!');
-						location.href = '#users';
-					})
-					.fail(function(error) {
-						$(".save-btn").button('reset');
-						console.log(error);
-						alert(JSON.stringify(error));
+						url : contextPath + "/app/setup/users/update",
+						data : $("#newUserForm").serialize(),
+						done: function(data) {
+							FacilioApp.notifyMessage('success', 'User updated successfully!');
+							location.href = '#users';
+						},
+						fail: function(error) {
+							$(".save-btn").button('reset');
+							console.log(error);
+							alert(JSON.stringify(error));
+						}
 					});
 					return false;
 			  	}

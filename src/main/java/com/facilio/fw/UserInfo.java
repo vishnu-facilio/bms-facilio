@@ -1,7 +1,12 @@
 package com.facilio.fw;
 
-import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.UserAPI;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.context.RoleContext;
+import com.facilio.bmsconsole.util.OrgApi;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -15,31 +20,27 @@ import com.facilio.bmsconsole.util.UserAPI;
 
 public class UserInfo {
 
+	// cognito props
+	private String cognitoId = "";
+	private String userName;
+	private String email;
+	private boolean emailVerified;
+	private String phoneNumber;
+	private boolean phoneNumberVerified;
+	private String locale;
+	private String timezone;
+	private JSONObject additionalProps;
+
+	// db props
 	private long userId;
 	private long orgId;
 	private long orgUserId;
-	private String email;
-	private String username;
 	private String name;
-	private String role="Administrator";
 	private boolean isActive;
+	private RoleContext role;
+	private String subdomain;
 
 	private static ThreadLocal<UserInfo> userlocal = new ThreadLocal<UserInfo>();
-
-	public UserInfo(String username) throws Exception
-	{
-		this.username = username;
-		UserContext context = UserAPI.getUser(username);
-		
-		setUserId(context.getUserId());
-		setOrgId(context.getOrgId());
-		setOrgUserId(context.getOrgUserId());
-		setEmail(context.getEmail());
-		setUsername(context.getEmail());
-		setName(context.getName());
-		//setRoleId(context.getRoleId());
-		setActive(context.getInviteAcceptStatus());
-	}
 
 	public static UserInfo getCurrentUser()
 	{
@@ -54,6 +55,89 @@ public class UserInfo {
 	public static void cleanup()
 	{
 		userlocal.remove();
+	}
+
+	public static ThreadLocal<UserInfo> getUserlocal() {
+		return userlocal;
+	}
+
+	public static void setUserlocal(ThreadLocal<UserInfo> userlocal) {
+		UserInfo.userlocal = userlocal;
+	}
+	
+	public String getCognitoId() {
+		return cognitoId;
+	}
+
+	public void setCognitoId(String cognitoId) {
+		this.cognitoId = cognitoId;
+	}
+
+	public String getSubdomain() throws Exception {
+		if (this.subdomain == null) {
+			this.subdomain = OrgApi.getOrgDomainFromId(orgId);
+		}
+		return subdomain;
+	}
+
+	public void setSubdomain(String subdomain) {
+		this.subdomain = subdomain;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public boolean isEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(boolean emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public boolean isPhoneNumberVerified() {
+		return phoneNumberVerified;
+	}
+
+	public void setPhoneNumberVerified(boolean phoneNumberVerified) {
+		this.phoneNumberVerified = phoneNumberVerified;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 	public long getUserId() {
@@ -80,22 +164,6 @@ public class UserInfo {
 		this.orgUserId = orgUserId;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -104,26 +172,48 @@ public class UserInfo {
 		this.name = name;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-	
-	public boolean hasRole(String role) {
-		if (this.role.equals(role)) {
-			return true;
-		}
-		return false;
-	}
-
 	public boolean isActive() {
 		return isActive;
 	}
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public RoleContext getRole() {
+		return role;
+	}
+
+	public void setRole(RoleContext role) {
+		this.role = role;
+	}
+	
+	public void setAdditionalProps(JSONObject additionalProps) {
+		this.additionalProps = additionalProps;
+	}
+	
+	public void addAdditionalProperty(String key, String value) {
+		if (this.additionalProps == null) {
+			this.additionalProps = new JSONObject();
+		}
+		this.additionalProps.put(key, value);
+	}
+	
+	public String getAdditionalProperty(String key) {
+		if (this.additionalProps != null) {
+			return this.additionalProps.get(key).toString();
+		}
+		return null;
+	}
+	
+	public String toString() {
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> properties = mapper.convertValue(this, Map.class);
+		if (properties != null) {
+			return properties.toString();
+		}
+		else {
+			return "null";
+		}
 	}
 }

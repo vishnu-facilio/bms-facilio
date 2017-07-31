@@ -65,19 +65,19 @@
 					}
 					
 					$(".save-btn").button('loading');
-					$.ajax({
+					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/home/setup/users/add",
-						data : $("#newUserForm").serialize()
-					})
-					.done(function(data) {
-						FacilioApp.notifyMessage('success', 'User created successfully!');
-						location.href = '#users';
-					})
-					.fail(function(error) {
-						$(".save-btn").button('reset');
-						console.log(error);
-						alert(JSON.stringify(error.responseJSON.fieldErrors));
+						url : contextPath + "/app/setup/users/add",
+						data : $("#newUserForm").serialize(),
+						done: function(data) {
+							FacilioApp.notifyMessage('success', 'User created successfully!');
+							location.href = '#users';
+						},
+						fail: function(error) {
+							$(".save-btn").button('reset');
+							console.log(error);
+							alert(JSON.stringify(error.responseJSON.fieldErrors));
+						}
 					});
 					return false;
 			  	}

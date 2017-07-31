@@ -102,17 +102,17 @@
 		var cnfm = confirm('Are you sure want to delete this group?');
 		if (cnfm) {
 			var grp_obj = {'groupId': groupId};
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
-				url : contextPath + "/home/setup/groups/delete",
-				data : grp_obj
-			})
-			.done(function(data) {
-				FacilioApp.notifyMessage('success', 'Group deleted successfully!');
-				FacilioApp.refreshView();
-			})
-			.fail(function(error) {
-				alert(JSON.stringify(error.responseJSON.fieldErrors));
+				url : contextPath + "/app/setup/groups/delete",
+				data : grp_obj,
+				done: function(data) {
+					FacilioApp.notifyMessage('success', 'Group deleted successfully!');
+					FacilioApp.refreshView();
+				},
+				fail: function(error) {
+					alert(JSON.stringify(error.responseJSON.fieldErrors));
+				}
 			});
 		}
 	})

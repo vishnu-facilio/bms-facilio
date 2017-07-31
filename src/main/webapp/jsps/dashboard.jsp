@@ -9,9 +9,9 @@ function showDeviceData(controllerId)
 {
 	var dataObject = new Object();
 	//dataObject.controllerId = controllerId;
-	$.ajax({
+	FacilioApp.ajax({
 	      type: "GET",
-	      url: contextPath + "/home/showDeviceData",   
+	      url: contextPath + "/app/showDeviceData",   
 	      data: dataObject,
 	      success: function (response) {
 	    	console.log(response);

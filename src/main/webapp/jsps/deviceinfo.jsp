@@ -84,7 +84,7 @@ li.selected {
 		</s:iterator>
 		</div>
 		<div id="devicetree" style="display:none;">
-			<f:chart onmove="rearrangeDevices" id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/home/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
+			<f:chart onmove="rearrangeDevices" id="eb-meter" type="tree-collapsible" width="400" height="450" url="${pageContext.request.contextPath}/app/showTree?controllerId=${requestScope.CONTROLLER_ID}"/>
 		</div>
 		</s:else>
    </div>
@@ -149,9 +149,9 @@ li.selected {
 	{
 		obj.controllerId=${requestScope.CONTROLLER_ID};
 		console.log(obj);
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: contextPath + "/home/rearrangeDevices",   
+		      url: contextPath + "/app/rearrangeDevices",   
 		      data: obj,
 		      success: function (response) {
 		    	  console.log('Success');
@@ -163,22 +163,22 @@ li.selected {
 	{
 		//$(btn).button('loading');
 		
-		$.ajax({
+		FacilioApp.ajax({
 			method : "post",
-			url : contextPath + "/home/addDevice",
-			data : $(form).serialize()
-		})
-		.done(function(data) {
-			$('#newDeviceModel').modal('hide');
-			FacilioApp.notifyMessage('success', 'Controller created successfully!');
-			
-			setTimeout(function() {
-				FacilioApp.refreshView();
-	        }, 500);
-		})
-		.fail(function(error) {
-			$(btn).button('reset');
-			alert(JSON.stringify(error.responseJSON.fieldErrors));
+			url : contextPath + "/app/addDevice",
+			data : $(form).serialize(),
+			done: function(data) {
+				$('#newDeviceModel').modal('hide');
+				FacilioApp.notifyMessage('success', 'Controller created successfully!');
+				
+				setTimeout(function() {
+					FacilioApp.refreshView();
+		        }, 500);
+			},
+			fail: function(error) {
+				$(btn).button('reset');
+				alert(JSON.stringify(error.responseJSON.fieldErrors));
+			}
 		});
 		return false;
 		
@@ -191,9 +191,9 @@ li.selected {
 		var dataObject = new Object();
 		dataObject.name = $(el).parent().parent().parent().find('input[name=deviceName]').val();
 		dataObject.controllerId = $(el).parent().parent().parent().find('input[name=controllerId]').val();
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: contextPath + "/home/addDevice",   
+		      url: contextPath + "/app/addDevice",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  showControllerDevices($(el).parent().parent().parent().find('input[name=controllerId]').val());
@@ -208,9 +208,9 @@ li.selected {
 		
 		var dataObject = new Object();
 		dataObject.deviceId = $(el).attr('device-id');
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "POST",
-		      url: contextPath + "/home/showConfigureDevice",   
+		      url: contextPath + "/app/showConfigureDevice",   
 		      data: dataObject,
 		      success: function (response) {
 		    	  $('#configureDeviceModel .modal-body').html(response);
@@ -236,9 +236,9 @@ li.selected {
 		var dataObject = new Object();
 		dataObject.deviceId = $('#deviceId').val();
 		dataObject.data = JSON.stringify(json);
-		$.ajax({
+		FacilioApp.ajax({
 			type : "POST",
-			url : contextPath + "/home/configureDevice",
+			url : contextPath + "/app/configureDevice",
 			data : dataObject,
 			success : function(response) {
 				$('#newDeviceModel').modal('hide');
@@ -255,9 +255,9 @@ li.selected {
 	{
 		var dataObject = new Object();
 		dataObject.controllerId = controllerId;
-		$.ajax({
+		FacilioApp.ajax({
 		      type: "GET",
-		      url: contextPath + "/home/showDeviceData",   
+		      url: contextPath + "/app/showDeviceData",   
 		      data: dataObject,
 		      success: function (response) {
 		    	console.log(response);
@@ -381,9 +381,9 @@ li.selected {
 		        	
 		    		dataObject.instances = JSON.stringify(json);
 		    		dataObject.controllerId = $('input[name=controllerId]').val();
-		    		$.ajax({
+		    		FacilioApp.ajax({
 		  		      type: "POST",
-		  		      url: contextPath + "/home/updateControllerInstances",   
+		  		      url: contextPath + "/app/updateControllerInstances",   
 		  		      data: dataObject,
 		  		      success: function (response) {
 		  		         

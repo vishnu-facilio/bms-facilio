@@ -5,7 +5,7 @@
 
 <struts>
 
-	<package name="home" strict-method-invocation="false" namespace="/home"  extends="struts-default,json-default">
+	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
@@ -172,7 +172,7 @@
 	</action>
     
 	</package>
-	<package name="modules" namespace="/home/modules" extends="home">
+	<package name="modules" namespace="/app/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
 			<param name="permission">setup</param>
 			<result name="success">/jsps/newCFs.jsp</result>
@@ -186,14 +186,14 @@
 		</action>
 	</package>
 
-	<package name="controllers" namespace="/home/controller" extends="home">
+	<package name="controllers" namespace="/app/controller" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
 			<param name="permission">setup</param>
     		<result name="success">/jsps/deviceinfo.jsp</result>
     	</action>
     </package>
     
-    <package name="admin" namespace="/home/admin" extends="home">
+    <package name="admin" namespace="/app/admin" extends="home">
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction" method="addJob">
     	</action>
     	<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction" method="deleteJob">
@@ -203,7 +203,7 @@
     	</action>
     </package>
     
-    <package name="setup" namespace="/home/setup" extends="home">
+    <package name="setup" namespace="/app/setup" extends="home">
 		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions" method="mySettings">
 			<param name="permission">setup</param>
 			<result name="success">/jsps/setup/mysettings.jsp</result>
@@ -230,7 +230,7 @@
 		</action>
 	</package>
 
-	<package name="ticket" namespace="/home/ticket" extends="home">
+	<package name="ticket" namespace="/app/ticket" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
@@ -265,7 +265,7 @@
 		</action>
 	</package>
 	
-	<package name="ticketSummary" namespace="/home/ticket/summary" extends="ticket">
+	<package name="ticketSummary" namespace="/app/ticket/summary" extends="ticket">
 		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
 			<param name="permission">workorderviewall</param>
 			<param name="ticketId">{1}</param>
@@ -273,13 +273,13 @@
 		</action>
 	</package>
 	
-	<package name="ticketstatus" namespace="/home/ticketstatus" extends="home">
+	<package name="ticketstatus" namespace="/app/ticketstatus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
 	
-	<package name="attachment" namespace="/home/attachment" extends="home">
+	<package name="attachment" namespace="/app/attachment" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
@@ -304,7 +304,7 @@
 		</action>
 	</package>
 	
-	<package name="task" namespace="/home/task" extends="home">
+	<package name="task" namespace="/app/task" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
 			<result name="success">/jsps/newForm.jsp</result>
 		</action>
@@ -325,7 +325,7 @@
 		</action>
 	</package>
 	
-	<package name="note" namespace="/home/note" extends="home">
+	<package name="note" namespace="/app/note" extends="home">
 		<action name="newDialog" class="com.facilio.bmsconsole.actions.NoteAction" method="newNote">
 			<result name="success">/jsps/newFormDialog.jsp</result>
 		</action>
@@ -337,7 +337,7 @@
 		</action>
 	</package>
 	
-	<package name="taskSummary" namespace="/home/task/summary" extends="task">
+	<package name="taskSummary" namespace="/app/task/summary" extends="task">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
 			<param name="permission">workorderviewall</param>
 			<param name="taskId">{1}</param>
@@ -345,7 +345,7 @@
 		</action>
 	</package>
 	
-	<package name="rules" namespace="/home/rules" extends="home">
+	<package name="rules" namespace="/app/rules" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleActions" method="{1}">
 			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
 			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>
@@ -356,7 +356,7 @@
 		</action>
 	</package>
 	
-	<package name="location" namespace="/home/location" extends="home">
+	<package name="location" namespace="/app/location" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.LocationActions">
 			<result name="success">/jsps/locationsPopup.jsp</result>
 		</action>
@@ -369,7 +369,7 @@
 		</action>
 	</package>
 	
-	<package name="skill" namespace="/home/skill" extends="home">
+	<package name="skill" namespace="/app/skill" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
 			<result name="success">/jsps/newForm.jsp</result>
 		</action>
@@ -385,7 +385,7 @@
 		</action>
 	</package>
 	
-	<package name="users" namespace="/home/setup/users" extends="home">
+	<package name="users" namespace="/app/setup/users" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<result name="success">/jsps/usersListPopup.jsp</result>
 		</action>
@@ -448,7 +448,7 @@
 		</action> -->
 	</package>
 	
-	<package name="groups" namespace="/home/setup/groups" extends="home">
+	<package name="groups" namespace="/app/setup/groups" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.GroupAction" method="newGroup">
 			<result type="tiles">newGroup</result>
 		</action>
@@ -503,7 +503,7 @@
 		</action> -->
 	</package>
 	
-	<package name="roles" namespace="/home/setup/roles" extends="home">
+	<package name="roles" namespace="/app/setup/roles" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.RoleAction" method="newRole">
 			<result type="tiles">newRole</result>
 		</action>
@@ -561,7 +561,19 @@
 		</action>
 	</package>
 
-	<package name="login" namespace="/" extends='struts-default,tiles-default'>
+	<package name="login" strict-method-invocation="false" namespace="/" extends='struts-default,tiles-default,json-default'>
+	
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="login">
 			<result name="loginpage">/jsps/login.jsp</result>
 			<result name="loginsuccess">/jsps/loginSuccess.jsp</result>
@@ -570,9 +582,15 @@
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="logout">
 			<result>/jsps/logout.jsp</result>
 		</action>
+		<action name="validateuser" class="com.facilio.bmsconsole.actions.LoginAction" method="validateUser">
+			<result>/jsps/validateLogin.jsp</result>
+		</action>
+		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction" method="signup">
+			<result>/jsps/validateLogin.jsp</result>
+		</action>
 	</package>
 	
-	<package name="unauth" namespace="/login" extends='struts-default,tiles-default'>
+	<!-- package name="unauth" namespace="/login" extends="login">
 		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction" method="validateLogin">
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
@@ -580,9 +598,9 @@
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
 
-	</package>
+	</package-->
 	
-	<package name="campus" namespace="/home/campus" extends="home">
+	<package name="campus" namespace="/app/campus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/campusListPopup.jsp</result>
@@ -602,7 +620,7 @@
 		</action>
 	</package>
 	
-	<package name="campusSummary" namespace="/home/campus/summary" extends="campus">
+	<package name="campusSummary" namespace="/app/campus/summary" extends="campus">
 		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
 			<param name="permission">workorderviewall</param>
 			<param name="campusId">{1}</param>
@@ -610,7 +628,7 @@
 		</action>
 	</package>
 	
-	<package name="building" namespace="/home/building" extends="home">
+	<package name="building" namespace="/app/building" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/buildingListPopup.jsp</result>
@@ -630,7 +648,7 @@
 		</action>
 	</package>
 	
-	<package name="buildingSummary" namespace="/home/building/summary" extends="building">
+	<package name="buildingSummary" namespace="/app/building/summary" extends="building">
 		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
 			<param name="permission">workorderviewall</param>
 			<param name="buildingId">{1}</param>
@@ -638,7 +656,7 @@
 		</action>
 	</package>
 	
-	<package name="floor" namespace="/home/floor" extends="home">
+	<package name="floor" namespace="/app/floor" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/floorListPopup.jsp</result>
@@ -658,7 +676,7 @@
 		</action>
 	</package>
 	
-	<package name="floorSummary" namespace="/home/floor/summary" extends="floor">
+	<package name="floorSummary" namespace="/app/floor/summary" extends="floor">
 		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
 			<param name="permission">workorderviewall</param>
 			<param name="floorId">{1}</param>
@@ -666,7 +684,7 @@
 		</action>
 	</package>
 	
-	<package name="space" namespace="/home/space" extends="home">
+	<package name="space" namespace="/app/space" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
@@ -681,7 +699,7 @@
 		</action>
 	</package>
 	
-	<package name="spaceSummary" namespace="/home/space/summary" extends="space">
+	<package name="spaceSummary" namespace="/app/space/summary" extends="space">
 		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
 			<param name="permission">workorderviewall</param>
 			<param name="spaceId">{1}</param>
@@ -689,7 +707,7 @@
 		</action>
 	</package>
 	
-	<package name="zone" namespace="/home/zone" extends="home">
+	<package name="zone" namespace="/app/zone" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/newForm.jsp</result>
@@ -704,7 +722,7 @@
 		</action>
 	</package>
 	
-	<package name="zoneSummary" namespace="/home/zone/summary" extends="zone">
+	<package name="zoneSummary" namespace="/app/zone/summary" extends="zone">
 		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction" method="viewZone">
 			<param name="permission">workorderviewall</param>
 			<param name="zoneId">{1}</param>
@@ -712,7 +730,7 @@
 		</action>
 	</package>
 	
-	<package name="area" namespace="/home/basespace" extends="home">
+	<package name="area" namespace="/app/basespace" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
 			<param name="permission">workorderviewall</param>
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>

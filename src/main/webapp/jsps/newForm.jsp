@@ -107,8 +107,8 @@
 	    	        	var rowObj = $(this).closest('.file-row');
 	    	        	var fileId = $(rowObj).find('.file-id').val();
 	    	        	var data = {'attachmentId[0]': fileId};
-	    	        	$.ajax({
-	    	        	       url : contextPath + '/home/attachment/delete',
+	    	        	FacilioApp.ajax({
+	    	        	       url : contextPath + '/app/attachment/delete',
 	    	        	       type : 'POST',
 	    	        	       data : data,
 	    	        	       success : function(data) {
@@ -119,8 +119,8 @@
 	    	    });
         	}
         	
-        	$.ajax({
-       	       url : contextPath + '/home/attachment/add',
+        	FacilioApp.ajax({
+       	       url : contextPath + '/app/attachment/add',
        	       type : 'POST',
        	       data : formData,
        	       processData: false,  // tell jQuery not to process the data
@@ -148,23 +148,23 @@
 				}
 				
 				$(".save-btn").button('loading');
-				$.ajax({
+				FacilioApp.ajax({
 					method : "post",
 					url : "<s:url action='add' />",
-					data : $("#addForm").serialize()
-				})
-				.done(function(data) {
-					console.log(data);
-					$.each(data, function(key, val) {
-						window.location.href='#<s:property value="%{moduleLinkName}"/>/'+val;
-					});
-				})
-				.fail(function(error) {
-					$(".save-btn").button('reset');
-					console.log(error);
+					data : $("#addForm").serialize(),
+					done: function(data) {
+						console.log(data);
+						$.each(data, function(key, val) {
+							window.location.href='#<s:property value="%{moduleLinkName}"/>/'+val;
+						});
+					},
+					fail: function(error) {
+						$(".save-btn").button('reset');
+						console.log(error);
+					}
 				});
-				return false;
 		  	}
+		  return false;
 		});
 	});
 </script>

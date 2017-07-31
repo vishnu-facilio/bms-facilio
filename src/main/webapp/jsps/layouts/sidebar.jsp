@@ -47,7 +47,7 @@
             </li>
              <li>
                 <a href="#centraldispatch">
-                <span class="nav-icon"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
+                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
                 <span class="nav-title">Central Dispatch
                 </span></a>
             </li>
