@@ -70,7 +70,7 @@ public class LoginUtil {
 				if (cookie.getName().equalsIgnoreCase(key)) {
 					cookie.setValue("");
 					cookie.setPath("/");
-					cookie.setDomain(domain);
+					cookie.setDomain(domain.substring(1));
 					cookie.setMaxAge(0);
 					response.addCookie(cookie);
 					return true;
@@ -84,7 +84,7 @@ public class LoginUtil {
 		
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
-		cookie.setDomain(domain);
+		cookie.setDomain(domain.substring(1));
 		response.addCookie(cookie);
 	}
 }
