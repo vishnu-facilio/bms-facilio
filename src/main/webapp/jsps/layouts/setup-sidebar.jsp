@@ -48,6 +48,18 @@
                 <a href="#workorder">
                 	<span class="nav-title">Work Order Settings</span>
                 </a>
+                 <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#wocustomize">Customize</a>
+                    </li>
+                    <li>
+                        <a href="#notifications">Notifications</a>
+                    </li>
+                    <li>
+                        <a href="#email">Email Settings</a>
+                    </li>
+               
+                </ul>
             </li>
             <li>
                 <a href="#subscriptions">

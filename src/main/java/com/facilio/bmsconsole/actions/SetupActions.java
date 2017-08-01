@@ -28,4 +28,9 @@ public class SetupActions extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	public String showEmailSettings() throws Exception {
+		
+		return SUCCESS;
+	}
+	
 }
