@@ -139,4 +139,12 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		
 		return (List<TicketStatusContext>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST);
 	}
+	
+	private BaseSpaceContext space;
+	public BaseSpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(BaseSpaceContext space) {
+		this.space = space;
+	}
 }

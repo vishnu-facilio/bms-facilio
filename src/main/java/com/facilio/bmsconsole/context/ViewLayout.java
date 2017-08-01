@@ -107,7 +107,7 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Campus", "campusId", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Campus", "campus", "name", ColumnType.LOOKUP));
 		viewLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
@@ -121,7 +121,7 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Building", "building", "name", ColumnType.LOOKUP));
 		viewLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
