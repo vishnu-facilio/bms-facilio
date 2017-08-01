@@ -77,9 +77,16 @@
 		<div class="row row-in">
 			<div class="col-md-12 col-sm-12 form-group"><br></div>
 			<div class="row row-footer">
-				<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('<s:property value="#relatedModule.linkName" />', relatedModuleAddCallBack, '<s:property value="%{moduleLinkName}" />', '<s:property value="%{record[recordSummaryLayout.pkColumnId]}" />');">
-					<button type="button" class="btn btn-default  plus-btn"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New <s:property value="#relatedModule.moduleName" />
-				</div>
+				<s:if test="#relatedModule.defaultPopup == 'form'">
+					<div class="col-md-6 col-sm-6" onclick="FacilioApp.createRecordDialog('<s:property value="#relatedModule.linkName" />', relatedModuleAddCallBack, '<s:property value="%{moduleLinkName}" />', '<s:property value="%{record[recordSummaryLayout.pkColumnId]}" />');">
+						<button type="button" class="btn btn-default  plus-btn"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;New <s:property value="#relatedModule.moduleName" />
+					</div>
+				</s:if>
+				<s:else>
+					<div class="col-md-6 col-sm-6" onclick="FacilioApp.lookupDialog('<s:property value="#relatedModule.linkName" />', '<s:property value="#relatedModule.moduleName" />')">
+						<button type="button" class="btn btn-default  plus-btn"><i class="fa fa-plus"></i></button>&nbsp;&nbsp;Add <s:property value="#relatedModule.moduleName" />
+					</div>
+				</s:else>
 			</div>
 		</div>
 		</s:if>

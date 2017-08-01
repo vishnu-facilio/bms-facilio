@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ZoneContext extends ModuleBaseWithCustomFields {
@@ -18,5 +20,16 @@ public class ZoneContext extends ModuleBaseWithCustomFields {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	private List<BaseSpaceContext> basespaces;
+	public List<BaseSpaceContext> getBasespaces() 
+	{
+		return basespaces;
+	}
+	
+	public void setBasespaces(List<BaseSpaceContext> basespaces) 
+	{
+		this.basespaces = basespaces;
 	}
 }

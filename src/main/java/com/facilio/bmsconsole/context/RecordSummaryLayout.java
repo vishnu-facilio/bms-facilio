@@ -207,9 +207,15 @@ public class RecordSummaryLayout {
 		recordSummaryLayout.setTitleColumnId("name");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Description", "shortDescription", ColumnType.TEXT));
 		
-		recordSummaryLayout.addRelatedModule(new RelatedModule("SPACES", "spaces", "Space", "space"));
+		recordSummaryLayout.addRelatedModule(new RelatedModule("SPACES", "basespaces", "Space", "basespace")
+				.setIcon("fa fa-globe")
+				.setShowHeader(true)
+				.setDefaultPopup("view")
+				.addColumn(new Column("Name", "name", ColumnType.TEXT))
+				.addColumn(new Column("Type", "type", ColumnType.TEXT))
+				);
 		return recordSummaryLayout;
 	}
 }
@@ -246,6 +252,18 @@ class RelatedModule
 	public String getLinkName()
 	{
 		return this.linkName;
+	}
+	
+	String defaultPopup = "form";
+	public RelatedModule setDefaultPopup(String defaultPopup)
+	{
+		this.defaultPopup = defaultPopup;
+		return this;
+	}
+	
+	public String getDefaultPopup()
+	{
+		return this.defaultPopup;
 	}
 	
 	String icon;
