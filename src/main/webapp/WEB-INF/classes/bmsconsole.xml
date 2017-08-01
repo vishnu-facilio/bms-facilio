@@ -111,10 +111,6 @@
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
-	<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
 	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<param name="permission">workorderviewall</param>
 		<result name="success">/jsps/listview.jsp</result>
@@ -236,6 +232,21 @@
 	    	<param name="permission">setup</param>
 	    	<result type="tiles">groupList</result>
 		</action>
+		
+		<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+			<param name="permission">setup</param>
+			<result type="tiles">ticketStatusList</result>
+		</action>
+		
+		<action name="ticketpriority" class="com.facilio.bmsconsole.actions.TicketPriorityAction" method="priorityList">
+			<param name="permission">setup</param>
+			<result type="tiles">ticketPriorityList</result>
+		</action>
+		
+		<action name="ticketcategory" class="com.facilio.bmsconsole.actions.TicketCategoryAction" method="categoryList">
+			<param name="permission">setup</param>
+			<result type="tiles">ticketCategoryList</result>
+		</action>
 	</package>
 
 	<package name="ticket" namespace="/app/ticket" extends="home">
@@ -281,13 +292,7 @@
 		</action>
 	</package>
 	
-	<package name="ticketstatus" namespace="/app/ticketstatus" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
-			<result name="success">/jsps/listview.jsp</result>
-		</action>
-	</package>
-	
-	<package name="attachment" namespace="/app/attachment" extends="home">
+	<package name="attachment" namespace="/home/attachment" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>

@@ -45,12 +45,27 @@
                 </ul>
             </li>
             <li>
-                <a href="#workorder">
-                	<span class="nav-title">Work Order Settings</span>
+                <a href="#">
+                	<span class="nav-title">Work Order</span>
+                	<span class="fa arrow"></span>
                 </a>
                  <ul class="nav nav-second-level">
                     <li>
-                        <a href="#wocustomize">Customize</a>
+                        <a href="#">
+                            <span class="nav-title">Customize</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        <ul class="nav nav-third-level">
+                            <li>
+                                <a href="#ticketstatus">Status</a>
+                            </li>
+                            <li>
+                                <a href="#ticketpriority">Priority</a>
+                            </li>
+                            <li>
+                                <a href="#ticketcategory">Category</a>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <a href="#notifications">Notifications</a>
@@ -58,7 +73,6 @@
                     <li>
                         <a href="#emailsettings">Email Settings</a>
                     </li>
-               
                 </ul>
             </li>
             <li>
