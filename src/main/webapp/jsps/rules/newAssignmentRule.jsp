@@ -107,16 +107,16 @@
  			ruleObj['module'] = ruleModule;
  			//ruleObj['rule.actions'] = actions;
 			
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
 				url : "<s:url action='addAssignmentRule' />",
-				data : ruleObj
-			})
-			.done(function(data) {
-				console.log(data);
-			})
-			.fail(function(error) {
-				console.log(error);
+				data : ruleObj,
+				done: function(data) {
+					console.log(data);
+				},
+				fail: function(error) {
+					console.log(error);
+				} 
 			});
 		});
 	});

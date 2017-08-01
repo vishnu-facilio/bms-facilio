@@ -89,17 +89,17 @@
 		var cnfm = confirm('Are you sure want to delete this role?');
 		if (cnfm) {
 			var grp_obj = {'roleId': roleId};
-			$.ajax({
+			FacilioApp.ajax({
 				method : "post",
-				url : contextPath + "/home/setup/roles/delete",
-				data : grp_obj
-			})
-			.done(function(data) {
-				FacilioApp.notifyMessage('success', 'Role deleted successfully!');
-				FacilioApp.refreshView();
-			})
-			.fail(function(error) {
-				alert(JSON.stringify(error.responseJSON.fieldErrors));
+				url : contextPath + "/app/setup/roles/delete",
+				data : grp_obj,
+				done: function(data) {
+					FacilioApp.notifyMessage('success', 'Role deleted successfully!');
+					FacilioApp.refreshView();
+				},
+				fail: function(error) {
+					alert(JSON.stringify(error.responseJSON.fieldErrors));
+				}
 			});
 		}
 	})

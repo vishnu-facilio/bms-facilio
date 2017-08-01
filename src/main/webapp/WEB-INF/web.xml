@@ -14,6 +14,10 @@
         <param-name>DOMAINNAME</param-name>
         <param-value>.facilstack.com</param-value>
     </context-param>
+    <context-param>
+        <param-name>M_DOMAINNAME</param-name>
+        <param-value>.mfacilio.com</param-value>
+    </context-param> 
  <listener>
       <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
     </listener>

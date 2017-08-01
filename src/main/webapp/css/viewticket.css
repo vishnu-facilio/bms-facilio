@@ -62,3 +62,16 @@
     color: #0E99E3;
 }	
 
+.user-circle {
+    background: #f2f2f2;
+    border-radius: 35px;
+    color: #000;
+    height: 35px;
+    width: 35px;
+    display: table;
+    margin: 20px auto;
+}
+.user-circle p {
+    vertical-align: middle;
+    display: table-cell;
+}

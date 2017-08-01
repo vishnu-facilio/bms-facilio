@@ -1,10 +1,20 @@
 /**
  * 
  */
+
 FacilioApp = {
 
+	ajaxInit: function() {
+		
+		$(document).on('ajaxStart', function() { NProgress.start(); });
+		$(document).on('ajaxStop',   function() { NProgress.done();  });
+		
+	},
+		
 	init: function() {
 		var self = this;
+		
+		self.ajaxInit();
 		
 		$('.sidebar').perfectScrollbar();    
 		
@@ -39,12 +49,12 @@ FacilioApp = {
 		
 			location.href = '#task/new';
 		});
-		$(document).on('ajaxStart', function() { NProgress.start(); });
-		$(document).on('ajaxStop',   function() { NProgress.done();  });
 	},
 	
 	initSetup: function() {
 		var self = this;
+		
+		self.ajaxInit();
 		
 		$('.sidebar').perfectScrollbar();    
 		
@@ -55,9 +65,57 @@ FacilioApp = {
 		$(window).on('hashchange',function(){ 
 			self.loadUrlFromHash(true);
 		});
+	},
+	
+	ajax: function(options) {
 		
-		$(document).on('ajaxStart', function() { NProgress.start(); });
-		$(document).on('ajaxStop',   function() { NProgress.done();  });
+		var actualSuccessFunc = options.success;
+		var actualDoneFunc = options.done;
+		var actualFailFunc = options.fail;
+		
+		var successFunc = function(data, status, xhr) {
+			if (xhr.getResponseHeader('FC-Login-State') != null && xhr.getResponseHeader('FC-Login-State') == '1') {
+				
+				var cogUtil = new CognitoUtil();
+				cogUtil.getTokens(function(result, err) {
+					try {
+						if (result != null) {
+							var idTokenInCookie = Cookies.get('fc.idToken');
+							if (result.idToken !== idTokenInCookie) {
+								Cookies.set('fc.idToken', result.idToken, { path: '/', domain: _DOMAINNAME });
+							}
+						}
+					}
+					catch(err) {
+					}
+					
+					if (typeof(actualDoneFunc) === 'undefined') {
+						options.success = actualSuccessFunc; 
+						$.ajax(options);
+					}
+					else {
+						$.ajax(options).done(actualDoneFunc).fail(actualFailFunc);
+					}
+				});
+			}
+			else {
+				if (typeof(actualDoneFunc) === 'undefined') {
+					actualSuccessFunc(data, status, xhr);
+				}
+				else {
+					actualDoneFunc(data, status, xhr);
+				}
+			}
+		};
+		
+		if (typeof(actualDoneFunc) === 'undefined') {
+			options.success = successFunc;
+			$.ajax(options);
+		}
+		else {
+			options.done = null;
+			$.ajax(options).done(successFunc).fail(actualFailFunc);
+		}
 	},
 	
 	loadUrlFromHash: function(is_setup) {
@@ -70,37 +128,41 @@ FacilioApp = {
 		var module = location.hash.slice(1);
 		if(module != "")
 		{	
-			var url = contextPath + '/home/' + module;
+			var url = contextPath + '/app/' + module;
 			if (is_setup) {
-				url = contextPath + '/home/setup/' + module;
+				url = contextPath + '/app/setup/' + module;
 			}
-			$('#page-wrapper').load(url, function(response, status, xhr) {
-				if (response.indexOf("Struts Problem Report") > 0) {
-					$('#page-wrapper').html("<div style='text-align:center;padding-top: 56px;'><i class='fa fa-suitcase fa-5' aria-hidden='true' style='font-size: 4em;'></i><h2>Work in progress.</h2></div>");
-				}
-				else {
-					if ($(this).find('.form-content').length > 0) {
-						$(this).find('.form-content').perfectScrollbar({
-					
-						});
+			FacilioApp.ajax({
+				url: url,
+				success: function(response, status, xhr) {
+					if (response.indexOf("Struts Problem Report") > 0) {
+						$('#page-wrapper').html("<div style='text-align:center;padding-top: 56px;'><i class='fa fa-suitcase fa-5' aria-hidden='true' style='font-size: 4em;'></i><h2>Work in progress.</h2></div>");
 					}
-					else if ($(this).find('.view-content').length > 0) {
-						$(this).find('.view-content').perfectScrollbar({
-							
-						});
+					else {
+						$('#page-wrapper').html(response);
+						
+						if ($(this).find('.form-content').length > 0) {
+							$(this).find('.form-content').perfectScrollbar({
 
-					}
-					else if ($(this).find('.temp-view-content').length > 0) {
-						$(this).find('.temp-view-content').perfectScrollbar(
-								 {}	
-						);
+							});
+						}
+						else if ($(this).find('.view-content').length > 0) {
+							$(this).find('.view-content').perfectScrollbar({
 
-					}
-					else if ($(this).find('.list-content').length > 0) {
-						   $('.list-content').perfectScrollbar({
-								 suppressScrollX : true
-							 });
+							});
 
+						}
+						else if ($(this).find('.temp-view-content').length > 0) {
+							$(this).find('.temp-view-content').perfectScrollbar(
+									{}	
+							);
+
+						}
+						else if ($(this).find('.list-content').length > 0) {
+							$('.list-content').perfectScrollbar({
+								suppressScrollX : true
+							});
+						}
 					}
 				}
 			});
@@ -133,13 +195,13 @@ FacilioApp = {
 		$(popup).find('.modal-title').text("All " + moduleName);
 		$(popup).data('fieldId', fieldId);
 		$(popup).modal("show");
-		$.ajax({
+		FacilioApp.ajax({
 			method : "get",
-			url : contextPath + "/home/" + moduleLinkName + "/popup",
+			url : contextPath + "/app/" + moduleLinkName + "/popup",
+			done: function(data) {
+				$(popup).find('.modal-body').html(data);
+			}
 		})
-		.done(function(data) {
-			$(popup).find('.modal-body').html(data);
-		});
 		$(popup).on('hidden.bs.modal', function () {
 			$(popup).remove();
 		})
@@ -155,9 +217,9 @@ FacilioApp = {
 	},
 	
 	createRecordDialog: function(moduleLinkName, callback, parentModuleLinkName, parentId) {
-		 $.ajax({
+		 FacilioApp.ajax({
 			type : "GET",
-			url : contextPath + '/home/'+moduleLinkName+'/newDialog',
+			url : contextPath + '/app/'+moduleLinkName+'/newDialog',
 			success : function(response) {
 				$('#newRecordModel').html(response);
 				if(parentModuleLinkName != undefined)
@@ -179,18 +241,18 @@ FacilioApp = {
 						}
 						
 						$(this).find(".save-btn").button('loading');
-						$.ajax({
+						FacilioApp.ajax({
 							method : "post",
-							url : contextPath + '/home/'+moduleLinkName+'/add',
-							data : $("#addFormDialog").serialize()
-						})
-						.done(function(data) {
-							$('#newRecordModel').modal('hide');
-							callback(data, null);
-						})
-						.fail(function(error) {
-							$(".save-btn").button('reset');
-							callback(null, error);
+							url : contextPath + '/app/'+moduleLinkName+'/add',
+							data : $("#addFormDialog").serialize(),
+							done: function(data) {
+								$('#newRecordModel').modal('hide');
+								callback(data, null);
+							},
+							fail: function(error) {
+								$(".save-btn").button('reset');
+								callback(null, error);
+							}
 						});
 						return false;
 				  	}
@@ -209,11 +271,11 @@ FacilioApp = {
 		 *  }
 		 */
 		
-		var ajaxURL = '/home/users';
+		var ajaxURL = '/app/users';
 		if (options.group) {
-			ajaxURL = '/home/users?groupId='+options.group;
+			ajaxURL = '/app/users?groupId='+options.group;
 		}
-		 $.ajax({
+		FacilioApp.ajax({
 				type : "GET",
 				url : contextPath + ajaxURL,
 				success : function(response) {

@@ -22,6 +22,7 @@
           jmxEnabled="true"
           jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
             org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
+          defaultTransactionIsolation="READ_COMMITTED" 
           username="faciliouser"
           password="zxcv1212"
           driverClassName="com.mysql.jdbc.Driver"
