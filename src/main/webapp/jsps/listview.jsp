@@ -40,7 +40,8 @@
 
 
 			<div class="action-btn text-right">
- 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+ 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New </button>
+ 		<s:if test="%{moduleLinkName == 'campus' || moduleLinkName == 'building'}"> <button type="button" class="btn btn-default import-btn save-btn">Import</button></s:if> 
 	 </div>
   </div>
 </div>
@@ -212,6 +213,11 @@
 				   $('.record-summary .view-content').perfectScrollbar();
 			   });
 		   }
+	   });
+	   $(".import-btn").click(function() {
+		   var moduleLinkName = '<s:property value="%{moduleLinkName}" />';
+		   //#import/showformupload?module=campus
+		   location.href = '#import/showformupload?module=<s:property value="%{moduleLinkName}" />';
 	   });
 	   
 	   $(".new-btn").click(function() {

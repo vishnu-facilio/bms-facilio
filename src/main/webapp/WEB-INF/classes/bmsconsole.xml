@@ -613,6 +613,20 @@
 
 	</package-->
 	
+	<package name="importmodule" namespace="/app/import" extends="home">
+	<action name="showformupload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="showformupload">
+			<result name="success">/jsps/import/showfileupload.jsp</result>
+		</action>
+		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
+			<result name="success">/jsps/campusListPopup.jsp</result>
+		</action>
+			<action name="displayColumnFieldMapping" class="com.facilio.bmsconsole.actions.ImportDataAction" method="displayColumnFieldMapping">
+			<result name="success">/jsps/campusListPopup.jsp</result>
+		</action>
+			<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+			<result name="success">/jsps/campusListPopup.jsp</result>
+		</action>
+	</package>	
 	<package name="campus" namespace="/app/campus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
 			<param name="permission">workorderviewall</param>
