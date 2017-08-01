@@ -56,7 +56,7 @@
                         <a href="#notifications">Notifications</a>
                     </li>
                     <li>
-                        <a href="#email">Email Settings</a>
+                        <a href="#emailsettings">Email Settings</a>
                     </li>
                
                 </ul>
