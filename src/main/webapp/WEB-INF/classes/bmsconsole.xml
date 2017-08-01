@@ -214,6 +214,10 @@
 			<result name="success">/jsps/setup/orgsettings.jsp</result>
 		</action>
 		
+		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
+			<param name="permission">setup</param>
+			<result name="success">/jsps/setup/notifications.jsp</result>
+		</action>
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">setup</param>
 	    	<result type="tiles">userList</result>
