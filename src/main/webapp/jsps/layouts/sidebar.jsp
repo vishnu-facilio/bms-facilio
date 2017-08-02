@@ -1,3 +1,5 @@
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@taglib uri="facilio-tags" prefix="f" %>
 <div class="navbar-default sidebar " role="navigation">
     <div class="sidebar-nav navbar-collapse">
         <ul class="nav metismenu" id="side-menu">
@@ -14,67 +16,77 @@
                
             </li>
             -->
-            <li>
-                <a href="#dashboard">
-                <span class="nav-icon">
-                <i class=" sidebar-icon fa fa-dashboard fa-fw "></i> </span>
-                <span class="nav-title">Dashboard</span>
-                </a>
-            </li>
-           <!-- <li>
-            	<a href="#controller"><i class="sidebar-icon fa fa-laptop fa-fw"></i> Controllers</a>
-            </li> -->
-              <li>
-               
-               
-                <a href="#ticket"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
-                <span class="nav-title all-workorder"> Work Orders</span>
-               <span class="nav-icon-right add-new-workorder pull-right fc-plus">+</span>
-                </a>
-            </li>
-            
-            <li>
-               <a href="#task"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
-               <span class="nav-title all-task">Tasks</span>
-               <span class="nav-icon-right add-new-task pull-right fc-plus">+</span></a>
-             
-            </li>
-            <li>
-                <a href="#calendar">
-                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
-                <span class="nav-title">Calendar
-                </span></a>
-            </li>
-             <li>
-                <a href="#centraldispatch">
-                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
-                <span class="nav-title">Central Dispatch
-                </span></a>
-            </li>
-			<li>
-               <a href="#">
-               <span class="nav-icon"><i class="sidebar-icon fa fa-globe fa-fw"></i></span> 
-               <span class="nav-title">Space Management</span>
-               <span class="fa arrow"></span>
-               </a>
-                <ul class="nav nav-second-level">
-               		<li>
-                        <a href="#campus">Campus</a>
-                    </li>
-                    <li>
-                        <a href="#building">Building</a>
-                    </li>
-                    <li>
-                        <a href="#floor">Floor</a>
-                    </li>
-                    <li>
-                        <a href="#space">Space</a>
-                    </li>
-                    <li>
-                        <a href="#zone">Zone</a>
-                    </li>
-                  </ul>
-            </li>
+            <f:hasPermission permission="DASHBOARD_ACCESS_ENABLE">
+            	<li>
+	                <a href="#dashboard">
+	                <span class="nav-icon">
+	                <i class=" sidebar-icon fa fa-dashboard fa-fw "></i> </span>
+	                <span class="nav-title">Dashboard</span>
+	                </a>
+	            </li>
+            </f:hasPermission>
+            <f:hasPermission permission="WORKORDER_READ">
+	             <li>
+	                <a href="#ticket"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
+	                <span class="nav-title all-workorder"> Work Orders</span>
+	                <f:hasPermission permission="WORKORDER_CREATE">
+	               		<span class="nav-icon-right add-new-workorder pull-right fc-plus">+</span>
+	               	</f:hasPermission>
+	                </a>
+	            </li>
+            </f:hasPermission>
+            <f:hasPermission permission="TASK_READ">
+	            <li>
+	               <a href="#task"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
+	               <span class="nav-title all-task">Tasks</span>
+	               <f:hasPermission permission="TASK_CREATE">
+	               		<span class="nav-icon-right add-new-task pull-right fc-plus">+</span>
+	               </f:hasPermission>
+	               </a>
+	            </li>
+            </f:hasPermission>
+            <f:hasPermission permission="TASK_READ">
+	            <li>
+	                <a href="#calendar">
+	                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
+	                <span class="nav-title">Calendar
+	                </span></a>
+	            </li>
+            </f:hasPermission>
+            <f:hasPermission permission="TASK_ASSIGN">
+	            <li>
+	                <a href="#centraldispatch">
+	                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
+	                <span class="nav-title">Central Dispatch
+	                </span></a>
+	            </li>
+            </f:hasPermission>
+            <f:hasPermission permission="SPACEMANAGEMENT_ACCESS_ENABLE">
+				<li>
+	               <a href="#">
+	               <span class="nav-icon"><i class="sidebar-icon fa fa-globe fa-fw"></i></span> 
+	               <span class="nav-title">Space Management</span>
+	               <span class="fa arrow"></span>
+	               </a>
+	                <ul class="nav nav-second-level">
+	               		<li>
+	                        <a href="#campus">Campus</a>
+	                    </li>
+	                    <li>
+	                        <a href="#building">Building</a>
+	                    </li>
+	                    <li>
+	                        <a href="#floor">Floor</a>
+	                    </li>
+	                    <li>
+	                        <a href="#space">Space</a>
+	                    </li>
+	                    <li>
+	                        <a href="#zone">Zone</a>
+	                    </li>
+	                  </ul>
+	            </li>
+	        </f:hasPermission>
          <%--    <li>
                 <a href="#"><i class="sidebar-icon fa fa-ticket fa-fw"></i> Facilities<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
@@ -157,17 +169,19 @@
                 <!-- /.nav-second-level -->
             </li>
              --%>
-            <li>
-                <a href="#">
-                <span class="nav-icon"><i class="sidebar-icon fa fa-pie-chart fa-fw"></i></span>
-                 <span class="nav-title">Reports</span>
-                 <span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#reports">Peak Energy Analysis</a>
-                    </li>
-                 </ul>
-            </li>
+            <f:hasPermission permission="REPORTS_ACCESS_ENABLE">
+	            <li>
+	                <a href="#">
+	                <span class="nav-icon"><i class="sidebar-icon fa fa-pie-chart fa-fw"></i></span>
+	                 <span class="nav-title">Reports</span>
+	                 <span class="fa arrow"></span></a>
+	                <ul class="nav nav-second-level">
+	                    <li>
+	                        <a href="#reports">Peak Energy Analysis</a>
+	                    </li>
+	                 </ul>
+	            </li>
+	        </f:hasPermission>
             <!-- 
             <li>
                 <a href="#"><i class="fa fa-wrench fa-fw"></i> Administration<span class="fa arrow"></span></a>

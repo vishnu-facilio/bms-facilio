@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="/struts-tags" prefix="s" %>    
+<%@ taglib uri="/struts-tags" prefix="s" %>
+<%@taglib uri="facilio-tags" prefix="f" %>    
 
 <link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/checkbox.css" rel="stylesheet">
@@ -19,29 +20,42 @@
 				test="%{moduleLinkName == 'ticket'}">
 
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="#ticket">All Work Orders</a></li>
-					<li><a href="#ticket/allopentickets">All Open Work Orders</a>
-					</li>
-					<li><a href="#ticket/mytickets">My Work Orders</a></li>
-					<li><a href="#ticket/myopentickets">My Open Work Orders</a></li>
-					<li><a href="#ticket/overduetickets">Overdue Work Orders</a></li>
-					<li><a href="#ticket/myoverduetickets">My Overdue Work
-							Orders</a></li>
+					<f:hasPermission permission="WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES,WORKORDER_ACCESS_READ_ANY">
+						<li><a href="#ticket">All Work Orders</a></li>
+						<li><a href="#ticket/allopentickets">All Open Work Orders</a></li>
+						<li><a href="#ticket/overduetickets">Overdue Work Orders</a></li>
+					</f:hasPermission>
+					<f:hasPermission permission="WORKORDER_ACCESS_READ_OWN,WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES,WORKORDER_ACCESS_READ_ANY">
+						<li><a href="#ticket/mytickets">My Work Orders</a></li>
+						<li><a href="#ticket/myopentickets">My Open Work Orders</a></li>
+						<li><a href="#ticket/myoverduetickets">My Overdue Work Orders</a></li>
+					</f:hasPermission>
 				</ul>
+				
+				<f:hasPermission permission="WORKORDER_CREATE">
+					<div class="action-btn text-right">
+				 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+					 </div>
+				</f:hasPermission>
 			</s:if>
 			<s:elseif
 				test="%{moduleLinkName == 'task'}">
 
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="#task">All Tasks</a></li>
-					<li><a href="#task/mytasks">My Tasks</a></li>
+					<f:hasPermission permission="TASK_ACCESS_READ_ANY">
+						<li><a href="#task">All Tasks</a></li>
+					</f:hasPermission>
+					<f:hasPermission permission="TASK_ACCESS_READ_OWN, TASK_ACCESS_READ_ANY">
+						<li><a href="#task/mytasks">My Tasks</a></li>
+					</f:hasPermission>
 				</ul>
+				
+				<f:hasPermission permission="TASK_CREATE">
+					<div class="action-btn text-right">
+				 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+					 </div>
+				</f:hasPermission>
 			</s:elseif>
-
-
-			<div class="action-btn text-right">
- 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
-	 </div>
   </div>
 </div>
 <s:if test="%{records == null || records.isEmpty()}">
@@ -52,7 +66,16 @@
 			<div class="no-screen-msg"><div class="row-title text-bold">No record created yet ...</div><div class="row-subtitle">Since you have not created any records,</div><div class="row-subtitle">Why not create a new one?</div></div>
 	 		<div class="action-btn text-center">
 			<div>&nbsp;</div>
-			<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+			<s:if test="%{moduleLinkName == 'ticket'}">
+				<f:hasPermission permission="WORKORDER_CREATE">
+					<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+				</f:hasPermission>
+			</s:if>
+			<s:elseif test="%{moduleLinkName == 'task'}">
+				<f:hasPermission permission="TASK_CREATE">
+					<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+				</f:hasPermission>
+			</s:elseif>
 			</div>
 		</div>
 	</div>

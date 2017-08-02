@@ -17,7 +17,7 @@
 			<div class="form-group">
 			    <label>Role</label>
 			    <span class="required">*</span>
-			    <s:select list="roles" name="user.role.name" class="form-control" required="true"/>
+			    <s:select list="roles" name="user.roleId" class="form-control" required="true"/>
 			</div>
 			<div class="form-group">
 			    <label>Accessible Spaces</label>

@@ -161,44 +161,58 @@
        						<ul class="list-unstyled">
        							<li class="setup-body-thead">General</li>
        							<li class="setup-body-tbody"><a href="setup#mysettings">Personal Settings</a></li>
-       							<li class="setup-body-tbody"><a href="setup#orgsettings">Company Settings</a></li>
+       							<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+       								<li class="setup-body-tbody"><a href="setup#orgsettings">Company Settings</a></li>
+       							</f:hasPermission>
        						</ul>
        					</div>
        					
        					<div class="col-lg-4 col-sm-4">
        						<ul class="list-unstyled">
        							<li class="setup-body-thead">Users & Groups</li>
-       							<li class="setup-body-tbody"><a href="setup#users">Users</a></li>
-       							<li class="setup-body-tbody"><a href="setup#groups">Groups</a></li>
-       							<li class="setup-body-tbody"><a href="setup#roles">Roles</a></li>
+       							<f:hasPermission permission="USER_ACCESS_ADMINISTER">
+       								<li class="setup-body-tbody"><a href="setup#users">Users</a></li>
+       							</f:hasPermission>
+       							<f:hasPermission permission="GROUP_ACCESS_ADMINISTER">
+       								<li class="setup-body-tbody"><a href="setup#groups">Groups</a></li>
+       							</f:hasPermission>
+       							<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+       								<li class="setup-body-tbody"><a href="setup#roles">Roles</a></li>
+       							</f:hasPermission>
        						</ul>
        					</div>
        					
        					<div class="col-lg-4 col-sm-4">
-       						<ul class="list-unstyled">
-       							<li class="setup-body-thead">Work Order</li>
-       							<li class="setup-body-tbody"><a href="#">Custom Fields</a></li>
-       							<li class="setup-body-tbody"><a href="#">Notifications</a></li>
-       							<li class="setup-body-tbody"><a href="#">Emails</a></li>
-       						</ul>
+       						<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+      							<ul class="list-unstyled">
+	       							<li class="setup-body-thead">Work Order</li>
+	       							<li class="setup-body-tbody"><a href="#">Custom Fields</a></li>
+	       							<li class="setup-body-tbody"><a href="#">Notifications</a></li>
+	       							<li class="setup-body-tbody"><a href="#">Emails</a></li>
+	       						</ul>
+       						</f:hasPermission>
        					</div>
        				</div>
        				
        				<div class="row">
        					<div class="col-lg-4 col-sm-4">
-       						<ul class="list-unstyled">
-       							<li class="setup-body-thead">Subscriptions</li>
-       							<li class="setup-body-tbody"><a href="#">Plans & Billings</a></li>
-       						</ul>
+       						<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	       						<ul class="list-unstyled">
+	       							<li class="setup-body-thead">Subscriptions</li>
+	       							<li class="setup-body-tbody"><a href="#">Plans & Billings</a></li>
+	       						</ul>
+	       					</f:hasPermission>
        					</div>
        					
        					<div class="col-lg-4 col-sm-4">
-       						<ul class="list-unstyled">
-       							<li class="setup-body-thead">Automation</li>
-       							<li class="setup-body-tbody"><a href="#">Assignment Rules</a></li>
-       							<li class="setup-body-tbody"><a href="#">Workflow Rules</a></li>
-       							<li class="setup-body-tbody"><a href="#">SLA Esclation Rules</a></li>
-       						</ul>
+       						<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	       						<ul class="list-unstyled">
+	       							<li class="setup-body-thead">Automation</li>
+	       							<li class="setup-body-tbody"><a href="#">Assignment Rules</a></li>
+	       							<li class="setup-body-tbody"><a href="#">Workflow Rules</a></li>
+	       							<li class="setup-body-tbody"><a href="#">SLA Esclation Rules</a></li>
+	       						</ul>
+       						</f:hasPermission>
        					</div>
        				</div>
         		</div>

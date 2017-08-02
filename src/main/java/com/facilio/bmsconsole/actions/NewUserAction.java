@@ -1,25 +1,25 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
+import java.util.Map;
 
-import com.facilio.constants.FacilioConstants;
+import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewUserAction extends ActionSupport {
 	
-	private List<String> roles;
-	public List<String> getRoles() {
+	private Map<Long, String> roles;
+	public Map<Long, String> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<String> roles) {
+	public void setRoles(Map<Long, String> roles) {
 		this.roles = roles;
 	}
 	
 	@Override
 	public String execute() throws Exception {
 		
-		roles = (List<String>) FacilioConstants.Role.ALL_ROLES;
-		roles.remove(0);
+		roles = UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
 		return SUCCESS;
 	}

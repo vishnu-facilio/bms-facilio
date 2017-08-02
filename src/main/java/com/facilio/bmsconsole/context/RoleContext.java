@@ -36,20 +36,76 @@ public class RoleContext {
 		this.description = description;
 	}
 	
-	private String permissions;
-	public String getPermissions() {
+	private long permissions;
+	public long getPermissions() {
 		return permissions;
 	}
-	public void setPermissions(String permissions) {
+	public void setPermissions(long permissions) {
 		this.permissions = permissions;
 	}
 	
-	public boolean hasPermission(int permission)
+	public boolean hasPermission(long permission)
 	{
 		if(name.equals(FacilioConstants.Role.ADMINISTRATOR))
 		{
 			return true;
 		}
-		return (Integer.parseInt(permissions, 16) & permission) == permission;
+		return (permissions & permission) == permission;
+	}
+	
+	public boolean hasPermission(String permissionValue) throws Exception {
+		
+		boolean hasAccess = false;
+		
+		String[] permissionArray = permissionValue.split(",");
+		
+		for (String permission : permissionArray) {
+			
+			permission = permission.trim();
+
+			FacilioConstants.Permission permType = null;
+			FacilioConstants.PermissionGroup permGroupType = null;
+			
+			try {
+				permType = FacilioConstants.Permission.valueOf(permission);
+			} catch (Exception e) {
+				e.getMessage();
+			}
+			try {
+				permGroupType = FacilioConstants.PermissionGroup.valueOf(permission);
+			} catch (Exception e) {
+				e.getMessage();
+			}
+			
+			if (permType != null) {
+				hasAccess = hasPermission(permType);
+			}
+			else if (permGroupType != null) {
+				FacilioConstants.Permission permissionList[] = permGroupType.getPermission();
+				for (FacilioConstants.Permission perm : permissionList) {
+					hasAccess = hasPermission(perm);
+					if (hasAccess) {
+						break;
+					}
+				}
+			}
+			else {
+				throw new Exception("Invalid permission type: "+permission);
+			}
+			
+			if (hasAccess) {
+				break;
+			}
+		}
+		return hasAccess;
+	}
+	
+	public boolean hasPermission(FacilioConstants.Permission permission)
+	{
+		if(name.equals(FacilioConstants.Role.ADMINISTRATOR))
+		{
+			return true;
+		}
+		return (permissions & permission.getPermission()) == permission.getPermission();
 	}
 }

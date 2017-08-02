@@ -47,4 +47,14 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+	<tag>
+		<name>hasPermission</name>
+		<tag-class>com.facilio.taglib.HasPermission</tag-class>
+		<info>tag for checking permission</info>
+		<attribute>
+			<name>permission</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>

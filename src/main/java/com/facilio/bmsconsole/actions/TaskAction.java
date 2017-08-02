@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TaskAction extends ActionSupport {
@@ -126,6 +127,14 @@ public class TaskAction extends ActionSupport {
 	//Task List
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
+		
+		if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_ANY)) {
+			this.viewName = null;
+		}
+		else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_OWN)) {
+			this.viewName = "mytasks";
+		}
+		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,34 @@ public class UserAPI {
 				roles.add(tc);
 			}
 			
+			return roles;
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	public static Map<Long, String> getRolesOfOrgMap(long orgId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Role where Role.ORGID = ?");
+			pstmt.setLong(1, orgId);
+			
+			Map<Long, String> roles = new HashMap<>();
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				long roleId = rs.getLong("ROLE_ID");
+				String roleName = rs.getString("NAME");
+				roles.put(roleId, roleName);
+			}
 			return roles;
 		}
 		catch(SQLException e) {
@@ -387,7 +416,7 @@ public class UserAPI {
 		rc.setRoleId(rs.getLong("ROLE_ID"));
 		rc.setName(rs.getString("ROLE_NAME"));
 		rc.setDescription(rs.getString("ROLE_DESC"));
-		rc.setPermissions(rs.getString("ROLE_PERMISSIONS"));
+		rc.setPermissions(rs.getLong("ROLE_PERMISSIONS"));
 		uc.setRole(rc);
 		
 		return uc;
@@ -400,7 +429,7 @@ public class UserAPI {
 		rc.setRoleId(rs.getLong("ROLE_ID"));
 		rc.setName(rs.getString("NAME"));
 		rc.setDescription(rs.getString("DESCRIPTION"));
-		rc.setPermissions(rs.getString("PERMISSIONS"));
+		rc.setPermissions(rs.getLong("PERMISSIONS"));
 		
 		return rc;
 	}

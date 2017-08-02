@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 
+import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
@@ -85,8 +89,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 			OrgInfo.setCurrentOrgInfo(OrgApi.getOrgInfo(userInfo.getOrgId()));
 
 			// Step 5: Checking permission for current resource
-			String permission = ActionContext.getContext().getParameters().get("permission").getValue();
-			if (!isAuthorizedAccess(permission)) {
+			Parameter permission = ActionContext.getContext().getParameters().get("permission");
+			if (permission != null && permission.getValue() != null && !isAuthorizedAccess(permission.getValue())) {
 				return "unauthorized";
 			}
 		}
@@ -105,15 +109,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 		return result;
 	}
 
-	private boolean isAuthorizedAccess(String permission) throws SQLException
+	private boolean isAuthorizedAccess(String permissions) throws Exception
 	{
-		System.out.println("Current Role:::" +UserInfo.getCurrentUser().getRole());
-		// Temp code
-		//		if(FacilioConstants.Role.ADMINISTRATOR.equalsIgnoreCase(UserInfo.getCurrentUser().getRole()))
-		//		{
-		//			return true;
-		//		}
-		//		return UserAPI.getRole(UserInfo.getCurrentUser().getRole()).hasPermission(FacilioConstants.Role.permissionsMap.get(permission));
-		return true;
+		Map<String, Long> perm = FacilioConstants.Role.DEFAULT_ROLES;
+		
+		if (permissions == null || "".equals(permissions.trim())) {
+			System.out.println("WARNING: Configured permission is empty");
+			return true;
+		}
+		
+		RoleContext role = UserInfo.getCurrentUser().getRole();
+		return role.hasPermission(permissions);
 	}
 }

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 
@@ -70,18 +71,18 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<String> roles;
-	public List<String> getRoles() {
+	private Map<Long, String> roles;
+	public Map<Long, String> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<String> roles) {
+	public void setRoles(Map<Long, String> roles) {
 		this.roles = roles;
 	}
 	
 	public String newUser() throws Exception {
 		
 		setSetup(SetupLayout.getNewUserLayout());
-		setRoles(FacilioConstants.Role.ALL_ROLES);
+		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		
 		return SUCCESS;
 	}
@@ -91,8 +92,6 @@ public class UserAction extends ActionSupport {
 		// setting necessary fields
 		user.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		user.setPassword("Test1@34");
-		long roleId = UserAPI.getRole(user.getRole().getName()).getRoleId();
-		user.setRoleId(roleId);
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
@@ -139,14 +138,12 @@ public class UserAction extends ActionSupport {
 				
 		setSetup(SetupLayout.getEditUserLayout());
 		setUser(UserAPI.getUserFromOrgUserId(getUserId()));
-		setRoles(FacilioConstants.Role.ALL_ROLES);
+		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		
 		return SUCCESS;
 	}
 	
 	public String updateUser() throws Exception {
-		
-		user.setRoleId(UserAPI.getRole(user.getRole().getName()).getRoleId());
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);

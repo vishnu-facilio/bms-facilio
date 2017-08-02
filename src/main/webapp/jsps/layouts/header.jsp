@@ -1,3 +1,4 @@
+<%@taglib uri="facilio-tags" prefix="f" %>
 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -26,11 +27,13 @@
             </a>
          
         </li>
-        <li class="dropdown">
-            <a class="dropdown-toggle" href="setuphome">
-               <i class="fa fa-gear icon-head-2x"></i>
-            </a>
-        </li>
+        <f:hasPermission permission="SETUP">
+	        <li class="dropdown">
+	            <a class="dropdown-toggle" href="setuphome">
+	               <i class="fa fa-gear icon-head-2x"></i>
+	            </a>
+	        </li>
+        </f:hasPermission>
         
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">

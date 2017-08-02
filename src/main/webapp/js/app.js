@@ -19,7 +19,7 @@ FacilioApp = {
 		$('.sidebar').perfectScrollbar();    
 		
 		if (location.hash.trim() == "") {
-			location.hash = '#dashboard';
+			location.hash = $("#side-menu li:first-child a").attr('href');
 		}
 		self.loadUrlFromHash();
 		$(window).on('hashchange',function(){ 

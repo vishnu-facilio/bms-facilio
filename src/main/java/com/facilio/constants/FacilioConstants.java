@@ -1,10 +1,8 @@
 package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -57,46 +55,239 @@ public class FacilioConstants {
 		}
 	}
 	
+	public static enum Permission {
+		
+		ORG_ACCESS_ADMINISTER(1), // full control over the organization
+		
+		ORG_ACCESS_DELETE(2), // permission to close organization
+		
+		USER_ACCESS_ADMINISTER(4), // view, create or edit users
+		
+		USER_ACCESS_DELETE(8), // delete users
+		
+		GROUP_ACCESS_ADMINISTER(16), // view, create or edit groups
+		
+		GROUP_ACCESS_DELETE(32), // delete groups
+		
+		WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES(64),
+		
+		WORKORDER_ACCESS_CREATE_ANY(128),
+		
+		WORKORDER_ACCESS_UPDATE_OWN(256),
+		
+		WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES(512),
+		
+		WORKORDER_ACCESS_UPDATE_ANY(1024),
+		
+		WORKORDER_ACCESS_READ_OWN(2048),
+		
+		WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES(4096),
+		
+		WORKORDER_ACCESS_READ_ANY(8192),
+		
+		WORKORDER_ACCESS_DELETE_OWN(16384),
+		
+		WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES(32768),
+		
+		WORKORDER_ACCESS_DELETE_ANY(65536),
+		
+		WORKORDER_ACCESS_ASSIGN_OWN(131072),
+		
+		WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES(262144),
+		
+		WORKORDER_ACCESS_ASSIGN_ANY(524288),
+		
+		WORKORDER_ACCESS_CAN_BE_ASSIGNED_ACCESSIBLE_SPACES(1048576),
+		
+		WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY(2097152),
+		
+		TASK_ACCESS_CREATE_ANY(4194304),
+		
+		TASK_ACCESS_UPDATE_OWN(8388608),
+		
+		TASK_ACCESS_UPDATE_ANY(16777216),
+		
+		TASK_ACCESS_READ_OWN(33554432),
+		
+		TASK_ACCESS_READ_ANY(67108864),
+		
+		TASK_ACCESS_DELETE_OWN(134217728),
+		
+		TASK_ACCESS_DELETE_ANY(268435456),
+		
+		TASK_ACCESS_ASSIGN_OWN(536870912),
+		
+		TASK_ACCESS_ASSIGN_ACCESSIBLE_GRPUPS(1073741824),
+		
+		TASK_ACCESS_ASSIGN_ANY(2147483648L),
+		
+		TASK_ACCESS_CAN_BE_ASSIGNED_ANY(4294967296L),
+		
+		DASHBOARD_ACCESS_ENABLE(8589934592L),
+		
+		REPORTS_ACCESS_ENABLE(17179869184L),
+		
+		SPACEMANAGEMENT_ACCESS_ENABLE(34359738368L);
+		
+		long permission;
+		
+		Permission(long permission) {
+			this.permission = permission;
+		}
+		
+		public long getPermission() {
+			return this.permission;
+		}
+		
+		public static long getSumOf(Permission... permissions) {
+			long sumOf = 0;
+			for (Permission perm : permissions) {
+				sumOf += perm.getPermission();
+			}
+			return sumOf;
+		}
+	}
+	
+	public static enum PermissionGroup {
+		
+		SETUP(
+				Permission.ORG_ACCESS_ADMINISTER,
+				Permission.ORG_ACCESS_DELETE,
+				Permission.USER_ACCESS_ADMINISTER,
+				Permission.USER_ACCESS_DELETE,
+				Permission.GROUP_ACCESS_ADMINISTER,
+				Permission.GROUP_ACCESS_DELETE
+			),
+		
+		WORKORDER_CREATE(
+				Permission.WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES,
+				Permission.WORKORDER_ACCESS_CREATE_ANY
+				),
+		
+		WORKORDER_UPDATE(
+				Permission.WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES,
+				Permission.WORKORDER_ACCESS_UPDATE_OWN,
+				Permission.WORKORDER_ACCESS_UPDATE_ANY
+				),
+		
+		WORKORDER_READ(
+				Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES,
+				Permission.WORKORDER_ACCESS_READ_OWN,
+				Permission.WORKORDER_ACCESS_READ_ANY
+				),
+		
+		WORKORDER_DELETE(
+				Permission.WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES,
+				Permission.WORKORDER_ACCESS_DELETE_OWN,
+				Permission.WORKORDER_ACCESS_DELETE_ANY
+				),
+		
+		WORKORDER_ASSIGN(
+				Permission.WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES,
+				Permission.WORKORDER_ACCESS_ASSIGN_OWN,
+				Permission.WORKORDER_ACCESS_ASSIGN_ANY
+				),
+		
+		TASK_CREATE(
+				Permission.TASK_ACCESS_CREATE_ANY
+				),
+		
+		TASK_UPDATE(
+				Permission.TASK_ACCESS_UPDATE_OWN,
+				Permission.TASK_ACCESS_UPDATE_ANY
+				),
+		
+		TASK_READ(
+				Permission.TASK_ACCESS_READ_OWN,
+				Permission.TASK_ACCESS_READ_ANY
+				),
+		
+		TASK_DELETE(
+				Permission.TASK_ACCESS_DELETE_OWN,
+				Permission.TASK_ACCESS_DELETE_ANY
+				),
+		
+		TASK_ASSIGN(
+				Permission.TASK_ACCESS_ASSIGN_ACCESSIBLE_GRPUPS,
+				Permission.TASK_ACCESS_ASSIGN_OWN,
+				Permission.TASK_ACCESS_ASSIGN_ANY
+				);
+		
+		
+		Permission[] permission;
+		
+		PermissionGroup(Permission... permission) {
+			this.permission = permission;
+		}
+		
+		public Permission[] getPermission() {
+			return this.permission;
+		}
+		
+		public static long getSumOf(Permission... permissions) {
+			long sumOf = 0;
+			for (Permission perm : permissions) {
+				sumOf += perm.getPermission();
+			}
+			return sumOf;
+		}
+	}
+	
 	public static class Role 
 	{
 		public static final String ADMINISTRATOR 	= "Administrator";
-		public static final String MANAGER 		= "Manager";
+		public static final String MANAGER 		    = "Manager";
 		public static final String DISPATCHER 		= "Dispatcher";
 		public static final String TECHNICIAN 		= "Technician";
 		
-		public static final List<String> ALL_ROLES 	= new ArrayList<>();
+		public static final Map<String, Long> DEFAULT_ROLES = new HashMap<>();
 		
 		static 
 		{
-			ALL_ROLES.add(ADMINISTRATOR);
-			ALL_ROLES.add(MANAGER);
-			ALL_ROLES.add(DISPATCHER);
-			ALL_ROLES.add(TECHNICIAN);
-		}
-		
-		// general permissions
-		public static final int CAN_ADMINISTER_ORGANIZATION = 0x1;
-		public static final int DASHBOARD 					= 0x1;
-		public static final int WORKORDER_MODULE 			= 0x2;
-		public static final int WORKORDER_VIEW_ALL 			= 0x4;
-		public static final int WORKORDER_VIEW_OWN 			= 0x8;
-		public static final int WORKORDER_VIEW_UNASSIGNED 	= 0x10;
-		
-		public static final String PERMISSION_DASHBOARD						= "dashboard";
-		public static final String PERMISSION_WORKORDER_MODULE				= "workorder";
-		public static final String PERMISSION_WORKORDER_VIEW_ALL 			= "workorderviewall";
-		public static final String PERMISSION_WORKORDER_VIEW_OWN 			= "workorderviewown";
-		public static final String PERMISSION_WORKORDER_VIEW_UNASSIGNED 	= "workorderviewunassigned";
-		
-		public static final Map<String, Integer> permissionsMap 	= new HashMap<>();
-		
-		static 
-		{
-			permissionsMap.put(PERMISSION_DASHBOARD, DASHBOARD);
-			permissionsMap.put(PERMISSION_WORKORDER_MODULE, WORKORDER_MODULE);
-			permissionsMap.put(PERMISSION_WORKORDER_VIEW_ALL, WORKORDER_VIEW_ALL);
-			permissionsMap.put(PERMISSION_WORKORDER_VIEW_OWN, WORKORDER_VIEW_OWN);
-			permissionsMap.put(PERMISSION_WORKORDER_VIEW_UNASSIGNED, WORKORDER_VIEW_UNASSIGNED);
+			DEFAULT_ROLES.put(ADMINISTRATOR, 0L); // 0 means full permission
+			
+			DEFAULT_ROLES.put(MANAGER, Permission.getSumOf(
+					Permission.USER_ACCESS_ADMINISTER,
+					Permission.GROUP_ACCESS_ADMINISTER,
+					Permission.WORKORDER_ACCESS_CREATE_ANY,
+					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
+					Permission.WORKORDER_ACCESS_READ_ANY,
+					Permission.WORKORDER_ACCESS_DELETE_ANY,
+					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
+					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+					Permission.TASK_ACCESS_CREATE_ANY,
+					Permission.TASK_ACCESS_UPDATE_ANY,
+					Permission.TASK_ACCESS_READ_ANY,
+					Permission.TASK_ACCESS_DELETE_ANY,
+					Permission.TASK_ACCESS_ASSIGN_ANY,
+					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY,
+					Permission.DASHBOARD_ACCESS_ENABLE,
+					Permission.REPORTS_ACCESS_ENABLE
+					));
+			
+			DEFAULT_ROLES.put(DISPATCHER, Permission.getSumOf(
+					Permission.WORKORDER_ACCESS_CREATE_ANY,
+					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
+					Permission.WORKORDER_ACCESS_READ_ANY,
+					Permission.WORKORDER_ACCESS_DELETE_ANY,
+					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
+					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+					Permission.TASK_ACCESS_CREATE_ANY,
+					Permission.TASK_ACCESS_UPDATE_ANY,
+					Permission.TASK_ACCESS_READ_ANY,
+					Permission.TASK_ACCESS_DELETE_ANY,
+					Permission.TASK_ACCESS_ASSIGN_ANY,
+					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
+					));
+			
+			DEFAULT_ROLES.put(TECHNICIAN, Permission.getSumOf(
+					Permission.WORKORDER_ACCESS_UPDATE_OWN, 
+					Permission.WORKORDER_ACCESS_READ_OWN,
+					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+					Permission.TASK_ACCESS_UPDATE_OWN,
+					Permission.TASK_ACCESS_READ_OWN,
+					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
+					));
 		}
 	}
 	

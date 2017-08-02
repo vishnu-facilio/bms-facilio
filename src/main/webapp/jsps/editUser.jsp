@@ -19,7 +19,7 @@
 			<div class="form-group">
 			    <label>Role</label>
 			    <span class="required">*</span>
-			    <s:select list="roles" value="%{user.role.name}" name="user.role.name" class="form-control" required="true"/>
+			    <s:select list="roles" value="%{user.roleId}" name="user.roleId" class="form-control" required="true"/>
 			</div>
 			<div class="form-group">
 			    <label>Time zone</label>

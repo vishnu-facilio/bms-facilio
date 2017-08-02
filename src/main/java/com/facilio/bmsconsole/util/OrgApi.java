@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
@@ -38,24 +40,21 @@ public class OrgApi {
 				orgId = rs.getLong(1);
 				ps.close();
 				
+				Map<String, Long> defaultRoles = FacilioConstants.Role.DEFAULT_ROLES;
+				Iterator<String> keys = defaultRoles.keySet().iterator();
+				
 				String insertquery1 = "insert into Role (ORGID,NAME,PERMISSIONS) values (?,?,?)";
 				PreparedStatement ps1 = conn.prepareStatement(insertquery1);
-				ps1.setLong(1, orgId);
-				ps1.setString(2, "Administrator");
-				ps1.setString(3, "0");
-				ps1.addBatch();
-				ps1.setLong(1, orgId);
-				ps1.setString(2, "Manager");
-				ps1.setString(3, "0");
-				ps1.addBatch();
-				ps1.setLong(1, orgId);
-				ps1.setString(2, "Dispatcher");
-				ps1.setString(3, "0");
-				ps1.addBatch();
-				ps1.setLong(1, orgId);
-				ps1.setString(2, "Technician");
-				ps1.setString(3, "0");
-				ps1.addBatch();
+				
+				while (keys.hasNext()) {
+					String key = keys.next();
+					long permission = defaultRoles.get(key);
+					
+					ps1.setLong(1, orgId);
+					ps1.setString(2, key);
+					ps1.setLong(3, permission);
+					ps1.addBatch();
+				}
 				ps1.executeBatch();
 				ps1.close();
 			}

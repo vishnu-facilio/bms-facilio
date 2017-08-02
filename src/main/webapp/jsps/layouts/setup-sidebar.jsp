@@ -1,3 +1,4 @@
+<%@taglib uri="facilio-tags" prefix="f" %>
 <div class="navbar-default sidebar navbar-collapse" role="navigation">
 	<div class="nav back-to-product">
 		<div class="col-lg-12">
@@ -22,9 +23,11 @@
                     <li>
                         <a href="#mysettings">Personal Settings</a>
                     </li>
-                    <li>
-                        <a href="#orgsettings">Company Settings</a>
-                    </li>
+                    <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+                    	<li>
+	                        <a href="#orgsettings">Company Settings</a>
+	                    </li>
+                    </f:hasPermission>
                 </ul>
             </li>
             <li>
@@ -33,27 +36,35 @@
                 	<span class="fa arrow"></span>
                 </a>
                 <ul class="nav nav-second-level">
-                    <li>
-                        <a href="#users">Users</a>
-                    </li>
-                    <li>
-                        <a href="#groups">Groups</a>
-                    </li>
-                    <li>
-                        <a href="#roles">Roles</a>
-                    </li>
+                	 <f:hasPermission permission="USER_ACCESS_ADMINISTER">
+                    	<li>
+	                        <a href="#users">Users</a>
+	                    </li>
+                    </f:hasPermission>
+                    <f:hasPermission permission="GROUP_ACCESS_ADMINISTER">
+	                    <li>
+	                        <a href="#groups">Groups</a>
+	                    </li>
+	                </f:hasPermission>
+	                <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	                    <li>
+	                        <a href="#roles">Roles</a>
+	                    </li>
+	                </f:hasPermission>
                 </ul>
             </li>
-            <li>
-                <a href="#workorder">
-                	<span class="nav-title">Work Order Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="#subscriptions">
-                	<span class="nav-title">Subscriptions</span>
-                </a>
-            </li>
+            <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	            <li>
+	                <a href="#workorder">
+	                	<span class="nav-title">Work Order Settings</span>
+	                </a>
+	            </li>
+	            <li>
+	                <a href="#subscriptions">
+	                	<span class="nav-title">Subscriptions</span>
+	                </a>
+	            </li>
+	        </f:hasPermission>
         </ul>
     </div>
     <!-- /.sidebar-collapse -->
