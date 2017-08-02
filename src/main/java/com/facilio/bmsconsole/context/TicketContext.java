@@ -42,6 +42,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
+	private GroupContext assignmentGroup;
+	public GroupContext getAssignmentGroup() {
+		return assignmentGroup;
+	}
+	public void setAssignmentGroup(GroupContext assignmentGroup) {
+		this.assignmentGroup = assignmentGroup;
+	}
+	
 	private UserContext assignedTo;
 	public UserContext getAssignedTo() {
 		return assignedTo;

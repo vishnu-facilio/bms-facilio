@@ -25,7 +25,7 @@ public class LookupSpecialTypeUtil {
 			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), false);
+			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
 			Map<Long, String> groupList = new HashMap<>();
 			for(GroupContext group : groups) {
 				groupList.put(group.getGroupId(), group.getName());
