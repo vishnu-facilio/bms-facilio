@@ -642,12 +642,12 @@
 
 	</package-->
 	
-	<package name="importmodule" namespace="/app/import" extends="home">
+<package name="importmodule" namespace="/app/import" extends="home">
 	<action name="showformupload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="showformupload">
 			<result name="success">/jsps/import/showfileupload.jsp</result>
 		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
-			<result name="success">/jsps/campusListPopup.jsp</result>
+			<result name="success">/jsps/import/displayColumnMapping.jsp</result>
 		</action>
 			<action name="displayColumnFieldMapping" class="com.facilio.bmsconsole.actions.ImportDataAction" method="displayColumnFieldMapping">
 			<result name="success">/jsps/campusListPopup.jsp</result>

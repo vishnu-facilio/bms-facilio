@@ -1,13 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
-    <%@ taglib uri="/struts-tags" prefix="s" %>    
+    pageEncoding="UTF-8"%>  <%@ taglib uri="/struts-tags" prefix="s" %>    
     
   
   
   <h4>  Import for <s:property value="%{#parameters.module}" /> </h4>
    
-   <form>
-    <input type="file" name="upload">
-    <input type="button" name="upload" value="upload"/>
-    </form>
+  <div> 
+  <s:form namespace="/app/import" action="upload" enctype="multipart/form-data">
+    <s:hidden value="%{#parameters.module}" />
+    <s:file name="fileUpload"  />
+    <input type="submit" name="upload" value="upload"/>
+    </s:form>
+    </div>
+    
