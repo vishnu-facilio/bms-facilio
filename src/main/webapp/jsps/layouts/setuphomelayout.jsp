@@ -186,9 +186,9 @@
        						<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
       							<ul class="list-unstyled">
 	       							<li class="setup-body-thead">Work Order</li>
-	       							<li class="setup-body-tbody"><a href="#">Custom Fields</a></li>
-	       							<li class="setup-body-tbody"><a href="#">Notifications</a></li>
-	       							<li class="setup-body-tbody"><a href="#">Emails</a></li>
+	       							<li class="setup-body-tbody"><a href="setup#ticketstatus">Customize</a></li>
+	       							<li class="setup-body-tbody"><a href="setup#notifications">Notifications</a></li>
+	       							<li class="setup-body-tbody"><a href="setup#emailsettings">Email Settings</a></li>
 	       						</ul>
        						</f:hasPermission>
        					</div>

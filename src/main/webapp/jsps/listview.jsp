@@ -61,8 +61,8 @@
 					<f:hasPermission permission="SPACEMANAGEMENT_ACCESS_ENABLE">
 						<div class="action-btn text-right">
 					 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
+					 		<button type="button" class="btn btn-default import-btn save-btn">Import</button>
 						 </div>
-						<button type="button" class="btn btn-default import-btn save-btn">Import</button>
 					</f:hasPermission>
 			</s:elseif>
   </div>

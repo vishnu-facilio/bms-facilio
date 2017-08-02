@@ -1,3 +1,4 @@
+<%@taglib uri="/struts-tags" prefix="s" %>
 <%@taglib uri="facilio-tags" prefix="f" %>
 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
@@ -42,7 +43,7 @@
 
             </a>
             <ul class="dropdown-menu dropdown-user">
-                <li><a href="setup#mysettings"><i class="fa fa-user fa-fw"></i> My Profile</a>
+                <li><a href="setup#mysettings"><i class="fa fa-user fa-fw"></i> My Profile (<s:property value="#session.USER_INFO.getRole().name"/>)</a>
                 </li>
                 <li><a href="setup#mysettings"><i class="fa fa-gear fa-fw"></i> Notification Settings</a>
                 </li>
