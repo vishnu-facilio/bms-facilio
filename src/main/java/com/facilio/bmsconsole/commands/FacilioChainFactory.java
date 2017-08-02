@@ -97,7 +97,17 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTicketPriority());
 //		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetTicketStatusListCommand());
+		c.addCommand(new GetTicketPriorityListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getTicketCategoryListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForTicketCategory());
+//		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetTicketCategoryListCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

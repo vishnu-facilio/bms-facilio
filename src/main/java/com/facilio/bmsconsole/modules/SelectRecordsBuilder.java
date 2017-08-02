@@ -20,7 +20,7 @@ import com.facilio.sql.DBUtil;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
-	private static final int LEVEL = 2;
+	private static final int LEVEL = 1;
 	
 	private String dataTableName;
 	private Class<E> beanClass;

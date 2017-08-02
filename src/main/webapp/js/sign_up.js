@@ -54,7 +54,7 @@ function registerUser(){
         }
 
 
-var url = "login/signup"; // the script where you handle the form input.
+var url = "/signup"; // the script where you handle the form input.
 
 $.ajax({
        type: "POST",

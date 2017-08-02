@@ -10,4 +10,12 @@ public class TicketPriorityContext extends ModuleBaseWithCustomFields {
 	public void setPriority(String priority) {
 		this.priority = priority;
 	}
+	
+	private int sequenceNumber;
+	public int getSequenceNumber() {
+		return sequenceNumber;
+	}
+	public void setSequenceNumber(int sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
 }

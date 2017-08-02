@@ -1,12 +1,17 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.amazonaws.services.rds.model.SourceType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -37,6 +42,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
+	private GroupContext assignmentGroup;
+	public GroupContext getAssignmentGroup() {
+		return assignmentGroup;
+	}
+	public void setAssignmentGroup(GroupContext assignmentGroup) {
+		this.assignmentGroup = assignmentGroup;
+	}
+	
 	private UserContext assignedTo;
 	public UserContext getAssignedTo() {
 		return assignedTo;
@@ -61,6 +74,30 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.priority = priority;
 	}
 	
+	private TicketCategoryContext category;
+	public TicketCategoryContext getCategory() {
+		return category;
+	}
+	public void setCategory(TicketCategoryContext category) {
+		this.category = category;
+	}
+	
+	private SourceType sourceType;
+	public int getSourceType() {
+		if(sourceType != null) {
+			return sourceType.getIntVal();
+		}
+		else {
+			return 0;
+		}
+	}
+	public void setSourceType(int type) {
+		this.sourceType = SourceType.typeMap.get(type);
+	}
+	public SourceType getSourceTypeEnum() {
+		return sourceType;
+	}
+		
 	private long assetId = 0;
 	public long getAssetId() {
 		return assetId;
@@ -88,6 +125,25 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setDueDate(long dueTime) {
 		this.dueDate = dueTime;
+	}
+	
+	private long createdDate = 0;
+	public long getCreatedDate() {
+		return createdDate;
+	}
+	@TypeConversion(converter = "java.lang.String")
+	public void setCreatedDate(String createdDate) {
+		if(createdDate != null && !createdDate.isEmpty()) {
+			try {
+				this.createdDate = FacilioConstants.HTML5_DATE_FORMAT.parse(createdDate).getTime();
+			}
+			catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public void setCreatedDate(long createdDate) {
+		this.createdDate = createdDate;
 	}
 	
 	private long openedDate = 0;
@@ -138,5 +194,49 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		statusListChain.execute(context);
 		
 		return (List<TicketStatusContext>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST);
+	}
+	
+	private BaseSpaceContext space;
+	public BaseSpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(BaseSpaceContext space) {
+		this.space = space;
+	}
+	
+	public static enum SourceType {
+		
+		WEB(1, "Web"),
+		EMAIL(2, "E Mail"),
+		SMS(3, "SMS")
+		;
+		
+		private int intVal;
+		private String strVal;
+		
+		private SourceType(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, SourceType> initTypeMap() {
+			Map<Integer, SourceType> typeMap = new HashMap<>();
+			
+			for(SourceType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, SourceType> getAllTypes() {
+			return typeMap;
+		}
 	}
 }

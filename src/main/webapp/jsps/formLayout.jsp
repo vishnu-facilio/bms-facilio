@@ -121,6 +121,9 @@
 									<s:elseif test="%{#field.specialType == 'groups'}">
 										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('groups', 'Groups', '<s:property value="#field.inputName"/>')">
 									</s:elseif>
+									<s:elseif test="%{#field.specialType == 'basespace'}">
+										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('basespace', 'Spaces', '<s:property value="#field.inputName"/>')">
+									</s:elseif>
 									<s:else>
 										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.displayName"/>', '<s:property value="#field.inputName"/>')">
 									</s:else>

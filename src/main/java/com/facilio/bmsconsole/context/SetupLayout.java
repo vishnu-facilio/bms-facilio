@@ -196,6 +196,39 @@ public class SetupLayout {
 		
 		return sl;
 	}
+	
+	public static SetupLayout getTicketStatusListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Status");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getTicketPriorityListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Priority");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getTicketCategoryListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Category");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
 }
 
 class ActionButton

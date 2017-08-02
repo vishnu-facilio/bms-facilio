@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskStatusContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -314,6 +315,9 @@ public class FacilioConstants {
 		public static final String TICKET_PRIORITY = "ticketpriority";
 		public static final String TICKET_PRIORITY_LIST = "ticketpriorities";
 		
+		public static final String TICKET_CATEGORY = "ticketcategory";
+		public static final String TICKET_CATEGORY_LIST = "ticketcategories";
+		
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
@@ -404,6 +408,7 @@ public class FacilioConstants {
 			Map<String, Class> classMap = new HashMap<>();
 			classMap.put(TICKET_STATUS, TicketStatusContext.class);
 			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
+			classMap.put(TICKET_CATEGORY, TicketCategoryContext.class);
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(TASK_STATUS, TaskStatusContext.class);

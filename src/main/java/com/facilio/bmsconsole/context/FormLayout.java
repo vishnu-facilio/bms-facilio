@@ -20,11 +20,7 @@ public class FormLayout {
 			if(field.getName().equals("assetId")) {
 				continue;
 			}
-			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("spaceId")) {
-				if(field.getName().equals("assetId"))
-				{
-					field.isDisabled();
-				}
+			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("space") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
 				first.add(field);
 			}
 			else {
