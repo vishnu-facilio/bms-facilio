@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum DateOperators implements Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public enum DateOperators implements Operator<String> {
 	
 	IS("is") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-				return columnName+" = "+value;
+			if(field != null && value != null && !value.isEmpty()) {
+				return field.getColumnName()+" = "+value;
 			}
 			return null;
 		}
@@ -20,14 +22,14 @@ public enum DateOperators implements Operator {
 	
 	ISN_T("isn't") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" != ")
 						.append(value.trim())
 						.append(")");
@@ -39,42 +41,42 @@ public enum DateOperators implements Operator {
 	
 	IS_BEFORE("is before") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(columnName, "<", value);
+			return greaterOrLessThan(field.getColumnName(), "<", value);
 		}
 	},
 	
 	IS_AFTER("is after") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(columnName, ">", value);
+			return greaterOrLessThan(field.getColumnName(), ">", value);
 		}
 	},
 	
 	BETWEEN("between") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(columnName, value, false);
+			return betweenWhereClause(field.getColumnName(), value, false);
 		}
 	},
 	
 	NOT_BETWEEN("not between") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(columnName, value, true);
+			return betweenWhereClause(field.getColumnName(), value, true);
 		}
 	},
 	
 	TODAY("Today") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))";
 			}
 			return null;
 		}
@@ -87,10 +89,10 @@ public enum DateOperators implements Operator {
 	
 	TOMORROW("Tomorrow") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))";
 			}
 			return null;	
 		}
@@ -104,10 +106,10 @@ public enum DateOperators implements Operator {
 	
 	STARTING_TOMORROW("Starting Tomorrow") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))";
+			if(field != null) {
+				return "CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))";
 			}
 			return null;
 		}
@@ -121,10 +123,10 @@ public enum DateOperators implements Operator {
 	
 	YESTERDAY("Yesterday") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(CURDATE()))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(CURDATE()))";
 			}
 			return null;
 		}
@@ -137,10 +139,10 @@ public enum DateOperators implements Operator {
 	
 	TILL_YESTERDAY("Till Yesterday") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(CURDATE())";
+			if(field != null) {
+				return "CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(CURDATE())";
 			}
 			return null;
 		}
@@ -153,10 +155,10 @@ public enum DateOperators implements Operator {
 	
 	LAST_MONTH("Last Month") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
 			}
 			return null;
 		}
@@ -169,10 +171,10 @@ public enum DateOperators implements Operator {
 	
 	CURRENT_MONTH("Current Month") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))";
 			}
 			return null;
 		}
@@ -185,10 +187,10 @@ public enum DateOperators implements Operator {
 	
 	NEXT_MONTH("Next Month") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
 			}
 			return null;
 		}
@@ -201,10 +203,10 @@ public enum DateOperators implements Operator {
 	
 	LAST_WEEK("Last Week") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))";
 			}
 			return null;
 		}
@@ -217,10 +219,10 @@ public enum DateOperators implements Operator {
 	
 	CURRENT_WEEK("Current Week") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))"; //Condition is >= first day of this week and < first day of next week
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))"; //Condition is >= first day of this week and < first day of next week
 			}
 			return null;
 		}
@@ -233,10 +235,10 @@ public enum DateOperators implements Operator {
 	
 	NEXT_WEEK("Next Week") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "(CEIL("+columnName+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL("+columnName+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))";
+			if(field != null) {
+				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))";
 			}
 			return null;
 		}
@@ -249,10 +251,10 @@ public enum DateOperators implements Operator {
 	
 	AGE_IN_DAYS("Age in Days") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "CEIL((UNIX_TIMESTAMP(CURDATE())-("+columnName+"/1000))/(24*3600)) "+value;
+			if(field != null) {
+				return "CEIL((UNIX_TIMESTAMP(CURDATE())-("+field.getColumnName()+"/1000))/(24*3600)) "+value;
 			}
 			return null;
 		}
@@ -260,10 +262,10 @@ public enum DateOperators implements Operator {
 	
 	DUE_IN_DAYS("Due in Days") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return "FLOOR((("+columnName+"/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) "+value;
+			if(field != null) {
+				return "FLOOR((("+field.getColumnName()+"/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) "+value;
 			}
 			return null;
 		}
@@ -314,7 +316,7 @@ public enum DateOperators implements Operator {
 	}
 	
 	@Override
-	public abstract String getWhereClause(String columnName, String value);
+	public abstract String getWhereClause(FacilioField field, String value);
 
 	@Override
 	public String getDynamicParameter() {

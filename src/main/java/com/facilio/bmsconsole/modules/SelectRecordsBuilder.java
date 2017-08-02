@@ -151,17 +151,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	private Object getVal(FacilioField field, ResultSet rs) throws Exception {
 		if (field.getDataType() == FieldType.LOOKUP) {
-			if(level <= LEVEL) {
-				long id = (long) FieldUtil.getValueAsPerType(field, rs);
+			long id = (long) FieldUtil.getValueAsPerType(field, rs);
+			if(id != 0 && level <= LEVEL) {
 				LookupField lookupField = (LookupField) field;
 				if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
 					return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
 				}
 				else {
 					Class moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
-					List<FacilioField> lookupBeanFields = FieldUtil.getAllFields(lookupField.getLookupModule().getName(), conn);
-					
 					if(moduleClass != null) {
+						List<FacilioField> lookupBeanFields = FieldUtil.getAllFields(lookupField.getLookupModule().getName(), conn);
 						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
 																							.connection(conn)
 																							.dataTableName(lookupField.getLookupModule().getTableName())

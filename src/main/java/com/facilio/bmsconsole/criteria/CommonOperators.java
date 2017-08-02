@@ -5,31 +5,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum CommonOperators implements Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public enum CommonOperators implements Operator<String> {
 	
 	IS_EMPTY("is empty") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return columnName+" IS NULL";
+			if(field != null) {
+				return field.getColumnName()+" IS NULL";
 			}
 			return null;
 		}
 	},	
 	IS_NOT_EMPTY("is not empty") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty()) {
-				return columnName+" IS NOT NULL";
+			if(field != null) {
+				return field.getColumnName()+" IS NOT NULL";
 			}
 			return null;
 		}
 	};
 	
 	@Override
-	public abstract String getWhereClause(String columnName, String value);
+	public abstract String getWhereClause(FacilioField field, String value);
 	
 	@Override
 	public String getDynamicParameter() {

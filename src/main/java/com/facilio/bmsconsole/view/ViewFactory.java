@@ -4,13 +4,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.UserOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 
 public class ViewFactory {
 	
@@ -32,17 +36,44 @@ public class ViewFactory {
 		return viewMap;
 	}
 	
+	private static Criteria getOpenStatusCriteria() {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("typeCode");
+		statusTypeField.setColumnName("STATUS_TYPE");
+		statusTypeField.setDataType(FieldType.NUMBER);
+		
+		Condition statusOpen = new Condition();
+		statusOpen.setField(statusTypeField);
+		statusOpen.setOperator(NumberOperators.EQUALS);
+		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
+		
+		Map<Integer, Condition> conditions = new HashMap<>();
+		conditions.put(1, statusOpen);
+		
+		Criteria criteria = new Criteria();
+		criteria.setConditions(conditions);
+		criteria.setPattern("(1)");
+		
+		return criteria;
+	}
+	
 	private static FacilioView getAllOpenTickets() {
 		//All Open Tickets
-		FacilioField statusField = new FacilioField();
-		statusField.setName("statusCode");
-		statusField.setColumnName("STATUS");
-		statusField.setDataType(FieldType.NUMBER);
+		FacilioModule module = new FacilioModule();
+		module.setName("ticketstatus");
+		module.setTableName("TicketStatus");
+		module.setDisplayName("Ticket Status");
+		
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setLookupModule(module);
 		
 		Condition ticketOpen = new Condition();
 		ticketOpen.setField(statusField);
-		ticketOpen.setOperator(NumberOperators.EQUALS);
-	//	ticketOpen.setValue(String.valueOf(TicketContext.Status.SUBMITTED.getStatusAsInt()));
+		ticketOpen.setOperator(LookupOperator.LOOKUP);
+		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, ticketOpen);

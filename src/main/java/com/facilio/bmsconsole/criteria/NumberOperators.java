@@ -5,18 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum NumberOperators implements Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public enum NumberOperators implements Operator<String> {
 	
 	EQUALS("=") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
-					return columnName+" IN ("+value+")";
+					return field.getColumnName()+" IN ("+value+")";
 				}
 				else {
-					return columnName+" = "+value;
+					return field.getColumnName()+" = "+value;
 				}
 			}
 			return null;
@@ -24,14 +26,14 @@ public enum NumberOperators implements Operator {
 	},
 	NOT_EQUALS("!=") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(columnName);
+						.append(field.getColumnName());
 				if(value.contains(",")) {
 					builder.append(" NOT IN (")
 							.append(value)
@@ -54,10 +56,10 @@ public enum NumberOperators implements Operator {
 	;
 	
 	@Override
-	public String getWhereClause(String columnName, String value) {
+	public String getWhereClause(FacilioField field, String value) {
 		// TODO Auto-generated method stub
-		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-			return columnName+operator+value;
+		if(field != null && value != null && !value.isEmpty()) {
+			return field.getColumnName()+operator+value;
 		}
 		return null;
 	};

@@ -6,22 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum StringOperators implements Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public enum StringOperators implements Operator<String> {
 	IS("is") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(columnName)
+					builder.append(field.getColumnName())
 							.append(" IN (");
 					splitAndAddQuestionMark(value, builder);
 					builder.append(")");
 					return builder.toString();
 				}
 				else {
-					return columnName+" = ?";
+					return field.getColumnName()+" = ?";
 				}
 			}
 			return null;
@@ -35,14 +37,14 @@ public enum StringOperators implements Operator {
 	},
 	ISN_T("isn't") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(columnName);
+						.append(field.getColumnName());
 				if(value.contains(",")) {
 					builder.append(" NOT IN (");
 					splitAndAddQuestionMark(value, builder);
@@ -66,9 +68,9 @@ public enum StringOperators implements Operator {
 	},
 	CONTAINS("contains") {
 		@Override
-		public String getWhereClause(String field, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return contains(field, value, false);
+			return contains(field.getColumnName(), value, false);
 		}
 
 		@Override
@@ -79,14 +81,14 @@ public enum StringOperators implements Operator {
 	},
 	DOESNT_CONTAIN("doesn't contain") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(contains(columnName, value, true))
+						.append(contains(field.getColumnName(), value, true))
 						.append(")");
 				return builder.toString();
 			}
@@ -101,9 +103,9 @@ public enum StringOperators implements Operator {
 	},
 	STARTS_WITH("starts with") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return contains(columnName, value, false);
+			return contains(field.getColumnName(), value, false);
 		}
 		
 		@Override
@@ -114,9 +116,9 @@ public enum StringOperators implements Operator {
 	},
 	ENDS_WITH("ends with") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return contains(columnName, value, false);
+			return contains(field.getColumnName(), value, false);
 		}
 
 		@Override
@@ -128,7 +130,7 @@ public enum StringOperators implements Operator {
 	;
 	
 	@Override
-	public abstract String getWhereClause(String columnName, String value);
+	public abstract String getWhereClause(FacilioField field, String value);
 
 	@Override
 	public String getDynamicParameter() {

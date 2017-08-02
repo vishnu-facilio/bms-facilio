@@ -5,23 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum BooleanOperators implements Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+
+public enum BooleanOperators implements Operator<String> {
 	
 	IS("is");
 	
 	@Override
-	public String getWhereClause(String columnName, String value) {
+	public String getWhereClause(FacilioField field, String value) {
 		// TODO Auto-generated method stub
-		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-			if(value == "true") {
-				return columnName+" = true";
+		if(field != null && value != null) {
+			if("true".equalsIgnoreCase(value)) {
+				return field.getColumnName()+" = true";
 			}
 			else {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" = false)");
 				return builder.toString();
 			}

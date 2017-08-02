@@ -8,6 +8,8 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -107,6 +109,10 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
+		return null;
+	}
+	
+	public static String getWhereClause(String specialType, FacilioField field, Criteria value) {
 		return null;
 	}
 }

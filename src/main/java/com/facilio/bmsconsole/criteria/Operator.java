@@ -2,13 +2,15 @@ package com.facilio.bmsconsole.criteria;
 
 import java.util.List;
 
-public interface Operator {
+import com.facilio.bmsconsole.modules.FacilioField;
+
+public interface Operator<E> {
 	public String getOperator();
 	
-	public String getWhereClause(String columnName, String value);
+	public String getWhereClause(FacilioField field, E value);
 	
 	public String getDynamicParameter();
 	
-	public List<Object> computeValues(String value);
+	public List<Object> computeValues(E value);
 	
 }

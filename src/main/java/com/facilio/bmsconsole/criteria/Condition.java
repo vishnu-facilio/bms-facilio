@@ -72,10 +72,23 @@ public class Condition {
 		this.value = value;
 	}
 	
+	private Criteria criteriaValue;
+	public Criteria getCriteriaValue() {
+		return criteriaValue;
+	}
+	public void setCriteriaValue(Criteria criteriaVal) {
+		this.criteriaValue = criteriaVal;
+	}
+	
 	private String computedWhereClause;
 	public String getComputedWhereClause() {
 		if(computedWhereClause == null) {
-			computedWhereClause = operator.getWhereClause(field.getColumnName(), value);
+			if(operator == LookupOperator.LOOKUP) {
+				computedWhereClause = operator.getWhereClause(field, criteriaValue);
+			}
+			else {
+				computedWhereClause = operator.getWhereClause(field, value);
+			}
 		}
 		return computedWhereClause;
 	}

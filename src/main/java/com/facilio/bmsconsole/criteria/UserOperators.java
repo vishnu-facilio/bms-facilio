@@ -6,18 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.UserInfo;
 
-public enum UserOperators implements Operator{
+public enum UserOperators implements Operator<String> {
 	
 	IS("is") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && value != null && !value.isEmpty()) {
+			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(columnName)
+					builder.append(field.getColumnName())
 							.append(" IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
 					builder.append(")");
@@ -27,7 +28,7 @@ public enum UserOperators implements Operator{
 					if(value.trim().equals(LOGGED_IN_USER)) {
 						value = "?";
 					}
-					return columnName+" = "+value;
+					return field.getColumnName()+" = "+value;
 				}
 			}
 			return null;
@@ -35,14 +36,14 @@ public enum UserOperators implements Operator{
 	},
 	ISN_T("isn't") {
 		@Override
-		public String getWhereClause(String columnName, String value) {
+		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(columnName != null && value != null && !value.isEmpty()) {
+			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(columnName)
+						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(columnName);
+						.append(field.getColumnName());
 				if(value.contains(",")) {
 					builder.append(" NOT IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
@@ -84,7 +85,7 @@ public enum UserOperators implements Operator{
 	
 	
 	@Override
-	public abstract String getWhereClause(String columnName, String value);
+	public abstract String getWhereClause(FacilioField field, String value);
 	
 	public static String LOGGED_IN_USER = "${LOGGED_USER}";
 	
