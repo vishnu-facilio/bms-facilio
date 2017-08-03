@@ -27,7 +27,7 @@
             </f:hasPermission>
             <f:hasPermission permission="WORKORDER_READ">
 	             <li>
-	                <a href="#ticket"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
+	                <a href="#workorder"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
 	                <span class="nav-title all-workorder"> Work Orders</span>
 	                <f:hasPermission permission="WORKORDER_CREATE">
 	               		<span class="nav-icon-right add-new-workorder pull-right fc-plus">+</span>

@@ -86,7 +86,7 @@ public class SQLScriptRunner {
 					}
 				}
 			}
-			if (command != null) {
+			if (command != null && command.length() != 0) {
 				execCommand(conn, command, lineReader.getLineNumber());
 			}
 		}

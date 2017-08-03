@@ -30,7 +30,7 @@ public class GetTasksOfTicketCommand implements Command {
 					.beanClass(TaskContext.class)
 					.select(fields)
 					.where("parent = ?", ticketId)
-					.orderBy("taskId");
+					.orderBy("id");
 
 			List<TaskContext> tasks = builder.getAsBean();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);

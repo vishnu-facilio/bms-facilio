@@ -20,7 +20,7 @@ import com.facilio.sql.DBUtil;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
-	private static final int LEVEL = 1;
+	private static final int LEVEL = 2;
 	
 	private String dataTableName;
 	private Class<E> beanClass;
@@ -152,27 +152,39 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	private Object getVal(FacilioField field, ResultSet rs) throws Exception {
 		if (field.getDataType() == FieldType.LOOKUP) {
 			long id = (long) FieldUtil.getValueAsPerType(field, rs);
-			if(id != 0 && level <= LEVEL) {
+			if(id != 0) {
 				LookupField lookupField = (LookupField) field;
 				if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-					return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
+					if(level <= LEVEL) {
+						return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
+					}
+					else {
+						return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
+					}
 				}
 				else {
-					Class moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+					Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
 					if(moduleClass != null) {
-						List<FacilioField> lookupBeanFields = FieldUtil.getAllFields(lookupField.getLookupModule().getName(), conn);
-						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
-																							.connection(conn)
-																							.dataTableName(lookupField.getLookupModule().getTableName())
-																							.beanClass(moduleClass)
-																							.select(lookupBeanFields)
-																							.where("ID = ?", id);
-						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.getAsBean();
-						if(records != null && records.size() > 0) {
-							return records.get(0);
+						if(level <= LEVEL) {
+							List<FacilioField> lookupBeanFields = FieldUtil.getAllFields(lookupField.getLookupModule().getName(), conn);
+							SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
+																								.connection(conn)
+																								.dataTableName(lookupField.getLookupModule().getTableName())
+																								.beanClass(moduleClass)
+																								.select(lookupBeanFields)
+																								.where("ID = ?", id);
+							List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.getAsBean();
+							if(records != null && records.size() > 0) {
+								return records.get(0);
+							}
+							else {
+								return null;
+							}
 						}
 						else {
-							return null;
+							ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
+							lookedupModule.setId(id);
+							return lookedupModule;
 						}
 					}
 					else {

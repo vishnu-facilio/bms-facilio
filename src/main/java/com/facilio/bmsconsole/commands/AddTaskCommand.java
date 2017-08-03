@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -18,15 +19,9 @@ public class AddTaskCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
+		TicketContext ticket = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-		if(task != null) {
-			
-			ScheduleContext scheduleObj = (ScheduleContext) context.get(FacilioConstants.ContextNames.SCHEDULE_OBJECT);
-			if(scheduleObj != null) {
-				task.setScheduleId(scheduleObj.getScheduleId());
-			}
-			
+		if(ticket != null && task != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
@@ -39,14 +34,10 @@ public class AddTaskCommand implements Command {
 															.connection(conn);
 			long taskId = builder.insert(task);
 			task.setId(taskId);
-			
-			if(task.getParentModuleLinkName() != null && task.getParentModuleLinkName().equals("ticket"))
-			{
-				TicketAPI.addTicketTask(task.getParentId(), taskId, conn);
-			}
+			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
 		}
 		else {
-			throw new IllegalArgumentException("Task Object cannot be null");
+			throw new IllegalArgumentException("Task/ Ticket Object cannot be null");
 		}
 		
 		return false;
