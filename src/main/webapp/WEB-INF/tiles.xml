@@ -17,6 +17,14 @@
    </definition>
    
    <!-- Setup Pages -->
+   	<definition name="orgSettings" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Org Settings"/>   
+   		<put-attribute name="body" value="/jsps/setup/orgsettings.jsp"/>   
+   	</definition>
+   	<definition name="mySettings" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="My Settings"/>   
+   		<put-attribute name="body" value="/jsps/setup/mysettings.jsp"/>   
+   	</definition>
    	<definition name="userList" template="/jsps/setup/container.jsp">   
    		<put-attribute name="title" value="Users"/>   
    		<put-attribute name="body" value="/jsps/usersList.jsp"/>   

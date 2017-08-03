@@ -159,8 +159,13 @@ FacilioApp = {
 
 						}
 						else if ($(this).find('.list-content').length > 0) {
-							$('.list-content').perfectScrollbar({
+							$(this).find('.list-content').perfectScrollbar({
 								suppressScrollX : true
+							});
+						}
+						else if ($(this).find('.setup-list-content').length > 0) {
+							$(this).find('.setup-list-content').perfectScrollbar({
+
 							});
 						}
 					}
