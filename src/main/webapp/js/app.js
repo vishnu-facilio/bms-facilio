@@ -41,7 +41,7 @@ FacilioApp = {
 		$('.sidebar .add-new-workorder').click(function(e) {
 			e.preventDefault();
 			
-			location.href = '#ticket/new';
+			location.href = '#workorder/new';
 		});
 		
 		$('.sidebar .add-new-task').click(function(e) {

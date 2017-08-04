@@ -36,11 +36,6 @@ public class GetTaskCommand implements Command {
 			if(tasks.size() > 0) {
 				TaskContext task = tasks.get(0);
 				context.put(FacilioConstants.ContextNames.TASK, task);
-				context.put(FacilioConstants.ContextNames.SCHEDULE_ID, task.getScheduleId());
-				
-				context.put(GetNotesCommand.NOTES_REL_TABLE, "Task_Note");
-				context.put(GetNotesCommand.MODULEID_COLUMN, "TASKID");
-				context.put(GetNotesCommand.MODULE_ID, taskId);
 			}
 ;		}
 		else {

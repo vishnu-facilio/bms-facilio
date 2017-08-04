@@ -40,6 +40,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("ticket", "Tickets");
 	}
 	
+	public static SetTableNamesCommand getForWorkOrder() {
+		return new SetTableNamesCommand("workorder", "WorkOrders");
+	}
+	
 	public static SetTableNamesCommand getForTask() {
 		return new SetTableNamesCommand("task", "Tasks");
 	}

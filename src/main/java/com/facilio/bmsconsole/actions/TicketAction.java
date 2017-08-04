@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -18,13 +16,12 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.UserInfo;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TicketAction extends ActionSupport {
 	
 	//New Ticket props
-	public String newTicket() throws Exception {
+	/*public String newTicket() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Chain newTicket = FacilioChainFactory.getNewTicketChain();
 		newTicket.execute(context);
@@ -43,7 +40,7 @@ public class TicketAction extends ActionSupport {
 			return "ajaxsuccess";
 		}
 		return SUCCESS;
-	}
+	}*/
 	
 	private List<FacilioField> fields;
 	
@@ -80,7 +77,7 @@ public class TicketAction extends ActionSupport {
 	}
 	
 	//Add Ticket Props
-	public String addTicket() throws Exception {
+	/*public String addTicket() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
@@ -90,7 +87,7 @@ public class TicketAction extends ActionSupport {
 		addTicket.execute(context);
 		setTicketId(ticket.getId());
 		return SUCCESS;
-	}
+	}*/
  	
  	//View Ticket Props
 	public String viewTicket() throws Exception {

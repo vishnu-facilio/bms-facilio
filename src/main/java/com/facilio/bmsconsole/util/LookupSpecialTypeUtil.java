@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -108,6 +109,25 @@ public class LookupSpecialTypeUtil {
 					}
 				}
 			}
+		}
+		return null;
+	}
+	
+	public static Object getEmptyLookedupObject(String specialType, long id) throws Exception {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
+			UserContext user = new UserContext();
+			user.setId(id);
+			return user;
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			GroupContext group = new GroupContext();
+			group.setGroupId(id);
+			return group;
+		}
+		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
+			BaseSpaceContext baseSpace = new BaseSpaceContext();
+			baseSpace.setId(id);
+			return baseSpace;
 		}
 		return null;
 	}

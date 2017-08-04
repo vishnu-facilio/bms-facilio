@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    
 <div class="container adminContent">
 <div class="row">
 <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-left"> <i class="fa fa-cog" aria-hidden="true"></i>

@@ -8,23 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
-import com.amazonaws.services.rds.model.SourceType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
-	
-	private String requester;
-	public String getRequester() {
-		return requester;
-	}
-	public void setRequester(String requester) {
-		this.requester = requester;
-	}
 	
 	private String subject;
 	public String getSubject() {
@@ -112,7 +102,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public long getDueDate() {
 		return dueDate;
 	}
-	@TypeConversion(converter = "java.lang.String")
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
 	public void setDueDate(String dueDate) {
 		if(dueDate != null && !dueDate.isEmpty()) {
 			try {
@@ -123,15 +113,15 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			}
 		}
 	}
-	public void setDueDate(long dueTime) {
-		this.dueDate = dueTime;
+	public void setDueDate(long dueDate) {
+		this.dueDate = dueDate;
 	}
 	
 	private long createdDate = 0;
 	public long getCreatedDate() {
 		return createdDate;
 	}
-	@TypeConversion(converter = "java.lang.String")
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
 	public void setCreatedDate(String createdDate) {
 		if(createdDate != null && !createdDate.isEmpty()) {
 			try {
@@ -144,36 +134,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setCreatedDate(long createdDate) {
 		this.createdDate = createdDate;
-	}
-	
-	private long openedDate = 0;
-	public long getOpenedDate() {
-		return openedDate;
-	}
-	public void setOpenedDate(long openedDate) {
-		this.openedDate = openedDate;
-	}	
-		
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks()
-	{
-		return this.tasks;
-	}
-	
-	public void setTasks(List<TaskContext> tasks)
-	{
-		this.tasks = tasks;
-	}
-	
-	private List<NoteContext> notes;
-	public List<NoteContext> getNotes()
-	{
-		return this.notes;
-	}
-	
-	public void setNotes(List<NoteContext> notes)
-	{
-		this.notes = notes;
 	}
 	
 	private List<FileContext> attachments;
@@ -202,6 +162,22 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setSpace(BaseSpaceContext space) {
 		this.space = space;
+	}
+	
+	private ScheduleContext schedule;
+	public ScheduleContext getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleContext schedule) {
+		this.schedule = schedule;
+	}
+	
+	private long scheduleId = 0;
+	public long getScheduleId() {
+		return scheduleId;
+	}
+	public void setScheduleId(long scheduleId) {
+		this.scheduleId = scheduleId;
 	}
 	
 	public static enum SourceType {
