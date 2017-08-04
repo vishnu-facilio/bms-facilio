@@ -195,11 +195,11 @@
 		    <artifactId>nimbus-jose-jwt</artifactId>
 		    <version>4.23</version>
 		</dependency>
-		<!--  		<dependency>
+		  		<dependency>
             <groupId>com.facilio</groupId>
             <artifactId>fedge</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency> -->
+        </dependency> 
    <!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
