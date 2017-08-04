@@ -10,8 +10,10 @@ processid <s:property value="%{importprocessid}" />
 
 
 <form id="processImport" name="processImport" action="/bms/app/import/processImport.action" method="post">
-<s:iterator value="metainfo.columnheadings">
-  <p><s:property/> : <s:select list="metainfo.fields" /></p>
+<s:hidden name="importprocessid" />
+<s:iterator value="metainfo.columnHeadings" >
+<s:set var="columnheading"/>
+  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{columnheading}']" list="metainfo.fields" /></p>
 </s:iterator>
-<input type="button" name="confirm" value="confirm">
+<input type="submit" name="confirm" value="confirm">
 </form>
