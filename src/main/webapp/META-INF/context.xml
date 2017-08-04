@@ -23,10 +23,10 @@
           jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
             org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
           defaultTransactionIsolation="READ_COMMITTED" 
-          username="faciliouser"
-          password="zxcv1212"
+          username="root"
+          password=""
           driverClassName="com.mysql.jdbc.Driver"
-          url="jdbc:mysql://34.209.191.151:3306/bms"/>
+          url="jdbc:mysql://localhost:3306/bms"/>
           <Transaction factory="com.arjuna.ats.internal.jta.transaction.arjunacore.UserTransactionImple" />
 
 <Resource name="TransactionManager" auth="Container" factory="com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionManagerImple"/>
