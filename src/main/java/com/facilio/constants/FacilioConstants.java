@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 
 public class FacilioConstants {
@@ -322,6 +323,9 @@ public class FacilioConstants {
 		public static final String TICKET_LIST = "tickets";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		
+		public static final String WORK_ORDER = "workorder";
+		public static final String WORK_ORDER_LIST = "workorders";
+		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
 		
@@ -411,7 +415,8 @@ public class FacilioConstants {
 			classMap.put(TICKET_CATEGORY, TicketCategoryContext.class);
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
-			classMap.put(TASK_STATUS, TaskStatusContext.class);
+			classMap.put(WORK_ORDER, WorkOrderContext.class);
+			//classMap.put(TASK_STATUS, TaskStatusContext.class);
 			classMap.put(CAMPUS, CampusContext.class);
 			classMap.put(BUILDING, BuildingContext.class);
 			classMap.put(FLOOR, FloorContext.class);

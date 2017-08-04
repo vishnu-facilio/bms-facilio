@@ -205,3 +205,303 @@ td.center {
 	text-transform: uppercase;
 	color: #666666;
 }
+
+/* email settings */
+
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+.clearfix {
+	display: inline-block;
+}
+.clearfix {
+	display: block;
+}
+
+.fa {
+	display: inline-block;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: inherit;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.fa-question-circle-o:before {
+	content: "\f29c";
+}
+.fa-star:before {
+	content: "\f005";
+	padding-left:20px;
+	
+	color:#ffcc66;
+	font-size:20px;
+}
+.fa-trash-o:before {
+	content: "\f014";
+	
+}
+.fa-cog:before {
+	content: "\f013";
+	font-size:18px;
+		color:#aaa;
+}
+.fa-caret-down:before {
+	content: "\f0d7";
+	font-size:12px;
+		color:#CCC;
+		padding-bottom:20px;
+}
+a.downArrow{
+	margin-top:10px;}
+
+.adminContent{
+	padding-top:10px;
+}
+.border{
+	width:100%;
+	height:1px;
+	background-color:#dadada;
+	}
+.helpdeskBtn{
+	background-color:#118a9d;
+	padding:5px 12px 5px 12px;
+	color:#FFF;
+	border-radius:4px;
+	
+}
+.helpdeskBtn:hover{
+	text-decoration:none;
+	color:#FFF;
+}
+h3{
+	font-weight:300;
+	color:#555555;
+}
+.admin{
+	display:inline-block;
+	font-size:18px;
+	color:#aaa;
+	padding-left:3px;
+	padding-right:3px;
+}
+p{
+	font-weight:400;
+	font-size:16px;
+	margin-top:-5px;
+}
+.leftHeading{
+	display:inline;
+	color:#555555;
+}
+.rightText{
+	display:inline;
+	float:right;
+	padding-top: 10px;
+	color:#06F;
+	font-weight:400;
+	font-size:18px;
+}
+.rightText:hover a{
+	text-decoration:none;
+	
+	
+}
+.heading1{
+	padding-bottom:20px;
+}
+
+
+.content{
+	background-color:#f9f9f9;
+	padding:20px 0;
+}
+.borderTop,.borderBottom{
+	width:100%;
+	height:1px;
+	background-color:#eeeeee;
+}
+.borderTop{
+	margin-top:2px;
+}
+
+.titleStrong{
+	color:#555;
+	font-weight:500;
+	font-size:17px;
+
+}
+.titleLight{
+	color:#99999c;
+	font-size:17px;
+}
+p{
+	line-height:1;
+}
+.question{
+	padding-top:20px;
+	padding-bottom:20px;
+}
+.titleAgent,titleReply{
+	padding-top:0px;
+	font-size:20px;
+}
+.titleAgent{
+	color:#555555;
+	font-weight:300;
+	
+}
+.titleReply{
+	color:#cccccc;
+}
+.agentContent,.replyContent{
+	font-weight:400;
+	font-size:16px;
+	color:#aaa;
+	line-height:1.2;
+}
+.editBtn,.delBtn{
+	padding:5px 8px 5px 8px;
+	border:1px solid #CCC;
+	border-radius:5px;
+	color:#999;
+	font-weight:400;
+	text-decoration:none;
+}
+.editBtn:hover,.delBtn:hover{
+	text-decoration:none;
+	color:#333;
+	font-weight:400;
+	border:1px solid #333;
+}
+.editBtn:active{
+	text-decoration:none;
+}
+.delBtn{
+	padding:5px;
+}
+.btns{
+	padding-right:20px;
+}
+.noBtn,.yesBtn{
+	padding:4px 7px 4px 7px;
+	background-color:#828282;
+	color:#FFF;
+	border:1px solid #828282;
+	border-radius:10px;
+	text-align:center;
+}
+.yesBtn{
+		background-color:#4aa05c;
+	}
+.noBtn:hover,.yesBtn:hover{
+	text-decoration:none;
+	color:#FFF;
+}
+.yesNo{
+	margin-top:30px;
+}
+.yesNo1{
+	margin-top:20px;
+}
+.fa-arrow-left:before {
+	content: "\f060";
+	color:#aaaaaa;
+}
+.adminContent{
+	padding-top:10px;
+	margin-top:10px;
+}
+.emailBack{
+	display:inline;
+	color:#2f99cc;
+	font-size:16px;
+	font-weight:400;
+	text-decoration:none !important;
+}
+.emailBack:hover,emailBack:visited{
+color:#12759d;
+text-decoration:none;
+}
+
+
+.cancel{
+	background-color:#f2f2f2;
+	color:#333333;
+	padding:5px 12px 5px 12px;
+	border-radius:4px;
+	text-decoration:none !important;
+	}
+.cancel:hover{
+	background-color:#c4c2c2;
+}
+.update{
+	background-color:#323232;
+	color:#FFF;
+	padding:5px 12px 5px 12px;
+	border-radius:4px;
+	text-decoration:none !important;
+	}
+.update:hover{
+	background-color:#101010;
+	color:#FFF;
+	text-decoration:none !important;
+	}
+.update:visited{
+	color:#FFF;
+	}
+.border{
+	width:100%;
+	height:1px;
+	background-color:#dadada;
+	margin-top:20px;
+	}
+input[type="text"]{
+	border: 1px solid #E4E4E4;
+	border-radius: 5px;
+	box-shadow: 0 1px 0 #BBBBBB inset;
+	font-weight: 300;
+	padding: 5px;
+	font-size: 14px;
+	width:100%;
+	margin-top:10px;
+	
+}
+input[type="radio"]{
+	margin-top:10px;
+}
+input[type="text"]:active{
+	border: 1px solid #2f99cc;
+	border-radius: 5px;
+	}
+
+input[type="text"], select, input.text {
+    color: #666;
+}
+.name{
+	padding-top:20px;
+}
+
+.subText{
+	color:#999;
+	padding-top:5px;
+}
+.star{
+	color:red;
+	font-size:16px;
+}
+.forwardMail{
+	background-color:#efefef;
+}
+
+
+
+
+/*bootstrap class*/
+text-right{
+	margin-top:20px;
+}

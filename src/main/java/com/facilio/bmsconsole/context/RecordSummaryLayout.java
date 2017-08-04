@@ -125,17 +125,26 @@ public class RecordSummaryLayout {
 							);
 		return recordSummaryLayout;
 	}
+	
+	public static RecordSummaryLayout getRecordSummaryWorkOrderLayout() {
+		RecordSummaryLayout recordSummaryLayout = getRecordSummaryTicketLayout();
+		recordSummaryLayout.addColumn(new Column("Requester", "requester", ColumnType.TEXT));
+		
+		return recordSummaryLayout;
+	}
 
 	public static RecordSummaryLayout getRecordSummaryTaskLayout()
 	{
-		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("id");
-		recordSummaryLayout.setHasProgressBar(true);
-		recordSummaryLayout.setRecordTitleColumnId("subject");
-		
-		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
+//		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
+//		recordSummaryLayout.setTitleColumnId("id");
+//		recordSummaryLayout.setHasProgressBar(true);
+//		recordSummaryLayout.setRecordTitleColumnId("subject");
+//		
+//		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
+//		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
+//		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
+		RecordSummaryLayout recordSummaryLayout = getRecordSummaryTicketLayout();
+		recordSummaryLayout.addColumn(new Column("Work Order", "parentWorkOrder", ColumnType.TEXT));
 		
 		return recordSummaryLayout;
 	}

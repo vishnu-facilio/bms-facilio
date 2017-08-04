@@ -52,8 +52,23 @@ public class ViewLayout {
 		viewLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
 		viewLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		viewLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
-		viewLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
 		viewLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
+		
+		return viewLayout;
+	}
+	
+	public static ViewLayout getViewWorkOrderLayout()
+	{
+		ViewLayout viewLayout = getViewTicketLayout();
+		viewLayout.addColumn(new Column("Requester", "requester", ColumnType.TEXT));
+		
+		return viewLayout;
+	}
+	
+	public static ViewLayout getViewTaskLayout()
+	{
+		ViewLayout viewLayout = getViewTicketLayout();
+//		viewLayout.addColumn(new Column("Work Order", "requester", ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -66,20 +81,20 @@ public class ViewLayout {
 		return viewLayout;
 	}
 	
-	public static ViewLayout getViewTaskLayout()
-	{
-		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
-		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
-							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
-							.addColumn(new Column("Description", "description", ColumnType.TEXT))
-							);
-		viewLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-		viewLayout.addColumn(new Column("Assigned To", "assignedToId", ColumnType.TEXT));
-		
-		return viewLayout;
-	}
+//	public static ViewLayout getViewTaskLayout()
+//	{
+//		ViewLayout viewLayout = new ViewLayout();
+//		viewLayout.setPkColumnId("id");
+//		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
+//		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
+//							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
+//							.addColumn(new Column("Description", "description", ColumnType.TEXT))
+//							);
+//		viewLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
+//		viewLayout.addColumn(new Column("Assigned To", "assignedToId", ColumnType.TEXT));
+//		
+//		return viewLayout;
+//	}
 	
 	public static ViewLayout getViewTaskStatusLayout() {
 		ViewLayout viewLayout = new ViewLayout();

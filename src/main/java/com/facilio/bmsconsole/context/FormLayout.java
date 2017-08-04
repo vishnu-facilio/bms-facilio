@@ -17,47 +17,16 @@ public class FormLayout {
 		Panel second =  new Panel(Panel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("assetId")) {
+			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType")) {
 				continue;
 			}
-			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("space") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
+			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
 				first.add(field);
 			}
 			else {
 				second.add(field);
 			}
 		}
-		panels.add(first);
-		panels.add(second);
-		
-//		Panel third =  new Panel(Panel.Type.FULL);
-//		third.add(new Field("Attachments","inputAttachment","attachmentId",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
-//		panels.add(third);
-		
-		return panels;
-		
-	}
-	
-	public static List<Panel> getNewTaskLayout(List<FacilioField> fields)
-	{
-		List<Panel> panels = new ArrayList<Panel>();
-		
-		Panel first =  new Panel(Panel.Type.HALF);
-		Panel second =  new Panel(Panel.Type.HALF);
-		
-		for(FacilioField field : fields) {
-			if(field.getName().equals("scheduleId"))
-			{
-				continue;
-			}
-			if(field.getName().equals("subject") || field.getName().equals("description")) {
-				first.add(field);
-			}
-			else {
-				second.add(field);
-			}
-		}
-		
 		panels.add(first);
 		panels.add(second);
 		
@@ -70,7 +39,7 @@ public class FormLayout {
 		scheduleStart.setDisplayName("Scheduled Start");
 		scheduleStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		scheduleStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		scheduleStart.setModuleName("task.schedule");
+		scheduleStart.setModuleName("ticket.schedule");
 		scheduleStart.setDefault(true);
 		fourth.add(scheduleStart);
 	 
@@ -79,7 +48,7 @@ public class FormLayout {
 		actualWorkStart.setDisplayName("Actual Work Start");
 		actualWorkStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		actualWorkStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		actualWorkStart.setModuleName("task.schedule");
+		actualWorkStart.setModuleName("ticket.schedule");
 		actualWorkStart.setDefault(true);
 		fourth.add(actualWorkStart);
 		panels.add(fourth);
@@ -90,7 +59,7 @@ public class FormLayout {
 		estimatedEnd.setDisplayName("Estimated End");
 		estimatedEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		estimatedEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		estimatedEnd.setModuleName("task.schedule");
+		estimatedEnd.setModuleName("ticket.schedule");
 		estimatedEnd.setDefault(true);
 		fifth.add(estimatedEnd);
 	 
@@ -99,14 +68,19 @@ public class FormLayout {
 		actualWorkEnd.setDisplayName("Actual Work End");
 		actualWorkEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 		actualWorkEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		actualWorkEnd.setModuleName("task.schedule");
+		actualWorkEnd.setModuleName("ticket.schedule");
 		actualWorkEnd.setDefault(true);
 		fifth.add(actualWorkEnd);
 		panels.add(fifth);
 		
+//		Panel third =  new Panel(Panel.Type.FULL);
+//		third.add(new Field("Attachments","inputAttachment","attachmentId",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
+//		panels.add(third);
+		
 		return panels;
 		
 	}
+	
 	
 	public static List<Panel> getNewCampusLayout(List<FacilioField> fields)
 	{
@@ -244,6 +218,7 @@ public class FormLayout {
 		field.setDataType(FieldType.STRING);
 		field.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
 		field.setModuleName("note");
+		field.setDefault(true);
 		
 		first.add(field);
 		fields.add(first);

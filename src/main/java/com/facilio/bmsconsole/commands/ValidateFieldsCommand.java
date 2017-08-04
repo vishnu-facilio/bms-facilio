@@ -17,10 +17,6 @@ public class ValidateFieldsCommand implements Command {
 		TicketContext ticketContext = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
 		if (ticketContext != null) {
 
-			if(ticketContext.getRequester() == null || ticketContext.getRequester().isEmpty()) {
-				throw new IllegalArgumentException("Requestor is invalid");
-			}
-			
 			if(ticketContext.getSubject() == null || ticketContext.getSubject().isEmpty()) {
 				throw new IllegalArgumentException("Subejct is invalid");
 			}

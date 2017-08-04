@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -15,24 +16,27 @@ public class SupportMailParseAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
-		TicketContext ticket = new TicketContext();
 		long orgId = OrgApi.getOrgIdFromDomain(getOrgDomain());
 		
 		if(orgId == -1) {
 			throw new IllegalArgumentException("Invalid Org Domain");
 		}
+		TicketContext ticket = new TicketContext();
 		ticket.setOrgId(orgId);
-		ticket.setRequester((String) getFrom().get("address"));
 		ticket.setSubject(getSubject());
 		ticket.setDescription(getBody());
+		
+		WorkOrderContext workOrder = new WorkOrderContext();
+		workOrder.setRequester((String) getFrom().get("address"));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		
-		Command addTicket = FacilioChainFactory.getAddTicketChain();
+		Command addTicket = FacilioChainFactory.getAddWorkOrderChain();
 		addTicket.execute(context);
-		System.out.println("Ticket ID : "+ticket.getId());
-		setTicketId(ticket.getId());
+		
+		System.out.println("Work Order ID : "+workOrder.getId());
+		setWorkOrderId(workOrder.getId());
 		return SUCCESS;
 	}
 	
@@ -68,11 +72,11 @@ public class SupportMailParseAction extends ActionSupport {
 		this.body = body;
 	}
 	
-	private long ticketId;
- 	public long getTicketId() {
- 		return ticketId;
+	private long workOrderId;
+ 	public long getWorkOrderId() {
+ 		return workOrderId;
  	}
- 	public void setTicketId(long ticketId) {
- 		this.ticketId = ticketId;
+ 	public void setWorkOrderId(long workOrderId) {
+ 		this.workOrderId = workOrderId;
  	}
 }

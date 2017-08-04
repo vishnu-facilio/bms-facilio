@@ -6,45 +6,36 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.util.ScheduleObjectAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class AddTicketCommand implements Command {
+public class AddWorkOrderCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
 		TicketContext ticket = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
-		
-		if(ticket != null) {
+		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		if(ticket != null && workOrder != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			ScheduleContext scheduleObj = ticket.getSchedule();
-			if(scheduleObj != null) {
-				scheduleObj.setScheduleId(ScheduleObjectAPI.addScheduleObject(scheduleObj, conn));
-				ticket.setScheduleId(scheduleObj.getScheduleId());
-			}
-			
-			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
+			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)
 																.fields(fields)
 																.connection(conn);
-			long ticketId = builder.insert(ticket);
-			ticket.setId(ticketId);
-			
-			context.put(FacilioConstants.ContextNames.RECORD_ID, ticketId);
+			long workOrderId = builder.insert(workOrder);
+			workOrder.setId(workOrderId);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
 		}
 		else {
-			throw new IllegalArgumentException("Ticket Object cannot be null");
+			throw new IllegalArgumentException("Ticket/ WorkOrder Object cannot be null");
 		}
 		return false;
 	}

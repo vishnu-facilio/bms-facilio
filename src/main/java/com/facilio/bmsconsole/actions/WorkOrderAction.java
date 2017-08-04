@@ -3,31 +3,28 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class TaskAction extends ActionSupport {
+public class WorkOrderAction extends ActionSupport {
 	
-	//New Task Props
-	public String newTask() throws Exception {
+	public String newWorkOrder() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain newTask = FacilioChainFactory.getNewTaskChain();
-		newTask.execute(context);
+		Chain newTicket = FacilioChainFactory.getNewWorkOrderChain();
+		newTicket.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
@@ -44,20 +41,20 @@ public class TaskAction extends ActionSupport {
 		return FormLayout.getNewTicketLayout(fields);
 	}
 	
-	private String moduleName;
-	public String getModuleName() {
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-	
 	private ActionForm actionForm;
 	public ActionForm getActionForm() {
 		return actionForm;
 	}
 	public void setActionForm(ActionForm actionForm) {
 		this.actionForm = actionForm;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 	
 	private List<Long> attachmentId;
@@ -68,43 +65,38 @@ public class TaskAction extends ActionSupport {
 		this.attachmentId = attachmentId;
 	}
 	
-	//Add Task Props
-	public String addTask() throws Exception {
-		// TODO Auto-generated method stub
+	public String addWorkOrder() throws Exception {
 		
-		if(task == null) {
-			task = new TaskContext();
+		if(workorder == null) {
+			workorder = new WorkOrderContext();
 		}
-		task.setTicket(ticket);
+		workorder.setTicket(ticket);
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		if(ticket.getSchedule() != null && ticket.getSchedule().getScheduledStart() != 0) {
 			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, ticket.getSchedule());
 		}
 		
-		Chain addTask = FacilioChainFactory.getAddTaskChain();
-		addTask.execute(context);
-		
-		setTaskId(task.getId());
-		
+		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+		addWorkOrder.execute(context);
+		setWorkOrderId(workorder.getId());
 		return SUCCESS;
 	}
 	
-	//View Task Props
-	public String viewTask() throws Exception {
-		// TODO Auto-generated method stub
+	public String viewWorkOrder() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getTaskId());
+		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 		
-		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
-		getTaskChain.execute(context);
+		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDetailsChain();
+		getWorkOrderChain.execute(context);
 		
-		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
+		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		return SUCCESS;
 	}
@@ -117,41 +109,33 @@ public class TaskAction extends ActionSupport {
 		this.ticket = ticket;
 	}
 	
-	private TaskContext task;
-	public TaskContext getTask() {
-		return task;
+	private WorkOrderContext workorder;
+	public WorkOrderContext getWorkorder() {
+		return workorder;
 	}
-	public void setTask(TaskContext task) {
-		this.task = task;
-	}
-	
-	private long taskId;
-	public long getTaskId() {
-		return taskId;
-	}
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
+	public void setWorkorder(WorkOrderContext workorder) {
+		this.workorder = workorder;
 	}
 	
-	//Task List
-	public String taskList() throws Exception {
+	private long workOrderId;
+	public long getWorkOrderId() {
+		return workOrderId;
+	}
+	public void setWorkOrderId(long workOrderId) {
+		this.workOrderId = workOrderId;
+	}
+	
+	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub
+ 		FacilioContext context = new FacilioContext();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		
-//		if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_ANY)) {
-//			this.viewName = null;
-//		}
-//		else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_OWN)) {
-//			this.viewName = "mytasks";
-//		}
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		
-		Chain taskListChain = FacilioChainFactory.getTaskListChain();
-		taskListChain.execute(context);
-		
+		System.out.println("View Name : "+getViewName());
+ 		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
+ 		workOrderListChain.execute(context);
+ 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 		
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if(cv != null) {
@@ -161,27 +145,27 @@ public class TaskAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
-		return tasks;
+	private List<WorkOrderContext> workOrders;
+	public List<WorkOrderContext> getWorkOrders() {
+		return workOrders;
 	}
-	public void setTasks(List<TaskContext> tasks) {
-		this.tasks = tasks;
+	public void setWorkOrders(List<WorkOrderContext> workOrders) {
+		this.workOrders = workOrders;
 	}
 	
 	public String getModuleLinkName()
 	{
-		return FacilioConstants.ContextNames.TASK;
+		return FacilioConstants.ContextNames.WORK_ORDER;
 	}
 	
 	public ViewLayout getViewlayout()
 	{
-		return ViewLayout.getViewTaskLayout();
+		return ViewLayout.getViewWorkOrderLayout();
 	}
 	
-	public List<TaskContext> getRecords() 
+	public List<WorkOrderContext> getRecords() 
 	{
-		return tasks;
+		return workOrders;
 	}
 	
 	private String viewName = null;
@@ -192,7 +176,7 @@ public class TaskAction extends ActionSupport {
 		this.viewName = viewName;
 	}
 	
-	private String displayName = "All Tasks";
+	private String displayName = "All Work Orders";
 	public String getViewDisplayName() {
 		return displayName;
 	}
@@ -202,12 +186,11 @@ public class TaskAction extends ActionSupport {
 	
 	public RecordSummaryLayout getRecordSummaryLayout()
 	{
-		return RecordSummaryLayout.getRecordSummaryTaskLayout();
+		return RecordSummaryLayout.getRecordSummaryTicketLayout();
 	}
 	
-	public TaskContext getRecord() 
+	public WorkOrderContext getRecord() 
 	{
-		return task;
+		return workorder;
 	}
- }
-
+}

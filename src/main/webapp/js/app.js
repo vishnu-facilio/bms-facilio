@@ -41,7 +41,7 @@ FacilioApp = {
 		$('.sidebar .add-new-workorder').click(function(e) {
 			e.preventDefault();
 			
-			location.href = '#ticket/new';
+			location.href = '#workorder/new';
 		});
 		
 		$('.sidebar .add-new-task').click(function(e) {
@@ -159,8 +159,13 @@ FacilioApp = {
 
 						}
 						else if ($(this).find('.list-content').length > 0) {
-							$('.list-content').perfectScrollbar({
+							$(this).find('.list-content').perfectScrollbar({
 								suppressScrollX : true
+							});
+						}
+						else if ($(this).find('.setup-list-content').length > 0) {
+							$(this).find('.setup-list-content').perfectScrollbar({
+
 							});
 						}
 					}

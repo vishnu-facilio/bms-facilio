@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
@@ -67,9 +68,9 @@ public class AddNoteCommand implements Command {
 				System.out.println("Added Note with id : "+noteId);
 				note.setNoteId(noteId);
 				
-				if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals("ticket"))
+				if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals("workorder"))
 				{
-					TicketAPI.addTicketNote(note.getParentId(), noteId, conn);
+					WorkOrderAPI.addWorkOrderNote(note.getParentId(), noteId, conn);
 				}
 			}
 		}

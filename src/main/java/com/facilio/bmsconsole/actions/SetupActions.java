@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.context.SetupLayout;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SetupActions extends ActionSupport {
@@ -14,13 +15,24 @@ public class SetupActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private SetupLayout setup;
+	public SetupLayout getSetup() {
+		return this.setup;
+	}
+	
+	public void setSetup(SetupLayout setup) {
+		this.setup = setup;
+	}
+	
 	public String mySettings() throws Exception {
 		
+		setSetup(SetupLayout.getPersonalSettingsLayout());
 		return SUCCESS;
 	}
 	
 	public String orgSettings() throws Exception {
 		
+		setSetup(SetupLayout.getCompanySettingsLayout());
 		return SUCCESS;
 	}
 	

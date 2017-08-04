@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class TaskContext extends ModuleBaseWithCustomFields {
+public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	private TicketContext ticket;
 	public TicketContext getTicket() {
 		return ticket;
@@ -12,31 +14,12 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.ticket = ticket;
 	}
 	
-	private WorkOrderContext parentWorkOrder;
-	public WorkOrderContext getParentWorkOrder() {
-		return parentWorkOrder;
+	private String requester;
+	public String getRequester() {
+		return requester;
 	}
-	public void setParentWorkOrder(WorkOrderContext parentWorkOrder) {
-		this.parentWorkOrder = parentWorkOrder;
-	}
-	
-	public long getParentId() {
-		if(parentWorkOrder != null) {
-			return parentWorkOrder.getId();
-		}
-		return 0;
-	}
-	public void setParentId(long parentId) {
-		parentWorkOrder = new WorkOrderContext();
-		parentWorkOrder.setId(parentId);
-	}
-	
-	private String parentModuleLinkName;
-	public String getParentModuleLinkName() {
-		return parentModuleLinkName;
-	}
-	public void setParentModuleLinkName(String parentModuleLinkName) {
-		this.parentModuleLinkName = parentModuleLinkName;
+	public void setRequester(String requester) {
+		this.requester = requester;
 	}
 	
 	public String getSubject() {
@@ -142,5 +125,28 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 			return ticket.getDueDate();
 		}
 		return 0;
+	}
+	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return this.tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
+	}
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes() {
+		return this.notes;
+	}
+	public void setNotes(List<NoteContext> notes){
+		this.notes = notes;
+	}
+	
+	public List<FileContext> getAttachments() {
+		if(ticket != null) {
+			return ticket.getAttachments();
+		}
+		return null;
 	}
 }

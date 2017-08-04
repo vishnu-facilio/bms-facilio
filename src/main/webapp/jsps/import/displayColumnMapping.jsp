@@ -1,11 +1,19 @@
 
 <%@ taglib uri="/struts-tags" prefix="s" %>    
 
-display the column mapping
 
 
-column header <s:property value="%{columnheading}" />
 
-<s:property value="%{columnheading}" />
 
 processid <s:property value="%{importprocessid}" />
+
+
+
+<form id="processImport" name="processImport" action="/bms/app/import/processImport.action" method="post">
+<s:hidden name="importprocessid" />
+<s:iterator value="metainfo.columnHeadings" >
+<s:set var="columnheading"/>
+  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{columnheading}']" list="metainfo.fields" /></p>
+</s:iterator>
+<input type="submit" name="confirm" value="confirm">
+</form>
