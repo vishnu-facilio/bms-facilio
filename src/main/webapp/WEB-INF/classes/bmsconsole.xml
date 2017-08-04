@@ -204,12 +204,12 @@
     
     <package name="setup" namespace="/app/setup" extends="home">
 		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions" method="mySettings">
-			<result name="success">/jsps/setup/mysettings.jsp</result>
+			<result type="tiles">mySettings</result>
 		</action>
 
 		<action name="orgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/setup/orgsettings.jsp</result>
+			<result type="tiles">orgSettings</result>
 		</action>
 		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
