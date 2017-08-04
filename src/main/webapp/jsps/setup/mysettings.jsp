@@ -133,7 +133,7 @@ margin-bottom: 10px;
 			
 			document.getElementById('upfile1').src = window.URL.createObjectURL(this.files[0]);
 		});
-		
+	/*
 		var cogUtil = new CognitoUtil();
 		var cognitoUser = cogUtil.getCurrentUser();
 		 cognitoUser.changePassword('oldPassword', 'newPassword', function(err, result) {
@@ -143,6 +143,7 @@ margin-bottom: 10px;
 		        }
 		        console.log('call result: ' + result);
 		    });
+		 */
 		
 	});
 
