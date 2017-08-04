@@ -241,4 +241,16 @@ class Column
 	{
 		return this.showColumn;
 	}
+
+	boolean isEditable = false;
+	public Column setIsEditable(boolean isEditable) 
+	{
+		this.isEditable = isEditable;
+		return this;
+	}
+	
+	public boolean getIsEditable()
+	{
+		return this.isEditable;
+	}
 }

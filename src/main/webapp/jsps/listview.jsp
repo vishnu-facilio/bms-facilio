@@ -31,7 +31,6 @@
 						<li><a href="#ticket/myoverduetickets">My Overdue Work Orders</a></li>
 					</f:hasPermission>
 				</ul>
-				
 				<f:hasPermission permission="WORKORDER_CREATE">
 					<div class="action-btn text-right">
 				 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>
@@ -57,7 +56,7 @@
 				</f:hasPermission>
 			</s:elseif>
 			<s:elseif
-				test="%{moduleLinkName == 'campus' || moduleLinkName == 'building'}">
+				test="%{moduleLinkName == 'campus' || moduleLinkName == 'building' || moduleLinkName == 'floor' || moduleLinkName == 'space' || moduleLinkName == 'zone'}">
 					<f:hasPermission permission="SPACEMANAGEMENT_ACCESS_ENABLE">
 						<div class="action-btn text-right">
 					 		<button type="button" class="btn btn-default new-btn save-btn"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New</button>

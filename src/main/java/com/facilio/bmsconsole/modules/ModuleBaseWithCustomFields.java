@@ -23,7 +23,7 @@ public class ModuleBaseWithCustomFields {
 		this.moduleId = moduleId;
 	}
 	
-	private long id = 0;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}

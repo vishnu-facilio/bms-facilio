@@ -187,7 +187,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.attachments = attachments;
 	}
 	
-	public List<TicketStatusContext> getStatuses() throws Exception 
+	public static List<TicketStatusContext> getStatuses() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
 		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
