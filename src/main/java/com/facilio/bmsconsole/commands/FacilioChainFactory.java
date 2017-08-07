@@ -44,6 +44,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateTicketChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForTicket());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getTicketDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());

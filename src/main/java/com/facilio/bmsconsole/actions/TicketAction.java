@@ -88,6 +88,16 @@ public class TicketAction extends ActionSupport {
 		setTicketId(ticket.getId());
 		return SUCCESS;
 	}*/
+	
+	public String updateTicket() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		
+		Chain updateTicket = FacilioChainFactory.getUpdateTicketChain();
+		updateTicket.execute(context);
+		return SUCCESS;
+	}
  	
  	//View Ticket Props
 	public String viewTicket() throws Exception {

@@ -253,6 +253,10 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">ticketCategoryList</result>
 		</action>
+		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
+			<result type="tiles">importData</result>
+		</action>
+		
 	</package>
 
 	<package name="ticket" namespace="/app/ticket" extends="home">
@@ -268,6 +272,14 @@
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.TicketAction" method="updateTicket">
+			<param name="permission">WORKORDER_UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">ticketId</param>
+			</result>
+		</action>
+		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction" method="deleteTicket">
 			<param name="permission">WORKORDER_DELETE</param>
 			<result name="success" type="json">

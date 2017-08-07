@@ -29,7 +29,12 @@ public class SetupActions extends ActionSupport {
 		setSetup(SetupLayout.getPersonalSettingsLayout());
 		return SUCCESS;
 	}
-	
+
+	public String importData() throws Exception {
+		
+		setSetup(SetupLayout.getImportLayout());
+		return SUCCESS;
+	}
 	public String orgSettings() throws Exception {
 		
 		setSetup(SetupLayout.getCompanySettingsLayout());

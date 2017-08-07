@@ -48,7 +48,7 @@
 					<s:iterator var="column" value="recordSummaryLayout.columns">
 						<tr>
 							<th class="left-th"><s:property value="#column.label" /></th>
-							<td>
+							<td <s:if test="#column.isEditable">onclick="$(this).hide(); $(this).next().show();"</s:if>>
 							<s:if test="%{#column.columnType == @com.facilio.bmsconsole.context.Column$ColumnType@LOOKUP}">
 								<s:property value="record[#column.id][#column.lookupId]" />
 							</s:if>
@@ -56,6 +56,16 @@
 								<s:property value="record[#column.id]" />
 							</s:else>
 							</td>
+							<s:if test="#column.isEditable">
+								<td style="display:none;">
+									<input name="<s:property value="#column.id"/>" 
+									class="form-control" 
+									type="text"
+									value="<s:property value="record[#column.id]" />"
+									onchange="update('<s:property value="record[recordSummaryLayout.pkColumnId]" />',$(this).val());"
+									/>
+								</td>
+							</s:if>
 						</tr>
 					</s:iterator>
 				</table>
@@ -226,6 +236,17 @@ var relatedModuleAddCallBack = function(result, error)
 		}
 	}
 </s:if>
+
+//Testing
+function update(id, value)
+{
+	FacilioApp.ajax({
+		url: "/app/ticket/update?ticket.id="+id+"&ticket.description=" +value,
+		success: function(response, status, xhr) {
+			alert(response);
+		}
+	});	
+}
  
 </script>
 

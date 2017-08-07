@@ -95,7 +95,7 @@ public class RecordSummaryLayout {
 		recordSummaryLayout.setHasProgressBar(true);
 		recordSummaryLayout.setRecordTitleColumnId("subject");
 		recordSummaryLayout.setPkColumnId("id");
-		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
+		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT).setIsEditable(true));
 		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
 		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
