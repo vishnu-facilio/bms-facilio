@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
@@ -154,10 +155,14 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		
 		if(bean != null) {
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.setSerializationInclusion(Include.NON_DEFAULT);
 			properties = mapper.convertValue(bean, Map.class);
 			
 			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-			properties.putAll(customProps);
+			if(customProps != null)
+			{
+				properties.putAll(customProps);
+			}
 		}
 		
 		return properties;
