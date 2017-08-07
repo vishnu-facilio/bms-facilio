@@ -1,3 +1,7 @@
+.setup-wrapper {
+    overflow-y: scroll !important;
+}
+
 .sidebar-search .setup-search {
 	background: #323941;
 	color: #fff;
@@ -162,7 +166,7 @@ td.center {
 }
 
 .setup-list-content {
-    height: 500px;
+    height: 300px;
 }
 .setup-list-content .form-container {
 	padding: 30px;
@@ -250,6 +254,9 @@ td.center {
 	font-size:18px;
 		color:#aaa;
 }
+.fa-cog:hover:before {
+		color:#333;
+}
 .fa-caret-down:before {
 	content: "\f0d7";
 	font-size:12px;
@@ -261,6 +268,7 @@ a.downArrow{
 
 .adminContent{
 	padding-top:10px;
+	
 }
 .border{
 	width:100%;
@@ -289,10 +297,16 @@ h3{
 	padding-left:3px;
 	padding-right:3px;
 }
+.admin:hover{
+	color:#333;
+}
 p{
 	font-weight:400;
 	font-size:16px;
-	margin-top:-5px;
+
+}
+.subHead{
+		margin-top:-5px;
 }
 .leftHeading{
 	display:inline;
@@ -312,7 +326,7 @@ p{
 	
 }
 .heading1{
-	padding-bottom:20px;
+	padding-bottom:10px;
 }
 
 
@@ -333,7 +347,6 @@ p{
 	color:#555;
 	font-weight:500;
 	font-size:17px;
-
 }
 .titleLight{
 	color:#99999c;
@@ -408,13 +421,16 @@ p{
 .yesNo1{
 	margin-top:20px;
 }
+
+/* editemailsettings */
+
 .fa-arrow-left:before {
 	content: "\f060";
 	color: #aaaaaa;
 }
 .adminContent {
 	padding-top: 10px;
-	margin-top: 10px;
+/*	margin-top: 10px;*/
 }
 .emailBack {
 	display: inline;
@@ -452,7 +468,7 @@ p{
 .update:visited {
 	color: #FFF;
 }
-.border {
+.editBorder {
 	width: 100%;
 	height: 1px;
 	background-color: #dadada;
@@ -500,7 +516,95 @@ input[type="text"], select, input.text {
 	background-color: #efefef;
 }
 
+/* notifications */
 
+.fa-pencil:before {
+	content: "\f040";
+}
+.emailHead{
+	font-weight:500;
+}
+.notificationNav{
+	padding-top:10px;
+	font-size:16px;
+	}
+.subTitle{
+	font-weight:500;
+	font-size:17px;
+	padding-left:30px;
+}
+.contentOdd{
+	
+	padding:20px 0;
+}
+.contentEven{
+	background-color:#f7f7f7;
+	padding:20px 0;
+}
+.contentOdd:hover,.contentEven:hover{
+	background-color:#fbfbfb;
+	padding:20px 0;
+}
+.textBlue a{
+	color:#09c;
+	text-decoration:none !important;
+	
+}
+.textBlue a:hover{
+	text-decoration:none !important;
+}
+.system{
+	text-transform:uppercase;
+}
+
+.language_symbol {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.language_symbol{
+border: 1px solid;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #85b525;
+    text-align: center;
+    background: #fff;
+}
+.language_symbol .language_name {
+    font-size: 10px;
+    font-weight: normal;
+    top: 3px;
+    position: relative;
+    text-transform: capitalize;
+}
+.language_symbol .language_symbol_overlay {
+   display:inline;
+    position: absolute;
+    background: #555;
+    height: 20px;
+    width: 20px;
+    left: -1px;
+    top: -1px;
+    border-radius: 50%;
+    border: 1px solid #555;
+}
+.language_symbol .language_symbol_overlay i{
+	color:#fff;
+	position:relative;
+	top:2px;
+	left:4px;
+}
+.lastBorder{
+	padding-bottom:20px;
+}
+.content1{
+	padding:20px;
+}
 
 
 /*bootstrap class*/

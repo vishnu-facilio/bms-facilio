@@ -13,7 +13,7 @@
 </div>
 <div class="container-fluid1">
   <div class="row">
-    <div class="border"></div>
+    <div class="editBorder"></div>
   </div>
 </div>
 <div class="container1">
