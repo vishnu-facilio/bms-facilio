@@ -92,6 +92,7 @@ button.btn.btn-default.btn-circle.cancel-btn {
 	text-transform: uppercase;
 	letter-spacing: 0.64px;
 	font-size: 15px;
+	white-space: nowrap;
 }
 
 .setup-body-tbody {
