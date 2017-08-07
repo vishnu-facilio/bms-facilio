@@ -85,6 +85,22 @@
 	                    </li>
 	                </ul>
 	            </li>
+	                     <li>
+                <a href="#">
+                	<span class="nav-title">Data Administration</span>
+                	<span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#import">Import</a>
+                    </li>
+                    <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+                    	<li>
+	                        <a href="#">Export</a>
+	                    </li>
+                    </f:hasPermission>
+                </ul>
+            </li>
 	            <li>
 	                <a href="#subscriptions">
 	                	<span class="nav-title">Subscriptions</span>

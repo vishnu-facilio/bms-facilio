@@ -2,7 +2,7 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>    
 
 
-
+<div class="form-container form-content">
 
 
 processid <s:property value="%{importprocessid}" />
@@ -17,3 +17,4 @@ processid <s:property value="%{importprocessid}" />
 </s:iterator>
 <input type="submit" name="confirm" value="confirm">
 </form>
+</div>

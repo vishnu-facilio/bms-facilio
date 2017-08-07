@@ -214,6 +214,16 @@
 	       						</ul>
        						</f:hasPermission>
        					</div>
+       					<div class="col-lg-4 col-sm-4">
+       						<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	       						<ul class="list-unstyled">
+	       							<li class="setup-body-thead">Data Administration</li>
+	       							<li class="setup-body-tbody"><a href="setup#import">Import</a></li>
+	       							<li class="setup-body-tbody"><a href="#">Export</a></li>
+	       				
+	       						</ul>
+       						</f:hasPermission>
+       					</div>
        				</div>
         		</div>
         	</div>
