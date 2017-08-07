@@ -7,11 +7,11 @@
 			<div class="form-group">
 		    	<label>Modules</label>
 		    	<span class="required">*</span>
-		    	<select name="module" required class="form-control">
+		    	<select name="metainfo.module" required class="form-control">
 				
-				<option>campus</option>
-				<option>Building</option>
-				<option>Floor</option>
+				<option value="1">Energy</option>
+				<option value="2">Building</option>
+				<option value="3">Floor</option>
 				<option>Space</option>
 				<option>Zone</option>
 			</select>

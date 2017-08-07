@@ -5,8 +5,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.transaction.FacilioConnectionPool;
@@ -74,8 +76,36 @@ public class ImportMetaInfo
 
 		System.out.println("fieldMapping" +fieldMapping);
 		
+		System.out.println("columnheadings" +columnheadings);
+		
+		System.out.println("fields" +fields);
+		
 		return columnheadings==null?"":columnheadings.toJSONString() + "\n" + (fields==null?"":fields.toJSONString())+"\n Field mapping"+fieldMapping;
 	}
+	public enum Module
+	{
+		Energy(1),
+		Campuse(2),
+		Space(3);
+		int value;
+		private Module(int value)
+		{
+			this.value=value;
+		}
+		public int getValue()
+		{
+			System.out.println("this get value "+value);
+			return this.value;
+		}
+		
+	}
+	public Module getModule() {
+		return module;
+	}
+	public void setModule(Module module) {
+		this.module = module;
+	}
+	private Module module=Module.Energy;
 	public static JSONArray getFields(int moduletype)
 	{
 		JSONArray fields = new JSONArray();
@@ -99,39 +129,42 @@ public class ImportMetaInfo
 			
 	}
 	
-	public static JSONArray getColumnHeadings(File excelfile)
-	{
-		JSONArray columnheadings = new JSONArray();
-		//columnheadings.
-		columnheadings.add(0, "PowerKWS");
-		columnheadings.add(1, "Voltage");
-		
-		columnheadings.add( "Current R");
-		columnheadings.add( "Voltage");
-		
-		columnheadings.add( "Current  L");
-		columnheadings.add( "phase Voltage");
-		
-		columnheadings.add( "Current Y");
-		columnheadings.add( "Frequency");
-		return columnheadings;
-	}
 	
-	private HashMap<String,Object> fieldMapping = new HashMap<String,Object>();
-	public HashMap<String,Object> getFieldMapping() {
+	
+	private HashMap fieldMapping = new HashMap();
+	public HashMap getFieldMapping() {
+		System.out.println(fieldMapping);
 		return fieldMapping;
 	}
-	public void setFieldMapping(HashMap<String,Object> fieldMapping) {
+	public void setFieldMapping(HashMap fieldMapping) {
 		this.fieldMapping = fieldMapping;
 	}
-	public String getFieldMapping(String key) {
+	public String[] getFieldMapping(String key) {
 
-		return (String)fieldMapping.get(key);
+		return (String[])fieldMapping.get(key);
 	}
-	public void setFieldMapping(String key,String Value) {
+	public void setFieldMapping(String key,String[] Value) {
 		this.fieldMapping.put(key, Value);
 	}
 	
+	public JSONObject getFieldMappingJSON()
+	{
+		JSONObject json = new JSONObject();
+		Iterator keys = fieldMapping.keySet().iterator();
+		while(keys.hasNext())
+		{
+			String key =(String) keys.next();
+			String []values = (String [])fieldMapping.get(key);
+		json.put(key, values[0]);
+		}
+		
+		return json;
+	}
 	
+	public static void main(String args[])
+	{
+		Module m = Module.Energy;
+		System.out.println("value is "+ m.getValue());
+	}
 	
 }

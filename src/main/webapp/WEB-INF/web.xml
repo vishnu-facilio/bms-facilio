@@ -12,7 +12,7 @@
    </context-param>
    <context-param>
         <param-name>DOMAINNAME</param-name>
-        <param-value>.facilstack.com</param-value>
+        <param-value>.facilio.com</param-value>
     </context-param>
     <context-param>
         <param-name>M_DOMAINNAME</param-name>
