@@ -121,6 +121,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, FieldType.NUMBER, properties.get("id"));
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
 	{
 		Map<String, Object> properties = null;

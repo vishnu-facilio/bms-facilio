@@ -88,7 +88,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		return sourceType;
 	}
 		
-	private long assetId = 0;
+	private long assetId = -1;
 	public long getAssetId() {
 		return assetId;
 	}
@@ -117,7 +117,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.dueDate = dueDate;
 	}
 	
-	private long createdDate = 0;
+	private long createdDate = -1;
 	public long getCreatedDate() {
 		return createdDate;
 	}
@@ -172,7 +172,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.schedule = schedule;
 	}
 	
-	private long scheduleId = 0;
+	private long scheduleId = -1;
 	public long getScheduleId() {
 		return scheduleId;
 	}

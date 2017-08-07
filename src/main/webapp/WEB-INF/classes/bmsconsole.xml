@@ -268,6 +268,14 @@
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.TicketAction" method="updateTicket">
+			<param name="permission">WORKORDER_UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">ticketId</param>
+			</result>
+		</action>
+		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction" method="deleteTicket">
 			<param name="permission">WORKORDER_DELETE</param>
 			<result name="success" type="json">
