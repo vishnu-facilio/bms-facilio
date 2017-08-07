@@ -17,7 +17,7 @@
    						 <span class="caret"></span></h4>
    						 
 			<s:if
-				test="%{moduleLinkName == 'ticket'}">
+				test="%{moduleLinkName == 'workorder'}">
 
 				<ul class="dropdown-menu" role="menu">
 					<f:hasPermission permission="WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES,WORKORDER_ACCESS_READ_ANY">
