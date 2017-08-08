@@ -5,12 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
