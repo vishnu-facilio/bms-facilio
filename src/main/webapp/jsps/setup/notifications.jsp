@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-   
-
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>   
 <div class="container1 adminContent panel-heading">
   <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-left"> <i class="fa fa-cog" aria-hidden="true"></i>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-left"><a href="#setuphome" class="adminHead"> <i class="fa fa-cog" aria-hidden="true"></i>
       <h3 class="admin">Admin</h3>
-      <a href="#" class="downArrow"><i class="fa fa-caret-down" aria-hidden="true"></i></a> </div>
+      <i class="fa fa-caret-down" aria-hidden="true"></i></a> </div>
   </div>
 </div>
 <div class="container-fluid1">
@@ -30,7 +30,7 @@
  <div class="border"></div>  
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1">yes/no</div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"><input type="checkbox" class="notifyCheck" name="" value="0"></div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">New Ticket Created</a></p>
       </div>
@@ -46,7 +46,7 @@
   <div class="border"></div>
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Agent adds comment to Ticket</a></p>
       </div>
@@ -62,7 +62,7 @@
   <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Agent solves the Ticket</a></p>
       </div>
@@ -78,7 +78,7 @@
   <div class="border"></div>
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Agent closes the Ticket</a></p>
       </div>
@@ -94,7 +94,7 @@
   <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">User Activation Email</a></p>
       </div>
@@ -111,7 +111,7 @@
   
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Requested Item Stage Change</a></p>
       </div>
@@ -152,7 +152,7 @@
   <div class="border"></div>  
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0"> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">New Ticket Created</a></p>
       </div>
@@ -168,7 +168,7 @@
   <div class="border"></div>
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Ticket assigned to Group</a></p>
       </div>
@@ -184,7 +184,7 @@
   <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Ticket assigned to Agent</a></p>
       </div>
@@ -200,7 +200,7 @@
   <div class="border"></div>
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Requester replies to Ticket</a></p>
       </div>
@@ -216,7 +216,7 @@
   <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Ticket unattended in Group</a></p>
       </div>
@@ -233,7 +233,7 @@
   
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">First Response SLA Notification</a></p>
       </div>
@@ -249,7 +249,7 @@
   <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Resolution time SLA Notification</a></p>
       </div>
@@ -266,7 +266,7 @@
   
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Service Request Approved or Rejected</a></p>
       </div>
@@ -366,7 +366,7 @@
     </div>
   </div>
   <div class="border"></div>
-  <div class="contentEven">
+  <div class="contentOdd">
     <div class="row">
       <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <p class="system">System</p></div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
@@ -390,7 +390,7 @@
    <div class="border"></div>
   <div class="contentOdd">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">New ticket created</a></p>
       </div>
@@ -406,7 +406,7 @@
   <div class="border"></div>
   <div class="contentEven">
     <div class="row">
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> yes/no </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-1"> <input type="checkbox" class="notifyCheck" name="" value="0" checked> </div>
       <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">
         <p class="textBlue"><a href="#">Note added to Ticket</a></p>
       </div>
