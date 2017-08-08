@@ -15,7 +15,7 @@
   <div class="row">
     <div class="heading1">
       <h3>Email Settings</h3>
-      <p>List of all helpdesk email addresses</p>
+      <p class="subHead">List of all helpdesk email addresses</p>
     </div>
   </div>
 </div>

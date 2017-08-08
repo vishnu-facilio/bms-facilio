@@ -11,6 +11,7 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -41,12 +42,14 @@ public class ImportDataAction extends ActionSupport {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		Connection conn =null;
 		try {
-			JSONArray columnheadings = ImportMetaInfo.getColumnHeadings(fileUpload);
+			JSONArray columnheadings = ProcessXLS.getColumnHeadings(fileUpload);
 						
 			setColumnheading(columnheadings.toJSONString());
 			long fileid = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 			String  insert = INSERTQUERY.replaceAll("#orguserid#", fs.getUserId()+"").replaceAll("#fileid#", fileid+"").replaceAll("#COLUMN_HEADING#", getColumnheading().replaceAll("\"", "\\\""));
-			insert =insert.replaceAll("#module#", "1"); // 1 for energy data
+
+			System.out.println(""+metainfo.getModule());
+			insert =insert.replaceAll("#module#", String.valueOf(metainfo.getModule().getValue())); // 1 for energy data
 			 conn  = FacilioConnectionPool.INSTANCE.getConnection();
 			System.out.println(insert);
 			PreparedStatement pstmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);	
@@ -89,9 +92,20 @@ public class ImportDataAction extends ActionSupport {
 	}
 	// column heading vs field name mapping + importid
 	
-	public String processImport()
+	public String processImport() throws SQLException
 	{
+		System.out.println("Meta info"+getMetainfo());
+		System.out.println("Meta info"+getMetainfo().getFieldMapping());
 		// based on the option selected in displayColumnFieldMapping, load the data from excel file and get it imported
+		
+		String updatequery = UPDATEQUERY.replaceAll("#FIELD_MAPPING#", getMetainfo().getFieldMappingJSON().toJSONString()).replaceAll("#IMPORTID#", String.valueOf(getMetainfo().getImportprocessid()));
+		java.sql.Connection c = FacilioConnectionPool.getInstance().getConnection();
+		Statement stmt = c.createStatement();
+		System.out.println("the column mapping is "+updatequery);
+		stmt.executeUpdate(updatequery);
+		stmt.close();
+		c.close();
+		
 		return SUCCESS;
 	}
 	public String showformupload()
@@ -142,6 +156,9 @@ public class ImportDataAction extends ActionSupport {
 	private long importprocessid=0;
 	private static String INSERTQUERY = "insert into ImportProcess(ORG_USERID,INSTANCE_ID,STATUS,FILEID,COLUMN_HEADING,IMPORT_TIME,IMPORT_TYPE) values (#orguserid#,#module#,1,#fileid#,'#COLUMN_HEADING#',UNIX_TIMESTAMP(),1)";
 
+	private static String UPDATEQUERY = "update  ImportProcess set FIELD_MAPPING='#FIELD_MAPPING#' where IMPORTID_ID=#IMPORTID#";
+
+	
 	public ImportMetaInfo getMetainfo() {
 		return metainfo;
 	}

@@ -79,6 +79,15 @@ public class SetupLayout {
 		
 		return sl;
 	}
+	public static SetupLayout getImportLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Data Administration");
+		sl.setSettingViewTitle("Import");
+		
+		return sl;
+	}
 	
 	public static SetupLayout getCompanySettingsLayout() {
 		

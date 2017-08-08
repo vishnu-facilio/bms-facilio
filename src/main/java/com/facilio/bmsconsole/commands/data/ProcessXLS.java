@@ -14,6 +14,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+
+import com.facilio.bmsconsole.actions.ImportMetaInfo;
 
 public class ProcessXLS implements Command {
 
@@ -101,4 +104,27 @@ String FILE_NAME  =null;
 	    return true;
 	} 
 	
+	public static void processImport(ImportMetaInfo metainfo)
+	{
+		System.out.println("All set for importing "+metainfo);
+		
+	}
+	
+	public static JSONArray getColumnHeadings(File excelfile)
+	{
+		JSONArray columnheadings = new JSONArray();
+		//columnheadings.
+		columnheadings.add(0, "PowerKWS");
+		columnheadings.add(1, "Voltage");
+		
+		columnheadings.add( "CurrentR");
+		columnheadings.add( "Voltage");
+		
+		columnheadings.add( "CurrentL");
+		columnheadings.add( "phase Voltage");
+		
+		columnheadings.add( "CurrentY");
+		columnheadings.add( "Frequency");
+		return columnheadings;
+	}
 }
