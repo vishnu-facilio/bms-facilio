@@ -1,4 +1,5 @@
 package com.facilio.fw;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
@@ -14,29 +15,28 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.sql.Connection;
 
 public class BeanFactory {
+	
 	static HashMap<String,Class> beans = new HashMap();
-	static
 	
-	{
+	static {
 		//TODO move it to context listener file
-
-			
 	}
-	
+
 	public static void initBeans()
 	{
 		ClassLoader classLoader = BeanFactory.class.getClassLoader();
 		File beansxml = new File(classLoader.getResource("conf/fw/beans.xml").getFile());
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		try {
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
 			Document doc = dBuilder.parse(beansxml);
 			NodeList nList = doc.getElementsByTagName("bean");
-			
-			
+
+
 
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				Node nNode = nList.item(temp);
@@ -60,16 +60,64 @@ public class BeanFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-System.out.println("beans initialised" +beans );
-	
+		System.out.println("beans initialised" +beans );
+
 	}
-	public Object lookup(String beanname,Long orgid) throws InstantiationException, IllegalAccessException
+	
+	public static Object lookup(String beanname) throws InstantiationException, IllegalAccessException
+	{
+		long orgid = OrgInfo.getCurrentOrgInfo().getOrgid();
+		Class implclass = beans.get(beanname);
+		Object implobj = implclass.newInstance();
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
+	}
+	
+	public static Object lookup(String beanname, Long orgid) throws InstantiationException, IllegalAccessException
 	{
 		Class implclass = beans.get(beanname);
 		Object implobj = implclass.newInstance();
-		return Proxy.newProxyInstance(implclass.getClass().getClassLoader(),
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
 				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
-		
+	}
+	
+	public static Object lookup(String beanname, Connection conn) throws InstantiationException, IllegalAccessException
+	{
+		long orgid = OrgInfo.getCurrentOrgInfo().getOrgid();
+		Class implclass = beans.get(beanname);
+		Object implobj = implclass.newInstance();
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid,conn));	
+	}
+	
+	public static Object lookup(String beanname, Long orgid, Connection conn) throws InstantiationException, IllegalAccessException
+	{
+		Class implclass = beans.get(beanname);
+		Object implobj = implclass.newInstance();
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid,conn));	
 	}
 
+	private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
+
+	/**
+	 * Set's given connection to current threadlocal and return's old connection if it exists
+	 * 
+	 * @param conn
+	 * @return
+	 */
+	public static Connection setConnection(Connection conn) {
+		Connection oldConn = connectionThreadLocal.get();
+		connectionThreadLocal.set(conn);
+		return oldConn;
+	}
+
+	/**
+	 * Get connection from current threadlocal
+	 * 
+	 * @return
+	 */
+	public static Connection getConnection() {
+		return connectionThreadLocal.get();
+	}
 }

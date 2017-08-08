@@ -13,8 +13,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
@@ -31,6 +33,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	private String orderBy;
 	private int limit;
 	private int level = 0;
+	private ModuleBean modBean;
 	
 	//Need where condition builder for custom field
 	
@@ -82,6 +85,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	public SelectRecordsBuilder<E> limit(int limit) {
 		this.limit = limit;
 		return this;
+	}
+	
+	private ModuleBean getModuleBean() throws Exception {
+		if (this.modBean == null) {
+			this.modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", this.conn);
+		}
+		return this.modBean;
 	}
 	
 	private ResultSet getResultSet(PreparedStatement pstmt) throws SQLException {
@@ -166,7 +176,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 					Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
 					if(moduleClass != null) {
 						if(level <= LEVEL) {
-							List<FacilioField> lookupBeanFields = FieldUtil.getAllFields(lookupField.getLookupModule().getName(), conn);
+							List<FacilioField> lookupBeanFields = getModuleBean().getAllFields(lookupField.getLookupModule().getName());
 							SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
 																								.connection(conn)
 																								.dataTableName(lookupField.getLookupModule().getTableName())

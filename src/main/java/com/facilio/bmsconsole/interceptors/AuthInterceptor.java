@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.interceptors;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;

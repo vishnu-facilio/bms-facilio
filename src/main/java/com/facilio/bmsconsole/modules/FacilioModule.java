@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.modules;
 
-public class FacilioModule {
+import java.io.Serializable;
+
+public class FacilioModule implements Serializable {
 	
 	private long moduleId;
 	public long getModuleId() {

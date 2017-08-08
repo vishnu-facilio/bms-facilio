@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,11 +10,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
 public class WorkOrderAPI {
@@ -58,8 +59,8 @@ public class WorkOrderAPI {
 
 	public static List<TaskContext> getRelatedTasks(long workOrderId, Connection conn) throws Exception 
 	{
-		
-		List<FacilioField> fields = FieldUtil.getAllFields("task", conn);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.connection(conn)

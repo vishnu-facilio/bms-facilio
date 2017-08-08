@@ -1,10 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FacilioField {
+public class FacilioField implements Serializable {
 	
 	private long fieldId;
 	public long getFieldId() {
@@ -92,6 +93,14 @@ public class FacilioField {
 	}
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+	
+	private String moduleTableName;
+	public String getModuleTableName() {
+		return moduleTableName;
+	}
+	public void setModuleTableName(String moduleTableName) {
+		this.moduleTableName = moduleTableName;
 	}
 	
 	private boolean required;

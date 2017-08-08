@@ -1,16 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
+import com.facilio.fw.BeanFactory;
 
 public class SetModuleIdCommand implements Command{
 
@@ -24,33 +22,12 @@ public class SetModuleIdCommand implements Command{
 			throw new IllegalArgumentException("Module Name cannot be empty or null");
 		}
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
 		
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		FacilioModule moduleObj = modBean.getModule(moduleName);
 		
-		try {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			pstmt = conn.prepareStatement("SELECT MODULEID FROM Modules WHERE ORGID=? AND NAME=?");
-			pstmt.setLong(1, orgId);
-			pstmt.setString(2, moduleName);
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				context.put(FacilioConstants.ContextNames.MODULE_ID, rs.getLong("MODULEID"));
-			}
-			else {
-				throw new IllegalArgumentException("Invalid moduleName. No such moduleName found");
-			}
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		context.put(FacilioConstants.ContextNames.MODULE_ID, moduleObj.getModuleId());
 		
 		return false;
 	}
