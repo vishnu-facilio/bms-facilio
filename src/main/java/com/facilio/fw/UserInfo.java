@@ -1,6 +1,8 @@
 package com.facilio.fw;
 
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.simple.JSONObject;
 
@@ -27,8 +29,8 @@ public class UserInfo {
 	private boolean emailVerified;
 	private String phoneNumber;
 	private boolean phoneNumberVerified;
-	private String locale;
-	private String timezone;
+	private String localeValue;
+	private String timezoneValue;
 	private JSONObject additionalProps;
 
 	// db props
@@ -124,20 +126,34 @@ public class UserInfo {
 		this.phoneNumberVerified = phoneNumberVerified;
 	}
 
-	public String getLocale() {
-		return locale;
+	public String getLocaleValue() {
+		return localeValue;
 	}
 
-	public void setLocale(String locale) {
-		this.locale = locale;
+	public void setLocaleValue(String localeValue) {
+		this.localeValue = localeValue;
+	}
+	
+	public Locale getLocale() {
+		if (this.localeValue != null) {
+			return new Locale(this.localeValue);
+		}
+		return null;
 	}
 
-	public String getTimezone() {
-		return timezone;
+	public String getTimezoneValue() {
+		return timezoneValue;
 	}
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
+	public void setTimezoneValue(String timezoneValue) {
+		this.timezoneValue = timezoneValue;
+	}
+	
+	public TimeZone getTimeZone() {
+		if (this.timezoneValue != null) {
+			return TimeZone.getTimeZone(this.timezoneValue);
+		}
+		return null;
 	}
 
 	public long getUserId() {
