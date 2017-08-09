@@ -54,8 +54,14 @@
    		 </label>
     	 <label class="radio-inline ">
     	 <input type="radio" value="all"  name="user-ticket-permissions">Everyone
-         </label>
-    	</div>
+         </label> 
+          <div id="enable-captcha" class="hidden-input">
+         <label class="radio-inline "> 
+         <input	type="checkbox" name="captcha" value="captcha-enabled">Enable CAPTCHA to help avoid spam
+		  </label>
+		  </div>
+
+		</div>
 		</div>
 		 <div class="row row-height">
          <div class="col-xs-6">
@@ -69,6 +75,7 @@
     	 <label class="radio-inline ">
     	 <input type="radio" value="all" name="view-user-permissions">Everyone
          </label>
+         
     	</div>
 		</div>
     </section>
@@ -94,7 +101,7 @@
     	 <label class="radio-inline">
     	 <input class="display-input" type="radio" value="no" name="whitelist-domain-radio">Users from whitelisted domains
     	 </label>
-    	 <input type="text" class="hidden-input"name="FirstName" >
+    	 <input type="text" id="domain-name" class="hidden-input" name="domainName" placeholder="Enter Domain Name" >
          
     	</div>
 		</div>
@@ -109,6 +116,11 @@
    </form>
 </div>
 <style>
+.fc-dashed-line{
+
+margin-top: 20px;
+margin-bottom: 20px;
+}
 .hidden-input{
 display: none;
 }
@@ -147,14 +159,27 @@ $(document).ready(function() {
 	$("input[name=whitelist-domain-radio]").change(function() {
 		var val = ($(this).val());
 		if(val == "no"){
-	 		 $('.hidden-input').addClass('hidden-input1');
+	 		
 
-	 		 $('.hidden-input').removeClass('hidden-input');
+	 		 $('#domain-name').removeClass('hidden-input');
 
 		}
 		else{
- 		 $('.hidden-input1').addClass('hidden-input');
- 		 $('.hidden-input').removeClass('hidden-input1');
+ 		 $('#domain-name').addClass('hidden-input');
+
+		}
+ 		 
+	});
+	$("input[name=user-ticket-permissions]").change(function() {
+		var val = ($(this).val());
+		if(val == "all"){
+	 		
+
+	 		 $('#enable-captcha').removeClass('hidden-input');
+
+		}
+		else{
+ 		 $('#enable-captcha').addClass('hidden-input');
 
 		}
  		 
