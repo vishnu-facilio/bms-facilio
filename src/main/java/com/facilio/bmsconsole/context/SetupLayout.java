@@ -89,6 +89,18 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getcustomerPortal() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Customer Portal");
+		sl.setSettingViewTitle("Customer Portal");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		
+		
+		return sl;
+	}
+	
 	public static SetupLayout getCompanySettingsLayout() {
 		
 		SetupLayout sl = new SetupLayout();

@@ -35,6 +35,11 @@ public class SetupActions extends ActionSupport {
 		setSetup(SetupLayout.getImportLayout());
 		return SUCCESS;
 	}
+	public String customerPortal() throws Exception {
+
+		setSetup(SetupLayout.getcustomerPortal());
+		return SUCCESS;
+	}
 	public String orgSettings() throws Exception {
 		
 		setSetup(SetupLayout.getCompanySettingsLayout());

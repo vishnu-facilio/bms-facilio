@@ -106,6 +106,11 @@
 	                	<span class="nav-title">Subscriptions</span>
 	                </a>
 	            </li>
+	            <li>
+	                <a href="#customerPortal">
+	                	<span class="nav-title">Customer Portal</span>
+	                </a>
+	            </li>
 	        </f:hasPermission>
         </ul>
     </div>
