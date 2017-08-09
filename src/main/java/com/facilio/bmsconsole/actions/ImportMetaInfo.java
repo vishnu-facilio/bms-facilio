@@ -26,6 +26,15 @@ public class ImportMetaInfo
 		System.out.println("setting the id "+importprocessid);
 		this.importprocessid = importprocessid;
 	}
+	
+	long fileId=0;
+	public long getFileId() {
+		return fileId;
+	}
+	public void setFileId(long fileId) {
+		this.fileId = fileId;
+	}
+	
 	public static ImportMetaInfo getInstance(long processid) throws Exception
 	{
 		
@@ -43,6 +52,7 @@ public class ImportMetaInfo
 				iminfo.columnheadings =(JSONArray)parser.parse(rs.getString("COLUMN_HEADING"));
 				System.out.println("columnheadeing"+iminfo.columnheadings);
 				int instanceid = rs.getInt("INSTANCE_ID");
+				iminfo.setFileId(rs.getLong("FILEID"));
 				iminfo.fields = getFields(instanceid);
 				iminfo.setImportprocessid(processid);
 				System.out.println("fields"+iminfo.fields);
@@ -115,12 +125,32 @@ public class ImportMetaInfo
 			fields.add("TOTAL_ENERGY_CONSUMPTION");
 			fields.add("TOTAL_ENERGY_CONSUMPTION_DELTA");
 			fields.add("LINE_VOLTAGE_R");
-			fields.add("TOTAL_ENERGY_CONSUMPTION");
-			fields.add("TOTAL_ENERGY_CONSUMPTION_DELTA");
-			fields.add("LINE_VOLTAGE_R");
 			fields.add("LINE_VOLTAGE_Y");
 			fields.add("LINE_VOLTAGE_B");
 			fields.add("PHASE_VOLTAGE_R");
+			fields.add("PHASE_VOLTAGE_Y");
+			fields.add("PHASE_VOLTAGE_B");
+			fields.add("LINE_CURRENT_R");
+			fields.add("LINE_CURRENT_Y");
+			fields.add("LINE_CURRENT_B");
+			fields.add("POWER_FACTOR_R");
+			fields.add("POWER_FACTOR_Y");
+			fields.add("POWER_FACTOR_B");
+			fields.add("FREQUENCY_R");
+			fields.add("FREQUENCY_Y");
+			fields.add("FREQUENCY_B");
+			fields.add("ACTIVE_POWER_R");
+			fields.add("ACTIVE_POWER_Y");
+			fields.add("ACTIVE_POWER_B");
+			fields.add("REACTIVE_POWER_R");
+			fields.add("REACTIVE_POWER_Y");
+			fields.add("REACTIVE_POWER_B");
+			fields.add("APPARENT_POWER_R");
+			fields.add("APPARENT_POWER_Y");
+			fields.add("APPARENT_POWER_B");
+			fields.add("PHASE_ENERGY_R");
+			fields.add("PHASE_ENERGY_Y");
+			fields.add("PHASE_ENERGY_B");
 			
 			return fields;
 		}

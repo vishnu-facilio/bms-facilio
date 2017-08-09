@@ -702,11 +702,15 @@
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 			<result name="success">/jsps/import/displayColumnMapping.jsp</result>
 		</action>
-			<action name="displayColumnFieldMapping" class="com.facilio.bmsconsole.actions.ImportDataAction" method="displayColumnFieldMapping">
-			<result name="success">/jsps/campusListPopup.jsp</result>
-		</action>
-			<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
-			<result name="success">/jsps/campusListPopup.jsp</result>
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>
 	</package>	
 	<package name="campus" namespace="/app/campus" extends="home">

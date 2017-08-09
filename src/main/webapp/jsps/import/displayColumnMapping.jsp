@@ -9,12 +9,29 @@ processid <s:property value="%{metainfo.columnHeadings}" />
 
 
 
-<form id="processImport" name="processImport" action="/bms/app/import/processImport.action" method="post">
+<form id="processImport" name="processImport" onsubmit="return false;" method="post">
 <s:hidden name="metainfo.importprocessid" />
-<s:iterator value="metainfo.columnHeadings" >
-<s:set var="columnheading2"/>
-  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{columnheading2}']" list="metainfo.fields" /></p>
+<s:iterator var="field" value="metainfo.fields" >
+  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{field}']" list="metainfo.columnHeadings" headerKey="-1" headerValue="Select Import field"/></p>
 </s:iterator>
-<input type="submit" name="confirm" value="confirm">
+<input type="submit" value="confirm">
 </form>
 </div>
+<script>
+	$('#processImport').submit(function() {
+		
+		FacilioApp.ajax({
+			method : "post",
+			url : contextPath + "/app/import/processImport",
+			data : $(this).serialize(),
+			success: function(data) {
+				FacilioApp.notifyMessage('success', 'Data imported successfully!');
+				FacilioApp.refreshView();
+			},
+			error: function(error) {
+				alert(error);
+			}
+		});
+		return false;
+	});
+</script>
