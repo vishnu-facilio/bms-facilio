@@ -3,8 +3,9 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class LoadAllFieldsCommand implements Command{
 
@@ -18,7 +19,9 @@ public class LoadAllFieldsCommand implements Command{
 			throw new IllegalArgumentException("Module Name is not set for the module");
 		}
  		
-		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, FieldUtil.getAllFields(moduleName, ((FacilioContext) context).getConnectionWithoutTransaction()));
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", ((FacilioContext) context).getConnectionWithoutTransaction());
+		
+		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(moduleName));
 		
 		return false;
 	}

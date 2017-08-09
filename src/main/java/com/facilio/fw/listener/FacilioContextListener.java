@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 
+import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.FacilioScheduler;
@@ -21,6 +22,7 @@ public class FacilioContextListener implements ServletContextListener {
 	public void contextDestroyed(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 //		System.out.println("Listener Destroyed");
+		RedisManager.getInstance().release(); // destroying redis connection pool
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
@@ -36,6 +38,8 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
+			
+			RedisManager.getInstance().connect(); // creating redis connection pool
 			
 			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {

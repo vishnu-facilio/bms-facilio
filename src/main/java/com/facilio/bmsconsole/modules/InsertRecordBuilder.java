@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	private String moduleName;
+	private long moduleId = 0;
 	private String dataTableName;
 	private Connection conn;
 	private List<FacilioField> fields;
@@ -81,6 +84,19 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		}
 	}
 	
+	private long getModuleId() {
+		if (this.moduleId <= 0) {
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+				this.moduleId = modBean.getModule(moduleName).getModuleId();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return this.moduleId;
+	}
+	
 	private void checkForNull() {
 		
 		if(moduleName == null || moduleName.isEmpty()) {
@@ -116,11 +132,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		
 		sql.append(") VALUES (")
 			.append(orgId)
-			.append(", (SELECT MODULEID FROM Modules WHERE ORGID = ")
-			.append(orgId)
-			.append(" AND NAME = '")
-			.append(moduleName)
-			.append("')");
+			.append(",")
+			.append(getModuleId())
+			.append(")");
 			
 		for(FacilioField field : fields) {
 			sql.append(", ?");

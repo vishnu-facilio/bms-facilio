@@ -255,9 +255,6 @@ td.center {
 	font-size:18px;
 		color:#aaa;
 }
-.fa-cog:hover:before {
-		color:#333;
-}
 .fa-caret-down:before {
 	content: "\f0d7";
 	font-size:12px;
@@ -265,18 +262,28 @@ td.center {
 		padding-bottom:20px;
 }
 a.downArrow{
-	margin-top:10px;}
-
+	margin-top:10px;
+}
 .adminContent{
-	padding-top:10px;
-	
+	padding-top:10px;	
+}
+a.adminHead{
+	text-decoration:none !important;
+}
+a.adminHead h3.admin:hover,.fa-cog:hover:before{
+	color:#333;
+	text-decoration:none !important;
 }
 .border{
 	width:100%;
 	height:1px;
 	background-color:#dadada;
 	}
+.newBtn{
+	padding-top:18px;
+}
 .helpdeskBtn{
+	
 	background-color:#118a9d;
 	padding:5px 12px 5px 12px;
 	color:#FFF;
@@ -297,9 +304,6 @@ h3{
 	color:#aaa;
 	padding-left:3px;
 	padding-right:3px;
-}
-.admin:hover{
-	color:#333;
 }
 p{
 	font-weight:400;
@@ -356,9 +360,13 @@ p{
 p{
 	line-height:1;
 }
+.mailId{
+	width:100%;
+	word-wrap:break-word;
+}
 .question{
 	padding-top:20px;
-	padding-bottom:20px;
+	padding-bottom:50px;
 }
 .titleAgent,titleReply{
 	padding-top:0px;
@@ -385,6 +393,7 @@ p{
 	color:#999;
 	font-weight:400;
 	text-decoration:none;
+	
 }
 .editBtn:hover,.delBtn:hover{
 	text-decoration:none;
@@ -400,6 +409,10 @@ p{
 }
 .btns{
 	padding-right:20px;
+}
+input[type="checkbox"]{
+	margin-top:50px;
+	margin-right:20px;
 }
 .noBtn,.yesBtn{
 	padding:4px 7px 4px 7px;
@@ -445,26 +458,31 @@ p{
 	text-decoration: none;
 }
 .cancel {
-	background-color: #f2f2f2;
+	background-color: #e4e2e2;
 	color: #333333;
 	padding: 5px 12px 5px 12px;
 	border-radius: 4px;
 	text-decoration: none !important;
+	border:1px solid #525050;
+	margin-right:5px;
 }
 .cancel:hover {
 	background-color: #c4c2c2;
+	color: #333333;
 }
 .update {
-	background-color: #323232;
+	background-color: #525050;
 	color: #FFF;
 	padding: 5px 12px 5px 12px;
 	border-radius: 4px;
 	text-decoration: none !important;
+	border:1px solid #101010;
 }
 .update:hover {
 	background-color: #101010;
 	color: #FFF;
 	text-decoration: none !important;
+	border:1px solid #525050;
 }
 .update:visited {
 	color: #FFF;
@@ -606,7 +624,12 @@ border: 1px solid;
 .content1{
 	padding:20px;
 }
+input[type="checkbox"].notifyCheck{
+	margin-top:0px;
+	margin-right:0px;
+	margin-left:20px;
 
+}
 
 /*bootstrap class*/
 text-right{

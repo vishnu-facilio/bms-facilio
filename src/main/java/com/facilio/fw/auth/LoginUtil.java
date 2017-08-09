@@ -38,8 +38,8 @@ public class LoginUtil {
 		userInfo.setEmailVerified(cognitoUser.isEmailVerified());
 		userInfo.setPhoneNumber(cognitoUser.getPhoneNumber());
 		userInfo.setPhoneNumberVerified(cognitoUser.isPhoneNumberVerified());
-		userInfo.setLocale(cognitoUser.getLocale());
-		userInfo.setTimezone(cognitoUser.getTimezone());
+		userInfo.setLocaleValue(cognitoUser.getLocale());
+		userInfo.setTimezoneValue(cognitoUser.getTimezone());
 		userInfo.setAdditionalProps(cognitoUser.getAdditionalProps());
 		
 		userInfo.setUserId(usrCtx.getUserId());

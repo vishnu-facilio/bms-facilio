@@ -8,9 +8,10 @@ import java.sql.SQLException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
@@ -33,22 +34,11 @@ public class LoadMainFieldCommand implements Command {
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			String sql = "SELECT Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? AND IS_MAIN_FIELD = true";
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId, conn);
+			FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setLong(1, orgId);
-			pstmt.setString(2, moduleName);
-			
-			rs = pstmt.executeQuery();
-			FacilioField defaultField = null;
-			
-			if(rs.next()) {
-				defaultField = CommonCommandUtil.getFieldFromRS(rs);
-				defaultField.setModuleName(moduleName);
-				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, rs.getString("TABLE_NAME"));
-				context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
-			}
-			
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModuleTableName());
+			context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
 		}
 		catch (SQLException e) {
 			throw e;

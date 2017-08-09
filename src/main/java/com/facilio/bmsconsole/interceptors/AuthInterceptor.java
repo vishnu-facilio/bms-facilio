@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.interceptors;
 
-import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -93,6 +95,20 @@ public class AuthInterceptor extends AbstractInterceptor {
 			if (permission != null && permission.getValue() != null && !isAuthorizedAccess(permission.getValue())) {
 				return "unauthorized";
 			}
+			
+			// Step 6: Setting locale & timezone information in session
+			Locale localeObj = userInfo.getLocale();
+			if (localeObj == null) {
+				localeObj = request.getLocale();
+			}
+			ActionContext.getContext().getSession().put("org.apache.struts.action.LOCALE", localeObj);
+			
+			TimeZone timezoneObj = userInfo.getTimeZone();
+			if (timezoneObj == null) {
+				Calendar calendar = Calendar.getInstance(localeObj);
+				timezoneObj = calendar.getTimeZone();
+			}
+			ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
