@@ -147,15 +147,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.attachments = attachments;
 	}
 	
-	public static List<TicketStatusContext> getStatuses() throws Exception 
-	{
-		FacilioContext context = new FacilioContext();
-		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
-		statusListChain.execute(context);
-		
-		return (List<TicketStatusContext>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST);
-	}
-	
 	private BaseSpaceContext space;
 	public BaseSpaceContext getSpace() {
 		return space;

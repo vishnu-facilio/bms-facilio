@@ -38,12 +38,16 @@
  	<!--  JDBC -->
  	<resource-ref>     
        <description>DB Connection</description>     
-       <res-ref-name>jjdbc/BmsDB</res-ref-name>     
+       <res-ref-name>jdbc/BmsDB</res-ref-name>
        <res-type>javax.sql.DataSource</res-type>     
        <res-auth>Container</res-auth>     
  	</resource-ref>
  	
  	<!--  Context Listener -->
+ 	<listener>
+ 		<!-- Register context listener to bootstrap Narayana services -->
+        <listener-class>org.jboss.narayana.tomcat.jta.NarayanaJtaServletContextListener</listener-class>
+ 	</listener>
  	<listener>
  		<listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
  	</listener>

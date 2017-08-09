@@ -16,6 +16,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -38,6 +39,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
+			FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool
 			
