@@ -224,6 +224,10 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/setup/edit.jsp</result>
 		</action>
+		<action name="newemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="newEmailSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success">/jsps/setup/new.jsp</result>
+		</action>
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
 	    	<result type="tiles">userList</result>

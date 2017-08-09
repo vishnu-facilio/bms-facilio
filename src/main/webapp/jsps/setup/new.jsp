@@ -5,7 +5,7 @@
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-left"> <i class="fa fa-arrow-left" aria-hidden="true"></i>
       <a href="#emailsettings" class="emailBack">Back to Email Configs</a>
     </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right"> <a href="#emailsettings" class="cancel">Cancel</a> <a href="#" class="update">Update</a> </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right"> <a href="#emailsettings" class="cancel">Cancel</a> <a href="#" class="save">Save</a> </div>
   </div>
 </div>
 <div class="container-fluid1">
@@ -27,7 +27,7 @@
       <p class="name">Name</p>    
     </div>
     <div class="col-xs-8 col-sm-8 col-md-8 col-lg-9">
-      <input type="text" name="name" value="facilio" class="txtName">
+      <input type="text" name="name" value="" class="txtName">
       <p class="subText1">Name of the email that will be used in the ticket replies</p>       
     </div>
   </div>
@@ -36,7 +36,7 @@
       <p class="name">Your helpdesk email <span class="star"> *</span></p>    
     </div>
     <div class="col-xs-8 col-sm-8 col-md-8 col-lg-9">
-      <input type="text" name="name" value="helpdesk@facilio1234.freshservice.com" class="txtName">
+      <input type="text" name="name" value="" class="txtName">
       <p class="subText1">This is also your Reply-to address eg. helpdesk@yourcompany.com</p>       
     </div>
   </div>
@@ -79,7 +79,7 @@
           <p class="name">Forward your emails to:</p>    
         </div>
         <div class="col-xs-8 col-sm-8 col-md-8 col-lg-9">
-      <input type="text" name="name" value="helpdesk@facilio1234.freshservice.com" class="forwardMail" style="color:#0078bd;font-size:18px;font-weight:400;" disabled>
+      <input type="text" name="name" value="" class="forwardMail" style="color:#0078bd;font-size:18px;font-weight:400;" disabled>
       <p class="subText2"><a href="#" data-toggle="tooltip" title="Learn how to configure your support email">How to convert your emails into Freshservice tickets?</a></p>       
     </div>
   	</div>

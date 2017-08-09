@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>   
-<div class="container1 adminContent panel-heading">
+<div class="container1 adminContent">
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-left"><a href="#setuphome" class="adminHead"> <i class="fa fa-cog" aria-hidden="true"></i>
       <h3 class="admin">Admin</h3>
@@ -17,8 +17,8 @@
 <div class="container1 notifiContent">
   <div class="row">
     <div class="heading1">
-      <h3 class="emailHead">Email Notifications</h3>
-	      <p class="notificationNav">Work Order Notifications</p>	
+    <h3 class="emailHead">Email Notifications</h3>
+	<p class="notificationNav">Work Order Notifications</p>	
     </div>
     <div class="border"></div>
   </div>

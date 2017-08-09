@@ -54,5 +54,7 @@ public class SetupActions extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+	public String newEmailSettings() throws Exception {
+		return SUCCESS;
+	}
 }
