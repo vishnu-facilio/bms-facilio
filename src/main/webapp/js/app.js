@@ -175,7 +175,12 @@ FacilioApp = {
 	},
 	
 	refreshView: function() {
-		this.loadUrlFromHash();
+		if (location.href.indexOf('/setup') != -1) {
+			this.loadUrlFromHash(true);
+		}
+		else {
+			this.loadUrlFromHash();
+		}
 	},
 	
 	notifyMessage: function(action, message) {

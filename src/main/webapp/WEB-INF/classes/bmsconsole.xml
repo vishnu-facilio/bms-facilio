@@ -224,6 +224,10 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/setup/edit.jsp</result>
 		</action>
+		<action name="newemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="newEmailSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success">/jsps/setup/new.jsp</result>
+		</action>
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
 	    	<result type="tiles">userList</result>
@@ -255,6 +259,9 @@
 		</action>
 		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
 			<result type="tiles">importData</result>
+		</action>
+		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
+			<result type="tiles">customerPortal</result>
 		</action>
 		
 	</package>
@@ -699,11 +706,15 @@
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 			<result name="success">/jsps/import/displayColumnMapping.jsp</result>
 		</action>
-			<action name="displayColumnFieldMapping" class="com.facilio.bmsconsole.actions.ImportDataAction" method="displayColumnFieldMapping">
-			<result name="success">/jsps/campusListPopup.jsp</result>
-		</action>
-			<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
-			<result name="success">/jsps/campusListPopup.jsp</result>
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>
 	</package>	
 	<package name="campus" namespace="/app/campus" extends="home">

@@ -2,27 +2,24 @@ package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	private String moduleName;
-	private long moduleId = 0;
-	private String dataTableName;
+	private GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
+	private long moduleId = -1;
 	private Connection conn;
-	private List<FacilioField> fields;
+	private List<FacilioField> fields = new ArrayList<>();
 	
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -34,54 +31,47 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	}
 	
 	public InsertRecordBuilder<E> dataTableName(String dataTableName) {
-		this.dataTableName = dataTableName;
+		builder.table(dataTableName);
 		return this;
 	}
 	
 	public InsertRecordBuilder<E> fields(List<FacilioField> fields) {
-		this.fields = fields;
+		this.fields.add(FieldFactory.getOrgIdField());
+		this.fields.add(FieldFactory.getModuleIdField());
+		this.fields.addAll(fields);
+		
+		builder.fields(this.fields);
 		return this;
 	}
 	
 	public InsertRecordBuilder<E> connection(Connection conn) {
 		this.conn = conn;
+		builder.connection(conn);
 		return this;
 	}
 	
 	public long insert(E bean) throws Exception {
-		checkForNull();
+		if(moduleName == null || moduleName.isEmpty()) {
+			throw new IllegalArgumentException("Module Name cannot be empty");
+		}
 		
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		Map<String, Object> moduleProps = getAsProperties(bean);
+		moduleProps.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
+		moduleProps.put("moduleId", getModuleId());
 		
-		try {
-			String sql = constuctInsertStatement();
-			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			
-			Map<String, Object> moduleProps = getAsProperties(bean);
-			appendFieldValues(moduleProps, pstmt);
-			
-			if(pstmt.executeUpdate() < 1) {
-				throw new RuntimeException("Unable to add Module");
-			}
-			else {
-				rs = pstmt.getGeneratedKeys();
-				long id = 0;
-				if(rs.next())
-				{
-					id = rs.getLong(1);
-					System.out.println("Added "+bean.getClass().getName()+" object with id : "+id);
+		for(FacilioField field : fields) {
+			if(field.getDataType() == FieldType.LOOKUP) {
+				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
+				if(lookupProps != null) {
+					moduleProps.put(field.getName(), lookupProps.get("id"));
 				}
-				return id;
 			}
 		}
-		catch(SQLException | RuntimeException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		
+		builder.addRecord(moduleProps);
+		builder.save();
+		return (long) moduleProps.get("id");
+			
 	}
 	
 	private long getModuleId() {
@@ -95,73 +85,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			}
 		}
 		return this.moduleId;
-	}
-	
-	private void checkForNull() {
-		
-		if(moduleName == null || moduleName.isEmpty()) {
-			throw new IllegalArgumentException("Module Name cannot be empty");
-		}
-		
-		if(dataTableName == null || dataTableName.isEmpty()) {
-			throw new IllegalArgumentException("Data Table Name cannot be empty");
-		}
-		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
-		}
-		
-		if(fields == null || fields.size() <= 0) {
-			throw new IllegalArgumentException("Fields cannot be null or empty");
-		}
-	}
-	
-	private String constuctInsertStatement() {
-		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		
-		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO ")
-			.append(dataTableName)
-			.append(" (ORGID, MODULEID");
-		
-		for(FacilioField field : fields) {
-			sql.append(", ")
-				.append(field.getColumnName());
-		}
-		
-		sql.append(") VALUES (")
-			.append(orgId)
-			.append(",")
-			.append(getModuleId())
-			.append(")");
-			
-		for(FacilioField field : fields) {
-			sql.append(", ?");
-		}
-		
-		sql.append(")");
-		
-		return sql.toString();
-	}
-	
-	private void appendFieldValues(Map<String, Object> properties, PreparedStatement pstmt) throws SQLException {
-		int paramIndex = 1;
-		for(FacilioField field : fields) {
-			Object value = null;
-			if(field.getDataType() == FieldType.LOOKUP) {
-				Map<String, Object> moduleProps = (Map<String, Object>) properties.get(field.getName()); 
-				if(moduleProps != null) {
-					value = moduleProps.get("id");
-				}
-			}
-			else {
-				value = properties.get(field.getName());
-			}
-			
-			FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, field.getDataType(), value);
-			paramIndex++;
-		}
 	}
 	
 	private Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {

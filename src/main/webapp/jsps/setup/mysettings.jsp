@@ -1,23 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s" %>
 <div class="form-container form-content">
-	<form role="form" id="newRoleForm" method="post" onsubmit="return false;">
-	
-                  <div class="col-lg-6 " >
-                <div class="form-group col-centered">
-            
-  			 <img  class="responsive-img" id="upfile1" alt="click to upload" width="250" height="250"  style="cursor:pointer;line-height: 100px;text-align: center;background: #F8F8F8; "/>
-                
-                
-		     </div>
-		     <input type="file" id="file1"  name="photo" style="display:none" accept="image/*" />
-				
-					<div class="form-group">
-	    		<a href="#">Change profile picture</a>
-	    		
-			</div>
-        </div>
-        	<div class="col-lg-6" >
+	<form role="form" id="mysettings" method="post" onsubmit="return false;">
+	<div class="col-lg-6" >
 			<div class="form-group">
 		    	<label>Name</label>
 		    	<span class="required">*</span>
@@ -45,9 +30,57 @@
 				
 		</div>
 
+
+
+		<div class="col-lg-6 ">
+			<div class="form-group col-centered">
+
+				<img class="responsive-img"  id="upfile1" alt="click to upload"
+					width="250" height="250"
+					style="cursor: pointer; line-height: 100px; text-align: center; background: #F8F8F8;" />
+
+
+			</div>
+			<input type="file" id="file1" name="userPhoto" style="display: none"
+				accept="image/*" />
+
+			<div class="form-group col-centered">
+ <button type="button" class="btn btn-default" data-toggle="modal" data-target="#changePassModel">Change Password</button>
+			</div>
+		</div>
+		
 		
 		
 	</form>
+</div>
+<div class="modal fade" id="changePassModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+	        <div class="modal-header">
+	        	
+	            <button type="button" class="close model-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	            <h4 class="modal-title" id="myModalLabel">Reset password</h4>
+	        </div>
+	        <div class="modal-body">
+	        	<form role="form" id="changePassForm" method="post" onsubmit="return false;">
+					<div class="form-group">
+					    <label>current password</label>
+					    <s:textfield type="password" name="old_password" class="form-control"/>
+					</div>
+					<div class="form-group">
+					    <label>new password</label>
+					    <s:textfield type="password" name="new_password" class="form-control"/>
+					</div>
+				</form>
+	        </div>
+	        <div class="modal-footer">
+	            <button type="button" class="btn btn-default" id="model-close" data-dismiss="modal">Close</button>
+	            <button type="submit" id="save-btn" class="btn btn-primary">Save</button>
+	        </div>
+	    </div>
+	    <!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
 </div>
 <style>
 .col-lg-12.fc-dashed-line{
@@ -85,16 +118,97 @@ margin-bottom: 10px;
 	$(document).ready(function() {
 		
 		$(".action-btn .save-btn").click(function() {
-			$('#').submit();
+			$('#mysettings').submit();
 		});
+		
+		$("#save-btn").click(function() {
+		
+			$('#changePassForm').submit();
+		});
+		
+		$(".model-close").click(function() {
+	        $("#changePassForm")[0].reset();
+
+		});
+		$("#model-close").click(function() {
+	        $("#changePassForm")[0].reset();
+
+		});
+		
 		
 		$(".action-btn .cancel-btn").click(function() {
-			location.href = '#';
+			location.href = '#mysettings';
 		});
 		
-		$('#newRoleForm').validator().on('submit', function (e) {
+		$('#changePassModel').validator().on('submit', function (e) {
+			
+			  /* if (cognitoUser != null) {
+		            cognitoUser.getSession(function (err, session) {
+		                if (err) {
+		                	console.log("error");
+		                    alert(err);
+		                    return;
+		                }
+		            });
+
+		            cognitoUser.deleteUser(function (err, result) {
+		                if (err) {
+		                    alert(err);
+		                    return;
+		                }
+		                
+		            });
+		        } */
+			
+			var old_pass = $('#changePassModel input[name=old_password]').val();
+			var new_pass = $('#changePassModel input[name=new_password]').val();
+			if ((old_pass.trim() == "")  &  (new_pass.trim() == "")) {
+				alert('Password should not be empty.');
+			}
+			else if ((old_pass.trim() == "")) {
+				alert('Password should not be empty.');
+			}		
+			
+	
+			
+			var cogUtil = new CognitoUtil();
+			var cognitoUser = cogUtil.getCurrentUser();
+			
+			
+			cognitoUser.getSession(function(err, session) {
+				
+				if (session != null) {
+					cognitoUser.changePassword(old_pass, new_pass , function(err, result) {
+			             
+
+				        if (err) {
+		                	
+							
+				            alert(err);
+							
+
+				            return;
+				        }
+				        $(".model-close").trigger('click');
+				 
+				    });
+				}
+			});
+		});
+		
+		
+		
+		
+		$('#mysettings').validator().on('submit', function (e) {
+			
+			
+			
+			console.log( $( this ).serializeArray() );
+			  event.preventDefault();
+			
 			  if (e.isDefaultPrevented()) {
 					// handle the invalid form...
+					;
 			  }
 			  else {
 					// check if any validation errors
@@ -106,14 +220,15 @@ margin-bottom: 10px;
 					FacilioApp.ajax({
 						method : "post",
 						url : contextPath + "/app/setup/roles/add",
-						data : $("#newRoleForm").serialize(),
+						data : $("#mysettings").serialize(),
+						
 						done: function(data) {
 							FacilioApp.notifyMessage('success', 'Role created successfully!');
 							location.href = '#';
 						},
 						fail: function(error) {
 							$(".save-btn").button('reset');
-							console.log(error);
+							
 							alert(error);
 						} 
 					});

@@ -28,6 +28,11 @@
 	                        <a href="#orgsettings">Company Settings</a>
 	                    </li>
                     </f:hasPermission>
+                    <li>
+	                <a href="#customerPortal">
+	                	<span class="nav-title">Customer Portal</span>
+	                </a>
+	            </li>
                 </ul>
             </li>
             <li>
@@ -85,6 +90,8 @@
 	                    </li>
 	                </ul>
 	            </li>
+	               
+	            
 	                     <li>
                 <a href="#">
                 	<span class="nav-title">Data Administration</span>
@@ -106,6 +113,7 @@
 	                	<span class="nav-title">Subscriptions</span>
 	                </a>
 	            </li>
+	         
 	        </f:hasPermission>
         </ul>
     </div>

@@ -265,15 +265,19 @@ a.downArrow{
 	margin-top:10px;
 }
 .adminContent{
-	padding-top:10px;	
+	padding-top:20px;	
 }
 a.adminHead{
 	text-decoration:none !important;
 }
-a.adminHead h3.admin:hover,.fa-cog:hover:before{
+h3.admin:hover,.fa-cog:hover:before{
 	color:#333;
 	text-decoration:none !important;
 }
+/* a.adminHead h3.admin:hover,.fa-cog:hover:before{
+	color:#333;
+	text-decoration:none !important;
+}*/
 .border{
 	width:100%;
 	height:1px;
@@ -283,12 +287,11 @@ a.adminHead h3.admin:hover,.fa-cog:hover:before{
 	padding-top:18px;
 }
 .helpdeskBtn{
-	
 	background-color:#118a9d;
 	padding:5px 12px 5px 12px;
 	color:#FFF;
 	border-radius:4px;
-	
+	font-weight:600;
 }
 .helpdeskBtn:hover{
 	text-decoration:none;
@@ -332,9 +335,12 @@ p{
 }
 .heading1{
 	padding-bottom:10px;
+	margin-left:15px;
 }
-
-
+.heading2{
+	padding-top:20px;
+	margin-left:15px;
+}
 .content{
 	background-color:#f9f9f9;
 	padding:20px 0;
@@ -442,10 +448,6 @@ input[type="checkbox"]{
 	content: "\f060";
 	color: #aaaaaa;
 }
-.adminContent {
-	padding-top: 10px;
-/*	margin-top: 10px;*/
-}
 .emailBack {
 	display: inline;
 	color: #2f99cc;
@@ -470,15 +472,16 @@ input[type="checkbox"]{
 	background-color: #c4c2c2;
 	color: #333333;
 }
-.update {
+.update,.save {
 	background-color: #525050;
+	font-weight:700;
 	color: #FFF;
 	padding: 5px 12px 5px 12px;
 	border-radius: 4px;
 	text-decoration: none !important;
 	border:1px solid #101010;
 }
-.update:hover {
+.update:hover,.save:hover {
 	background-color: #101010;
 	color: #FFF;
 	text-decoration: none !important;
@@ -504,13 +507,19 @@ input[type="text"],select {
 	margin-top: 10px;
 }
 input[type="radio"] {
-	margin-top: 10px;
+	margin-top: 20px;
 }
 select {
 	width: 50%;
+	height:30px;
 	}
-input[type="text"]:active {
-	border: 1px solid #2f99cc;
+select option{
+	margin-top:20px;
+	margin-left:10px;
+}
+input[type="text"]:focus,select:focus {
+	outline:none !important;
+	border: 1px solid #5dc8ff;
 	border-radius: 5px;
 }
 input[type="text"], select, input.text {
@@ -522,10 +531,18 @@ input[type="text"], select, input.text {
 	font-size:16px;
 	font-weight:500;
 }
-.subText1 {
+.subText1,.subText2 {
 	color: #999;
-	padding-top: 6px;
-	
+	padding-top: 6px;	
+}
+.subText2 a{
+	color: #2fbbea;	
+}
+.subText2 a,.subText2 a:hover{
+	text-decoration:none !important;
+}
+.subText2 a:hover{
+	color:#115c87;
 }
 .star {
 	color: red;
@@ -533,6 +550,8 @@ input[type="text"], select, input.text {
 }
 .forwardMail {
 	background-color: #efefef;
+	color:#237dbe;
+	font-size:18px;
 }
 
 /* notifications */
@@ -541,14 +560,20 @@ input[type="text"], select, input.text {
 	content: "\f040";
 }
 .emailHead{
-	font-weight:500;
+	font-weight:700;	
+}
+default{
+	font-size:16px;
+	font-weight:300;
+	float-right;
+	display:inline;
 }
 .notificationNav{
 	padding-top:10px;
 	font-size:16px;
 	}
 .subTitle{
-	font-weight:500;
+	font-weight:700;
 	font-size:17px;
 	padding-left:30px;
 }
@@ -567,13 +592,16 @@ input[type="text"], select, input.text {
 .textBlue a{
 	color:#09c;
 	text-decoration:none !important;
-	
+	padding-left:15px;
 }
 .textBlue a:hover{
 	text-decoration:none !important;
 }
 .system{
 	text-transform:uppercase;
+	padding-left:15px;
+	color:#555555;
+	font-weight:400;
 }
 
 .language_symbol {
@@ -627,7 +655,7 @@ border: 1px solid;
 input[type="checkbox"].notifyCheck{
 	margin-top:0px;
 	margin-right:0px;
-	margin-left:20px;
+	margin-left:30px;
 
 }
 

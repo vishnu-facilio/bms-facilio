@@ -92,7 +92,7 @@ public class ImportDataAction extends ActionSupport {
 	}
 	// column heading vs field name mapping + importid
 	
-	public String processImport() throws SQLException
+	public String processImport() throws Exception
 	{
 		System.out.println("Meta info"+getMetainfo());
 		System.out.println("Meta info"+getMetainfo().getFieldMapping());
@@ -105,6 +105,10 @@ public class ImportDataAction extends ActionSupport {
 		stmt.executeUpdate(updatequery);
 		stmt.close();
 		c.close();
+		
+		long fileId = ImportMetaInfo.getInstance(getMetainfo().getImportprocessid()).getFileId();
+		metainfo.setFileId(fileId);
+		ProcessXLS.processImport(metainfo);
 		
 		return SUCCESS;
 	}
