@@ -57,4 +57,9 @@ public class SetupActions extends ActionSupport {
 	public String newEmailSettings() throws Exception {
 		return SUCCESS;
 	}
+public String showSubscriptions() throws Exception {
+		
+		return SUCCESS;
+	}
+	
 }
