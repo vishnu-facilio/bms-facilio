@@ -263,7 +263,9 @@
 		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
 			<result type="tiles">setuplayout/customerPortal.jsp</result>
 		</action>
-		
+		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
+			<result name="success">/jsps/setup/showPlans.jsp</result>
+		</action>
 	</package>
 
 	<package name="ticket" namespace="/app/ticket" extends="home">
