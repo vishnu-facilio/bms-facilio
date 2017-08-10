@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.OrgInfo;
 
 public class GenericSelectRecordBuilder {
 	private List<FacilioField> selectFields;
@@ -114,17 +113,16 @@ public class GenericSelectRecordBuilder {
 	
 	private String constructSelectStatement() {
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ");
 		
 		boolean isFirst = true;
 		for(FacilioField field : selectFields) {
-			if(!isFirst) {
-				sql.append(", ");
+			if(isFirst) {
+				isFirst = false;
 			}
 			else {
-				isFirst = false;
+				sql.append(", ");
 			}
 			sql.append(field.getModuleTableName())
 				.append(".")
@@ -132,13 +130,18 @@ public class GenericSelectRecordBuilder {
 		}
 		
 		sql.append(" FROM ")
-			.append(tableName)
-			.append(" WHERE ORGID = ")
-			.append(orgId);
+			.append(tableName);
 		
+		isFirst = true;
 		if(whereCondition != null && !whereCondition.isEmpty()) {
-			sql.append(" AND ")
-				.append(whereCondition);
+			if(isFirst) {
+				isFirst = false;
+				sql.append(" WHERE ");
+			}
+			else {
+				sql.append(" AND ");
+			}
+			sql.append(whereCondition);
 		}
 		
 		if(orderBy != null && !orderBy.isEmpty()) {

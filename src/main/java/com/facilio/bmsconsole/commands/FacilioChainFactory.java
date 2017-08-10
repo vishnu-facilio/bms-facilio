@@ -199,6 +199,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

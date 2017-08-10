@@ -14,23 +14,21 @@ import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class WorkflowRuleActions extends ActionSupport {
+public class WorkflowRuleAction extends ActionSupport {
 	
-	public String execute() throws Exception {
-	         
+	public String execute() throws Exception 
+	{
 	    return SUCCESS;
-	 
 	}
 	
-	public String assignmentRules() throws Exception {
-		
+	public String assignmentRules() throws Exception 
+	{
 		setRules(WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid()));
-		
 	    return "assignmentRules";
 	}
 	
-	public String newAssignmentRule() throws Exception {
-		
+	public String newAssignmentRule() throws Exception 
+	{
 		List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
 		assignmentGroupList = new HashMap<>();
 		if (groups != null && groups.size() > 0) {
@@ -40,7 +38,6 @@ public class WorkflowRuleActions extends ActionSupport {
 		}
 		
 		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
-		
 		return "newAssignmentRule";
 	}
 	

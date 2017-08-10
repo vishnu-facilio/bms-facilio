@@ -159,7 +159,7 @@
         <result name="success">/jsps/listview.jsp</result>
     </action>
     
-	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
+	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
 		<param name="permission">ORG_ACCESS_ADMINISTER</param>
         <result name="success">/jsps/assignmentRules.jsp</result>
     </action>
@@ -422,7 +422,7 @@
 	</package>
 	
 	<package name="rules" namespace="/app/rules" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleActions" method="{1}">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="{1}">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
 			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>
