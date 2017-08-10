@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="serviceportal" strict-method-invocation="false" namespace="/service"  extends="struts-default,json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<interceptors>
+			
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/jsps/serviceportal/login.jsp
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+
+		
+  	<action name="index" >
+        <result>/jsps/serviceportal/home.jsp</result>
+    </action>
+    
+       
+	</package>
+	
+</struts>
