@@ -33,7 +33,7 @@ public class FieldUtil {
 					else {
 						val = Double.parseDouble(value.toString());
 					}
-					if(val != 0) {
+					if(val != -1) {
 						pstmt.setDouble(paramIndex, val);
 					}
 					else {
@@ -69,7 +69,7 @@ public class FieldUtil {
 					else {
 						val = Long.parseLong(value.toString());
 					}
-					if(val != 0) {
+					if(val != -1) {
 						pstmt.setLong(paramIndex, val);
 					}
 					else {
