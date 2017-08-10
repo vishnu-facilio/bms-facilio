@@ -48,13 +48,23 @@ public class SetupActions extends ActionSupport {
 	
 	public String showNotificationSettings() throws Exception {
 		
+		setSetup(SetupLayout.getEmailNotificationsLayout());
 		return SUCCESS;
 	}
+	
 	public String showEmailSettings() throws Exception {
 		
+		setSetup(SetupLayout.getEmailSettingsLayout());
 		return SUCCESS;
 	}
+	
 	public String newEmailSettings() throws Exception {
+		setSetup(SetupLayout.getNewEmailSettingLayout());
+		return SUCCESS;
+	}
+	
+	public String editEmailSettings() throws Exception {
+		setSetup(SetupLayout.getEditEmailSettingLayout());
 		return SUCCESS;
 	}
 }

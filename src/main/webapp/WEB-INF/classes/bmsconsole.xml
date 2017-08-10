@@ -204,64 +204,64 @@
     
     <package name="setup" namespace="/app/setup" extends="home">
 		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions" method="mySettings">
-			<result type="tiles">mySettings</result>
+			<result type="tiles">setuplayout/setup/mysettings.jsp</result>
 		</action>
 
 		<action name="orgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">orgSettings</result>
+			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
 		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/setup/notifications.jsp</result>
+			<result type="tiles">setuplayout/setup/notifications.jsp</result>
 		</action>
 		<action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/setup/emailsettings.jsp</result>
+			<result type="tiles">setuplayout/setup/emailsettings.jsp</result>
 		</action>
-		<action name="editemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
+		<action name="editemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/setup/edit.jsp</result>
+			<result type="tiles">setuplayout/setup/edit.jsp</result>
 		</action>
 		<action name="newemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="newEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/setup/new.jsp</result>
+			<result type="tiles">setuplayout/setup/new.jsp</result>
 		</action>
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
-	    	<result type="tiles">userList</result>
+	    	<result type="tiles">setuplayout/usersList.jsp</result>
 		</action>
 		
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">roleList</result>
+			<result type="tiles">setuplayout/roleList.jsp</result>
 		</action>
 		
 	    <action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
 	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
-	    	<result type="tiles">groupList</result>
+	    	<result type="tiles">setuplayout/groups/groupsList.jsp</result>
 		</action>
 		
 		<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">ticketStatusList</result>
+			<result type="tiles">setuplayout/ticketStatusList.jsp</result>
 		</action>
 		
 		<action name="ticketpriority" class="com.facilio.bmsconsole.actions.TicketPriorityAction" method="priorityList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">ticketPriorityList</result>
+			<result type="tiles">setuplayout/ticketPriorityList.jsp</result>
 		</action>
 		
 		<action name="ticketcategory" class="com.facilio.bmsconsole.actions.TicketCategoryAction" method="categoryList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">ticketCategoryList</result>
+			<result type="tiles">setuplayout/ticketCategoryList.jsp</result>
 		</action>
 		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
-			<result type="tiles">importData</result>
+			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
 		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
-			<result type="tiles">customerPortal</result>
+			<result type="tiles">setuplayout/customerPortal.jsp</result>
 		</action>
 		
 	</package>
@@ -475,7 +475,7 @@
 		
 		<action name="new" class="com.facilio.bmsconsole.actions.UserAction" method="newUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
-			<result type="tiles">newUser</result>
+			<result type="tiles">setuplayout/inviteUser.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
@@ -492,7 +492,7 @@
 		
 		<action name="edit" class="com.facilio.bmsconsole.actions.UserAction" method="editUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
-			<result type="tiles">editUser</result>
+			<result type="tiles">setuplayout/editUser.jsp</result>
 		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
@@ -540,7 +540,7 @@
 	<package name="groups" namespace="/app/setup/groups" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.GroupAction" method="newGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
-			<result type="tiles">newGroup</result>
+			<result type="tiles">setuplayout/groups/newGroup.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
@@ -557,7 +557,7 @@
 		
 		<action name="edit" class="com.facilio.bmsconsole.actions.GroupAction" method="editGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
-			<result type="tiles">editGroup</result>
+			<result type="tiles">setuplayout/groups/editGroup.jsp</result>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.GroupAction" method="updateGroup">
@@ -600,7 +600,7 @@
 	<package name="roles" namespace="/app/setup/roles" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.RoleAction" method="newRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">newRole</result>
+			<result type="tiles">setuplayout/newRole.jsp</result>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.RoleAction" method="addRole">
