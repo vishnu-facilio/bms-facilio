@@ -67,4 +67,9 @@ public class SetupActions extends ActionSupport {
 		setSetup(SetupLayout.getEditEmailSettingLayout());
 		return SUCCESS;
 	}
+public String showSubscriptions() throws Exception {
+		
+		return SUCCESS;
+	}
+	
 }

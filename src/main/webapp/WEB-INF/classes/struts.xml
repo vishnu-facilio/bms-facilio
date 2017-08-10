@@ -15,7 +15,7 @@
 	<!-- constant name="struts.ui.theme" value="simple"/ -->
 
 	<include file="bmsconsole.xml" />
-
+	<include file="serviceportal.xml" />
 	<!-- Add packages here -->
 
 </struts>
