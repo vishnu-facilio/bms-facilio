@@ -1,26 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<div class="container1 adminContent">
-  <div class="row">
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-left"> <i class="fa fa-arrow-left" aria-hidden="true"></i>
-      <a href="#emailsettings" class="emailBack">Back to Email Configs</a>
-    </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right"> <a href="#emailsettings" class="cancel">Cancel</a> <a href="#" class="update">Update</a> </div>
-  </div>
-</div>
-<div class="container-fluid1">
-  <div class="row">
-    <div class="editBorder"></div>
-  </div>
-</div>
-<div class="container1">
-  <div class="row">
-    <div class="heading1">
-      <h3>Email Settings</h3>
-    </div>
-  </div>
-</div>
-
+<div class="form-container form-content">
 <div class="container1">
   <div class="row">
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-3">
@@ -85,3 +65,15 @@
   	</div>
 
 </div>
+</div>
+<script>
+	$(document).ready(function() {
+		
+		$(".action-btn .save-btn").click(function() {
+		});
+		
+		$(".action-btn .cancel-btn").click(function() {
+			location.href = '#emailsettings';
+		});
+	});
+</script>

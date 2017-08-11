@@ -113,6 +113,52 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getEmailNotificationsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Notifications");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEmailSettingsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Email Settings");
+		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+
+	public static SetupLayout getNewEmailSettingLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("New Helpdesk Email");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEditEmailSettingLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Edit Helpdesk Email");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
 	public static SetupLayout getUsersListLayout() {
 		
 		SetupLayout sl = new SetupLayout();
