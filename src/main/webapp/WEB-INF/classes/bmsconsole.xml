@@ -212,6 +212,12 @@
 			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
 		
+			<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+		</action>
+		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/notifications.jsp</result>
@@ -270,8 +276,9 @@
 		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
-		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
-			<result type="tiles">setuplayout/customerPortal.jsp</result>
+
+		<action name="servicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="servicePortal">		
+			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>

@@ -89,12 +89,12 @@ public class SetupLayout {
 		return sl;
 	}
 	
-	public static SetupLayout getcustomerPortal() {
+	public static SetupLayout getservicePortal() {
 		
 		SetupLayout sl = new SetupLayout();
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("General");
-		sl.setSettingViewTitle("Customer Portal");
+		sl.setSettingViewTitle("Service Portal");
 		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
 		
 		

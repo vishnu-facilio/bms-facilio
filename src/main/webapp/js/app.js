@@ -49,6 +49,8 @@ FacilioApp = {
 		
 			location.href = '#task/new';
 		});
+		
+		
 	},
 	
 	initSetup: function() {
@@ -224,6 +226,39 @@ FacilioApp = {
 		selectize.refreshOptions();
 		selectize.setValue(id);
 		$(popup).modal('hide');
+	},
+	
+	countryCombo: function(selector) {
+		var country = $(selector).selectize({
+			preload: true,
+			
+			valueField: 'code',
+			labelField: 'name',
+			searchField: 'name',
+			options: [],
+			delimiter: ',',
+			persist: false,
+			create: false,
+			load: function(query, callback) {
+			    
+			    $.ajax({
+			        url: contextPath + '/js/data/country.json',
+			        type: 'GET',
+			        dataType: 'json',
+			        data: {
+			            name: query,
+			        },
+			        error: function() {
+			            callback();
+			        },
+			        success: function(res) {
+			            callback(res);
+			        }
+			    });
+			}
+
+        });
+		
 	},
 	
 	createRecordDialog: function(moduleLinkName, callback, parentModuleLinkName, parentId) {

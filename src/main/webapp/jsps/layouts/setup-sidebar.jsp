@@ -35,8 +35,8 @@
                         </li>
                     </f:hasPermission>
                     <li>
-	                <a href="#customerPortal">
-	                	<span class="nav-title">Customer Portal</span>
+	                <a href="#servicePortal">
+	                	<span class="nav-title">Service Portal</span>
 	                </a>
 	            </li>
                 </ul>

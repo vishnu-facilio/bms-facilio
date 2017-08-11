@@ -114,6 +114,9 @@
 		
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
 		
+		<!-- country code js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+		
 		<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/aws-cognito-sdk.min.js"></script>
     	<script src="<%=staticURL%>/vendor/amazon-cognito-identity-js/amazon-cognito-identity.min.js"></script>
     	<script src="${pageContext.request.contextPath}/js/cognitoutil.js"></script>

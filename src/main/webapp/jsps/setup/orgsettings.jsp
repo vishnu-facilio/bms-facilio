@@ -5,13 +5,9 @@
 		<div class="col-lg-6" >
 			<div class="form-group">
 	    		<label>Org Name</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder="Sample Inc." required="true"/>
+	    		<s:textfield name="org.name" class="form-control" placeholder="Sample Inc." required="true"/>
 			</div>
-			<div class="form-group">
-	    		<label>Industry</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder="Select" required="true"/>
-	    	
-			</div>
+		
 
 		</div>
                   <div class="col-lg-4" >
@@ -21,7 +17,7 @@
                 
                 
 		     </div>
-		     <input type="file" id="file1"  name="photo" style="display:none" accept="image/*" />
+		     <input type="file" id="file1"  name="org.photo" style="display:none" accept="image/*" />
 
        
         </div>
@@ -29,47 +25,47 @@
 		<div class="col-lg-12 fc-dashed-line"></div>
 		<div class="col-lg-6" >
 			<div class="form-group">
-	    		<label>Address</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder="Street" required="true"/>
+	    		<label>street</label>
+	    		<s:textfield name="org.street" class="form-control" placeholder="Street" required="true"/>
 			</div>
 		</div>
 				<div class="col-lg-5" >
 			<div class="form-group">
 	    		<label>City</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder="City" required="true"/>
+	    		<s:textfield name="org.city" class="form-control" placeholder="City" required="true"/>
 			</div>
 			</div>
 			
 			<div class="col-lg-3" >
 			<div class="form-group">
 	    		
-	    		<s:textfield name="role.name" class="form-control" placeholder="State" required="true"/>
+	    		<s:textfield name="org.state" class="form-control" placeholder="State" required="true"/>
 			</div>
 				<div class="form-group">
 	    		<label>Phone</label>
-	    		<s:textfield name="role.name" class="form-control"  required="true"/>
+	    		<s:textfield name="org.phone" class="form-control"  required="true"/>
 	    	
 			</div>
 
 			<div class="form-group">
 	    		<label>Language</label>
-	    		<s:textfield name="role.name" class="form-control"  required="true"/>
+	    		<s:textfield name="org.language" class="form-control"  required="true"/>
 	    	
 			</div>
 
 		</div>
 		<div class="col-lg-3" >
 			<div class="form-group">
-	    		<s:textfield name="role.name" class="form-control" placeholder="ZIP Code" required="true"/>
+	    		<s:textfield name="org.zipcode" class="form-control" placeholder="ZIP Code" required="true"/>
 			</div>
 					<div class="form-group">
 	    		<label>Fax</label>
-	    		<s:textfield name="role.name" class="form-control"  required="true"/>
+	    		<s:textfield name="org.fax" class="form-control"  required="true"/>
 	    	
 			</div>
 						<div class="form-group">
 	    		<label>Date format</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder="" required="true"/>
+	    		<s:textfield name="org.dateformat" class="form-control" placeholder="" required="true"/>
 	    	
 			</div>
 
@@ -77,19 +73,21 @@
 		
 			<div class="col-lg-5" >
 			<div class="form-group">
-	    		<s:textfield name="role.name" class="form-control" placeholder="Country" required="true"/>
+			    <label>Select Country</label>
+			    <select id="select-country" name="org.country" class="form-control">
+			    	
+			    </select>
 			</div>
 				<div class="form-group">
 	    		<label>Mobile</label>
-	    		<s:textfield name="role.name" class="form-control" required="true"/>
+	    		<s:textfield name="org.mobile" class="form-control" required="true"/>
 			</div>
 				<div class="form-group">
 	    		<label>Time Zone</label>
-	    		<s:textfield name="role.name" class="form-control" placeholder=" " required="true"/>
+	    		<s:textfield name="org.timezone" class="form-control" placeholder=" " required="true"/>
 			</div>
 			</div>
 		
-			
 		
 		
 		
@@ -119,17 +117,23 @@ margin-bottom: 10px;
   color: #222;
   border-color: #222;
 }
+
+.selectize-dropdown{
+position: relative;
+}
 </style>
 
 <script>
 	$(document).ready(function() {
+		
+		FacilioApp.countryCombo('#select-country');
 		
 		$(".action-btn .save-btn").click(function() {
 			$('#newRoleForm').submit();
 		});
 		
 		$(".action-btn .cancel-btn").click(function() {
-			location.href = '#roles';
+			location.href = '#orgsettings';
 		});
 		
 		$('#newRoleForm').validator().on('submit', function (e) {
@@ -145,11 +149,12 @@ margin-bottom: 10px;
 					$(".save-btn").button('loading');
 					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/app/setup/roles/add",
+						url : contextPath + "/app/setup/updateorgsettings",
 						data : $("#newRoleForm").serialize(),
 						done: function(data) {
-							FacilioApp.notifyMessage('success', 'Role created successfully!');
-							location.href = '#roles';
+							
+							FacilioApp.notifyMessage('success', 'company settings updated successfully!');
+
 						},
 						fail: function(error) {
 							$(".save-btn").button('reset');
@@ -168,6 +173,7 @@ margin-bottom: 10px;
             
           
        });
+		
 		
 		$("#file1").change(function() {
 			console.log(this.files[0].size);
