@@ -240,12 +240,12 @@
 		
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">LocationsList</result>
+			<result type="tiles">setuplayout/locations.jsp</result>
 		</action>
 		
 		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">skillsList</result>
+			<result type="tiles">setuplayout/skills.jsp</result>
 		</action>
 		
 	    <action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
@@ -448,7 +448,7 @@
 	<package name="location" namespace="/app/setup/locations" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions" method="newLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">newLocation</result>
+			<result type="tiles">setuplayout/newLocation.jsp</result>
 		</action>
 		
 		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions" method="addLocation">
@@ -487,7 +487,7 @@
 		
 		<action name="edit" class="com.facilio.bmsconsole.actions.LocationActions" method="editLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">editLocation</result>
+			<result type="tiles">setuplayout/editLocation.jsp</result>
 		</action>
 		
 	</package>
@@ -495,7 +495,7 @@
 	<package name="skills" namespace="/app/setup/skills" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">newSkill</result>
+			<result type="tiles">setuplayout/newSkill.jsp</result>
 			<!-- result name="success">/jsps/newForm.jsp</result -->
 		</action>
 				
