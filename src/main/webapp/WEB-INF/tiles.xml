@@ -60,6 +60,31 @@
    		<put-attribute name="body" value="/jsps/roleList.jsp"/>   
    	</definition>
    	
+   	<definition name="skillsList" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Skills"/>   
+   		<put-attribute name="body" value="/jsps/skills.jsp"/>   
+   	</definition>
+   	
+   	<definition name="newSkill" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="New Skill"/>   
+   		<put-attribute name="body" value="/jsps/newSkill.jsp"/>   
+   	</definition>
+   	
+   	<definition name="LocationsList" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Locations"/>   
+   		<put-attribute name="body" value="/jsps/locations.jsp"/>   
+   	</definition>
+   	
+   	<definition name="newLocation" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="New Location"/>   
+   		<put-attribute name="body" value="/jsps/newLocation.jsp"/>   
+   	</definition>
+   	
+   	<definition name="editLocation" template="/jsps/setup/container.jsp">   
+   		<put-attribute name="title" value="Edit Location"/>   
+   		<put-attribute name="body" value="/jsps/editLocation.jsp"/>   
+   	</definition>
+   	
    	<definition name="newRole" template="/jsps/setup/container.jsp">   
    		<put-attribute name="title" value="New Role"/>   
    		<put-attribute name="body" value="/jsps/newRole.jsp"/>   
