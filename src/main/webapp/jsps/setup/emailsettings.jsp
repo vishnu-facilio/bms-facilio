@@ -1,24 +1,4 @@
-<div class="container1 adminContent">
-  <div class="row">
-    <div class="col-xs-5 col-sm-6 col-md-6 col-lg-6 text-left"><a href="#setuphome" class="adminHead"> <i class="fa fa-cog" aria-hidden="true"><h3 class="admin">Admin</h3></i>
-      
-      <i class="fa fa-caret-down" aria-hidden="true"></i></a> </div>
-    <div class="col-xs-7 col-sm-6 col-md-6 col-lg-6 text-right"> <div class="newBtn"><a href="#newemailsettings" class="helpdeskBtn">New Helpdesk Email</a></div> </div>
-  </div>
-</div>
-<div class="container-fluid1">
-  <div class="row">
-    <div class="border"></div>
-  </div>
-</div>
-<div class="container1">
-  <div class="row">
-    <div class="heading1">
-      <h3>Email Settings</h3>
-      <p class="subHead">List of all helpdesk email addresses</p>
-    </div>
-  </div>
-</div>
+<div class="form-container form-content">
 <div class="container1">
   <div class="row">
     <div class="heading2">
@@ -101,3 +81,11 @@
     </div>
   </div>
 </div>
+</div>
+<script>
+
+	$(".action-btn .new-btn").click(function() {
+		location.href = '#newemailsettings';
+	});
+
+</script>

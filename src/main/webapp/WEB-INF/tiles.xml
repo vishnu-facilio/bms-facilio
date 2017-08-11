@@ -17,105 +17,11 @@
    </definition>
    
    <!-- Setup Pages -->
-   	<definition name="orgSettings" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Org Settings"/>   
-   		<put-attribute name="body" value="/jsps/setup/orgsettings.jsp"/>   
-   	</definition>
-   	<definition name="mySettings" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="My Settings"/>   
-   		<put-attribute name="body" value="/jsps/setup/mysettings.jsp"/>   
-   	</definition>
-   	<definition name="userList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Users"/>   
-   		<put-attribute name="body" value="/jsps/usersList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="newUser" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="New User"/>   
-   		<put-attribute name="body" value="/jsps/inviteUser.jsp"/>   
-   	</definition>
-   	
-   	<definition name="editUser" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Edit User"/>   
-   		<put-attribute name="body" value="/jsps/editUser.jsp"/>   
-   	</definition>
-   	
-   	<definition name="groupList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Groups"/>   
-   		<put-attribute name="body" value="/jsps/groups/groupsList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="newGroup" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="New Group"/>   
-   		<put-attribute name="body" value="/jsps/groups/newGroup.jsp"/>   
-   	</definition>
-   	
-   	<definition name="editGroup" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Edit Group"/>   
-   		<put-attribute name="body" value="/jsps/groups/editGroup.jsp"/>   
-   	</definition>
-   	
-   	<definition name="roleList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Roles"/>   
-   		<put-attribute name="body" value="/jsps/roleList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="skillsList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Skills"/>   
-   		<put-attribute name="body" value="/jsps/skills.jsp"/>   
-   	</definition>
-   	
-   	<definition name="newSkill" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="New Skill"/>   
-   		<put-attribute name="body" value="/jsps/newSkill.jsp"/>   
-   	</definition>
-   	
-   	<definition name="LocationsList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Locations"/>   
-   		<put-attribute name="body" value="/jsps/locations.jsp"/>   
-   	</definition>
-   	
-   	<definition name="newLocation" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="New Location"/>   
-   		<put-attribute name="body" value="/jsps/newLocation.jsp"/>   
-   	</definition>
-   	
-   	<definition name="editLocation" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Edit Location"/>   
-   		<put-attribute name="body" value="/jsps/editLocation.jsp"/>   
-   	</definition>
-   	
-   	<definition name="newRole" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="New Role"/>   
-   		<put-attribute name="body" value="/jsps/newRole.jsp"/>   
-   	</definition>
-   	
-   	<definition name="editRole" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Edit Role"/>   
-   		<put-attribute name="body" value="/jsps/editRole"/>   
-   	</definition>
-   	
-   	<definition name="ticketStatusList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Status"/>   
-   		<put-attribute name="body" value="/jsps/ticketStatusList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="ticketPriorityList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Status"/>   
-   		<put-attribute name="body" value="/jsps/ticketPriorityList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="ticketCategoryList" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Status"/>   
-   		<put-attribute name="body" value="/jsps/ticketCategoryList.jsp"/>   
-   	</definition>
-   	
-   	<definition name="importData" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Status"/>   
-   		<put-attribute name="body" value="/jsps/importData.jsp"/>   
-   	</definition>
-   	<definition name="customerPortal" template="/jsps/setup/container.jsp">   
-   		<put-attribute name="title" value="Status"/>   
-   		<put-attribute name="body" value="/jsps/customerPortal.jsp"/>   
-   	</definition>
+   <definition name="setuplayout/*" template="/jsps/setup/container.jsp">      
+   	<put-attribute name="body" value="/jsps/{1}"/>   
+   </definition>
+   <definition name="setuplayout/*/*" template="/jsps/setup/container.jsp">      
+   	<put-attribute name="body" value="/jsps/{1}/{2}"/>   
+   </definition>
+   
 </tiles-definitions>  

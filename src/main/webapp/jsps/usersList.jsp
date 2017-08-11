@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>
-<table width="100%" class="table table-striped able-hover" id="record-list">
+<table width="100%" class="table table-striped table-hover" id="record-list">
     <thead>
         <tr>
         	<th>
@@ -28,7 +28,7 @@
                    </td>
                    <td><s:property value="#user.getInvitedTimeStr()" /></td>
                    <td>
-                   		<div class="toggle-switch">
+                   		<div class="toggle-switch" >
                    			<s:if test="%{#user.userStatus}">
                    				<input type="checkbox" id="<s:property value="#user.orgUserId" />_status" class="checkbox hidden userstatus" checked/>
                    			</s:if>

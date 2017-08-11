@@ -27,6 +27,12 @@
                     	<li>
 	                        <a href="#orgsettings">Company Settings</a>
 	                    </li>
+	                    <li>
+                        	<a href="#locations">Locations Settings</a>
+                        </li>
+                        <li>
+                        	<a href="#skills">Skills Settings</a>
+                        </li>
                     </f:hasPermission>
                     <li>
 	                <a href="#customerPortal">

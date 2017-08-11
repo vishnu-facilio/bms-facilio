@@ -163,8 +163,14 @@
        							<li class="setup-body-tbody"><a href="setup#mysettings">Personal Settings</a></li>
        							<f:hasPermission permission="ORG_ACCESS_ADMINISTER">
        								<li class="setup-body-tbody"><a href="setup#orgsettings">Company Settings</a></li>
+
        								<li class="setup-body-tbody"><a href="setup#customerPortal">Customer Portal</a></li>
        								
+
+       								<li class="setup-body-tbody"><a href="setup#locations">Locations Settings</a></li>
+
+									<li class="setup-body-tbody"><a href="setup#skills">Skill Settings</a></li>
+
        							</f:hasPermission>
        						</ul>
        					</div>

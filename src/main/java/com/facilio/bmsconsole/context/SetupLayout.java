@@ -113,6 +113,52 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getEmailNotificationsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Notifications");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEmailSettingsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Email Settings");
+		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+
+	public static SetupLayout getNewEmailSettingLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("New Helpdesk Email");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEditEmailSettingLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Work Order");
+		sl.setSettingViewTitle("Edit Helpdesk Email");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
 	public static SetupLayout getUsersListLayout() {
 		
 		SetupLayout sl = new SetupLayout();
@@ -194,6 +240,64 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getSkillsListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Skills");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getNewSkillLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("New Skill");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getLocationsListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Locations");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+		
+	public static SetupLayout getNewLocationLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("New Location");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEditLocationLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Edit Location");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+
 	public static SetupLayout getNewRoleLayout() {
 		
 		SetupLayout sl = new SetupLayout();
