@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.fw.auth.CognitoUtil;
@@ -125,6 +126,34 @@ public class UserAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
+	
+	/*public static List<LocationContext> getLocationsOfOrg(long orgId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Locations where Locations.ORGID = ?");
+			pstmt.setLong(1, orgId);
+			
+			List<LocationContext> locations = new ArrayList<>();
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				LocationContext tc = getLocationObjectFromRS(rs);
+				locations.add(tc);
+			}
+			
+			return locations;
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}*/
 	
 	public static Map<Long, String> getRolesOfOrgMap(long orgId) throws SQLException {
 		Connection conn = null;
@@ -433,4 +462,6 @@ public class UserAPI {
 		
 		return rc;
 	}
+	
+
 }

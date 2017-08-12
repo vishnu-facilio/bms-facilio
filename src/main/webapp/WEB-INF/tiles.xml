@@ -17,12 +17,13 @@
    </definition>
    
    <!-- Setup Pages -->
-   	<definition name="setuplayout/*" template="/jsps/setup/container.jsp">      
-   		<put-attribute name="body" value="/jsps/{1}"/>   
-   	</definition>
-   	
-   	<definition name="setuplayout/*/*" template="/jsps/setup/container.jsp">
-   		<put-attribute name="body" value="/jsps/{1}/{2}"/>
-   	</definition>
-   	
+   <definition name="setuplayout/*" template="/jsps/setup/container.jsp">      
+   	<put-attribute name="body" value="/jsps/{1}"/>   
+   </definition>
+   <definition name="setuplayout/*/*" template="/jsps/setup/container.jsp">      
+   	<put-attribute name="body" value="/jsps/{1}/{2}"/>   
+   </definition>
+   
+
+
 </tiles-definitions>  

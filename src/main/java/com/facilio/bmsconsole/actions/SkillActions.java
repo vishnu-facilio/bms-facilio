@@ -4,8 +4,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -17,9 +23,25 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SkillActions extends ActionSupport {
-	
+
+	private SetupLayout setup;
+
+	public SetupLayout getSetup() {
+		return this.setup;
+	}
+
+	public void setSetup(SetupLayout setup) {
+		this.setup = setup;
+	}
+
+	private ActionForm actionForm;
+
+	public ActionForm getActionForm() {
+		return actionForm;
+	}
+
 	public String execute() {
-		
+
 		try {
 			setSkills(SkillAPI.getAllSkill(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		} catch (SQLException e) {
@@ -27,99 +49,104 @@ public class SkillActions extends ActionSupport {
 		}
 		return SUCCESS;
 	}
-	
+
 	private List formlayout;
+
 	public List getFormlayout() {
 		return this.formlayout;
 	}
-	
+
 	public void setFormlayout(List formlayout) {
 		this.formlayout = formlayout;
 	}
-	
+
 	private String moduleName;
+
 	public String getModuleName() {
 		return moduleName;
 	}
+
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
+
 	private List<FacilioField> fields;
-	
+
 	public String newSkill() throws Exception {
-		
-		Connection conn = null;
-		try {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
-			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
-			
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			setModuleName("Skill");
-			setFormlayout(FormLayout.getNewSkillLayout(fields));
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				}
-				catch(SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	    return SUCCESS;
-	}
-	
-	public String newSkillDialog() throws Exception {
-		
-		Connection conn = null;
-		try {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
-			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
-			
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			setModuleName("Skill");
-			setFormlayout(FormLayout.getNewSkillLayout(fields));
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				}
-				catch(SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	    return SUCCESS;
-	}
-	
-	public String addSkill() throws Exception {
-		
-		skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		long skillId = SkillAPI.addSkill(skill);
-		
-		setSkillId(skillId);
-		
+		setSetup(SetupLayout.getNewSkillLayout());
+		FacilioContext context = new FacilioContext();
+		Chain newSkill = FacilioChainFactory.getNewSkillChain();
+		newSkill.execute(context);
+
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+
 		return SUCCESS;
 	}
-	
+
+	public void setActionForm(ActionForm actionForm) {
+		this.actionForm = actionForm;
+	}
+
+	/*
+	 * public String newSkill() throws Exception {
+	 * 
+	 * Connection conn = null; try { ModuleBean modBean = (ModuleBean)
+	 * BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+	 * fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
+	 * 
+	 * conn = FacilioConnectionPool.INSTANCE.getConnection();
+	 * setModuleName("Skill");
+	 * setFormlayout(FormLayout.getNewSkillLayout(fields)); } catch(SQLException
+	 * e) { throw e; } finally { if(conn != null) { try { conn.close(); }
+	 * catch(SQLException e) { e.printStackTrace(); } } } return SUCCESS; }
+	 */
+
+	public String newSkillDialog() throws Exception {
+
+		Connection conn = null;
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
+
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			setModuleName("Skill");
+			setFormlayout(FormLayout.getNewSkillLayout(fields));
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return SUCCESS;
+	}
+
+	public String addSkill() throws Exception {
+
+		skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		long skillId = SkillAPI.addSkill(skill);
+
+		setSkillId(skillId);
+
+		return SUCCESS;
+	}
+
 	private SkillContext skill;
+
 	public SkillContext getSkill() {
 		return skill;
 	}
+
 	public void setSkill(SkillContext skill) {
 		this.skill = skill;
 	}
-	
+
 	private long skillId;
+
 	public long getSkillId() {
 		return skillId;
 	}
@@ -127,36 +154,42 @@ public class SkillActions extends ActionSupport {
 	public void setSkillId(long skillId) {
 		this.skillId = skillId;
 	}
-	
+
 	private List<SkillContext> skills = null;
+
 	public List<SkillContext> getSkills() {
 		return skills;
 	}
+
 	public void setSkills(List<SkillContext> skills) {
 		this.skills = skills;
 	}
-	
-	public String getModuleLinkName()
-	{
+
+	public String getModuleLinkName() {
 		return FacilioConstants.ContextNames.SKILL;
 	}
-	
-	public ViewLayout getViewlayout()
-	{
+
+	public ViewLayout getViewlayout() {
 		return ViewLayout.getViewSkillLayout();
 	}
-	
-	public String getViewName()
-	{
+
+	public String getViewName() {
 		return "Skills";
 	}
 
 	public String getNewActionType() {
 		return "dialog"; // dialog or empty string
 	}
-	
-	public List<SkillContext> getRecords() 
-	{
+
+	public List<SkillContext> getRecords() {
 		return skills;
+	}
+
+	public String skillsList() throws Exception {
+
+		setSetup(SetupLayout.getSkillsListLayout());
+		setSkills(SkillAPI.getAllSkill(OrgInfo.getCurrentOrgInfo().getOrgid()));
+
+		return SUCCESS;
 	}
 }

@@ -56,7 +56,6 @@
 			formData.append('module', module);
 			formData.append('fileUpload', fileObj);	
 			
-			console.log("Test");
 			console.log( $( this ).serializeArray() );
 			event.preventDefault();
 			

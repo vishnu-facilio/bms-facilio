@@ -27,10 +27,16 @@
                     	<li>
 	                        <a href="#orgsettings">Company Settings</a>
 	                    </li>
+	                    <li>
+                        	<a href="#locations">Locations Settings</a>
+                        </li>
+                        <li>
+                        	<a href="#skills">Skills Settings</a>
+                        </li>
                     </f:hasPermission>
                     <li>
-	                <a href="#customerPortal">
-	                	<span class="nav-title">Customer Portal</span>
+	                <a href="#servicePortal">
+	                	<span class="nav-title">Service Portal</span>
 	                </a>
 	            </li>
                 </ul>

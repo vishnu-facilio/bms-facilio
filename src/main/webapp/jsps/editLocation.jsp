@@ -8,40 +8,41 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label>Name</label>
+					<s:hidden name="location.id"/>
 					<s:textfield name="location.name"
 						id="inputName" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>Street</label>
-					<s:textfield name="location.street"
+					<s:textfield name="location.street" 
 						id="inputStreet" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>City</label>
-					<s:textfield name="location.city"
+					<s:textfield value="%{location.city}" name="location.city"
 						id="inputCity" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>State / Province</label>
-					<s:textfield name="location.state"
+					<s:textfield value="%{location.state}" name="location.state"
 						id="inputState" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>Zip / Postal Code</label>
-					<s:textfield name="location.zip"
+					<s:textfield value="%{location.zip}" name="location.zip"
 						id="inputZip" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>Country</label>
-					<s:textfield name="location.country"
+					<s:textfield value="%{location.country}" name="location.country"
 						id="inputCountry" class="form-control"/>
 				</div>
 				<div class="form-group">
 					<label>Latitude & Longitude</label>
 					<div class="input-group">
-						<s:textfield name="location.lat" id="inputLat" class="form-control" placeholder="Lat"/>
+						<s:textfield value="%{location.lat}" name="location.lat" id="inputLat" class="form-control" placeholder="Lat"/>
 					    <span class="input-group-addon">&</span>
-					    <s:textfield name="location.lng" id="inputLng" class="form-control" placeholder="Lng"/>
+					    <s:textfield value="%{location.lng}" name="location.lng" id="inputLng" class="form-control" placeholder="Lng"/>
 					</div>
 				</div>
 			</div>
@@ -72,13 +73,13 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label>Contact</label>
-					<s:select class="form-control" list="actionForm.userList"
+					<s:select class="form-control" list="actionForm.userList" value="%{location.contact}"
 						name="location.contact" id="inputContact" headerKey="0"
 						headerValue="--" />
 				</div>
 				<div class="form-group">
 					<label>Phone</label>
-					<s:textfield class="form-control" name="location.phone" id="inputPhone" />
+					<s:textfield value="%{location.phone}" class="form-control" name="location.phone" id="inputPhone" />
 				</div>
 			</div>
 		</div>
@@ -86,7 +87,7 @@
 			<div class="panel-body">
 				<div class="form-group">
 					<label>Fax Phone</label>
-					<s:textfield class="form-control" name="location.faxPhone" id="inputFaxPhone" />
+					<s:textfield value="%{location.faxPhone}" class="form-control" name="location.faxPhone" id="inputFaxPhone" />
 				</div>
 			</div>
 		</div>
@@ -121,11 +122,21 @@ $('#addLocationForm').tooltip({
 			location.href = '#locations';
 		});
 		
+		var defaultLat = '<s:property value="location.lat"/>';
+		var defaultLng = '<s:property value="location.lng"/>';
+		console.log(defaultLat);
+		console.log(defaultLng);
+		if (defaultLat == 0) {
+			defaultLat = 42;
+		}
+		if (defaultLng == 0) {
+			defaultLng = 6;
+		}
 		var addresspickerMap = $( "#inputAddress" ).addresspicker({
 		      updateCallback: updateAddressInForm,
 		      mapOptions: {
-		        zoom: 5,
-		        center: new google.maps.LatLng(46, 2),
+		        zoom: 10,
+		        center: new google.maps.LatLng(defaultLat, defaultLng),
 		        scrollwheel: false,
 		        mapTypeId: google.maps.MapTypeId.ROADMAP
 		      },
@@ -185,12 +196,12 @@ $('#addLocationForm').tooltip({
 			
 			FacilioApp.ajax({
 				method : "post",
-				url : "<s:url action='add' />",
+				url : "<s:url action='update' />",
 				data : $("#addLocationForm").serialize(),
 				done: function(data) {
 					console.log(data);
 					window.location.href='#locations';
-					FacilioApp.notifyMessage('success', 'Location created successfully!');
+					FacilioApp.notifyMessage('success', 'Location updated successfully!');
 				},
 				fail: function(error) {
 					console.log(error);
@@ -198,4 +209,9 @@ $('#addLocationForm').tooltip({
 			});
 		});
 	});
+	
+	/* $(".action-btn .save-btn").click(function() {
+		alert('<s:property value="location.Id"/>');
+		location.href = '#locations/update?locationId=<s:property value="location.Id"/>';
+	}); */
 </script>

@@ -32,7 +32,7 @@ public class SkillAPI {
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				skills.put(rs.getLong("SKILL_ID"), rs.getString("NAME"));
+				skills.put(rs.getLong("ID"), rs.getString("NAME"));
 			}
 			
 			return skills;
@@ -113,7 +113,7 @@ public class SkillAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Skills SET NAME=?, DESCRIPTION=?, IS_ACTIVE=? WHERE SKILL_ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("UPDATE Skills SET NAME=?, DESCRIPTION=?, IS_ACTIVE=? WHERE ID=? AND ORGID=?");
 			
 			pstmt.setString(1, skillContext.getName());
 			pstmt.setString(2, skillContext.getDescription());
@@ -137,7 +137,7 @@ public class SkillAPI {
 	private static SkillContext getSkillObjectFromRS(ResultSet rs) throws SQLException {
 		
 		SkillContext sc = new SkillContext();
-		sc.setId(rs.getLong("SKILL_ID"));
+		sc.setId(rs.getLong("ID"));
 		sc.setOrgId(rs.getLong("ORGID"));
 		sc.setName(rs.getString("NAME"));
 		sc.setDescription(rs.getString("DESCRIPTION"));

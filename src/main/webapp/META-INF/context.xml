@@ -48,5 +48,5 @@
     	name="TransactionSynchronizationRegistry" 
 		type="javax.transaction.TransactionSynchronizationRegistry"
 		factory="org.jboss.narayana.tomcat.jta.TransactionSynchronizationRegistryFactory"/>
-          
+        
 </Context>

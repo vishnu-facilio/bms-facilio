@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -35,14 +36,33 @@ public class SetupActions extends ActionSupport {
 		setSetup(SetupLayout.getImportLayout());
 		return SUCCESS;
 	}
-	public String customerPortal() throws Exception {
+	public String servicePortal() throws Exception {
 
-		setSetup(SetupLayout.getcustomerPortal());
+		setSetup(SetupLayout.getservicePortal());
 		return SUCCESS;
 	}
 	public String orgSettings() throws Exception {
 		
 		setSetup(SetupLayout.getCompanySettingsLayout());
+		
+		return SUCCESS;
+	}
+	
+	
+	private OrgContext org;
+	public void setOrg(OrgContext org) {
+		this.org = org;
+	}
+	
+	public OrgContext getOrg() {
+		return this.org;
+	}
+	
+	public String updateOrgSettings() throws Exception {
+		org.getName();
+		
+	System.out.println(org.getName());
+		
 		return SUCCESS;
 	}
 	

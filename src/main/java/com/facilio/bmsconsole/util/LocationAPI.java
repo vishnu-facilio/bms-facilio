@@ -32,7 +32,7 @@ public class LocationAPI {
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				locations.put(rs.getLong("LOCATION_ID"), rs.getString("NAME"));
+				locations.put(rs.getLong("ID"), rs.getString("NAME"));
 			}
 			
 			return locations;
@@ -80,7 +80,7 @@ public class LocationAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Locations (ORGID, NAME, STREET, CITY, STATE, ZIP, COUNTRY, LAT, LNG, CONTACT, PHONE, FAX_PHONE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Locations (MODULEID,ORGID, NAME, STREET, CITY, STATE, ZIP, COUNTRY, LAT, LNG, CONTACT, PHONE, FAX_PHONE) VALUES (-1,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, locationContext.getOrgId());
 			pstmt.setString(2, locationContext.getName());
@@ -114,6 +114,31 @@ public class LocationAPI {
 		}
 	}
 	
+	public static boolean deleteLocation(long locationId, long OrgId) throws Exception
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("DELETE FROM LOCATIONS WHERE ID=? AND ORGID=?");
+			pstmt.setLong(1, locationId);
+			pstmt.setLong(2, OrgId);
+			
+			if (pstmt.executeUpdate() < 1) {
+				return false;
+			}
+			return true;
+			
+		}catch(SQLException  | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	public static boolean updateLocation(LocationContext locationContext) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -121,7 +146,7 @@ public class LocationAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Locations SET NAME=?, STREET=?, CITY=?, STATE=?, ZIP=?, COUNTRY=?, LAT=?, LNG=?, CONTACT=?, PHONE=?, FAX_PHONE=? WHERE LOCATION_ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("UPDATE Locations SET NAME=?, STREET=?, CITY=?, STATE=?, ZIP=?, COUNTRY=?, LAT=?, LNG=?, CONTACT=?, PHONE=?, FAX_PHONE=? WHERE ID=? AND ORGID=?");
 			
 			pstmt.setString(1, locationContext.getName());
 			pstmt.setString(2, locationContext.getStreet());
@@ -153,7 +178,7 @@ public class LocationAPI {
 	private static LocationContext getLocationObjectFromRS(ResultSet rs) throws SQLException {
 		
 		LocationContext lc = new LocationContext();
-		lc.setId(rs.getLong("LOCATION_ID"));
+		lc.setId(rs.getLong("ID"));
 		lc.setOrgId(rs.getLong("ORGID"));
 		lc.setName(rs.getString("NAME"));
 		lc.setStreet(rs.getString("STREET"));
