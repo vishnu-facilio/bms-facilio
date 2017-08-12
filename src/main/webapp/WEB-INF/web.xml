@@ -45,8 +45,9 @@
  	
  	<!--  Context Listener -->
  	<listener>
- 		<!-- Register context listener to bootstrap Narayana services -->
+ 		<!-- Register context listener to bootstrap Narayana services 
         <listener-class>org.jboss.narayana.tomcat.jta.NarayanaJtaServletContextListener</listener-class>
+        -->
  	</listener>
  	<listener>
  		<listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
