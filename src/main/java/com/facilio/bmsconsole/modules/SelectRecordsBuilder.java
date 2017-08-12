@@ -269,10 +269,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		
 		for(FacilioField field : selectFields) {
 			sql.append(", ")
-				.append(field.getColumnName())
-				.append(" AS '")
-				.append(field.getName())
-				.append("'");
+				.append(field.getModuleTableName())
+				.append(".")
+				.append(field.getColumnName());
 		}
 		
 		sql.append(" FROM ")
