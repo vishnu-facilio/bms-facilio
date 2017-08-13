@@ -1,3 +1,4 @@
+<%@ taglib uri="/struts-tags" prefix="s" %>    
 <div class="form-content form-container">
 <form class="">
  <div class="row row-height">
@@ -6,16 +7,11 @@
         <h3 class="inline-header">User Sign Up and Login</h3>
          <div class="row row-height">
          <div class="col-xs-6">
-        <!-- text -->
    		 <label class="inline-text">Allow users to Sign Up from the customer portal</label>
     	</div>
     	<div class="col-xs-6">
-    	 <label class="radio-inline ">
-     	 <input type="radio"  value="yes" name="user-login">Yes
-   		 </label>
-    	 <label class="radio-inline ">
-    	 <input type="radio"  value="no" name="user-login">No
-         </label>
+    	<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.signupAllowed" cssClass="radio-inline" />
+    	
     	</div>
 		</div>
 		 <div class="row row-height">
@@ -24,12 +20,8 @@
    		 <label class="inline-text">Allow users to Sign In using Google</label>
     	</div>
     	<div class="col-xs-6">
-    	 <label class="radio-inline ">
-     	 <input type="radio"  value="yes" name="google-login">Yes
-   		 </label>
-    	 <label class="radio-inline ">
-    	 <input type="radio" value="no" name="google-login">No
-         </label>
+		<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.gmailLoginAllowed" cssClass="radio-inline" />
+
     	</div>
 		</div>
     </section>
@@ -49,12 +41,9 @@
    		 <label class="inline-text">Who can submit a new ticket on portal</label>
     	</div>
     	<div class="col-xs-6">
-    	 <label class="radio-inline ">
-     	 <input type="radio" value="user"  name="user-ticket-permissions">Logged in users
-   		 </label>
-    	 <label class="radio-inline ">
-    	 <input type="radio" value="all"  name="user-ticket-permissions">Everyone
-         </label> 
+    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="setup.data.ticketAlloedForPublic" cssClass="radio-inline" />
+    	
+    	 
           <div id="enable-captcha" class="hidden-input">
          <label class="radio-inline "> 
          <input	type="checkbox" name="captcha" value="captcha-enabled">Enable CAPTCHA to help avoid spam
@@ -63,22 +52,7 @@
 
 		</div>
 		</div>
-		 <div class="row row-height">
-         <div class="col-xs-6">
-        <!-- text -->
-   		 <label class="inline-text">Who can view solutions</label>
-    	</div>
-    	<div class="col-xs-6">
-    	 <label class="radio-inline ">
-     	 <input type="radio" value="user" name="view-user-permissions">Logged in users
-   		 </label>
-    	 <label class="radio-inline ">
-    	 <input type="radio" value="all" name="view-user-permissions">Everyone
-         </label>
-         
-    	</div>
-		</div>
-    </section>
+	  </section>
     
     <nav class="col-md-4">
         <!-- Navigation -->
@@ -92,15 +66,12 @@
 		 <div class="row row-height">
          <div class="col-xs-6">
         <!-- text -->
-   		 <label class="inline-text">Who can log in (or) sign up (or) create tickets?</label>
+   		 <label class="inline-text">Who can log in (or) sign up ?</label>
     	</div>
     	<div class="col-xs-6">
-    	 <label class="radio-inline ">
-     	 <input type="radio" value="yes" name="whitelist-domain-radio">Users from any domain
-   		 </label>
-    	 <label class="radio-inline">
-    	 <input class="display-input" type="radio" value="no" name="whitelist-domain-radio">Users from whitelisted domains
-    	 </label>
+    	
+       <s:radio list="#{'true':'Any domain','false':'Whitelisted domains'}" name="setup.data.anyDomain" cssClass="radio-inline" />
+    	
     	 <input type="text" id="domain-name" class="hidden-input" name="domainName" placeholder="Enter Domain Name" >
          
     	</div>

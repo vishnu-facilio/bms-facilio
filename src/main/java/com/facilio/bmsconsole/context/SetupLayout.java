@@ -3,7 +3,19 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetupLayout {
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+
+
+public class SetupLayout<T> {
+	private T t;
+	
+	public void setData(T t) {
+        this.t = t;
+    }
+
+    public T getData() {
+        return t;
+    }
 	
 	String settingTitle;
 	String settingGroupTitle;
@@ -89,9 +101,9 @@ public class SetupLayout {
 		return sl;
 	}
 	
-	public static SetupLayout getservicePortal() {
+	public static SetupLayout<ServicePortalInfo> getservicePortal() {
 		
-		SetupLayout sl = new SetupLayout();
+		SetupLayout<ServicePortalInfo> sl = new SetupLayout<ServicePortalInfo>();
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("General");
 		sl.setSettingViewTitle("Service Portal");
@@ -398,4 +410,7 @@ class ActionButton
 		this.type = type;
 		return this;
 	}
+	
+	
+	
 }

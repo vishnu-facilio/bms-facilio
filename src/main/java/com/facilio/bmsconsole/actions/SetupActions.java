@@ -6,6 +6,7 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
@@ -47,7 +48,10 @@ public class SetupActions extends ActionSupport {
 	}
 	public String servicePortal() throws Exception {
 
-		setSetup(SetupLayout.getservicePortal());
+		SetupLayout<ServicePortalInfo> portalInfo =SetupLayout.getservicePortal();
+		ServicePortalInfo spinfo = new ServicePortalInfo();
+		portalInfo.setData(spinfo);
+		setSetup(portalInfo);
 		return SUCCESS;
 	}
 	public String orgSettings() throws Exception {
