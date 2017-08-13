@@ -568,4 +568,19 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadSupportEmailsCommand());
+		c.addCommand(new LoadEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }

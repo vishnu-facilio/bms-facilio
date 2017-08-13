@@ -226,7 +226,15 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/emailsettings.jsp</result>
 		</action>
-		<action name="editemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
+		
+		<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateEmailSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/edit.jsp</result>
 		</action>

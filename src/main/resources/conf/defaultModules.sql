@@ -1,3 +1,7 @@
+INSERT INTO SupportEmails (ORGID, REPLY_NAME, ACTUAL_EMAIL, FWD_EMAIL, VERIFIED) VALUES (${orgId}, (SELECT ORGNAME FROM Organizations WHERE ORGID = ${orgId}), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.com')), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.com')), true);
+
+INSERT INTO EmailSettings (ORGID, FLAGS) VALUES (${orgId}, 2);
+
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME) VALUES (${orgId}, 'location', 'Locationsde', 'Locations');
 SET @LOCATION_MODULE_ID := (SELECT LAST_INSERT_ID());
 

@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.constants.FacilioConstants;
+
 public class FieldFactory {
 	
 	public static FacilioField getOrgIdField() {
@@ -70,5 +72,45 @@ public class FieldFactory {
 		fields.add(flags);
 		
 		return fields;
+	}
+	
+	public static List<FacilioField> getSupportEmailFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		String tableName = "SupportEmails";
+		
+		fields.add(getIdField(tableName));
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField replyName = new FacilioField();
+		replyName.setName("replyName");
+		replyName.setDataType(FieldType.STRING);
+		replyName.setColumnName("REPLY_NAME");
+		replyName.setModuleTableName(tableName);
+		fields.add(replyName);
+		
+		FacilioField actualEmail = new FacilioField();
+		actualEmail.setName("actualEmail");
+		actualEmail.setDataType(FieldType.STRING);
+		actualEmail.setColumnName("ACTUAL_EMAIL");
+		actualEmail.setModuleTableName(tableName);
+		fields.add(actualEmail);
+		
+		FacilioField fwdEmail = new FacilioField();
+		fwdEmail.setName("fwdEmail");
+		fwdEmail.setDataType(FieldType.STRING);
+		fwdEmail.setColumnName("FWD_EMAIL");
+		fwdEmail.setModuleTableName(tableName);
+		fields.add(fwdEmail);
+		
+		LookupField autoAssignGroup = new LookupField();
+		autoAssignGroup.setName("autoAssignGroup");
+		autoAssignGroup.setDataType(FieldType.LOOKUP);
+		autoAssignGroup.setColumnName("AUTO_ASSIGN_GROUP_ID");
+		autoAssignGroup.setModuleTableName(tableName);
+		autoAssignGroup.setSpecialType(FacilioConstants.ContextNames.GROUP);
+		fields.add(autoAssignGroup);
+		
+		return fields;
+		
 	}
 }	

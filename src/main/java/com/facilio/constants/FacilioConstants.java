@@ -390,6 +390,11 @@ public class FacilioConstants {
 		
 		public static final String LOCATION = "location";
 		
+		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
+		public static final String EMAIL_SETTING = "emailSetting";
+		
+		public static final String RESULT = "result";
+		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
 				return "TICKETID";
