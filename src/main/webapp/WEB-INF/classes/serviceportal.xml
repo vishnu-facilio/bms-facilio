@@ -22,7 +22,7 @@
 
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
-			<result name="login">/jsps/serviceportal/login.jsp
+			<result name="login">/jsps/service/login.jsp
 			</result>
 			<result name="unauthorized" type="redirect">
 				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
@@ -32,10 +32,35 @@
 
 		
   	<action name="index" >
-        <result>/jsps/serviceportal/home.jsp</result>
+        <result>/service/index.jsp</result>
     </action>
     
+    <action name="login" class="com.facilio.customerportal.actions.Authentication" method="login">
+			<result >/service/login.jsp</result>
+		</action>
+		
        
+	</package>
+	
+	<package name="portallogin" strict-method-invocation="false" namespace="/serviceauth" extends='struts-default,tiles-default,json-default'>
+	
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		
+		<action name="login" class="com.facilio.customerportal.actions.Authentication" method="login">
+			<result >/service/login.jsp</result>
+		</action>
+				<action name="signup" class="com.facilio.customerportal.actions.Authentication" method="login">
+			<result >/jsps/login.jsp</result>
+		</action>
 	</package>
 	
 </struts>
