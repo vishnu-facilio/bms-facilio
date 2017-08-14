@@ -7,6 +7,7 @@
 <link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
 <link href="css/style.css" type="text/css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+<script src="https://unpkg.com/vue"></script>
 </head>
 <body>
 <div class="container">
@@ -40,35 +41,67 @@
 
 <div class="container-fluid icons">
 <div class="row">
-<div class="container">
-    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 text-center">
-	<a href="#" class="icon"><i class="fa fa-ticket" aria-hidden="true"></i>
-	<p class="lightText">
-	
-	<div id="signinform" style="display:block;margin-left:50px;margin-top:25px;margin-bottom:25px;width:350px">
-        <form>
-          <div>
-            
-            <p>  <input type="text" placeholder="Enter Email" name="email" required="" autocomplete="off"></p>
-           <p><input type="password" placeholder="Enter Password" name="psw" required=""></p>
-          
-            <input type="checkbox" checked="checked"> Remember me
-
-            <div class="clearfix">
-              
-              <button type="button" class="signupbtn" onclick="javascript:signin(this.form.email.value,this.form.psw.value)">Sign In</button>
-            </div>
-            
-          </div>
-        </form>
-               
-      </div>
-	
-	
-    </div>
-    </p>
-    </a>
+<div class="col-sm-1 col-md-1 col-lg-1"> &nbsp;
+</div>
    
+   <div class="col-sm-5 col-md-5 col-lg-5">
+
+<form>
+  <div class="form-group">
+    <label for="email">Email address:</label>
+    <input type="email" class="form-control" id="email">
+  </div>
+  <div class="form-group">
+    <label for="pwd">Password:</label>
+    <input type="password" class="form-control" id="pwd">
+  </div>
+  <div class="checkbox">
+    <label><input type="checkbox"> Remember me</label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+
+</div>
+
+  	<div class="col-sm-5 col-md-5 col-lg-5" style="border-left: 1px dashed #333">
+<form role="form">
+			    			<div class="row">
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			                <input type="text" name="first_name" id="first_name" class="form-control input-sm" placeholder="First Name">
+			    					</div>
+			    				</div>
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="text" name="last_name" id="last_name" class="form-control input-sm" placeholder="Last Name">
+			    					</div>
+			    				</div>
+			    			</div>
+
+			    			<div class="form-group">
+			    				<input type="email" name="email" id="email" class="form-control input-sm" placeholder="Email Address">
+			    			</div>
+
+			    			<div class="row">
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password">
+			    					</div>
+			    				</div>
+			    				<div class="col-xs-6 col-sm-6 col-md-6">
+			    					<div class="form-group">
+			    						<input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">
+			    					</div>
+			    				</div>
+			    			</div>
+			    			
+			    			<input type="submit" value="Register" class="btn btn-info btn-block">
+			    		
+			    		</form>
+
+</div>
+   <div class="col-sm-1 col-md-1 col-lg-1" >  &nbsp;
 </div>
 
 </div>
