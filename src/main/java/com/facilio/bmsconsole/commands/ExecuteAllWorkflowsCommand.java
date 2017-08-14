@@ -68,7 +68,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							.where("ACTION_ID = ?", actionId);
 					List<Map<String, Object>> actions = actionBuilder.get();
 					
-					int actionType = (int) actions.get(0).get("actionType");
+					int actionType = Integer.parseInt(String.valueOf(actions.get(0).get("actionType")));
 					switch(actionType)
 					{
 						case FacilioConstants.Workflow.ACTION_EMAIL_NOTIFICATION:
@@ -76,10 +76,20 @@ public class ExecuteAllWorkflowsCommand implements Command
 							long templateId = (long) actions.get(0).get("templateId");
 							if(templateId == 0)
 							{
-								int templateType = (int) actions.get(0).get("templateType");
+								int templateType = Integer.parseInt(String.valueOf(actions.get(0).get("templateType")));
 								switch(templateType)
 								{
 									case FacilioConstants.Workflow.TEMPLATE_WORKORDER_ASSIGN:
+									{
+										JSONObject mailJson = new JSONObject();
+										mailJson.put("sender", "support@thingscient.com");
+										mailJson.put("to", "shivaraj@thingscient.com");
+										mailJson.put("subject", "Workorder Assigned");
+										mailJson.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
+										AwsUtil.sendEmail(mailJson);
+										break;
+									}
+									case FacilioConstants.Workflow.TEMPLATE_WORKORDER_ACTIVITY_FOLLOWUP:
 									{
 										JSONObject mailJson = new JSONObject();
 										mailJson.put("sender", "support@thingscient.com");
