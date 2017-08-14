@@ -301,6 +301,37 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getLocationChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForLocation());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetLocationCommand());
+		
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSkillChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetSkillCommand());
+		
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNewSkillChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadActionFormCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAllCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForCampus());
@@ -535,6 +566,21 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateNotePropsCommand());
 		c.addCommand(new AddNoteCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadSupportEmailsCommand());
+		c.addCommand(new LoadEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateEmailSettingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

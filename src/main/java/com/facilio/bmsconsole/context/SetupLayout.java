@@ -3,7 +3,19 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetupLayout {
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+
+
+public class SetupLayout<T> {
+	private T t;
+	
+	public void setData(T t) {
+        this.t = t;
+    }
+
+    public T getData() {
+        return t;
+    }
 	
 	String settingTitle;
 	String settingGroupTitle;
@@ -89,12 +101,12 @@ public class SetupLayout {
 		return sl;
 	}
 	
-	public static SetupLayout getcustomerPortal() {
+	public static SetupLayout<ServicePortalInfo> getservicePortal() {
 		
-		SetupLayout sl = new SetupLayout();
+		SetupLayout<ServicePortalInfo> sl = new SetupLayout<ServicePortalInfo>();
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("General");
-		sl.setSettingViewTitle("Customer Portal");
+		sl.setSettingViewTitle("Service Portal");
 		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
 		
 		
@@ -240,6 +252,64 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getSkillsListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Skills");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getNewSkillLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("New Skill");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getLocationsListLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Locations");
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		return sl;
+	}
+		
+	public static SetupLayout getNewLocationLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("New Location");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+	
+	public static SetupLayout getEditLocationLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Edit Location");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+
 	public static SetupLayout getNewRoleLayout() {
 		
 		SetupLayout sl = new SetupLayout();
@@ -340,4 +410,7 @@ class ActionButton
 		this.type = type;
 		return this;
 	}
+	
+	
+	
 }

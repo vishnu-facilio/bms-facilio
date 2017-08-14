@@ -212,6 +212,12 @@
 			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
 		
+			<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+		</action>
+		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/notifications.jsp</result>
@@ -220,7 +226,15 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/emailsettings.jsp</result>
 		</action>
-		<action name="editemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
+		
+		<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateEmailSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/edit.jsp</result>
 		</action>
@@ -236,6 +250,16 @@
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/roleList.jsp</result>
+		</action>
+		
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/locations.jsp</result>
+		</action>
+		
+		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/skills.jsp</result>
 		</action>
 		
 	    <action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
@@ -260,8 +284,9 @@
 		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
-		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
-			<result type="tiles">setuplayout/customerPortal.jsp</result>
+
+		<action name="servicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="servicePortal">		
+			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>
@@ -435,25 +460,70 @@
 		</action>
 	</package>
 	
-	<package name="location" namespace="/app/location" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.LocationActions">
+	<package name="location" namespace="/app/setup/locations" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions" method="newLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/locationsPopup.jsp</result>
+			<result type="tiles">setuplayout/newLocation.jsp</result>
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.LocationActions" method="{1}">
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions" method="addLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="new_location">/jsps/newLocation.jsp</result>
-			<result name="add_location_success" type="json">
+			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
 			</result>
-			<allowed-methods>create,add</allowed-methods>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.LocationActions" method="updateLocation">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">			
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.LocationActions" method="deleteLocation">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">			
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="edit" class="com.facilio.bmsconsole.actions.LocationActions" method="editLocation">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/editLocation.jsp</result>
+		</action>
+		
 	</package>
 	
-	<package name="skill" namespace="/app/skill" extends="home">
+	<package name="skills" namespace="/app/setup/skills" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success">/jsps/newForm.jsp</result>
+			<result type="tiles">setuplayout/newSkill.jsp</result>
+			<!-- result name="success">/jsps/newForm.jsp</result -->
+		</action>
+				
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">skillId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>
 		
 		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkillDialog">
@@ -461,12 +531,6 @@
 			<result name="success">/jsps/newFormDialog.jsp</result>
 		</action>
 		
-		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">skillId</param>
-			</result>
-		</action>
 	</package>
 	
 	<package name="users" namespace="/app/setup/users" extends="home">

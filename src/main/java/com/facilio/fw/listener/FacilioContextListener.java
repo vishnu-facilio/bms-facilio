@@ -39,7 +39,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
-			FacilioTransactionManager.INSTANCE.getTransactionManager();
+//			FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool
 			

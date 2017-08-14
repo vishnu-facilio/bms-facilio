@@ -16,6 +16,8 @@
 							<span class="required">*</span>
 						</s:if>
 					</label>
+					
+					
 					<s:if test="%{#field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@TEXTBOX || #field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@EMAIL || #field.displayType == @com.facilio.bmsconsole.modules.FacilioField$FieldDisplayType@NUMBER}">
 						
 						<input name="<s:property value="#field.inputName"/>" 
@@ -90,9 +92,10 @@
 							required="true"
 							</s:if>
 							>
-							<option value="">- None -</option>
 							<s:iterator value="actionForm[#field.list]" status="rowstatus" var="option">
-								<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/></option>
+								<option value="<s:property value="#option.key"/>"><s:property value="#option.value"/>
+								</option>
+								
 							</s:iterator>
 						</select>
 					</s:if>
@@ -235,19 +238,27 @@
 		$('select').selectize({
 			preload : true,
 			load : function(query, callback) {
-				console.log(this);
+				//console.log(this);
+				var self = this;
 				var moduleName = this.$input.data("module-name");
-				console.log(moduleName);
+				//console.log(moduleName);
 				FacilioApp.ajax({
 					method : "post",
 					url : "<s:url action='picklist' namespace='/app' />",
 					data : {moduleName : moduleName},
 					done: function(data) {
 						var dataArr = [];
+						var defaultValue;
+						var isFirst = true;
 						for(var key in data) {
 							dataArr.push({value : key, text : data[key]});
+							if(isFirst) {
+								defaultValue = key;
+								isFirst = false;
+							}
 						}
 						callback(dataArr);
+						self.setValue(defaultValue);
 					},
 					fail: function(error) {
 					}

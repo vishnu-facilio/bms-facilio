@@ -1,12 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s"%>
-<div class="row">
-	<div class="col-lg-12">
-		<h1 class="page-header">New Location</h1>
-	</div>
-	<!-- /.col-lg-12 -->
-</div>
+<div class="form-container form-content">
 <form role="form" id="addLocationForm" onsubmit="return false;">
 	<div class="row">
 		<div class="col-lg-6">
@@ -96,7 +91,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="row">
+	<!-- div class="row">
 		<div class="col-lg-12">
 			<div class="panel-body">
 				<div class="form-group">
@@ -107,8 +102,9 @@
 
 			</div>
 		</div>
-	</div>
+	</div -->
 </form>
+</div>
 <script>
 $('#addLocationForm').tooltip({
     selector: "[data-toggle=tooltip]",
@@ -116,6 +112,15 @@ $('#addLocationForm').tooltip({
 });
 
 	$(document).ready(function() {
+		
+		$(".action-btn .save-btn").click(function() {
+			$('#addLocationForm').submit();
+		});
+		
+		$(".action-btn .cancel-btn").click(function() {
+			location.href = '#locations';
+		});
+		
 		var addresspickerMap = $( "#inputAddress" ).addresspicker({
 		      updateCallback: updateAddressInForm,
 		      mapOptions: {

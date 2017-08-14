@@ -72,4 +72,11 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("zone", "Zone");
 	}
 
+	public static SetTableNamesCommand getForLocation(){
+		return new SetTableNamesCommand("location","Locations");
+	}
+	
+	public static SetTableNamesCommand getForSkill(){
+		return new SetTableNamesCommand("skill","Skills");
+	}
 }

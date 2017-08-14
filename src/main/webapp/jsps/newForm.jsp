@@ -137,34 +137,19 @@
         	});	
 	    });
 		
-		$('#addForm').validator().on('submit', function (e) {
-		  if (e.isDefaultPrevented()) {
-				// handle the invalid form...
-		  }
-		  else {
-				// check if any validation errors
-				if ($(this).find('.form-group').hasClass('has-error')) {
-					return false;
-				}
-				
-				$(".save-btn").button('loading');
-				FacilioApp.ajax({
-					method : "post",
-					url : "<s:url action='add' />",
-					data : $("#addForm").serialize(),
-					done: function(data) {
+		$('#addForm').validator().on('submit', 
+				FacilioApp.ajaxSubmitForm("#addForm", "<s:url action='add' />", 
+				function(data, error) {
+					if(data) {
 						console.log(data);
 						$.each(data, function(key, val) {
 							window.location.href='#<s:property value="%{moduleLinkName}"/>/'+val;
 						});
-					},
-					fail: function(error) {
-						$(".save-btn").button('reset');
+					}
+					if(error) {
 						console.log(error);
 					}
-				});
-		  	}
-		  return false;
-		});
+				})
+		);
 	});
 </script>

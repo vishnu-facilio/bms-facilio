@@ -18,11 +18,17 @@ public class ActionForm {
 //	}
 	
 	private Map<Long, String> locations;
+	private Map<Long, String> skills;
 	public Map<Long, String> getLocations() {
 		return locations;
 	}
 	public void setLocations(Map<Long, String> locations) {
 		this.locations = locations;
+	}
+	
+	public void setSKills(Map<Long, String> skills)
+	{
+		this.skills=skills;
 	}
 	
 	public List< String> getCategories() {
