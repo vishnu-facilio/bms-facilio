@@ -433,4 +433,15 @@ public class FacilioConstants {
 			return classMap.get(moduleName);
 		}
 	}
+	
+	public static class Workflow 
+	{
+		public static final String EVENT_TYPE = "eventType";
+		
+		public static final int EVENT_ADD_WORKORDER = 1;
+		
+		public static final int ACTION_EMAIL_NOTIFICATION = 1;
+		
+		public static final int TEMPLATE_WORKORDER_ASSIGN = 1;
+	}
 }

@@ -83,20 +83,21 @@ public class FieldUtil {
 	}
 	
 	public static Object getValueAsPerType(FacilioField cf, ResultSet rs) throws SQLException {
-		switch(cf.getDataType()) {
-			case STRING:
-				return rs.getString(cf.getName());
-			case DECIMAL:
-				return rs.getDouble(cf.getName());
-			case BOOLEAN:
-				return rs.getBoolean(cf.getName());
-			case LOOKUP:
-			case NUMBER:	
-			case DATE:
-			case DATE_TIME:
-				return rs.getLong(cf.getName());
-			default:
-				return rs.getString(cf.getName());
-		}
-	}
+        String key = cf.getModuleTableName()+"."+cf.getColumnName();
+        switch(cf.getDataType()) {
+            case STRING:
+                return rs.getString(key);
+            case DECIMAL:
+                return rs.getDouble(key);
+            case BOOLEAN:
+                return rs.getBoolean(key);
+            case LOOKUP:
+            case NUMBER:    
+            case DATE:
+            case DATE_TIME:
+                return rs.getLong(key);
+            default:
+                return rs.getString(key);
+        }
+    }
 }

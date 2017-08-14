@@ -31,9 +31,11 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
@@ -43,6 +45,13 @@ import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 
 public class AwsUtil 
 {
@@ -236,4 +245,31 @@ public class AwsUtil
         for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
     }
+	
+	public static void sendEmail(JSONObject mailJson) throws Exception 
+	{
+        Destination destination = new Destination().withToAddresses(new String[] { (String) mailJson.get("to") });
+        Content subjectContent = new Content().withData((String) mailJson.get("subject"));
+        Content bodyContent = new Content().withData((String) mailJson.get("message"));
+        Body body = new Body().withText(bodyContent);
+
+        Message message = new Message().withSubject(subjectContent).withBody(body);
+
+        try
+        {
+	        SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
+	                .withDestination(destination).withMessage(message);
+	        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+	        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+	                .withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+	        client.sendEmail(request);
+	        System.out.println("Email sent!");
+	    } 
+        catch (Exception ex) 
+        {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+            throw ex;
+        }
+	}
 }
