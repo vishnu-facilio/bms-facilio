@@ -42,6 +42,14 @@ public class SupportEmailContext {
 		this.fwdEmail = fwdEmail;
 	}
 	
+	private long autoAssignGroupId;
+	public long getAutoAssignGroupId() {
+		return autoAssignGroupId;
+	}
+	public void setAutoAssignGroupId(long autoAssignGroupId) {
+		this.autoAssignGroupId = autoAssignGroupId;
+	}
+	
 	private GroupContext autoAssignGroup;
 	public GroupContext getAutoAssignGroup() {
 		return autoAssignGroup;
@@ -51,7 +59,7 @@ public class SupportEmailContext {
 	}
 	
 	private boolean verified;
-	public boolean getVerified() {
+	public boolean isVerified() {
 		return verified;
 	}
 	public void setVerified(boolean verified) {

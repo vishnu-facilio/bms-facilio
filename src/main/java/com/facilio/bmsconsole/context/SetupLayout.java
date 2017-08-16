@@ -142,7 +142,7 @@ public class SetupLayout<T> {
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("Work Order");
 		sl.setSettingViewTitle("Email Settings");
-		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn editSupportBtn").setType(ActionButton.Type.SAVE));
 		
 		return sl;
 	}

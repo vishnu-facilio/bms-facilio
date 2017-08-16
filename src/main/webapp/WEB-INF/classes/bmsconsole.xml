@@ -234,14 +234,32 @@
 			</result>
 		</action>
 		
-		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
+		<action name="supportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="supportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/setup/edit.jsp</result>
+			<result name="success" >/jsps/setup/supportemail.jsp</result>
 		</action>
-		<action name="newemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="newEmailSettings">
+		
+		<action name="addsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/setup/new.jsp</result>
+			<result name="success" type="json">
+				<param name="includeProperties">supportEmailId</param>
+			</result>
 		</action>
+		
+		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="deletesupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
 	    	<result type="tiles">setuplayout/usersList.jsp</result>

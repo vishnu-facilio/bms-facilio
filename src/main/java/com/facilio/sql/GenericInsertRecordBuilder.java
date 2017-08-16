@@ -63,8 +63,7 @@ public class GenericInsertRecordBuilder {
 			for(Map<String, Object> value : values) {
 				pstmt.clearParameters();
 				for(FacilioField field : fields) {
-					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, field.getDataType(), value.get(field.getName()));
-					paramIndex++;
+					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
 				}
 				pstmt.addBatch();
 			}

@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -32,19 +33,7 @@ public class LoadSupportEmailsCommand implements Command {
 		List<SupportEmailContext> emails = new ArrayList<>();
 		if(emailList != null) {
 			for(Map<String, Object> props : emailList) {
-				SupportEmailContext email = new SupportEmailContext();
-				
-				long groupId = (long) props.get("autoAssignGroup");
-				if(groupId != 0) {
-					GroupContext group = GroupAPI.getGroup(groupId);
-					props.put("autoAssignGroup", group);
-				}
-				else {
-					props.remove("autoAssignGroup");
-				}
-				
-				BeanUtils.populate(email, props);
-				emails.add(email);
+				emails.add(CommonCommandUtil.getSupportEmailFromMap(props));
 			}
 		}
 		

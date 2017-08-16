@@ -47,7 +47,7 @@
 	          </s:else>
 	        </div>
 	        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 text-right">
-	          <div class="btns"> <button type="button" class="btn btn-default btn-sm editSupportBtn">Edit</button> <button type="button" class="btn btn-default"><i class="fa fa-trash-o" aria-hidden="true"></i></button> </div>
+	          <div class="btns"> <button type="button" class="btn btn-default btn-sm editSupportBtn" data-id="<s:property value="#supportEmail.id" />">Edit</button> <button type="button" data-id="<s:property value="#supportEmail.id" />" class="btn btn-default deleteSupportBtn"><i class="fa fa-trash-o" aria-hidden="true"></i></button> </div>
 	        </div>
 	      </div>
 	    </div>
@@ -136,7 +136,7 @@
     </div>
   </div>
   <div class="modal fade" id="supportTicketModal" tabindex="-1" role="dialog"
-    aria-labelledby="Supoort Ticket" aria-hidden="true">
+    aria-labelledby="Support Ticket" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -146,13 +146,13 @@
 						data-dismiss="modal">
 						<i class="fa fa-times"></i>
 					</button>
-					<button type="button" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" class="btn btn-default save-btn" onclick="$('#addFormDialog').submit();" class="btn btn-default save-btn">
+					<button type="button" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Saving" class="btn btn-default save-btn" onclick="$('#supportEmailForm').submit();" class="btn btn-default save-btn">
 						<i class="fa fa-check" aria-hidden="true"></i>&nbsp;&nbsp;Done
 					</button>
 				</div>  
         	</div>
-        <div class="modal-body form-content">
-          <%@ include file="supportemail.jsp" %>  
+        <div class="modal-body form-content" id="supportEmailContainer">
+            
         </div>
       </div>
     </div>
@@ -160,19 +160,57 @@
 </div>
 <script>
 
-	$(".action-btn .new-btn").click(function() {
+	/* $(".action-btn .new-btn").click(function() {
 		location.href = '#newemailsettings';
-	});
+	}); */
 
 	$(document).ready(function() {
 		$('[data-toggle="tooltip"]').tooltip();
 		
-		$(".editSupportBtn").click(function() {
-			$("#supportTicketModal").modal("show");
-		});
-		
 		$("#setBccBtn").click(function() {
 			$("#setBccModal").modal("show");
+		});
+		
+		$(".deleteSupportBtn").click(function() {
+			var id = $(this).data("id");
+			console.log(id);
+			var cnf = confirm("Are you sure?");
+			if(cnf == true) {
+				FacilioApp.ajax({
+					method : "post",
+					url : contextPath + '/app/setup/deletesupportemail',
+					data : {supportEmailId : id},
+					done: function(data) {
+						console.log(data);
+						FacilioApp.notifyMessage('success', 'Deleted Successfully!');
+						setTimeout(function() {
+							FacilioApp.refreshView();
+						}, 500);
+					},
+					fail: function(error) {
+						console.log(error);
+					}
+				});
+			}
+		});
+		
+		$(".editSupportBtn").click(function() {
+			var id = $(this).data("id");
+			console.log(id);
+			$("#supportEmailContainer").html("");
+			FacilioApp.ajax({
+				method : "post",
+				url : contextPath + '/app/setup/supportemail',
+				data : {supportEmailId : id},
+				done: function(data) {
+					//console.log(data);		
+					$("#supportEmailContainer").html(data);
+					$("#supportTicketModal").modal("show");
+				},
+				fail: function(error) {
+					console.log(error);
+				}
+			});
 		});
 		
 		$('#setBccForm').validator().on('submit',
@@ -207,22 +245,5 @@
 			)
 		);
 	
-		/* $('.emailFlag').click(function() {
-			var emailSetting = {};
-			emailSetting[$(this).attr("name")] = $(this).is(':checked');
-			console.log(emailSetting);
-			FacilioApp.ajax({
-				method : "post",
-				url : contextPath + '/app/setup/updateemailsettings',
-				data : {emailSetting : emailSetting},
-				type : 'json',
-				done: function(data) {
-					console.log(data);
-				},
-				fail: function(error) {
-					console.log(error);
-					FacilioApp.notifyMessage('danger', 'Unable to change now. Try again later');
-				}
-			});*/
-		}); 
+	}); 
 </script>

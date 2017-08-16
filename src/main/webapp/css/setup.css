@@ -496,7 +496,7 @@ input[type="checkbox"]{
 	background-color: #dadada;
 	margin-top: 20px;
 }
-input[type="text"],select {
+input[type="text"], input[type="email"], select {
 	border: 1px solid #E4E4E4;
 	border-radius: 5px;
 	box-shadow: 0 1px 0 #BBBBBB inset;
@@ -517,12 +517,12 @@ select option{
 	margin-top:20px;
 	margin-left:10px;
 }
-input[type="text"]:focus,select:focus {
+input[type="text"]:focus, input[type="email"]:focus, select:focus {
 	outline:none !important;
 	border: 1px solid #5dc8ff;
 	border-radius: 5px;
 }
-input[type="text"], select, input.text {
+input[type="text"], input[type="email"], select, input.text {
 	color: #666;
 }
 .name {

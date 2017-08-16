@@ -8,7 +8,7 @@ public class FacilioChainFactory {
 
 	public static Chain getOrgSignupChain()
 	{
-		Chain c =new ChainBase();
+		Chain c = new ChainBase();
 		c.addCommand(new CreateUserCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		addCleanUpCommand(c);
@@ -581,6 +581,34 @@ public class FacilioChainFactory {
 	public static Chain getUpdateEmailSettingChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteSupportEmailCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
