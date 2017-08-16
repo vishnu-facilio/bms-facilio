@@ -20,6 +20,7 @@ public class GetCampusCommand implements Command {
 		long campusId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(campusId > 0) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -27,6 +28,7 @@ public class GetCampusCommand implements Command {
 			SelectRecordsBuilder<CampusContext> builder = new SelectRecordsBuilder<CampusContext>()
 					.connection(conn)
 					.dataTableName(dataTableName)
+					.moduleName(moduleName)
 					.beanClass(CampusContext.class)
 					.select(fields)
 					.where("ID = ?", campusId)

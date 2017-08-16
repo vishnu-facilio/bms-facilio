@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.CampusContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -21,6 +20,7 @@ public class GetLocationCommand implements Command {
 		long locationId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(locationId > 0) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -28,6 +28,7 @@ public class GetLocationCommand implements Command {
 			SelectRecordsBuilder<LocationContext> builder = new SelectRecordsBuilder<LocationContext>()
 					.connection(conn)
 					.dataTableName(dataTableName)
+					.moduleName(moduleName)
 					.beanClass(LocationContext.class)
 					.select(fields)
 					.where("ID = ?", locationId)

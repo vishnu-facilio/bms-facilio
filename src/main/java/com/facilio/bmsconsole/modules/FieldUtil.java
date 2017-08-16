@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.modules;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FieldUtil {
 	
@@ -99,5 +104,24 @@ public class FieldUtil {
 			default:
 				return rs.getString(key);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <E extends ModuleBaseWithCustomFields> Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	{
+		Map<String, Object> properties = null;
+		if(bean != null) 
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setSerializationInclusion(Include.NON_DEFAULT);
+			properties = mapper.convertValue(bean, Map.class);
+			
+			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
+			if(customProps != null)
+			{
+				properties.putAll(customProps);
+			}
+		}
+		return properties;
 	}
 }

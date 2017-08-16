@@ -6,16 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {

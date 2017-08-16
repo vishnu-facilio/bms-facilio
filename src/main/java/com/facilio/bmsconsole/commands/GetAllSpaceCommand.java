@@ -17,6 +17,7 @@ public class GetAllSpaceCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -24,6 +25,7 @@ public class GetAllSpaceCommand implements Command{
 		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
 				.connection(conn)
 				.dataTableName(dataTableName)
+				.moduleName(moduleName)
 				.beanClass(SpaceContext.class)
 				.select(fields)
 				.orderBy("ID");

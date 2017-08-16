@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -16,8 +15,6 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TaskAction extends ActionSupport {

@@ -241,7 +241,7 @@ var relatedModuleAddCallBack = function(result, error)
 function update(id, value)
 {
 	FacilioApp.ajax({
-		url: "/app/ticket/update?ticket.id="+id+"&ticket.description=" +value,
+		url: contextPath + "/app/ticket/update?ticket.id="+id+"&ticket.description=" +value,
 		success: function(response, status, xhr) {
 			alert(response);
 		}

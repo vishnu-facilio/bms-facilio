@@ -3,9 +3,9 @@ package com.facilio.fw;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 
 import com.facilio.transaction.FacilioConnectionPool;
-import java.sql.Connection;
 
 public class BeanInvocationHandler implements InvocationHandler {
 

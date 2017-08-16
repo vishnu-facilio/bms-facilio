@@ -1,5 +1,4 @@
 package com.facilio.bmsconsole.context;
-import com.facilio.bmsconsole.util.OrgApi;
 
 public class OrgContext{
 	private String name;

@@ -2,21 +2,26 @@ package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import com.facilio.sql.DBUtil;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	
+	private GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
 	private String moduleName;
+	private long moduleId = -1;
 	private String dataTableName;
 	private Connection conn;
+	private List<FacilioField> fields = new ArrayList<>();
+	private String where;
+	private Object[] whereValues;
 	
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -29,41 +34,78 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	public UpdateRecordBuilder<E> dataTableName(String dataTableName) {
 		this.dataTableName = dataTableName;
+		builder.table(dataTableName);
 		return this;
 	}
 	
 	public UpdateRecordBuilder<E> connection(Connection conn) {
 		this.conn = conn;
+		builder.connection(conn);
 		return this;
 	}
 	
-	public void update(E bean) throws Exception 
-	{
-		checkForNull();
-		
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			Map<String, Object> moduleProps = getAsProperties(bean);
-			String sql = constuctUpdateStatement(moduleProps);
-			
-			pstmt = conn.prepareStatement(sql);
-			appendFieldValues(moduleProps, pstmt);
-			
-			if(pstmt.executeUpdate() < 1) {
-				throw new RuntimeException("Unable to update Module");
+	public UpdateRecordBuilder<E> where(String where, Object... values) {
+		this.where = where;
+		this.whereValues = values;
+		return this;
+	}
+	
+	public UpdateRecordBuilder<E> fields(List<FacilioField> fields) {
+		this.fields = fields;
+		return this;
+	}
+	
+	private long getModuleId() {
+		if (this.moduleId <= 0) {
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+				this.moduleId = modBean.getModule(moduleName).getModuleId();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		catch(SQLException | RuntimeException e) 
-		{
-			e.printStackTrace();
-			throw e;
+		return this.moduleId;
+	}
+	
+	public int update(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		checkForNull();
+		fields.add(FieldFactory.getOrgIdField(dataTableName));
+		fields.add(FieldFactory.getModuleIdField(dataTableName));
+		fields.add(FieldFactory.getIdField(dataTableName));
+		builder.fields(fields);
+		
+		StringBuilder whereCondition = new StringBuilder(dataTableName);
+		whereCondition.append(".ORGID = ? AND ")
+						.append(dataTableName)
+						.append(".MODULEID = ?");
+		if(where != null && !where.isEmpty()) {
+			whereCondition.append(" AND ")
+							.append(where);
 		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
+		
+		Object[] whereVals = null;
+		if(whereValues != null) {
+			whereVals = new Object[whereValues.length+2];
+			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
+			whereVals[1] = getModuleId();
+			for(int i=0; i<whereValues.length; i++) {
+				whereVals[i+2] = whereValues[i];
+			}
 		}
+		else {
+			whereVals = new Object[2];
+			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
+			whereVals[1] = getModuleId();
+		}
+		builder.where(whereCondition.toString(), whereVals);
+		
+		Map<String, Object> moduleProps = FieldUtil.<E>getAsProperties(bean);
+		moduleProps.remove("orgId");
+		moduleProps.remove("moduleId");
+		moduleProps.remove("id");
+		
+		return builder.update(moduleProps);
 	}
 	
 	private void checkForNull() {
@@ -79,61 +121,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		if(conn == null) {
 			throw new IllegalArgumentException("Connection cannot be null");
 		}
-	}
-	
-	private String constuctUpdateStatement(Map<String, Object> properties) 
-	{
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ")
-			.append(dataTableName)
-			.append(" SET ");
 		
-		Iterator<String> fields = properties.keySet().iterator();
-		int paramIndex = 1;
-		while(fields.hasNext()) 
-		{
-			String columnName = fields.next();
-			sql.append(columnName);
-			sql.append(" = ?");
-			if(properties.size() > paramIndex)
-			{
-				sql.append(", ");
-			}
-			paramIndex++;
+		if(fields == null || fields.size() < 1) {
+			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
-		sql.append("WHERE ID = ?");
-		return sql.toString();
-	}
-	
-	private void appendFieldValues(Map<String, Object> properties, PreparedStatement pstmt) throws SQLException 
-	{
-		Iterator<String> fields = properties.keySet().iterator();
-		int paramIndex = 1;
-		while(fields.hasNext()) 
-		{
-			String columnName = fields.next();
-			FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, FieldType.STRING, properties.get(columnName));
-			paramIndex++;
-		}
-		FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex, FieldType.NUMBER, properties.get("id"));
-	}
-	
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
-		Map<String, Object> properties = null;
-		if(bean != null) 
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			properties = mapper.convertValue(bean, Map.class);
-			
-			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-			if(customProps != null)
-			{
-				properties.putAll(customProps);
-			}
-		}
-		return properties;
 	}
 }

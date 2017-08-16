@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
@@ -65,6 +66,7 @@ public class WorkOrderAPI {
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.connection(conn)
 				.dataTableName("Tasks")
+				.moduleName(FacilioConstants.ContextNames.TASK)
 				.beanClass(TaskContext.class)
 				.select(fields)
 				.where("PARENT_WORK_ORDER_ID = ?", workOrderId)

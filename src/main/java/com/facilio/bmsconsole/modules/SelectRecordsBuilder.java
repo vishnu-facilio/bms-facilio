@@ -1,40 +1,34 @@
 package com.facilio.bmsconsole.modules;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	private static final int LEVEL = 2;
 	
 	private String dataTableName;
+	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private List<FacilioField> selectFields;
 	private Connection conn;
-	private String whereCondition;
-	private Object[] whereValues;
-	private String orderBy;
-	private int limit;
 	private int level = 0;
 	private ModuleBean modBean;
-	
+	private String moduleName;
+	private long moduleId = -1;
+	private String where;
+	private Object[] whereValues;
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -47,6 +41,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	public SelectRecordsBuilder<E> dataTableName(String dataTableName) {
 		this.dataTableName = dataTableName;
+		builder.table(dataTableName);
 		return this;
 	}
 	
@@ -62,28 +57,28 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	public SelectRecordsBuilder<E> connection(Connection conn) {
 		this.conn = conn;
+		builder.connection(conn);
 		return this;
 	}
 	
 	public SelectRecordsBuilder<E> where(String where, Object... values) {
-		
-		int count = StringUtils.countMatches(where, "?");
-		if(values.length < count) {
-			throw new IllegalArgumentException("No. of where values doesn't match the number of ?");
-		}
-		
-		this.whereCondition = where;
+		this.where = where;
 		this.whereValues = values;
 		return this;
 	}
 	
 	public SelectRecordsBuilder<E> orderBy(String orderBy) {
-		this.orderBy = orderBy;
+		builder.orderBy(orderBy);
 		return this;
 	}
 	
 	public SelectRecordsBuilder<E> limit(int limit) {
-		this.limit = limit;
+		builder.limit(limit);
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> moduleName(String moduleName) {
+		this.moduleName = moduleName;
 		return this;
 	}
 	
@@ -94,124 +89,151 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		return this.modBean;
 	}
 	
-	private ResultSet getResultSet(PreparedStatement pstmt) throws SQLException {
-		String sql = constructSelectStatement();
-		pstmt = conn.prepareStatement(sql);
-		
-		if(whereValues != null) {
-			for(int i=0; i<whereValues.length; i++) {
-				Object value = whereValues[i];
-				pstmt.setObject(i+1, value);
-			}
-		}
-		
-		return pstmt.executeQuery();
-	}
-	
 	public List<E> getAsBean() throws Exception {
 		checkForNull(true);
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			rs = getResultSet(pstmt);
-			List<E> records = new ArrayList<>();
-			while(rs.next()) {
-				E record = getBeanFromRS(rs);
-				records.add(record);
+		List<Map<String, Object>> propList = getAsJustProps();
+		
+		List<E> beans = new ArrayList<>();
+		if(propList != null && propList.size() > 0) {
+			List<FacilioField> lookupFields = getLookupFields();
+			for(Map<String, Object> props : propList) {
+				if(lookupFields.size() > 0) {
+					for(FacilioField field : lookupFields) {
+						Long recordId = (Long) props.remove(field.getName());
+						if(recordId != null) {
+							Object lookedupObj = getLookupVal(field, recordId);
+							if(lookedupObj != null) {
+								props.put(field.getName(), lookedupObj);
+							}
+						}
+					}
+				}
+				E bean = beanClass.newInstance();
+				BeanUtils.populate(bean, props);
+				beans.add(bean);
 			}
-			return records;
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		return beans;
 	}
 	
 	public List<Map<String, Object>> getAsProps() throws Exception {
 		checkForNull(false);
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			rs = getResultSet(pstmt);
-			List<Map<String, Object>> records = new ArrayList<>();
-			while(rs.next()) {
-				Map<String, Object> record = new HashMap<>();
-				record.put("orgId", rs.getLong("ORGID"));
-				record.put("moduleId", rs.getLong("MODULEID"));
-				record.put("id", rs.getLong("ID"));
-				for(FacilioField field : selectFields) {
-					record.put(field.getName(), getVal(field, rs));
+		List<Map<String, Object>> propList = getAsJustProps();
+		
+		if(propList != null && propList.size() > 0) {
+			List<FacilioField> lookupFields = getLookupFields();
+			if(lookupFields.size() > 0) {
+				for(Map<String, Object> props : propList) {
+					for(FacilioField field : lookupFields) {
+						Long recordId = (Long) props.remove(field.getName());
+						if(recordId != null) {
+							Object lookedupObj = getLookupVal(field, recordId);
+							if(lookedupObj != null) {
+								props.put(field.getName(), lookedupObj);
+							}
+						}
+					}
 				}
-				
-				records.add(record);
 			}
-			return records;
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		return propList;
 	}
 	
-	private Object getVal(FacilioField field, ResultSet rs) throws Exception {
-		if (field.getDataType() == FieldType.LOOKUP) {
-			long id = (long) FieldUtil.getValueAsPerType(field, rs);
-			if(id != 0) {
-				LookupField lookupField = (LookupField) field;
-				if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-					if(level <= LEVEL) {
-						return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
-					}
-					else {
-						return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
-					}
-				}
-				else {
-					Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
-					if(moduleClass != null) {
-						if(level <= LEVEL) {
-							List<FacilioField> lookupBeanFields = getModuleBean().getAllFields(lookupField.getLookupModule().getName());
-							SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
-																								.connection(conn)
-																								.dataTableName(lookupField.getLookupModule().getTableName())
-																								.beanClass(moduleClass)
-																								.select(lookupBeanFields)
-																								.where("ID = ?", id);
-							List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.getAsBean();
-							if(records != null && records.size() > 0) {
-								return records.get(0);
-							}
-							else {
-								return null;
-							}
-						}
-						else {
-							ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
-							lookedupModule.setId(id);
-							return lookedupModule;
-						}
-					}
-					else {
-						throw new IllegalArgumentException("Unknown Module Name in Lookup field "+field);
-					}
-				}
+	private List<FacilioField> getLookupFields() {
+		List<FacilioField> lookupFields = new ArrayList<>();
+		for(FacilioField field : selectFields) {
+			if(field.getDataType() == FieldType.LOOKUP) {
+				lookupFields.add(field);
 			}
-			else {
-				return null;
+		}
+		return lookupFields;
+	}
+	
+	private List<Map<String, Object>> getAsJustProps() throws Exception {
+		selectFields.add(FieldFactory.getOrgIdField(dataTableName));
+		selectFields.add(FieldFactory.getModuleIdField(dataTableName));
+		selectFields.add(FieldFactory.getIdField(dataTableName));
+		builder.select(selectFields);
+		
+		StringBuilder whereCondition = new StringBuilder(dataTableName);
+		whereCondition.append(".ORGID = ? AND ")
+						.append(dataTableName)
+						.append(".MODULEID = ?");
+		if(where != null && !where.isEmpty()) {
+			whereCondition.append(" AND ")
+							.append(where);
+		}
+		
+		Object[] whereVals = null;
+		if(whereValues != null) {
+			whereVals = new Object[whereValues.length+2];
+			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
+			whereVals[1] = getModuleId();
+			for(int i=0; i<whereValues.length; i++) {
+				whereVals[i+2] = whereValues[i];
 			}
 		}
 		else {
-			return FieldUtil.getValueAsPerType(field, rs);
+			whereVals = new Object[2];
+			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
+			whereVals[1] = getModuleId();
+		}
+		builder.where(whereCondition.toString(), whereVals);
+		return builder.get();
+	}
+	
+	private Object getLookupVal(FacilioField field, long id) throws Exception {
+		if(id != 0) {
+			LookupField lookupField = (LookupField) field;
+			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+				if(level <= LEVEL) {
+					return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
+				}
+				else {
+					return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
+				}
+			}
+			else {
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				if(moduleClass != null) {
+					if(level <= LEVEL) {
+						List<FacilioField> lookupBeanFields = getModuleBean().getAllFields(lookupField.getLookupModule().getName());
+						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
+																							.connection(conn)
+																							.dataTableName(lookupField.getLookupModule().getTableName())
+																							.moduleName(lookupField.getLookupModule().getName())
+																							.beanClass(moduleClass)
+																							.select(lookupBeanFields)
+																							.where("ID = ?", id);
+						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.getAsBean();
+						if(records != null && records.size() > 0) {
+							return records.get(0);
+						}
+						else {
+							return null;
+						}
+					}
+					else {
+						ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
+						lookedupModule.setId(id);
+						return lookedupModule;
+					}
+				}
+				else {
+					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+field);
+				}
+			}
+		}
+		else {
+			return null;
 		}
 	}
 	
 	private void checkForNull(boolean checkBean) {
+		if(moduleName == null || moduleName.isEmpty()) {
+			throw new IllegalArgumentException("Module Name cannot be empty");
+		}
+		
 		if(dataTableName == null || dataTableName.isEmpty()) {
 			throw new IllegalArgumentException("Data Table Name cannot be empty");
 		}
@@ -231,70 +253,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		}
 	}
 	
-	private E getBeanFromRS(ResultSet rs) throws Exception {
-		E bean = beanClass.newInstance();
-		Map<String, Object> customProps = new HashMap<>();
-		bean.setOrgId(rs.getLong("ORGID"));
-		bean.setModuleId(rs.getLong("MODULEID"));
-		bean.setId(rs.getLong("ID"));
-		for(FacilioField field : selectFields) {
-			Object val = getVal(field, rs);
-			if(val != null) {
-				if(propertyExists(bean, field.getName())) {
-					BeanUtils.setProperty(bean, field.getName(), val);
-				}
-				else {
-					customProps.put(field.getName(), getVal(field, rs));
-				}
+	private long getModuleId() {
+		if (this.moduleId <= 0) {
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+				this.moduleId = modBean.getModule(moduleName).getModuleId();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		bean.setCustomProps(customProps);
-		return bean;
+		return this.moduleId;
 	}
-	
-	private boolean propertyExists (Object bean, String property) {
-	    return PropertyUtils.isReadable(bean, property) && 
-	            PropertyUtils.isWriteable(bean, property); 
-	 } 
-	
-	private String constructSelectStatement() {
-		
-		if(selectFields == null || selectFields.size() <= 0) {
-			throw new IllegalArgumentException("Fields cannot be null or empty.");
-		}
-		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT ORGID, MODULEID, ID");
-		
-		for(FacilioField field : selectFields) {
-			sql.append(", ")
-				.append(field.getModuleTableName())
-				.append(".")
-				.append(field.getColumnName());
-		}
-		
-		sql.append(" FROM ")
-			.append(dataTableName)
-			.append(" WHERE ORGID = ")
-			.append(orgId);
-		
-		if(whereCondition != null && !whereCondition.isEmpty()) {
-			sql.append(" AND ")
-				.append(whereCondition);
-		}
-		
-		if(orderBy != null && !orderBy.isEmpty()) {
-			sql.append(" ORDER BY ")
-				.append(orderBy);
-		}
-		
-		if(limit != 0) {
-			sql.append(" LIMIT ")
-				.append(limit);
-		}
-		
-		return sql.toString();
-	}
-	
 }

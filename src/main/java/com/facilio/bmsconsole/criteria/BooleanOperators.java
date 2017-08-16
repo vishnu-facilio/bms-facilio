@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 
 public enum BooleanOperators implements Operator<String> {
 	

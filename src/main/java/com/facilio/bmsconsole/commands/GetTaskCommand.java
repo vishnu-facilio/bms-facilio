@@ -20,6 +20,7 @@ public class GetTaskCommand implements Command {
 		long taskId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
 		if(taskId > 0) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -27,6 +28,7 @@ public class GetTaskCommand implements Command {
 			SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 					.connection(conn)
 					.dataTableName(dataTableName)
+					.moduleName(moduleName)
 					.beanClass(TaskContext.class)
 					.select(fields)
 					.where("ID = ?", taskId)
