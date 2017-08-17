@@ -26,7 +26,7 @@
  <div>
     <div class="col-sm-4">
     <div class="ld-panel">
-    <label><b>Project Name</b></label>
+    <label>Project Name</label>
     <div >
    <input class="ld-input-text form-control" type=text >
    </div>
