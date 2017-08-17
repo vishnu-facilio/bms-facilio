@@ -65,7 +65,7 @@ public class ScheduleObjectAPI {
 			ResultSet rs = null;
 			
 			try {
-				pstmt = conn.prepareStatement("SELECT * FROM SCHEDULEOBJECTS WHERE ORGID = ? AND SCHEDULEID = ?");
+				pstmt = conn.prepareStatement("SELECT * FROM ScheduleObjects WHERE ORGID = ? AND SCHEDULEID = ?");
 				pstmt.setLong(1, orgId);
 				pstmt.setLong(2, scheduleId);
 				
