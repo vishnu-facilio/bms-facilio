@@ -8,7 +8,7 @@ public class FacilioChainFactory {
 
 	public static Chain getOrgSignupChain()
 	{
-		Chain c =new ChainBase();
+		Chain c = new ChainBase();
 		c.addCommand(new CreateUserCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		addCleanUpCommand(c);
@@ -199,6 +199,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -315,13 +316,9 @@ public class FacilioChainFactory {
 	public static Chain getAddSkillChain()
 	{
 		Chain c = new ChainBase();
-		c.addCommand(new ValidateSkillFieldsCommand());
-		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSkillCommand());
 		addCleanUpCommand(c);
 		return c;
-		
 	}
 	
 	public static Chain getSkillChain() {
@@ -589,4 +586,48 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadSupportEmailsCommand());
+		c.addCommand(new LoadEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateEmailSettingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateEmailSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteSupportEmailChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }
+

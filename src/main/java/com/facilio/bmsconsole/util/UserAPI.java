@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.fw.auth.CognitoUtil;

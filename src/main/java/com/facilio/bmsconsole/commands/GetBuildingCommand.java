@@ -22,6 +22,7 @@ public class GetBuildingCommand implements Command {
 		
 		if(buildingId > 0) 
 		{
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -29,6 +30,7 @@ public class GetBuildingCommand implements Command {
 			SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
 					.connection(conn)
 					.dataTableName(dataTableName)
+					.moduleName(moduleName)
 					.beanClass(BuildingContext.class)
 					.select(fields)
 					.where("ID = ?", buildingId)

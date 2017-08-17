@@ -24,4 +24,6 @@
    	<put-attribute name="body" value="/jsps/{1}/{2}"/>   
    </definition>
    
+
+
 </tiles-definitions>  

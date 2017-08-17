@@ -3,7 +3,19 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetupLayout {
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+
+
+public class SetupLayout<T> {
+	private T t;
+	
+	public void setData(T t) {
+        this.t = t;
+    }
+
+    public T getData() {
+        return t;
+    }
 	
 	String settingTitle;
 	String settingGroupTitle;
@@ -89,12 +101,12 @@ public class SetupLayout {
 		return sl;
 	}
 	
-	public static SetupLayout getcustomerPortal() {
+	public static SetupLayout<ServicePortalInfo> getservicePortal() {
 		
-		SetupLayout sl = new SetupLayout();
+		SetupLayout<ServicePortalInfo> sl = new SetupLayout<ServicePortalInfo>();
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("General");
-		sl.setSettingViewTitle("Customer Portal");
+		sl.setSettingViewTitle("Service Portal");
 		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
 		
 		
@@ -130,7 +142,7 @@ public class SetupLayout {
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("Work Order");
 		sl.setSettingViewTitle("Email Settings");
-		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn editSupportBtn").setType(ActionButton.Type.SAVE));
 		
 		return sl;
 	}
@@ -411,4 +423,7 @@ class ActionButton
 		this.type = type;
 		return this;
 	}
+	
+	
+	
 }

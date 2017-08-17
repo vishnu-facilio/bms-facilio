@@ -105,7 +105,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			Connection conn = getConnection();
 			long orgId = getOrgId();
 			
-			String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
+			String sql = "SELECT Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
 			
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setLong(1, orgId);
@@ -120,6 +120,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					field = getLookupField(field);
 				}
 				field.setModuleName(moduleName);
+				field.setModuleTableName(rs.getString("TABLE_NAME"));
 				fields.add(field);
 			}
 			

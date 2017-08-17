@@ -49,6 +49,8 @@ FacilioApp = {
 		
 			location.href = '#task/new';
 		});
+		
+		
 	},
 	
 	initSetup: function() {
@@ -226,6 +228,39 @@ FacilioApp = {
 		$(popup).modal('hide');
 	},
 	
+	countryCombo: function(selector) {
+		var country = $(selector).selectize({
+			preload: true,
+			
+			valueField: 'code',
+			labelField: 'name',
+			searchField: 'name',
+			options: [],
+			delimiter: ',',
+			persist: false,
+			create: false,
+			load: function(query, callback) {
+			    
+			    $.ajax({
+			        url: contextPath + '/js/data/country.json',
+			        type: 'GET',
+			        dataType: 'json',
+			        data: {
+			            name: query,
+			        },
+			        error: function() {
+			            callback();
+			        },
+			        success: function(res) {
+			            callback(res);
+			        }
+			    });
+			}
+
+        });
+		
+	},
+	
 	createRecordDialog: function(moduleLinkName, callback, parentModuleLinkName, parentId) {
 		 FacilioApp.ajax({
 			type : "GET",
@@ -240,35 +275,50 @@ FacilioApp = {
 				$("#newRecordModel").modal("show");
 				
 				// handle save record on dialog
-				$('#addFormDialog').validator().on('submit', function (e) {
-				  if (e.isDefaultPrevented()) {
-						// handle the invalid form...
-				  }
-				  else {
-						// check if any validation errors
-						if ($(this).find('.form-group').hasClass('has-error')) {
-							return false;
-						}
-						
-						$(this).find(".save-btn").button('loading');
-						FacilioApp.ajax({
-							method : "post",
-							url : contextPath + '/app/'+moduleLinkName+'/add',
-							data : $("#addFormDialog").serialize(),
-							done: function(data) {
-								$('#newRecordModel').modal('hide');
-								callback(data, null);
-							},
-							fail: function(error) {
-								$(".save-btn").button('reset');
-								callback(null, error);
-							}
-						});
-						return false;
-				  	}
-				});
+				$('#addFormDialog').validator().on('submit', 
+						FacilioApp.ajaxSubmitForm("#addFormDialog", contextPath + '/app/'+moduleLinkName+'/add', 
+													function(data, error) {
+														if(data) {
+															$('#newRecordModel').modal('hide');
+															callback(data, null);
+														}
+														if(error) {
+															callback(null, error);
+														}
+													})
+				);
 			}
 		});
+	},
+	
+	ajaxSubmitForm: function(formSelector, submitUrl, callback) {
+		return function(event) { 
+			if (event.isDefaultPrevented()) {
+				// handle the invalid form...
+			}
+			else {
+				// check if any validation errors
+				if ($(this).find('.form-group').hasClass('has-error')) {
+					return false;
+				}
+				
+				$(".save-btn").button('loading');
+				FacilioApp.ajax({
+					method : "post",
+					url : submitUrl,
+					data : $(formSelector).serialize(),
+					done: function(data) {
+						$(".save-btn").button('reset');
+						callback(data, null);
+					},
+					fail: function(error) {
+						$(".save-btn").button('reset');
+						callback(null, error);
+					}
+				});
+				return false;
+		  	}
+		}
 	},
 	
 	userPickList: function(selector, options) {

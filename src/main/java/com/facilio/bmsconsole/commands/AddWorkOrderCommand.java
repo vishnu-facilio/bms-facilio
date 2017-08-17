@@ -33,6 +33,7 @@ public class AddWorkOrderCommand implements Command {
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
+			context.put(FacilioConstants.Workflow.EVENT_TYPE, FacilioConstants.Workflow.EVENT_ADD_WORKORDER);
 		}
 		else {
 			throw new IllegalArgumentException("Ticket/ WorkOrder Object cannot be null");

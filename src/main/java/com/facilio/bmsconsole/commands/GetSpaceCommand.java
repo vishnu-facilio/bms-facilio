@@ -22,6 +22,7 @@ public class GetSpaceCommand implements Command {
 		
 		if(spaceId > 0) 
 		{
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -29,6 +30,7 @@ public class GetSpaceCommand implements Command {
 			SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
 					.connection(conn)
 					.dataTableName(dataTableName)
+					.moduleName(moduleName)
 					.beanClass(SpaceContext.class)
 					.select(fields)
 					.where("ID = ?", spaceId)

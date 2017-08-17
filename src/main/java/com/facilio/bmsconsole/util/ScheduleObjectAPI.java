@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ScheduleContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
@@ -67,7 +65,7 @@ public class ScheduleObjectAPI {
 			ResultSet rs = null;
 			
 			try {
-				pstmt = conn.prepareStatement("SELECT * FROM SCHEDULEOBJECTS WHERE ORGID = ? AND SCHEDULEID = ?");
+				pstmt = conn.prepareStatement("SELECT * FROM ScheduleObjects WHERE ORGID = ? AND SCHEDULEID = ?");
 				pstmt.setLong(1, orgId);
 				pstmt.setLong(2, scheduleId);
 				

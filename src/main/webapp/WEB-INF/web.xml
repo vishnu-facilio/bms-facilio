@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="WebApp_9" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>BMS Console</display-name>
+<display-name>BMS Console</display-name>
 <context-param>
-   <param-name>
-      org.apache.tiles.impl.BasicTilesContainer.DEFINITIONS_CONFIG
-   </param-name>
-   <param-value>
-      /WEB-INF/tiles.xml
-   </param-value>
-   </context-param>
-   <context-param>
-        <param-name>DOMAINNAME</param-name>
-        <param-value>.facilstack.com</param-value>
-    </context-param>
-    <context-param>
-        <param-name>M_DOMAINNAME</param-name>
-        <param-value>.mfacilio.com</param-value>
-    </context-param> 
- <listener>
-      <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
-    </listener>
-    <filter>
-        <filter-name>struts2</filter-name>
-        <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
-    </filter>
+    <param-name>
+        org.apache.tiles.impl.BasicTilesContainer.DEFINITIONS_CONFIG
+    </param-name>
+    <param-value>
+        /WEB-INF/tiles.xml
+    </param-value>
+</context-param>
+    
+<context-param>
+    <param-name>DOMAINNAME</param-name>
+    <param-value>.facilstack.com</param-value>
+</context-param>
+    
+<context-param>
+    <param-name>M_DOMAINNAME</param-name>
+    <param-value>.mfacilio.com</param-value>
+</context-param> 
+    
+<listener>
+    <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
+</listener>
+    
+<filter>
+    <filter-name>struts2</filter-name>
+    <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
+</filter>
 
-    <filter-mapping>
-        <filter-name>struts2</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<filter-mapping>
+    <filter-name>struts2</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
 
-    <welcome-file-list>
-        <welcome-file>home.html</welcome-file>
-    </welcome-file-list>
+<welcome-file-list>
+    <welcome-file>home.html</welcome-file>
+</welcome-file-list>
  
  	<!--  JDBC -->
  	<resource-ref>     
@@ -44,10 +48,7 @@
  	</resource-ref>
  	
  	<!--  Context Listener -->
- 	<listener>
- 		<!-- Register context listener to bootstrap Narayana services -->
-        <listener-class>org.jboss.narayana.tomcat.jta.NarayanaJtaServletContextListener</listener-class>
- 	</listener>
+ 	
  	<listener>
  		<listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
  	</listener>
@@ -57,6 +58,5 @@
                <taglib-uri>facilio-tags</taglib-uri> 
                <taglib-location>/WEB-INF/tags/facilio-tags.tld</taglib-location> 
         </taglib> 
-	</jsp-config>
- 
+	</jsp-config> 
 </web-app>

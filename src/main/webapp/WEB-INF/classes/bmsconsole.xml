@@ -159,7 +159,7 @@
         <result name="success">/jsps/listview.jsp</result>
     </action>
     
-	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleActions">
+	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
 		<param name="permission">ORG_ACCESS_ADMINISTER</param>
         <result name="success">/jsps/assignmentRules.jsp</result>
     </action>
@@ -212,6 +212,12 @@
 			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
 		
+			<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+		</action>
+		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/notifications.jsp</result>
@@ -220,14 +226,40 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/emailsettings.jsp</result>
 		</action>
-		<action name="editemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="editEmailSettings">
+		
+		<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/setup/edit.jsp</result>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
 		</action>
-		<action name="newemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="newEmailSettings">
+		
+		<action name="supportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="supportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/setup/new.jsp</result>
+			<result name="success" >/jsps/setup/supportemail.jsp</result>
 		</action>
+		
+		<action name="addsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">supportEmailId</param>
+			</result>
+		</action>
+		
+		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="deletesupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
 	    	<result type="tiles">setuplayout/usersList.jsp</result>
@@ -270,8 +302,9 @@
 		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
-		<action name="customerPortal" class="com.facilio.bmsconsole.actions.SetupActions" method="customerPortal">
-			<result type="tiles">setuplayout/customerPortal.jsp</result>
+
+		<action name="servicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="servicePortal">		
+			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>
@@ -434,7 +467,7 @@
 	</package>
 	
 	<package name="rules" namespace="/app/rules" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleActions" method="{1}">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="{1}">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
 			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>

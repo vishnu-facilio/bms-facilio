@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
@@ -18,8 +16,7 @@ public class GenericSelectRecordBuilder {
 	private List<FacilioField> selectFields;
 	private String tableName;
 	private Connection conn = null;
-	private String whereCondition;
-	private Object[] whereValues;
+	private WhereBuilder where = new WhereBuilder();
 	private String orderBy;
 	private int limit;
 	
@@ -38,15 +35,8 @@ public class GenericSelectRecordBuilder {
 		return this;
 	}
 	
-	public GenericSelectRecordBuilder where(String where, Object... values) {
-		
-		int count = StringUtils.countMatches(where, "?");
-		if(values.length < count) {
-			throw new IllegalArgumentException("No. of where values doesn't match the number of ?");
-		}
-		
-		this.whereCondition = where;
-		this.whereValues = values;
+	public GenericSelectRecordBuilder where(String whereCondition, Object... values) {
+		this.where.where(whereCondition, values);
 		return this;
 	}
 	
@@ -83,6 +73,7 @@ public class GenericSelectRecordBuilder {
 			String sql = constructSelectStatement();
 			pstmt = conn.prepareStatement(sql);
 			
+			Object[] whereValues = where.getValues();
 			if(whereValues != null) {
 				for(int i=0; i<whereValues.length; i++) {
 					Object value = whereValues[i];
@@ -132,16 +123,9 @@ public class GenericSelectRecordBuilder {
 		sql.append(" FROM ")
 			.append(tableName);
 		
-		isFirst = true;
-		if(whereCondition != null && !whereCondition.isEmpty()) {
-			if(isFirst) {
-				isFirst = false;
-				sql.append(" WHERE ");
-			}
-			else {
-				sql.append(" AND ");
-			}
-			sql.append(whereCondition);
+		if(where.getCondition() != null && !where.getCondition().isEmpty()) {
+			sql.append(" WHERE ")
+				.append(where.getCondition());
 		}
 		
 		if(orderBy != null && !orderBy.isEmpty()) {

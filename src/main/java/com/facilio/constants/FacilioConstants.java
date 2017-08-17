@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TaskStatusContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
@@ -390,6 +389,12 @@ public class FacilioConstants {
 		
 		public static final String LOCATION = "location";
 		
+		public static final String SUPPORT_EMAIL = "supportEmail";
+		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
+		public static final String EMAIL_SETTING = "emailSetting";
+		
+		public static final String RESULT = "result";
+		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
 				return "TICKETID";
@@ -432,5 +437,17 @@ public class FacilioConstants {
 		public static Class getClassFromModuleName(String moduleName) {
 			return classMap.get(moduleName);
 		}
+	}
+	
+	public static class Workflow 
+	{
+		public static final String EVENT_TYPE = "eventType";
+		
+		public static final int EVENT_ADD_WORKORDER = 1;
+		
+		public static final int ACTION_EMAIL_NOTIFICATION = 1;
+		
+		public static final int TEMPLATE_WORKORDER_ASSIGN 				= 1;
+		public static final int TEMPLATE_WORKORDER_ACTIVITY_FOLLOWUP 	= 2;
 	}
 }

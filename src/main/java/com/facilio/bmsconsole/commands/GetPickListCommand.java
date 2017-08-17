@@ -20,6 +20,7 @@ public class GetPickListCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -31,6 +32,7 @@ public class GetPickListCommand implements Command {
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																.connection(conn)
 																.dataTableName(dataTableName)
+																.moduleName(moduleName)
 																.select(fields)
 																.orderBy("ID");
 			

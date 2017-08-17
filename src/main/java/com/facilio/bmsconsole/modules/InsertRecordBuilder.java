@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.modules;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +9,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	
-	private String moduleName;
 	private GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
+	private String moduleName;
 	private long moduleId = -1;
 	private Connection conn;
 	private List<FacilioField> fields = new ArrayList<>();
@@ -55,7 +52,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			throw new IllegalArgumentException("Module Name cannot be empty");
 		}
 		
-		Map<String, Object> moduleProps = getAsProperties(bean);
+		Map<String, Object> moduleProps = FieldUtil.<E>getAsProperties(bean);
 		moduleProps.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
 		moduleProps.put("moduleId", getModuleId());
 		
@@ -85,24 +82,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			}
 		}
 		return this.moduleId;
-	}
-	
-	private Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		Map<String, Object> properties = null;
-		
-		if(bean != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			properties = mapper.convertValue(bean, Map.class);
-			
-			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-			if(customProps != null)
-			{
-				properties.putAll(customProps);
-			}
-		}
-		
-		return properties;
 	}
 	
 }
