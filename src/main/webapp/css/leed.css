@@ -1,0 +1,131 @@
+
+
+
+.row-height{
+    padding-left: 40px;
+    padding-right: 10px;
+    padding-bottom: 20px;
+}
+.child-wrappert{
+
+background-color: white;
+}
+#page-wrapper{
+background: white;
+}
+.fc-content{
+padding-left: 0px;
+padding-right: 0px;
+}
+.fc-dashed-line {
+	border-top: 0.12em dashed #f5f5f5;
+}
+.fc-input-text {
+border-top: 0px;
+border-left: 0px;
+border-right: 0px;
+  outline: 0;
+  background: transparent;
+  border-bottom: 1px solid black;
+}
+.form-content input{
+border: 0 solid #E0E0E0;
+border-bottom: 1px solid #E0E0E0;
+}
+.form-content{
+	padding: 30px;
+}
+ .ld-input-text:FOCUS{
+    outline: none;
+	
+border-color:#4285F4;;
+
+}
+.form-control{
+	
+	padding:0px 0px; 	
+}
+
+.form-control:FOCUS{
+	  outline: none;
+	 box-shadow: none;	
+}
+.selectize-control.single .selectize-input, .selectize-control.single .selectize-input input{
+	border: 0;
+	border-bottom: 1px solid #E0E0E0;
+	padding: 0px 0px;
+}
+.selectize-control.single:FOCUS .selectize-input:FOCUS, .selectize-control.single:FOCUS .selectize-input:FOCUS input:FOCUS{
+	
+	 box-shadow: none;	
+	 border-color:#4285F4;
+}
+
+.selectize-dropdown{
+position: relative;
+
+}
+
+.selectize-control.single .selectize-input:after{
+	right: 1px;
+}
+.ld-panel{
+	
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-right:0px;
+}
+.form-content input[type=radio]{
+	position: relative;
+	margin-right: 5px;
+}
+.form-content input[type=checkbox]{
+	margin-right: 10px;
+}
+label.radio-inline{
+	padding-left: 0px ;
+	    padding-top: 10px;
+    padding-bottom: 10px;
+	
+}
+.ld-content-header{
+	padding-left: 14px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.btn.ld-submit-btn  {
+	border-radius: 15px;
+	margin-left: 10px;
+	background: #3F7EE6;
+	color: white;
+	font-size: 14px;
+	letter-spacing: 0.5px;
+	border: 1px solid #3F7EE6;
+	
+    
+}
+button.btn.btn-default.pull-right.ld-cancel-btn:focus, button.btn.btn-default.pull-right.ld-cancel-btn:active {
+outline: none;
+}
+button.btn.btn-default.pull-right.ld-submit-btn:focus, button.btn.btn-default.pull-right.ld-submit-btn:active {
+outline: none;
+}
+.btn.ld-cancel-btn  {
+	border-radius: 15px;
+	margin-left: 10px;
+    margin-right: 10px;
+    font-size: 14px;
+color: #333333;
+letter-spacing: 0.5px;
+border: 1px solid #3F7EE6;
+
+}
+
+.jumbotron{
+	margin-bottom: 0px;
+}
+select.form-control.ld-select {
+    border: 0;
+    border-bottom: 1px solid #DCE0E0;
+    outline: none;
+}

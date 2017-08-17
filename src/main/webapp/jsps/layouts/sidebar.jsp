@@ -221,6 +221,12 @@
                 <a href="#help"><i class="fa fa-question-circle fa-fw"></i> Help</a>
             </li>
             -->
+                         <li>
+	                <a href="#leed"><span class="nav-icon"><i class="sidebar-icon fa fa-tree fa-fw"></i></span>
+	                <span class="nav-title all-workorder"> LEED</span>
+	  
+	                </a>
+	            </li>
         </ul>
         
        <div class="nav  sidebar-footer-btn  ">

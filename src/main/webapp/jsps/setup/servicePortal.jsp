@@ -10,7 +10,7 @@
    		 <label class="inline-text">Allow users to Sign Up from the customer portal</label>
     	</div>
     	<div class="col-xs-6">
-    	<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.signupAllowed" cssClass="radio-inline" />
+    	<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.signupAllowed"  />
     	
     	</div>
 		</div>
@@ -20,7 +20,7 @@
    		 <label class="inline-text">Allow users to Sign In using Google</label>
     	</div>
     	<div class="col-xs-6">
-		<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.gmailLoginAllowed" cssClass="radio-inline" />
+		<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.gmailLoginAllowed"  />
 
     	</div>
 		</div>
@@ -41,7 +41,7 @@
    		 <label class="inline-text">Who can submit a new ticket on portal</label>
     	</div>
     	<div class="col-xs-6">
-    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="setup.data.ticketAlloedForPublic" cssClass="radio-inline" />
+    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="setup.data.ticketAlloedForPublic"  />
     	
     	 
           <div id="enable-captcha" class="hidden-input">
@@ -70,7 +70,7 @@
     	</div>
     	<div class="col-xs-6">
     	
-       <s:radio list="#{'true':'Any domain','false':'Whitelisted domains'}" name="setup.data.anyDomain" cssClass="radio-inline" />
+       <s:radio  list="#{'true':'Any domain','false':'Whitelisted domains'}" name="setup.data.anyDomain" />
     	
     	 <input type="text" id="domain-name" class="hidden-input" name="domainName" placeholder="Enter Domain Name" >
          
@@ -93,7 +93,7 @@ margin-top: 20px;
 margin-bottom: 20px;
 }
 .hidden-input{
-display: none;
+ display: none; 
 }
 .show-hidden-input{
 display: block;
@@ -123,38 +123,53 @@ margin-bottom: 10px;
 .inline-header{
 margin-top: 10px;
 }
+..checkbox-inline, .radio-inline{
+padding-left: 0px !important;
+}
 </style>
 <script>
 $(document).ready(function() {
+
 	
-	$("input[name=whitelist-domain-radio]").change(function() {
-		var val = ($(this).val());
-		if(val == "no"){
-	 		
+$("input[name=setup\\.data\\.anyDomain]").change(function () {
+	
+	var val = ($(this).val());
+	
+ 	if(val == "false"){
+ 		
 
-	 		 $('#domain-name').removeClass('hidden-input');
+ 		 $('#domain-name').removeClass('hidden-input');
 
-		}
-		else{
- 		 $('#domain-name').addClass('hidden-input');
+	}
+	else{
+		 $('#domain-name').addClass('hidden-input');
 
-		}
- 		 
-	});
-	$("input[name=user-ticket-permissions]").change(function() {
-		var val = ($(this).val());
-		if(val == "all"){
-	 		
+	}
+		 
+	
+});
 
-	 		 $('#enable-captcha').removeClass('hidden-input');
+$("input[name=setup\\.data\\.ticketAlloedForPublic]").change(function () {
+	
+	var val = ($(this).val());
+	
+	if(val == "true"){
+ 		
 
-		}
-		else{
- 		 $('#enable-captcha').addClass('hidden-input');
+ 		 $('#enable-captcha').removeClass('hidden-input');
 
-		}
- 		 
-	});
+	}
+	else{
+		 $('#enable-captcha').addClass('hidden-input');
+
+	}
+		 
+	
+});
+	
+
+	
+	
 	
 	
 });
