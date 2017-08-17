@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.sql.SQLException;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.UserAPI;
 
 public class LocationContext extends ModuleBaseWithCustomFields {
 	
@@ -74,6 +77,9 @@ public class LocationContext extends ModuleBaseWithCustomFields {
 	}
 	public void setContact(long contact) {
 		this.contact = contact;
+	}
+	public String getContactName() throws Exception {
+		return UserAPI.getUser(contact).getName();
 	}
 
 	private String phone;

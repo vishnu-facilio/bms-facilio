@@ -6,17 +6,18 @@
 			<div class="form-group">
 	    		<label>Name</label>
 	    		<span class="required">*</span>
+	    		<s:hidden name="skill.id"/>
 	    		<s:textfield name="skill.name" class="form-control" placeholder="Eg. HVAC Maintanence" required="true"/>
 			</div>
 			<div class="form-group">
 			    <label>Description</label>
-			    <textarea name="skill.description" class="form-control" placeholder="Eg. AHU Cleaning and Reading Maintanence"></textarea>
+			    <s:textarea name="skill.description" value="%{skill.description}" class="form-control" placeholder="Eg. AHU Cleaning and Reading Maintanence"/>
+			    <!-- textarea name="skill.description" value= class="form-control" placeholder="Eg. AHU Cleaning and Reading Maintanence"></textarea -->
 			</div>
 			<div class="form-group">
-			    <div class="checkbox checkbox-primary">
-       		 	 	<input type="checkbox" value="true" name="skill.active" id="isActive">
-       		 	 	<label for="isActive">Is Active Skill ?</label>
-       		 	</div>
+       		 	 	<s:checkbox class="form-control" name="skill.active" value="%{skill.active}" />
+       		 	 	<!--  input type="checkbox" value="%{skill.active} name="skill.active" id="active" -->
+       		 	 	<label>Is Active Skill ?</label>
 			</div>
 		</div>
 	</form>
@@ -45,10 +46,10 @@
 					$(".save-btn").button('loading');
 					FacilioApp.ajax({
 						method : "post",
-						url : contextPath + "/app/setup/skills/add",
+						url : contextPath + "/app/setup/skills/update",
 						data : $("#newSkillForm").serialize(),
 						done: function(data) {
-							FacilioApp.notifyMessage('success', 'Skill created successfully!');
+							FacilioApp.notifyMessage('success', 'Skill updated successfully!');
 							location.href = '#skills';
 						},
 						fail: function(error) {

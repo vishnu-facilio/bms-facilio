@@ -18,7 +18,7 @@
    				<s:iterator var="location" value="locations">
 					<tr class="odd gradeX" id="<s:property value="#location.id" />">
 			            <td><a href="#locations/<s:property value="#location.id" />"><s:property value="#location.name" /></a></td>
-			            <td><s:property value="#location.contact" /></td>
+			            <td><s:property value="#location.contactName" /></td>
 			            <td><s:property value="#location.phone" /></td>
 			            <td><s:property value="#location.lat" /></td>
 			            <td><s:property value="#location.lng" /></td>

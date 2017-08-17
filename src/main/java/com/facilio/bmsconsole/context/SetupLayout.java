@@ -263,6 +263,19 @@ public class SetupLayout {
 		return sl;
 	}
 	
+	public static SetupLayout getEditSkillLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("General");
+		sl.setSettingViewTitle("Edit Skill");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
+		return sl;
+	}
+
+
 	public static SetupLayout getLocationsListLayout() {
 		
 		SetupLayout sl = new SetupLayout();

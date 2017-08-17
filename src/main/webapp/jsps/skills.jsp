@@ -27,7 +27,7 @@
 	                    </td>
 			            <td class="text-center">
 			            	<div class="btn-group">
-								<button type="button" skill-id="<s:property value="#skill.skillId" />" data-toggle="tooltip" data-placement="top" title="Edit skill" onclick="editSkill(this);" class="btn btn-outline btn-primary btn-md">
+								<button type="button" skill-id="<s:property value="#skill.Id" />" data-toggle="tooltip" data-placement="top" title="Edit skill" onclick="editSkill(this);" class="btn btn-outline btn-primary btn-md">
 	                    			<i class="fa fa-pencil"></i>
 	                    		</button>
 	                    		<button type="button" skill-id="<s:property value="#skill.skillId" />" data-toggle="tooltip" data-placement="top" title="Delete skill" onclick="deleteSkill(this);" class="btn btn-outline btn-danger btn-md">
@@ -89,6 +89,31 @@
 	$(".action-btn .new-btn").click(function() {
 		location.href = '#skills/new';
 	});
+	
+	function editSkill(thisvar)
+	{
+		var Id = $(thisvar).attr("skill-id");
+		
+		location.href = '#skills/edit?skillId='+Id;
+	}
+	
+	function deleteSkill(thisvar)
+	{
+		var Id = $(thisvar).attr("skill-id");
+		FacilioApp.ajax({
+			method : "post",
+			url : contextPath + "/app/setup/skills/delete",
+			data : {"skillId":Id},
+			done: function(data) {
+				console.log(data);
+				FacilioApp.refreshView();
+				FacilioApp.notifyMessage('success', 'Skill deleted successfully!');
+			},
+			fail: function(error) {
+				console.log(error);
+			} 
+		});
+	}s
 	
 	function saveSkill(btn) {
 		$(btn).button('loading');

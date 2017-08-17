@@ -511,6 +511,22 @@
 			</result>
 		</action>
 		
+		<action name="edit" class="com.facilio.bmsconsole.actions.SkillActions" method="editSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/editSkill.jsp</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions" method="updateSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">			
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
 		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkillDialog">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/newFormDialog.jsp</result>

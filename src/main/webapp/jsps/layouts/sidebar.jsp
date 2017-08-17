@@ -21,14 +21,14 @@
 	                <a href="#dashboard">
 	                <span class="nav-icon">
 	                <i class=" sidebar-icon fa fa-dashboard fa-fw "></i> </span>
-	                <span class="nav-title">Dashboard</span>
+	                <span class="nav-title"><s:text name="global.dashboard"/></span>
 	                </a>
 	            </li>
             </f:hasPermission>
             <f:hasPermission permission="WORKORDER_READ">
 	             <li>
 	                <a href="#workorder"><span class="nav-icon"><i class="sidebar-icon fa fa-briefcase fa-fw"></i></span>
-	                <span class="nav-title all-workorder"> Work Orders</span>
+	                <span class="nav-title all-workorder"><s:text name="global.workorders"/></span>
 	                <f:hasPermission permission="WORKORDER_CREATE">
 	               		<span class="nav-icon-right add-new-workorder pull-right fc-plus">+</span>
 	               	</f:hasPermission>
@@ -38,7 +38,7 @@
             <f:hasPermission permission="TASK_READ">
 	            <li>
 	               <a href="#task"><span class="nav-icon"><i class="sidebar-icon fa fa-tasks fa-fw"></i></span>
-	               <span class="nav-title all-task">Tasks</span>
+	               <span class="nav-title all-task"><s:text name="global.tasks"/></span>
 	               <f:hasPermission permission="TASK_CREATE">
 	               		<span class="nav-icon-right add-new-task pull-right fc-plus">+</span>
 	               </f:hasPermission>
@@ -49,7 +49,7 @@
 	            <li>
 	                <a href="#calendar">
 	                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
-	                <span class="nav-title">Calendar
+	                <span class="nav-title"><s:text name="global.calender"/>
 	                </span></a>
 	            </li>
             </f:hasPermission>
@@ -57,7 +57,7 @@
 	            <li>
 	                <a href="#centraldispatch">
 	                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
-	                <span class="nav-title">Central Dispatch
+	                <span class="nav-title"><s:text name="global.centraldispatch"/>
 	                </span></a>
 	            </li>
             </f:hasPermission>
@@ -65,24 +65,24 @@
 				<li>
 	               <a href="#">
 	               <span class="nav-icon"><i class="sidebar-icon fa fa-globe fa-fw"></i></span> 
-	               <span class="nav-title">Space Management</span>
+	               <span class="nav-title"><s:text name="global.spacemanagement"/></span>
 	               <span class="fa arrow"></span>
 	               </a>
 	                <ul class="nav nav-second-level">
 	               		<li>
-	                        <a href="#campus">Campus</a>
+	                        <a href="#campus"><s:text name="global.campus"/></a>
 	                    </li>
 	                    <li>
-	                        <a href="#building">Building</a>
+	                        <a href="#building"><s:text name="global.building"/></a>
 	                    </li>
 	                    <li>
-	                        <a href="#floor">Floor</a>
+	                        <a href="#floor"><s:text name="global.floor"/></a>
 	                    </li>
 	                    <li>
-	                        <a href="#space">Space</a>
+	                        <a href="#space"><s:text name="global.space"/></a>
 	                    </li>
 	                    <li>
-	                        <a href="#zone">Zone</a>
+	                        <a href="#zone"><s:text name="global.zone"/></a>
 	                    </li>
 	                  </ul>
 	            </li>
