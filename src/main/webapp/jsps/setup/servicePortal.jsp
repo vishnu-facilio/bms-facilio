@@ -1,6 +1,6 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>    
 <div class="form-content form-container">
-<form class="">
+<form id="service-form" class="service-form">
  <div class="row row-height">
     <section class="col-md-8">
         <!-- Content -->
@@ -82,7 +82,68 @@
         <!-- Navigation -->
     </nav>
 </div>
+<div class="col-lg-12 fc-dashed-line"></div>
+ <div id="" class="row row-height smal">
+    <section class="col-md-9">
+        <!-- Content -->
+        <h3 class="inline-header">SAML authentication details</h3>
+		 <div class="row row-height">
+		 <div class="col-xs-9 ">
+        
+        <label class="inline-text text-right ">Login URL :</label>
+        <input type="url" class="pull-right form-control">
+  		</div>
+  		
+		</div>
+		 <div class="row row-height">
+		 <div class="col-xs-9 ">
+        
+        <label class="inline-text text-right ">Logout URL :</label>
+        <input type="url" class="pull-right form-control">
+  		</div>
+  		
+		</div>
+		 <div class="row row-height">
+		 <div class="col-xs-9 ">
+        
+        <label class="inline-text text-right ">Change Password URL :</label>
+        <input type="url" class="pull-right form-control" >
+  		</div>
+  		
+		</div>
+			 <div class="row row-height">
+		 <div class="col-xs-9 ">
+        
+        <label class="inline-text text-right ">Public Key  :</label>
+   		<input type="text" class="pull-right form-control" placeholder="Get Key from file" >
 
+  		</div>
+  		
+		</div>
+		 <div class="row row-height">
+		 <div class="col-xs-9 ">
+        
+        <label class="inline-text text-right ">Algorithm  :</label>
+        <select class="pull-right form-control" >
+        <option>RSA</option>
+        </select>
+  		</div>
+  		
+		</div>
+			 <div class="row row-height">
+		 <div class="col-xs-9 ">
+		 <button id="reset" class="btn btn-default btn-primary pull-right ">Reset</button>
+  		</div>
+  		
+		</div>
+	
+	
+	
+		
+    </section>
+    
+
+</div>
 
    </form>
 </div>
@@ -168,7 +229,10 @@ $("input[name=setup\\.data\\.ticketAlloedForPublic]").change(function () {
 });
 	
 
-	
+/* $("#reset").click(function() {
+    $("#service-form")[0].reset();
+
+}); */
 	
 	
 	
