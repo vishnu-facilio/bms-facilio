@@ -14,11 +14,12 @@ import com.facilio.transaction.FacilioTransactionManager;
 public class FacilioContext extends ContextBase {
 	private Connection conn = null;
 	
-	
+	boolean transstarted=false;
 	public Connection getConnectionWithTransaction() throws SQLException, NotSupportedException, SystemException {
 		if(conn == null)
 		{
 			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
+			transstarted = true;
 			conn = FacilioConnectionPool.getInstance().getConnection();
 		}
 		return conn;
@@ -30,15 +31,17 @@ public class FacilioContext extends ContextBase {
 	
 	public void commit() throws Exception {
 		cleanup();
-		if(conn != null) {
+		if(transstarted) {
 			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+			transstarted = false;
 		}
 	}
 	
 	public void rollback() throws Exception {
 		cleanup();
-		if(conn != null) {
+		if(transstarted) {
 			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+			transstarted = false;
 		}
 	}
 	
