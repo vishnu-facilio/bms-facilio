@@ -19,7 +19,7 @@ public class LoadTicketFieldsCommand implements Command{
 		List<FacilioField> existingFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		if(existingFields != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", ((FacilioContext) context).getConnectionWithoutTransaction());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			existingFields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TICKET));
 		}

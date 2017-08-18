@@ -21,7 +21,7 @@ public class LoadModuleNameCommand implements Command {
 		if(moduleName != null && !moduleName.isEmpty()) {
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			FacilioModule moduleObj = modBean.getModule(moduleName);
 			

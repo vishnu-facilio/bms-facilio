@@ -19,7 +19,7 @@ public class LoadAllFieldsCommand implements Command{
 			throw new IllegalArgumentException("Module Name is not set for the module");
 		}
  		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", ((FacilioContext) context).getConnectionWithoutTransaction());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(moduleName));
 		

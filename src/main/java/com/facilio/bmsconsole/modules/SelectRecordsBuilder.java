@@ -84,7 +84,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	
 	private ModuleBean getModuleBean() throws Exception {
 		if (this.modBean == null) {
-			this.modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", this.conn);
+			this.modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		}
 		return this.modBean;
 	}
@@ -256,7 +256,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	private long getModuleId() {
 		if (this.moduleId <= 0) {
 			try {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				this.moduleId = modBean.getModule(moduleName).getModuleId();
 			}
 			catch (Exception e) {

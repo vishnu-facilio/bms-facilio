@@ -36,14 +36,14 @@ public class LoadMainFieldCommand implements Command {
 		ResultSet rs = null;
 		try {
 			
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+			//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			Transaction trans = FacilioTransactionManager.INSTANCE.getTransactionManager().suspend();
+			//Transaction trans = FacilioTransactionManager.INSTANCE.getTransactionManager().suspend();
 			
-			ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean", orgId, conn);
+			ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		//	modBean.
 			
-			FacilioTransactionManager.INSTANCE.getTransactionManager().resume(trans);
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().resume(trans);
 			FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModuleTableName());

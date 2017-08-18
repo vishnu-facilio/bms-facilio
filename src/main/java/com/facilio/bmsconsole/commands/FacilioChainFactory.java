@@ -19,7 +19,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadMainFieldCommand());
 		c.addCommand(new GetPickListCommand());
-		addCleanUpCommand(c);
+	//	addCleanUpCommand(c);
 		return c;
 	}
 	

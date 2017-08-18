@@ -74,7 +74,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	private long getModuleId() {
 		if (this.moduleId <= 0) {
 			try {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				this.moduleId = modBean.getModule(moduleName).getModuleId();
 			}
 			catch (Exception e) {
