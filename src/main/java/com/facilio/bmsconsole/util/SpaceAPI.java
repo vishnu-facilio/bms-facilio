@@ -12,18 +12,21 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
 	
-	public static Long addSpaceBase(Long orgId, Connection conn) throws Exception
+	public static Long addSpaceBase(Long orgId) throws Exception
 	{
+		 Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Long areaId = null;
 		try
 		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO BaseSpace (ORGID) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1, orgId);
 			
@@ -45,7 +48,7 @@ public class SpaceAPI {
 		}
 		finally 
 		{
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return areaId;
 	}

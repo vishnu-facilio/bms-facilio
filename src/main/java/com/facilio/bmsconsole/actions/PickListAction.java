@@ -25,10 +25,10 @@ public class PickListAction extends ActionSupport {
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 			
-			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			Chain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
-			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();			
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().commit();			
 			setPickList((Map<Long, String>) context.get(FacilioConstants.ContextNames.PICKLIST));
 		}
 		

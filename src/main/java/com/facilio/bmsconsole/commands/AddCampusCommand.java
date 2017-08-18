@@ -23,10 +23,10 @@ public class AddCampusCommand implements Command {
 		CampusContext campus = (CampusContext) context.get(FacilioConstants.ContextNames.CAMPUS);
 		if(campus != null) 
 		{
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+			//Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
 			campus.setBaseSpaceId(spaceId);
-			
+			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

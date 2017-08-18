@@ -23,10 +23,10 @@ public class AddSpaceCommand implements Command {
 		SpaceContext space = (SpaceContext) context.get(FacilioConstants.ContextNames.SPACE);
 		if(space != null) 
 		{
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			Long areaId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+			Long areaId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
 			space.setBaseSpaceId(areaId);
-			
+			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

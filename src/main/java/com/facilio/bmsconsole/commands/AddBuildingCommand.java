@@ -23,10 +23,10 @@ public class AddBuildingCommand implements Command {
 		BuildingContext building = (BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING);
 		if(building != null) 
 		{
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
-			building.setBaseSpaceId(spaceId);
 			
+			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
+			building.setBaseSpaceId(spaceId);
+			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
