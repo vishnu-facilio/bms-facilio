@@ -32,6 +32,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 		try {
 
 			if (this.conn == null) {
+				System.out.println("Connection NULL #########  !!!!!!!!!!");
 				this.conn = FacilioConnectionPool.getInstance().getConnection();
 				this.conn.setAutoCommit(false);
 				localConn = true;
@@ -39,19 +40,9 @@ public class BeanInvocationHandler implements InvocationHandler {
 			//Connection oldConn = BeanFactory.setConnection(this.conn);
 
 			// TODO switch context to orgid
-			OrgInfo oldorginfo = OrgInfo.getCurrentOrgInfo();
-
-			boolean switchback = false;
-			if (orgid != 0) {
-				OrgInfo.setCurrentOrgInfo(new OrgInfo(orgid));
-				switchback = true;
-			}
-
+		
 			result = method.invoke(delegate, args);
-			if (switchback) {
-				OrgInfo.setCurrentOrgInfo(oldorginfo);
-			}
-
+			
 		//	BeanFactory.setConnection(oldConn);
 			if (localConn) {
 				this.conn.commit();
