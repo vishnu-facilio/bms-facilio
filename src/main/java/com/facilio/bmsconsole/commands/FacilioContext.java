@@ -3,60 +3,47 @@ package com.facilio.bmsconsole.commands;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+
 import org.apache.commons.chain.impl.ContextBase;
 
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioContext extends ContextBase {
-	private Connection transactedConn = null, readOnlyConn = null;
-	private boolean isTransactedConnOpen = false, isReadOnlyConnOpen = false;
+	private Connection conn = null;
 	
 	
-	public Connection getConnectionWithTransaction() throws SQLException {
-		if(transactedConn == null || !isTransactedConnOpen)
+	public Connection getConnectionWithTransaction() throws SQLException, NotSupportedException, SystemException {
+		if(conn == null)
 		{
-			transactedConn = FacilioConnectionPool.getInstance().getConnection();
-			isTransactedConnOpen = true;
-			transactedConn.setAutoCommit(false);
+			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
+			conn = FacilioConnectionPool.getInstance().getConnection();
 		}
-		return transactedConn;
+		return conn;
 	}
 	
-	public Connection getConnectionWithoutTransaction() throws SQLException {
-		if(readOnlyConn == null || !isReadOnlyConnOpen) {
-			readOnlyConn = FacilioConnectionPool.getInstance().getConnection();
-			isReadOnlyConnOpen = true;
-		}
-		return readOnlyConn;
+	public Connection getConnectionWithoutTransaction() throws SQLException, NotSupportedException, SystemException {
+		return getConnectionWithTransaction();
 	}
 	
 	public void commit() throws Exception {
-		if(transactedConn != null) {
-			transactedConn.commit();
-		}
 		cleanup();
+		FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 	}
 	
 	public void rollback() throws Exception {
-		if(transactedConn != null) {
-			transactedConn.rollback();
-		}
 		cleanup();
+		FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 	}
 	
 	private void cleanup() throws Exception
 	{
 		System.out.println("Closing connection ....");
-		if(transactedConn != null) {
-			transactedConn.close();
-			transactedConn = null;
-			isTransactedConnOpen = false;
-		}
-		
-		if(readOnlyConn != null) {
-			readOnlyConn.close();
-			readOnlyConn = null;
-			isReadOnlyConnOpen = false;
+		if(conn != null) {
+			conn.close();
+			conn = null;
 		}
 	}
 }
