@@ -36,7 +36,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 				this.conn.setAutoCommit(false);
 				localConn = true;
 			}
-			Connection oldConn = BeanFactory.setConnection(this.conn);
+			//Connection oldConn = BeanFactory.setConnection(this.conn);
 
 			// TODO switch context to orgid
 			OrgInfo oldorginfo = OrgInfo.getCurrentOrgInfo();
@@ -52,7 +52,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 				OrgInfo.setCurrentOrgInfo(oldorginfo);
 			}
 
-			BeanFactory.setConnection(oldConn);
+		//	BeanFactory.setConnection(oldConn);
 			if (localConn) {
 				this.conn.commit();
 			}

@@ -18,12 +18,14 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class ModuleBeanImpl implements ModuleBean {
 
-	@Override
-	public Connection getConnection() {
-		return BeanFactory.getConnection();
+	
+	private Connection getConnection() throws SQLException {
+	//	return BeanFactory.getConnection();
+		return FacilioConnectionPool.INSTANCE.getConnection();
 	}
 
 	@Override
@@ -35,9 +37,10 @@ public class ModuleBeanImpl implements ModuleBean {
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
 		PreparedStatement pstmt = null;
+		Connection conn  =null;
 		ResultSet rs = null;
 		try {
-			Connection conn = getConnection();
+			 conn = getConnection();
 			pstmt = conn.prepareStatement("SELECT * FROM Modules WHERE ORGID=? and NAME = ?");
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
@@ -56,17 +59,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
+		Connection conn  =null;
 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			Connection conn = getConnection();
+			 conn = getConnection();
 			long orgId = getOrgId();
 			
 			String sql = "SELECT Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? AND IS_MAIN_FIELD = true";
@@ -92,17 +96,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 
 	@Override
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
-		
+		Connection conn  =null;
+
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			Connection conn = getConnection();
+			 conn = getConnection();
 			long orgId = getOrgId();
 			
 			String sql = "SELECT Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Modules.NAME = ? ORDER BY Fields.FIELDID";
@@ -130,19 +135,20 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 	
 	private LookupField getLookupField(FacilioField field) throws Exception {
-		
+		Connection conn  =null;
+
 		LookupField lookupField = new LookupField();
 		BeanUtils.copyProperties(lookupField, field);
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			Connection conn = getConnection();
+			 conn = getConnection();
 			
 			String sql = "SELECT Modules.MODULEID, Modules.ORGID, Modules.NAME, Modules.DISPLAY_NAME, Modules.TABLE_NAME, LookupFields.SPECIAL_TYPE FROM LookupFields LEFT JOIN Modules ON LookupFields.LOOKUP_MODULE_ID = Modules.MODULEID WHERE LookupFields.FIELDID = ?";
 			
@@ -164,17 +170,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 
 	@Override
 	public long addField(FacilioField field) throws Exception {
+		Connection conn  =null;
 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			Connection conn = getConnection();
+			 conn = getConnection();
 
 			String sql = "INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, COLUMN_NAME, SEQUENCE_NUMBER, DATA_TYPE) VALUES (?,?,?,?,?,?,?)";
 
@@ -217,7 +224,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 }

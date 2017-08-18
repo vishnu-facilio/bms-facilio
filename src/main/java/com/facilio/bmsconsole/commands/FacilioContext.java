@@ -30,12 +30,16 @@ public class FacilioContext extends ContextBase {
 	
 	public void commit() throws Exception {
 		cleanup();
-		FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+		if(conn != null) {
+			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+		}
 	}
 	
 	public void rollback() throws Exception {
 		cleanup();
-		FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+		if(conn != null) {
+			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+		}
 	}
 	
 	private void cleanup() throws Exception

@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 public interface RootBean {
 
-	public Connection getConnection();
+	//private Connection getConnection();
 	
 	public long getOrgId();
 }
