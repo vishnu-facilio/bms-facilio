@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -34,7 +35,8 @@ public class LoadMainFieldCommand implements Command {
 			
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId, conn);
+			ModuleBeanImpl modBean = new ModuleBeanImpl();// (ModuleBean) BeanFactory.lookup("ModuleBean", orgId, conn);
+		//	modBean.
 			FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModuleTableName());
