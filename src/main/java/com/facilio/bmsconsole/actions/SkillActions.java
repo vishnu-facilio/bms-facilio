@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -127,14 +129,43 @@ public class SkillActions extends ActionSupport {
 
 	public String addSkill() throws Exception {
 
-		skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		long skillId = SkillAPI.addSkill(skill);
+		//skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SKILL, skill);
+		Chain addSkill = FacilioChainFactory.getAddSkillChain();
+		addSkill.execute(context);
+		context.get(FacilioConstants.ContextNames.SKILL);
+		
+		//long skillId = SkillAPI.addSkill(skill);
 
-		setSkillId(skillId);
+		setSkillId(skill.getId());
 
 		return SUCCESS;
 	}
+	
+	public String editSkill() throws Exception {
+		
+		setSetup(SetupLayout.getEditSkillLayout());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, skillId);
+		Chain editSkill = FacilioChainFactory.getSkillChain();
+		editSkill.execute(context);
+		context.get(FacilioConstants.ContextNames.SKILL);
+		setSkill((SkillContext) context.get(FacilioConstants.ContextNames.SKILL));
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		return SUCCESS;
+	}
 
+	public String updateSkill() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
+		Command updateSkill = FacilioChainFactory.getUpdateSkillCommand();
+		updateSkill.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private SkillContext skill;
 
 	public SkillContext getSkill() {

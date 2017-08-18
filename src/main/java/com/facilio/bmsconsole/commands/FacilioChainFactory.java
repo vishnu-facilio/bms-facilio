@@ -313,6 +313,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddSkillChain()
+	{
+		Chain c = new ChainBase();
+		c.addCommand(new AddSkillCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getSkillChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSkill());
@@ -328,6 +336,15 @@ public class FacilioChainFactory {
 	public static Chain getNewSkillChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadActionFormCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getUpdateSkillCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateSkillCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -613,3 +630,4 @@ public class FacilioChainFactory {
 		return c;
 	}
 }
+

@@ -8,7 +8,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index"><img src="${pageContext.request.contextPath}/images/Brand-logo.svg">FACILIO<span style="color: #00BBE8 ">.</span></a>
+        <a class="navbar-brand" href="index"><img src="${pageContext.request.contextPath}/images/Brand-logo.svg"><s:text name="global.name"/><span style="color: #00BBE8 ">.</span></a>
     </div>
     <!-- /.navbar-header -->
 
@@ -43,12 +43,12 @@
 
             </a>
             <ul class="dropdown-menu dropdown-user">
-                <li><a href="setup#mysettings"><i class="fa fa-user fa-fw"></i> My Profile (<s:property value="#session.USER_INFO.getRole().name"/>)</a>
+                <li><a href="setup#mysettings"><i class="fa fa-user fa-fw"></i> <s:text name="global.myprofile"/> (<s:property value="#session.USER_INFO.getRole().name"/>)</a>
                 </li>
-                <li><a href="setup#mysettings"><i class="fa fa-gear fa-fw"></i> Notification Settings</a>
+                <li><a href="setup#mysettings"><i class="fa fa-gear fa-fw"></i> <s:text name="global.notificationsettings"/></a>
                 </li>
                 <li class="divider"></li>
-                <li><a href="${pageContext.request.contextPath}/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                <li><a href="${pageContext.request.contextPath}/logout"><i class="fa fa-sign-out fa-fw"></i> <s:text name="global.logout"/></a>
                 </li>
             </ul>
         </li>

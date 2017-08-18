@@ -114,6 +114,11 @@
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
 	
+	<action name="leed" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<!-- <param name="permission">WORKORDER_READ</param> -->
+		<result name="success">/jsps/leed/leedhome.jsp</result>
+	</action>
+	
 	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<param name="permission">TASK_READ</param>
 		<result name="success">/jsps/listview.jsp</result>
@@ -362,7 +367,29 @@
 		</action>
 	</package>
 	
+		
 	<package name="workOrder" namespace="/app/workorder" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderId</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="leed" namespace="/app/leed" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
@@ -536,6 +563,22 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		
+		<action name="edit" class="com.facilio.bmsconsole.actions.SkillActions" method="editSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/editSkill.jsp</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions" method="updateSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">			
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>

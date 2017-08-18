@@ -141,7 +141,7 @@ public class SkillAPI {
 		sc.setOrgId(rs.getLong("ORGID"));
 		sc.setName(rs.getString("NAME"));
 		sc.setDescription(rs.getString("DESCRIPTION"));
-		sc.setIsActive(rs.getBoolean("IS_ACTIVE"));
+		sc.setActive(rs.getBoolean("IS_ACTIVE"));
 		
 		return sc;
 	}
