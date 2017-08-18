@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands.data;
 
+import java.io.File;
+import java.util.HashMap;
+
 public class ServicePortalInfo {
 
 	public boolean isSignupAllowed() {
@@ -30,6 +33,44 @@ public class ServicePortalInfo {
 	boolean gmailLoginAllowed=true;
 	boolean ticketAlloedForPublic=true;
 	boolean anyDomain;
+	public boolean isSamlEnabled() {
+		return samlEnabled;
+	}
+	public void setSamlEnabled(boolean samlEnabled) {
+		this.samlEnabled = samlEnabled;
+	}
+	boolean samlEnabled;
 	
+	private HashMap samlinfo = null;
+	public HashMap getSamlInfo()
+	{
+		if(!isSamlEnabled())
+		{
+		return samlinfo;
+		}
+		return null;
+	}
+	public void setSamInfo(String key, String value)
+	{
+		samlinfo.put(key, value);
+	}
+	public void setSamInfo(String key, File value)
+	{
+		samlinfo.put(key, value);
+	}
 	
+	public void setSamInfo(HashMap samlinfo)
+	{
+		// Keys
+		/*login_url
+		logout_url
+		forgot_pass_url
+		certificate path
+		*/
+		if(samlinfo.size()==3)
+		{
+			this.samlinfo= samlinfo;
+			
+		}
+	}
 }
