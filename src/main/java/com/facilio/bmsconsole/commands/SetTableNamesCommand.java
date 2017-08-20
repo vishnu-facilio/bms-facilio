@@ -53,7 +53,7 @@ public class SetTableNamesCommand implements Command {
 	}
 	
 	public static SetTableNamesCommand getForCampus() {
-		return new SetTableNamesCommand("campus", "campus");
+		return new SetTableNamesCommand("campus", "Campus");
 	}
 	
 	public static SetTableNamesCommand getForBuilding() {
