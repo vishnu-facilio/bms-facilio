@@ -14,12 +14,23 @@ import com.facilio.transaction.FacilioTransactionManager;
 public class FacilioContext extends ContextBase {
 	private Connection conn = null;
 	
+	public boolean isTransstarted() {
+		return transstarted;
+	}
+
+	public void setTransstarted(boolean transstarted) {
+		this.transstarted = transstarted;
+	}
+
 	boolean transstarted=false;
 	public Connection getConnectionWithTransaction() throws SQLException, NotSupportedException, SystemException {
 		if(conn == null)
 		{
-			FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
-			transstarted = true;
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
+			if(transstarted)
+			{
+				throw new NotSupportedException();
+			}
 			conn = FacilioConnectionPool.getInstance().getConnection();
 		}
 		return conn;
@@ -32,7 +43,7 @@ public class FacilioContext extends ContextBase {
 	public void commit() throws Exception {
 		cleanup();
 		if(transstarted) {
-			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+		//	FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 			transstarted = false;
 		}
 	}
@@ -40,7 +51,7 @@ public class FacilioContext extends ContextBase {
 	public void rollback() throws Exception {
 		cleanup();
 		if(transstarted) {
-			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+		//	FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 			transstarted = false;
 		}
 	}

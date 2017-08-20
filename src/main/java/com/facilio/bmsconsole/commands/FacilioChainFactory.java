@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
+
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
 
@@ -629,5 +632,31 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+}
+class TransactionChain extends ChainBase
+{
+	public boolean execute(Context context)
+            throws Exception
+            {
+		boolean status =  false;
+		try {
+			javax.transaction.TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+		System.out.println("Transaction beginned");
+			tm.begin();
+			((FacilioContext)context).setTransstarted(true);
+
+			       status =  super.execute(context);
+			   //    tm.commit();
+			       ((FacilioContext)context).setTransstarted(false);
+					System.out.println("Transaction commit");
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+			e.printStackTrace();
+			throw e;
+		}
+return status;
+            }
 }
 

@@ -24,7 +24,7 @@ public class PickListAction extends ActionSupport {
 		else {
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-			
+			//System.out.println("Context is "+context);
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			Chain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
