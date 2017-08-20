@@ -7,6 +7,7 @@
 <link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
 <link href="css/style.css" type="text/css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+<script src="https://unpkg.com/vue"></script>
 </head>
 <body>
 <div class="container">
