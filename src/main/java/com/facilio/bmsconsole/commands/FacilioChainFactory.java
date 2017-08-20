@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -19,7 +21,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getPickListChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new LoadMainFieldCommand());
 		c.addCommand(new GetPickListCommand());
 	//	addCleanUpCommand(c);
@@ -639,20 +641,28 @@ class TransactionChain extends ChainBase
             throws Exception
             {
 		boolean status =  false;
+		Transaction currenttrans = null;
 		try {
 			javax.transaction.TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
-		System.out.println("Transaction beginned");
-			tm.begin();
-			((FacilioContext)context).setTransstarted(true);
-
-			       status =  super.execute(context);
-			   //    tm.commit();
-			       ((FacilioContext)context).setTransstarted(false);
-					System.out.println("Transaction commit");
+		
+			 currenttrans = tm.getTransaction();
+			if (currenttrans != null) {
+				tm.begin();
+				System.out.println("Transaction beginned");
+				((FacilioContext) context).setTransstarted(true);
+			}
+			status = super.execute(context);
+			if (currenttrans != null) {
+				tm.commit();
+				((FacilioContext) context).setTransstarted(false);
+				System.out.println("Transaction commit");
+			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			if (currenttrans != null) {
 			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+			}
 			e.printStackTrace();
 			throw e;
 		}
