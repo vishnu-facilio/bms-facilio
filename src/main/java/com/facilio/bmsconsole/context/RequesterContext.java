@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-public class RequesterContext {
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class RequesterContext extends ModuleBaseWithCustomFields {
 	
-	private long orgId = 0;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -10,7 +12,11 @@ public class RequesterContext {
 		this.orgId = orgId;
 	}
 	
-	private long requesterId = 0;
+	public long getId() {
+		return requesterId;
+	}
+	
+	private long requesterId = -1;
 	public long getRequesterId() {
 		return requesterId;
 	}

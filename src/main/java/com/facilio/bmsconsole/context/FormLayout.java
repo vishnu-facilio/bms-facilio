@@ -15,9 +15,17 @@ public class FormLayout {
 		
 		Panel first =  new Panel(Panel.Type.HALF);
 		Panel second =  new Panel(Panel.Type.HALF);
+		FacilioField requesterEmail = new FacilioField();
+		requesterEmail.setName("email");
+		requesterEmail.setDisplayName("Requester Email");
+		requesterEmail.setDisplayType(FacilioField.FieldDisplayType.EMAIL);
+		requesterEmail.setDataType(com.facilio.bmsconsole.modules.FieldType.STRING);
+		requesterEmail.setModuleName("workorder.requester");
+		requesterEmail.setDefault(true);
+		second.add(requesterEmail);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType")) {
+			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requesterId")) {
 				continue;
 			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
