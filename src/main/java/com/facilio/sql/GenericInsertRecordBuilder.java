@@ -12,37 +12,43 @@ import java.util.Map;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
-public class GenericInsertRecordBuilder {
+public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> fields;
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
 	private Connection conn = null;
 	
+	@Override
 	public GenericInsertRecordBuilder table(String tableName) {
 		this.tableName = tableName;
 		return this;
 	}
-	
+
+	@Override
 	public GenericInsertRecordBuilder fields(List<FacilioField> fields) {
 		this.fields = fields;
 		return this;
 	}
-	
+
+	@Override
 	public GenericInsertRecordBuilder addRecord(Map<String, Object> value) {
 		this.values.add(value);
 		return this;
 	}
-	
+
+	@Override
 	public GenericInsertRecordBuilder addRecords(List<Map<String, Object>> values) {
 		this.values.addAll(values);
 		return this;
 	}
-	
+
+	@Override
 	public GenericInsertRecordBuilder connection(Connection conn) {
 		this.conn = conn;
 		return this;
 	}
-	
+
+	@Override
 	public void save() throws SQLException, RuntimeException {
 		
 		if(values == null || values.isEmpty()) {

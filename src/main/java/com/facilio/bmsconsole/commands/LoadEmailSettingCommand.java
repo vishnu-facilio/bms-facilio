@@ -24,7 +24,7 @@ public class LoadEmailSettingCommand implements Command {
 				.connection(((FacilioContext) context).getConnectionWithTransaction())
 				.table("EmailSettings")
 				.select(fields)
-				.where("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+				.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 		List<Map<String, Object>> settings = builder.get();
 		
 		if(settings != null && settings.size() > 0) {

@@ -27,7 +27,7 @@ public class GetTaskListCommand implements Command{
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.connection(conn)
-				.dataTableName(dataTableName)
+				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(TaskContext.class)
 				.select(fields)
@@ -35,10 +35,10 @@ public class GetTaskListCommand implements Command{
 		
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
+			builder.andCriteria(criteria);
 		}
 
-		List<TaskContext> tasks = builder.getAsBean();
+		List<TaskContext> tasks = builder.get();
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		
 		return false;

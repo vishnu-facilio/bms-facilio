@@ -23,13 +23,13 @@ public class GetAllBuildingCommand implements Command{
 		
 		SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
 				.connection(conn)
-				.dataTableName(dataTableName)
+				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(BuildingContext.class)
 				.select(fields)
 				.orderBy("ID");
 
-		List<BuildingContext> buildings = builder.getAsBean();
+		List<BuildingContext> buildings = builder.get();
 		context.put(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
 		
 		return false;

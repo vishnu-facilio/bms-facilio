@@ -26,7 +26,7 @@ public class GetWorkOrderListCommand implements Command {
 		
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(WorkOrderContext.class)
 														.select(fields)
@@ -34,10 +34,10 @@ public class GetWorkOrderListCommand implements Command {
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
+			builder.andCriteria(criteria);
 		}
 		
-		List<WorkOrderContext> workOrders = builder.getAsBean();
+		List<WorkOrderContext> workOrders = builder.get();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		
 		return false;

@@ -27,14 +27,14 @@ public class GetLocationCommand implements Command {
 			
 			SelectRecordsBuilder<LocationContext> builder = new SelectRecordsBuilder<LocationContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(LocationContext.class)
 					.select(fields)
-					.where("ID = ?", locationId)
+					.andCustomWhere("ID = ?", locationId)
 					.orderBy("ID");
 
-			List<LocationContext> locations = builder.getAsBean();	
+			List<LocationContext> locations = builder.get();	
 			if(locations.size() > 0) {
 				LocationContext location = locations.get(0);
 				context.put(FacilioConstants.ContextNames.LOCATION, location);

@@ -36,7 +36,7 @@ public class UpdateSupportEmailCommand implements Command {
 													.connection(((FacilioContext)context).getConnectionWithTransaction())
 													.table("SupportEmails")
 													.fields(fields)
-													.where("ID = ?", supportEmail.getId());
+													.andCustomWhere("ID = ?", supportEmail.getId());
 			builder.update(emailProps);
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}

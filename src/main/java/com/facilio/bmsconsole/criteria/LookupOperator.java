@@ -33,7 +33,9 @@ public enum LookupOperator implements Operator<Criteria> {
 			FacilioModule module = lookupField.getLookupModule();
 			if(module != null) {
 				StringBuilder builder = new StringBuilder();
-				builder.append(field.getColumnName())
+				builder.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
 						.append(" IN (SELECT ID FROM ")
 						.append(module.getTableName())
 						.append(" WHERE ")

@@ -23,12 +23,12 @@ public class GetTicketCategoryListCommand implements Command {
 		
 		SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(TicketCategoryContext.class)
 														.select(fields)
 														.orderBy("ID");
-		List<TicketCategoryContext> statuses = builder.getAsBean();
+		List<TicketCategoryContext> statuses = builder.get();
 		context.put(FacilioConstants.ContextNames.TICKET_CATEGORY_LIST, statuses);
 		
 		return false;

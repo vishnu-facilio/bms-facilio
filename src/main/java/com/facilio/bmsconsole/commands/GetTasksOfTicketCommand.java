@@ -27,14 +27,14 @@ public class GetTasksOfTicketCommand implements Command {
 			
 			SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(TaskContext.class)
 					.select(fields)
-					.where("parent = ?", ticketId)
+					.andCustomWhere("parent = ?", ticketId)
 					.orderBy("id");
 
-			List<TaskContext> tasks = builder.getAsBean();
+			List<TaskContext> tasks = builder.get();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		}
 		else {

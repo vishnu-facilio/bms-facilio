@@ -24,12 +24,12 @@ public class GetTaskStatusListCommand implements Command {
 		
 		SelectRecordsBuilder<TaskStatusContext> builder = new SelectRecordsBuilder<TaskStatusContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(TaskStatusContext.class)
 														.select(fields)
 														.orderBy("ID");
-		List<TaskStatusContext> statuses = builder.getAsBean();
+		List<TaskStatusContext> statuses = builder.get();
 		context.put(FacilioConstants.ContextNames.TASK_STATUS_LIST, statuses);
 		
 		return false;

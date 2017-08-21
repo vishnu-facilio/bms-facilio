@@ -18,7 +18,9 @@ public enum UserOperators implements Operator<String> {
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getColumnName())
+					builder.append(field.getModuleTableName())
+							.append(".")
+							.append(field.getColumnName())
 							.append(" IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
 					builder.append(")");
@@ -28,7 +30,7 @@ public enum UserOperators implements Operator<String> {
 					if(value.trim().equals(LOGGED_IN_USER)) {
 						value = "?";
 					}
-					return field.getColumnName()+" = "+value;
+					return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
 				}
 			}
 			return null;
@@ -41,8 +43,12 @@ public enum UserOperators implements Operator<String> {
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName());
 				if(value.contains(",")) {
 					builder.append(" NOT IN (");

@@ -28,10 +28,10 @@ public class UpdateSkillCommand implements Command {
 			
 			UpdateRecordBuilder<SkillContext> builder = new UpdateRecordBuilder<SkillContext>()
 														.moduleName(moduleName)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.fields(fields)
 														.connection(conn)
-														.where("ID = ?", skill.getId());
+														.andCustomWhere("ID = ?", skill.getId());
 			builder.update(skill);
 		}
 		else 

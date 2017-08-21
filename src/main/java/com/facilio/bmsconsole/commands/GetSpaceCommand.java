@@ -29,14 +29,14 @@ public class GetSpaceCommand implements Command {
 			
 			SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(SpaceContext.class)
 					.select(fields)
-					.where("ID = ?", spaceId)
+					.andCustomWhere("ID = ?", spaceId)
 					.orderBy("ID");
 
-			List<SpaceContext> spaces = builder.getAsBean();	
+			List<SpaceContext> spaces = builder.get();	
 			if(spaces.size() > 0) {
 				SpaceContext space = spaces.get(0);
 				context.put(FacilioConstants.ContextNames.SPACE, space);

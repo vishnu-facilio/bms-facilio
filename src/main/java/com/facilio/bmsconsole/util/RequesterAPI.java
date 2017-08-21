@@ -25,7 +25,7 @@ public class RequesterAPI {
 				.connection(conn)
 				.table("Requester")
 				.select(FieldFactory.getRequesterFields())
-				.where("ORGID = ?", orgId);
+				.andCustomWhere("ORGID = ?", orgId);
 		List<Map<String, Object>> requesters = builder.get();
 		
 		Map<Long, String> requesterMap = new LinkedHashMap<>();
@@ -44,7 +44,7 @@ public class RequesterAPI {
 				.connection(conn)
 				.table("Requester")
 				.select(FieldFactory.getRequesterFields())
-				.where("ORGID = ? AND EMAIL = ?", orgId, email);
+				.andCustomWhere("ORGID = ? AND EMAIL = ?", orgId, email);
 		List<Map<String, Object>> requesters = builder.get();
 		
 		return !requesters.isEmpty()?requesters.get(0):null;

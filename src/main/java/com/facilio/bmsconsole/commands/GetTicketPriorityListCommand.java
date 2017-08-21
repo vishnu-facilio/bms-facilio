@@ -23,12 +23,12 @@ public class GetTicketPriorityListCommand implements Command {
 		
 		SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(TicketPriorityContext.class)
 														.select(fields)
 														.orderBy("ID");
-		List<TicketPriorityContext> statuses = builder.getAsBean();
+		List<TicketPriorityContext> statuses = builder.get();
 		context.put(FacilioConstants.ContextNames.TICKET_PRIORITY_LIST, statuses);
 		
 		return false;

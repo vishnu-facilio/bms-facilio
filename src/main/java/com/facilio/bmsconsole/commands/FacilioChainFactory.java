@@ -682,4 +682,3 @@ class TransactionChain extends ChainBase
 return status;
             }
 }
-

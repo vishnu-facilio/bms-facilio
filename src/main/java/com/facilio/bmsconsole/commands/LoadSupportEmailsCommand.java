@@ -25,7 +25,7 @@ public class LoadSupportEmailsCommand implements Command {
 												.connection(((FacilioContext) context).getConnectionWithTransaction())
 												.table("SupportEmails")
 												.select(fields)
-												.where("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+												.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 		List<Map<String, Object>> emailList = builder.get();
 		List<SupportEmailContext> emails = new ArrayList<>();
 		if(emailList != null) {

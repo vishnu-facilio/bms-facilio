@@ -29,11 +29,10 @@ public class GetPickListCommand implements Command {
 		try {
 			if(dataTableName != null && !dataTableName.isEmpty() && defaultField != null) {
 				List<FacilioField> fields = new ArrayList<>();
-				fields.add(defaultField);
-				
+				fields.add(defaultField);				
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																	.connection(conn)
-																	.dataTableName(dataTableName)
+																	.table(dataTableName)
 																	.moduleName(moduleName)
 																	.select(fields)
 																	.orderBy("ID");

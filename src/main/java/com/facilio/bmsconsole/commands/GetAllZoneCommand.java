@@ -24,13 +24,13 @@ public class GetAllZoneCommand implements Command{
 		
 		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
 				.connection(conn)
-				.dataTableName(dataTableName)
+				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(ZoneContext.class)
 				.select(fields)
 				.orderBy("ID");
 
-		List<ZoneContext> zones = builder.getAsBean();
+		List<ZoneContext> zones = builder.get();
 		context.put(FacilioConstants.ContextNames.ZONE_LIST, zones);
 		
 		return false;

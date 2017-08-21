@@ -29,14 +29,14 @@ public class GetBuildingCommand implements Command {
 			
 			SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(BuildingContext.class)
 					.select(fields)
-					.where("ID = ?", buildingId)
+					.andCustomWhere("ID = ?", buildingId)
 					.orderBy("ID");
 
-			List<BuildingContext> buildings = builder.getAsBean();	
+			List<BuildingContext> buildings = builder.get();	
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
 				context.put(FacilioConstants.ContextNames.BUILDING, building);

@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
-public class GenericUpdateRecordBuilder {
+public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> fields;
 	private Map<String, FacilioField> fieldMap;
 	private String tableName;
@@ -34,11 +36,47 @@ public class GenericUpdateRecordBuilder {
 		return this;
 	}
 	
-	public GenericUpdateRecordBuilder where(String whereCondition, Object... values) {
-		this.where.where(whereCondition, values);
+	public GenericUpdateRecordBuilder andCustomWhere(String whereCondition, Object... values) {
+		this.where.andCustomWhere(whereCondition, values);
 		return this;
 	}
 	
+	@Override
+	public GenericUpdateRecordBuilder orCustomWhere(String whereCondition, Object... values) {
+		// TODO Auto-generated method stub
+		this.where.orCustomWhere(whereCondition, values);
+		return this;
+	}
+
+	@Override
+	public GenericUpdateRecordBuilder andCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.andCondition(condition);
+		return this;
+	}
+
+	@Override
+	public GenericUpdateRecordBuilder orCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.orCondition(condition);
+		return this;
+	}
+
+	@Override
+	public GenericUpdateRecordBuilder andCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.andCriteria(criteria);
+		return this;
+	}
+
+	@Override
+	public GenericUpdateRecordBuilder orCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.orCriteria(criteria);
+		return this;
+	}
+	
+	@Override
 	public int update(Map<String, Object> value) throws SQLException {
 		checkForNull();
 		this.value = value;
@@ -109,9 +147,9 @@ public class GenericUpdateRecordBuilder {
 			}
 		}
 		
-		if(where.getCondition() != null && !where.getCondition().isEmpty()) {
+		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
 			sql.append(" WHERE ")
-				.append(where.getCondition());
+				.append(where.getWhereClause());
 		}
 		
 		return sql.toString();

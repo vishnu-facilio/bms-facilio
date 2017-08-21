@@ -1,33 +1,112 @@
 package com.facilio.sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 
-class WhereBuilder {
-	private String condition;
-	private Object[] values;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+
+public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
+	private StringBuilder condition = new StringBuilder();
+	private List<Object> values = new ArrayList<>();;
 	
-	public WhereBuilder where(String where, Object... values) {
-		
-		int count = StringUtils.countMatches(where, "?");
-		if(values.length < count) {
-			throw new IllegalArgumentException("No. of where values doesn't match the number of ?");
+	@Override
+	public WhereBuilder andCustomWhere(String where, Object... values) {
+		return customWhere(true, where, values);
+	}
+	
+	@Override
+	public WhereBuilder orCustomWhere(String where, Object... values) {
+		return customWhere(false, where, values);
+	}
+	
+	private WhereBuilder customWhere(boolean isAND, String where, Object... values) {
+		if(where != null && !where.isEmpty()) {
+			int count = StringUtils.countMatches(where, "?");
+			if(values != null && values.length < count) {
+				throw new IllegalArgumentException("No. of where values doesn't match the number of ?");
+			}
+			
+			checkIfFirstAndAdd(isAND);
+			condition.append(where);
+			if(values != null) {
+				for(Object val : values) {
+					this.values.add(val);
+				}
+			}
 		}
-		
-		this.condition = where;
-		this.values = values;
+		return this;
+	}
+	
+	@Override
+	public WhereBuilder andCondition(Condition condition) {
+		return condition(true, condition);
+	}
+	
+	@Override
+	public WhereBuilder orCondition(Condition condition) {
+		return condition(false, condition);
+	}
+	
+	private WhereBuilder condition(boolean isAND, Condition condition) {
+		if(condition != null) {
+			checkIfFirstAndAdd(isAND);
+			this.condition.append(condition.getComputedWhereClause());
+			if(condition.getComputedValues() != null) {
+				values.addAll(condition.getComputedValues());
+			}
+		}
+		return this;
+	}
+	
+	@Override
+	public WhereBuilder andCriteria(Criteria criteria) {
+		return criteria(true, criteria);
+	}
+	
+	@Override
+	public WhereBuilder orCriteria(Criteria criteria) {
+		return criteria(false, criteria);
+	}
+	
+	private WhereBuilder criteria(boolean isAND, Criteria criteria) {
+		if(criteria != null) {
+			checkIfFirstAndAdd(isAND);
+			this.condition.append(criteria.computeWhereClause());
+			if(criteria.getComputedValues() != null) {
+				values.addAll(criteria.getComputedValues());
+			}
+		}
 		return this;
 	}
 	
 	public Object[] getValues() {
-		return values;
+		return values.toArray();
 	}
-	public String getCondition() {
-		return condition;
+	public String getWhereClause() {
+		return condition.toString();
+	}
+	
+	private void checkIfFirstAndAdd(boolean isAND) {
+		if(condition.length() != 0) {
+			if(isAND) {
+				condition.append(" AND ");
+			}
+			else {
+				condition.append(" OR ");
+			}
+		}
 	}
 	
 	public void checkForNull() {
-		if(condition == null || condition.isEmpty()) {
+		if(condition.length() == 0) {
 			throw new IllegalArgumentException("No where condition specified");
 		}
+	}
+	
+	public boolean isEmpty() {
+		return condition.length() == 0;
 	}
 }
