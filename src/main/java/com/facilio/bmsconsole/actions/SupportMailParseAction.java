@@ -27,7 +27,7 @@ public class SupportMailParseAction extends ActionSupport {
 		ticket.setDescription(getBody());
 		
 		WorkOrderContext workOrder = new WorkOrderContext();
-		workOrder.setRequester((String) getFrom().get("address"));
+		//workOrder.setRequester((String) getFrom().get("address"));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);

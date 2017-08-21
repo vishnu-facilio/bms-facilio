@@ -20,11 +20,15 @@ public class LookupSpecialTypeUtil {
 		return FacilioConstants.ContextNames.USERS.equals(specialType)
 				|| FacilioConstants.ContextNames.GROUPS.equals(specialType)
 				|| FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)
+				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
 				;
 	}
 	
 	public static Map<Long, String> getPickList(String specialType) throws SQLException {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
+			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
+		}
+		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
