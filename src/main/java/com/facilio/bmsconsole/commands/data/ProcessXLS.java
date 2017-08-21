@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.commands.data;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,13 +12,12 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
@@ -30,12 +27,14 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class ProcessXLS implements Command {
 
+	
 	public boolean execute(Context context) throws Exception {
 		
+		/*
 		try {
-String FILE_NAME  =null;
-            FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
-            Workbook workbook = new XSSFWorkbook(excelFile);
+			String FILE_NAME  =null;
+          
+            Workbook workbook = WorkbookFactory.create(new File(FILE_NAME));
             Sheet datatypeSheet = workbook.getSheetAt(0);
             Iterator<Row> iterator = datatypeSheet.iterator();
 
@@ -93,10 +92,12 @@ String FILE_NAME  =null;
 		{
 			//workbook.
 		}
-
+		 */
+		
 		return false;
 
 	}
+	
 	
 	public static boolean isRowEmpty(Row row) {
 		if (row == null) {
@@ -120,7 +121,7 @@ String FILE_NAME  =null;
 		
 		HashMap fieldMapping = metainfo.getFieldMapping();
 		
-		java.sql.Connection c = FacilioConnectionPool.getInstance().getConnection();
+		Connection conn = FacilioConnectionPool.getInstance().getConnection();
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO Energy_Data SET ");
@@ -130,7 +131,7 @@ String FILE_NAME  =null;
 		int i = 0;
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
-			String val = ((String[]) fieldMapping.get(key))[0];
+			//String val = ((String[]) fieldMapping.get(key))[0];
 			if (i != 0) {
 				sql.append(",");
 			}
@@ -140,14 +141,14 @@ String FILE_NAME  =null;
 			i++;
 		}
 		
-		PreparedStatement pstmt = c.prepareStatement(sql.toString());
+		PreparedStatement pstmt = conn.prepareStatement(sql.toString());
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream ins = fs.readFile(metainfo.getFileId());
 		
 		HashMap<Integer, String> colIndex = new HashMap<Integer, String>();
 		
-		Workbook workbook = new HSSFWorkbook(ins);
+		Workbook workbook = WorkbookFactory.create(ins);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 
 		Iterator<Row> itr = datatypeSheet.iterator();
@@ -219,8 +220,7 @@ String FILE_NAME  =null;
 		
 		pstmt.executeBatch();
 		pstmt.close();
-		c.close();
-		
+		conn.close();
 		workbook.close();
 	}
 	
@@ -228,8 +228,7 @@ String FILE_NAME  =null;
 	{
 		JSONArray columnheadings = new JSONArray();
 		
-		FileInputStream excelFile = new FileInputStream(excelfile);
-        Workbook workbook = new HSSFWorkbook(excelFile);
+        Workbook workbook = WorkbookFactory.create(excelfile);
         Sheet datatypeSheet = workbook.getSheetAt(0);
         
         Iterator<Row> itr = datatypeSheet.iterator();

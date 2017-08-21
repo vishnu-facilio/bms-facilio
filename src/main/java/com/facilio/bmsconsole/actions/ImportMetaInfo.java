@@ -121,6 +121,7 @@ public class ImportMetaInfo
 		switch(moduletype)
 		{
 		case 1:
+			fields.add("ADDED_TIME");
 			fields.add("TOTAL_ENERGY_CONSUMPTION");
 			fields.add("TOTAL_ENERGY_CONSUMPTION_DELTA");
 			fields.add("LINE_VOLTAGE_R");
