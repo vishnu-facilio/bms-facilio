@@ -320,7 +320,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddSkillChain()
 	{
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
