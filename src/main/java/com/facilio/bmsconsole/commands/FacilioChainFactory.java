@@ -201,7 +201,6 @@ public class FacilioChainFactory {
 	public static Chain getAddWorkOrderChain() {
 		Chain c = new ChainBase();
 		c.addCommand(getAddTicketChain());
-		c.addCommand(new AddRequesterCommand());
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
@@ -322,6 +321,9 @@ public class FacilioChainFactory {
 	public static Chain getAddSkillChain()
 	{
 		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSkillCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -349,9 +351,19 @@ public class FacilioChainFactory {
 	public static Command getUpdateSkillCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateSkillCommand());
 		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getDeleteSkillCommand(){
+		Chain c = new ChainBase();
+		
+		//c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new DeleteSkillCommand());
+		//addCleanUpCommand(c);
 		return c;
 	}
 	

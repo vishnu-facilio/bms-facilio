@@ -21,7 +21,7 @@ public class SkillContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private boolean active;
-	public boolean isActive() {
+	public boolean getActive() {
 		return active;
 	}
 	public void setActive(boolean active) {

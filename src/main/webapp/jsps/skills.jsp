@@ -18,7 +18,7 @@
 			            <td><a href="#skills/<s:property value="#skill.skillId" />"><s:property value="#skill.name" /></a></td>
 			            <td><s:property value="#skill.description" /></td>
 			            <td>
-	                    	<s:if test="%{#skill.isActive()}">
+	                    	<s:if test="%{#skill.active}">
 								<h5><span class="label label-success">Active</span></h5>
 							</s:if>
 							<s:else>
@@ -30,7 +30,7 @@
 								<button type="button" skill-id="<s:property value="#skill.Id" />" data-toggle="tooltip" data-placement="top" title="Edit skill" onclick="editSkill(this);" class="btn btn-outline btn-primary btn-md">
 	                    			<i class="fa fa-pencil"></i>
 	                    		</button>
-	                    		<button type="button" skill-id="<s:property value="#skill.skillId" />" data-toggle="tooltip" data-placement="top" title="Delete skill" onclick="deleteSkill(this);" class="btn btn-outline btn-danger btn-md">
+	                    		<button type="button" skill-id="<s:property value="#skill.Id" />" data-toggle="tooltip" data-placement="top" title="Delete skill" onclick="deleteSkill(this);" class="btn btn-outline btn-danger btn-md">
 	                    			<i class="fa fa-trash"></i>
 	                    		</button>
 	                    	</div>
@@ -60,7 +60,7 @@
 					</div>
 					<div class="form-group">
 				  		<div class="checkbox">
-				  			<label><s:checkbox name="skill.isActive" value="true" cssClass="checkbox"/>Active</label>
+				  			<label><s:checkbox name="skill.active" value="true" cssClass="checkbox"/>Active</label>
 				  		</div>
 				  	</div>
 				</form>

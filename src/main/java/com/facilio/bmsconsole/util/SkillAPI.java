@@ -85,7 +85,7 @@ public class SkillAPI {
 			pstmt.setLong(1, skillContext.getOrgId());
 			pstmt.setString(2, skillContext.getName());
 			pstmt.setString(3, skillContext.getDescription());
-			pstmt.setBoolean(4, skillContext.isActive());
+			pstmt.setBoolean(4, skillContext.getActive());
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add skill");
@@ -117,7 +117,7 @@ public class SkillAPI {
 			
 			pstmt.setString(1, skillContext.getName());
 			pstmt.setString(2, skillContext.getDescription());
-			pstmt.setBoolean(3, skillContext.isActive());
+			pstmt.setBoolean(3, skillContext.getActive());
 			pstmt.setLong(4, skillContext.getId());
 			pstmt.setLong(5, skillContext.getOrgId());
 			
@@ -141,7 +141,7 @@ public class SkillAPI {
 		sc.setOrgId(rs.getLong("ORGID"));
 		sc.setName(rs.getString("NAME"));
 		sc.setDescription(rs.getString("DESCRIPTION"));
-		sc.setActive(rs.getBoolean("IS_ACTIVE"));
+		sc.setActive(rs.getBoolean("ACTIVE"));
 		
 		return sc;
 	}
