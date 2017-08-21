@@ -5,15 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class LoadMainFieldCommand implements Command {
 
@@ -32,9 +36,14 @@ public class LoadMainFieldCommand implements Command {
 		ResultSet rs = null;
 		try {
 			
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+			//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId, conn);
+			//Transaction trans = FacilioTransactionManager.INSTANCE.getTransactionManager().suspend();
+			
+			ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
+		//	modBean.
+			
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().resume(trans);
 			FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModuleTableName());

@@ -23,7 +23,7 @@ public class SetModuleIdCommand implements Command{
 		}
 		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule moduleObj = modBean.getModule(moduleName);
 		

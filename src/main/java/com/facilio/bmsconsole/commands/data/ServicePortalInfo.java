@@ -73,4 +73,9 @@ public class ServicePortalInfo {
 			
 		}
 	}
+	
+	public void save()
+	{
+		
+	}
 }

@@ -21,7 +21,7 @@ public class AddFieldsCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long moduleId = (long) context.get(FacilioConstants.ContextNames.MODULE_ID);
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", ((FacilioContext) context).getConnectionWithTransaction());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		for(FacilioField field : fields) {
 			

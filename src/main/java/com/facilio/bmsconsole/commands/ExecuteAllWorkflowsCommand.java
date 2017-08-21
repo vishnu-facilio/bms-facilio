@@ -25,7 +25,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", conn);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		long moduleId = modBean.getModule("workorder").getModuleId();
 		
 		int eventType = (int) context.get(FacilioConstants.Workflow.EVENT_TYPE);

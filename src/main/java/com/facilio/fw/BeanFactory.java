@@ -80,24 +80,9 @@ public class BeanFactory {
 				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
 	}
 	
-	public static Object lookup(String beanname, Connection conn) throws InstantiationException, IllegalAccessException
-	{
-		long orgid = OrgInfo.getCurrentOrgInfo().getOrgid();
-		Class implclass = beans.get(beanname);
-		Object implobj = implclass.newInstance();
-		return Proxy.newProxyInstance(implclass.getClassLoader(),
-				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid,conn));	
-	}
 	
-	public static Object lookup(String beanname, Long orgid, Connection conn) throws InstantiationException, IllegalAccessException
-	{
-		Class implclass = beans.get(beanname);
-		Object implobj = implclass.newInstance();
-		return Proxy.newProxyInstance(implclass.getClassLoader(),
-				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid,conn));	
-	}
-
-	private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
+	
+	//private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
 
 	/**
 	 * Set's given connection to current threadlocal and return's old connection if it exists
@@ -105,18 +90,18 @@ public class BeanFactory {
 	 * @param conn
 	 * @return
 	 */
-	public static Connection setConnection(Connection conn) {
+/*	public static Connection setConnection(Connection conn) {
 		Connection oldConn = connectionThreadLocal.get();
 		connectionThreadLocal.set(conn);
 		return oldConn;
-	}
+	}*/
 
 	/**
 	 * Get connection from current threadlocal
 	 * 
 	 * @return
 	 */
-	public static Connection getConnection() {
+	/*public static Connection getConnection() {
 		return connectionThreadLocal.get();
-	}
+	}*/
 }

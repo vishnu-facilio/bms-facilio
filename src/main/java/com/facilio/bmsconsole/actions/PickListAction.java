@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.transaction.FacilioTransactionManager;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class PickListAction extends ActionSupport {
@@ -23,10 +24,11 @@ public class PickListAction extends ActionSupport {
 		else {
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-			
+			//System.out.println("Context is "+context);
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			Chain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
-			
+			//FacilioTransactionManager.INSTANCE.getTransactionManager().commit();			
 			setPickList((Map<Long, String>) context.get(FacilioConstants.ContextNames.PICKLIST));
 		}
 		

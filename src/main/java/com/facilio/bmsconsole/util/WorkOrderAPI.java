@@ -60,7 +60,7 @@ public class WorkOrderAPI {
 
 	public static List<TaskContext> getRelatedTasks(long workOrderId, Connection conn) throws Exception 
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
 		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()

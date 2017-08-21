@@ -23,10 +23,8 @@
 		jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
 			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
 		defaultTransactionIsolation="READ_COMMITTED"           
-		username="faciliouser" 
-		password="zxcv1212"
-		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://34.209.191.151:3306/bms"/> 
+		driverClassName="com.arjuna.ats.jdbc.TransactionalDriver"
+		url="jdbc:arjuna:java:comp/env/jdbc/BmsXA"
 		/>
     
 	<Resource 
@@ -34,10 +32,10 @@
 		auth="Container"
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
-		user="root" 
-		password="" 
+		user="faciliouser" 
+		password="zxcv1212" 
 		explicitUrl="true"
-		url="jdbc:mysql://localhost:3306/bms"
+		url="jdbc:mysql://34.209.191.151:3306/bms"
 		/>
     
     <!-- Transaction Configuration -->

@@ -85,7 +85,7 @@ public class AwsUtil
         {
             return null;
         }
-        System.out.println(prop);
+        
         String value = prop.getProperty(name);
         if (value == null || value.trim().length() == 0) 
         {
@@ -211,7 +211,7 @@ public class AwsUtil
 			{
 				result.append(line);
 			}
-			System.out.println(result.toString());
+		//	System.out.println(result.toString());
     	}
 		catch (Exception e) 
     	{
