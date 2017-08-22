@@ -25,7 +25,7 @@ public class FormLayout {
 		second.add(requesterEmail);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requesterId")) {
+			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester")) {
 				continue;
 			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
