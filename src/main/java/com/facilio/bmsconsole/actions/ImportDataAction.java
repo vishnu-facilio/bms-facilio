@@ -34,9 +34,11 @@ public class ImportDataAction extends ActionSupport {
 			//Here: We are checking whether the field mapping exists for the same column headings..
 			//if already exists.. setting the old fieldMapping to display the mappings in the form set with old mappings 
 			// when users upload similar set of data with same mapping frequently..
+			String checkQuery="select FIELD_MAPPING from ImportProcess where 	FIELD_MAPPING IS NOT NULL AND COLUMN_HEADING=? ORDER BY IMPORT_TIME DESC LIMIT 1";
 			
 			PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery);
 			pstmtCheck.setString(1, getColumnheading());
+			//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
 			System.out.println("The Columnheading "+getColumnheading());
 			ResultSet fieldMapSet= pstmtCheck.executeQuery();
 			if (fieldMapSet.next())
@@ -179,10 +181,7 @@ public class ImportDataAction extends ActionSupport {
 	private long importprocessid=0;
 	private static String INSERTQUERY = "insert into ImportProcess(ORG_USERID,INSTANCE_ID,STATUS,FILEID,COLUMN_HEADING,IMPORT_TIME,IMPORT_TYPE) values (#orguserid#,#module#,1,#fileid#,'#COLUMN_HEADING#',UNIX_TIMESTAMP(),1)";
 
-	private static String UPDATEQUERY = "update  ImportProcess set FIELD_MAPPING='#FIELD_MAPPING#' where IMPORTID_ID=#IMPORTID#";
-	
-	private String checkQuery="select FIELD_MAPPING from ImportProcess where 	COLUMN_HEADING=? limit 1";
-	
+	private static String UPDATEQUERY = "update  ImportProcess set FIELD_MAPPING='#FIELD_MAPPING#' where IMPORTID_ID=#IMPORTID#";	
 
 	public ImportMetaInfo getMetainfo() {
 		return metainfo;
