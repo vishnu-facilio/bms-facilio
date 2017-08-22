@@ -28,8 +28,29 @@ public class ImportDataAction extends ActionSupport {
 		if(getImportprocessid()!=0)
 		{
 			System.out.println("secondtime code"+ this.hashCode());
-
 			metainfo= ImportMetaInfo.getInstance(getImportprocessid());
+			
+			Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();
+			//Here: We are checking whether the field mapping exists for the same column headings..
+			//if already exists.. setting the old fieldMapping to display the mappings in the form set with old mappings 
+			// when users upload similar set of data with same mapping frequently..
+			
+			PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery);
+			pstmtCheck.setString(1, getColumnheading());
+			System.out.println("The Columnheading "+getColumnheading());
+			ResultSet fieldMapSet= pstmtCheck.executeQuery();
+			if (fieldMapSet.next())
+			 {
+				String fieldMapping	= fieldMapSet.getString(1);
+				System.out.println("Obtained from db"+fieldMapping);
+				if(fieldMapping!=null && !fieldMapping.trim().isEmpty())
+				{
+					metainfo.setFieldMapping(metainfo.getFieldMapping(fieldMapping));
+				}
+			 }
+			fieldMapSet.close();
+			pstmtCheck.close();
+			conn.close();
 			return SUCCESS;
 		}
 		else
@@ -41,9 +62,9 @@ public class ImportDataAction extends ActionSupport {
 		try {
 			JSONArray columnheadings = ProcessXLS.getColumnHeadings(fileUpload);
 						
-			setColumnheading(columnheadings.toJSONString());
+			setColumnheading(columnheadings.toJSONString().replaceAll("\"", "\\\""));
 			long fileid = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
-			String  insert = INSERTQUERY.replaceAll("#orguserid#", fs.getUserId()+"").replaceAll("#fileid#", fileid+"").replaceAll("#COLUMN_HEADING#", getColumnheading().replaceAll("\"", "\\\""));
+			String  insert = INSERTQUERY.replaceAll("#orguserid#", fs.getUserId()+"").replaceAll("#fileid#", fileid+"").replaceAll("#COLUMN_HEADING#", getColumnheading());
 
 			System.out.println(""+metainfo.getModule());
 			insert =insert.replaceAll("#module#", String.valueOf(metainfo.getModule().getValue())); // 1 for energy data
@@ -62,6 +83,7 @@ public class ImportDataAction extends ActionSupport {
 			}
 			rs.close();
 			pstmt.close();
+			
 			return upload();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -158,8 +180,10 @@ public class ImportDataAction extends ActionSupport {
 	private static String INSERTQUERY = "insert into ImportProcess(ORG_USERID,INSTANCE_ID,STATUS,FILEID,COLUMN_HEADING,IMPORT_TIME,IMPORT_TYPE) values (#orguserid#,#module#,1,#fileid#,'#COLUMN_HEADING#',UNIX_TIMESTAMP(),1)";
 
 	private static String UPDATEQUERY = "update  ImportProcess set FIELD_MAPPING='#FIELD_MAPPING#' where IMPORTID_ID=#IMPORTID#";
-
 	
+	private String checkQuery="select FIELD_MAPPING from ImportProcess where 	COLUMN_HEADING=? limit 1";
+	
+
 	public ImportMetaInfo getMetainfo() {
 		return metainfo;
 	}

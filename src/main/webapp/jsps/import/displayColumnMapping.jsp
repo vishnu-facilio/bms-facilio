@@ -5,14 +5,10 @@
 <div class="form-container form-content">
 
 
-processid <s:property value="%{metainfo.columnHeadings}" />
-
-
-
 <form id="processImport" name="processImport" onsubmit="return false;" method="post">
 <s:hidden name="metainfo.importprocessid" />
 <s:iterator var="field" value="metainfo.fields" >
-  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{field}']" list="metainfo.columnHeadings" headerKey="-1" headerValue="Select Import field"/></p>
+  <p><s:property/> : <s:select name="metainfo.fieldMapping['%{field}']" list="metainfo.columnHeadings" headerKey="-1" value="metainfo.fieldMapping[#field]" headerValue="Select Import Field"/></p>
 </s:iterator>
 <input type="submit" value="confirm">
 </form>

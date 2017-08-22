@@ -169,7 +169,7 @@ public class ImportMetaInfo
 	public void setFieldMapping(HashMap fieldMapping) {
 		this.fieldMapping = fieldMapping;
 	}
-	public String[] getFieldMapping(String key) {
+	public String[] getFieldValue(String key) {
 
 		return (String[])fieldMapping.get(key);
 	}
@@ -185,10 +185,26 @@ public class ImportMetaInfo
 		{
 			String key =(String) keys.next();
 			String []values = (String [])fieldMapping.get(key);
-		json.put(key, values[0]);
+			json.put(key, values[0]);
 		}
 		
 		return json;
+	}
+	
+	public HashMap getFieldMapping(String jsonString) throws Exception
+	{
+		HashMap <String,String[]> fieldMap = new HashMap();
+		JSONParser parser = new JSONParser();
+		JSONObject json=(JSONObject)parser.parse(jsonString);
+		Iterator keys = json.keySet().iterator();
+		while(keys.hasNext())
+		{
+			String key =(String) keys.next();
+			String values[] = {(String) json.get(key)};
+			fieldMap.put(key, values);
+		}
+		System.out.println("###The Field Map after setting "+fieldMap);
+		return fieldMap;
 	}
 	
 	public static void main(String args[])
