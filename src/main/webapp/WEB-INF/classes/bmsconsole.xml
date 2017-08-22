@@ -818,6 +818,10 @@
 		</action>
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="logout">
 			<result>/jsps/logout.jsp</result>
+			<result name="REDIRECT" type="redirect">
+				<param name="location">${#request.redirUrl}</param>
+				
+			</result>
 		</action>
 		<action name="validateuser" class="com.facilio.bmsconsole.actions.LoginAction" method="validateUser">
 			<result>/jsps/validateLogin.jsp</result>

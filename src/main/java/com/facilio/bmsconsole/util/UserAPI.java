@@ -316,7 +316,7 @@ public class UserAPI {
 				ps2.setLong(1,userId);
 				ps2.setLong(2, context.getOrgId());
 				ps2.setLong(3, System.currentTimeMillis());
-				ps2.setBoolean(4, true);
+				ps2.setBoolean(4, false);
 				ps2.setBoolean(5, true);
 				ps2.setBoolean(6, true);
 				ps2.setLong(7, context.getRoleId());
