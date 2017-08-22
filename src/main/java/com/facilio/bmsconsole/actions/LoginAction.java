@@ -237,14 +237,14 @@ public class LoginAction extends ActionSupport{
 		LoginUtil.eraseUserCookie(httpReq, httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, HOSTNAME);
 		
 		ActionContext.getContext().getSession().remove("USER_INFO");
-		if(httpReq.getRemoteHost().matches(HOSTNAME.substring(1)))
+		if(httpReq.getServerName().matches(HOSTNAME.substring(1)))
 		{
-			System.out.println("redirecting to root domain");
 			
 			return SUCCESS;
 		}
 		else
 		{
+			
 			System.out.println("redirecting to root domain");
 			httpReq.setAttribute("redirUrl",getURL(httpReq,HOSTNAME.substring(1))+"/logout");
 			return "REDIRECT";
