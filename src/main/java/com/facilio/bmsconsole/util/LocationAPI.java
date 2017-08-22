@@ -10,7 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -80,20 +82,24 @@ public class LocationAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Locations (MODULEID,ORGID, NAME, STREET, CITY, STATE, ZIP, COUNTRY, LAT, LNG, CONTACT, PHONE, FAX_PHONE) VALUES (-1,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Locations (MODULEID,ORGID, NAME, STREET, CITY, STATE, ZIP, COUNTRY, LAT, LNG, CONTACT, PHONE, FAX_PHONE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
-			pstmt.setLong(1, locationContext.getOrgId());
-			pstmt.setString(2, locationContext.getName());
-			pstmt.setString(3, locationContext.getStreet());
-			pstmt.setString(4, locationContext.getCity());
-			pstmt.setString(5, locationContext.getState());
-			pstmt.setString(6, locationContext.getZip());
-			pstmt.setString(7, locationContext.getCountry());
-			pstmt.setDouble(8, locationContext.getLat());
-			pstmt.setDouble(9, locationContext.getLng());
-			pstmt.setLong(10, locationContext.getContact());
-			pstmt.setString(11, locationContext.getPhone());
-			pstmt.setString(12, locationContext.getFaxPhone());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			long moduleId = modBean.getModule("location").getModuleId();
+			
+			pstmt.setLong(1, moduleId);
+			pstmt.setLong(2, locationContext.getOrgId());
+			pstmt.setString(3, locationContext.getName());
+			pstmt.setString(4, locationContext.getStreet());
+			pstmt.setString(5, locationContext.getCity());
+			pstmt.setString(6, locationContext.getState());
+			pstmt.setString(7, locationContext.getZip());
+			pstmt.setString(8, locationContext.getCountry());
+			pstmt.setDouble(9, locationContext.getLat());
+			pstmt.setDouble(10, locationContext.getLng());
+			pstmt.setLong(11, locationContext.getContact());
+			pstmt.setString(12, locationContext.getPhone());
+			pstmt.setString(13, locationContext.getFaxPhone());
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add location");
