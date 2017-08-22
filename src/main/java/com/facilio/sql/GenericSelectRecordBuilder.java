@@ -204,6 +204,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		sql.append(" FROM ")
 			.append(tableName);
 		
+		sql.append(joinBuilder.toString());
+		
 		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
 			sql.append(" WHERE ")
 				.append(where.getWhereClause());
@@ -233,8 +235,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		@Override
 		public GenericSelectRecordBuilder on(String condition) {
 			// TODO Auto-generated method stub
-			parentBuilder.joinBuilder.append(condition)
-						.append(" ");
+			parentBuilder.joinBuilder.append("ON ")
+										.append(condition)
+										.append(" ");
 			return parentBuilder;
 		}
 		
