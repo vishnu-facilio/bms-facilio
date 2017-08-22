@@ -62,6 +62,11 @@
 	                        <a href="#roles">Roles</a>
 	                    </li>
 	                </f:hasPermission>
+	                <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+	                    <li>
+	                        <a href="#requester">Requester</a>
+	                    </li>
+	                </f:hasPermission>
                 </ul>
             </li>
             <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
