@@ -44,6 +44,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 			HttpServletRequest request = ServletActionContext.getRequest();
 
 			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
+			boolean isAPI = false;
+			if (idToken == null) {
+				// api requests
+				idToken = request.getHeader("Authorization").replace("Bearer ", "");
+				isAPI = true;
+			}
 
 			CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
 			if (cognitoUser == null) {
@@ -82,7 +88,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			}
 			
-			if (!requestSubdomain.equalsIgnoreCase(userInfo.getSubdomain())) {
+			if (!isAPI && !requestSubdomain.equalsIgnoreCase(userInfo.getSubdomain())) {
 				return "unauthorized";
 			}
 
