@@ -209,7 +209,7 @@ FacilioApp = {
 		$(popup).modal("show");
 		FacilioApp.ajax({
 			method : "get",
-			url : contextPath + "/app/" + moduleLinkName + "/popup",
+			url : contextPath + "/app/setup/" + moduleLinkName + "/popup",
 			done: function(data) {
 				$(popup).find('.modal-body').html(data);
 			}

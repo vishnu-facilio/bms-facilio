@@ -27,7 +27,7 @@ public class GetTicketListCommand implements Command {
 		
 		SelectRecordsBuilder<TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(TicketContext.class)
 														.select(fields)
@@ -35,10 +35,10 @@ public class GetTicketListCommand implements Command {
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.where(criteria.computeWhereClause(), criteria.getComputedValues());
+			builder.andCriteria(criteria);
 		}
 		
-		List<TicketContext> tickets = builder.getAsBean();
+		List<TicketContext> tickets = builder.get();
 		context.put(FacilioConstants.ContextNames.TICKET_LIST, tickets);
 		
 		return false;

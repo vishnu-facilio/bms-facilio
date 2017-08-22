@@ -105,7 +105,7 @@
 									class="form-control select-lookup"
 									name="<s:property value="#field.inputName"/>"
 									placeholder="<s:property value="#field.placeHolder"/>"
-									<s:if test="%{#field.specialType == 'users' || #field.specialType == 'groups' || #field.specialType == 'basespace'}">
+									<s:if test="%{#field.specialType == 'users' || #field.specialType == 'groups' || #field.specialType == 'basespace' || #field.specialType == 'requester'}">
 										data-module-name="<s:property value="#field.specialType"/>"
 									</s:if>
 										data-module-name="<s:property value="#field.lookupModule.name"/>"
@@ -126,6 +126,9 @@
 									</s:elseif>
 									<s:elseif test="%{#field.specialType == 'basespace'}">
 										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('basespace', 'Spaces', '<s:property value="#field.inputName"/>')">
+									</s:elseif>
+									<s:elseif test="%{#field.specialType == 'requester'}">
+										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('requester', 'Requester', '<s:property value="#field.inputName"/>')">
 									</s:elseif>
 									<s:else>
 										<button class="btn btn-default btn-md btn-lookup" data-toggle="tooltip" data-placement="top" title="Lookup using list" type="button" onclick="FacilioApp.lookupDialog('<s:property value="#field.lookupModule.name"/>', '<s:property value="#field.lookupModule.displayName"/>', '<s:property value="#field.inputName"/>')">

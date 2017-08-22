@@ -29,14 +29,14 @@ public class GetZoneCommand implements Command {
 			
 			SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(ZoneContext.class)
 					.select(fields)
-					.where("ID = ?", zoneId)
+					.andCustomWhere("ID = ?", zoneId)
 					.orderBy("ID");
 
-			List<ZoneContext> zones = builder.getAsBean();	
+			List<ZoneContext> zones = builder.get();	
 			if(zones.size() > 0) {
 				ZoneContext zone = zones.get(0);
 				context.put(FacilioConstants.ContextNames.ZONE, zone);

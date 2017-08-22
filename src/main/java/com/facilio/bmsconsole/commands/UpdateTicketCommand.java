@@ -27,10 +27,10 @@ public class UpdateTicketCommand implements Command {
 			
 			UpdateRecordBuilder<TicketContext> builder = new UpdateRecordBuilder<TicketContext>()
 														.moduleName(moduleName)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.connection(conn)
 														.fields(fields)
-														.where("ID = ?", ticket.getId());
+														.andCustomWhere("ID = ?", ticket.getId());
 			builder.update(ticket);
 		}
 		else 

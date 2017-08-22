@@ -29,14 +29,14 @@ public class GetFloorCommand implements Command {
 			
 			SelectRecordsBuilder<FloorContext> builder = new SelectRecordsBuilder<FloorContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(FloorContext.class)
 					.select(fields)
-					.where("ID = ?", floorId)
+					.andCustomWhere("ID = ?", floorId)
 					.orderBy("ID");
 
-			List<FloorContext> floors = builder.getAsBean();	
+			List<FloorContext> floors = builder.get();	
 			if(floors.size() > 0) {
 				FloorContext floor = floors.get(0);
 				context.put(FacilioConstants.ContextNames.FLOOR, floor);

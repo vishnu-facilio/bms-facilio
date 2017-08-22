@@ -31,7 +31,7 @@ public class UpdateEmailSettingCommand implements Command {
 												.connection(((FacilioContext)context).getConnectionWithTransaction())
 												.table("EmailSettings")
 												.fields(fields)
-												.where("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+												.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 		builder.update(emailSettingProps);
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");

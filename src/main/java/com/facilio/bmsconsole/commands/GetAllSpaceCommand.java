@@ -24,13 +24,13 @@ public class GetAllSpaceCommand implements Command{
 		
 		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
 				.connection(conn)
-				.dataTableName(dataTableName)
+				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(SpaceContext.class)
 				.select(fields)
 				.orderBy("ID");
 
-		List<SpaceContext> spaces = builder.getAsBean();
+		List<SpaceContext> spaces = builder.get();
 		context.put(FacilioConstants.ContextNames.SPACE_LIST, spaces);
 		
 		return false;

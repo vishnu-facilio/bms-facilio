@@ -29,18 +29,20 @@ public class ExecuteAllWorkflowsCommand implements Command
 		long moduleId = modBean.getModule("workorder").getModuleId();
 		
 		int eventType = (int) context.get(FacilioConstants.Workflow.EVENT_TYPE);
-		GenericSelectRecordBuilder eventBuilder = new GenericSelectRecordBuilder()
-				.connection(conn)
-				.table("Event")
-				.select(FieldFactory.getEventFields())
-				.where("ORGID = ? AND MODULEID = ? AND EVENT_TYPE = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), moduleId, eventType);
-		List<Map<String, Object>> events = eventBuilder.get();
+//		GenericSelectRecordBuilder eventBuilder = new GenericSelectRecordBuilder()
+//				.connection(conn)
+//				.table("Event")
+//				.select(FieldFactory.getEventFields())
+//				.where("ORGID = ? AND MODULEID = ? AND EVENT_TYPE = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), moduleId, eventType);
+//		List<Map<String, Object>> events = eventBuilder.get();
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.connection(conn)
 				.table("Workflow_Rule")
 				.select(FieldFactory.getWorkflowRuleFields())
-				.where("ORGID = ? AND EVENT_ID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), events.get(0).get("eventId"))
+				.innerJoin("Event")
+				.on("Workflow_Rule.EVENT_ID = Event.EVENT_ID")
+				.andCustomWhere("Workflow_Rule.ORGID = ? AND Event.MODULEID = ? AND Event.EVENT_TYPE = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), moduleId, eventType)
 				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> workflowRules = ruleBuilder.get();
 		
@@ -55,7 +57,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 						.connection(conn)
 						.table("Workflow_Rule_Action")
 						.select(FieldFactory.getWorkflowRuleActionFields())
-						.where("WORKFLOW_RULE_ID = ?", workflowRuleId);
+						.andCustomWhere("WORKFLOW_RULE_ID = ?", workflowRuleId);
 				List<Map<String, Object>> workflowRuleActions = ruleActionBuilder.get();
 				
 				for(Map<String, Object> workflowRuleAction : workflowRuleActions)
@@ -65,7 +67,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							.connection(conn)
 							.table("Action")
 							.select(FieldFactory.getActionFields())
-							.where("ACTION_ID = ?", actionId);
+							.andCustomWhere("ACTION_ID = ?", actionId);
 					List<Map<String, Object>> actions = actionBuilder.get();
 					
 					int actionType = Integer.parseInt(String.valueOf(actions.get(0).get("actionType")));

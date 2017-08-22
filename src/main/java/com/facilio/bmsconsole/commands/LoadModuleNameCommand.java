@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -20,7 +19,6 @@ public class LoadModuleNameCommand implements Command {
 		
 		if(moduleName != null && !moduleName.isEmpty()) {
 			
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			FacilioModule moduleObj = modBean.getModule(moduleName);

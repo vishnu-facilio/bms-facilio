@@ -15,10 +15,10 @@ public enum NumberOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
-					return field.getColumnName()+" IN ("+value+")";
+					return field.getModuleTableName()+"."+field.getColumnName()+" IN ("+value+")";
 				}
 				else {
-					return field.getColumnName()+" = "+value;
+					return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
 				}
 			}
 			return null;
@@ -31,8 +31,12 @@ public enum NumberOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName());
 				if(value.contains(",")) {
 					builder.append(" NOT IN (")
@@ -59,7 +63,7 @@ public enum NumberOperators implements Operator<String> {
 	public String getWhereClause(FacilioField field, String value) {
 		// TODO Auto-generated method stub
 		if(field != null && value != null && !value.isEmpty()) {
-			return field.getColumnName()+operator+value;
+			return field.getModuleTableName()+"."+field.getColumnName()+operator+value;
 		}
 		return null;
 	};

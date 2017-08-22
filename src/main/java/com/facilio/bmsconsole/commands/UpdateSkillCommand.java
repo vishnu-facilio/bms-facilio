@@ -17,19 +17,21 @@ public class UpdateSkillCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
-		SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
+				SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
 		
 		if(skill != null) 
 		{
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			UpdateRecordBuilder<SkillContext> builder = new UpdateRecordBuilder<SkillContext>()
 														.moduleName(moduleName)
-														.dataTableName(dataTableName)
-														.connection(conn);
+														.table(dataTableName)
+														.fields(fields)
+														.connection(conn)
+														.andCustomWhere("ID = ?", skill.getId());
 			builder.update(skill);
 		}
 		else 

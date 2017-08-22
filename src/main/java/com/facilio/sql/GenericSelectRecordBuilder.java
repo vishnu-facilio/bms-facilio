@@ -9,46 +9,126 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.impl.jam.mutable.MSourcePosition;
+
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 
-public class GenericSelectRecordBuilder {
+public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> selectFields;
 	private String tableName;
 	private Connection conn = null;
 	private WhereBuilder where = new WhereBuilder();
 	private String orderBy;
 	private int limit;
+	private StringBuilder joinBuilder = new StringBuilder();
 	
+	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
 		this.selectFields = fields;
 		return this;
 	}
 	
+	@Override
 	public GenericSelectRecordBuilder table(String tableName) {
 		this.tableName = tableName;
 		return this;
 	}
 	
+	@Override
 	public GenericSelectRecordBuilder connection(Connection conn) {
 		this.conn = conn;
 		return this;
 	}
 	
-	public GenericSelectRecordBuilder where(String whereCondition, Object... values) {
-		this.where.where(whereCondition, values);
+	@Override
+	public GenericJoinBuilder innerJoin(String tableName) {
+		joinBuilder.append(" INNER JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder leftJoin(String tableName) {
+		joinBuilder.append(" LEFT JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder rightJoin(String tableName) {
+		joinBuilder.append(" RIGHT JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder fullJoin(String tableName) {
+		joinBuilder.append(" FULL JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericSelectRecordBuilder andCustomWhere(String whereCondition, Object... values) {
+		this.where.andCustomWhere(whereCondition, values);
 		return this;
 	}
 	
+	@Override
+	public GenericSelectRecordBuilder orCustomWhere(String whereCondition, Object... values) {
+		// TODO Auto-generated method stub
+		this.where.orCustomWhere(whereCondition, values);
+		return this;
+	}
+
+	@Override
+	public GenericSelectRecordBuilder andCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.andCondition(condition);
+		return this;
+	}
+
+	@Override
+	public GenericSelectRecordBuilder orCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.orCondition(condition);
+		return this;
+	}
+
+	@Override
+	public GenericSelectRecordBuilder andCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.andCriteria(criteria);
+		return this;
+	}
+
+	@Override
+	public GenericSelectRecordBuilder orCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.orCriteria(criteria);
+		return this;
+	}
+	
+	@Override
 	public GenericSelectRecordBuilder orderBy(String orderBy) {
 		this.orderBy = orderBy;
 		return this;
 	}
 	
+	@Override
 	public GenericSelectRecordBuilder limit(int limit) {
 		this.limit = limit;
 		return this;
 	}
+	
 	
 	private void checkForNull(boolean checkBean) {
 		if(tableName == null || tableName.isEmpty()) {
@@ -63,7 +143,8 @@ public class GenericSelectRecordBuilder {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 	}
-	
+
+	@Override
 	public List<Map<String, Object>> get() throws Exception {
 		checkForNull(false);
 		PreparedStatement pstmt = null;
@@ -123,9 +204,9 @@ public class GenericSelectRecordBuilder {
 		sql.append(" FROM ")
 			.append(tableName);
 		
-		if(where.getCondition() != null && !where.getCondition().isEmpty()) {
+		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
 			sql.append(" WHERE ")
-				.append(where.getCondition());
+				.append(where.getWhereClause());
 		}
 		
 		if(orderBy != null && !orderBy.isEmpty()) {
@@ -139,5 +220,23 @@ public class GenericSelectRecordBuilder {
 		}
 		
 		return sql.toString();
+	}
+	
+	public static class GenericJoinBuilder implements JoinBuilderIfc<Map<String, Object>> {
+
+		private GenericSelectRecordBuilder parentBuilder;
+		private GenericJoinBuilder(GenericSelectRecordBuilder parentBuilder) {
+			// TODO Auto-generated constructor stub
+			this.parentBuilder = parentBuilder;
+		}
+		
+		@Override
+		public GenericSelectRecordBuilder on(String condition) {
+			// TODO Auto-generated method stub
+			parentBuilder.joinBuilder.append(condition)
+						.append(" ");
+			return parentBuilder;
+		}
+		
 	}
 }

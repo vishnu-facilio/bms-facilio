@@ -24,13 +24,13 @@ public class GetAllCampusCommand implements Command{
 		
 		SelectRecordsBuilder<CampusContext> builder = new SelectRecordsBuilder<CampusContext>()
 				.connection(conn)
-				.dataTableName(dataTableName)
+				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(CampusContext.class)
 				.select(fields)
 				.orderBy("ID");
 
-		List<CampusContext> campuses = builder.getAsBean();
+		List<CampusContext> campuses = builder.get();
 		context.put(FacilioConstants.ContextNames.CAMPUS_LIST, campuses);
 		
 		return false;

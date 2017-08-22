@@ -29,14 +29,14 @@ public class GetTicketCommand implements Command {
 			
 			SelectRecordsBuilder<TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
 																.connection(conn)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.moduleName(moduleName)
 																.beanClass(TicketContext.class)
 																.select(fields)
-																.where("ID = ?", ticketId)
+																.andCustomWhere("ID = ?", ticketId)
 																.orderBy("ID");
 			
-			List<TicketContext> tickets = builder.getAsBean();
+			List<TicketContext> tickets = builder.get();
 			if(tickets.size() > 0) {
 				TicketContext ticket = tickets.get(0);
 				

@@ -65,14 +65,14 @@ public class WorkOrderAPI {
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 				.connection(conn)
-				.dataTableName("Tasks")
+				.table("Tasks")
 				.moduleName(FacilioConstants.ContextNames.TASK)
 				.beanClass(TaskContext.class)
 				.select(fields)
-				.where("PARENT_WORK_ORDER_ID = ?", workOrderId)
+				.andCustomWhere("PARENT_WORK_ORDER_ID = ?", workOrderId)
 				.orderBy("ID");
 
-		List<TaskContext> tasks = builder.getAsBean();	
+		List<TaskContext> tasks = builder.get();	
 		return tasks;
 	}
 	

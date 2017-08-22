@@ -15,8 +15,8 @@
 			    <!-- textarea name="skill.description" value= class="form-control" placeholder="Eg. AHU Cleaning and Reading Maintanence"></textarea -->
 			</div>
 			<div class="form-group">
-       		 	 	<s:checkbox class="form-control" name="skill.active" value="%{skill.active}" />
-       		 	 	<!--  input type="checkbox" value="%{skill.active} name="skill.active" id="active" -->
+       		 	 	<s:checkbox name="skill.active" value="%{skill.active}" />
+       		 	 	<!-- input type="checkbox" value="%{skill.active} name="skill.active" id="isActive" -->
        		 	 	<label>Is Active Skill ?</label>
 			</div>
 		</div>

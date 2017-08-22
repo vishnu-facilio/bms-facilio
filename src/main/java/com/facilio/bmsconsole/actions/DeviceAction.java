@@ -265,7 +265,7 @@ public class DeviceAction extends ActionSupport
 		} 
 		catch (Exception e) 
 		{
-			logger.log(Level.SEVERE, "Exception while showing device data" +e.getMessage(), e);
+			//logger.log(Level.SEVERE, "Exception while showing device data" +e.getMessage(), e);
 		}
 	}
 	

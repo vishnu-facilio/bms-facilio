@@ -27,14 +27,14 @@ public class GetSkillCommand implements Command {
 			
 			SelectRecordsBuilder<SkillContext> builder = new SelectRecordsBuilder<SkillContext>()
 					.connection(conn)
-					.dataTableName(dataTableName)
+					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(SkillContext.class)
 					.select(fields)
-					.where("ID = ?", skillId)
+					.andCustomWhere("ID = ?", skillId)
 					.orderBy("ID");
 
-			List<SkillContext> skills = builder.getAsBean();	
+			List<SkillContext> skills = builder.get();	
 			if(skills.size() > 0) {
 				SkillContext skill = skills.get(0);
 				context.put(FacilioConstants.ContextNames.SKILL, skill);

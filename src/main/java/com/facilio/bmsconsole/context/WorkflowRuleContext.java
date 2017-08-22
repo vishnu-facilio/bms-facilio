@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
 
-public class WorkflowRuleContext extends FacilioContext {
+public class WorkflowRuleContext {
 	
 	private long orgId = 0;
 	public long getOrgId() {

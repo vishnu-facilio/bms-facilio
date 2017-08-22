@@ -29,14 +29,14 @@ public class GetWorkOrderCommand implements Command {
 			
 			SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 																.connection(conn)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.moduleName(moduleName)
 																.beanClass(WorkOrderContext.class)
 																.select(fields)
-																.where("ID = ?", workOrderId)
+																.andCustomWhere("ID = ?", workOrderId)
 																.orderBy("ID");
 			
-			List<WorkOrderContext> workOrders = builder.getAsBean();
+			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {
 				WorkOrderContext workOrder = workOrders.get(0);
 				

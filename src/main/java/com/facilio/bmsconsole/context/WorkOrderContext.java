@@ -14,11 +14,11 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		this.ticket = ticket;
 	}
 	
-	private String requester;
-	public String getRequester() {
+	private RequesterContext requester;
+	public RequesterContext getRequester() {
 		return requester;
 	}
-	public void setRequester(String requester) {
+	public void setRequester(RequesterContext requester) {
 		this.requester = requester;
 	}
 	

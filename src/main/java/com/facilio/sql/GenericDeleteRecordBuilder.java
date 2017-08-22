@@ -20,7 +20,7 @@ public class GenericDeleteRecordBuilder {
 	}
 	
 	public GenericDeleteRecordBuilder where(String whereCondition, Object... values) {
-		this.where.where(whereCondition, values);
+		this.where.andCustomWhere(whereCondition, values);
 		return this;
 	}
 	
@@ -65,7 +65,7 @@ public class GenericDeleteRecordBuilder {
 		StringBuilder sql = new StringBuilder("DELETE FROM ");
 		sql.append(tableName)
 			.append(" WHERE ")
-			.append(where.getCondition());
+			.append(where.getWhereClause());
 		
 		return sql.toString();
 	}

@@ -74,6 +74,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
+		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		

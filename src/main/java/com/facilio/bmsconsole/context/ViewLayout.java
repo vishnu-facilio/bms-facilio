@@ -60,7 +60,7 @@ public class ViewLayout {
 	public static ViewLayout getViewWorkOrderLayout()
 	{
 		ViewLayout viewLayout = getViewTicketLayout();
-		viewLayout.addColumn(new Column("Requester", "requester", ColumnType.TEXT));
+		viewLayout.addColumn(new Column("Requester", "requester", "email", ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}

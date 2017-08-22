@@ -20,12 +20,16 @@ public class LookupSpecialTypeUtil {
 		return FacilioConstants.ContextNames.USERS.equals(specialType)
 				|| FacilioConstants.ContextNames.GROUPS.equals(specialType)
 				|| FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)
+				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
 				;
 	}
 	
-	public static Map<Long, String> getPickList(String specialType) throws SQLException {
+	public static Map<Long, String> getPickList(String specialType) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
+		}
+		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			return RequesterAPI.getAllRequesters(OrgInfo.getCurrentOrgInfo().getOrgid());
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
@@ -85,6 +89,9 @@ public class LookupSpecialTypeUtil {
 	public static Object getLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			return UserAPI.getUserFromOrgUserId(id);
+		}
+		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			return RequesterAPI.getRequesterFromId(id);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return GroupAPI.getGroup(id);

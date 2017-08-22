@@ -8,17 +8,24 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
+import com.facilio.sql.JoinBuilderIfc;
+import com.facilio.sql.SelectBuilderIfc;
+import com.facilio.sql.WhereBuilder;
 
-public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
+public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
 	private static final int LEVEL = 2;
 	
-	private String dataTableName;
+	private String tableName;
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private List<FacilioField> selectFields;
@@ -27,8 +34,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	private ModuleBean modBean;
 	private String moduleName;
 	private long moduleId = -1;
-	private String where;
-	private Object[] whereValues;
+	private WhereBuilder where = new WhereBuilder();
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -39,9 +45,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		this.level = level;
 	}
 	
-	public SelectRecordsBuilder<E> dataTableName(String dataTableName) {
-		this.dataTableName = dataTableName;
-		builder.table(dataTableName);
+	@Override
+	public SelectRecordsBuilder<E> table(String tableName) {
+		this.tableName = tableName;
+		builder.table(tableName);
 		return this;
 	}
 	
@@ -49,29 +56,88 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		this.beanClass = beanClass;
 		return this;
 	}
-	
+
+	@Override
 	public SelectRecordsBuilder<E> select(List<FacilioField> selectFields) {
 		this.selectFields = selectFields;
 		return this;
 	}
-	
+
+	@Override
 	public SelectRecordsBuilder<E> connection(Connection conn) {
 		this.conn = conn;
 		builder.connection(conn);
 		return this;
 	}
 	
-	public SelectRecordsBuilder<E> where(String where, Object... values) {
-		this.where = where;
-		this.whereValues = values;
+	@Override
+	public JoinRecordBuilder<E> innerJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.innerJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> leftJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.leftJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> rightJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.rightJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> fullJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.fullJoin(tableName));
+	}
+	
+	@Override
+	public SelectRecordsBuilder<E> andCustomWhere(String where, Object... values) {
+		this.where.andCustomWhere(where, values);
 		return this;
 	}
 	
+	@Override
+	public SelectRecordsBuilder<E> orCustomWhere(String whereCondition, Object... values) {
+		// TODO Auto-generated method stub
+		this.where.orCustomWhere(whereCondition, values);
+		return this;
+	}
+
+	@Override
+	public SelectRecordsBuilder<E> andCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.andCondition(condition);
+		return this;
+	}
+
+	@Override
+	public SelectRecordsBuilder<E> orCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.orCondition(condition);
+		return this;
+	}
+
+	@Override
+	public SelectRecordsBuilder<E> andCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.andCriteria(criteria);
+		return this;
+	}
+
+	@Override
+	public SelectRecordsBuilder<E> orCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.orCriteria(criteria);
+		return this;
+	}
+
+	@Override
 	public SelectRecordsBuilder<E> orderBy(String orderBy) {
 		builder.orderBy(orderBy);
 		return this;
 	}
-	
+
+	@Override
 	public SelectRecordsBuilder<E> limit(int limit) {
 		builder.limit(limit);
 		return this;
@@ -88,8 +154,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 		}
 		return this.modBean;
 	}
-	
-	public List<E> getAsBean() throws Exception {
+
+	@Override
+	public List<E> get() throws Exception {
 		checkForNull(true);
 		List<Map<String, Object>> propList = getAsJustProps();
 		
@@ -150,35 +217,28 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 	}
 	
 	private List<Map<String, Object>> getAsJustProps() throws Exception {
-		selectFields.add(FieldFactory.getOrgIdField(dataTableName));
-		selectFields.add(FieldFactory.getModuleIdField(dataTableName));
-		selectFields.add(FieldFactory.getIdField(dataTableName));
+		selectFields.add(FieldFactory.getOrgIdField(tableName));
+		selectFields.add(FieldFactory.getModuleIdField(tableName));
+		selectFields.add(FieldFactory.getIdField(tableName));
 		builder.select(selectFields);
 		
-		StringBuilder whereCondition = new StringBuilder(dataTableName);
-		whereCondition.append(".ORGID = ? AND ")
-						.append(dataTableName)
-						.append(".MODULEID = ?");
-		if(where != null && !where.isEmpty()) {
-			whereCondition.append(" AND ")
-							.append(where);
-		}
+		WhereBuilder whereCondition = new WhereBuilder();
 		
-		Object[] whereVals = null;
-		if(whereValues != null) {
-			whereVals = new Object[whereValues.length+2];
-			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
-			whereVals[1] = getModuleId();
-			for(int i=0; i<whereValues.length; i++) {
-				whereVals[i+2] = whereValues[i];
-			}
-		}
-		else {
-			whereVals = new Object[2];
-			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
-			whereVals[1] = getModuleId();
-		}
-		builder.where(whereCondition.toString(), whereVals);
+		Condition orgCondition = new Condition();
+		orgCondition.setField(FieldFactory.getOrgIdField(tableName));
+		orgCondition.setOperator(NumberOperators.EQUALS);
+		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		whereCondition.andCondition(orgCondition);
+		
+		Condition moduleCondition = new Condition();
+		moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
+		moduleCondition.setOperator(NumberOperators.EQUALS);
+		moduleCondition.setValue(String.valueOf(getModuleId()));
+		whereCondition.andCondition(moduleCondition);
+		
+		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		
+		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		return builder.get();
 	}
 	
@@ -200,12 +260,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 						List<FacilioField> lookupBeanFields = getModuleBean().getAllFields(lookupField.getLookupModule().getName());
 						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
 																							.connection(conn)
-																							.dataTableName(lookupField.getLookupModule().getTableName())
+																							.table(lookupField.getLookupModule().getTableName())
 																							.moduleName(lookupField.getLookupModule().getName())
 																							.beanClass(moduleClass)
 																							.select(lookupBeanFields)
-																							.where("ID = ?", id);
-						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.getAsBean();
+																							.andCustomWhere("ID = ?", id);
+						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
 						if(records != null && records.size() > 0) {
 							return records.get(0);
 						}
@@ -234,7 +294,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 			throw new IllegalArgumentException("Module Name cannot be empty");
 		}
 		
-		if(dataTableName == null || dataTableName.isEmpty()) {
+		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Data Table Name cannot be empty");
 		}
 		
@@ -264,5 +324,24 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> {
 			}
 		}
 		return this.moduleId;
+	}
+	
+	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<E> {
+		private SelectRecordsBuilder<E> parentBuilder;
+		private GenericJoinBuilder joinBuilder;
+		
+		private JoinRecordBuilder(SelectRecordsBuilder<E> parentBuilder, GenericJoinBuilder joinBuilder) {
+			this.parentBuilder = parentBuilder;
+			this.joinBuilder = joinBuilder;
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public SelectRecordsBuilder<E> on(String condition) {
+			// TODO Auto-generated method stub
+			joinBuilder.on(condition);
+			return parentBuilder;
+		}
+		
 	}
 }

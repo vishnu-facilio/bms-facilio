@@ -41,6 +41,7 @@ public class ViewFactory {
 		statusTypeField.setName("typeCode");
 		statusTypeField.setColumnName("STATUS_TYPE");
 		statusTypeField.setDataType(FieldType.NUMBER);
+		statusTypeField.setModuleTableName("TicketStatus");
 		
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
@@ -68,6 +69,7 @@ public class ViewFactory {
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
 		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModuleTableName("Tickets");
 		statusField.setLookupModule(module);
 		
 		Condition ticketOpen = new Condition();
@@ -93,7 +95,7 @@ public class ViewFactory {
 		FacilioView view = getAllOpenTickets();
 		view.setName("myopentickets");
 		view.setDisplayName("My Open Tickets");
-		view.getCriteria().addAndCondition(getMyUserCondition());
+		view.getCriteria().addAndCondition(getMyUserCondition("Tickets"));
 		return view;
 	}
 	
@@ -102,6 +104,7 @@ public class ViewFactory {
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
+		dueField.setModuleTableName("Tickets");
 		
 		Condition overdue = new Condition();
 		overdue.setField(dueField);
@@ -125,13 +128,13 @@ public class ViewFactory {
 		FacilioView view = getAllOverdueTickets();
 		view.setName("myoverduetickets");
 		view.setDisplayName("My Overdue Tickets");
-		view.getCriteria().addAndCondition(getMyUserCondition());
+		view.getCriteria().addAndCondition(getMyUserCondition("Tickets"));
 		return view;
 	}
 	
 	private static FacilioView getMyTickets() {
 		Map<Integer, Condition> conditions = new HashMap<>();
-		conditions.put(1, getMyUserCondition());
+		conditions.put(1, getMyUserCondition("Tickets"));
 		
 		Criteria criteria = new Criteria();
 		criteria.setConditions(conditions);
@@ -146,7 +149,7 @@ public class ViewFactory {
 	
 	private static FacilioView getMyTasks() {
 		Map<Integer, Condition> conditions = new HashMap<>();
-		conditions.put(1, getMyUserCondition());
+		conditions.put(1, getMyUserCondition("Tasks"));
 		
 		Criteria criteria = new Criteria();
 		criteria.setConditions(conditions);
@@ -159,11 +162,12 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 		
-	private static Condition getMyUserCondition() {
+	private static Condition getMyUserCondition(String moduleTableName) {
 		FacilioField userField = new FacilioField();
 		userField.setName("assignedToId");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
+		userField.setModuleTableName(moduleTableName);
 		
 		Condition myUserCondition = new Condition();
 		myUserCondition.setField(userField);

@@ -25,7 +25,7 @@ public class GetSupportEmailCommand implements Command {
 					.connection(((FacilioContext) context).getConnectionWithTransaction())
 					.table("SupportEmails")
 					.select(fields)
-					.where("ID = ?", supportEmailId);
+					.andCustomWhere("ID = ?", supportEmailId);
 			
 			List<Map<String, Object>> emailList = builder.get();
 			if(emailList != null && emailList.size() > 0) {

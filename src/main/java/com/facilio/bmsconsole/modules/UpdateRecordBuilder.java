@@ -8,20 +8,24 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.sql.UpdateBuilderIfc;
+import com.facilio.sql.WhereBuilder;
 
-public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
+public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
 	
 	private GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
 	private String moduleName;
 	private long moduleId = -1;
-	private String dataTableName;
+	private String tableName;
 	private Connection conn;
 	private List<FacilioField> fields = new ArrayList<>();
-	private String where;
-	private Object[] whereValues;
+	private WhereBuilder where = new WhereBuilder();
 	
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -32,9 +36,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		return this;
 	}
 	
-	public UpdateRecordBuilder<E> dataTableName(String dataTableName) {
-		this.dataTableName = dataTableName;
-		builder.table(dataTableName);
+	@Override
+	public UpdateRecordBuilder<E> table(String tableName) {
+		this.tableName = tableName;
+		builder.table(tableName);
 		return this;
 	}
 	
@@ -43,13 +48,49 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		builder.connection(conn);
 		return this;
 	}
-	
-	public UpdateRecordBuilder<E> where(String where, Object... values) {
-		this.where = where;
-		this.whereValues = values;
+
+	@Override
+	public UpdateRecordBuilder<E> andCustomWhere(String where, Object... values) {
+		this.where.andCustomWhere(where, values);
 		return this;
 	}
 	
+	@Override
+	public UpdateRecordBuilder<E> orCustomWhere(String whereCondition, Object... values) {
+		// TODO Auto-generated method stub
+		this.where.orCustomWhere(whereCondition, values);
+		return this;
+	}
+
+	@Override
+	public UpdateRecordBuilder<E> andCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.andCondition(condition);
+		return this;
+	}
+
+	@Override
+	public UpdateRecordBuilder<E> orCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.orCondition(condition);
+		return this;
+	}
+
+	@Override
+	public UpdateRecordBuilder<E> andCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.andCriteria(criteria);
+		return this;
+	}
+
+	@Override
+	public UpdateRecordBuilder<E> orCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.orCriteria(criteria);
+		return this;
+	}
+
+	@Override
 	public UpdateRecordBuilder<E> fields(List<FacilioField> fields) {
 		this.fields = fields;
 		return this;
@@ -67,38 +108,32 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		}
 		return this.moduleId;
 	}
-	
+
+	@Override
 	public int update(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		checkForNull();
-		fields.add(FieldFactory.getOrgIdField(dataTableName));
-		fields.add(FieldFactory.getModuleIdField(dataTableName));
-		fields.add(FieldFactory.getIdField(dataTableName));
+		fields.add(FieldFactory.getOrgIdField(tableName));
+		fields.add(FieldFactory.getModuleIdField(tableName));
+		fields.add(FieldFactory.getIdField(tableName));
 		builder.fields(fields);
 		
-		StringBuilder whereCondition = new StringBuilder(dataTableName);
-		whereCondition.append(".ORGID = ? AND ")
-						.append(dataTableName)
-						.append(".MODULEID = ?");
-		if(where != null && !where.isEmpty()) {
-			whereCondition.append(" AND ")
-							.append(where);
-		}
+		WhereBuilder whereCondition = new WhereBuilder();
 		
-		Object[] whereVals = null;
-		if(whereValues != null) {
-			whereVals = new Object[whereValues.length+2];
-			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
-			whereVals[1] = getModuleId();
-			for(int i=0; i<whereValues.length; i++) {
-				whereVals[i+2] = whereValues[i];
-			}
-		}
-		else {
-			whereVals = new Object[2];
-			whereVals[0] = OrgInfo.getCurrentOrgInfo().getOrgid();
-			whereVals[1] = getModuleId();
-		}
-		builder.where(whereCondition.toString(), whereVals);
+		Condition orgCondition = new Condition();
+		orgCondition.setField(FieldFactory.getOrgIdField(tableName));
+		orgCondition.setOperator(NumberOperators.EQUALS);
+		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		whereCondition.andCondition(orgCondition);
+		
+		Condition moduleCondition = new Condition();
+		moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
+		moduleCondition.setOperator(NumberOperators.EQUALS);
+		moduleCondition.setValue(String.valueOf(getModuleId()));
+		whereCondition.andCondition(moduleCondition);
+		
+		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		
+		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		
 		Map<String, Object> moduleProps = FieldUtil.<E>getAsProperties(bean);
 		moduleProps.remove("orgId");
@@ -114,7 +149,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> {
 			throw new IllegalArgumentException("Module Name cannot be empty");
 		}
 		
-		if(dataTableName == null || dataTableName.isEmpty()) {
+		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Data Table Name cannot be empty");
 		}
 		

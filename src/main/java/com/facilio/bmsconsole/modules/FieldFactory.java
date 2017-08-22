@@ -276,4 +276,55 @@ public class FieldFactory {
 		
 		return fields;
 	}
+
+	public static List<FacilioField> getRequesterFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		String tableName = "Requester";
+		
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField field1 = new FacilioField();
+		field1.setName("requesterId");
+		field1.setDataType(FieldType.NUMBER);
+		field1.setColumnName("REQUESTER_ID");
+		field1.setModuleTableName(tableName);
+		fields.add(field1);
+		
+		FacilioField field2 = new FacilioField();
+		field2.setName("name");
+		field2.setDataType(FieldType.STRING);
+		field2.setColumnName("NAME");
+		field2.setModuleTableName(tableName);
+		fields.add(field2);
+		
+		FacilioField field3 = new FacilioField();
+		field3.setName("cognitoId");
+		field3.setDataType(FieldType.STRING);
+		field3.setColumnName("COGNITO_ID");
+		field3.setModuleTableName(tableName);
+		fields.add(field3);
+		
+		LookupField field4 = new LookupField();
+		field4.setName("userVerified");
+		field4.setDataType(FieldType.BOOLEAN);
+		field4.setColumnName("USER_VERIFIED");
+		field4.setModuleTableName(tableName);
+		fields.add(field4);
+		
+		LookupField field5 = new LookupField();
+		field5.setName("email");
+		field5.setDataType(FieldType.STRING);
+		field5.setColumnName("EMAIL");
+		field5.setModuleTableName(tableName);
+		fields.add(field5);
+		
+		LookupField field6 = new LookupField();
+		field6.setName("portalAccess");
+		field6.setDataType(FieldType.BOOLEAN);
+		field6.setColumnName("PORTAL_ACCESS");
+		field6.setModuleTableName(tableName);
+		fields.add(field6);
+		
+		return fields;
+	}
 }	

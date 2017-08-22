@@ -23,12 +23,12 @@ public class GetTicketStatusListCommand implements Command {
 		
 		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
 														.connection(conn)
-														.dataTableName(dataTableName)
+														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(TicketStatusContext.class)
 														.select(fields)
 														.orderBy("ID");
-		List<TicketStatusContext> statuses = builder.getAsBean();
+		List<TicketStatusContext> statuses = builder.get();
 		context.put(FacilioConstants.ContextNames.TICKET_STATUS_LIST, statuses);
 		
 		return false;

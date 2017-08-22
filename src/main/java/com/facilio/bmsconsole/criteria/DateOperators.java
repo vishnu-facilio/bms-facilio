@@ -14,7 +14,7 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return field.getColumnName()+" = "+value;
+				return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
 			}
 			return null;
 		}
@@ -27,8 +27,12 @@ public enum DateOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
+						.append(field.getModuleTableName())
+						.append(".")
 						.append(field.getColumnName())
 						.append(" != ")
 						.append(value.trim())
@@ -43,7 +47,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getColumnName(), "<", value);
+			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), "<", value);
 		}
 	},
 	
@@ -51,7 +55,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getColumnName(), ">", value);
+			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), ">", value);
 		}
 	},
 	
@@ -59,7 +63,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getColumnName(), value, false);
+			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, false);
 		}
 	},
 	
@@ -67,7 +71,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getColumnName(), value, true);
+			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, true);
 		}
 	},
 	
@@ -76,7 +80,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -92,7 +106,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))");
+				return builder.toString();
 			}
 			return null;	
 		}
@@ -109,7 +133,13 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -126,7 +156,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(CURDATE()))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(CURDATE()))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -142,7 +182,13 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(CURDATE())";
+				StringBuilder builder = new StringBuilder();
+				builder.append("CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(CURDATE())");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -158,7 +204,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -174,7 +230,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -190,7 +256,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -206,7 +282,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -222,7 +308,18 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))"; //Condition is >= first day of this week and < first day of next week
+				StringBuilder builder = new StringBuilder();
+				//Condition is >= first day of this week and < first day of next week
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))");
+				return builder.toString(); 
 			}
 			return null;
 		}
@@ -238,7 +335,17 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "(CEIL("+field.getColumnName()+"/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL("+field.getColumnName()+"/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))";
+				StringBuilder builder = new StringBuilder();
+				builder.append("(CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))");
+				return builder.toString();
 			}
 			return null;
 		}
@@ -254,7 +361,14 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "CEIL((UNIX_TIMESTAMP(CURDATE())-("+field.getColumnName()+"/1000))/(24*3600)) "+value;
+				StringBuilder builder = new StringBuilder();
+				builder.append("CEIL((UNIX_TIMESTAMP(CURDATE())-(")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000))/(24*3600)) = ")
+						.append(value);
+				return builder.toString();
 			}
 			return null;
 		}
@@ -265,7 +379,14 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return "FLOOR((("+field.getColumnName()+"/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) "+value;
+				StringBuilder builder = new StringBuilder();
+				builder.append("FLOOR(((")
+						.append(field.getModuleTableName())
+						.append(".")
+						.append(field.getColumnName())
+						.append("/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) = ")
+						.append(value);
+				return builder.toString();
 			}
 			return null;
 		}

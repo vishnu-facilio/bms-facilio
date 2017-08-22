@@ -56,7 +56,7 @@ public class Criteria {
 		return builder.toString();
 	}
 	
-	public Object[] getComputedValues() {
+	public List<Object> getComputedValues() {
 		List<Object> list = new ArrayList<>();
 		for(Condition condition : conditions.values()) {
 			List<Object> computedValues = condition.getComputedValues();
@@ -66,7 +66,7 @@ public class Criteria {
 				}
 			}
 		}
-		return list.toArray();
+		return list;
 	}
 	
 	public void addAndCondition(Condition condition) {

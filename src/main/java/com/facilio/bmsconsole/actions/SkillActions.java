@@ -166,6 +166,17 @@ public class SkillActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteSkill() throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		//context.put(FacilioConstants.ContextNames.SKILL, getSkill());
+		context.put(FacilioConstants.ContextNames.ID, getSkillId());
+		Command deleteSkill = FacilioChainFactory.getDeleteSkillCommand();
+		deleteSkill.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private SkillContext skill;
 
 	public SkillContext getSkill() {
