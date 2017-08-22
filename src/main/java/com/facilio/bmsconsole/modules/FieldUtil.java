@@ -113,7 +113,7 @@ public class FieldUtil {
 		if(bean != null) 
 		{
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
+			//mapper.setSerializationInclusion(Include.NON_DEFAULT);
 			properties = mapper.convertValue(bean, Map.class);
 			
 			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
