@@ -10,8 +10,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.context.GroupMemberContext;
+import com.facilio.bmsconsole.context.OrgContext;
+import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -185,4 +192,157 @@ public class OrgApi {
 		
 		return null;
 	}
+	
+public static Object updateOrgsettings (OrgContext context, Connection conn) throws Exception{
+	
+
+	boolean isLocalConn = false;
+	PreparedStatement psmt = null;
+	try {
+		if (conn == null) {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			isLocalConn = true;
+		}
+
+		String insertquery = "update Organizations set PHONE=? , MOBILE=? ,ORGNAME=?,FAX=?,STREET=?,CITY=?,STATE=?,ZIP=?,COUNTRY=?,TIMEZONE=?, LOGO_ID=? where ORGID=?";
+		psmt = conn.prepareStatement(insertquery);
+		psmt.setLong(1, context.getPhone());
+		psmt.setLong(2, context.getMobile());
+		psmt.setString(3, context.getName());
+		psmt.setString(4, context.getFax());
+		psmt.setString(5, context.getStreet());
+		psmt.setString(6, context.getCity());
+		psmt.setString(7, context.getState());
+		psmt.setLong(8, context.getZipcode());
+		psmt.setString(9, context.getCountry());
+		psmt.setLong(10, context.getTimezone());
+		psmt.setLong(11, context.getLogoId());
+		psmt.setLong(12, OrgInfo.getCurrentOrgInfo().getOrgid());
+		psmt.executeUpdate();
+		System.out.println("org logo id "+context.getLogoId());
+		return true;
+	}
+	catch (Exception e) {
+		throw e;
+	}
+	finally {
+		if (isLocalConn) {
+			DBUtil.closeAll(conn, null);
+		}
+		if (psmt != null) {
+			DBUtil.closeAll(null, psmt);
+		}
+	}
+}
+
+public static OrgContext getOrgContext() throws Exception {
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	
+	try {
+		conn = FacilioConnectionPool.INSTANCE.getConnection();
+		pstmt = conn.prepareStatement("select * from organizations where ORGID=?");
+		pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		rs = pstmt.executeQuery();
+		OrgContext oc = null;
+		while(rs.next()) {
+			oc = getOrgContextFromRS(rs);
+			break;
+		}
+		
+		return oc;
+	}
+	catch(SQLException e) {
+		throw e;
+	}
+	finally {
+		DBUtil.closeAll(conn, pstmt, rs);
+	}
+}
+private static OrgContext getOrgContextFromRS(ResultSet rs) throws SQLException {
+	OrgContext getorgContext = new OrgContext();
+	getorgContext.setName(rs.getString("ORGNAME"));
+	getorgContext.setCity(rs.getString("CITY"));
+	getorgContext.setCountry(rs.getString("COUNTRY"));
+	getorgContext.setFax(rs.getString("FAX"));
+	getorgContext.setState(rs.getString("STATE"));
+	getorgContext.setStreet(rs.getString("STREET"));
+	getorgContext.setMobile(rs.getLong("MOBILE"));
+	getorgContext.setPhone(rs.getLong("PHONE"));
+	getorgContext.setTimezone(rs.getLong("TIMEZONE"));
+	getorgContext.setZipcode(rs.getLong("ZIP"));
+	getorgContext.setLogoId(rs.getLong("LOGO_ID"));
+	
+	return getorgContext;
+}
+
+/*public static Object updatePortalInfo (ServicePortalInfo context, Connection conn) throws Exception{
+	
+
+	boolean isLocalConn = false;
+	PreparedStatement psmt = null;
+	try {
+		if (conn == null) {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			isLocalConn = true;
+		}
+		
+		String insertquery = "update portalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?,IS_ANY_DOMAIN_ALLOWED=? where ORGID=?";
+		psmt = conn.prepareStatement(insertquery);
+		psmt.setBoolean(1, context.getSignupAllowed());
+		psmt.setBoolean(2, context.getGmailLoginAllowed());
+		psmt.setBoolean(3, context.getTicketAlloedForPublic());
+		psmt.setBoolean(4, context.getAnyDomain());
+		psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
+
+		System.out.println("api ----->"+context);
+		return true;
+
+		}
+	catch (Exception e) {
+		throw e;
+	}
+	finally {
+		if (isLocalConn) {
+			DBUtil.closeAll(conn, null);
+		}
+		if (psmt != null) {
+			DBUtil.closeAll(null, psmt);
+		}
+	}
+}
+*/
+public static boolean checkid() throws SQLException {
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	
+	try {
+		conn = FacilioConnectionPool.INSTANCE.getConnection();
+		pstmt = conn.prepareStatement("SELECT * FROM portalInfo WHERE ORGID = ?");
+		
+		pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		rs = pstmt.executeQuery();
+		
+		while(rs.next()) {
+			String orgIdLocal = rs.getString("ORGID");
+			
+			if( orgIdLocal != null)
+			
+			return true;
+		}
+	}
+	catch (SQLException e) {
+		throw e;
+	}
+	finally {
+		DBUtil.closeAll(conn, pstmt, rs);
+	}
+	
+	return false;
+}
+
 }

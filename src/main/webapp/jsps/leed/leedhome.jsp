@@ -26,13 +26,13 @@
  <div>
     <div class="col-sm-4">
     <div class="ld-panel">
-    <label>Project Name</label>
+    <label class="ld-panel-header">Project Name</label>
     <div >
    <input class="ld-input-text form-control" type=text >
    </div>
    </div>
    <div class="ld-panel">
-    <label>Project type</label>
+    <label class="ld-panel-header">Project type</label>
       <div >
    <select  name="org.country" class="form-control ld-select">
    <option>1</option>
@@ -43,14 +43,14 @@
   <div class="col-sm-4 ">
  
     <div class="ld-panel">
-    <label>Unit type</label>
+    <label class="ld-panel-header">Unit type</label>
     <div >
    <label class="radio-inline"><input type="radio" value="ip" name="optradio"><b>IP</b></label>
 	<label class="radio-inline"><input type="radio" value="si" name="optradio"><b>SI</b></label>
    </div>
    </div>
    <div class="ld-panel">
-    <label>Rating System (Optional)</label>
+    <label class="ld-panel-header">Rating System (Optional)</label>
       <div >
    <input class="ld-input-text form-control" type=text >
    </div>
@@ -68,7 +68,7 @@
  <div>
     <div class="col-sm-4">
     <div class="ld-panel">
-    <label>Owner Type</label>
+    <label class="ld-panel-header">Owner Type</label>
     <div >
    <select  name="org.country" class="form-control ld-select">
    <option>1</option>
@@ -76,7 +76,7 @@
    </div>
    </div>
    <div class="ld-panel">
-    <label>Owner Email</label>
+    <label class="ld-panel-header">Owner Email</label>
       <div >
       <input class="ld-input-text form-control" type=text >
    
@@ -87,7 +87,7 @@
   <div class="col-sm-4">
  
     <div class="ld-panel">
-    <label>Owner Organization</label>
+    <label class="ld-panel-header">Owner Organization</label>
            <div >
    <select  name="org.country" class="form-control ld-select">
    <option>1</option>
@@ -96,7 +96,7 @@
 
    </div>
    <div class="ld-panel">
-    <label>Owner Country</label>
+    <label class="ld-panel-header">Owner Country</label>
      <div >
       <div >
     <select id="select-country" name="org.country" class="form-control">
@@ -116,7 +116,7 @@
      <div>
          <div class="col-sm-4">
     <div class="ld-panel">
-    <label>Area</label>
+    <label class="ld-panel-header">Area</label>
     <div >
    <input class="ld-input-text form-control" type=text >
    </div>
@@ -130,14 +130,14 @@
     <div class="col-sm-4">
   
    <div class="ld-panel">
-    <label>Address</label>
+    <label class="ld-panel-header">Address</label>
       <div >
        <input class="ld-input-text form-control" type=text >
 
    </div>
     </div>
      <div class="ld-panel">
-    <label>Country</label>
+    <label class="ld-panel-header">Country</label>
       <div >
       <div >
     <select id="country" name="org.country" class="form-control">
@@ -146,7 +146,7 @@
    </div>
     </div>
      <div class="ld-panel">
-    <label>Zip code</label>
+    <label class="ld-panel-header">Zip code</label>
       <div >
        <input class="ld-input-text form-control" type=text >
 
@@ -156,13 +156,13 @@
   <div class="col-sm-4">
  
    <div class="ld-panel">
-    <label>City</label>
+    <label class="ld-panel-header">City</label>
       <div >
    <input class="ld-input-text form-control" type=text >
    </div>
     </div>
      <div class="ld-panel">
-    <label>State</label>
+    <label class="ld-panel-header">State</label>
       <div >
        <select  name="org.country" class="form-control ld-select">
    <option>1</option>
@@ -170,7 +170,7 @@
    </div>
     </div>
      <div class="ld-panel">
-    <label>Geo location (Optional)</label>
+    <label class="ld-panel-header">Geo location (Optional)</label>
       <div >
        <input class="ld-input-text form-control" type=text >
 
@@ -195,7 +195,7 @@
 			<div>
 				<div class="col-sm-4">
 					<div class="ld-panel">
-						<label>User name</label>
+						<label class="ld-panel-header">User name</label>
 						<div>
 							<input class="ld-input-text form-control" type=text>
 						</div>
@@ -205,7 +205,7 @@
 				<div class="col-sm-4">
 
 					<div class="ld-panel">
-						<label>Password</label> <input class="ld-input-text form-control"
+						<label class="ld-panel-header">Password</label> <input class="ld-input-text form-control"
 							type=text>
 
 					</div>
@@ -241,5 +241,13 @@
 		
 		FacilioApp.countryCombo('#select-country');
 		FacilioApp.countryCombo('#country');
+		
+		$(".ld-panel").click(function () {
+		
+			
+		
+			
+			$(this).css("color","red");
+		})
 	});
   </script>

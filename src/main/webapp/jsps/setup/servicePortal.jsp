@@ -91,7 +91,7 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Login URL :</label>
-        <input type="url" class="pull-right form-control">
+        <input name="" type="url" class="pull-right form-control">
   		</div>
   		
 		</div>
@@ -229,12 +229,54 @@ $("input[name=setup\\.data\\.ticketAlloedForPublic]").change(function () {
 });
 	
 
-/* $("#reset").click(function() {
-    $("#service-form")[0].reset();
+$(".action-btn .save-btn").click(function() {
+	$('#service-form').submit();
+});
 
-}); */
+$(".action-btn .cancel-btn").click(function() {
+	location.href = '#servicePortal';
+});
 	
+$('#service-form').validator().on('submit', function (e) {
 	
+	event.preventDefault();
+	  console.log( $( this ).serialize() );
+ 	
+	  if (e.isDefaultPrevented()) {
+			// handle the invalid form...
+	  }
+	  else {
+			// check if any validation errors
+			if ($(this).find('.form-group').hasClass('has-error')) {
+				return false;
+			}
+			
+			$(".save-btn").button('loading');
+			FacilioApp.ajax({
+				method : "post",
+				url : contextPath + "/app/setup/updateServicePortal",
+				 data : $("#service-form").serialize(), 
+				processData: false,
+				contentType: false,
+				done: function(data) {
+					
+					FacilioApp.notifyMessage('success', 'company settings updated successfully!');
+
+				},
+				fail: function(error) {
+					$(".save-btn").button('reset');
+					console.log(error);
+					alert(error);
+				} 
+			});
+			$(".save-btn").button('reset');
+			return false;
+	  	}
+	
+	 
+	});
+
+
 	
 });
 </script>

@@ -3,27 +3,31 @@ package com.facilio.bmsconsole.commands.data;
 import java.io.File;
 import java.util.HashMap;
 
+import com.facilio.bmsconsole.util.OrgApi;
+
+import redis.clients.jedis.Connection;
+
 public class ServicePortalInfo {
 
-	public boolean isSignupAllowed() {
+	public boolean getSignupAllowed() {
 		return signupAllowed;
 	}
 	public void setSignupAllowed(boolean signupAllowed) {
 		this.signupAllowed = signupAllowed;
 	}
-	public boolean isGmailLoginAllowed() {
+	public boolean getGmailLoginAllowed() {
 		return gmailLoginAllowed;
 	}
 	public void setGmailLoginAllowed(boolean gmailLoginAllowed) {
 		this.gmailLoginAllowed = gmailLoginAllowed;
 	}
-	public boolean isTicketAlloedForPublic() {
+	public boolean getTicketAlloedForPublic() {
 		return ticketAlloedForPublic;
 	}
 	public void setTicketAlloedForPublic(boolean ticketAlloedForPublic) {
 		this.ticketAlloedForPublic = ticketAlloedForPublic;
 	}
-	public boolean isAnyDomain() {
+	public boolean getAnyDomain() {
 		return anyDomain;
 	}
 	public void setAnyDomain(boolean anyDomain) {
@@ -33,7 +37,7 @@ public class ServicePortalInfo {
 	boolean gmailLoginAllowed=true;
 	boolean ticketAlloedForPublic=true;
 	boolean anyDomain;
-	public boolean isSamlEnabled() {
+	public boolean getSamlEnabled() {
 		return samlEnabled;
 	}
 	public void setSamlEnabled(boolean samlEnabled) {
@@ -44,7 +48,7 @@ public class ServicePortalInfo {
 	private HashMap samlinfo = null;
 	public HashMap getSamlInfo()
 	{
-		if(!isSamlEnabled())
+		if(!getSamlEnabled())
 		{
 		return samlinfo;
 		}
@@ -74,8 +78,11 @@ public class ServicePortalInfo {
 		}
 	}
 	
-	public void save()
+
+	
+	public void save() throws Exception
 	{
-		
+		/*OrgApi.updatePortalInfo(this, null);
+		System.out.println("--------------> service"+this);*/
 	}
 }

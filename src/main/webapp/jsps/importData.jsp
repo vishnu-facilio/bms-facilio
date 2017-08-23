@@ -49,9 +49,7 @@
 			var module = $('select[name=module]').val();
 			var fileObj = $('input[name=fileUpload]')[0].files[0];
 			
-			console.log(module);
-			console.log(fileObj);
-			
+						
 			var formData = new FormData();
 			formData.append('module', module);
 			formData.append('fileUpload', fileObj);	

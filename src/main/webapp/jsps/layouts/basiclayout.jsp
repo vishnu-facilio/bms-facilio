@@ -127,6 +127,10 @@
 		<script src="${pageContext.request.contextPath}/js/d3/d3wrapper.js"></script>
 		<script src="${pageContext.request.contextPath}/js/webmessenger.js"></script>
 		
+		<script src="${pageContext.request.contextPath}/js/timezone/timezones.full.js"></script>
+		<script src="${pageContext.request.contextPath}/js/timezone/timezones.full.min.js"></script>
+		
+		
 		<script>
 			var contextPath = "${pageContext.request.contextPath}";
 			

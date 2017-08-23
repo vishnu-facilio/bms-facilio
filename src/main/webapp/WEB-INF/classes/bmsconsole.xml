@@ -217,10 +217,22 @@
 			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
 		
-			<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+		<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
+		</action>
+		
+		<action name="viewOrgPhoto" class="com.facilio.bmsconsole.actions.SetupActions" method="viewOrgPhoto">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+ 			<result name="success" type="stream">
+		      <param name="contentType">${fileInfo.contentType}</param>
+		      <param name="inputName">downloadStream</param>
+		      <param name="contentDisposition">images;filename="${fileInfo.fileName}"</param>
+		      <param name="contentLength">${fileInfo.fileSize}</param>
+		      <param name="bufferSize">4096</param>
+		    </result>
+		    <result name="error">/jsps/viewOrgPhotoError.jsp</result>
 		</action>
 		
 		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
@@ -311,6 +323,14 @@
 		<action name="servicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="servicePortal">		
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
+		
+		
+		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="updateServicePortal">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+		</action>
+		
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>
 		</action>

@@ -13,7 +13,7 @@
                   <div class="col-lg-4" >
                 <div class="form-group">
             
-  			 <img  class="responsive-img" id="upfile1" alt="click to upload" width="240" height="124"  style="cursor:pointer;line-height: 100px;text-align: center;background: #F8F8F8; "/>
+  			 <img  class="responsive-img"  src="${pageContext.request.contextPath}/app/setup/viewOrgPhoto" id="upfile1" alt="click to upload" width="240" height="124"  style="cursor:pointer;line-height: 100px;text-align: center;background: #F8F8F8; "/>
                 
                 
 		     </div>
@@ -137,6 +137,44 @@ position: relative;
 		});
 		
 		$('#newRoleForm').validator().on('submit', function (e) {
+			
+		
+			var orgName = ($('input[name="org\\.name"]').val());
+			var orgStreet = ($('input[name="org\\.street"]').val());
+			var orgcity = ($('input[name="org\\.city"]').val());
+			var orgState = ($('input[name="org\\.state"]').val());
+			var orgPhone = ($('input[name="org\\.phone"]').val());
+			var orgLanguage = ($('input[name="org\\.language"]').val());
+			var orgZipcode = ($('input[name="org\\.zipcode"]').val());
+			var orgFax = ($('input[name="org\\.fax"]').val());
+			var orgDateFormat = ($('input[name="org\\.dateformat"]').val());
+			var orgCountry = ($('input[name="org\\.country"]').val());
+			var orgMobile = ($('input[name="org\\.mobile"]').val());
+			var orgTimezone = ($('input[name="org\\.timezone"]').val());
+			
+			
+		var fileObj = $('input[name="org\\.photo"]')[0].files[0];
+ 			
+ 		
+ 		
+			 
+			var formData = new FormData();
+			formData.append('orgPhoto', fileObj);
+			 formData.append('org.name', orgName);
+			formData.append('org.street', orgStreet);
+			formData.append('org.city', orgcity);
+			formData.append('org.state', orgState);
+			formData.append('org.phone', orgPhone);
+			formData.append('org.language', orgLanguage);
+			formData.append('org.zipcode', orgZipcode);
+			formData.append('org.fax', orgFax);
+			formData.append('org.dateformat', orgDateFormat); 
+			formData.append('org.country', orgCountry); 
+			formData.append('org.mobile', orgMobile); 
+			formData.append('org.timezone', orgTimezone); 
+			
+			console.log("this ------>"+formData );
+			
 			  if (e.isDefaultPrevented()) {
 					// handle the invalid form...
 			  }
@@ -150,7 +188,10 @@ position: relative;
 					FacilioApp.ajax({
 						method : "post",
 						url : contextPath + "/app/setup/updateorgsettings",
-						data : $("#newRoleForm").serialize(),
+						/* data : $("#newRoleForm").serialize(), */
+						data : formData,
+						processData: false,
+						contentType: false,
 						done: function(data) {
 							
 							FacilioApp.notifyMessage('success', 'company settings updated successfully!');
@@ -162,6 +203,7 @@ position: relative;
 							alert(error);
 						} 
 					});
+					$(".save-btn").button('reset');
 					return false;
 			  	}
 			
@@ -176,7 +218,6 @@ position: relative;
 		
 		
 		$("#file1").change(function() {
-			console.log(this.files[0].size);
 			document.getElementById('upfile1').src = window.URL.createObjectURL(this.files[0]);
 		});
 	});

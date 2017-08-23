@@ -56,7 +56,7 @@
             <f:hasPermission permission="TASK_ASSIGN">
 	            <li>
 	                <a href="#centraldispatch">
-	                <span class="nav-icon"><i class="sidebar-icon fa fa-calendar fa-fw"></i></span>
+	                <span class="nav-icon"><i class="sidebar-icon fa fa-paper-plane fa-fw"></i></span>
 	                <span class="nav-title"><s:text name="global.centraldispatch"/>
 	                </span></a>
 	            </li>

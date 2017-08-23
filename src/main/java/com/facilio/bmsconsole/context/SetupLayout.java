@@ -13,6 +13,7 @@ public class SetupLayout<T> {
         this.t = t;
     }
 
+	
     public T getData() {
         return t;
     }

@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="/struts-tags" prefix="s" %>
+		<script src="${pageContext.request.contextPath}/js/timezone/timezones.full.min.js"></script>
+
 <div class="form-container form-content">
 	<form role="form" id="mysettings" method="post" onsubmit="return false;">
 	<div class="col-lg-6" >
@@ -15,7 +17,7 @@
 			</div>
 			<div class="form-group">
 			    <label>Phone</label>
-			    <s:textfield type="text" name="user.phone" class="form-control"/>
+			    <s:textfield type="text" name="user.phone" class="form-control timezone"/>
 			</div>
 					<div class="form-group">
 	    		<label>Address</label>
@@ -23,8 +25,7 @@
 			</div>
 						<div class="form-group">
 			    <label>Time zone</label>
-			    <select name="user.timezone" class="form-control">
-			    	<option> -- </option>
+			    <select name="user.timezone" class="form-control timezone">
 			    </select>
 			</div>
 				
@@ -135,6 +136,8 @@ margin-bottom: 10px;
 
 		});
 		
+	 	$(".timezone").timezones(); 
+
 		
 		$(".action-btn .cancel-btn").click(function() {
 			location.href = '#mysettings';
