@@ -320,10 +320,10 @@
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
 
-		<action name="servicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupActions" method="servicePortal">		
+		<action name="servicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="servicePortal">		
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
-		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupActions" method="updateServicePortal">		
+		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="updateServicePortal">		
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
 		

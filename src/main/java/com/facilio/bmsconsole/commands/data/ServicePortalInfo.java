@@ -33,7 +33,7 @@ public class ServicePortalInfo {
 	public void setAnyDomain(boolean anyDomain) {
 		this.anyDomain = anyDomain;
 	}
-	boolean signupAllowed=true;
+	boolean signupAllowed=false;
 	boolean gmailLoginAllowed=true;
 	boolean ticketAlloedForPublic=true;
 	boolean anyDomain;
@@ -84,5 +84,11 @@ public class ServicePortalInfo {
 	{
 		/*OrgApi.updatePortalInfo(this, null);
 		System.out.println("--------------> service"+this);*/
+	}
+	@Override
+	public String toString() {
+		return "ServicePortalInfo [signupAllowed=" + signupAllowed + ", gmailLoginAllowed=" + gmailLoginAllowed
+				+ ", ticketAlloedForPublic=" + ticketAlloedForPublic + ", anyDomain=" + anyDomain + ", samlEnabled="
+				+ samlEnabled + ", samlinfo=" + samlinfo + "]";
 	}
 }
