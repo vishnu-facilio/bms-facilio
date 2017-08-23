@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.GroupMemberContext;
 import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.auth.CognitoUtil;

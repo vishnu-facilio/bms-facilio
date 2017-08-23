@@ -438,6 +438,16 @@
 		</action>
 	</package>
 	
+	<package name="workOrderInfo" namespace="/api/workorder/summary" extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="viewWorkOrder">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="workOrderId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="attachment" namespace="/app/attachment" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
