@@ -10,15 +10,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.GroupMemberContext;
 import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.context.servicePortalContext;
+//import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
-import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.transaction.FacilioConnectionPool;
