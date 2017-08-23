@@ -320,15 +320,11 @@
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
 
-		<action name="servicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="servicePortal">		
+		<action name="servicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupActions" method="servicePortal">		
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
-		
-		
-		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.SetupActions" method="updateServicePortal">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-			</result>
+		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupActions" method="updateServicePortal">		
+			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
 		
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
