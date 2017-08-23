@@ -21,7 +21,7 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class SetupActions extends ActionSupport {
+public class SetupActions<T> extends ActionSupport {
 	
 	static
 	{
@@ -33,12 +33,12 @@ public class SetupActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private SetupLayout setup;
-	public SetupLayout getSetup() {
+	private SetupLayout<T> setup;
+	public SetupLayout<T> getSetup() {
 		return this.setup;
 	}
 	
-	public void setSetup(SetupLayout setup) {
+	public void setSetup(SetupLayout<T> setup) {
 		this.setup = setup;
 	}
 	
@@ -64,26 +64,6 @@ public class SetupActions extends ActionSupport {
 		this.servicePortal = servicePortal;
 	}
 
-	public String servicePortal() throws Exception {
-
-		SetupLayout<ServicePortalInfo> portalInfo =SetupLayout.getservicePortal();
-		ServicePortalInfo spinfo = new ServicePortalInfo();
-		portalInfo.setData(spinfo);
-		setSetup(portalInfo);
-		return SUCCESS;
-	}
-
-	
-/*	public String updateServicePortal() throws Exception {
-		
-		System.out.println("-------------->"+servicePortal);
-		
-	OrgApi.updatePortalInfo(servicePortal, null);
-	
-	
-		
-		return SUCCESS;
-	}*/
 	
 	
 	public String orgSettings() throws Exception {

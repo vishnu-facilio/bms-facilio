@@ -58,6 +58,7 @@ public class CampusAction extends ActionSupport {
 	public String addCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		System.out.println("The campus is "+campus);
 		context.put(FacilioConstants.ContextNames.CAMPUS, campus);
 		
 		Chain addCampus = FacilioChainFactory.getAddCampusChain();
