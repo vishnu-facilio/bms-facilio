@@ -5,6 +5,42 @@
 
 <struts>
 
+	<package name="homeApi" strict-method-invocation="false" namespace="/api"  extends="struts-default,json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="redirect">
+				<param name="location">/login</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
