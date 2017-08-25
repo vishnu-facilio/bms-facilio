@@ -9,7 +9,9 @@ import java.sql.Types;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
@@ -18,6 +20,7 @@ import com.facilio.sql.DBUtil;
 
 public class AddNoteCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -70,6 +73,15 @@ public class AddNoteCommand implements Command {
 				if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals("workorder"))
 				{
 					WorkOrderAPI.addWorkOrderNote(note.getParentId(), noteId, conn);
+					if(note.getNotifyRequester())
+					{
+						JSONObject mailJson = new JSONObject();
+						mailJson.put("sender", "support@thingscient.com");
+						mailJson.put("to", "shivaraj@thingscient.com");
+						mailJson.put("subject", "New note added by ");
+						mailJson.put("message", note.getBody());
+						AwsUtil.sendEmail(mailJson);
+					}
 				}
 			}
 		}
