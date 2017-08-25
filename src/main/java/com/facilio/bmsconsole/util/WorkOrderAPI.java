@@ -93,6 +93,7 @@ public class WorkOrderAPI {
 				NoteContext nc = new NoteContext();
 				nc.setNoteId(rs.getLong("NOTE_ID"));
 				nc.setBody(rs.getString("BODY"));
+				nc.setCreationTime(rs.getLong("CREATION_TIME"));
 				notes.add(nc);
 			}
 		}
