@@ -48,7 +48,17 @@ public class SetupActions<T> extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public String importData() throws Exception {
+	public String assignmentRules() throws Exception {
+		
+		setSetup(SetupLayout.getAssignmentRules());
+		return SUCCESS;
+	}
+	public String newAssignmentRules() throws Exception {
+		
+		setSetup(SetupLayout.getNewAssignmentRules());
+		return SUCCESS;
+	}
+public String importData() throws Exception {
 		
 		setSetup(SetupLayout.getImportLayout());
 		return SUCCESS;

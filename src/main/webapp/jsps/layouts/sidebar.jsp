@@ -221,11 +221,23 @@
                 <a href="#help"><i class="fa fa-question-circle fa-fw"></i> Help</a>
             </li>
             -->
-                         <li>
-	                <a href="#leed"><span class="nav-icon"><i class="sidebar-icon fa fa-tree fa-fw"></i></span>
-	                <span class="nav-title all-workorder"> LEED</span>
-	  
-	                </a>
+                
+	             <li>
+	                <a href="#">
+					<span class="nav-icon"><i class="sidebar-icon fa fa-tree fa-fw"></i></span>
+	                <span class="nav-title all-workorder"> LEED</span>	                
+	                 <span class="fa arrow"></span></a>
+	                <ul class="nav nav-second-level">
+	                    <li>
+	                        <a href="#leed">LEED Home</a>
+	                    </li>
+	                    <li>
+	                        <a href="#leedDemo">LEED Demo</a>
+	                    </li>
+	                    <li>
+	                        <a href="#leedRegistration">LEED Registration</a>
+	                    </li>
+	                 </ul>
 	            </li>
         </ul>
         

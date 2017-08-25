@@ -119,6 +119,16 @@
 		<result name="success">/jsps/leed/leedhome.jsp</result>
 	</action>
 	
+	<action name="leedDemo" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<!-- <param name="permission">WORKORDER_READ</param> -->
+		<result name="success">/jsps/leed/leedDemo.jsp</result>
+	</action>
+	
+	<action name="leedRegistration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<!-- <param name="permission">WORKORDER_READ</param> -->
+		<result name="success">/jsps/leed/leedRegistration.jsp</result>
+	</action>
+	
 	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
 		<param name="permission">TASK_READ</param>
 		<result name="success">/jsps/listview.jsp</result>
@@ -320,16 +330,31 @@
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
 
+
 		<action name="servicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="servicePortal">		
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
-		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="updateServicePortal">		
-			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
+		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="updateServicePortal">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+			</action>		
+
+		
+		<action name="assignment" class="com.facilio.bmsconsole.actions.SetupActions" method="assignmentRules">
+			<result type="tiles">setuplayout/assignmentRules.jsp</result>
 		</action>
+		
+		<action name="newAssignmentRules" class="com.facilio.bmsconsole.actions.SetupActions" method="newAssignmentRules">
+			<result type="tiles">setuplayout/newAssignmentRules.jsp</result>
+		</action>
+		
+
 		
 		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>
 		</action>
+		
 	</package>
 
 	<package name="ticket" namespace="/app/ticket" extends="home">
