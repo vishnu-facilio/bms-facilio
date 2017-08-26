@@ -19,9 +19,21 @@ public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> {
 	public String updateServicePortal() throws Exception {
 
 		SetupLayout<ServicePortalInfo> set = getSetup();
+		System.out.println(set.getData());
+
+		System.out.println(set.getData().getClass().getName());
 		//TODO get the data from and save..
 		return SUCCESS;
 	}
+		@Override
+	public SetupLayout<ServicePortalInfo> getSetup() {
+		if(super.getSetup()==null)
+		{
+			setSetup(new SetupLayout<ServicePortalInfo>(ServicePortalInfo.class));
+		}
+		return super.getSetup();
+	}
+		
 		
 	
 }

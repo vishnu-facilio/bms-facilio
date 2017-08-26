@@ -12,9 +12,27 @@ public class SetupLayout<T> {
 	public void setData(T t) {
         this.t = t;
     }
+	private  Class<T> type;
 
+	public SetupLayout(Class<T> type) {
+        this.type = type;
+   }
+
+    public Class<T> getDataType() {
+        return this.type;
+    }
 	
     public T getData() {
+    	if(t==null)
+    	{
+    		try {
+				return type.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
         return t;
     }
 	
