@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.util.OrgApi;
 import redis.clients.jedis.Connection;
 
 public class ServicePortalInfo {
+	boolean signupAllowed;
+	boolean gmailLoginAllowed;
+	boolean ticketAlloedForPublic;
+	boolean anyDomain;
 
 	public boolean getSignupAllowed() {
 		return signupAllowed;
@@ -33,10 +37,7 @@ public class ServicePortalInfo {
 	public void setAnyDomain(boolean anyDomain) {
 		this.anyDomain = anyDomain;
 	}
-	boolean signupAllowed=false;
-	boolean gmailLoginAllowed=true;
-	boolean ticketAlloedForPublic=true;
-	boolean anyDomain;
+
 	public boolean getSamlEnabled() {
 		return samlEnabled;
 	}

@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.File;
 
-import com.facilio.bmsconsole.util.OrgApi;;
+import com.facilio.bmsconsole.util.OrgApi;
 
 public class OrgContext{
 	private String name;
