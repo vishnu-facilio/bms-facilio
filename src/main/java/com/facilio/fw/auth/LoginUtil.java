@@ -15,6 +15,10 @@ public class LoginUtil {
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
 	public static UserInfo getUserInfo(CognitoUser cognitoUser) throws Exception {
+		return getUserInfo(null,cognitoUser);
+	}
+	
+	public static UserInfo getUserInfo(String threadpoolname,CognitoUser cognitoUser) throws Exception {
 		
 		UserInfo userInfo = new UserInfo();
 		
