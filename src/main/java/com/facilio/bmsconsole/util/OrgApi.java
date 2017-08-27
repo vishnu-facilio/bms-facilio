@@ -10,10 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.OrgContext;
-import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.UserContext;
 //import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
@@ -273,88 +271,6 @@ private static OrgContext getOrgContextFromRS(ResultSet rs) throws SQLException 
 	getorgContext.setTimezone(rs.getLong("TIMEZONE"));
 	getorgContext.setZipcode(rs.getLong("ZIP"));
 	getorgContext.setLogoId(rs.getLong("LOGO_ID"));
-	
-	return getorgContext;
-}
-
-public static Object updatePortalInfo (SetupLayout<ServicePortalInfo> set, Connection conn) throws Exception{
-	
-
-	boolean isLocalConn = false;
-	PreparedStatement psmt = null;
-	try {
-		if (conn == null) {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			isLocalConn = true;
-		}
-		
-		String insertquery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
-		psmt = conn.prepareStatement(insertquery);
-		psmt.setBoolean(1, set.getData().getSignupAllowed());
-		psmt.setBoolean(2, set.getData().getGmailLoginAllowed());
-		psmt.setBoolean(3, set.getData().getTicketAlloedForPublic());
-		psmt.setBoolean(4, set.getData().getAnyDomain());
-		
-		psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
-		
-//		System.out.println("signup **************** "+set.getData().getSignupAllowed());
-//		System.out.println("gmail ****************"+set.getData().getGmailLoginAllowed());
-//		System.out.println("public ****************"+set.getData().getTicketAlloedForPublic());
-//		System.out.println("any ****************"+set.getData().getAnyDomain());
-//		System.out.println("orgid ****************"+OrgInfo.getCurrentOrgInfo().getOrgid());
-		psmt.executeUpdate();
-		return true;
-
-		}
-	catch (Exception e) {
-		throw e;
-	}
-	finally {
-		if (isLocalConn) {
-			DBUtil.closeAll(conn, null);
-		}
-		if (psmt != null) {
-			DBUtil.closeAll(null, psmt);
-		}
-	}
-}
-
-public static ServicePortalInfo getServicePortalInfo() throws Exception {
-	Connection conn = null;
-	PreparedStatement pstmt = null;
-	ResultSet rs = null;
-	
-	try {
-		conn = FacilioConnectionPool.INSTANCE.getConnection();
-		pstmt = conn.prepareStatement("select * from PortalInfo where ORGID=?");
-		pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
-		
-	rs = pstmt.executeQuery();
-	ServicePortalInfo oc = null;
-	while(rs.next()) {
-		oc = getServicePortalInfoFromRS(rs);
-		System.out.println("set service portal info ===========> "+oc);
-		break;
-	}
-	
-	return oc;
-}
-catch(SQLException e) {
-	throw e;
-}
-finally {
-	DBUtil.closeAll(conn, pstmt, rs);
-}
-}
-
-
-private static ServicePortalInfo getServicePortalInfoFromRS(ResultSet rs) throws SQLException {
-	ServicePortalInfo getorgContext = new ServicePortalInfo();
-	getorgContext.setAnyDomain(rs.getBoolean("IS_ANYDOMAIN_ALLOWED"));
-	getorgContext.setSignupAllowed(rs.getBoolean("SIGNUP_ALLOWED"));
-	getorgContext.setGmailLoginAllowed(rs.getBoolean("GMAILLOGIN_ALLOWED"));
-	getorgContext.setTicketAlloedForPublic(rs.getBoolean("IS_PUBLIC_CREATE_ALLOWED"));
-
 	
 	return getorgContext;
 }
