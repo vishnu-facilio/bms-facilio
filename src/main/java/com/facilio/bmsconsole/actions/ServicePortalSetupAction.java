@@ -9,7 +9,7 @@ public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> {
 
 		System.out.println("Serviceportal called");
 		SetupLayout<ServicePortalInfo> portalInfo =SetupLayout.getservicePortal();
-		ServicePortalInfo spinfo = new ServicePortalInfo();
+		ServicePortalInfo spinfo = ServicePortalInfo.getServicePortalInfo();
 		portalInfo.setData(spinfo);
 		setSetup(portalInfo);
 		System.out.println(getSetup().getData().toString());

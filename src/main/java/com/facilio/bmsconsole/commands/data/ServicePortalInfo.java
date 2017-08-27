@@ -99,7 +99,7 @@ public class ServicePortalInfo {
 				+ ", ticketAlloedForPublic=" + ticketAlloedForPublic + ", anyDomain=" + anyDomain + ", samlEnabled="
 				+ samlEnabled + ", samlinfo=" + samlinfo + "]";
 	}
-	public static ServicePortalInfo getServicePortalInfoFromRS(ResultSet rs) throws SQLException {
+	private  static ServicePortalInfo getServicePortalInfoFromRS(ResultSet rs) throws SQLException {
 		ServicePortalInfo getorgContext = new ServicePortalInfo();
 		getorgContext.setAnyDomain(rs.getBoolean("IS_ANYDOMAIN_ALLOWED"));
 		getorgContext.setSignupAllowed(rs.getBoolean("SIGNUP_ALLOWED"));
@@ -116,15 +116,18 @@ public class ServicePortalInfo {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select * from PortalInfo where ORGID=?");
+			pstmt = conn.prepareStatement("select * from PortalInfo where ORGID=? and PORTALTYPE=0");
 			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
 			
 		rs = pstmt.executeQuery();
 		ServicePortalInfo oc = null;
-		while(rs.next()) {
+		if(rs.next()) {
 			oc = ServicePortalInfo.getServicePortalInfoFromRS(rs);
 			System.out.println("set service portal info ===========> "+oc);
-			break;
+		}
+		else
+		{
+			oc = new ServicePortalInfo();
 		}
 		
 		return oc;
