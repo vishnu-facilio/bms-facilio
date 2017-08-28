@@ -139,7 +139,7 @@ public class ServicePortalInfo {
 		DBUtil.closeAll(conn, pstmt, rs);
 	}
 	}
-	public static Object updatePortalInfo (SetupLayout<ServicePortalInfo> set, Connection conn) throws Exception{
+	public static Object updatePortalInfo (ServicePortalInfo data, Connection conn) throws Exception{
 		
 	
 		boolean isLocalConn = false;
@@ -152,10 +152,10 @@ public class ServicePortalInfo {
 			
 			String insertquery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
 			psmt = conn.prepareStatement(insertquery);
-			psmt.setBoolean(1, set.getData().getSignupAllowed());
-			psmt.setBoolean(2, set.getData().getGmailLoginAllowed());
-			psmt.setBoolean(3, set.getData().getTicketAlloedForPublic());
-			psmt.setBoolean(4, set.getData().getAnyDomain());
+			psmt.setBoolean(1, data.getSignupAllowed());
+			psmt.setBoolean(2, data.getGmailLoginAllowed());
+			psmt.setBoolean(3, data.getTicketAlloedForPublic());
+			psmt.setBoolean(4, data.getAnyDomain());
 			
 			psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
 			

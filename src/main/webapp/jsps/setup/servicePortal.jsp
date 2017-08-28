@@ -10,7 +10,7 @@
    		 <label class="inline-text">Allow users to Sign Up from the customer portal</label>
     	</div>
     	<div class="col-xs-6">
-    	<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.signupAllowed"  />
+    	<s:radio list="#{'true':'Yes','false':'No'}" name="signupAllowed"  />
     	
     	</div>
 		</div>
@@ -20,7 +20,7 @@
    		 <label class="inline-text">Allow users to Sign In using Google</label>
     	</div>
     	<div class="col-xs-6">
-		<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.gmailLoginAllowed"  />
+		<s:radio list="#{'true':'Yes','false':'No'}" name="gmailLoginAllowed"  />
 
     	</div>
 		</div>
@@ -41,7 +41,7 @@
    		 <label class="inline-text">Who can submit a new ticket on portal</label>
     	</div>
     	<div class="col-xs-6">
-    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="setup.data.ticketAlloedForPublic"  />
+    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="ticketAlloedForPublic"  />
     	
     	 
           <div id="enable-captcha" class="hidden-input">
@@ -255,9 +255,7 @@ $('#service-form').validator().on('submit', function (e) {
 			FacilioApp.ajax({
 				method : "post",
 				url : contextPath + "/app/setup/updateServicePortal",
-				 data : $("#service-form").serialize(), 
-				processData: false,
-				contentType: false,
+				 data : $("#service-form").serialize(),
 				done: function(data) {
 					
 					FacilioApp.notifyMessage('success', 'company settings updated successfully!');
