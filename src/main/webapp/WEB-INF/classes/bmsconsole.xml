@@ -39,6 +39,12 @@
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="attachmentList">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
@@ -478,6 +484,22 @@
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="attachmentApi" namespace="/api/attachment" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
 			</result>
 		</action>
 	</package>

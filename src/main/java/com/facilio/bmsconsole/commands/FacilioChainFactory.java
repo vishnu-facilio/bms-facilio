@@ -575,6 +575,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAttachmentsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAttachmentsCommand());
+		return c;
+	}
+	
 	public static Chain getDeleteAttachmentChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteAttachmentCommand());
