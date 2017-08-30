@@ -124,7 +124,10 @@ public class SetupLayout<T> {
 		SetupLayout sl = new SetupLayout();
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("Automation");
-		sl.setSettingViewTitle("AssignmentRules");
+		sl.setSettingViewTitle("Assignment Rules");
+		
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
 		
 		return sl;
 	}

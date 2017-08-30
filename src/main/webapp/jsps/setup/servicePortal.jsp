@@ -70,7 +70,7 @@
     	</div>
     	<div class="col-xs-6">
     	
-       <s:radio  list="#{'true':'Any domain','false':'Whitelisted domains'}" name="setup.data.anyDomain" />
+       <s:radio  list="#{'true':'Any domain','false':'Whitelisted domains'}" name="anyDomain" />
     	
     	 <input type="text" id="domain-name" class="hidden-input" name="domainName" placeholder="Enter Domain Name" >
          
