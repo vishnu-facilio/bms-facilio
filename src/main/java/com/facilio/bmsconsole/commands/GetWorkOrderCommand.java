@@ -45,6 +45,7 @@ public class GetWorkOrderCommand implements Command {
 				
 				workOrder.setTasks(WorkOrderAPI.getRelatedTasks(workOrderId, conn));
 				workOrder.setNotes(WorkOrderAPI.getRelatedNotes(workOrderId, conn));
+				workOrder.setAttachments(WorkOrderAPI.getRelatedAttachments(workOrderId, conn));
 			}
 		}
 		else {

@@ -143,10 +143,11 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		this.notes = notes;
 	}
 	
-	public List<FileContext> getAttachments() {
-		if(ticket != null) {
-			return ticket.getAttachments();
-		}
-		return null;
+	private List<AttachmentContext> attachments;
+	public void setAttachments(List<AttachmentContext> attachments) {
+		this.attachments = attachments;
+	}
+	public List<AttachmentContext> getAttachments() {
+		return this.attachments;
 	}
 }
