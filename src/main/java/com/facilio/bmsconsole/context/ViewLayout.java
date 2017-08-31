@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsole.context.Column.ColumnType;
-
 public class ViewLayout {
 	
 	public ViewLayout()
@@ -12,9 +10,9 @@ public class ViewLayout {
 		
 	}
 	
-	private List<Column> columns;
+	private List<ViewColumn> columns;
 	
-	public ViewLayout addColumn(Column column)
+	public ViewLayout addColumn(ViewColumn column)
 	{
 		if(this.columns == null)
 		{
@@ -24,7 +22,7 @@ public class ViewLayout {
 		return this;
 	}
 	
-	public List<Column> getColumns()
+	public List<ViewColumn> getColumns()
 	{
 		return this.columns;
 	}
@@ -44,15 +42,15 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
-		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
-							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
-							.addColumn(new Column("Description", "description", ColumnType.TEXT))
+		viewLayout.addColumn(new ViewColumn("ID", "id", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Subject & Description", "", ViewColumn.ColumnType.MULTICOLUMN)
+							.addColumn(new ViewColumn("Subject", "subject", ViewColumn.ColumnType.TEXT))
+							.addColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT))
 							);
-		viewLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-		viewLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
-		viewLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
-		viewLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Status", "status", "status", ViewColumn.ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Priority", "priority", "priority", ViewColumn.ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Due Date", "duedate", ViewColumn.ColumnType.DATETIME));
+		viewLayout.addColumn(new ViewColumn("Assigned To", "assignedTo", "email", ViewColumn.ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}
@@ -60,7 +58,7 @@ public class ViewLayout {
 	public static ViewLayout getViewWorkOrderLayout()
 	{
 		ViewLayout viewLayout = getViewTicketLayout();
-		viewLayout.addColumn(new Column("Requester", "requester", "email", ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Requester", "requester", "email", ViewColumn.ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}
@@ -68,7 +66,7 @@ public class ViewLayout {
 	public static ViewLayout getViewTaskLayout()
 	{
 		ViewLayout viewLayout = getViewTicketLayout();
-//		viewLayout.addColumn(new Column("Work Order", "requester", ColumnType.TEXT));
+//		viewLayout.addColumn(new ViewColumn("Work Order", "requester", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -76,8 +74,8 @@ public class ViewLayout {
 	public static ViewLayout getViewTicketStatusLayout() {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
-		viewLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("ID", "id", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Status", "status", ViewColumn.ColumnType.TEXT));
 		return viewLayout;
 	}
 	
@@ -85,13 +83,13 @@ public class ViewLayout {
 //	{
 //		ViewLayout viewLayout = new ViewLayout();
 //		viewLayout.setPkColumnId("id");
-//		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
-//		viewLayout.addColumn(new Column("Subject & Description", "", ColumnType.MULTICOLUMN)
-//							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
-//							.addColumn(new Column("Description", "description", ColumnType.TEXT))
+//		viewLayout.addColumn(new ViewColumn("ID", "id", ViewColumn.ColumnType.NUMBER));
+//		viewLayout.addColumn(new ViewColumn("Subject & Description", "", ViewColumn.ColumnType.MULTICOLUMN)
+//							.addColumn(new ViewColumn("Subject", "subject", ViewColumn.ColumnType.TEXT))
+//							.addColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT))
 //							);
-//		viewLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-//		viewLayout.addColumn(new Column("Assigned To", "assignedToId", ColumnType.TEXT));
+//		viewLayout.addColumn(new ViewColumn("Status", "status", "status", ViewColumn.ColumnType.LOOKUP));
+//		viewLayout.addColumn(new ViewColumn("Assigned To", "assignedToId", ViewColumn.ColumnType.TEXT));
 //		
 //		return viewLayout;
 //	}
@@ -99,8 +97,8 @@ public class ViewLayout {
 	public static ViewLayout getViewTaskStatusLayout() {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("ID", "id", ColumnType.NUMBER));
-		viewLayout.addColumn(new Column("Status", "status", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("ID", "id", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Status", "status", ViewColumn.ColumnType.TEXT));
 		return viewLayout;
 	}
 	
@@ -108,11 +106,11 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Managed By", "managedBy", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Managed By", "managedBy", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -121,12 +119,12 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Campus", "campus", "name", ColumnType.LOOKUP));
-		viewLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Campus", "campus", "name", ViewColumn.ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Floors", "floors", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -135,12 +133,12 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Building", "building", "name", ColumnType.LOOKUP));
-		viewLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Building", "building", "name", ViewColumn.ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Main Level", "mainLevel", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -149,13 +147,13 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("Display Name", "displayName", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Category", "spaceCategoryId", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Occupiable", "occupiable", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Display Name", "displayName", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Category", "spaceCategoryId", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Occupiable", "occupiable", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -164,8 +162,8 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Short Description", "shortDescription", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Short Description", "shortDescription", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
 	}
@@ -173,99 +171,10 @@ public class ViewLayout {
 	public static ViewLayout getViewSkillLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
-		viewLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		viewLayout.addColumn(new Column("Status", "isActive", ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Status", "isActive", ViewColumn.ColumnType.TEXT));
 		
 		return viewLayout;
-	}
-}
-
-class Column
-{
-	String label;
-	String id;
-	String lookupId;
-	public String getLabel() {
-		return label;
-	}
-	
-	public void setLabel(String label) {
-		this.label = label;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String getLookupId() {
-		return lookupId;
-	}
-	public void setLookupId(String lookupId) {
-		this.lookupId = lookupId;
-	}
-	
-	public ColumnType getColumnType()
-	{
-		return this.columnType;
-	}
-	
-	public enum ColumnType {
-	    TEXT, NUMBER, DATETIME, DATE, MULTICOLUMN, LOOKUP
-	}
-	
-	public List<Column> getColumns()
-	{
-		return this.columns;
-	}
-	
-	List<Column> columns;
-	public Column addColumn(Column column)
-	{
-		if(this.columns == null)
-		{
-			columns = new ArrayList<>();
-		}
-		columns.add(column);
-		return this;
-	}
-	
-	ColumnType columnType;
-	public Column(String label,String id, ColumnType columnType) {
-		this(label, id, null, columnType);
-	}
-	
-	public Column(String label,String id, String lookupId, ColumnType columnType) {
-		this.label = label;
-		this.id = id;
-		this.lookupId = lookupId;
-		this.columnType = columnType;
-	}
-
-	boolean showColumn = true;
-	public Column setShowColumn(boolean showColumn) 
-	{
-		this.showColumn = showColumn;
-		return this;
-	}
-	
-	public boolean getShowColumn()
-	{
-		return this.showColumn;
-	}
-
-	boolean isEditable = false;
-	public Column setIsEditable(boolean isEditable) 
-	{
-		this.isEditable = isEditable;
-		return this;
-	}
-	
-	public boolean getIsEditable()
-	{
-		return this.isEditable;
 	}
 }

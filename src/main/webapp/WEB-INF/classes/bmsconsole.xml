@@ -45,6 +45,36 @@
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
@@ -500,6 +530,86 @@
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="campus" namespace="/api/campus" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction" method="addCampus">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">campusId</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="building" namespace="/api/building" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction" method="addBuilding">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="floor" namespace="/api/floor" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction" method="addFloor">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">floorId</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="space" namespace="/api/space" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="addSpace">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">spaceId</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="zone" namespace="/api/zone" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction" method="addZone">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
 	</package>

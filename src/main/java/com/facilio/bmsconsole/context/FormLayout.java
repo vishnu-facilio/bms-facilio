@@ -90,22 +90,22 @@ public class FormLayout {
 	}
 	
 	
-	public static List<Panel> getNewCampusLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewCampusLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
+		List<NewPanel> panels = new ArrayList<NewPanel>();
 		
-		Panel first =  new Panel(Panel.Type.HALF);
-		Panel second =  new Panel(Panel.Type.HALF);
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
 			if(field.getName().equals("baseSpaceId")) {
 				continue;
 			}
 			if(field.getName().equals("name") || field.getName().equals("location") || field.getName().equals("description")) {
-				first.add(field);
+				first.addField(field);
 			}
 			else {
-				second.add(field);
+				second.addField(field);
 			}
 		}
 		
@@ -115,26 +115,26 @@ public class FormLayout {
 		return panels;
 	}
 	
-	public static List<Panel> getNewBuildingLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewBuildingLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
+		List<NewPanel> panels = new ArrayList<NewPanel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
-		Panel second =  new Panel(Panel.Type.HALF);
-		Panel third =  new Panel(Panel.Type.HALF);
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		 
 		for(FacilioField field : fields) {
 			if(field.getName().equals("baseSpaceId")) {
 				continue;
 			}
 			if(field.getName().equals("name")) {
-				first.add(field);
+				first.addField(field);
 			}
 			else if(field.getName().equals("campus") || field.getName().equals("floors") || field.getName().equals("location")){
-				second.add(field);
+				second.addField(field);
 			}
 			else {
-				third.add(field);
+				third.addField(field);
 			}
 		}
 		panels.add(first);
@@ -144,21 +144,21 @@ public class FormLayout {
 		return panels;
 	}
 	
-	public static List<Panel> getNewFloorLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewFloorLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
-		Panel first =  new Panel(Panel.Type.HALF);
-		Panel second =  new Panel(Panel.Type.HALF);
+		List<NewPanel> panels = new ArrayList<NewPanel>();
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
 			if(field.getName().equals("baseSpaceId")) {
 				continue;
 			}
 			if(field.getName().equals("name") || field.getName().equals("building") || field.getName().equals("area")) {
-				first.add(field);
+				first.addField(field);
 			}
 			else {
-				second.add(field);
+				second.addField(field);
 			}
 		}
 		
@@ -167,21 +167,21 @@ public class FormLayout {
 		return panels;
 	}
 	
-	public static List<Panel> getNewSpaceLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewSpaceLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
-		Panel first =  new Panel(Panel.Type.HALF);
-		Panel second =  new Panel(Panel.Type.HALF);
+		List<NewPanel> panels = new ArrayList<NewPanel>();
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
 			if(field.getName().equals("baseSpaceId")) {
 				continue;
 			}
 			if(field.getName().equals("name") || field.getName().equals("displayName") || field.getName().equals("building") || field.getName().equals("floor") || field.getName().equals("area")) {
-				first.add(field);
+				first.addField(field);
 			}
 			else {
-				second.add(field);
+				second.addField(field);
 			}
 		}
 		
@@ -190,13 +190,13 @@ public class FormLayout {
 		return panels;
 	}
 	
-	public static List<Panel> getNewZoneLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewZoneLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
+		List<NewPanel> panels = new ArrayList<NewPanel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
 		for(FacilioField field : fields) {
-			first.add(field);
+			first.addField(field);
 		}
 		panels.add(first);
 		return panels;

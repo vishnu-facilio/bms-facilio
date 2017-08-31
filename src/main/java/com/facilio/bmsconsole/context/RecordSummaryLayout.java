@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsole.context.Column.ColumnType;
-
 public class RecordSummaryLayout {
 	
 	public RecordSummaryLayout()
@@ -12,15 +10,15 @@ public class RecordSummaryLayout {
 		
 	}
 	
-	private String titleColumnId;
-	public RecordSummaryLayout setTitleColumnId(String titleColumnId) 
+	private String titleViewColumnId;
+	public RecordSummaryLayout setTitleViewColumnId(String titleViewColumnId) 
 	{
-		this.titleColumnId = titleColumnId;
+		this.titleViewColumnId = titleViewColumnId;
 		return this;
 	}
-	public String getTitleColumnId() 
+	public String getTitleViewColumnId() 
 	{
-		return this.titleColumnId;
+		return this.titleViewColumnId;
 	}
 	
 	private boolean hasProgressBar = true;;
@@ -34,26 +32,26 @@ public class RecordSummaryLayout {
 		return this.hasProgressBar;
 	}
 	
-	private String recordTitleColumnId;
-	public RecordSummaryLayout setRecordTitleColumnId(String recordTitleColumnId) 
+	private String recordTitleViewColumnId;
+	public RecordSummaryLayout setRecordTitleViewColumnId(String recordTitleViewColumnId) 
 	{
-		this.recordTitleColumnId = recordTitleColumnId;
+		this.recordTitleViewColumnId = recordTitleViewColumnId;
 		return this;
 	}
-	public String getRecordTitleColumnId() 
+	public String getRecordTitleViewColumnId() 
 	{
-		return this.recordTitleColumnId;
+		return this.recordTitleViewColumnId;
 	}
 	
-	private String pkColumnId;
-	public RecordSummaryLayout setPkColumnId(String pkColumnId) 
+	private String pkViewColumnId;
+	public RecordSummaryLayout setPkViewColumnId(String pkViewColumnId) 
 	{
-		this.pkColumnId = pkColumnId;
+		this.pkViewColumnId = pkViewColumnId;
 		return this;
 	}
-	public String getPkColumnId() 
+	public String getPkViewColumnId() 
 	{
-		return this.pkColumnId;
+		return this.pkViewColumnId;
 	}
 	
 	List<RelatedModule> relatedModules;
@@ -72,63 +70,63 @@ public class RecordSummaryLayout {
 		return this.relatedModules;
 	}
 	
-	List<Column> columns;
-	public RecordSummaryLayout addColumn(Column column)
+	List<ViewColumn> ViewColumns;
+	public RecordSummaryLayout addViewColumn(ViewColumn ViewColumn)
 	{
-		if(this.columns == null)
+		if(this.ViewColumns == null)
 		{
-			columns = new ArrayList<>();
+			ViewColumns = new ArrayList<>();
 		}
-		columns.add(column);
+		ViewColumns.add(ViewColumn);
 		return this;
 	}
 	
-	public List<Column> getColumns()
+	public List<ViewColumn> getViewColumns()
 	{
-		return this.columns;
+		return this.ViewColumns;
 	}
 
 	public static RecordSummaryLayout getRecordSummaryTicketLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("id");
+		recordSummaryLayout.setTitleViewColumnId("id");
 		recordSummaryLayout.setHasProgressBar(true);
-		recordSummaryLayout.setRecordTitleColumnId("subject");
-		recordSummaryLayout.setPkColumnId("id");
-		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT).setIsEditable(true));
-		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-		recordSummaryLayout.addColumn(new Column("Priority", "priority", "priority", ColumnType.LOOKUP));
-		recordSummaryLayout.addColumn(new Column("Due Date", "duedate", ColumnType.DATETIME));
-		recordSummaryLayout.addColumn(new Column("Requested By", "requester", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", "email", ColumnType.LOOKUP));
-		recordSummaryLayout.addColumn(new Column("Space", "space", "name", ColumnType.LOOKUP));
+		recordSummaryLayout.setRecordTitleViewColumnId("subject");
+		recordSummaryLayout.setPkViewColumnId("id");
+		recordSummaryLayout.addViewColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT).setIsEditable(true));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Status", "status", "status", ViewColumn.ColumnType.LOOKUP));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Priority", "priority", "priority", ViewColumn.ColumnType.LOOKUP));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Due Date", "duedate", ViewColumn.ColumnType.DATETIME));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Requested By", "requester", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Assigned To", "assignedTo", "email", ViewColumn.ColumnType.LOOKUP));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Space", "space", "name", ViewColumn.ColumnType.LOOKUP));
 		
 		recordSummaryLayout.addRelatedModule(new RelatedModule("TASKS", "tasks", "Task", "task")
 							.setIcon("fa fa-tasks")
 							.setShowHeader(true)
-							.addColumn(new Column("ID", "id", ColumnType.NUMBER))
-							.addColumn(new Column("Subject", "subject", ColumnType.TEXT))
-							.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP))
-							.addColumn(new Column("Assigned To", "assignedTo", "name", ColumnType.LOOKUP))
+							.addViewColumn(new ViewColumn("ID", "id", ViewColumn.ColumnType.NUMBER))
+							.addViewColumn(new ViewColumn("Subject", "subject", ViewColumn.ColumnType.TEXT))
+							.addViewColumn(new ViewColumn("Status", "status", "status", ViewColumn.ColumnType.LOOKUP))
+							.addViewColumn(new ViewColumn("Assigned To", "assignedTo", "name", ViewColumn.ColumnType.LOOKUP))
 							);
 		recordSummaryLayout.addRelatedModule(new RelatedModule("ATTACHMENTS", "attachments", "Attachment", "attachment")
 							.setIcon("fa fa-paperclip")
 							.setShowHeader(false)
-							.addColumn(new Column("ID", "fileId", ColumnType.NUMBER).setShowColumn(false))
-							.addColumn(new Column("Name", "fileName", ColumnType.TEXT))
+							.addViewColumn(new ViewColumn("ID", "fileId", ViewColumn.ColumnType.NUMBER).setShowColumn(false))
+							.addViewColumn(new ViewColumn("Name", "fileName", ViewColumn.ColumnType.TEXT))
 							);
 		recordSummaryLayout.addRelatedModule(new RelatedModule("NOTES", "notes", "Note", "note")
 							.setIcon("fa fa-sticky-note")
 							.setShowHeader(false)
-							.addColumn(new Column("ID", "noteId", ColumnType.NUMBER).setShowColumn(false))
-							.addColumn(new Column("Content", "body", ColumnType.TEXT))
+							.addViewColumn(new ViewColumn("ID", "noteId", ViewColumn.ColumnType.NUMBER).setShowColumn(false))
+							.addViewColumn(new ViewColumn("Content", "body", ViewColumn.ColumnType.TEXT))
 							);
 		return recordSummaryLayout;
 	}
 	
 	public static RecordSummaryLayout getRecordSummaryWorkOrderLayout() {
 		RecordSummaryLayout recordSummaryLayout = getRecordSummaryTicketLayout();
-		recordSummaryLayout.addColumn(new Column("Requester", "requester", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Requester", "requester", ViewColumn.ColumnType.TEXT));
 		
 		return recordSummaryLayout;
 	}
@@ -136,15 +134,15 @@ public class RecordSummaryLayout {
 	public static RecordSummaryLayout getRecordSummaryTaskLayout()
 	{
 //		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-//		recordSummaryLayout.setTitleColumnId("id");
+//		recordSummaryLayout.setTitleViewColumnId("id");
 //		recordSummaryLayout.setHasProgressBar(true);
-//		recordSummaryLayout.setRecordTitleColumnId("subject");
+//		recordSummaryLayout.setRecordTitleViewColumnId("subject");
 //		
-//		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-//		recordSummaryLayout.addColumn(new Column("Status", "status", "status", ColumnType.LOOKUP));
-//		recordSummaryLayout.addColumn(new Column("Assigned To", "assignedTo", ColumnType.TEXT));
+//		recordSummaryLayout.addViewColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT));
+//		recordSummaryLayout.addViewColumn(new ViewColumn("Status", "status", "status", ViewColumn.ColumnType.LOOKUP));
+//		recordSummaryLayout.addViewColumn(new ViewColumn("Assigned To", "assignedTo", ViewColumn.ColumnType.TEXT));
 		RecordSummaryLayout recordSummaryLayout = getRecordSummaryTicketLayout();
-		recordSummaryLayout.addColumn(new Column("Work Order", "parentWorkOrder", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Work Order", "parentWorkOrder", ViewColumn.ColumnType.TEXT));
 		
 		return recordSummaryLayout;
 	}
@@ -152,79 +150,79 @@ public class RecordSummaryLayout {
 	public static RecordSummaryLayout getRecordSummaryCampusLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("name");
+		recordSummaryLayout.setTitleViewColumnId("name");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Description", "description", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Managed By", "managedBy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Location", "locationId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Managed By", "managedBy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Location", "locationId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		return recordSummaryLayout;
 	}
 	
 	public static RecordSummaryLayout getRecordSummaryBuildingLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("name");
+		recordSummaryLayout.setTitleViewColumnId("name");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Campus", "campusId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Floors", "floors", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Location", "locationId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Campus", "campusId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Floors", "floors", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Location", "locationId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		return recordSummaryLayout;
 	}
 	
 	public static RecordSummaryLayout getRecordSummaryFloorLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("name");
+		recordSummaryLayout.setTitleViewColumnId("name");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Main Level", "mainLevel", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Building", "buildingId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Main Level", "mainLevel", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		return recordSummaryLayout;
 	}
 	
 	public static RecordSummaryLayout getRecordSummarySpaceLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("displayName");
+		recordSummaryLayout.setTitleViewColumnId("displayName");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Name", "name", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Building", "buildingId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Floor", "floorId", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Occupiable", "occupiable", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Availability", "availability", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Category", "category", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Max Occupancy", "maxOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Current Occupancy", "currentOccupancy", ColumnType.TEXT));
-		recordSummaryLayout.addColumn(new Column("Area", "area", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Building", "buildingId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Floor", "floorId", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Occupiable", "occupiable", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Availability", "availability", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Category", "category", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
 		return recordSummaryLayout;
 	}
 	
 	public static RecordSummaryLayout getRecordSummaryZoneLayout()
 	{
 		RecordSummaryLayout recordSummaryLayout = new RecordSummaryLayout();
-		recordSummaryLayout.setTitleColumnId("name");
+		recordSummaryLayout.setTitleViewColumnId("name");
 		recordSummaryLayout.setHasProgressBar(false);
 		
-		recordSummaryLayout.addColumn(new Column("Description", "shortDescription", ColumnType.TEXT));
+		recordSummaryLayout.addViewColumn(new ViewColumn("Description", "shortDescription", ViewColumn.ColumnType.TEXT));
 		
 		recordSummaryLayout.addRelatedModule(new RelatedModule("SPACES", "basespaces", "Space", "basespace")
 				.setIcon("fa fa-globe")
 				.setShowHeader(true)
 				.setDefaultPopup("view")
-				.addColumn(new Column("Name", "name", ColumnType.TEXT))
-				.addColumn(new Column("Type", "type", ColumnType.TEXT))
+				.addViewColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT))
+				.addViewColumn(new ViewColumn("Type", "type", ViewColumn.ColumnType.TEXT))
 				);
 		return recordSummaryLayout;
 	}
@@ -300,19 +298,19 @@ class RelatedModule
 		return this.showHeader;
 	}
 	
-	List<Column> columns;
-	public RelatedModule addColumn(Column column)
+	List<ViewColumn> ViewColumns;
+	public RelatedModule addViewColumn(ViewColumn ViewColumn)
 	{
-		if(this.columns == null)
+		if(this.ViewColumns == null)
 		{
-			columns = new ArrayList<>();
+			ViewColumns = new ArrayList<>();
 		}
-		columns.add(column);
+		ViewColumns.add(ViewColumn);
 		return this;
 	}
 	
-	public List<Column> getColumns()
+	public List<ViewColumn> getViewColumns()
 	{
-		return this.columns;
+		return this.ViewColumns;
 	}
 }
