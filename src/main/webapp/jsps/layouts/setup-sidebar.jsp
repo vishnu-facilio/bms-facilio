@@ -124,6 +124,23 @@
 	                	<span class="nav-title">Subscriptions</span>
 	                </a>
 	            </li>
+	                     
+	                     <li>
+                <a href="#">
+                	<span class="nav-title">Automation</span>
+                	<span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#assignment">Assignment Rules</a>
+                    </li>
+                    <f:hasPermission permission="ORG_ACCESS_ADMINISTER">
+                    	<li>
+	                        <a href="#">Export</a>
+	                    </li>
+                    </f:hasPermission>
+                </ul>
+            </li>
 	         
 	        </f:hasPermission>
         </ul>

@@ -65,4 +65,12 @@ public class NoteContext {
 	public void setParentModuleLinkName(String parentModuleLinkName) {
 		this.parentModuleLinkName = parentModuleLinkName;
 	}
+	
+	public boolean notifyRequester = false;
+	public boolean getNotifyRequester() {
+		return notifyRequester;
+	}
+	public void setNotifyRequester(boolean notifyRequester) {
+		this.notifyRequester = notifyRequester;
+	}
 }

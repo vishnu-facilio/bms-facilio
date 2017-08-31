@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -11,11 +13,15 @@ import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class SetupActions extends ActionSupport {
+public class SetupActions<T> extends ActionSupport {
 	
 	static
 	{
@@ -27,12 +33,12 @@ public class SetupActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private SetupLayout setup;
-	public SetupLayout getSetup() {
+	private SetupLayout<T> setup;
+	public SetupLayout<T> getSetup() {
 		return this.setup;
 	}
 	
-	public void setSetup(SetupLayout setup) {
+	public void setSetup(SetupLayout<T> setup) {
 		this.setup = setup;
 	}
 	
@@ -42,22 +48,39 @@ public class SetupActions extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public String importData() throws Exception {
+	public String assignmentRules() throws Exception {
+		
+		setSetup(SetupLayout.getAssignmentRules());
+		return SUCCESS;
+	}
+	public String newAssignmentRules() throws Exception {
+		
+		setSetup(SetupLayout.getNewAssignmentRules());
+		return SUCCESS;
+	}
+public String importData() throws Exception {
 		
 		setSetup(SetupLayout.getImportLayout());
 		return SUCCESS;
 	}
-	public String servicePortal() throws Exception {
-
-		SetupLayout<ServicePortalInfo> portalInfo =SetupLayout.getservicePortal();
-		ServicePortalInfo spinfo = new ServicePortalInfo();
-		portalInfo.setData(spinfo);
-		setSetup(portalInfo);
-		return SUCCESS;
+	
+	private ServicePortalInfo servicePortal;
+	
+	public ServicePortalInfo getServicePortal() {
+		return servicePortal;
 	}
+
+	public void setServicePortal(ServicePortalInfo servicePortal) {
+		this.servicePortal = servicePortal;
+	}
+
+	
+	
 	public String orgSettings() throws Exception {
 		
 		setSetup(SetupLayout.getCompanySettingsLayout());
+	
+		setOrg(OrgApi.getOrgContext());
 		
 		return SUCCESS;
 	}
@@ -72,13 +95,87 @@ public class SetupActions extends ActionSupport {
 		return this.org;
 	}
 	
+	private File orgPhoto;
+	
+	public File getOrgPhoto() {
+		return orgPhoto;
+	}
+	public void setOrgPhoto(File orgPhoto) {
+		this.orgPhoto = orgPhoto;
+	}
+	
+	private String orgPhotoFileName;
+
+	public String getOrgPhotoFileName() {
+		return orgPhotoFileName;
+	}
+
+	public void setOrgPhotoFileName(String orgPhotoFileName) {
+		this.orgPhotoFileName = orgPhotoFileName;
+	}
+	
+	private String orgPhotoContentType;
+	public String getOrgPhotoContentType() {
+		return orgPhotoContentType;
+	}
+
+	public void setOrgPhotoContentType(String orgPhotoContentType) {
+		this.orgPhotoContentType = orgPhotoContentType;
+	}	
+	
 	public String updateOrgSettings() throws Exception {
 		org.getName();
 		
-	System.out.println(org.getName());
+		if (getOrgPhoto() != null) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			long fileId = fs.addFile(getOrgPhotoFileName(), getOrgPhoto(), getOrgPhotoContentType());
+			org.setLogoId(fileId);
+		}
+		
+	OrgApi.updateOrgsettings(org, null);
 		
 		return SUCCESS;
 	}
+	
+	private FileInfo fileInfo;
+	private InputStream downloadStream;
+	
+	public FileInfo getFileInfo() {
+		return fileInfo;
+	}
+
+	public void setFileInfo(FileInfo fileInfo) {
+		this.fileInfo = fileInfo;
+	}
+
+	public InputStream getDownloadStream() {
+		return downloadStream;
+	}
+
+	public void setDownloadStream(InputStream downloadStream) {
+		this.downloadStream = downloadStream;
+	}
+	
+	public String viewOrgPhoto() {
+		
+		try {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			this.org = OrgApi.getOrgContext();
+			fileInfo = fs.getFileInfo(this.org.getLogoId());
+			if (fileInfo != null) {
+				downloadStream = fs.readFile(this.org.getLogoId());
+			}
+			else {
+				return ERROR;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return SUCCESS;
+	}
+	
+	
 	
 	public String showNotificationSettings() throws Exception {
 		
@@ -209,5 +306,7 @@ public class SetupActions extends ActionSupport {
 		
 		return SUCCESS;
 	}
+
+	
 	
 }

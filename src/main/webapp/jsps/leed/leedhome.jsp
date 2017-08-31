@@ -1,245 +1,195 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@taglib uri="/struts-tags" prefix="s"%>
-
-<link href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet">
-
-<link href="${pageContext.request.contextPath}/css/leed.css" rel="stylesheet">
-
-<div class="form-header">
+<div class="page-header">
 <div class="row">
-<div class="col-sm-12" >
-  <h4 class="pull-left ld-content-header">Project Registration<br><br>
-  <small>Project registration includes access to performance</small>
-  </h4>
+  	<div class="container-fluid ">
+  	<div class="col-sm-8">
+          <h4><b>Welcome</b></h4>
+          <p style="color:white;margin-left: 63px;font-style: inherit;"> Get started with easy LEED certification</p>
+      	</div>
+      	<div class="col-sm-4">
+      
+      <img src="${pageContext.request.contextPath}/images/Leed.svg" alt="Leed" width="140" height="140" class="img-responsive pull-right" >
    
+      	</div>
+     </div> 	
+  	</div>
+</div>
+
+
+
+<div style="padding-left:20px; padding-right:20px;">
+<div class="row">
+<p style="margin-left:14px;">Onboarding</p>
+<div class= "col-sm-6">
+
+<form role = "form">
+   <div class = "form-group">
+      <label for = "name">First Name</label>
+      <input type = "text" class = "form-control" id = "name" placeholder = "">
+
+   </div>
+   </form>
+</div>
+
+<div class= "col-sm-6">
+<form role = "form">
+   <div class = "form-group">
+      <label for = "name">Last Name</label>
+      <input type = "text" class = "form-control" id = "name" placeholder = "">
+   </div>
+   </form>
+</div>
+</div><br>
+
+<div class="row">
+<div class= "col-sm-6">
+<form role = "form">
+   <div class = "form-group">
+      <label for = "name">Phone</label>
+      <input type = "text" class = "form-control" id = "name" placeholder = "">
+   </div>
+   </form>
+</div>
+
+<div class= "col-sm-6">
+<form role = "form">
+   <div class = "form-group">
+ <label for = "name">Company</label>
+      <input type = "text" class = "form-control" id = "name" placeholder = "">
+   </div>
+   </form>
+</div>
+</div><br>
+
+
+<div class="row">
+<div class= "col-sm-12">
+ <div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Country
+    <span class="caret"></span></button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">INDIA</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">USA</a></li>
+
+    </ul>
   </div>
 </div>
+
 </div>
-<div class="form-content leed-form ">
-<form>
+</div>
+<br>
+                                                       
+<div class="row">
+<div></div>
+<div id="footer">
+  <div class="container">
+    <p class="text-muted">
+    <button type="button" class="btn btn-default pull-right" >Cancel</button>
+    <button type="button" class="btn btn-primary pull-right">Submit</button></p>
+  </div>
+</div>
+</div> 
 
 
- <div class="row">
-     <label class="ld-content-header">Enter your facility's details</label>
- 
- <div>
-    <div class="col-sm-4">
-    <div class="ld-panel">
-    <label>Project Name</label>
-    <div >
-   <input class="ld-input-text form-control" type=text >
-   </div>
-   </div>
-   <div class="ld-panel">
-    <label>Project type</label>
-      <div >
-   <select  name="org.country" class="form-control ld-select">
-   <option>1</option>
-	</select>
-   </div>
-    </div>
-    </div>
-  <div class="col-sm-4 ">
- 
-    <div class="ld-panel">
-    <label>Unit type</label>
-    <div >
-   <label class="radio-inline"><input type="radio" value="ip" name="optradio"><b>IP</b></label>
-	<label class="radio-inline"><input type="radio" value="si" name="optradio"><b>SI</b></label>
-   </div>
-   </div>
-   <div class="ld-panel">
-    <label>Rating System (Optional)</label>
-      <div >
-   <input class="ld-input-text form-control" type=text >
-   </div>
-    </div>
-    </div>
+<style>
+
+
+#footer {
+    height: 50px;
+    background-color: #f5f5f5;
+    margin-top: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0px 0px 5px;
+    /*margin-left: -16px;*/
+}
+.container{
+    margin-left: 24px;}
+/*#footer {
+  height: 60px;
+  background-color: #f5f5f5;
+  margin-top:50px;
+  padding-top:10px;
+  padding-bottom:10px;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  box-shadow:0px 0px 5px;
+}*/
+/*.btn-primary{
+margin-right:45px;}*/
+/* .btn-default{
+margin-left:440px;}*/
+
+
+.dropdown{
     
+    margin-top: -8px;
+    }
+.btn{margin-right:10px;} 
+@media screen and (min-width: 699px) {
+.btn-default{
 
-	
-</div>
-</div>
+margin-right:184px;
 
-  <div class="row">
-     <label class="ld-content-header">Enter your organization's details </label>
- 
- <div>
-    <div class="col-sm-4">
-    <div class="ld-panel">
-    <label>Owner Type</label>
-    <div >
-   <select  name="org.country" class="form-control ld-select">
-   <option>1</option>
-	</select>
-   </div>
-   </div>
-   <div class="ld-panel">
-    <label>Owner Email</label>
-      <div >
-      <input class="ld-input-text form-control" type=text >
+
+}
+}
+.btn-primary {
+    
+    margin-right: 7px;
+}
+
+
+@media (min-width: 768px){
+
+#page-wrapper {
+
+padding: 0px !important;   
+
+}
+}
+.panel{    margin-top: 45px;}
+
+
+.container-fluid {
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: #323941;
+    }
+    
+   h4{
    
-	
-   </div>
-    </div>
-    </div>
-  <div class="col-sm-4">
- 
-    <div class="ld-panel">
-    <label>Owner Organization</label>
-           <div >
-   <select  name="org.country" class="form-control ld-select">
-   <option>1</option>
-	</select>
-   </div>
+    color: white;
+         
+}
+b,strong{
+margin-left: 63px;}
 
-   </div>
-   <div class="ld-panel">
-    <label>Owner Country</label>
-     <div >
-      <div >
-    <select id="select-country" name="org.country" class="form-control">
-	</select>
-   </div>
-   </div>
-    </div>
-    </div>
-   
+.img-responsive {
+    display: block;
+    /* max-width: 100%; */
+    height: auto;
+    margin-right: 70px;
+    }
+    .container{
+        margin-right: 70px;}
+        
+.col-sm-8 {
+    width: 66.66666667%;
+    margin-top: 16px;
+}
+.page-header {
+    /*padding-bottom: 9px;
+    margin: 40px 0 20px;*/
+    border-bottom: 0px solid #eee;
+    #eee;
+    width: 106%;
+    margin-left: -16px;
+}
+</style>
 
-	
-</div>
-</div>
- 
-   <div class="row">
-     <label class="ld-content-header">Where is your project located at?</label>
-     <div>
-         <div class="col-sm-4">
-    <div class="ld-panel">
-    <label>Area</label>
-    <div >
-   <input class="ld-input-text form-control" type=text >
-   </div>
-   </div>
-   </div>
- </div>
- </div>
- 
-  <div class="row"> 
- <div>
-    <div class="col-sm-4">
-  
-   <div class="ld-panel">
-    <label>Address</label>
-      <div >
-       <input class="ld-input-text form-control" type=text >
-
-   </div>
-    </div>
-     <div class="ld-panel">
-    <label>Country</label>
-      <div >
-      <div >
-    <select id="country" name="org.country" class="form-control">
-	</select>
-   </div>
-   </div>
-    </div>
-     <div class="ld-panel">
-    <label>Zip code</label>
-      <div >
-       <input class="ld-input-text form-control" type=text >
-
-   </div>
-    </div>
-    </div>
-  <div class="col-sm-4">
- 
-   <div class="ld-panel">
-    <label>City</label>
-      <div >
-   <input class="ld-input-text form-control" type=text >
-   </div>
-    </div>
-     <div class="ld-panel">
-    <label>State</label>
-      <div >
-       <select  name="org.country" class="form-control ld-select">
-   <option>1</option>
-	</select>
-   </div>
-    </div>
-     <div class="ld-panel">
-    <label>Geo location (Optional)</label>
-      <div >
-       <input class="ld-input-text form-control" type=text >
-
-   </div>
-    </div>
-    </div>
-  
-	
-</div>
-</div>
-
- <div class="row">
- <div class="col-md-8 ld-panel">
- <input type="checkbox" name="vehicle" value="Bike">This project is private<br>
- 
- </div>
- </div>
-
-		<div class="row">
-			<label class="ld-content-header">Urjanet credentials</label>
-
-			<div>
-				<div class="col-sm-4">
-					<div class="ld-panel">
-						<label>User name</label>
-						<div>
-							<input class="ld-input-text form-control" type=text>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-sm-4">
-
-					<div class="ld-panel">
-						<label>Password</label> <input class="ld-input-text form-control"
-							type=text>
-
-					</div>
-
-
-				</div>
-
-
-			</div>
-		</div>
-
- <div class="row">
- <div class="col-md-8 ld-panel jumbotron">
- <input type="checkbox" name="vehicle" value="Bike">I agree to terms and conditions of <a href="#">service agreement</a><br>
- 
- </div>
- </div>
-  <div class="row">
- <div class="col-md-8 ld-panel ">
- <button type="button" class="btn btn-default pull-right ld-submit-btn">Submit</button>
-  <button type="button" class="btn btn-default pull-right ld-cancel-btn">cancel</button>
- </div>
- </div>
- <div class="ld-panel">
- </div>
-
-
-	</form>
-</div>
-
-  <script>
-	$(document).ready(function() {
-		
-		FacilioApp.countryCombo('#select-country');
-		FacilioApp.countryCombo('#country');
-	});
-  </script>

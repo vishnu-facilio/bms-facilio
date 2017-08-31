@@ -399,16 +399,16 @@ public class FacilioConstants {
 		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
-				return "TICKETID";
+				return "WORK_ORDER_ID";
 			}
-			return null;
+			return "WORK_ORDER_ID";
 		}
 		
 		public static String getAttachmentTableName(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
-				return "Ticket_Attachment";
+				return "WorkOrder_Attachment";
 			}
-			return null;
+			return "WorkOrder_Attachment";
 		}
 
 		public static final String CV_NAME = "cvName";

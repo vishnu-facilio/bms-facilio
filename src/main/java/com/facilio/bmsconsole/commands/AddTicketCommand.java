@@ -32,7 +32,7 @@ public class AddTicketCommand implements Command {
 				scheduleObj.setScheduleId(ScheduleObjectAPI.addScheduleObject(scheduleObj, conn));
 				ticket.setScheduleId(scheduleObj.getScheduleId());
 			}
-			
+			ticket.setCreatedDate(System.currentTimeMillis());
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)

@@ -26,11 +26,16 @@ label {
 	box-shadow: none;
 }
 
+button.btn.btn-default.save-btn:focus,button.btn.btn-default.cancel-btn:focus{
+	outline: none;
+	
+}
 .btn.save-btn {
 	background: #50CA7C;
 	border-radius: 100px;
 	color: #ffffff;
 	border-color: #50CA7C;
+
 }
 
 .btn.edit{

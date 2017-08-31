@@ -10,7 +10,7 @@
    		 <label class="inline-text">Allow users to Sign Up from the customer portal</label>
     	</div>
     	<div class="col-xs-6">
-    	<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.signupAllowed"  />
+    	<s:radio list="#{'true':'Yes','false':'No'}" name="signupAllowed"  />
     	
     	</div>
 		</div>
@@ -20,7 +20,7 @@
    		 <label class="inline-text">Allow users to Sign In using Google</label>
     	</div>
     	<div class="col-xs-6">
-		<s:radio list="#{'true':'Yes','false':'No'}" name="setup.data.gmailLoginAllowed"  />
+		<s:radio list="#{'true':'Yes','false':'No'}" name="gmailLoginAllowed"  />
 
     	</div>
 		</div>
@@ -41,7 +41,7 @@
    		 <label class="inline-text">Who can submit a new ticket on portal</label>
     	</div>
     	<div class="col-xs-6">
-    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="setup.data.ticketAlloedForPublic"  />
+    			<s:radio list="#{'false':'Logged In Users','true':'Everyone'}" name="ticketAlloedForPublic"  />
     	
     	 
           <div id="enable-captcha" class="hidden-input">
@@ -70,7 +70,7 @@
     	</div>
     	<div class="col-xs-6">
     	
-       <s:radio  list="#{'true':'Any domain','false':'Whitelisted domains'}" name="setup.data.anyDomain" />
+       <s:radio  list="#{'true':'Any domain','false':'Whitelisted domains'}" name="anyDomain" />
     	
     	 <input type="text" id="domain-name" class="hidden-input" name="domainName" placeholder="Enter Domain Name" >
          
@@ -91,15 +91,14 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Login URL :</label>
-        <input type="url" class="pull-right form-control">
+        <s:textfield name="samlInfo.loginurl"  class="pull-right form-control" type="url"/>
   		</div>
   		
 		</div>
 		 <div class="row row-height">
 		 <div class="col-xs-9 ">
-        
-        <label class="inline-text text-right ">Logout URL :</label>
-        <input type="url" class="pull-right form-control">
+         <label class="inline-text text-right ">Logout URL :</label>
+         <s:textfield name="samlInfo.logouturl"  class="pull-right form-control" type="url"/>
   		</div>
   		
 		</div>
@@ -107,7 +106,8 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Change Password URL :</label>
-        <input type="url" class="pull-right form-control" >
+        <s:textfield name="samlInfo.changepasswordurl"  class="pull-right form-control" type="url"/>
+
   		</div>
   		
 		</div>
@@ -115,7 +115,7 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Public Key  :</label>
-   		<input type="text" class="pull-right form-control" placeholder="Get Key from file" >
+        <s:file name="samlInfo.publickey"  class="pull-right form-control" type="url"/>
 
   		</div>
   		
@@ -229,12 +229,52 @@ $("input[name=setup\\.data\\.ticketAlloedForPublic]").change(function () {
 });
 	
 
-/* $("#reset").click(function() {
-    $("#service-form")[0].reset();
+$(".action-btn .save-btn").click(function() {
+	$('#service-form').submit();
+});
 
-}); */
+$(".action-btn .cancel-btn").click(function() {
+	location.href = '#servicePortal';
+});
 	
+$('#service-form').validator().on('submit', function (e) {
 	
+	event.preventDefault();
+	  console.log( $( this ).serialize() );
+ 	
+	  if (e.isDefaultPrevented()) {
+			// handle the invalid form...
+	  }
+	  else {
+			// check if any validation errors
+			if ($(this).find('.form-group').hasClass('has-error')) {
+				return false;
+			}
+			
+			$(".save-btn").button('loading');
+			FacilioApp.ajax({
+				method : "post",
+				url : contextPath + "/app/setup/updateServicePortal",
+				 data : $("#service-form").serialize(),
+				done: function(data) {
+					
+					FacilioApp.notifyMessage('success', 'company settings updated successfully!');
+
+				},
+				fail: function(error) {
+					$(".save-btn").button('reset');
+					console.log(error);
+					alert(error);
+				} 
+			});
+			$(".save-btn").button('reset');
+			return false;
+	  	}
+	
+	 
+	});
+
+
 	
 });
 </script>

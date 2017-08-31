@@ -1,39 +1,59 @@
 package com.facilio.bmsconsole.commands.data;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
-public class ServicePortalInfo {
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
-	public boolean isSignupAllowed() {
+//import redis.clients.jedis.Connection;
+
+public class ServicePortalInfo {
+	public ServicePortalInfo()
+	{
+		// default values
+	//	samlinfo.put("loginurl", "1");
+		//samlinfo.put("logouturl", "2");
+
+		//samlinfo.put("changepasswordurl", 3);
+
+	}
+	boolean signupAllowed;
+	boolean gmailLoginAllowed;
+	boolean ticketAlloedForPublic;
+	boolean anyDomain;
+
+	public boolean getSignupAllowed() {
 		return signupAllowed;
 	}
 	public void setSignupAllowed(boolean signupAllowed) {
 		this.signupAllowed = signupAllowed;
 	}
-	public boolean isGmailLoginAllowed() {
+	public boolean getGmailLoginAllowed() {
 		return gmailLoginAllowed;
 	}
 	public void setGmailLoginAllowed(boolean gmailLoginAllowed) {
 		this.gmailLoginAllowed = gmailLoginAllowed;
 	}
-	public boolean isTicketAlloedForPublic() {
+	public boolean getTicketAlloedForPublic() {
 		return ticketAlloedForPublic;
 	}
 	public void setTicketAlloedForPublic(boolean ticketAlloedForPublic) {
 		this.ticketAlloedForPublic = ticketAlloedForPublic;
 	}
-	public boolean isAnyDomain() {
+	public boolean getAnyDomain() {
 		return anyDomain;
 	}
 	public void setAnyDomain(boolean anyDomain) {
 		this.anyDomain = anyDomain;
 	}
-	boolean signupAllowed=true;
-	boolean gmailLoginAllowed=true;
-	boolean ticketAlloedForPublic=true;
-	boolean anyDomain;
-	public boolean isSamlEnabled() {
+
+	public boolean getSamlEnabled() {
 		return samlEnabled;
 	}
 	public void setSamlEnabled(boolean samlEnabled) {
@@ -41,10 +61,10 @@ public class ServicePortalInfo {
 	}
 	boolean samlEnabled;
 	
-	private HashMap samlinfo = null;
+	private HashMap samlinfo = new HashMap();
 	public HashMap getSamlInfo()
 	{
-		if(!isSamlEnabled())
+		if(!getSamlEnabled())
 		{
 		return samlinfo;
 		}
@@ -61,12 +81,7 @@ public class ServicePortalInfo {
 	
 	public void setSamInfo(HashMap samlinfo)
 	{
-		// Keys
-		/*login_url
-		logout_url
-		forgot_pass_url
-		certificate path
-		*/
+		
 		if(samlinfo.size()==3)
 		{
 			this.samlinfo= samlinfo;
@@ -74,8 +89,106 @@ public class ServicePortalInfo {
 		}
 	}
 	
-	public void save()
-	{
+
+	
+	
+	@Override
+	public String toString() {
+		return "ServicePortalInfo [signupAllowed=" + signupAllowed + ", gmailLoginAllowed=" + gmailLoginAllowed
+				+ ", ticketAlloedForPublic=" + ticketAlloedForPublic + ", anyDomain=" + anyDomain + ", samlEnabled="
+				+ samlEnabled + ", samlinfo=" + samlinfo + "]";
+	}
+	private  static ServicePortalInfo getServicePortalInfoFromRS(ResultSet rs) throws SQLException {
+		ServicePortalInfo getorgContext = new ServicePortalInfo();
+		getorgContext.setAnyDomain(rs.getBoolean("IS_ANYDOMAIN_ALLOWED"));
+		getorgContext.setSignupAllowed(rs.getBoolean("SIGNUP_ALLOWED"));
+		getorgContext.setGmailLoginAllowed(rs.getBoolean("GMAILLOGIN_ALLOWED"));
+		getorgContext.setTicketAlloedForPublic(rs.getBoolean("IS_PUBLIC_CREATE_ALLOWED"));
+	
 		
+		return getorgContext;
+	}
+	public static ServicePortalInfo getServicePortalInfo() throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select * from PortalInfo where ORGID=? and PORTALTYPE=0");
+			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
+			
+		rs = pstmt.executeQuery();
+		ServicePortalInfo oc = null;
+		if(rs.next()) {
+			oc = ServicePortalInfo.getServicePortalInfoFromRS(rs);
+			System.out.println("set service portal info ===========> "+oc);
+		}
+		else
+		{
+			oc = new ServicePortalInfo();
+		}
+		
+		return oc;
+	}
+	catch(SQLException e) {
+		throw e;
+	}
+	finally {
+		DBUtil.closeAll(conn, pstmt, rs);
+	}
+	}
+	public static Object updatePortalInfo (ServicePortalInfo data, Connection conn) throws Exception{
+		
+	
+		boolean isLocalConn = false;
+		PreparedStatement psmt = null;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isLocalConn = true;
+			}
+			
+			String updatequery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
+			psmt = conn.prepareStatement(updatequery);
+			psmt.setBoolean(1, data.getSignupAllowed());
+			psmt.setBoolean(2, data.getGmailLoginAllowed());
+			psmt.setBoolean(3, data.getTicketAlloedForPublic());
+			psmt.setBoolean(4, data.getAnyDomain());
+			
+			psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
+			
+			psmt.executeUpdate();
+			psmt.close();
+			
+			if(data.getSamlInfo()!=null)
+			{
+			String samlupdatequery = "update PortalInfo set LOGIN_URL=? , LOGOUT_URL=? ,PASSWORD_URL=? where ORGID=?";
+			psmt = conn.prepareStatement(samlupdatequery);
+			psmt.setString(1, ((String[])data.getSamlInfo().get("loginurl"))[0]);
+			psmt.setString(2, ((String[])data.getSamlInfo().get("logouturl"))[0]);
+
+			psmt.setString(3, ((String[])data.getSamlInfo().get("changepasswordurl"))[0]);
+            psmt.setLong(4, OrgInfo.getCurrentOrgInfo().getOrgid());
+			
+			psmt.executeUpdate();
+			psmt.close();
+			psmt=null;
+			}
+			
+			return true;
+	
+			}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			if (isLocalConn) {
+				DBUtil.closeAll(conn, null);
+			}
+			if (psmt != null) {
+				DBUtil.closeAll(null, psmt);
+			}
+		}
 	}
 }

@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
+
+import com.facilio.bmsconsole.util.OrgApi;
+
 public class OrgContext{
 	private String name;
 	private long orgId;
@@ -15,8 +19,14 @@ public class OrgContext{
 	public void setName(String name) {
 		this.name = name;
 	}
+	private long logoId;
 	
-	
+	public long getLogoId() {
+		return logoId;
+	}
+	public void setLogoId(long logoId) {
+		this.logoId = logoId;
+	}
 	
 	private long phone;
 	private long mobile;

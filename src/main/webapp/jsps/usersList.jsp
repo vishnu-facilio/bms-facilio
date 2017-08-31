@@ -4,7 +4,6 @@
     <thead>
         <tr>
         	<th>
-        		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         		Name
         	</th>
         	<th>Email</th>

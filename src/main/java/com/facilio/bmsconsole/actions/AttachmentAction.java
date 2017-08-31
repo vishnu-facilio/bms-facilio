@@ -8,6 +8,7 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
@@ -101,6 +102,32 @@ public class AttachmentAction  extends ActionSupport {
 		return SUCCESS;
 	}
 
+	private List<AttachmentContext> attachments;
+	public List<AttachmentContext> getAttachments() {
+		return attachments;
+	}
+	public void setAttachments(List<AttachmentContext> attachments) {
+		this.attachments = attachments;
+	}
+	
+	public String attachmentList() {
+		
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+			
+			Chain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
+			getAttachmentsChain.execute(context);
+			
+			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+			setAttachments(attachmentList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return SUCCESS;
+	}
+	
 	public String deleteAttachment() {
 		try {
 			FacilioContext context = new FacilioContext();

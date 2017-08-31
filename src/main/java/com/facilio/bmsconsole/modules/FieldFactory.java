@@ -327,4 +327,49 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getNoteFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		String tableName = "Notes";
+		
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField field1 = new FacilioField();
+		field1.setName("noteId");
+		field1.setDataType(FieldType.NUMBER);
+		field1.setColumnName("NOTEID");
+		field1.setModuleTableName(tableName);
+		fields.add(field1);
+		
+		LookupField field2 = new LookupField();
+		field2.setName("ownerId");
+		field2.setDataType(FieldType.LOOKUP);
+		field2.setColumnName("OWNERID");
+		field2.setModuleTableName(tableName);
+		field2.setSpecialType(FacilioConstants.ContextNames.USER);
+		fields.add(field2);
+		
+		FacilioField field3 = new FacilioField();
+		field3.setName("creationTime");
+		field3.setDataType(FieldType.NUMBER);
+		field3.setColumnName("CREATION_TIME");
+		field3.setModuleTableName(tableName);
+		fields.add(field3);
+		
+		LookupField field4 = new LookupField();
+		field4.setName("title");
+		field4.setDataType(FieldType.STRING);
+		field4.setColumnName("TITLE");
+		field4.setModuleTableName(tableName);
+		fields.add(field4);
+		
+		LookupField field5 = new LookupField();
+		field5.setName("body");
+		field5.setDataType(FieldType.STRING);
+		field5.setColumnName("BODY");
+		field5.setModuleTableName(tableName);
+		fields.add(field5);
+
+		return fields;
+	}
 }	

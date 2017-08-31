@@ -12,8 +12,27 @@ public class SetupLayout<T> {
 	public void setData(T t) {
         this.t = t;
     }
+	private  Class<T> type;
 
+	public SetupLayout(Class<T> type) {
+        this.type = type;
+   }
+
+    public Class<T> getDataType() {
+        return this.type;
+    }
+	
     public T getData() {
+    	if(t==null)
+    	{
+    		try {
+				return type.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
         return t;
     }
 	
@@ -97,6 +116,30 @@ public class SetupLayout<T> {
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("Data Administration");
 		sl.setSettingViewTitle("Import");
+		
+		return sl;
+	}
+	public static SetupLayout getAssignmentRules() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Automation");
+		sl.setSettingViewTitle("Assignment Rules");
+		
+		sl.addActionButton(new ActionButton().setName("New").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		
+		
+		return sl;
+	}
+	public static SetupLayout getNewAssignmentRules() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Automation");
+		sl.setSettingViewTitle("New AssignmentRules");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
+		
 		
 		return sl;
 	}

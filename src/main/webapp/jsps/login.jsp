@@ -1,5 +1,12 @@
 <%
  String staticURL = "http://facilio-static.s3-website-us-west-2.amazonaws.com";
+
+// Temp code
+String serverName = request.getServerName();
+if (serverName.indexOf("fazilio") != -1) {
+	response.sendRedirect("/app/login");
+	return;
+}
  %>
 <!DOCTYPE html>
 <html lang="en">

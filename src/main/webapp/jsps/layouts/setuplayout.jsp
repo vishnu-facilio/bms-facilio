@@ -16,7 +16,10 @@
     	<title><tiles:getAsString name="title" /></title>  
     
     	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    	
+
+    	<script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
+
+
     	<!-- Bootstrap Core CSS -->
 	    <link href="<%=staticURL%>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	    
