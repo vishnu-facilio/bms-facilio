@@ -24,15 +24,10 @@
 </div>
 </form>
 </div>
-<table>
-<div class="row">
-<div class="col-sm-4" style="background-color:powderblue; height:350px; width: 20%;  padding-left: 80px;  margin-left: 80px;">
 
-</div>
 <div class="col-sm-4" style="background-color:powderblue; height:350px; width: 20%;  padding-left: 80px;  margin-left: 80px;">.col-sm-4</div>
 <div class="col-sm-4" style="background-color:powderblue; height:350px; width: 20%;  padding-left: 80px;  margin-left: 80px;">.col-sm-4</div>
-</div>
-</table>
+<div class="col-sm-4" style="background-color:powderblue; height:350px; width: 20%;  padding-left: 80px;  margin-left: 80px;">.col-sm-4</div>
 <style>
 
 .cur_plan {
