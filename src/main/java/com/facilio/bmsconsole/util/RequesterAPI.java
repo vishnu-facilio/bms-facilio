@@ -79,6 +79,7 @@ public class RequesterAPI {
 		
 		RequesterContext rc = new RequesterContext();
 		rc.setEmail(rs.getString("EMAIL"));
+		rc.setName(rs.getString("NAME"));
 		
 		return rc;
 	}

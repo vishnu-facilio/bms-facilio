@@ -102,13 +102,37 @@ public class ViewFactory {
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, ticketRequested);
 		
+		Criteria ticketCriteria = new Criteria();
+		ticketCriteria.setConditions(conditions);
+		ticketCriteria.setPattern("(1)");
+		
+		FacilioModule ticketModule = new FacilioModule();
+		ticketModule.setName("ticket");
+		ticketModule.setTableName("Tickets");
+		ticketModule.setDisplayName("Tickets");
+		
+		LookupField ticketField = new LookupField();
+		ticketField.setName("ticket");
+		ticketField.setColumnName("TICKET_ID");
+		ticketField.setDataType(FieldType.LOOKUP);
+		ticketField.setModuleTableName("Workorders");
+		ticketField.setLookupModule(ticketModule);
+		
+		Condition ticketCondition = new Condition();
+		ticketCondition.setField(ticketField);
+		ticketCondition.setOperator(LookupOperator.LOOKUP);
+		ticketCondition.setCriteriaValue(ticketCriteria);
+		
+		Map<Integer, Condition> ticketConditions = new HashMap<>();
+		ticketConditions.put(1, ticketCondition);
+		
 		Criteria criteria = new Criteria();
-		criteria.setConditions(conditions);
+		criteria.setConditions(ticketConditions);
 		criteria.setPattern("(1)");
 		
 		FacilioView openTicketsView = new FacilioView();
-		openTicketsView.setName("allopentickets");
-		openTicketsView.setDisplayName("All Open Tickets");
+		openTicketsView.setName("allrequests");
+		openTicketsView.setDisplayName("Work Order Requests");
 		openTicketsView.setCriteria(criteria);
 		return openTicketsView;
 	}
