@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -15,6 +14,15 @@ import com.facilio.transaction.FacilioConnectionPool;
 //import redis.clients.jedis.Connection;
 
 public class ServicePortalInfo {
+	public ServicePortalInfo()
+	{
+		// default values
+	//	samlinfo.put("loginurl", "1");
+		//samlinfo.put("logouturl", "2");
+
+		//samlinfo.put("changepasswordurl", 3);
+
+	}
 	boolean signupAllowed;
 	boolean gmailLoginAllowed;
 	boolean ticketAlloedForPublic;
@@ -53,7 +61,7 @@ public class ServicePortalInfo {
 	}
 	boolean samlEnabled;
 	
-	private HashMap samlinfo = null;
+	private HashMap samlinfo = new HashMap();
 	public HashMap getSamlInfo()
 	{
 		if(!getSamlEnabled())
@@ -73,12 +81,7 @@ public class ServicePortalInfo {
 	
 	public void setSamInfo(HashMap samlinfo)
 	{
-		// Keys
-		/*login_url
-		logout_url
-		forgot_pass_url
-		certificate path
-		*/
+		
 		if(samlinfo.size()==3)
 		{
 			this.samlinfo= samlinfo;
@@ -88,11 +91,7 @@ public class ServicePortalInfo {
 	
 
 	
-	public void save() throws Exception
-	{
-		/*OrgApi.updatePortalInfo(this, null);
-		System.out.println("--------------> service"+this);*/
-	}
+	
 	@Override
 	public String toString() {
 		return "ServicePortalInfo [signupAllowed=" + signupAllowed + ", gmailLoginAllowed=" + gmailLoginAllowed
@@ -150,8 +149,8 @@ public class ServicePortalInfo {
 				isLocalConn = true;
 			}
 			
-			String insertquery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
-			psmt = conn.prepareStatement(insertquery);
+			String updatequery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
+			psmt = conn.prepareStatement(updatequery);
 			psmt.setBoolean(1, data.getSignupAllowed());
 			psmt.setBoolean(2, data.getGmailLoginAllowed());
 			psmt.setBoolean(3, data.getTicketAlloedForPublic());
@@ -160,6 +159,23 @@ public class ServicePortalInfo {
 			psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
 			
 			psmt.executeUpdate();
+			psmt.close();
+			
+			if(data.getSamlInfo()!=null)
+			{
+			String samlupdatequery = "update PortalInfo set LOGIN_URL=? , LOGOUT_URL=? ,PASSWORD_URL=? where ORGID=?";
+			psmt = conn.prepareStatement(samlupdatequery);
+			psmt.setString(1, ((String[])data.getSamlInfo().get("loginurl"))[0]);
+			psmt.setString(2, ((String[])data.getSamlInfo().get("logouturl"))[0]);
+
+			psmt.setString(3, ((String[])data.getSamlInfo().get("changepasswordurl"))[0]);
+            psmt.setLong(4, OrgInfo.getCurrentOrgInfo().getOrgid());
+			
+			psmt.executeUpdate();
+			psmt.close();
+			psmt=null;
+			}
+			
 			return true;
 	
 			}

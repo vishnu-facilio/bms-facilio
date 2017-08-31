@@ -91,15 +91,14 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Login URL :</label>
-        <input name="" type="url" class="pull-right form-control">
+        <s:textfield name="samlInfo.loginurl"  class="pull-right form-control" type="url"/>
   		</div>
   		
 		</div>
 		 <div class="row row-height">
 		 <div class="col-xs-9 ">
-        
-        <label class="inline-text text-right ">Logout URL :</label>
-        <input type="url" class="pull-right form-control">
+         <label class="inline-text text-right ">Logout URL :</label>
+         <s:textfield name="samlInfo.logouturl"  class="pull-right form-control" type="url"/>
   		</div>
   		
 		</div>
@@ -107,7 +106,8 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Change Password URL :</label>
-        <input type="url" class="pull-right form-control" >
+        <s:textfield name="samlInfo.changepasswordurl"  class="pull-right form-control" type="url"/>
+
   		</div>
   		
 		</div>
@@ -115,7 +115,7 @@
 		 <div class="col-xs-9 ">
         
         <label class="inline-text text-right ">Public Key  :</label>
-   		<input type="text" class="pull-right form-control" placeholder="Get Key from file" >
+        <s:file name="samlInfo.publickey"  class="pull-right form-control" type="url"/>
 
   		</div>
   		
