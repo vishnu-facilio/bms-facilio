@@ -26,55 +26,73 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	public void init() {
 		// TODO Auto-generated method stub
 		super.init();
-		ServletContext context = ServletActionContext.getServletContext();
-		
-		String host = (String) context.getInitParameter("DOMAINNAME");
-		if(RequestUtil.HOSTNAME==null)
-		{
-		 RequestUtil.HOSTNAME = host;
+	
+	}
+	
+	public void initHost()
+	{
+		try {
+			ServletContext context = ServletActionContext.getServletContext();
+			
+			
+			if(RequestUtil.HOSTNAME==null)
+			{
+			String host = (String) context.getInitParameter("DOMAINNAME");
+			 RequestUtil.HOSTNAME = host;
+			}
+			if(RequestUtil.MOBILE_HOSTNAME==null)
+			{
+				RequestUtil.MOBILE_HOSTNAME= (String) context.getInitParameter("M_DOMAINNAME");
+			}
+			
+			System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if(RequestUtil.MOBILE_HOSTNAME==null)
-		{
-			RequestUtil.MOBILE_HOSTNAME= (String) context.getInitParameter("M_DOMAINNAME");
-		}
-		
-		System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
 
 	}
+	
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
 		System.out.println("This is the interceptopr for service portal" );
-		//String serviceportaldomain = null;
-		//HttpServletRequest request = ServletActionContext.getRequest();
+		initHost();
+		
 		
 		String subdomian =  RequestUtil.getDomainName();
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", subdomian);
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", subdomian);
 
-		ServicePortalInfo  sinfo = modBean.getServicePortalInfo();
-		if(sinfo==null)
-		{
-			// invalid portal
-		}
-		
-		String actionname = ActionContext.getContext().getName();
-		System.out.println("inside if"+actionname);
-
-		boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
-		
-		boolean validsession =false;
-		if(bypassauth || validsession)
-		{
-			System.out.println("inside if");
-			String result = arg0.invoke();
-			return result;
-		}
-		else
-		{
+			ServicePortalInfo  sinfo = modBean.getServicePortalInfo();
+			if(sinfo==null)
+			{
+				// invalid portal
+			}
 			
-			// redirect to login page..
-			System.out.println("inside else");
+			String actionname = ActionContext.getContext().getName();
+			System.out.println("inside if"+actionname);
 
+			boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
+			
+			boolean validsession =false;
+			if(bypassauth || validsession)
+			{
+				System.out.println("inside if");
+				String result = arg0.invoke();
+				return result;
+			}
+			else
+			{
+				
+				// redirect to login page..
+				System.out.println("inside else");
+
+				return "login";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return "login";
 		}
 

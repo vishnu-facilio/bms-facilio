@@ -10,12 +10,12 @@ import java.util.ArrayList;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -226,5 +226,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		finally {
 			DBUtil.closeAll(conn,pstmt, rs);
 		}
+	}
+	
+	public ServicePortalInfo getServicePortalInfo() throws Exception
+	{
+		return ServicePortalInfo.getServicePortalInfo();
 	}
 }
