@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,6 +16,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.facilio.bmsconsole.util.OrgApi;
 
 public class BeanFactory {
 	
@@ -79,7 +82,14 @@ public class BeanFactory {
 		return Proxy.newProxyInstance(implclass.getClassLoader(),
 				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
 	}
-	
+	public static Object lookup(String beanname, String domainname) throws InstantiationException, IllegalAccessException, SQLException
+	{
+		Long orgid = OrgApi.getOrgIdFromDomain(domainname);
+		Class implclass = beans.get(beanname);
+		Object implobj = implclass.newInstance();
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
+	}
 	
 	
 	//private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();

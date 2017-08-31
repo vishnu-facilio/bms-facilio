@@ -18,15 +18,13 @@ import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
+import com.facilio.fw.util.RequestUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class AuthInterceptor extends AbstractInterceptor {
-
-	private static String HOSTNAME = null;
-	private static String MOBILE_HOSTNAME = null;
 
 	@Override
 	public void init() {
@@ -65,24 +63,24 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			// Step 3: Validating subdomain
 			String serverName = request.getServerName();
-			if (HOSTNAME == null) {
-				HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
+			if (RequestUtil.HOSTNAME == null) {
+				RequestUtil.HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
 			}
-			if(MOBILE_HOSTNAME==null)
+			if(RequestUtil.MOBILE_HOSTNAME==null)
 			{
-				MOBILE_HOSTNAME = (String)ActionContext.getContext().getApplication().get("M_DOMAINNAME");
+				RequestUtil.MOBILE_HOSTNAME = (String)ActionContext.getContext().getApplication().get("M_DOMAINNAME");
 			}
 			String requestSubdomain = null;//serverName.replaceAll(HOSTNAME, "");
 			
-			if(serverName.endsWith(HOSTNAME))
+			if(serverName.endsWith(RequestUtil.HOSTNAME))
 			{
-				requestSubdomain = serverName.replaceAll(HOSTNAME, "");
+				requestSubdomain = serverName.replaceAll(RequestUtil.HOSTNAME, "");
 				 request.setAttribute("isMobile", false);
 				 System.out.println("desktop");
 			}
 			else
 			{
-				requestSubdomain = serverName.replaceAll(MOBILE_HOSTNAME, "");
+				requestSubdomain = serverName.replaceAll(RequestUtil.MOBILE_HOSTNAME, "");
 				request.setAttribute("isMobile", true);
 				 System.out.println("mobile");
 
