@@ -452,4 +452,43 @@ public class FacilioConstants {
 		public static final int TEMPLATE_WORKORDER_ASSIGN 				= 1;
 		public static final int TEMPLATE_WORKORDER_ACTIVITY_FOLLOWUP 	= 2;
 	}
+	
+	public static class Reports 
+
+	{
+		public static final String RANGE_FROM = "fromRange";
+		public static final String RANGE_END = "endRange";
+		public static final String QUERY_STRING = "query";
+		public static final String DEVICE_ID = "deviceId";
+		
+		public static final int THIS_HOUR = 1;
+		public static final int LAST_HOUR = 2;
+		
+		public static final int TODAY = 3;
+		public static final int YESTERDAY = 4;
+		
+		public static final int THIS_WEEK  = 5;
+		public static final int LAST_WEEK	= 6;
+		
+		public static final int THIS_MONTH  = 7;
+		public static final int LAST_MONTH	= 8;
+		
+		public static final int LAST_7_DAYS  = 9;
+		public static final int LAST_30_DAYS	= 10;
+		
+		public static final int THIS_YEAR  = 11;
+		public static final int LAST_YEAR  = 12;
+		
+		public static final int THIS_MONTH_WITH_WEEK  = 13;
+		public static final int LAST_MONTH_WITH_WEEK	=  14;
+		
+		public static final int THIS_YEAR_WITH_WEEK  = 15;
+		public static final int LAST_YEAR_WITH_WEEK	= 16;
+		
+		public static final int CUSTOM_WITH_DATE  = 17;
+		public static final int CUSTOM_WITH_WEEK  = 18 ;
+		public static final int CUSTOM_WITH_MONTH = 19;
+
+	}
+	
 }
