@@ -46,30 +46,18 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	@Override
+	public SelectRecordsBuilder<E> select(List<FacilioField> selectFields) {
+		this.selectFields = selectFields;
+		return this;
+	}
+	
+	@Override
 	public SelectRecordsBuilder<E> table(String tableName) {
 		this.tableName = tableName;
 		builder.table(tableName);
 		return this;
 	}
-	
-	public SelectRecordsBuilder<E> beanClass(Class<E> beanClass) {
-		this.beanClass = beanClass;
-		return this;
-	}
 
-	@Override
-	public SelectRecordsBuilder<E> select(List<FacilioField> selectFields) {
-		this.selectFields = selectFields;
-		return this;
-	}
-
-	@Override
-	public SelectRecordsBuilder<E> connection(Connection conn) {
-		this.conn = conn;
-		builder.connection(conn);
-		return this;
-	}
-	
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName) {
 		return new JoinRecordBuilder<E>(this, builder.innerJoin(tableName));
@@ -132,6 +120,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	@Override
+	public SelectRecordsBuilder<E> groupBy(String groupBy) {
+		throw new UnsupportedOperationException("No Group By support for Bean Select Builder. Use Generic");
+	}
+	
+	@Override
+	public SelectRecordsBuilder<E> having(String having) {
+		throw new UnsupportedOperationException("No Having support for Bean Select Builder. Use Generic");
+	}
+	
+	@Override
 	public SelectRecordsBuilder<E> orderBy(String orderBy) {
 		builder.orderBy(orderBy);
 		return this;
@@ -143,8 +141,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
+	@Override
+	public SelectRecordsBuilder<E> connection(Connection conn) {
+		this.conn = conn;
+		builder.connection(conn);
+		return this;
+	}
+	
 	public SelectRecordsBuilder<E> moduleName(String moduleName) {
 		this.moduleName = moduleName;
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> beanClass(Class<E> beanClass) {
+		this.beanClass = beanClass;
 		return this;
 	}
 	

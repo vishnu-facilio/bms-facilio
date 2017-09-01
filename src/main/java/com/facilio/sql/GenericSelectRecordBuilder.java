@@ -20,11 +20,13 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> selectFields;
 	private String tableName;
-	private Connection conn = null;
+	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
+	private String groupBy;
+	private String having;
 	private String orderBy;
 	private int limit;
-	private StringBuilder joinBuilder = new StringBuilder();
+	private Connection conn = null;
 	
 	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
@@ -35,12 +37,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	@Override
 	public GenericSelectRecordBuilder table(String tableName) {
 		this.tableName = tableName;
-		return this;
-	}
-	
-	@Override
-	public GenericSelectRecordBuilder connection(Connection conn) {
-		this.conn = conn;
 		return this;
 	}
 	
@@ -118,6 +114,18 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	}
 	
 	@Override
+	public GenericSelectRecordBuilder groupBy(String groupBy) {
+		this.groupBy = groupBy;
+		return this;
+	}
+	
+	@Override
+	public GenericSelectRecordBuilder having(String having) {
+		this.having = having;
+		return this;
+	}
+	
+	@Override
 	public GenericSelectRecordBuilder orderBy(String orderBy) {
 		this.orderBy = orderBy;
 		return this;
@@ -129,6 +137,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return this;
 	}
 	
+	@Override
+	public GenericSelectRecordBuilder connection(Connection conn) {
+		this.conn = conn;
+		return this;
+	}
 	
 	private void checkForNull(boolean checkBean) {
 		if(tableName == null || tableName.isEmpty()) {
@@ -196,9 +209,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			else {
 				sql.append(", ");
 			}
-			sql.append(field.getModuleTableName())
-				.append(".")
-				.append(field.getColumnName());
+			if(field.getModuleTableName() != null && !field.getModuleTableName().isEmpty()) {
+				sql.append(field.getModuleTableName())
+					.append(".");
+			}
+			sql.append(field.getColumnName());
 		}
 		
 		sql.append(" FROM ")
@@ -209,6 +224,16 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
 			sql.append(" WHERE ")
 				.append(where.getWhereClause());
+		}
+		
+		if(groupBy != null && !groupBy.isEmpty()) {
+			sql.append(" GROUP BY ")
+				.append(groupBy);
+		}
+		
+		if(having != null && !having.isEmpty()) {
+			sql.append(" HAVING ")
+				.append(having);
 		}
 		
 		if(orderBy != null && !orderBy.isEmpty()) {

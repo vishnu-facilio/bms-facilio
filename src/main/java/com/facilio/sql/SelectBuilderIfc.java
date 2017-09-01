@@ -12,10 +12,6 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	
 	public SelectBuilderIfc<E> table(String tableName);
 	
-	public SelectBuilderIfc<E> orderBy(String orderBy);
-	
-	public SelectBuilderIfc<E> limit(int limit);
-	
 	public JoinBuilderIfc<E> innerJoin(String tableName);
 	
 	public JoinBuilderIfc<E> leftJoin(String tableName);
@@ -23,6 +19,14 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	public JoinBuilderIfc<E> rightJoin(String tableName);
 	
 	public JoinBuilderIfc<E> fullJoin(String tableName);
+	
+	public SelectBuilderIfc<E> groupBy(String groupBy);
+	
+	public SelectBuilderIfc<E> having(String having); 
+	
+	public SelectBuilderIfc<E> orderBy(String orderBy);
+	
+	public SelectBuilderIfc<E> limit(int limit);
 	
 	public SelectBuilderIfc<E> connection(Connection conn);
 
