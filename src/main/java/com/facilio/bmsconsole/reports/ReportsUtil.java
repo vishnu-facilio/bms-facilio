@@ -33,7 +33,7 @@ public class ReportsUtil
 	
 	private StringBuilder where = new StringBuilder(" WHERE ");
 
-	private StringBuilder addedBetween = new StringBuilder(" ADDED_TIME BETWEEN ? AND ? ");
+	private StringBuilder timeBetween = new StringBuilder(" ADDED_TIME BETWEEN ? AND ? ");
 	
 	private StringBuilder dateBetween = new StringBuilder(" ADDED_DATE BETWEEN ? AND ? ");
 
@@ -54,17 +54,17 @@ public class ReportsUtil
 		append(query).append(separator).append(groupByColumn);
 	}
 	
-	private StringBuilder getPowerQuery(StringBuilder betweenCol, Long deviceId)
+	private StringBuilder getQuery(StringBuilder selectFields, StringBuilder table, StringBuilder betweenCol, Long deviceId)
 	{
 		StringBuilder baseQuery=new StringBuilder();
 		if(deviceId==null)
 		{
-			baseQuery=baseQuery.append(fieldsForPower).append(from).append(energy).append(where).
+			baseQuery=baseQuery.append(selectFields).append(from).append(table).append(where).
 					append(betweenCol).append(groupBy);
 		}
 		else
 		{
-			baseQuery= baseQuery.append(fieldsForPower).append(from).append(energy).append(where).
+			baseQuery= baseQuery.append(selectFields).append(from).append(table).append(where).
 					append(betweenCol).append(andOperator).append(device_id).append(groupBy); 
 		}
 		return baseQuery;
@@ -72,13 +72,13 @@ public class ReportsUtil
 
 	public HashMap<String,Object> getQueryObject(int category, Long deviceId)
 	{
-		StringBuilder baseQuery=getPowerQuery(addedBetween,deviceId);
+		StringBuilder baseQuery=getQuery(fieldsForPower, energy, timeBetween,deviceId);
 		return getQueryObject(category, deviceId, baseQuery);
 	}
 	
 	public HashMap<String,Object> getQueryObject(int category, Long deviceId, String fromDate, String endDate)
 	{
-		StringBuilder baseQuery=getPowerQuery(dateBetween,deviceId);
+		StringBuilder baseQuery=getQuery(fieldsForPower, energy,dateBetween,deviceId);
 		HashMap <String,Object> hMap = getQueryObject(category, deviceId, baseQuery);
 		hMap.put(FacilioConstants.Reports.RANGE_FROM, fromDate);
 		hMap.put(FacilioConstants.Reports.RANGE_END, endDate);
@@ -237,18 +237,18 @@ public class ReportsUtil
 		JSONObject result =null;
 		
 		HashMap <String,Object> hMap =queryObj;
-		String fromTime = (String)hMap.get(FacilioConstants.Reports.RANGE_FROM);
-		String endTime = (String)hMap.get(FacilioConstants.Reports.RANGE_END);
+		String from = (String)hMap.get(FacilioConstants.Reports.RANGE_FROM);
+		String end = (String)hMap.get(FacilioConstants.Reports.RANGE_END);
 		Long deviceId= (Long)hMap.get(FacilioConstants.Reports.DEVICE_ID);
 		String fetchQuery=(String)hMap.get(FacilioConstants.Reports.QUERY_STRING);
 		
-		System.out.println("The pstmt with "+fromTime+" & "+endTime+" is \n"+fetchQuery);
+		System.out.println("The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
 
 		try(Connection conn = FacilioConnectionPool.getInstance().getConnection();
 				PreparedStatement psmt=conn.prepareStatement(fetchQuery))
 		{
-			psmt.setObject(1, fromTime);
-			psmt.setObject(2, endTime);
+			psmt.setObject(1, from);
+			psmt.setObject(2, end);
 			if(deviceId!=null)
 			{
 				psmt.setObject(3, deviceId);	
