@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.util;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
@@ -144,16 +147,45 @@ public class DateTimeUtil
 		return getMillis(getHourFirst().minusHours(interval),true);
 	}
 	
-	public long getStartTime(int day, int month, int year)
+	public static long getStartTime(int day, int month, int year)
 	{ 
 		return getMillis(ZonedDateTime.of
 				(LocalDateTime.of(year, month, day, 0, 0),getZoneId()),true);
 	}
 	
-	public long getEndTime(int day, int month, int year)
+	public static long getEndTime(int day, int month, int year)
 	{ 
 		return getMillis(ZonedDateTime.of
 				(LocalDateTime.of(year, month, day, 23, 59,59),getZoneId()),true);
+	}
+	
+	public static long getAge(long startTimestamp) {
+		return getDaysBetween(startTimestamp, -1);
+	}
+	
+	public static int getDue(long endTimestamp) {
+		return getDaysBetween(-1, endTimestamp);
+	}
+	
+	public static int getDaysBetween(long startTimestamp, long endTimestamp) {
+		LocalDate start = null;
+		LocalDate end = null;
+		
+		if(startTimestamp == -1) {
+			start = Instant.now().atZone(getZoneId()).toLocalDate();
+		}
+		else {
+			start = Instant.ofEpochMilli(startTimestamp).atZone(getZoneId()).toLocalDate();
+		}
+		
+		if(endTimestamp == -1) {
+			end = Instant.now().atZone(getZoneId()).toLocalDate();
+		}
+		else {
+			end = Instant.ofEpochMilli(endTimestamp).atZone(getZoneId()).toLocalDate();
+		}
+		
+		return Period.between(start, end).getDays();
 	}
 }
 

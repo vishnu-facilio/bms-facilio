@@ -1,11 +1,18 @@
 package com.facilio.bmsconsole.criteria;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanPredicate;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public enum DateOperators implements Operator<String> {
 	
@@ -15,6 +22,27 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
+			}
+			return null;
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							return currentVal.equals(val); 
+						}
+						return false;
+					}
+				});
 			}
 			return null;
 		}
@@ -41,6 +69,27 @@ public enum DateOperators implements Operator<String> {
 			}
 			return null;
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							return !currentVal.equals(val); 
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	IS_BEFORE("is before") {
@@ -48,6 +97,27 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), "<", value);
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							return currentVal.isBefore(val); 
+						}
+						return false;
+					}
+				});
+			}
+			return null;
 		}
 	},
 	
@@ -57,6 +127,27 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), ">", value);
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							return currentVal.isAfter(val);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	BETWEEN("between") {
@@ -65,6 +156,18 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, false);
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Predicate betweenPredicate = getBetweenPredicate(value);
+				if(betweenPredicate != null) {
+					return new BeanPredicate(field.getName(), betweenPredicate);
+				}
+			}
+			return null;
+		}
 	},
 	
 	NOT_BETWEEN("not between") {
@@ -72,6 +175,18 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, true);
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Predicate betweenPredicate = getBetweenPredicate(value);
+				if(betweenPredicate != null) {
+					return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(betweenPredicate));
+				}
+			}
+			return null;
 		}
 	},
 	
@@ -99,6 +214,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${TODAY}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getDayStartTime(-1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	TOMORROW("Tomorrow") {
@@ -125,6 +260,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${TOMORROW}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(-2);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	 	
 	},
 	
@@ -147,6 +302,26 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getDynamicParameter() {
 			return "${TOMORROWPLUS}";
+		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return currentVal >= DateTimeUtil.getDayStartTime(-1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
 		}
 	 	
 	},
@@ -175,6 +350,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${YESTERDAY}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime(1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	TILL_YESTERDAY("Till Yesterday") {
@@ -196,6 +391,26 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getDynamicParameter() {
 			return "${YESTERDAYMINUS}";
+		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return currentVal < DateTimeUtil.getDayStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
 		}
 	},
 	
@@ -223,6 +438,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${LASTMONTH}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime(1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	CURRENT_MONTH("Current Month") {
@@ -248,6 +483,26 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getDynamicParameter() {
 			return "${THISMONTH}";
+		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime() <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(-1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
 		}
 	},
 	
@@ -275,6 +530,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${NEXTMONTH}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(-2);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	LAST_WEEK("Last Week") {
@@ -300,6 +575,26 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getDynamicParameter() {
 			return "${LASTWEEK}";
+		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTime(1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
 		}
 	},
 	
@@ -328,6 +623,26 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${THISWEEK}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(-1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	NEXT_WEEK("Next Week") {
@@ -354,13 +669,33 @@ public enum DateOperators implements Operator<String> {
 		public String getDynamicParameter() {
 			return "${NEXTWEEK}";
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null) {
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(-2);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	AGE_IN_DAYS("Age in Days") {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("CEIL((UNIX_TIMESTAMP(CURDATE())-(")
 						.append(field.getModuleTableName())
@@ -372,13 +707,34 @@ public enum DateOperators implements Operator<String> {
 			}
 			return null;
 		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null && value != null && !value.isEmpty()) {
+				int age = Integer.parseInt(value);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getAge(currentVal) == age;
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	},
 	
 	DUE_IN_DAYS("Due in Days") {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("FLOOR(((")
 						.append(field.getModuleTableName())
@@ -387,6 +743,27 @@ public enum DateOperators implements Operator<String> {
 						.append("/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) = ")
 						.append(value);
 				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			if(field != null && value != null && !value.isEmpty()) {
+				int due = Integer.parseInt(value);
+				return new BeanPredicate(field.getName(), new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getDue(currentVal) == due;
+						}
+						return false;
+					}
+				});
 			}
 			return null;
 		}
@@ -414,7 +791,7 @@ public enum DateOperators implements Operator<String> {
 			
 			String values[] = value.trim().split("\\s*,\\s*");
 			
-			if(values != null && values.length > 0) {
+			if(values != null && values.length > 1) {
 			StringBuilder builder = new StringBuilder();
 				builder.append("CEIL(")
 						.append(columnName)
@@ -470,5 +847,27 @@ public enum DateOperators implements Operator<String> {
 	}
 	public static Map<String, Operator> getAllOperators() {
 		return operatorMap;
+	}
+	
+	private static Predicate getBetweenPredicate(String value) {
+		String values[] = value.trim().split("\\s*,\\s*");
+		
+		if(values != null && values.length > 1) {
+			Instant startVal = Instant.ofEpochMilli(Long.parseLong(values[0])).truncatedTo(ChronoUnit.MINUTES);
+			Instant endVal = Instant.ofEpochMilli(Long.parseLong(values[1])).truncatedTo(ChronoUnit.MINUTES);
+			return new Predicate() {
+				
+				@Override
+				public boolean evaluate(Object object) {
+					// TODO Auto-generated method stub
+					if(object != null && object instanceof Long) {
+						Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+						return currentVal.equals(startVal) || (currentVal.isAfter(startVal) && currentVal.isBefore(endVal)) || currentVal.equals(endVal);
+					}
+					return false;
+				}
+			};
+		}
+		return null;
 	}
 }

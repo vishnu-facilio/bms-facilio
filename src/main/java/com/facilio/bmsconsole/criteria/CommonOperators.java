@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanPredicate;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum CommonOperators implements Operator<String> {
@@ -18,6 +22,15 @@ public enum CommonOperators implements Operator<String> {
 			}
 			return null;
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null) {
+				return new BeanPredicate(field.getName(), PredicateUtils.nullPredicate());
+			}
+			return null;
+		}
 	},	
 	IS_NOT_EMPTY("is not empty") {
 		@Override
@@ -25,6 +38,15 @@ public enum CommonOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(field != null) {
 				return field.getModuleTableName()+"."+field.getColumnName()+" IS NOT NULL";
+			}
+			return null;
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null) {
+				return new BeanPredicate(field.getName(), PredicateUtils.notNullPredicate());
 			}
 			return null;
 		}

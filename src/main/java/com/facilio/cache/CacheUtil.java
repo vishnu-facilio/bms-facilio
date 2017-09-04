@@ -16,6 +16,8 @@ public class CacheUtil {
 	
 	public static final String FIELDS = "fields";
 	
+	public static final String FIELD = "field";
+	
 	public static final String PRIMARY = "primary";
 	
 	public static String ORG_KEY(long orgId) {
@@ -28,6 +30,10 @@ public class CacheUtil {
 	
 	public static String FIELDS_KEY(long orgId, String moduleName) {
 		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + FIELDS;
+	}
+	
+	public static String FIELD_KEY(long orgId, long fieldId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + fieldId + KEY_SEPARATOR + FIELD;
 	}
 	
 	public static String PRIMARY_FIELD_KEY(long orgId, String moduleName) {
