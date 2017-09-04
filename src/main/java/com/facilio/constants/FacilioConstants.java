@@ -413,6 +413,7 @@ public class FacilioConstants {
 
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
+		public static final String FILTERS = "filters";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
