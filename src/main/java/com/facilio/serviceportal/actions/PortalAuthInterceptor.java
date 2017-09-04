@@ -1,21 +1,13 @@
 package com.facilio.serviceportal.actions;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.util.RequestUtil;
-import com.facilio.fw.auth.CognitoUtil.CognitoUser;
-import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;

@@ -9,7 +9,6 @@ import javax.transaction.SystemException;
 import org.apache.commons.chain.impl.ContextBase;
 
 import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioContext extends ContextBase {
 	private Connection conn = null;

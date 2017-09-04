@@ -3,10 +3,8 @@ package com.facilio.fw;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 
 import com.facilio.bmsconsole.util.OrgApi;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class BeanInvocationHandler implements InvocationHandler {
 

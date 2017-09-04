@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanPredicate;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
 import com.facilio.bmsconsole.modules.FacilioField;

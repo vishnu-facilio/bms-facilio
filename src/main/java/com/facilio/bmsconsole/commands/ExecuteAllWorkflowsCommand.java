@@ -10,15 +10,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
@@ -39,13 +33,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 			
 			int eventType = (int) context.get(FacilioConstants.Workflow.EVENT_TYPE);
 			
-	//		GenericSelectRecordBuilder eventBuilder = new GenericSelectRecordBuilder()
-	//				.connection(conn)
-	//				.table("Event")
-	//				.select(FieldFactory.getEventFields())
-	//				.where("ORGID = ? AND MODULEID = ? AND EVENT_TYPE = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), moduleId, eventType);
-	//		List<Map<String, Object>> events = eventBuilder.get();
-			
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.connection(conn)
 					.table("Workflow_Rule")
@@ -64,12 +51,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 				if(flag)
 				{
 					long workflowRuleId = (long) workflowRule.get("workflowRuleId");
-//					GenericSelectRecordBuilder ruleActionBuilder = new GenericSelectRecordBuilder()
-//							.connection(conn)
-//							.table("Workflow_Rule_Action")
-//							.select(FieldFactory.getWorkflowRuleActionFields())
-//							.andCustomWhere("WORKFLOW_RULE_ID = ?", workflowRuleId);
-//					List<Map<String, Object>> workflowRuleActions = ruleActionBuilder.get();
 					GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 							.connection(conn)
 							.select(FieldFactory.getActionFields())
@@ -80,14 +61,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 					List<Map<String, Object>> actions = actionBuilder.get();
 					for(Map<String, Object> action : actions)
 					{
-//						long actionId = (long) workflowRuleAction.get("actionId");
-//						GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
-//								.connection(conn)
-//								.table("Action")
-//								.select(FieldFactory.getActionFields())
-//								.andCustomWhere("ACTION_ID = ?", actionId);
-//						List<Map<String, Object>> actions = actionBuilder.get();
-						
 						int actionType = Integer.parseInt(String.valueOf(action.get("actionType")));
 						switch(actionType)
 						{
@@ -143,32 +116,5 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 		}
 		return false;
-	}
-	
-	private Criteria getCriteria() {
-		Criteria ticketCriteria = new Criteria();
-		ticketCriteria.addAndCondition(ViewFactory.getMyUserCondition("Tickets"));
-		
-		FacilioModule ticketModule = new FacilioModule();
-		ticketModule.setName("ticket");
-		ticketModule.setTableName("Tickets");
-		ticketModule.setDisplayName("Tickets");
-		
-		LookupField ticketField = new LookupField();
-		ticketField.setName("ticket");
-		ticketField.setColumnName("TICKET_ID");
-		ticketField.setDataType(FieldType.LOOKUP);
-		ticketField.setModuleTableName("Workorders");
-		ticketField.setLookupModule(ticketModule);
-		
-		Condition ticketCondition = new Condition();
-		ticketCondition.setField(ticketField);
-		ticketCondition.setOperator(LookupOperator.LOOKUP);
-		ticketCondition.setCriteriaValue(ticketCriteria);
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(ticketCondition);
-		
-		return criteria;
 	}
 }
