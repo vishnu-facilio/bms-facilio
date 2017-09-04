@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -97,7 +98,14 @@ public class LocationAPI {
 			pstmt.setString(8, locationContext.getCountry());
 			pstmt.setDouble(9, locationContext.getLat());
 			pstmt.setDouble(10, locationContext.getLng());
-			pstmt.setLong(11, locationContext.getContact());
+			
+			if(locationContext.getContact() != null) {
+				pstmt.setLong(11, locationContext.getContact().getOrgUserId());
+			}
+			else {
+				pstmt.setNull(11, Types.BIGINT);
+			}
+			
 			pstmt.setString(12, locationContext.getPhone());
 			pstmt.setString(13, locationContext.getFaxPhone());
 			
@@ -162,7 +170,14 @@ public class LocationAPI {
 			pstmt.setString(6, locationContext.getCountry());
 			pstmt.setDouble(7, locationContext.getLat());
 			pstmt.setDouble(8, locationContext.getLng());
-			pstmt.setLong(9, locationContext.getContact());
+			
+			if(locationContext.getContact() != null) {
+				pstmt.setLong(9, locationContext.getContact().getOrgUserId());
+			}
+			else {
+				pstmt.setNull(9, Types.BIGINT);
+			}
+			
 			pstmt.setString(10, locationContext.getPhone());
 			pstmt.setString(11, locationContext.getFaxPhone());
 			pstmt.setLong(12, locationContext.getId());
@@ -194,7 +209,11 @@ public class LocationAPI {
 		lc.setCountry(rs.getString("COUNTRY"));
 		lc.setLat(rs.getDouble("LAT"));
 		lc.setLng(rs.getDouble("LNG"));
-		lc.setContact(rs.getLong("CONTACT"));
+		
+		if(rs.getLong("CONTACT_ID") != 0) {
+			lc.setContact(UserAPI.getUserFromOrgUserId(rs.getLong("CONTACT_ID")));
+		}
+		
 		lc.setPhone(rs.getString("PHONE"));
 		lc.setFaxPhone(rs.getString("FAX_PHONE"));
 		

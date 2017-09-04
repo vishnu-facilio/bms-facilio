@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands.data;
 
 import java.io.File;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +23,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -128,19 +131,16 @@ public class ProcessXLS implements Command {
 		
 		List<String> dbCols = new ArrayList<>();
 		Iterator keys = fieldMapping.keySet().iterator();
-		int i = 0;
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
-			//String val = ((String[]) fieldMapping.get(key))[0];
-			if (i != 0) {
-				sql.append(",");
-			}
 			sql.append(key+"=?");
-			
+			sql.append(",");
 			dbCols.add(key);
-			i++;
 		}
+		sql.append(getAdditionalTimeSql());
+		dbCols.addAll(dbCols.size(),getAdditionalTimeCols());
 		
+		System.out.println("#######The sql String: "+sql.toString());
 		PreparedStatement pstmt = conn.prepareStatement(sql.toString());
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -152,10 +152,10 @@ public class ProcessXLS implements Command {
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 
 		Iterator<Row> itr = datatypeSheet.iterator();
-		int rowIndex = 0;
+		boolean heading=true;
 		while (itr.hasNext()) {
 			Row row = itr.next();
-			if (rowIndex == 0) {
+			if (heading) {
 				// column heading
 				
 				Iterator<Cell> cellItr = row.cellIterator();
@@ -166,56 +166,66 @@ public class ProcessXLS implements Command {
 					colIndex.put(cellIndex, cellValue);
 					cellIndex++;
 				}
+				heading=false;
+				continue;
 			}
-			else {
-				HashMap<String, Double> colVal = new HashMap<>();
-				
-				Iterator<Cell> cellItr = row.cellIterator();
-				int cellIndex = 0;
-				while (cellItr.hasNext()) {
-					Cell cell = cellItr.next();
-					
-					String dbColName = colIndex.get(cellIndex);
-					if (dbColName == null) {
-						continue;
-					}
-					
-					double val = 0.0;
-					if (cell.getCellTypeEnum() == CellType.STRING) {
-						
-						String cellValue = cell.getStringCellValue();
-						try {
-							val = Double.parseDouble(cellValue);
-						}
-						catch (Exception e) {
-						}
-					}
-					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-						
-						val = cell.getNumericCellValue();
-					}
-					
-					colVal.put(dbColName, val);
-					
-					cellIndex++;
+			HashMap<String, Object> colVal = new HashMap<>();
+
+			Iterator<Cell> cellItr = row.cellIterator();
+			int cellIndex = 0;
+			while (cellItr.hasNext()) {
+				Cell cell = cellItr.next();
+
+				String cellName = colIndex.get(cellIndex);
+				if (cellName == null) {
+					continue;
 				}
-				
-				int idx = 1;
-				for (String v : dbCols) {
-					String cellName = ((String[]) fieldMapping.get(v))[0];
-					
-					if (colVal.containsKey(cellName)) {
-						pstmt.setDouble(idx, colVal.get(cellName));
-					}
-					else {
-						pstmt.setDouble(idx, 0.0);
-					}
-					
-					idx++;
+
+				Object val = 0.0;
+				if (cell.getCellTypeEnum() == CellType.STRING) {
+
+					val = cell.getStringCellValue();
 				}
-				pstmt.addBatch();
+				else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
+
+					val = cell.getNumericCellValue();
+				}
+
+				colVal.put(cellName, val);
+
+				cellIndex++;
 			}
-			rowIndex ++;
+
+			int idx = 1;
+			
+			HashMap <String,Object> additionalColVals= new HashMap<String,Object>();
+			for (String dbColName: dbCols) 
+			{
+				Object value=null;
+				
+				
+				String[] valArray=(String [])fieldMapping.get(dbColName);
+				if(valArray!=null)
+				{
+					String cellName = valArray[0];
+					value=colVal.get(cellName);
+				}
+
+				if (value!=null || (value=additionalColVals.get(dbColName))!=null) {
+					pstmt.setObject(idx, value);
+				}
+				else {
+					pstmt.setObject(idx, 0.0);
+				}
+				//we have to make sure we need to have this column for all the collected data table.. 
+				if(dbColName.equalsIgnoreCase("ADDED_TIME"))
+				{
+					additionalColVals=getAdditionalTimeData((Double)value);	
+				}
+				idx++;
+			}
+
+			pstmt.addBatch();
 		}
 		
 		pstmt.executeBatch();
@@ -245,5 +255,40 @@ public class ProcessXLS implements Command {
 		workbook.close();
 		
 		return columnheadings;
+	}
+	
+	
+	private static HashMap<String,Object> getAdditionalTimeData(Double addedTime)
+	{
+		HashMap<String,Object> columnVals = new HashMap<String, Object>() ;
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(addedTime.longValue());
+		int hour=zdt.getHour();
+		String month=zdt.getMonth().toString();
+		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+		String date=zdt.toLocalDate().toString();
+		String day=zdt.getDayOfWeek().toString();
+		columnVals.put("ADDED_DATE", date);
+		columnVals.put("ADDED_MONTH", month);
+		columnVals.put("ADDED_WEEK", week);
+		columnVals.put("ADDED_DAY", day);
+		columnVals.put("ADDED_HOUR",hour);
+		return columnVals;
+	}
+	
+	private static StringBuilder getAdditionalTimeSql()
+	{
+		return new StringBuilder("ADDED_DATE=?,ADDED_MONTH=?,ADDED_WEEK=?,ADDED_DAY=?,ADDED_HOUR=?"); 
+	}
+	
+	private static List<String> getAdditionalTimeCols()
+	{
+		List<String> dbCols = new ArrayList<>();
+		dbCols.add("ADDED_DATE");
+		dbCols.add("ADDED_MONTH");
+		dbCols.add("ADDED_WEEK");
+		dbCols.add("ADDED_DAY");
+		dbCols.add("ADDED_HOUR");
+		return dbCols;
+		
 	}
 }

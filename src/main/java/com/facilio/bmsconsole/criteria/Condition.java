@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.criteria;
 
 import java.util.List;
 
+import org.apache.commons.collections.Predicate;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public class Condition {
@@ -15,12 +17,12 @@ public class Condition {
 		this.conditionId = conditionId;
 	}
 	
-	private long criteriaId;
-	public long getCriteriaId() {
-		return criteriaId;
+	private long parentCriteriaId;
+	public long getParentCriteriaId() {
+		return parentCriteriaId;
 	}
-	public void setCriteriaId(long criteriaId) {
-		this.criteriaId = criteriaId;
+	public void setParentCriteriaId(long parentCriteriaId) {
+		this.parentCriteriaId = parentCriteriaId;
 	}
 	
 	private int sequence;
@@ -72,6 +74,14 @@ public class Condition {
 		this.value = value;
 	}
 	
+	private long criteriaValueId;
+	public long getCriteriaValueId() {
+		return criteriaValueId;
+	}
+	public void setCriteriaValueId(long criteriaValueId) {
+		this.criteriaValueId = criteriaValueId;
+	}
+	
 	private Criteria criteriaValue;
 	public Criteria getCriteriaValue() {
 		return criteriaValue;
@@ -98,5 +108,14 @@ public class Condition {
 	
 	public List<Object> getComputedValues() {
 		return operator.computeValues(value);
+	}
+	
+	public Predicate getPredicate() {
+		if(operator == LookupOperator.LOOKUP) {
+			return operator.getPredicate(field, criteriaValue);
+		}
+		else {
+			return operator.getPredicate(field, value);
+		}
 	}
 }

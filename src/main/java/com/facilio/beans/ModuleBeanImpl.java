@@ -139,6 +139,44 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
+	@Override
+	public FacilioField getField(long fieldId) throws Exception {
+		Connection conn  =null;
+
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			 conn = getConnection();
+			long orgId = getOrgId();
+			
+			String sql = "SELECT Modules.NAME, Modules.TABLE_NAME, Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields INNER JOIN Modules ON Fields.MODULEID = Modules.MODULEID WHERE Modules.ORGID = ? and Fields.FIELDID = ?";
+			
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, fieldId);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				FacilioField field = CommonCommandUtil.getFieldFromRS(rs);
+				if(field.getDataType() == FieldType.LOOKUP) {
+					field = getLookupField(field);
+				}
+				field.setModuleName(rs.getString("Modules.NAME"));
+				field.setModuleTableName(rs.getString("Modules.TABLE_NAME"));
+				return field;
+			}
+			else {
+				return null;
+			}
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn,pstmt, rs);
+		}
+	}
+	
 	private LookupField getLookupField(FacilioField field) throws Exception {
 		Connection conn  =null;
 

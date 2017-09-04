@@ -534,7 +534,7 @@
 		</action>
 	</package>
 	
-	<package name="campus" namespace="/api/campus" extends="home">
+	<package name="campusApi" namespace="/api/campus" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
@@ -550,7 +550,7 @@
 		</action>
 	</package>
 	
-	<package name="building" namespace="/api/building" extends="home">
+	<package name="buildingApi" namespace="/api/building" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
@@ -566,7 +566,7 @@
 		</action>
 	</package>
 	
-	<package name="floor" namespace="/api/floor" extends="home">
+	<package name="floorApi" namespace="/api/floor" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
@@ -582,7 +582,7 @@
 		</action>
 	</package>
 	
-	<package name="space" namespace="/api/space" extends="home">
+	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
@@ -598,7 +598,7 @@
 		</action>
 	</package>
 	
-	<package name="zone" namespace="/api/zone" extends="home">
+	<package name="zoneApi" namespace="/api/zone" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">

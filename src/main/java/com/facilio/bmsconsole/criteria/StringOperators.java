@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanPredicate;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum StringOperators implements Operator<String> {
@@ -35,6 +39,15 @@ public enum StringOperators implements Operator<String> {
 		public List<Object> computeValues(String value) {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, false, false);
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				return new BeanPredicate(field.getName(), computeEqualPredicate(value));
+			}
+			return null;
 		}
 	},
 	ISN_T("isn't") {
@@ -71,6 +84,15 @@ public enum StringOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, false, false);
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
+			}
+			return null;
+		}
 	},
 	CONTAINS("contains") {
 		@Override
@@ -83,6 +105,15 @@ public enum StringOperators implements Operator<String> {
 		public List<Object> computeValues(String value) {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, true, true);
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				return new BeanPredicate(field.getName(), computeContainsPredicate(value));
+			}
+			return null;
 		}
 	},
 	DOESNT_CONTAIN("doesn't contain") {
@@ -108,6 +139,15 @@ public enum StringOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, true, true);
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeContainsPredicate(value)));
+			}
+			return null;
+		}
 	},
 	STARTS_WITH("starts with") {
 		@Override
@@ -121,6 +161,39 @@ public enum StringOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, false, true);
 		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Predicate startsWithPredicate = null;
+				if(value.contains(",")) {
+					List<Predicate> startsWithPredicates = new ArrayList<>();
+					String[] values = value.trim().split("\\s*,\\s*");
+					for(String val : values) {
+						startsWithPredicates.add(getStartsWithPredicate(val));
+					}
+					startsWithPredicate = PredicateUtils.anyPredicate(startsWithPredicates);
+				}
+				else {
+					startsWithPredicate = getStartsWithPredicate(value);
+				}
+				return new BeanPredicate(field.getName(), startsWithPredicate);
+			}
+			return null;
+		}
+		
+		private Predicate getStartsWithPredicate(String value) {
+			return new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if(object != null && object instanceof String) {
+						return ((String) object).startsWith(value);
+					}
+					return false;
+				}
+			};
+		}
 	},
 	ENDS_WITH("ends with") {
 		@Override
@@ -133,6 +206,39 @@ public enum StringOperators implements Operator<String> {
 		public List<Object> computeValues(String value) {
 			// TODO Auto-generated method stub
 			return commonComputeValue(value, true, false);
+		}
+
+		@Override
+		public Predicate getPredicate(FacilioField field, String value) {
+			// TODO Auto-generated method stub
+			if(field != null && value != null && !value.isEmpty()) {
+				Predicate endsWithPredicate = null;
+				if(value.contains(",")) {
+					List<Predicate> endsWithPredicates = new ArrayList<>();
+					String[] values = value.trim().split("\\s*,\\s*");
+					for(String val : values) {
+						endsWithPredicates.add(getEndsWithPredicate(val));
+					}
+					endsWithPredicate = PredicateUtils.anyPredicate(endsWithPredicates);
+				}
+				else {
+					endsWithPredicate = getEndsWithPredicate(value);
+				}
+				return new BeanPredicate(field.getName(), endsWithPredicate);
+			}
+			return null;
+		}
+		
+		private Predicate getEndsWithPredicate(String value) {
+			return new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if(object != null && object instanceof String) {
+						return ((String) object).endsWith(value);
+					}
+					return false;
+				}
+			};
 		}
 	}
 	;
@@ -239,5 +345,57 @@ public enum StringOperators implements Operator<String> {
 			return builder.toString();
 		}
 		return null;
+	}
+	
+	private static Predicate computeEqualPredicate(String value) {
+		if(value.contains(",")) {
+			List<Predicate> equalPredicates = new ArrayList<>();
+			String[] values = value.trim().split("\\s*,\\s*");
+			for(String val : values) {
+				equalPredicates.add(getEqualPredicate(val));
+			}
+			return PredicateUtils.anyPredicate(equalPredicates);
+		}
+		else {
+			return getEqualPredicate(value);
+		}
+	}
+	
+	private static Predicate getEqualPredicate(String value) {
+		return new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				if(object != null && object instanceof String) {
+					return ((String) object).equalsIgnoreCase(value);
+				}
+				return false;
+			}
+		};
+	}
+	
+	private static Predicate computeContainsPredicate(String value) {
+		if(value.contains(",")) {
+			List<Predicate> containsPredicates = new ArrayList<>();
+			String[] values = value.trim().split("\\s*,\\s*");
+			for(String val : values) {
+				containsPredicates.add(getContainsPredicate(val));
+			}
+			return PredicateUtils.anyPredicate(containsPredicates);
+		}
+		else {
+			return getContainsPredicate(value);
+		}
+	}
+	
+	private static Predicate getContainsPredicate(String value) {
+		return new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				if(object != null && object instanceof String) {
+					return ((String) object).contains(value);
+				}
+				return false;
+			}
+		};
 	}
 }

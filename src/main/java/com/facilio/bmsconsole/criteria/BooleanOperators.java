@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanPredicate;
+import org.apache.commons.collections.Predicate;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum BooleanOperators implements Operator<String> {
@@ -30,6 +33,20 @@ public enum BooleanOperators implements Operator<String> {
 						.append(field.getColumnName())
 						.append(" = false)");
 				return builder.toString();
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public Predicate getPredicate(FacilioField field, String value) {
+		// TODO Auto-generated method stub
+		if(field != null && value != null) {
+			if("true".equalsIgnoreCase(value)) {
+				return new BeanPredicate(field.getName(), new BooleanPredicate(true));
+			}
+			else {
+				return new BeanPredicate(field.getColumnName(), new BooleanPredicate(false));
 			}
 		}
 		return null;
@@ -66,5 +83,26 @@ public enum BooleanOperators implements Operator<String> {
 	}
 	public static Map<String, Operator> getAllOperators() {
 		return operatorMap;
+	}
+	
+	public static class BooleanPredicate implements Predicate {
+
+		private boolean val;
+		
+		public BooleanPredicate(boolean val) {
+			// TODO Auto-generated constructor stub
+			this.val = val;
+		}
+		
+		@Override
+		public boolean evaluate(Object object) {
+			// TODO Auto-generated method stub
+			if(object != null && object instanceof Boolean) {
+				boolean currentVal = (boolean) object;
+				return val == currentVal;
+			}
+			return false;
+		}
+		
 	}
 }

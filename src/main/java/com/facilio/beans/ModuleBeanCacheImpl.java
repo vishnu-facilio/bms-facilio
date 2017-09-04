@@ -78,6 +78,25 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	public FacilioField getField(long fieldId) throws Exception {
+		
+		FacilioField field = (FacilioField) CacheUtil.get(CacheUtil.FIELD_KEY(getOrgId(), fieldId));
+		
+		if (field == null) {
+			
+			field = super.getField(fieldId);
+			
+			CacheUtil.set(CacheUtil.FIELD_KEY(getOrgId(), fieldId), field);
+			
+			LOGGER.log(Level.INFO, "getField result from DB for Id: "+fieldId);
+		}
+		else {
+			LOGGER.log(Level.INFO, "getField result from CACHE for Id: "+fieldId);
+		}
+		return field;
+	}
+	
+	@Override
 	public long addField(FacilioField field) throws Exception {
 		
 		long fieldId = super.addField(field);
