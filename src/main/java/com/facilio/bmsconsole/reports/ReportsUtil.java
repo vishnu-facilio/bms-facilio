@@ -9,52 +9,54 @@ import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ReportsUtil 
 {
-	private StringBuilder select = new StringBuilder(" SELECT ");
+	private static StringBuilder select = new StringBuilder(" SELECT ");
 
-	private StringBuilder fieldsForPower = new StringBuilder (" DEVICE_ID, ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
+	private  static StringBuilder fieldsForPower = new StringBuilder (" DEVICE_ID, ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
 
-	private StringBuilder fieldsDate= new StringBuilder("ADDED_DATE");
+	private  static StringBuilder fieldsDate= new StringBuilder("ADDED_DATE");
 
-	private StringBuilder fieldsMonth= new StringBuilder("ADDED_MONTH");
+	private  static StringBuilder fieldsMonth= new StringBuilder("ADDED_MONTH");
 
-	private StringBuilder fieldsHour= new StringBuilder("ADDED_HOUR");
+	private  static  StringBuilder fieldsHour= new StringBuilder("ADDED_HOUR");
 
-	private StringBuilder fieldsWeek= new StringBuilder("ADDED_WEEK");
+	private  static StringBuilder fieldsWeek= new StringBuilder("ADDED_WEEK");
 
-	private StringBuilder from = new StringBuilder(" FROM ");
+	private  static StringBuilder from = new StringBuilder(" FROM ");
 	
-	private StringBuilder energy= new StringBuilder(" ENERGY_DATA ");
+	private  static StringBuilder energy= new StringBuilder(" ENERGY_DATA ");
 	
-	private StringBuilder where = new StringBuilder(" WHERE ");
+	private  static  StringBuilder where = new StringBuilder(" WHERE ");
 
-	private StringBuilder timeBetween = new StringBuilder(" ADDED_TIME BETWEEN ? AND ? ");
+	private  static StringBuilder timeBetween = new StringBuilder(" ADDED_TIME BETWEEN ? AND ? ");
 	
-	private StringBuilder dateBetween = new StringBuilder(" ADDED_DATE BETWEEN ? AND ? ");
+	private static  StringBuilder dateBetween = new StringBuilder(" ADDED_DATE BETWEEN ? AND ? ");
 
-	private StringBuilder device_id= new StringBuilder(" DEVICE_ID = ? ");
+	private  static StringBuilder device_id= new StringBuilder(" DEVICE_ID = ? ");
 
-	private StringBuilder groupBy = new StringBuilder(" GROUP BY DEVICE_ID ");
+	private  static StringBuilder groupBy = new StringBuilder(" GROUP BY DEVICE_ID ");
 
-	private StringBuilder andOperator = new StringBuilder(" AND ");
+	private  static StringBuilder andOperator = new StringBuilder(" AND ");
 
-	private StringBuilder orOperator = new StringBuilder(" OR ");
+	private  static StringBuilder orOperator = new StringBuilder(" OR ");
 
-	private StringBuilder separator = new StringBuilder(" , ");
+	private  static StringBuilder separator = new StringBuilder(" , ");
 
 	
-	private StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn)
+	private  static StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn)
 	{
 		return new StringBuilder().append(select).append(groupByColumn).append(separator).
 		append(query).append(separator).append(groupByColumn);
 	}
 	
-	private StringBuilder getQuery(StringBuilder selectFields, StringBuilder table, StringBuilder betweenCol, Long deviceId)
+	private  static StringBuilder getQuery(StringBuilder selectFields, StringBuilder table, StringBuilder betweenCol, Long deviceId)
 	{
 		StringBuilder baseQuery=new StringBuilder();
 		if(deviceId==null)
@@ -70,13 +72,13 @@ public class ReportsUtil
 		return baseQuery;
 	}
 
-	public HashMap<String,Object> getQueryObject(int category, Long deviceId)
+	private  static  HashMap<String,Object> getQueryObject(int category, Long deviceId)
 	{
 		StringBuilder baseQuery=getQuery(fieldsForPower, energy, timeBetween,deviceId);
 		return getQueryObject(category, deviceId, baseQuery);
 	}
 	
-	public HashMap<String,Object> getQueryObject(int category, Long deviceId, String fromDate, String endDate)
+	private  static  HashMap<String,Object> getQueryObject(int category, Long deviceId, String fromDate, String endDate)
 	{
 		StringBuilder baseQuery=getQuery(fieldsForPower, energy,dateBetween,deviceId);
 		HashMap <String,Object> hMap = getQueryObject(category, deviceId, baseQuery);
@@ -85,7 +87,7 @@ public class ReportsUtil
 		return hMap;
 	}
 
-	public HashMap<String,Object> getQueryObject(int category, Long deviceId, StringBuilder baseQuery)
+	private  static  HashMap<String,Object> getQueryObject(int category, Long deviceId, StringBuilder baseQuery)
 	{
 		Long fromRange=0L,endRange=0L;
 		
@@ -228,30 +230,55 @@ public class ReportsUtil
 		return hMap;
 	}
 
+	private static String getDeviceName(long deviceId)
+	{
+		Device device=null;
+		try {
+			device = DeviceAPI.getDevice(deviceId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return device.getName();
+	}
 	
-	
+	private static Long getDeviceID(String deviceName)
+	{
+		Device device=null;
+		try {
+			device = DeviceAPI.getDevice(deviceName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return device.getId();
+	}
 
-
-	public JSONObject getData (HashMap<String,Object> queryObj)
+	private  static JSONObject getData (HashMap<String,Object> queryObj)
 	{
 		JSONObject result =null;
 		
 		HashMap <String,Object> hMap =queryObj;
 		String from = (String)hMap.get(FacilioConstants.Reports.RANGE_FROM);
 		String end = (String)hMap.get(FacilioConstants.Reports.RANGE_END);
-		Long deviceId= (Long)hMap.get(FacilioConstants.Reports.DEVICE_ID);
+		Long in_deviceId= (Long)hMap.get(FacilioConstants.Reports.DEVICE_ID);
 		String fetchQuery=(String)hMap.get(FacilioConstants.Reports.QUERY_STRING);
+		String deviceName=null;
 		
 		System.out.println("The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
+		
+		if(in_deviceId!=null)
+		{
+			
+			deviceName=getDeviceName(in_deviceId);
+		}
 
 		try(Connection conn = FacilioConnectionPool.getInstance().getConnection();
 				PreparedStatement psmt=conn.prepareStatement(fetchQuery))
 		{
 			psmt.setObject(1, from);
 			psmt.setObject(2, end);
-			if(deviceId!=null)
+			if(in_deviceId!=null)
 			{
-				psmt.setObject(3, deviceId);	
+				psmt.setObject(3, in_deviceId);	
 			}
 			try(ResultSet rs=psmt.executeQuery())
 			{
@@ -265,9 +292,12 @@ public class ReportsUtil
 					
 					
 					
-					long device_id = (Long)rs.getObject(2);
+					long deviceId = (Long)rs.getObject(2);
 					//TODO get the deviceName for this device_id here..
-					String deviceName= ""+device_id;
+					if(in_deviceId==null)
+					{
+						deviceName=getDeviceName(deviceId);
+					}
 					json.put("DEVICE_NAME", deviceName);
 					json.put("POWER_CONSUMPTION", rs.getObject(3).toString());
 
@@ -292,7 +322,17 @@ public class ReportsUtil
 
 		System.out.println("The result: "+result);
 		return result;
-
+	}
+	
+	public static JSONObject getPowerData(int category, String deviceName)
+	{
+		
+		return getData(getQueryObject(category, getDeviceID(deviceName)));
+	}
+	
+	public static JSONObject getPowerData(int category, String deviceName,String fromDate, String endDate)
+	{
+		return getData(getQueryObject(category, getDeviceID(deviceName), fromDate, endDate));
 	}
 
 }
