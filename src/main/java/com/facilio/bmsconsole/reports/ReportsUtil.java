@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -235,31 +237,41 @@ public class ReportsUtil
 
 	private static String getDeviceName(long deviceId)
 	{
-		Device device=null;
-		try {
-			device = DeviceAPI.getDevice(deviceId);
-		} catch (SQLException e) {
-			e.printStackTrace();
+		try 
+		{
+			Device device = DeviceAPI.getDevice(deviceId);
+			if (device!=null)
+			{
+				return device.getName();
+			}
+		} 
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Error while fetching device with id: "+deviceId, e);
 		}
-		return device.getName();
+		return null;
 	}
 	
 	private static Long getDeviceID(String deviceName)
 	{
-		Device device=null;
-		try {
-			device = DeviceAPI.getDevice(deviceName);
-		} catch (SQLException e) {
-			e.printStackTrace();
+		try 
+		{
+			Device device = DeviceAPI.getDevice(deviceName);
+			if (device!=null)
+			{
+				return device.getId();
+			}
+		} 
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Error while fetching deviceName: "+deviceName, e);
 		}
-		return device.getId();
+		return null;
 	}
 
-	private  static JSONObject getData (HashMap<String,Object> queryObj)
+	private  static JSONObject getData (HashMap<String,Object> hMap)
 	{
 		JSONObject result =null;
-		
-		HashMap <String,Object> hMap =queryObj;
 		String from = (String)hMap.get(FacilioConstants.Reports.RANGE_FROM);
 		String end = (String)hMap.get(FacilioConstants.Reports.RANGE_END);
 		Long in_deviceId= (Long)hMap.get(FacilioConstants.Reports.DEVICE_ID);
@@ -270,7 +282,6 @@ public class ReportsUtil
 		
 		if(in_deviceId!=null)
 		{
-			
 			deviceName=getDeviceName(in_deviceId);
 		}
 
@@ -282,7 +293,6 @@ public class ReportsUtil
 			if(in_deviceId!=null)
 			{
 				psmt.setObject(3, in_deviceId);
-				deviceName=getDeviceName(in_deviceId);
 			}
 			try(ResultSet rs=psmt.executeQuery())
 			{
@@ -322,6 +332,25 @@ public class ReportsUtil
 		logger.log(Level.INFO, "The result: "+result);
 		return result;
 	}
+	
+	
+	public static StringBuilder getAdditionalTimeSql()
+	{
+		return new StringBuilder("ADDED_DATE=?,ADDED_MONTH=?,ADDED_WEEK=?,ADDED_DAY=?,ADDED_HOUR=?"); 
+	}
+	
+	public static List<String> getAdditionalTimeCols()
+	{
+		List<String> dbCols = new ArrayList<>();
+		dbCols.add("date");
+		dbCols.add("month");
+		dbCols.add("week");
+		dbCols.add("day");
+		dbCols.add("hour");
+		return dbCols;
+		
+	}
+	
 	
 	public static JSONObject getPowerData(int category, String deviceName)
 	{

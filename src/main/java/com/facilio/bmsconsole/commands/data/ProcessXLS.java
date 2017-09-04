@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +21,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -137,10 +136,9 @@ public class ProcessXLS implements Command {
 			sql.append(",");
 			dbCols.add(key);
 		}
-		sql.append(getAdditionalTimeSql());
-		dbCols.addAll(dbCols.size(),getAdditionalTimeCols());
+		sql.append(ReportsUtil.getAdditionalTimeSql());
+		dbCols.addAll(dbCols.size(),ReportsUtil.getAdditionalTimeCols());
 		
-		System.out.println("#######The sql String: "+sql.toString());
 		PreparedStatement pstmt = conn.prepareStatement(sql.toString());
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -220,7 +218,7 @@ public class ProcessXLS implements Command {
 				//we have to make sure we need to have this column for all the collected data table.. 
 				if(dbColName.equalsIgnoreCase("ADDED_TIME"))
 				{
-					additionalColVals=getAdditionalTimeData((Double)value);	
+					additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue());	
 				}
 				idx++;
 			}
@@ -258,37 +256,5 @@ public class ProcessXLS implements Command {
 	}
 	
 	
-	private static HashMap<String,Object> getAdditionalTimeData(Double addedTime)
-	{
-		HashMap<String,Object> columnVals = new HashMap<String, Object>() ;
-		ZonedDateTime zdt = DateTimeUtil.getDateTime(addedTime.longValue());
-		int hour=zdt.getHour();
-		String month=zdt.getMonth().toString();
-		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-		String date=zdt.toLocalDate().toString();
-		String day=zdt.getDayOfWeek().toString();
-		columnVals.put("ADDED_DATE", date);
-		columnVals.put("ADDED_MONTH", month);
-		columnVals.put("ADDED_WEEK", week);
-		columnVals.put("ADDED_DAY", day);
-		columnVals.put("ADDED_HOUR",hour);
-		return columnVals;
-	}
 	
-	private static StringBuilder getAdditionalTimeSql()
-	{
-		return new StringBuilder("ADDED_DATE=?,ADDED_MONTH=?,ADDED_WEEK=?,ADDED_DAY=?,ADDED_HOUR=?"); 
-	}
-	
-	private static List<String> getAdditionalTimeCols()
-	{
-		List<String> dbCols = new ArrayList<>();
-		dbCols.add("ADDED_DATE");
-		dbCols.add("ADDED_MONTH");
-		dbCols.add("ADDED_WEEK");
-		dbCols.add("ADDED_DAY");
-		dbCols.add("ADDED_HOUR");
-		return dbCols;
-		
-	}
 }
