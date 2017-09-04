@@ -30,7 +30,7 @@ public enum NumberOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), computeEqualPredicate(value));
@@ -68,7 +68,7 @@ public enum NumberOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
@@ -78,7 +78,7 @@ public enum NumberOperators implements Operator<String> {
 	},
 	LESS_THAN("<") {
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -109,7 +109,7 @@ public enum NumberOperators implements Operator<String> {
 	},
 	LESS_THAN_EQUAL("<=") {
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -140,7 +140,7 @@ public enum NumberOperators implements Operator<String> {
 	},
 	GREATER_THAN(">") {
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -171,7 +171,7 @@ public enum NumberOperators implements Operator<String> {
 	},
 	GREATER_THAN_EQUAL(">=") {
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					

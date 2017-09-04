@@ -24,7 +24,7 @@ public enum CommonOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
 				return new BeanPredicate(field.getName(), PredicateUtils.nullPredicate());
@@ -43,7 +43,7 @@ public enum CommonOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
 				return new BeanPredicate(field.getName(), PredicateUtils.notNullPredicate());

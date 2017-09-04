@@ -42,23 +42,23 @@ public class CommonCommandUtil {
 	
 	public static FacilioField getFieldFromRS(ResultSet rs) throws SQLException {
 		FacilioField field = new FacilioField();
-		field.setFieldId(rs.getLong("FIELDID"));
-		field.setOrgId(rs.getLong("ORGID"));
-		field.setModuleId(rs.getLong("MODULEID"));
-		field.setName(rs.getString("NAME"));
-		field.setDisplayName(rs.getString("DISPLAY_NAME"));
-		field.setDisplayType(rs.getInt("DISPLAY_TYPE"));
-		field.setColumnName(rs.getString("COLUMN_NAME"));
-		field.setSequenceNumber(rs.getInt("SEQUENCE_NUMBER"));
-		field.setDataType(FieldType.getCFType(rs.getInt("DATA_TYPE")));
-		field.setDataTypeCode(rs.getInt("DATA_TYPE"));
-		field.setDefault(rs.getBoolean("IS_DEFAULT"));
-		field.setMainField(rs.getBoolean("IS_MAIN_FIELD"));
-		field.setRequired(rs.getBoolean("REQUIRED"));
-		field.setDisabled(rs.getBoolean("DISABLED"));
-		field.setStyleClass(rs.getString("STYLE_CLASS"));
-		field.setIcon(rs.getString("ICON"));
-		field.setPlaceHolder(rs.getString("PLACE_HOLDER"));
+		field.setFieldId(rs.getLong("Fields.FIELDID"));
+		field.setOrgId(rs.getLong("Fields.ORGID"));
+		field.setModuleId(rs.getLong("Fields.MODULEID"));
+		field.setName(rs.getString("Fields.NAME"));
+		field.setDisplayName(rs.getString("Fields.DISPLAY_NAME"));
+		field.setDisplayType(rs.getInt("Fields.DISPLAY_TYPE"));
+		field.setColumnName(rs.getString("Fields.COLUMN_NAME"));
+		field.setSequenceNumber(rs.getInt("Fields.SEQUENCE_NUMBER"));
+		field.setDataType(FieldType.getCFType(rs.getInt("Fields.DATA_TYPE")));
+		field.setDataTypeCode(rs.getInt("Fields.DATA_TYPE"));
+		field.setDefault(rs.getBoolean("Fields.IS_DEFAULT"));
+		field.setMainField(rs.getBoolean("Fields.IS_MAIN_FIELD"));
+		field.setRequired(rs.getBoolean("Fields.REQUIRED"));
+		field.setDisabled(rs.getBoolean("Fields.DISABLED"));
+		field.setStyleClass(rs.getString("Fields.STYLE_CLASS"));
+		field.setIcon(rs.getString("Fields.ICON"));
+		field.setPlaceHolder(rs.getString("Fields.PLACE_HOLDER"));
 		
 		return field;
 	}

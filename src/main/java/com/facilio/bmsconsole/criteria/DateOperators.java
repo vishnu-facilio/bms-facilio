@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,17 +27,17 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
-							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							ZonedDateTime currentVal = DateTimeUtil.getDateTime((long) object).truncatedTo(ChronoUnit.MINUTES);
 							return currentVal.equals(val); 
 						}
 						return false;
@@ -71,17 +71,17 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
-							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							ZonedDateTime currentVal = DateTimeUtil.getDateTime((long) object).truncatedTo(ChronoUnit.MINUTES);
 							return !currentVal.equals(val); 
 						}
 						return false;
@@ -100,17 +100,17 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
-							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							ZonedDateTime currentVal = DateTimeUtil.getDateTime((long) object).truncatedTo(ChronoUnit.MINUTES);
 							return currentVal.isBefore(val); 
 						}
 						return false;
@@ -129,17 +129,17 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				Instant val = Instant.ofEpochMilli(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
+				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
-							Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							ZonedDateTime currentVal = DateTimeUtil.getDateTime((long) object).truncatedTo(ChronoUnit.MINUTES);
 							return currentVal.isAfter(val);
 						}
 						return false;
@@ -158,7 +158,7 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
@@ -178,7 +178,7 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
@@ -216,7 +216,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -226,7 +226,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getDayStartTime(-1);
+							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getDayStartTime(1);
 						}
 						return false;
 					}
@@ -262,7 +262,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -272,7 +272,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getDayStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(-2);
+							return DateTimeUtil.getDayStartTime(1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(2);
 						}
 						return false;
 					}
@@ -305,7 +305,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -315,7 +315,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return currentVal >= DateTimeUtil.getDayStartTime(-1);
+							return currentVal >= DateTimeUtil.getDayStartTime(1);
 						}
 						return false;
 					}
@@ -352,7 +352,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -362,7 +362,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getDayStartTime(1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime();
+							return DateTimeUtil.getDayStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getDayStartTime();
 						}
 						return false;
 					}
@@ -394,7 +394,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -440,7 +440,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -450,7 +450,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime(1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
+							return DateTimeUtil.getMonthStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
 						}
 						return false;
 					}
@@ -486,7 +486,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -496,7 +496,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime() <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(-1);
+							return DateTimeUtil.getMonthStartTime() <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(1);
 						}
 						return false;
 					}
@@ -532,7 +532,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -542,7 +542,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(-2);
+							return DateTimeUtil.getMonthStartTime(1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(2);
 						}
 						return false;
 					}
@@ -578,7 +578,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -588,7 +588,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getWeekStartTime(1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime();
+							return DateTimeUtil.getWeekStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime();
 						}
 						return false;
 					}
@@ -625,7 +625,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -635,7 +635,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(-1);
+							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(1);
 						}
 						return false;
 					}
@@ -671,7 +671,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
 				return new BeanPredicate(field.getName(), new Predicate() {
 					
@@ -681,7 +681,7 @@ public enum DateOperators implements Operator<String> {
 						if(object != null && object instanceof Long) {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
-							return DateTimeUtil.getWeekStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(-2);
+							return DateTimeUtil.getWeekStartTime(1) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(2);
 						}
 						return false;
 					}
@@ -709,7 +709,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				int age = Integer.parseInt(value);
 				return new BeanPredicate(field.getName(), new Predicate() {
@@ -748,7 +748,7 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				int due = Integer.parseInt(value);
 				return new BeanPredicate(field.getName(), new Predicate() {
@@ -853,15 +853,15 @@ public enum DateOperators implements Operator<String> {
 		String values[] = value.trim().split("\\s*,\\s*");
 		
 		if(values != null && values.length > 1) {
-			Instant startVal = Instant.ofEpochMilli(Long.parseLong(values[0])).truncatedTo(ChronoUnit.MINUTES);
-			Instant endVal = Instant.ofEpochMilli(Long.parseLong(values[1])).truncatedTo(ChronoUnit.MINUTES);
+			ZonedDateTime startVal = DateTimeUtil.getDateTime(Long.parseLong(values[0])).truncatedTo(ChronoUnit.MINUTES);
+			ZonedDateTime endVal = DateTimeUtil.getDateTime(Long.parseLong(values[1])).truncatedTo(ChronoUnit.MINUTES);
 			return new Predicate() {
 				
 				@Override
 				public boolean evaluate(Object object) {
 					// TODO Auto-generated method stub
 					if(object != null && object instanceof Long) {
-						Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+						ZonedDateTime currentVal = DateTimeUtil.getDateTime((long) object).truncatedTo(ChronoUnit.MINUTES);
 						return currentVal.equals(startVal) || (currentVal.isAfter(startVal) && currentVal.isBefore(endVal)) || currentVal.equals(endVal);
 					}
 					return false;

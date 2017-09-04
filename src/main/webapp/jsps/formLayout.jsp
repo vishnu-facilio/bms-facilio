@@ -115,7 +115,7 @@
 									required="true"
 									</s:if>
 									>
-									<option value="">- None -</option>
+									<option value="-1">- None -</option>
 								</select>
 								<span class="input-group-btn">
 									<s:if test="%{#field.specialType == 'users'}">

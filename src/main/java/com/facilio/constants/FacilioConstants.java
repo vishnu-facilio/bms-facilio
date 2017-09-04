@@ -294,6 +294,7 @@ public class FacilioConstants {
 	
 	public static class ContextNames {
 		
+		public static final String RECORD = "record";
 		public static final String RECORD_ID = "recordId";
 		
 		public static final String USER_ID = "userId";
