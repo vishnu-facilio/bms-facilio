@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,6 +19,8 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class ReportsUtil 
 {
+	private static Logger logger = Logger.getLogger(ReportsUtil.class.getName());
+	
 	private static StringBuilder select = new StringBuilder(" SELECT ");
 
 	private  static StringBuilder fieldsForPower = new StringBuilder (" DEVICE_ID, ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
@@ -58,16 +62,15 @@ public class ReportsUtil
 	
 	private  static StringBuilder getQuery(StringBuilder selectFields, StringBuilder table, StringBuilder betweenCol, Long deviceId)
 	{
-		StringBuilder baseQuery=new StringBuilder();
+		StringBuilder baseQuery=new StringBuilder().append(selectFields).append(from).append(table).
+				                append(where).append(betweenCol);
 		if(deviceId==null)
 		{
-			baseQuery=baseQuery.append(selectFields).append(from).append(table).append(where).
-					append(betweenCol).append(groupBy);
+			baseQuery=baseQuery.append(groupBy);
 		}
 		else
 		{
-			baseQuery= baseQuery.append(selectFields).append(from).append(table).append(where).
-					append(betweenCol).append(andOperator).append(device_id).append(groupBy); 
+			baseQuery= baseQuery.append(andOperator).append(device_id).append(groupBy); 
 		}
 		return baseQuery;
 	}
@@ -263,7 +266,7 @@ public class ReportsUtil
 		String fetchQuery=(String)hMap.get(FacilioConstants.Reports.QUERY_STRING);
 		String deviceName=null;
 		
-		System.out.println("The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
+		logger.log(Level.INFO, "The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
 		
 		if(in_deviceId!=null)
 		{
@@ -278,7 +281,8 @@ public class ReportsUtil
 			psmt.setObject(2, end);
 			if(in_deviceId!=null)
 			{
-				psmt.setObject(3, in_deviceId);	
+				psmt.setObject(3, in_deviceId);
+				deviceName=getDeviceName(in_deviceId);
 			}
 			try(ResultSet rs=psmt.executeQuery())
 			{
@@ -289,11 +293,7 @@ public class ReportsUtil
 					JSONObject json = new JSONObject();
 
 					String key =rs.getObject(1).toString();
-					
-					
-					
 					long deviceId = (Long)rs.getObject(2);
-					//TODO get the deviceName for this device_id here..
 					if(in_deviceId==null)
 					{
 						deviceName=getDeviceName(deviceId);
@@ -312,15 +312,14 @@ public class ReportsUtil
 			}
 			catch(SQLException e)
 			{
-				e.printStackTrace();
+				logger.log(Level.SEVERE, "Error while fetching data with query:\n "+fetchQuery, e);
 			}
 		}
 		catch(SQLException e)
 		{
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Error while fetching data with query:\n "+fetchQuery, e);
 		}
-
-		System.out.println("The result: "+result);
+		logger.log(Level.INFO, "The result: "+result);
 		return result;
 	}
 	
