@@ -191,7 +191,7 @@ public class ImportMetaInfo
 		return json;
 	}
 	
-	public HashMap getFieldMapping(String jsonString) throws Exception
+	public HashMap getFieldMap(String jsonString) throws Exception
 	{
 		HashMap <String,String[]> fieldMap = new HashMap();
 		JSONParser parser = new JSONParser();
@@ -203,7 +203,6 @@ public class ImportMetaInfo
 			String values[] = {(String) json.get(key)};
 			fieldMap.put(key, values);
 		}
-		System.out.println("###The Field Map after setting "+fieldMap);
 		return fieldMap;
 	}
 	
