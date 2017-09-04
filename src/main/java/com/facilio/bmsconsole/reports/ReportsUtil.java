@@ -111,7 +111,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_YEAR:
 		{
-			fromRange=DateTimeUtil.getYearStartTime(1);
+			fromRange=DateTimeUtil.getYearStartTime(-1);
 			endRange=DateTimeUtil.getYearStartTime()-1;
 			modifiedQuery=getQuery(baseQuery,fieldsMonth);
 			break;
@@ -125,7 +125,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_YEAR_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getYearStartTime(1);
+			fromRange=DateTimeUtil.getYearStartTime(-1);
 			endRange=DateTimeUtil.getYearStartTime()-1;
 			modifiedQuery=getQuery(baseQuery,fieldsWeek);
 			break;
@@ -139,7 +139,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_HOUR:
 		{
-			fromRange=DateTimeUtil.getHourStartTime(1);
+			fromRange=DateTimeUtil.getHourStartTime(-1);
 			endRange=DateTimeUtil.getCurrenTime();
 			modifiedQuery=new StringBuilder().append(select).append(baseQuery);
 			break;
@@ -153,7 +153,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_MONTH_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime(1);
+			fromRange=DateTimeUtil.getMonthStartTime(-1);
 			endRange=DateTimeUtil.getMonthStartTime()-1;
 			modifiedQuery=getQuery(baseQuery,fieldsWeek);
 			break;
@@ -177,13 +177,13 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_MONTH:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime(1);
+			fromRange=DateTimeUtil.getMonthStartTime(-1);
 			endRange=DateTimeUtil.getMonthStartTime()-1;
 			break;
 		}
 		case FacilioConstants.Reports.YESTERDAY:
 		{
-			fromRange=DateTimeUtil.getDayStartTime(1);
+			fromRange=DateTimeUtil.getDayStartTime(-1);
 			endRange=DateTimeUtil.getDayStartTime()-1;
 			break;
 		}
@@ -195,7 +195,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_30_DAYS:
 		{
-			fromRange=DateTimeUtil.getDayStartTime(30);
+			fromRange=DateTimeUtil.getDayStartTime(-30);
 			endRange=DateTimeUtil.getDayStartTime()-1;
 			break;
 		}
@@ -207,7 +207,7 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.LAST_WEEK:
 		{
-			fromRange=DateTimeUtil.getWeekStartTime(1);
+			fromRange=DateTimeUtil.getWeekStartTime(-1);
 			endRange=DateTimeUtil.getWeekStartTime() - 1;
 			break;
 		}

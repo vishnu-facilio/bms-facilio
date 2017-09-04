@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,7 +7,6 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
@@ -79,7 +77,7 @@ public class DateTimeUtil
 	
 	public static long getDayStartTime(int interval )
 	{
-		return getMillis(getMidnight().minusDays(interval),true);
+		return getMillis(getMidnight().plusDays(interval),true);
 	}
 
 	public static long getDayStartTime()
@@ -99,7 +97,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular month by required interval -1.
 		return getMillis(LocalDateTime.of(getMonthFirst(),LocalTime.MIDNIGHT).
-				minusMonths(interval),true); 
+				plusMonths(interval),true); 
 	}
 
 	public static long getWeekStartTime()
@@ -114,7 +112,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular week by sending required interval -1..
 		return getMillis(LocalDateTime.of(getWeekFirst(),LocalTime.MIDNIGHT).
-				minusWeeks(interval),true);
+				plusWeeks(interval),true);
 	}
 
 	public static long getYearStartTime()
@@ -130,7 +128,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular year by required interval -1.
 		return getMillis(LocalDateTime.of(getYearFirst(),LocalTime.MIDNIGHT).
-				minusYears(interval),true); 
+				plusYears(interval),true); 
 	}	
 	
 	public static long getHourStartTime()
@@ -144,7 +142,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 				//for a particular hour by required interval -1.
-		return getMillis(getHourFirst().minusHours(interval),true);
+		return getMillis(getHourFirst().plusHours(interval),true);
 	}
 	
 	public static long getStartTime(int day, int month, int year)
