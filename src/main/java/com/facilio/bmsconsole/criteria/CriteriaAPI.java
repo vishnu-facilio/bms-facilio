@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 
@@ -59,7 +61,7 @@ public class CriteriaAPI {
 	private static Condition getConditionFromRS(ResultSet rs, long orgId, Connection conn) throws Exception {
 		Condition condition = new Condition();
 		condition.setConditionId(rs.getLong("Conditions.CONDITIONID"));
-		condition.setParentCriteriaId(rs.getLong("Conditions.T_CRITERIA_ID"));
+		condition.setParentCriteriaId(rs.getLong("Conditions.PARENT_CRITERIA_ID"));
 		condition.setSequence(rs.getInt("Conditions.SEQUENCE"));
 		condition.setFieldId(rs.getLong("Conditions.FIELDID"));
 		condition.setValue(rs.getString("Conditions.VAL"));
@@ -69,7 +71,13 @@ public class CriteriaAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField(condition.getFieldId());
 		condition.setField(field);
-		condition.setOperator(field.getDataType().getOperator(rs.getString("OPERATOR")));
+		
+		if(field.getDataType() == FieldType.LOOKUP && FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType())) {
+			condition.setOperator(UserOperators.getAllOperators().get(rs.getString("OPERATOR")));
+		}
+		else {
+			condition.setOperator(field.getDataType().getOperator(rs.getString("OPERATOR")));
+		}
 		
 		if(condition.getCriteriaValueId() != 0) {
 			condition.setCriteriaValue(getCriteria(orgId, condition.getCriteriaValueId(), conn));

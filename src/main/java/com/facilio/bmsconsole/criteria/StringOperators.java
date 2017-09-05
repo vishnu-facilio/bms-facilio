@@ -42,7 +42,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), computeEqualPredicate(value));
@@ -86,7 +86,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
@@ -108,7 +108,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), computeContainsPredicate(value));
@@ -141,7 +141,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeContainsPredicate(value)));
@@ -163,7 +163,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate startsWithPredicate = null;
@@ -209,7 +209,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate endsWithPredicate = null;

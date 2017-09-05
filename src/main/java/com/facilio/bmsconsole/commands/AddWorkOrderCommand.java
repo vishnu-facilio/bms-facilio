@@ -32,6 +32,7 @@ public class AddWorkOrderCommand implements Command {
 																.connection(conn);
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
+			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
 			context.put(FacilioConstants.Workflow.EVENT_TYPE, FacilioConstants.Workflow.EVENT_ADD_WORKORDER);
 		}

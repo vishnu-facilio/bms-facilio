@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.ViewLayout;

@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
-
 public class WorkflowRuleContext {
 	
 	private long orgId = 0;

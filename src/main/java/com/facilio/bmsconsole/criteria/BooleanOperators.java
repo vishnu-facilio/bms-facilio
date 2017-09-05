@@ -39,7 +39,7 @@ public enum BooleanOperators implements Operator<String> {
 	}
 	
 	@Override
-	public Predicate getPredicate(FacilioField field, String value) {
+	public BeanPredicate getPredicate(FacilioField field, String value) {
 		// TODO Auto-generated method stub
 		if(field != null && value != null) {
 			if("true".equalsIgnoreCase(value)) {

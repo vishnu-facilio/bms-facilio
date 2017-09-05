@@ -241,9 +241,9 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 		
-	private static Condition getMyUserCondition(String moduleTableName) {
+	public static Condition getMyUserCondition(String moduleTableName) {
 		FacilioField userField = new FacilioField();
-		userField.setName("assignedToId");
+		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
 		userField.setModuleTableName(moduleTableName);

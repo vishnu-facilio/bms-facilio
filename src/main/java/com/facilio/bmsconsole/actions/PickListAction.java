@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.transaction.FacilioTransactionManager;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class PickListAction extends ActionSupport {

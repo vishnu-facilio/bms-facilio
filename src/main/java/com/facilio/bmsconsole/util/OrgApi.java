@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.OrgContext;
-import com.facilio.bmsconsole.context.UserContext;
 //import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;

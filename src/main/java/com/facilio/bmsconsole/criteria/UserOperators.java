@@ -42,7 +42,7 @@ public enum UserOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), computeUserPredicate(value));
@@ -83,7 +83,7 @@ public enum UserOperators implements Operator<String> {
 		}
 
 		@Override
-		public Predicate getPredicate(FacilioField field, String value) {
+		public BeanPredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeUserPredicate(value)));

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.RequesterContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;

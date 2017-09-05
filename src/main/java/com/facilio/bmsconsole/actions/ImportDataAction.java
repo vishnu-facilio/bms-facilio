@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -30,29 +31,39 @@ public class ImportDataAction extends ActionSupport {
 			System.out.println("secondtime code"+ this.hashCode());
 			metainfo= ImportMetaInfo.getInstance(getImportprocessid());
 			
-			Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();
 			//Here: We are checking whether the field mapping exists for the same column headings..
 			//if already exists.. setting the old fieldMapping to display the mappings in the form set with old mappings 
 			// when users upload similar set of data with same mapping frequently..
-			String checkQuery="select FIELD_MAPPING from ImportProcess where 	FIELD_MAPPING IS NOT NULL AND COLUMN_HEADING=? ORDER BY IMPORT_TIME DESC LIMIT 1";
-			
-			PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery);
-			pstmtCheck.setString(1, getColumnheading());
-			//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
-			System.out.println("The Columnheading "+getColumnheading());
-			ResultSet fieldMapSet= pstmtCheck.executeQuery();
-			if (fieldMapSet.next())
-			 {
-				String fieldMapping	= fieldMapSet.getString(1);
-				System.out.println("Obtained from db"+fieldMapping);
-				if(fieldMapping!=null && !fieldMapping.trim().isEmpty())
+			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+			String checkQuery="select FIELD_MAPPING from ImportProcess where 	FIELD_MAPPING IS NOT NULL AND ORG_USERID=? AND COLUMN_HEADING=? ORDER BY IMPORT_TIME DESC LIMIT 1";
+
+			try(Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();
+					PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery))
+			{			
+				pstmtCheck.setObject(1, orgId);
+				pstmtCheck.setObject(2, getColumnheading());
+				//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
+				try(ResultSet fieldMapSet= pstmtCheck.executeQuery())
 				{
-					metainfo.setFieldMapping(metainfo.getFieldMapping(fieldMapping));
+					if (fieldMapSet.next())
+					{
+						String fieldMapping	= fieldMapSet.getString(1);
+						System.out.println("Obtained from db"+fieldMapping);
+						if(fieldMapping!=null && !fieldMapping.trim().isEmpty())
+						{
+							metainfo.setFieldMapping(metainfo.getFieldMap(fieldMapping));
+						}
+					}
 				}
-			 }
-			fieldMapSet.close();
-			pstmtCheck.close();
-			conn.close();
+				catch(SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			catch(SQLException e)
+			{
+				e.printStackTrace();
+			}
 			return SUCCESS;
 		}
 		else

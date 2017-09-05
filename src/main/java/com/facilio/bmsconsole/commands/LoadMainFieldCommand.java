@@ -1,23 +1,18 @@
  package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import javax.transaction.Transaction;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioTransactionManager;
 
 public class LoadMainFieldCommand implements Command {
 

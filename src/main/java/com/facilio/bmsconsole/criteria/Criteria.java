@@ -158,6 +158,8 @@ public class Criteria {
 			conditions = new HashMap<>();
 			pattern = "1";
 			condition.setSequence(1);
+			
+			conditions = new HashMap<>();
 			conditions.put(1, condition);
 		}
 	}

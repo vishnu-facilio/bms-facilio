@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,9 +7,10 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class DateTimeUtil 
@@ -66,9 +66,38 @@ public class DateTimeUtil
 		return LocalTime.of(lTime.getHour(), 0).atDate(LocalDate.now(getZoneId()));
 	}
 	
-	public static ZonedDateTime getDateTime(long addedTime)
+	public static HashMap<String,Object> getTimeData(long addedTime)
 	{
-		 return ZonedDateTime.ofInstant(Instant.ofEpochMilli(addedTime), getZoneId());
+		HashMap<String,Object> columnVals = new HashMap<String, Object>() ;
+		ZonedDateTime zdt = getDateTime(addedTime);
+		int hour=zdt.getHour();
+		String month=zdt.getMonth().toString();
+		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+		String date=zdt.toLocalDate().toString();
+		String day=zdt.getDayOfWeek().toString();
+		int year=zdt.getYear();
+		columnVals.put("date", date);
+		columnVals.put("month", month);
+		columnVals.put("week", week);
+		columnVals.put("day", day);
+		columnVals.put("hour",hour);
+		columnVals.put("year", year);
+		return columnVals;
+	}
+	
+	public static ZonedDateTime getDateTime(long time)
+	{
+		if(time==-1)
+		{
+			//for getting current time
+			return getDateTime();	
+		}
+		return ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), getZoneId());
+	}
+	
+	public static ZonedDateTime getDateTime()
+	{
+		 return ZonedDateTime.now(getZoneId());
 	}
 	
 	public static long getCurrenTime()
@@ -79,7 +108,7 @@ public class DateTimeUtil
 	
 	public static long getDayStartTime(int interval )
 	{
-		return getMillis(getMidnight().minusDays(interval),true);
+		return getMillis(getMidnight().plusDays(interval),true);
 	}
 
 	public static long getDayStartTime()
@@ -99,7 +128,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular month by required interval -1.
 		return getMillis(LocalDateTime.of(getMonthFirst(),LocalTime.MIDNIGHT).
-				minusMonths(interval),true); 
+				plusMonths(interval),true); 
 	}
 
 	public static long getWeekStartTime()
@@ -114,7 +143,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular week by sending required interval -1..
 		return getMillis(LocalDateTime.of(getWeekFirst(),LocalTime.MIDNIGHT).
-				minusWeeks(interval),true);
+				plusWeeks(interval),true);
 	}
 
 	public static long getYearStartTime()
@@ -130,7 +159,7 @@ public class DateTimeUtil
 		//this can also be used as the end range with less than operator 
 		//for a particular year by required interval -1.
 		return getMillis(LocalDateTime.of(getYearFirst(),LocalTime.MIDNIGHT).
-				minusYears(interval),true); 
+				plusYears(interval),true); 
 	}	
 	
 	public static long getHourStartTime()
@@ -144,19 +173,19 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 				//for a particular hour by required interval -1.
-		return getMillis(getHourFirst().minusHours(interval),true);
+		return getMillis(getHourFirst().plusHours(interval),true);
 	}
 	
 	public static long getStartTime(int day, int month, int year)
 	{ 
-		return getMillis(ZonedDateTime.of
-				(LocalDateTime.of(year, month, day, 0, 0),getZoneId()),true);
+		return getMillis(ZonedDateTime.of(LocalDateTime.of
+				(year, month, day, 0, 0),getZoneId()),true);
 	}
 	
 	public static long getEndTime(int day, int month, int year)
 	{ 
-		return getMillis(ZonedDateTime.of
-				(LocalDateTime.of(year, month, day, 23, 59,59),getZoneId()),true);
+		return getMillis(ZonedDateTime.of(LocalDateTime.of
+				(year, month, day, 23, 59,59),getZoneId()),true);
 	}
 	
 	public static long getAge(long startTimestamp) {
@@ -168,24 +197,9 @@ public class DateTimeUtil
 	}
 	
 	public static int getDaysBetween(long startTimestamp, long endTimestamp) {
-		LocalDate start = null;
-		LocalDate end = null;
 		
-		if(startTimestamp == -1) {
-			start = Instant.now().atZone(getZoneId()).toLocalDate();
-		}
-		else {
-			start = Instant.ofEpochMilli(startTimestamp).atZone(getZoneId()).toLocalDate();
-		}
-		
-		if(endTimestamp == -1) {
-			end = Instant.now().atZone(getZoneId()).toLocalDate();
-		}
-		else {
-			end = Instant.ofEpochMilli(endTimestamp).atZone(getZoneId()).toLocalDate();
-		}
-		
-		return Period.between(start, end).getDays();
+		 return Period.between(getDateTime(startTimestamp).toLocalDate(), 
+				 getDateTime(endTimestamp).toLocalDate()).getDays();
 	}
 }
 

@@ -854,4 +854,66 @@ public class DeviceAPI
 		}
 		return dataList;
 	}
+	
+	public static Device getDevice(Long deviceId) throws SQLException
+	{
+		String sql="SELECT * FROM Device LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID WHERE DEVICE_ID = ?";
+		try (Connection conn =FacilioConnectionPool.INSTANCE.getConnection();PreparedStatement pstmt=conn.prepareStatement(sql) )
+		{
+			pstmt.setObject(1, deviceId);
+			try(ResultSet rs = pstmt.executeQuery())
+			{
+				while(rs.next()) 
+				{
+					return new Device()
+							.setId(rs.getLong("DEVICE_ID"))
+							.setName(rs.getString("NAME"))
+							.setParentId(rs.getLong("PARENT_DEVICE_ID"))
+							.setStatus(rs.getInt("STATUS"));
+				}
+			}
+			catch (SQLException e) 
+			{
+				logger.log(Level.SEVERE, "Exception while getting devices" +e.getMessage(), e);
+				throw e;
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting devices" +e.getMessage(), e);
+			throw e;
+		}
+		return null;
+	}
+	public static Device getDevice(String deviceName) throws SQLException
+	{
+		String sql="SELECT * FROM Device LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID WHERE NAME = ?";
+		try (Connection conn =FacilioConnectionPool.INSTANCE.getConnection();PreparedStatement pstmt=conn.prepareStatement(sql) )
+		{
+			pstmt.setObject(1, deviceName);
+			try(ResultSet rs = pstmt.executeQuery())
+			{
+				while(rs.next()) 
+				{
+					return new Device()
+							.setId(rs.getLong("DEVICE_ID"))
+							.setName(rs.getString("NAME"))
+							.setParentId(rs.getLong("PARENT_DEVICE_ID"))
+							.setStatus(rs.getInt("STATUS"));
+				}
+			}
+			catch (SQLException e) 
+			{
+				logger.log(Level.SEVERE, "Exception while getting devices" +e.getMessage(), e);
+				throw e;
+			}
+		}
+		catch (SQLException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while getting devices" +e.getMessage(), e);
+			throw e;
+		}
+		return null;
+	}
+	
 }
