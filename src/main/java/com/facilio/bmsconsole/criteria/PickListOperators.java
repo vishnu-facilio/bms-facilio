@@ -198,7 +198,7 @@ public enum PickListOperators implements Operator<String> {
 						currentId = (long) object;
 					}
 					else if(PropertyUtils.isReadable(object, "id")) {
-						currentId = (long) PropertyUtils.getMappedProperty(object, "id");
+						currentId = (long) PropertyUtils.getProperty(object, "id");
 					}
 					else {
 						return false;
