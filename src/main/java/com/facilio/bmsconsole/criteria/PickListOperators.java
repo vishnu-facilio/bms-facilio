@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanPredicate;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.UserInfo;
 
-public enum UserOperators implements Operator<String> {
+public enum PickListOperators implements Operator<String> {
 	
 	IS("is") {
 		@Override
@@ -32,7 +34,7 @@ public enum UserOperators implements Operator<String> {
 					return builder.toString();
 				}
 				else {
-					if(value.trim().equals(LOGGED_IN_USER)) {
+					if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 						value = "?";
 					}
 					return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
@@ -70,7 +72,7 @@ public enum UserOperators implements Operator<String> {
 					builder.append(")");
 				}
 				else {
-					if(value.trim().equals(LOGGED_IN_USER)) {
+					if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 						value = "?";
 					}
 					builder.append(" != ")
@@ -108,20 +110,20 @@ public enum UserOperators implements Operator<String> {
 	}
 	
 	private static Predicate getUserPredicate(String value) {
-		if(value.equals(LOGGED_IN_USER)) {
-			return new UserPredicate();
+		if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+			return new PickListPredicate(FacilioConstants.Criteria.LOGGED_IN_USER_ID);
 		}
 		else {
-			return new UserPredicate(Long.parseLong(value));
+			return new PickListPredicate(Long.parseLong(value));
 		}
 	}
 	
 	private static void replaceLoggedUserInMultpleValues(StringBuilder builder, String value) {
-		if(value.contains(LOGGED_IN_USER)) {
+		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			String[] values = value.trim().split("\\s*,\\s*");
 			for(int i=0; i<values.length; i++) {
 				String val = values[i];
-				if(val.equals(LOGGED_IN_USER)) {
+				if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 					val = "?";
 				}
 				if(i != 0) {
@@ -139,16 +141,14 @@ public enum UserOperators implements Operator<String> {
 	@Override
 	public abstract String getWhereClause(FacilioField field, String value);
 	
-	public static String LOGGED_IN_USER = "${LOGGED_USER}";
-	
 	@Override
 	public String getDynamicParameter() {
-		return LOGGED_IN_USER;
+		return null;
 	}
 	
 	@Override
 	public List<Object> computeValues(String value) {
-		if(value.contains(LOGGED_IN_USER)) {
+		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			List<Object> objs = new ArrayList<>();
 			objs.add(UserInfo.getCurrentUser().getOrgUserId());
 			return objs;
@@ -158,7 +158,7 @@ public enum UserOperators implements Operator<String> {
 		}
 	}
 	
-	private UserOperators(String operator) {
+	private PickListOperators(String operator) {
 		 this.operator = operator;
 	}
 	
@@ -174,44 +174,44 @@ public enum UserOperators implements Operator<String> {
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}
-		operatorMap.putAll(CommonOperators.getAllOperators());
 		return operatorMap;
 	}
 	public static Map<String, Operator> getAllOperators() {
 		return operatorMap;
 	}
 	
-	public static class UserPredicate implements Predicate {
-		private long userId = -1;
+	public static class PickListPredicate implements Predicate {
+		private long id = -1;
 		
-		public UserPredicate() {
+		public PickListPredicate(long id) {
 			// TODO Auto-generated constructor stub
-		}
-		
-		public UserPredicate(long userId) {
-			// TODO Auto-generated constructor stub
-			this.userId = userId;
+			this.id = id;
 		}
 
 		@Override
 		public boolean evaluate(Object object) {
 			// TODO Auto-generated method stub
 			if(object != null) {
-				long currentUserid;
-				if(object instanceof Long) {
-					currentUserid = (long) object;
+				try {
+					long currentId;
+					if(object instanceof Long) {
+						currentId = (long) object;
+					}
+					else if(PropertyUtils.isReadable(object, "id")) {
+						currentId = (long) PropertyUtils.getProperty(object, "id");
+					}
+					else {
+						return false;
+					}
+					if(id == FacilioConstants.Criteria.LOGGED_IN_USER_ID) {
+						return currentId == UserInfo.getCurrentUser().getOrgUserId();
+					}
+					else {
+						return currentId == id;
+					}
 				}
-				else if(object instanceof UserContext) {
-					currentUserid = ((UserContext) object).getOrgUserId();
-				}
-				else {
-					return false;
-				}
-				if(userId == -1) {
-					return currentUserid == UserInfo.getCurrentUser().getOrgUserId();
-				}
-				else {
-					return currentUserid == userId;
+				catch(IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					e.printStackTrace();
 				}
 			}
 			return false;

@@ -72,12 +72,7 @@ public class CriteriaAPI {
 		FacilioField field = modBean.getField(condition.getFieldId());
 		condition.setField(field);
 		
-		if(field.getDataType() == FieldType.LOOKUP && FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType())) {
-			condition.setOperator(UserOperators.getAllOperators().get(rs.getString("OPERATOR")));
-		}
-		else {
-			condition.setOperator(field.getDataType().getOperator(rs.getString("OPERATOR")));
-		}
+		condition.setOperator(field.getDataType().getOperator(rs.getString("OPERATOR")));
 		
 		if(condition.getCriteriaValueId() != 0) {
 			condition.setCriteriaValue(getCriteria(orgId, condition.getCriteriaValueId(), conn));

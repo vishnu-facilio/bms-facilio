@@ -1,9 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -16,6 +23,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -130,8 +138,13 @@ public class WorkOrderAction extends ActionSupport {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		
-		System.out.println("View Name : "+getViewName());
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+ 		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
  		workOrderListChain.execute(context);
  		
@@ -193,5 +206,16 @@ public class WorkOrderAction extends ActionSupport {
 	public WorkOrderContext getRecord() 
 	{
 		return workorder;
+	}
+	
+	String filters;
+	public void setFilters(String filters)
+	{
+		this.filters = filters;
+	}
+	
+	public String getFilters()
+	{
+		return this.filters;
 	}
 }

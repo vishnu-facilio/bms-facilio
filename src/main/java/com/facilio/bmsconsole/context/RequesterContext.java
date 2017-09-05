@@ -13,7 +13,10 @@ public class RequesterContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public long getId() {
-		return requesterId;
+		return getRequesterId();
+	}
+	public void setId(long id) {
+		setRequesterId(id);
 	}
 	
 	private long requesterId = -1;

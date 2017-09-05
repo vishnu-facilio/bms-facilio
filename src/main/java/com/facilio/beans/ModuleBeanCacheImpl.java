@@ -97,6 +97,13 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	public FacilioField getField(String fieldName, String moduleName) throws Exception {
+		
+		FacilioField field = super.getField(fieldName, moduleName);
+		return field;
+	}
+	
+	@Override
 	public long addField(FacilioField field) throws Exception {
 		
 		long fieldId = super.addField(field);

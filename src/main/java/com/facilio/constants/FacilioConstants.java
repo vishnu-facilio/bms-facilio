@@ -414,6 +414,7 @@ public class FacilioConstants {
 
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
+		public static final String FILTERS = "filters";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -440,6 +441,11 @@ public class FacilioConstants {
 		public static Class getClassFromModuleName(String moduleName) {
 			return classMap.get(moduleName);
 		}
+	}
+	
+	public static class Criteria {
+		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
+		public static final long LOGGED_IN_USER_ID = -99;
 	}
 	
 	public static class Workflow 

@@ -155,6 +155,7 @@ public class Criteria {
 			setPattern(newPattern.toString());
 		}
 		else {
+			conditions = new HashMap<>();
 			pattern = "1";
 			condition.setSequence(1);
 			
