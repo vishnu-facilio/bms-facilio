@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.AddressContext;
 import com.facilio.bmsconsole.context.OrgContext;
 //import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
@@ -201,16 +202,16 @@ public static Object updateOrgsettings (OrgContext context, Connection conn) thr
 
 		String insertquery = "update Organizations set PHONE=? , MOBILE=? ,ORGNAME=?,FAX=?,STREET=?,CITY=?,STATE=?,ZIP=?,COUNTRY=?,TIMEZONE=?, LOGO_ID=? where ORGID=?";
 		psmt = conn.prepareStatement(insertquery);
-		psmt.setLong(1, context.getPhone());
-		psmt.setLong(2, context.getMobile());
+		psmt.setString(1, context.getPhone());
+		psmt.setString(2, context.getMobile());
 		psmt.setString(3, context.getName());
 		psmt.setString(4, context.getFax());
-		psmt.setString(5, context.getStreet());
-		psmt.setString(6, context.getCity());
-		psmt.setString(7, context.getState());
-		psmt.setLong(8, context.getZipcode());
-		psmt.setString(9, context.getCountry());
-		psmt.setLong(10, context.getTimezone());
+		psmt.setString(5, context.getAddress().getStreet());
+		psmt.setString(6, context.getAddress().getCity());
+		psmt.setString(7, context.getAddress().getState());
+		psmt.setString(8, context.getAddress().getZip());
+		psmt.setString(9, context.getAddress().getCountry());
+		psmt.setString(10, context.getTimezone());
 		psmt.setLong(11, context.getLogoId());
 		psmt.setLong(12, OrgInfo.getCurrentOrgInfo().getOrgid());
 		psmt.executeUpdate();
@@ -237,7 +238,7 @@ public static Object updateOrgsettings (OrgContext context, Connection conn) thr
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select * from organizations where ORGID=?");
+			pstmt = conn.prepareStatement("select * from Organizations where ORGID=?");
 			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
 			
 		rs = pstmt.executeQuery();
@@ -257,18 +258,24 @@ public static Object updateOrgsettings (OrgContext context, Connection conn) thr
 	}
 }
 private static OrgContext getOrgContextFromRS(ResultSet rs) throws SQLException {
+	
 	OrgContext getorgContext = new OrgContext();
+	getorgContext.setOrgId(rs.getLong("ORGID"));
 	getorgContext.setName(rs.getString("ORGNAME"));
-	getorgContext.setCity(rs.getString("CITY"));
-	getorgContext.setCountry(rs.getString("COUNTRY"));
-	getorgContext.setFax(rs.getString("FAX"));
-	getorgContext.setState(rs.getString("STATE"));
-	getorgContext.setStreet(rs.getString("STREET"));
-	getorgContext.setMobile(rs.getLong("MOBILE"));
-	getorgContext.setPhone(rs.getLong("PHONE"));
-	getorgContext.setTimezone(rs.getLong("TIMEZONE"));
-	getorgContext.setZipcode(rs.getLong("ZIP"));
+	getorgContext.setTimezone(rs.getString("TIMEZONE"));
 	getorgContext.setLogoId(rs.getLong("LOGO_ID"));
+	
+	AddressContext address = new AddressContext();
+	address.setStreet(rs.getString("STREET"));
+	address.setCity(rs.getString("CITY"));
+	address.setState(rs.getString("STATE"));
+	address.setZip(rs.getString("ZIP"));
+	address.setCountry(rs.getString("COUNTRY"));
+	
+	getorgContext.setAddress(address);
+	getorgContext.setPhone(rs.getString("PHONE"));
+	getorgContext.setMobile(rs.getString("MOBILE"));
+	getorgContext.setFax(rs.getString("FAX"));
 	
 	return getorgContext;
 }
