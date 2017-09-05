@@ -107,7 +107,12 @@ public class Condition {
 	}
 	
 	public List<Object> getComputedValues() {
-		return operator.computeValues(value);
+		if(operator == LookupOperator.LOOKUP) {
+			return operator.computeValues(criteriaValue);
+		}
+		else {
+			return operator.computeValues(value);
+		}
 	}
 	
 	public Predicate getPredicate() {

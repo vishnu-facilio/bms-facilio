@@ -75,6 +75,11 @@
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
+	    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+			<result name="success" type="json">
+				<param name="root">pickList</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">

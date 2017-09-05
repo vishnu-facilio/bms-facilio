@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,11 +12,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -79,7 +84,36 @@ public class GetWorkOrderListCommand implements Command {
 								FacilioField childField = modBean.getField(childFieldName, childModule);
 								
 								JSONArray childValue = (JSONArray) childFieldJson.get("value");
-								if(childValue.size() > 0 || ( childField.getDataType() == FieldType.DATE_TIME && childFieldJson.get("operator") != null ))
+								if(childValue.size() > 0)
+								{
+									Iterator<Object> arrayIterator2 = childValue.iterator();
+									StringBuilder values = new StringBuilder();
+									boolean isFirst = true;
+									while(arrayIterator2.hasNext())
+									{
+										Object obj2 = arrayIterator2.next();
+										if(!isFirst)
+										{
+											values.append(",");
+										}
+										values.append((String) obj2);
+									}
+									Condition condition = new Condition();
+									condition.setField(field);
+									condition.setOperator(LookupOperator.LOOKUP);
+									
+									Condition childCondition = new Condition();
+									childCondition.setField(childField);
+									childCondition.setOperator(childField.getDataType().getOperator((String) childFieldJson.get("operator")));
+									childCondition.setValue(values.toString());
+									
+									Criteria criteria = new Criteria();
+									criteria.addAndCondition(childCondition);
+									
+									condition.setCriteriaValue(criteria);
+									builder.andCondition(condition);
+								}
+								else if(childField.getDataType() == FieldType.DATE_TIME && childFieldJson.get("operator") != null)
 								{
 									Condition condition = new Condition();
 									condition.setField(field);
@@ -96,6 +130,27 @@ public class GetWorkOrderListCommand implements Command {
 									builder.andCondition(condition);
 								}
 							}
+						}
+						else
+						{
+							Iterator<Object> arrayIterator2 = value.iterator();
+							StringBuilder values = new StringBuilder();
+							boolean isFirst = true;
+							while(arrayIterator2.hasNext())
+							{
+								Object obj2 = arrayIterator2.next();
+								if(!isFirst)
+								{
+									values.append(",");
+								}
+								values.append((String) obj2);
+							}
+							Condition condition = new Condition();
+							condition.setField(field);
+							condition.setOperator(field.getDataType().getOperator((String) fieldJson.get("operator")));
+							condition.setValue(values.toString());
+							
+							builder.andCondition(condition);
 						}
 					}
 				}
