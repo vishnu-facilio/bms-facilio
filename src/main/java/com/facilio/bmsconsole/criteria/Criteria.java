@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.criteria;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -154,6 +155,7 @@ public class Criteria {
 			setPattern(newPattern.toString());
 		}
 		else {
+			conditions = new HashMap<>();
 			pattern = "1";
 			condition.setSequence(1);
 			conditions.put(1, condition);

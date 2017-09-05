@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -136,8 +138,12 @@ public class WorkOrderAction extends ActionSupport {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
- 		context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
- 		
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
  		workOrderListChain.execute(context);
@@ -202,13 +208,13 @@ public class WorkOrderAction extends ActionSupport {
 		return workorder;
 	}
 	
-	List filters;
-	public void setFilters(List filters)
+	String filters;
+	public void setFilters(String filters)
 	{
 		this.filters = filters;
 	}
 	
-	public List getFilters()
+	public String getFilters()
 	{
 		return this.filters;
 	}

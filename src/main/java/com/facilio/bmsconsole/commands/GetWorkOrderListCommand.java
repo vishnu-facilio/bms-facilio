@@ -1,24 +1,30 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class GetWorkOrderListCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -41,19 +47,59 @@ public class GetWorkOrderListCommand implements Command {
 			builder.andCriteria(criteria);
 		}
 		
-		Map<String, Object> filters = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FILTERS);
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filters != null && !filters.isEmpty())
 		{	
-			FacilioField dueField = new FacilioField();
-			dueField.setName("createdDate");
-			dueField.setColumnName("CREATED_DATE");
-			dueField.setDataType(FieldType.DATE_TIME);
-			dueField.setModuleTableName("Tickets");
-			
-			Condition overdue = new Condition();
-			overdue.setField(dueField);
-			overdue.setOperator(DateOperators.TODAY);
-			builder.andCondition(overdue);
+			Iterator<String> filterIterator = filters.keySet().iterator();
+			while(filterIterator.hasNext())
+			{
+				String fieldName = filterIterator.next();
+				JSONObject fieldJson = (JSONObject) filters.get(fieldName);
+				String module = (String) fieldJson.get("module");
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField(fieldName, module);
+				
+				JSONArray value = (JSONArray) fieldJson.get("value");
+				if(value.size() > 0)
+				{
+					Iterator<Object> arrayIterator = value.iterator();
+					while(arrayIterator.hasNext())
+					{
+						Object obj = arrayIterator.next();
+						if(obj instanceof JSONObject)
+						{
+							JSONObject childFilter = (JSONObject) obj;
+							
+							Iterator<String> childFilterIterator = childFilter.keySet().iterator();
+							while(childFilterIterator.hasNext())
+							{
+								String childFieldName = childFilterIterator.next();
+								JSONObject childFieldJson = (JSONObject) childFilter.get(childFieldName);
+								String childModule = (String) childFieldJson.get("module");
+								FacilioField childField = modBean.getField(childFieldName, childModule);
+								
+								JSONArray childValue = (JSONArray) childFieldJson.get("value");
+								if(childValue.size() > 0 || ( childField.getDataType() == FieldType.DATE_TIME && childFieldJson.get("operator") != null ))
+								{
+									Condition condition = new Condition();
+									condition.setField(field);
+									condition.setOperator(LookupOperator.LOOKUP);
+									
+									Condition childCondition = new Condition();
+									childCondition.setField(childField);
+									childCondition.setOperator(childField.getDataType().getOperator((String) childFieldJson.get("operator")));
+									
+									Criteria criteria = new Criteria();
+									criteria.addAndCondition(childCondition);
+									
+									condition.setCriteriaValue(criteria);
+									builder.andCondition(condition);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		List<WorkOrderContext> workOrders = builder.get();

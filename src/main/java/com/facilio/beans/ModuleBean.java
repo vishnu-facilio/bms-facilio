@@ -16,6 +16,8 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioField getField(long fieldId) throws Exception;
 	
+	public FacilioField getField(String fieldName, String moduleName) throws Exception;
+	
 	public long addField(FacilioField field) throws Exception;
 	
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
