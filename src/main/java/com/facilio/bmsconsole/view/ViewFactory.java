@@ -10,11 +10,12 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.UserOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.constants.FacilioConstants;
 
 public class ViewFactory {
 	
@@ -250,8 +251,8 @@ public class ViewFactory {
 		
 		Condition myUserCondition = new Condition();
 		myUserCondition.setField(userField);
-		myUserCondition.setOperator(UserOperators.IS);
-		myUserCondition.setValue(UserOperators.IS.getDynamicParameter());
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
 		
 		return myUserCondition;
 	}

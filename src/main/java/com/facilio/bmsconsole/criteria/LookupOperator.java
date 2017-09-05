@@ -10,16 +10,21 @@ import org.apache.commons.beanutils.BeanPredicate;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 public enum LookupOperator implements Operator<Criteria> {
 
-	LOOKUP;
+	LOOKUP("lookup");
 
+	private LookupOperator(String operator) {
+		// TODO Auto-generated constructor stub
+		this.operator = operator;
+	}
+	
+	private String operator;
 	@Override
 	public String getOperator() {
 		// TODO Auto-generated method stub
-		return null;
+		return operator;
 	}
 
 	@Override
@@ -27,10 +32,6 @@ public enum LookupOperator implements Operator<Criteria> {
 		// TODO Auto-generated method stub
 		if(field != null && value != null) {
 			LookupField lookupField = (LookupField) field;
-			
-			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-				return LookupSpecialTypeUtil.getWhereClause(lookupField.getSpecialType(), field, value);
-			}
 			
 			FacilioModule module = lookupField.getLookupModule();
 			if(module != null) {
@@ -77,9 +78,11 @@ public enum LookupOperator implements Operator<Criteria> {
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
 	private static Map<String, Operator> initOperatorMap() {
 		Map<String, Operator> operatorMap = new HashMap<>();
+		operatorMap.putAll(PickListOperators.getAllOperators());
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}
+		operatorMap.putAll(CommonOperators.getAllOperators());
 		return operatorMap;
 	}
 	public static Map<String, Operator> getAllOperators() {
