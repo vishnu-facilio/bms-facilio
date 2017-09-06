@@ -80,6 +80,12 @@
 				<param name="root">pickList</param>
 			</result>
 		</action>
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,setup,locations,locations\[\d+\],locations\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">

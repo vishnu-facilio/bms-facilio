@@ -115,6 +115,19 @@ public class ViewLayout {
 		return viewLayout;
 	}
 	
+	public static ViewLayout getViewLocationLayout()
+	{
+		ViewLayout viewLayout = new ViewLayout();
+		viewLayout.setPkColumnId("id");
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Contact", "contact", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Phone", "phone", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Lat", "lat", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Lng", "lng", ViewColumn.ColumnType.TEXT));
+		
+		return viewLayout;
+	}
+	
 	public static ViewLayout getViewBuildingLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();

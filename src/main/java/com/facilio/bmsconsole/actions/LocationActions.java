@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -120,5 +121,10 @@ public class LocationActions extends ActionSupport {
 	}
 	public void setLocations(List<LocationContext> locations) {
 		this.locations = locations;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewLocationLayout();
 	}
 }
