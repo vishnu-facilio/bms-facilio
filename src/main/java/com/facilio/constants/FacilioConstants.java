@@ -296,6 +296,7 @@ public class FacilioConstants {
 		
 		public static final String RECORD = "record";
 		public static final String RECORD_ID = "recordId";
+		public static final String EVENT_TYPE = "eventType";
 		
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
@@ -446,18 +447,6 @@ public class FacilioConstants {
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
 		public static final long LOGGED_IN_USER_ID = -99;
-	}
-	
-	public static class Workflow 
-	{
-		public static final String EVENT_TYPE = "eventType";
-		
-		public static final int EVENT_ADD_WORKORDER = 1;
-		
-		public static final int ACTION_EMAIL_NOTIFICATION = 1;
-		
-		public static final int TEMPLATE_WORKORDER_ASSIGN 				= 1;
-		public static final int TEMPLATE_WORKORDER_ACTIVITY_FOLLOWUP 	= 2;
 	}
 	
 	public static class Reports 

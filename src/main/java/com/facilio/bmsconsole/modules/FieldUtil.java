@@ -86,25 +86,6 @@ public class FieldUtil {
 		}
 	}
 	
-	public static Object getValueAsPerType(FacilioField cf, ResultSet rs) throws SQLException {
-		String key = cf.getModuleTableName()+"."+cf.getColumnName();
-		switch(cf.getDataType()) {
-			case STRING:
-				return rs.getString(key);
-			case DECIMAL:
-				return rs.getDouble(key);
-			case BOOLEAN:
-				return rs.getBoolean(key);
-			case LOOKUP:
-			case NUMBER:	
-			case DATE:
-			case DATE_TIME:
-				return rs.getLong(key);
-			default:
-				return rs.getString(key);
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	public static <E extends ModuleBaseWithCustomFields> Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
 	{

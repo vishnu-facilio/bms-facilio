@@ -6,11 +6,11 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.WorkflowRuleContext;
-import com.facilio.bmsconsole.context.WorkflowRuleContext.EventType;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -47,9 +47,6 @@ public class WorkflowRuleAction extends ActionSupport {
 		rule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		rule.setName(getName());
 		rule.setDescription(getDescription());
-		rule.setModule(getModule());
-		rule.setEventType(EventType.CREATE);
-		rule.setActive(isActive());
 		rule.setExecutionOrder(getExecutionOrder());
 		
 		long ruleId = WorkflowAPI.addWorkflowRule(rule);
