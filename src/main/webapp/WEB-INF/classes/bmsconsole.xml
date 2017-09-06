@@ -518,7 +518,7 @@
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
+				<param name="includeProperties">appliedFilters,appliedFilters\[\d+\],workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
 	</package>

@@ -155,6 +155,7 @@ public class WorkOrderAction extends ActionSupport {
 		if(cv != null) {
 			setViewDisplayName(cv.getDisplayName());
 		}
+		setAppliedFilters((List<String>) context.get(FacilioConstants.ContextNames.APPLIED_FILTERS));
 		
 		return SUCCESS;
 	}
@@ -217,5 +218,16 @@ public class WorkOrderAction extends ActionSupport {
 	public String getFilters()
 	{
 		return this.filters;
+	}
+	
+	List<String> appliedFilters;
+	public void setAppliedFilters(List<String> appliedFilters)
+	{
+		this.appliedFilters = appliedFilters;
+	}
+	
+	public List<String> getAppliedFilters()
+	{
+		return this.appliedFilters;
 	}
 }

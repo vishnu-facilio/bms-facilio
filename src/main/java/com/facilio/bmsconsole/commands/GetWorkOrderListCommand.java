@@ -49,10 +49,15 @@ public class GetWorkOrderListCommand implements Command {
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filters != null && !filters.isEmpty())
 		{	
-			List<Condition> conditionList = filterToCondition(filters);
+			List<String> appliedFilters = new ArrayList<>();
+			List<Condition> conditionList = filterToCondition(filters, appliedFilters);
 			for(Condition condition : conditionList)
 			{
 				builder.andCondition(condition);
+			}
+			if(!appliedFilters.isEmpty())
+			{
+				context.put(FacilioConstants.ContextNames.APPLIED_FILTERS, appliedFilters);
 			}
 		}
 		
@@ -63,7 +68,7 @@ public class GetWorkOrderListCommand implements Command {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Condition> filterToCondition(JSONObject filters) throws Exception
+	private List<Condition> filterToCondition(JSONObject filters, List<String> appliedFilters) throws Exception
 	{
 		List<Condition> conditionList = new ArrayList<>();
 		Iterator<String> filterIterator = filters.keySet().iterator();
