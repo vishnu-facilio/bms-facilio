@@ -1,8 +1,16 @@
 package com.facilio.bmsconsole.context;
 
 public class OrgContext{
-	private String name;
+
 	private long orgId;
+	private String name;
+	private long logoId;
+	private String timezone;
+	private AddressContext address;
+	private String phone;
+	private String mobile;
+	private String fax;
+	
 	public long getOrgId() {
 		return orgId;
 	}
@@ -15,80 +23,35 @@ public class OrgContext{
 	public void setName(String name) {
 		this.name = name;
 	}
-	private long logoId;
-	
 	public long getLogoId() {
 		return logoId;
 	}
 	public void setLogoId(long logoId) {
 		this.logoId = logoId;
 	}
-	
-	private long phone;
-	private long mobile;
-	private long timezone;
-	private long zipcode;
-	private long dateformat;
-	
-	private String street;
-	private String city;
-	private String state;
-	private String language;
-	private String fax;
-	private String country;
-	public long getPhone() {
-		return phone;
-	}
-	public void setPhone(long phone) {
-		this.phone = phone;
-	}
-	public long getMobile() {
-		return mobile;
-	}
-	public void setMobile(long mobile) {
-		this.mobile = mobile;
-	}
-	public long getTimezone() {
+	public String getTimezone() {
 		return timezone;
 	}
-	public void setTimezone(long timezone) {
+	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 	}
-	public long getZipcode() {
-		return zipcode;
+	public AddressContext getAddress() {
+		return address;
 	}
-	public void setZipcode(long zipcode) {
-		this.zipcode = zipcode;
+	public void setAddress(AddressContext address) {
+		this.address = address;
 	}
-	public long getDateformat() {
-		return dateformat;
+	public String getPhone() {
+		return phone;
 	}
-	public void setDateformat(long dateformat) {
-		this.dateformat = dateformat;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
-	public String getStreet() {
-		return street;
+	public String getMobile() {
+		return mobile;
 	}
-	public void setStreet(String street) {
-		this.street = street;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getLanguage() {
-		return language;
-	}
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 	public String getFax() {
 		return fax;
@@ -96,13 +59,4 @@ public class OrgContext{
 	public void setFax(String fax) {
 		this.fax = fax;
 	}
-	public String getCountry() {
-		return country;
-	}
-	public void setCountry(String country) {
-		this.country = country;
-	}
-	
-	
-	
 }

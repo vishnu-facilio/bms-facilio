@@ -619,6 +619,21 @@
 		</action>
 	</package>
 	
+	<package name="setupApi" namespace="/api/settings" extends="home">
+		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">org,org.*</param>
+			</result>
+		</action>
+		
+		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			</result>
+		</action>
+	</package>
+	
 	<package name="leed" namespace="/app/leed" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
