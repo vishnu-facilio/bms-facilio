@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.workflow.EventContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddWorkOrderCommand implements Command {
@@ -34,7 +35,7 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
-			context.put(FacilioConstants.Workflow.EVENT_TYPE, FacilioConstants.Workflow.EVENT_ADD_WORKORDER);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
 		}
 		else {
 			throw new IllegalArgumentException("Ticket/ WorkOrder Object cannot be null");
