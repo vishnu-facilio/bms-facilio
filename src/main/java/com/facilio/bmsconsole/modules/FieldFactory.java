@@ -110,93 +110,58 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		String tableName = "Workflow_Rule";
 		
-		FacilioField field = new FacilioField();
-		field.setName("workflowRuleId");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("WORKFLOW_RULE_ID");
-		field.setModuleTableName(tableName);
-		fields.add(field);
-		
+		fields.add(getIdField(tableName));
 		fields.add(getOrgIdField(tableName));
 		
-		FacilioField field2 = new FacilioField();
-		field2.setName("name");
-		field2.setDataType(FieldType.STRING);
-		field2.setColumnName("NAME");
-		field2.setModuleTableName(tableName);
-		fields.add(field2);
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModuleTableName(tableName);
+		fields.add(name);
 		
-		FacilioField field3 = new FacilioField();
-		field3.setName("description");
-		field3.setDataType(FieldType.STRING);
-		field3.setColumnName("DESCRIPTION");
-		field3.setModuleTableName(tableName);
-		fields.add(field3);
+		FacilioField description = new FacilioField();
+		description.setName("description");
+		description.setDataType(FieldType.STRING);
+		description.setColumnName("DESCRIPTION");
+		description.setModuleTableName(tableName);
+		fields.add(description);
 
-		FacilioField field4 = new FacilioField();
-		field4.setName("eventId");
-		field4.setDataType(FieldType.NUMBER);
-		field4.setColumnName("EVENT_ID");
-		field4.setModuleTableName(tableName);
-		fields.add(field4);
+		FacilioField eventId = new FacilioField();
+		eventId.setName("eventId");
+		eventId.setDataType(FieldType.NUMBER);
+		eventId.setColumnName("EVENT_ID");
+		eventId.setModuleTableName(tableName);
+		fields.add(eventId);
 		
-		FacilioField field5 = new FacilioField();
-		field5.setName("criteriaId");
-		field5.setDataType(FieldType.NUMBER);
-		field5.setColumnName("CRITERIAID");
-		field5.setModuleTableName(tableName);
-		fields.add(field5);
+		FacilioField criteriaId = new FacilioField();
+		criteriaId.setName("criteriaId");
+		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setColumnName("CRITERIAID");
+		criteriaId.setModuleTableName(tableName);
+		fields.add(criteriaId);
 		
-		FacilioField field6 = new FacilioField();
-		field6.setName("executionOrder");
-		field6.setDataType(FieldType.NUMBER);
-		field6.setColumnName("EXECUTION_ORDER");
-		field6.setModuleTableName(tableName);
-		fields.add(field6);
+		FacilioField executionOrder = new FacilioField();
+		executionOrder.setName("executionOrder");
+		executionOrder.setDataType(FieldType.NUMBER);
+		executionOrder.setColumnName("EXECUTION_ORDER");
+		executionOrder.setModuleTableName(tableName);
+		fields.add(executionOrder);
 		
-		FacilioField field7 = new FacilioField();
-		field7.setName("status");
-		field7.setDataType(FieldType.NUMBER);
-		field7.setColumnName("STATUS");
-		field7.setModuleTableName(tableName);
-		fields.add(field7);
+		FacilioField status = new FacilioField();
+		status.setName("status");
+		status.setDataType(FieldType.BOOLEAN);
+		status.setColumnName("STATUS");
+		status.setModuleTableName(tableName);
+		fields.add(status);
 		
-		FacilioField field8 = new FacilioField();
-		field8.setName("ruleType");
-		field8.setDataType(FieldType.NUMBER);
-		field8.setColumnName("RULE_TYPE");
-		field8.setModuleTableName(tableName);
-		fields.add(field8);
+		FacilioField ruleType = new FacilioField();
+		ruleType.setName("ruleType");
+		ruleType.setDataType(FieldType.NUMBER);
+		ruleType.setColumnName("RULE_TYPE");
+		ruleType.setModuleTableName(tableName);
+		fields.add(ruleType);
 		
-		return fields;
-	}
-	
-	public static List<FacilioField> getWorkflowRuleActionFields() 
-	{
-		List<FacilioField> fields = new ArrayList<>();
-		String tableName = "Workflow_Rule_Action";
-		
-		FacilioField field = new FacilioField();
-		field.setName("worflowRuleActionId");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("WORKFLOW_RULE_ACTION_ID");
-		field.setModuleTableName(tableName);
-		fields.add(field);
-		
-		FacilioField field2 = new FacilioField();
-		field2.setName("workflowRuleId");
-		field2.setDataType(FieldType.NUMBER);
-		field2.setColumnName("WORKFLOW_RULE_ID");
-		field2.setModuleTableName(tableName);
-		fields.add(field2);
-		
-		FacilioField field3 = new FacilioField();
-		field3.setName("actionId");
-		field3.setDataType(FieldType.NUMBER);
-		field3.setColumnName("ACTION_ID");
-		field3.setModuleTableName(tableName);
-		fields.add(field3);
-
 		return fields;
 	}
 	
@@ -205,35 +170,29 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		String tableName = "Action";
 		
-		FacilioField field = new FacilioField();
-		field.setName("actionId");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("ACTION_ID");
-		field.setModuleTableName(tableName);
-		fields.add(field);
-		
 		fields.add(getOrgIdField(tableName));
+		fields.add(getIdField(tableName));
 		
-		FacilioField field2 = new FacilioField();
-		field2.setName("actionType");
-		field2.setDataType(FieldType.NUMBER);
-		field2.setColumnName("ACTION_TYPE");
-		field2.setModuleTableName(tableName);
-		fields.add(field2);
+		FacilioField actionType = new FacilioField();
+		actionType.setName("actionTypeVal");
+		actionType.setDataType(FieldType.NUMBER);
+		actionType.setColumnName("ACTION_TYPE");
+		actionType.setModuleTableName(tableName);
+		fields.add(actionType);
 		
-		FacilioField field3 = new FacilioField();
-		field3.setName("templateType");
-		field3.setDataType(FieldType.NUMBER);
-		field3.setColumnName("TEMPLATE_TYPE");
-		field3.setModuleTableName(tableName);
-		fields.add(field3);
+		FacilioField templateType = new FacilioField();
+		templateType.setName("templateType");
+		templateType.setDataType(FieldType.NUMBER);
+		templateType.setColumnName("TEMPLATE_TYPE");
+		templateType.setModuleTableName(tableName);
+		fields.add(templateType);
 		
-		FacilioField field4 = new FacilioField();
-		field4.setName("templateId");
-		field4.setDataType(FieldType.NUMBER);
-		field4.setColumnName("TEMPLATE_ID");
-		field4.setModuleTableName(tableName);
-		fields.add(field4);
+		FacilioField templateId = new FacilioField();
+		templateId.setName("templateId");
+		templateId.setDataType(FieldType.NUMBER);
+		templateId.setColumnName("TEMPLATE_ID");
+		templateId.setModuleTableName(tableName);
+		fields.add(templateId);
 		
 		return fields;
 	}
