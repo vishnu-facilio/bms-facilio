@@ -101,16 +101,24 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 			
 			// Step 6: Setting locale & timezone information in session
-			Locale localeObj = userInfo.getLocale();
-			if (localeObj == null) {
+			String locale = userInfo.getLocale();
+			Locale localeObj = null;
+			if (locale == null || locale.trim().isEmpty()) {
 				localeObj = request.getLocale();
+			}
+			else {
+				localeObj = new Locale(locale);
 			}
 			ActionContext.getContext().getSession().put("org.apache.struts.action.LOCALE", localeObj);
 			
-			TimeZone timezoneObj = userInfo.getTimeZone();
-			if (timezoneObj == null) {
+			String timezone = userInfo.getTimeZone();
+			TimeZone timezoneObj = null;
+			if (timezone == null || timezone.trim().isEmpty()) {
 				Calendar calendar = Calendar.getInstance(localeObj);
 				timezoneObj = calendar.getTimeZone();
+			}
+			else {
+				timezoneObj = TimeZone.getTimeZone(timezone);
 			}
 			ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 		}

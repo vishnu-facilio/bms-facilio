@@ -33,6 +33,11 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">

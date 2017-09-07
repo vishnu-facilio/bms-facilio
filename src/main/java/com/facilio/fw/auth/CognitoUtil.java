@@ -128,14 +128,15 @@ public class CognitoUtil {
 		return result.getIdentityId();
 	}
 	
-	public static String getUserSubdomain(String email) {
+	public static JSONObject getUserAttributes(String email) {
 		
+		JSONObject jobj = new JSONObject();
 		try {
 			// temp code
 			String emailDomain = email.split("@")[1];
 			emailDomain = emailDomain.split("\\.")[0];
 			if ("facilio".equalsIgnoreCase(emailDomain)) {
-				return emailDomain;
+				jobj.put("custom:orgDomain", emailDomain);
 			}
 		} catch (Exception e) {
 			e.getMessage();
@@ -144,11 +145,11 @@ public class CognitoUtil {
 		AdminGetUserResult userResult = CognitoUtil.getUser(email);
 		List<AttributeType> li = userResult.getUserAttributes();
 		for (AttributeType attr : li) {
-			if (attr.getName().equals("custom:orgName")) {
-				return attr.getValue();
+			if (!jobj.containsKey(attr.getName())) {
+				jobj.put(attr.getName(), attr.getValue());
 			}
 		}
-		return null;
+		return jobj;
 	}
 	
 	public static CognitoUser verifyIDToken(String idToken) throws Exception {
@@ -189,6 +190,9 @@ public class CognitoUtil {
 			else if ("cognito:username".equals(key)) {
 				userInfo.setUserName(value);
 			}
+			else if ("name".equals(key)) {
+				userInfo.setName(value);
+			}
 			else if ("email".equals(key)) {
 				userInfo.setEmail(value);
 			}
@@ -218,6 +222,7 @@ public class CognitoUtil {
 	public static class CognitoUser {
 		private String cognitoId = "";
 		private String userName;
+		private String name;
 		private String email;
 		private boolean emailVerified;
 		private String phoneNumber;
@@ -240,6 +245,14 @@ public class CognitoUtil {
 
 		public void setUserName(String userName) {
 			this.userName = userName;
+		}
+		
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public String getEmail() {

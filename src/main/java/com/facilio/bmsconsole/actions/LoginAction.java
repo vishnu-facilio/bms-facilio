@@ -45,6 +45,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -342,6 +343,65 @@ public class LoginAction extends ActionSupport{
 		c.execute(orgsignupcontext);
 		response ="<result>signupsuccess</result>";
 		return "success";
+	}
+	
+	private HashMap<String, Object> account;
+	
+	public HashMap<String, Object> getAccount() {
+		return account;
+	}
+	public void setAccount(HashMap<String, Object> account) {
+		this.account = account;
+	}
+	
+	private HashMap<String, Object> createAccountResp;
+	
+	public HashMap<String, Object> getCreateAccountResp() {
+		return createAccountResp;
+	}
+	public void setCreateAccountResp(HashMap<String, Object> createAccountResp) {
+		this.createAccountResp = createAccountResp;
+	}
+	
+	// API Method, so will return json
+	public String newSignup() throws Exception
+	{
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if (!request.getMethod().equalsIgnoreCase("POST")) {
+			createAccountResp.put("error", true);
+			createAccountResp.put("message", "post_only_api");
+		}
+		else {
+			if (getAccount() == null || getAccount().isEmpty()) {
+				createAccountResp = new HashMap<>();
+				createAccountResp.put("error", true);
+				createAccountResp.put("message", "mandatory_fields_missing");
+			}
+			else {
+				FacilioContext orgsignupcontext = new FacilioContext();
+				System.out.println("The parameters list"+ActionContext.getContext().getParameters());
+				orgsignupcontext.put("signupinfo", getAccount());
+				Chain c = FacilioChainFactory.getOrgSignupChain();
+				c.execute(orgsignupcontext);
+				
+				createAccountResp = new HashMap<>();
+				createAccountResp.put("success", true);
+			}
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String currentAccount() throws Exception {
+		
+		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
+		UserInfo curUser = UserInfo.getCurrentUser();
+		
+		account = new HashMap<>();
+		account.put("org", curOrg);
+		account.put("user", curUser);
+		
+		return SUCCESS;
 	}
 	
 	private String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception 
