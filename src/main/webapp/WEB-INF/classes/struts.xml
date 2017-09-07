@@ -16,6 +16,8 @@
 
 	<include file="bmsconsole.xml" />
 	<include file="serviceportal.xml" />
+	<include file="integration.xml" />
+	
 	<!-- Add packages here -->
 
 </struts>
