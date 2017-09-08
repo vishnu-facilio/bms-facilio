@@ -91,8 +91,28 @@
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,setup,locations,locations\[\d+\],locations\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,skills,skills\[\d+\],skills\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
-	
+	<package name="skillApi" namespace="/api/skill" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">skillId</param>
+			</result>
+		</action>
+	</package>
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"

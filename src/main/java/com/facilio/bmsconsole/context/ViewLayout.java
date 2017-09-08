@@ -184,6 +184,7 @@ public class ViewLayout {
 	public static ViewLayout getViewSkillLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
+		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Description", "description", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Status", "isActive", ViewColumn.ColumnType.TEXT));

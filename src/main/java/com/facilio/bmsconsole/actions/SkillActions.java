@@ -54,7 +54,7 @@ public class SkillActions extends ActionSupport {
 	private List formlayout;
 
 	public List getFormlayout() {
-		return this.formlayout;
+		return FormLayout.getNewSkillLayout(fields);
 	}
 
 	public void setFormlayout(List formlayout) {
@@ -75,11 +75,14 @@ public class SkillActions extends ActionSupport {
 
 	public String newSkill() throws Exception {
 		setSetup(SetupLayout.getNewSkillLayout());
+		
 		FacilioContext context = new FacilioContext();
 		Chain newSkill = FacilioChainFactory.getNewSkillChain();
 		newSkill.execute(context);
 
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 
 		return SUCCESS;
 	}
