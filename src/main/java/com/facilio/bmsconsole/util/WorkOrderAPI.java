@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,11 +17,14 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class WorkOrderAPI {
 	
@@ -146,5 +151,25 @@ public class WorkOrderAPI {
 			DBUtil.closeAll(pstmt, rs);
 		}
 		return attachments;
+	}
+	
+	public static long addS3MessageId(String s3Id) throws SQLException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			
+			Map<String, Object> workOrderEmailProps = new HashMap<>();
+			workOrderEmailProps.put("s3MessageId", s3Id);
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.connection(conn)
+															.table("WorkOrder_EMail")
+															.fields(FieldFactory.getWorkorderEmailFields())
+															.addRecord(workOrderEmailProps);
+			insertBuilder.save();
+			return (long) workOrderEmailProps.get("id");
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

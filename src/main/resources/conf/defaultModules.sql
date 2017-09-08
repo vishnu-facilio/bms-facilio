@@ -1,4 +1,4 @@
-INSERT INTO SupportEmails (ORGID, REPLY_NAME, ACTUAL_EMAIL, FWD_EMAIL, VERIFIED) VALUES (${orgId}, (SELECT ORGNAME FROM Organizations WHERE ORGID = ${orgId}), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.com')), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.com')), true);
+INSERT INTO SupportEmails (ORGID, REPLY_NAME, ACTUAL_EMAIL, FWD_EMAIL, VERIFIED) VALUES (${orgId}, (SELECT ORGNAME FROM Organizations WHERE ORGID = ${orgId}), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.me')), CONCAT('support@',CONCAT((SELECT FACILIODOMAINNAME FROM Organizations WHERE ORGID = ${orgId}),'.facilio.me')), true);
 
 INSERT INTO EmailSettings (ORGID, FLAGS) VALUES (${orgId}, 2);
 
