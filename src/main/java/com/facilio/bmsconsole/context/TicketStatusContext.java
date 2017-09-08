@@ -37,7 +37,8 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		OPEN(1, "Open"),
 		PENDING(2, "Pending"),
 		RESOLVED(3, "Resolved"),
-		CLOSED(4, "Closed")
+		CLOSED(4, "Closed"),
+		INCOMPLETE(6, "Incomplete")
 		;
 		
 		private int intVal;

@@ -6,11 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class TicketAPI {
 	
@@ -46,5 +56,26 @@ public class TicketAPI {
 			DBUtil.closeAll(pstmt, rs);
 		}
 		return attachments;
+	}
+	
+	public static Long getStatusId(long orgId, String status) throws Exception
+	{
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+																.connection(conn)
+																.table("ticketstatus")
+																.moduleName("ticketstatus")
+																.beanClass(TicketStatusContext.class)
+																.select(modBean.getAllFields("ticketstatus"))
+																.orderBy("ID");
+			List<TicketStatusContext> statuses = builder.get();
+			return (Long) statuses.get(0).getId();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }
