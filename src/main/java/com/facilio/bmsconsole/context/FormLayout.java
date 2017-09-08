@@ -202,6 +202,18 @@ public class FormLayout {
 		return panels;
 	}
 	
+	public static List<NewPanel> getNewLocationLayout(List<FacilioField> fields)
+	{
+		List<NewPanel> panels = new ArrayList<NewPanel>();
+		
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
+		for(FacilioField field : fields) {
+			first.addField(field);
+		}
+		panels.add(first);
+		return panels;
+	}
+	
 	public static List<NewPanel> getNewSkillLayout(List<FacilioField> fields)
 	{
 		List<NewPanel> panels = new ArrayList<NewPanel>();
