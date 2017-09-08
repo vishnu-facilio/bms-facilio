@@ -331,4 +331,27 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkorderEmailFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		String tableName = "WorkOrder_EMail";
+		
+		fields.add(getIdField(tableName));
+		
+		FacilioField s3MessageIdField = new FacilioField();
+		s3MessageIdField.setName("s3MessageId");
+		s3MessageIdField.setDataType(FieldType.STRING);
+		s3MessageIdField.setColumnName("S3_MESSAGE_ID");
+		s3MessageIdField.setModuleTableName(tableName);
+		fields.add(s3MessageIdField);
+		
+		FacilioField isProcessField = new FacilioField();
+		isProcessField.setName("isProcessed");
+		isProcessField.setDataType(FieldType.BOOLEAN);
+		isProcessField.setColumnName("IS_PROCESSED");
+		isProcessField.setModuleTableName(tableName);
+		fields.add(isProcessField);
+		
+		return fields;
+	}
 }	

@@ -32,7 +32,10 @@ public class OrgApi {
 			
 			long orgId = getOrgIdFromDomain(orgSubdomain);
 			
+			boolean orgAlreadyCreated = true;
 			if (orgId == -1) {
+				orgAlreadyCreated = false;
+				
 				String insertquery = "insert into Organizations (ORGNAME,FACILIODOMAINNAME) values (?,?)";
 				PreparedStatement ps = conn.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, orgName);
@@ -82,7 +85,7 @@ public class OrgApi {
 			ps3.executeUpdate();
 			ps3.close();
 			
-			if (populateDefaultModules) {
+			if (!orgAlreadyCreated && populateDefaultModules) {
 				File insertModulesSQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
 				
 				Map<String, String> paramValues = new HashMap<>(); 

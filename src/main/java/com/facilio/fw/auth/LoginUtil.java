@@ -4,6 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.UserAPI;
@@ -25,12 +27,15 @@ public class LoginUtil {
 		UserContext usrCtx = UserAPI.getUser(cognitoUser.getEmail());
 		if (usrCtx == null) {
 			
-			String userSubDomain = CognitoUtil.getUserSubdomain(cognitoUser.getEmail());
-			if (userSubDomain == null) {
+			JSONObject userAttributes = CognitoUtil.getUserAttributes(cognitoUser.getEmail());
+			if (userAttributes == null) {
 				throw new Exception("This user not associated with any organization.");
 			}
 			
-			OrgApi.createOrganization(null, userSubDomain, userSubDomain, null, cognitoUser.getEmail(), cognitoUser.getCognitoId(), true);
+			String userSubDomain = (String) (userAttributes.containsKey("custom:orgDomain") ? userAttributes.get("custom:orgDomain") : userAttributes.get("custom:orgName"));
+			String name = (cognitoUser.getName() == null) ? cognitoUser.getName() : cognitoUser.getUserName();
+			
+			OrgApi.createOrganization(null, userSubDomain, userSubDomain, name, cognitoUser.getEmail(), cognitoUser.getCognitoId(), true);
 			
 			usrCtx = UserAPI.getUser(cognitoUser.getEmail());
 			userInfo.setSubdomain(userSubDomain);
@@ -42,8 +47,8 @@ public class LoginUtil {
 		userInfo.setEmailVerified(cognitoUser.isEmailVerified());
 		userInfo.setPhoneNumber(cognitoUser.getPhoneNumber());
 		userInfo.setPhoneNumberVerified(cognitoUser.isPhoneNumberVerified());
-		userInfo.setLocaleValue(cognitoUser.getLocale());
-		userInfo.setTimezoneValue(cognitoUser.getTimezone());
+		userInfo.setLocale(cognitoUser.getLocale());
+		userInfo.setTimeZone(cognitoUser.getTimezone());
 		userInfo.setAdditionalProps(cognitoUser.getAdditionalProps());
 		
 		userInfo.setUserId(usrCtx.getUserId());

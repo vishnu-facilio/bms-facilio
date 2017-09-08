@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Map;

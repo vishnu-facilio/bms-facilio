@@ -33,6 +33,11 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
@@ -78,6 +83,12 @@
 	    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
 			<result name="success" type="json">
 				<param name="root">pickList</param>
+			</result>
+		</action>
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,setup,locations,locations\[\d+\],locations\[\d+\].*</param>
 			</result>
 		</action>
 	</package>

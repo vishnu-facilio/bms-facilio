@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.reports;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +27,7 @@ public class ReportsUtil
 	
 	private static StringBuilder select = new StringBuilder(" SELECT ");
 
-	private  static StringBuilder fieldsForPower = new StringBuilder (" DEVICE_ID, ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
+	private  static StringBuilder fieldsForPower = new StringBuilder (" DEVICE_ID, ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2) AS ENERGY_CONSUMPTION");
 
 	private  static StringBuilder fieldsDate= new StringBuilder("ADDED_DATE");
 
@@ -87,6 +89,7 @@ public class ReportsUtil
 	{
 		StringBuilder baseQuery=getQuery(fieldsForPower, energy,dateBetween,deviceId);
 		HashMap <String,Object> hMap = getQueryObject(category, deviceId, baseQuery);
+		//for custom we are setting the from & end date directly..
 		hMap.put(FacilioConstants.Reports.RANGE_FROM, fromDate);
 		hMap.put(FacilioConstants.Reports.RANGE_END, endDate);
 		return hMap;
@@ -271,7 +274,7 @@ public class ReportsUtil
 
 	private  static JSONObject getData (HashMap<String,Object> hMap)
 	{
-		JSONObject result =null;
+		HashMap<String, JSONArray> map =null;
 		String from = (String)hMap.get(FacilioConstants.Reports.RANGE_FROM);
 		String end = (String)hMap.get(FacilioConstants.Reports.RANGE_END);
 		Long in_deviceId= (Long)hMap.get(FacilioConstants.Reports.DEVICE_ID);
@@ -296,29 +299,34 @@ public class ReportsUtil
 			}
 			try(ResultSet rs=psmt.executeQuery())
 			{
-				result = new JSONObject();
+				
+			    map = new LinkedHashMap <String, JSONArray> ();
 
 				while(rs.next())
 				{
-					JSONObject json = new JSONObject();
-
+					ResultSetMetaData meta = rs.getMetaData();
+					JSONObject data  = new JSONObject();
+					
 					String key =rs.getObject(1).toString();
 					long deviceId = (Long)rs.getObject(2);
 					if(in_deviceId==null)
 					{
 						deviceName=getDeviceName(deviceId);
 					}
-					json.put("DEVICE_NAME", deviceName);
-					json.put("POWER_CONSUMPTION", rs.getObject(3).toString());
-
-					JSONArray array =(JSONArray) result.get(key);
+					data.put(meta.getColumnLabel(1), key);
+					data.put(meta.getColumnLabel(2), deviceName);
+					data.put(meta.getColumnLabel(3), rs.getObject(3).toString());
+					
+					JSONArray array =(JSONArray) map.get(key);
+					
 					if(array==null) 
 					{
 						array= new JSONArray();
-						result.put(key,array);
+						map.put(key,array);
 					}	
-					array.add(json);
-				}	
+					array.add(data);
+				}
+				
 			}
 			catch(SQLException e)
 			{
@@ -329,10 +337,35 @@ public class ReportsUtil
 		{
 			logger.log(Level.SEVERE, "Error while fetching data with query:\n "+fetchQuery, e);
 		}
-		logger.log(Level.INFO, "The result: "+result);
-		return result;
+		logger.log(Level.INFO, "The result: "+map);
+		
+		JSONObject resultJson =getResultJson(map);
+		
+		//need to think of fetching this from db or some other means instead of hardcoding..
+		resultJson.put("units", "KWH");
+		
+		return  resultJson;
 	}
 	
+	
+	private static JSONObject getResultJson(HashMap<String, JSONArray> map)
+	{
+		if (map==null || map.isEmpty())
+		{
+			return null;
+		}
+		JSONObject resultJson = new JSONObject();
+		
+		JSONArray keys = new JSONArray();
+		keys.addAll(map.keySet());
+		resultJson.put("keys", keys);
+		
+		JSONArray data = new JSONArray();
+		data.addAll(map.values());
+		resultJson.put("data", data);
+			
+		return resultJson;
+	}
 	
 	public static StringBuilder getAdditionalTimeSql()
 	{
