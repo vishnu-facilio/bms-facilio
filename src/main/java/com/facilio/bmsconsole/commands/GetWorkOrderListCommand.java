@@ -55,10 +55,6 @@ public class GetWorkOrderListCommand implements Command {
 			{
 				builder.andCondition(condition);
 			}
-			if(!appliedFilters.isEmpty())
-			{
-				context.put(FacilioConstants.ContextNames.APPLIED_FILTERS, appliedFilters);
-			}
 		}
 		
 		List<WorkOrderContext> workOrders = builder.get();
