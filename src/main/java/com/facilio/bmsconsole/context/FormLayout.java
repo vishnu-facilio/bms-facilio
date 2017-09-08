@@ -202,13 +202,13 @@ public class FormLayout {
 		return panels;
 	}
 	
-	public static List<Panel> getNewSkillLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewSkillLayout(List<FacilioField> fields)
 	{
-		List<Panel> panels = new ArrayList<Panel>();
+		List<NewPanel> panels = new ArrayList<NewPanel>();
 		
-		Panel first =  new Panel(Panel.Type.FULL);
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
 		for(FacilioField field : fields) {
-			first.add(field);
+			first.addField(field);
 		}
 		panels.add(first);
 		return panels;
