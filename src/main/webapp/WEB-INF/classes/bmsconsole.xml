@@ -113,6 +113,21 @@
 			</result>
 		</action>
 	</package>
+	<package name="locationApi" namespace="/api/location" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions" method="newLocation">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions" method="addLocation">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">locationId</param>
+			</result>
+		</action>
+	</package>
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"

@@ -9,7 +9,9 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -18,6 +20,9 @@ import com.opensymphony.xwork2.ActionSupport;
 public class LocationActions extends ActionSupport {
 	
 	private SetupLayout setup;
+	
+	private List<FacilioField> fields;
+	
 	public SetupLayout getSetup() {
 		return this.setup;
 	}
@@ -40,6 +45,8 @@ public class LocationActions extends ActionSupport {
 		newLocation.execute(context);
 		
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
 		return SUCCESS;
 	}
@@ -121,6 +128,13 @@ public class LocationActions extends ActionSupport {
 	}
 	public void setLocations(List<LocationContext> locations) {
 		this.locations = locations;
+	}
+	
+	private List formlayout;
+	
+	public List getFormlayout() 
+	{
+		return FormLayout.getNewLocationLayout(fields);
 	}
 	
 	public ViewLayout getViewlayout()
