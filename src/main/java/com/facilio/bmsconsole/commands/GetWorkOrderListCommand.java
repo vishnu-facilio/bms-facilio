@@ -77,85 +77,74 @@ public class GetWorkOrderListCommand implements Command {
 			String fieldName = filterIterator.next();
 			JSONObject fieldJson = (JSONObject) filters.get(fieldName);
 			JSONArray value = (JSONArray) fieldJson.get("value");
-			if(value.size() > 0)
+			if(value.size() > 0 || (fieldJson.get("operator") != null && !((String) fieldJson.get("operator")).equals("is")))
 			{
-				String module = (String) fieldJson.get("module");
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField(fieldName, module);
-				
-				Iterator<Object> iterator = value.iterator();
-				while(iterator.hasNext())
+				String[] module = ((String) fieldJson.get("module")).split("\\.");
+				if(module.length > 1)
 				{
-					Object obj = iterator.next();
-					if(obj instanceof JSONObject)
+					FacilioField field = modBean.getField(module[1], module[0]);
+					Condition condition = new Condition();
+					condition.setField(field);
+					condition.setOperator(LookupOperator.LOOKUP);
+					
+					FacilioField childField = modBean.getField(fieldName, module[1]);
+					Condition childCondition = new Condition();
+					childCondition.setField(childField);
+					childCondition.setOperator(childField.getDataType().getOperator((String) fieldJson.get("operator")));
+					
+					if(value.size() > 0)
 					{
-						JSONObject childFilter = (JSONObject) obj;
-						
-						Iterator<String> childFilterIterator = childFilter.keySet().iterator();
-						while(childFilterIterator.hasNext())
-						{
-							String childFieldName = childFilterIterator.next();
-							JSONObject childFieldJson = (JSONObject) childFilter.get(childFieldName);
-							String childModule = (String) childFieldJson.get("module");
-							FacilioField childField = modBean.getField(childFieldName, childModule);
-							
-							JSONArray childValue = (JSONArray) childFieldJson.get("value");
-							if(childValue.size() > 0 || (childField.getDataType() == FieldType.DATE_TIME && childFieldJson.get("operator") != null))
-							{
-								Condition condition = new Condition();
-								condition.setField(field);
-								condition.setOperator(field.getDataType().getOperator((String) fieldJson.get("operator")));
-								
-								Condition childCondition = new Condition();
-								childCondition.setField(childField);
-								childCondition.setOperator(childField.getDataType().getOperator((String) childFieldJson.get("operator")));
-								
-								if(childValue.size() > 0)
-								{
-									Iterator<Object> iterator2 = childValue.iterator();
-									StringBuilder values = new StringBuilder();
-									boolean isFirst = true;
-									while(iterator2.hasNext())
-									{
-										Object obj2 = iterator2.next();
-										if(!isFirst)
-										{
-											values.append(",");
-										}
-										values.append((String) obj2);
-									}
-									childCondition.setValue(values.toString());
-								}
-								
-								Criteria criteria = new Criteria();
-								criteria.addAndCondition(childCondition);
-								
-								condition.setCriteriaValue(criteria);
-								conditionList.add(condition);
-							}
-						}
-					}
-					else
-					{
-						Iterator<Object> iterator2 = value.iterator();
 						StringBuilder values = new StringBuilder();
 						boolean isFirst = true;
-						while(iterator2.hasNext())
+						Iterator<String> iterator = value.iterator();
+						while(iterator.hasNext())
 						{
-							Object obj2 = iterator2.next();
+							String obj = iterator.next();
 							if(!isFirst)
 							{
 								values.append(",");
 							}
-							values.append((String) obj2);
+							else
+							{
+								isFirst = false;
+							}
+							values.append(obj.substring(0, obj.indexOf("_")));
 						}
-						Condition condition = new Condition();
-						condition.setField(field);
-						condition.setOperator(field.getDataType().getOperator((String) fieldJson.get("operator")));
-						condition.setValue(values.toString());
-						
-						conditionList.add(condition);
+						childCondition.setValue(values.toString());
 					}
+					
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(childCondition);
+					
+					condition.setCriteriaValue(criteria);
+					conditionList.add(condition);
+				}
+				else
+				{
+					FacilioField field = modBean.getField(fieldName, module[0]);
+					Condition condition = new Condition();
+					condition.setField(field);
+					condition.setOperator(field.getDataType().getOperator((String) fieldJson.get("operator")));
+					
+					StringBuilder values = new StringBuilder();
+					boolean isFirst = true;
+					Iterator<String> iterator = value.iterator();
+					while(iterator.hasNext())
+					{
+						String obj = iterator.next();
+						if(!isFirst)
+						{
+							values.append(",");
+						}
+						else
+						{
+							isFirst = false;
+						}
+						values.append(obj.substring(0, obj.indexOf("_")));
+					}
+					condition.setValue(values.toString());
+					conditionList.add(condition);
 				}
 			}
 		}

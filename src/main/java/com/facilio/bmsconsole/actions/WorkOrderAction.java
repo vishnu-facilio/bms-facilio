@@ -219,15 +219,4 @@ public class WorkOrderAction extends ActionSupport {
 	{
 		return this.filters;
 	}
-	
-	List<String> appliedFilters;
-	public void setAppliedFilters(List<String> appliedFilters)
-	{
-		this.appliedFilters = appliedFilters;
-	}
-	
-	public List<String> getAppliedFilters()
-	{
-		return this.appliedFilters;
-	}
 }
