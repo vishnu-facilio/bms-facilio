@@ -56,7 +56,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			// Step 2: Setting current user in session
 			UserInfo userInfo = (UserInfo) ActionContext.getContext().getSession().get("USER_INFO");
-			if (userInfo == null) {
+			if (userInfo == null || isAPI) {
 				userInfo = LoginUtil.getUserInfo(cognitoUser);
 				ActionContext.getContext().getSession().put("USER_INFO", userInfo);
 			}
