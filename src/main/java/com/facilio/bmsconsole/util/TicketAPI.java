@@ -65,7 +65,7 @@ public class TicketAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
 																.connection(conn)
-																.table("ticketstatus")
+																.table("TicketStatus")
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
 																.select(modBean.getAllFields("ticketstatus"))
