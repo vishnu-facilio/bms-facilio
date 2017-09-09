@@ -139,7 +139,7 @@ public class ViewFactory {
 		ticketField.setName("ticket");
 		ticketField.setColumnName("TICKET_ID");
 		ticketField.setDataType(FieldType.LOOKUP);
-		ticketField.setModuleTableName("Workorders");
+		ticketField.setModuleTableName("WorkOrders");
 		ticketField.setLookupModule(ticketModule);
 		
 		Condition ticketCondition = new Condition();
@@ -195,7 +195,7 @@ public class ViewFactory {
 		ticketField.setName("ticket");
 		ticketField.setColumnName("TICKET_ID");
 		ticketField.setDataType(FieldType.LOOKUP);
-		ticketField.setModuleTableName("Workorders");
+		ticketField.setModuleTableName("WorkOrders");
 		ticketField.setLookupModule(ticketModule);
 		
 		Condition ticketCondition = new Condition();
