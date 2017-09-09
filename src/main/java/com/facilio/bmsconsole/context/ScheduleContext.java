@@ -31,8 +31,11 @@ public class ScheduleContext {
  			try {
 				this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(scheduledStart).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
  		}
  	}
@@ -49,8 +52,11 @@ public class ScheduleContext {
  			try {
 				this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(estimatedEnd).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
  		}
  	}
@@ -67,8 +73,11 @@ public class ScheduleContext {
  			try {
 				this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkStart).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
  		}
  	}
@@ -85,8 +94,11 @@ public class ScheduleContext {
  			try {
 				this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkEnd).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
  		}
  	}

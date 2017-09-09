@@ -91,6 +91,16 @@
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,setup,locations,locations\[\d+\],locations\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userPickList">
+	    	<result name="success" type="json">
+				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
+	    	<result name="success" type="json">
+				<param name="includeProperties">groups,groups\[\d+\],groups\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
@@ -519,6 +529,13 @@
 	</package>
 	
 	<package name="workOrderApi" namespace="/api/workorder" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">

@@ -8,40 +8,40 @@ import com.facilio.bmsconsole.modules.FieldType;
 
 public class FormLayout {
 	
-	public static List<Panel> getNewTicketLayout(List<FacilioField> fields)
+	public static List<NewPanel> getNewTicketLayout(List<FacilioField> fields)
 	{
 
-		List<Panel> panels =new ArrayList<Panel>();
+		List<NewPanel> panels =new ArrayList<NewPanel>();
 		
-		Panel first =  new Panel(Panel.Type.HALF);
-		Panel second =  new Panel(Panel.Type.HALF);
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
 		FacilioField requesterEmail = new FacilioField();
 		requesterEmail.setName("email");
 		requesterEmail.setDisplayName("Requester Email");
 		requesterEmail.setDisplayType(FacilioField.FieldDisplayType.EMAIL);
 		requesterEmail.setDataType(com.facilio.bmsconsole.modules.FieldType.STRING);
-		requesterEmail.setModuleName("workorder.requester");
+		requesterEmail.setModuleName("requester");
 		requesterEmail.setDefault(true);
-		second.add(requesterEmail);
+		second.addField(requesterEmail);
 		
 		for(FacilioField field : fields) {
 			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester")) {
 				continue;
 			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
-				first.add(field);
+				first.addField(field);
 			}
 			else {
-				second.add(field);
+				second.addField(field);
 			}
 		}
 		panels.add(first);
 		panels.add(second);
 		
-		Panel third =  new Panel(Panel.Type.FULL).setTitle("Scheduling");
+		NewPanel third =  new NewPanel(NewPanel.Type.FULL).setTitle("Scheduling");
 		panels.add(third);
 		
-		Panel fourth =  new Panel(Panel.Type.HALF);
+		NewPanel fourth =  new NewPanel(NewPanel.Type.HALF);
 		FacilioField scheduleStart = new FacilioField();
 		scheduleStart.setName("scheduledStart");
 		scheduleStart.setDisplayName("Scheduled Start");
@@ -49,7 +49,7 @@ public class FormLayout {
 		scheduleStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		scheduleStart.setModuleName("ticket.schedule");
 		scheduleStart.setDefault(true);
-		fourth.add(scheduleStart);
+		fourth.addField(scheduleStart);
 	 
 		FacilioField actualWorkStart = new FacilioField();
 		actualWorkStart.setName("actualWorkStart");
@@ -58,10 +58,10 @@ public class FormLayout {
 		actualWorkStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		actualWorkStart.setModuleName("ticket.schedule");
 		actualWorkStart.setDefault(true);
-		fourth.add(actualWorkStart);
+		fourth.addField(actualWorkStart);
 		panels.add(fourth);
 		
-		Panel fifth =  new Panel(Panel.Type.HALF);
+		NewPanel fifth =  new NewPanel(NewPanel.Type.HALF);
 		FacilioField estimatedEnd = new FacilioField();
 		estimatedEnd.setName("estimatedEnd");
 		estimatedEnd.setDisplayName("Estimated End");
@@ -69,7 +69,7 @@ public class FormLayout {
 		estimatedEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		estimatedEnd.setModuleName("ticket.schedule");
 		estimatedEnd.setDefault(true);
-		fifth.add(estimatedEnd);
+		fifth.addField(estimatedEnd);
 	 
 		FacilioField actualWorkEnd = new FacilioField();
 		actualWorkEnd.setName("actualWorkEnd");
@@ -78,7 +78,7 @@ public class FormLayout {
 		actualWorkEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
 		actualWorkEnd.setModuleName("ticket.schedule");
 		actualWorkEnd.setDefault(true);
-		fifth.add(actualWorkEnd);
+		fifth.addField(actualWorkEnd);
 		panels.add(fifth);
 		
 //		Panel third =  new Panel(Panel.Type.FULL);

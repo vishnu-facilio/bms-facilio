@@ -105,7 +105,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				this.dueDate = FacilioConstants.HTML5_DATE_FORMAT.parse(dueDate).getTime();
 			}
 			catch (ParseException e) {
-				e.printStackTrace();
+				try {
+					this.dueDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(dueDate).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
@@ -124,7 +128,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 				this.createdDate = FacilioConstants.HTML5_DATE_FORMAT.parse(createdDate).getTime();
 			}
 			catch (ParseException e) {
-				e.printStackTrace();
+				try {
+					this.createdDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdDate).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
 	}
