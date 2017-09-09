@@ -295,7 +295,10 @@ public class FacilioChainFactory {
 	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForLocation());
 		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -344,7 +347,10 @@ public class FacilioChainFactory {
 	
 	public static Chain getNewSkillChain() {
 		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadActionFormCommand());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

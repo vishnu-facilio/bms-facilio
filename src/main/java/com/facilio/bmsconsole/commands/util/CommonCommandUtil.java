@@ -2,18 +2,13 @@ package com.facilio.bmsconsole.commands.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fw.OrgInfo;
 
@@ -86,22 +81,6 @@ public class CommonCommandUtil {
 			return module;
 		}
 		return null;
-	}
-	
-	public static SupportEmailContext getSupportEmailFromMap(Map<String, Object> props) throws Exception {
-		SupportEmailContext email = new SupportEmailContext();
-		
-		long groupId = (long) props.get("autoAssignGroup");
-		if(groupId != 0) {
-			GroupContext group = GroupAPI.getGroup(groupId);
-			props.put("autoAssignGroup", group);
-		}
-		else {
-			props.remove("autoAssignGroup");
-		}
-		
-		BeanUtils.populate(email, props);
-		return email;
 	}
 	
 	public static void setFwdMail(SupportEmailContext supportEmail) {

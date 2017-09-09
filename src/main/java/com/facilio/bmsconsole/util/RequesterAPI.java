@@ -18,35 +18,44 @@ public class RequesterAPI {
 	
 	public static Map<Long, String> getAllRequesters(long orgId) throws Exception
 	{
-		Connection conn = FacilioConnectionPool.getInstance().getConnection();
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.connection(conn)
-				.table("Requester")
-				.select(FieldFactory.getRequesterFields())
-				.andCustomWhere("ORGID = ?", orgId);
-		List<Map<String, Object>> requesters = builder.get();
-		
-		Map<Long, String> requesterMap = new LinkedHashMap<>();
-		for(Map<String, Object> requester : requesters)
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
 		{
-			requesterMap.put((Long) requester.get("requesterId"), (String) requester.get("email"));
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.table("Requester")
+					.select(FieldFactory.getRequesterFields())
+					.andCustomWhere("ORGID = ?", orgId);
+			List<Map<String, Object>> requesters = builder.get();
+			
+			Map<Long, String> requesterMap = new LinkedHashMap<>();
+			for(Map<String, Object> requester : requesters)
+			{
+				requesterMap.put((Long) requester.get("requesterId"), (String) requester.get("email"));
+			}
+			return requesterMap;
 		}
-		return requesterMap;
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	public static Map<String, Object> getRequester(long orgId, String email) throws Exception
 	{
-		Connection conn = FacilioConnectionPool.getInstance().getConnection();
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.connection(conn)
-				.table("Requester")
-				.select(FieldFactory.getRequesterFields())
-				.andCustomWhere("ORGID = ? AND EMAIL = ?", orgId, email);
-		List<Map<String, Object>> requesters = builder.get();
-		
-		return !requesters.isEmpty()?requesters.get(0):null;
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		{
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.table("Requester")
+					.select(FieldFactory.getRequesterFields())
+					.andCustomWhere("ORGID = ? AND EMAIL = ?", orgId, email);
+			List<Map<String, Object>> requesters = builder.get();
+			return !requesters.isEmpty()?requesters.get(0):null;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	public static RequesterContext getRequesterFromId(long requesterId)throws SQLException {

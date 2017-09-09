@@ -15,7 +15,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	private GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
 	private String moduleName;
 	private long moduleId = -1;
-	private Connection conn;
 	private List<FacilioField> fields = new ArrayList<>();
 	
 	public InsertRecordBuilder () {
@@ -42,7 +41,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	}
 	
 	public InsertRecordBuilder<E> connection(Connection conn) {
-		this.conn = conn;
 		builder.connection(conn);
 		return this;
 	}

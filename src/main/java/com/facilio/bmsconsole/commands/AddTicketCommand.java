@@ -8,10 +8,13 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.ScheduleObjectAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 
 public class AddTicketCommand implements Command {
 
@@ -33,6 +36,12 @@ public class AddTicketCommand implements Command {
 				ticket.setScheduleId(scheduleObj.getScheduleId());
 			}
 			ticket.setCreatedDate(System.currentTimeMillis());
+			if(ticket.getStatus() == null)
+			{
+				TicketStatusContext tsc = new TicketStatusContext();
+				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
+				ticket.setStatus(tsc);
+			}
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)

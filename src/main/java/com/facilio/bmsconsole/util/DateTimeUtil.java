@@ -13,6 +13,7 @@ import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.Locale;
 
+
 public class DateTimeUtil 
 {
 	
@@ -20,8 +21,15 @@ public class DateTimeUtil
 	private static ZoneId getZoneId()
 	{
 		//TODO TimeZone related changes to be done.
-		//query the db with orgId for TimeZone
+		//like OrgInfo.getCurrentOrgInfo().getTimezone() & set the ZoneId..
 		return ZoneId.systemDefault();
+	}
+	
+	private static Locale getLocale()
+	{
+		//TODO Locale related changes to be done..
+		//like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
+		return Locale.getDefault();
 	}
 	
 	private static LocalDateTime getMidnight()
@@ -31,8 +39,7 @@ public class DateTimeUtil
 	
 	private static LocalDate getWeekFirst()
 	{
-		//TODO Locale related changes to be done.. query the db with orgId for Locale
-		return LocalDate.now(getZoneId()).with(WeekFields.of(Locale.getDefault()).dayOfWeek(),1L);
+		return LocalDate.now(getZoneId()).with(WeekFields.of(getLocale()).dayOfWeek(),1L);
 	}
 
 	private static LocalDate getMonthFirst()
@@ -71,7 +78,7 @@ public class DateTimeUtil
 		HashMap<String,Object> columnVals = new HashMap<String, Object>() ;
 		ZonedDateTime zdt = getDateTime(addedTime);
 		int hour=zdt.getHour();
-		String month=zdt.getMonth().toString();
+		int month=zdt.getMonthValue();
 		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 		String date=zdt.toLocalDate().toString();
 		String day=zdt.getDayOfWeek().toString();
