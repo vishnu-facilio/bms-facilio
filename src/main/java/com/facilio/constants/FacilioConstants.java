@@ -455,8 +455,10 @@ public class FacilioConstants {
 	{
 		public static final String RANGE_FROM = "fromRange";
 		public static final String RANGE_END = "endRange";
-		public static final String QUERY_STRING = "query";
-		public static final String DEVICE_ID = "deviceId";
+		public static final String GROUPBY_COLUMN = "groupByCol";
+		
+		public static final StringBuilder ENERGY_TABLE= new StringBuilder(" ENERGY_DATA ");
+		
 		
 		public static final int THIS_HOUR = 1;
 		public static final int LAST_HOUR = 2;
@@ -485,6 +487,102 @@ public class FacilioConstants {
 		public static final int CUSTOM_WITH_DATE  = 17;
 		public static final int CUSTOM_WITH_WEEK  = 18 ;
 		public static final int CUSTOM_WITH_MONTH = 19;
+		
+		
+		public static class Energy
+
+		{
+			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA=1;
+			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA_SUM=2;
+			public static final int TOTAL_ENERGY_CONSUMPTION_DELTA_COST=3;
+			
+			public static final int PHASE_ENERGY_R_DELTA=4;
+			public static final int PHASE_ENERGY_R_DELTA_SUM=5;
+			public static final int PHASE_ENERGY_R_DELTA_COST=6;
+			
+			public static final int PHASE_ENERGY_Y_DELTA=7;
+			public static final int PHASE_ENERGY_Y_DELTA_SUM=8;
+			public static final int PHASE_ENERGY_Y_DELTA_COST=9;
+			
+			public static final int PHASE_ENERGY_B_DELTA=10;
+			public static final int PHASE_ENERGY_B_DELTA_SUM=11;
+			public static final int PHASE_ENERGY_B_DELTA_COST=12;
+			
+			public static final int POWER_FACTOR_R=13;
+			public static final int POWER_FACTOR_R_AVERAGE=14;
+			
+			public static final int POWER_FACTOR_Y=15;
+			public static final int POWER_FACTOR_Y_AVERAGE=16;
+			
+			public static final int POWER_FACTOR_B=17;
+			public static final int POWER_FACTOR_B_AVERAGE=18;
+			
+			public static final int ACTIVE_POWER_R=19;
+			public static final int ACTIVE_POWER_R_SUM=20;
+			
+			public static final int ACTIVE_POWER_Y=21;
+			public static final int ACTIVE_POWER_Y_SUM=22;
+			
+			public static final int ACTIVE_POWER_B=23;
+			public static final int ACTIVE_POWER_B_SUM=24;
+			
+			
+			public static final int APPARANT_POWER_R=25;
+			public static final int APPARANT_POWER_R_SUM=26;
+			
+			public static final int APPARANT_POWER_Y=27;
+			public static final int APPARANT_POWER_Y_SUM=28;
+			
+			public static final int APPARANT_POWER_B=29;
+			public static final int APPARANT_POWER_B_SUM=30;
+			
+			public static final int REACTIVE_POWER_R=31;
+			public static final int REACTIVE_POWER_R_SUM=32;
+			
+			public static final int REACTIVE_POWER_Y=33;
+			public static final int REACTIVE_POWER_Y_SUM=34;
+			
+			public static final int REACTIVE_POWER_B=35;
+			public static final int REACTIVE_POWER_B_SUM=36;
+			
+			public static final int PHASE_VOLTAGE_R=37;
+			public static final int PHASE_VOLTAGE_R_AVERAGE=38;
+			
+			public static final int PHASE_VOLTAGE_Y=39;
+			public static final int PHASE_VOLTAGE_Y_AVERAGE=40;
+			
+			public static final int PHASE_VOLTAGE_B=41;
+			public static final int PHASE_VOLTAGE_B_AVERAGE=42;
+			
+			public static final int LINE_VOLTAGE_R=43;
+			public static final int LINE_VOLTAGE_R_AVERAGE=44;
+			
+			public static final int LINE_VOLTAGE_Y=45;
+			public static final int LINE_VOLTAGE_Y_AVERAGE=46;
+			
+			public static final int LINE_VOLTAGE_B=47;
+			public static final int LINE_VOLTAGE_B_AVERAGE=48;
+			
+			public static final int LINE_CURRENT_R=49;
+			public static final int LINE_CURRENT_R_AVERAGE=50;
+			
+			public static final int LINE_CURRENT_Y=51;
+			public static final int LINE_CURRENT_Y_AVERAGE=52;
+			
+			public static final int LINE_CURRENT_B=53;
+			public static final int LINE_CURRENT_B_AVERAGE=54;
+			
+			
+			public static final int FREQUENCY_R=55;
+			public static final int FREQUENCY_R_AVERAGE=56;
+			
+			public static final int FREQUENCY_Y=57;
+			public static final int FREQUENCY_Y_AVERAGE=58;
+			
+			public static final int FREQUENCY_B=59;
+			public static final int FREQUENCY_B_AVERAGE=60;
+			
+		}
 
 	}
 	
