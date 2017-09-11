@@ -52,11 +52,11 @@ public class FloorContext extends ModuleBaseWithCustomFields {
 		this.area = area;
 	}
 	
-	private boolean mainLevel;
-	public boolean getMainLevel() {
+	private Boolean mainLevel;
+	public Boolean getMainLevel() {
 		return mainLevel;
 	}
-	public void setMainLevel(boolean mainLevel) {
+	public void setMainLevel(Boolean mainLevel) {
 		this.mainLevel = mainLevel;
 	}
 }
