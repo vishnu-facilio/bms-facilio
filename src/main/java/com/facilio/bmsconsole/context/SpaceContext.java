@@ -103,11 +103,11 @@ public class SpaceContext extends ModuleBaseWithCustomFields {
 		this.availability = availability;
 	}
 	
-	private boolean occupiable;
-	public boolean getOccupiable() {
+	private Boolean occupiable;
+	public Boolean getOccupiable() {
 		return occupiable;
 	}
-	public void setOccupiable(boolean occupiable) {
+	public void setOccupiable(Boolean occupiable) {
 		this.occupiable = occupiable;
 	}
 }

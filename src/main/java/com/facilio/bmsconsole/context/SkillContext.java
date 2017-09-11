@@ -20,11 +20,11 @@ public class SkillContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private boolean active;
-	public boolean getActive() {
+	private Boolean active;
+	public Boolean getActive() {
 		return active;
 	}
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 }
