@@ -56,9 +56,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 			// Step 2: Setting current user in session
 			UserInfo userInfo = (UserInfo) ActionContext.getContext().getSession().get("USER_INFO");
-			if (userInfo == null || isAPI) {
-				userInfo = LoginUtil.getUserInfo(cognitoUser);
-				ActionContext.getContext().getSession().put("USER_INFO", userInfo);
+			if (userInfo == null || userInfo.getOrgId() == -1) {
+				if (isAPI) {
+					boolean addUserEntryIfNotExists = (request.getRequestURI().indexOf("/api/login") != -1 || request.getRequestURI().indexOf("/api/account") != -1);
+					userInfo = LoginUtil.getUserInfo(cognitoUser, addUserEntryIfNotExists);
+					ActionContext.getContext().getSession().put("USER_INFO", userInfo);
+				}
+				else {
+					userInfo = LoginUtil.getUserInfo(cognitoUser, true);
+					ActionContext.getContext().getSession().put("USER_INFO", userInfo);
+				}
 			}
 
 			// Step 3: Validating subdomain

@@ -19,6 +19,7 @@ import java.util.zip.Inflater;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
@@ -166,6 +167,28 @@ public class LoginAction extends ActionSupport{
 		}
 		
 		return "loginpage";
+	}
+	
+	public String apiLogin() throws Exception {
+		
+		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
+		UserInfo curUser = UserInfo.getCurrentUser();
+		
+		account = new HashMap<>();
+		account.put("org", curOrg);
+		account.put("user", curUser);
+		
+		return SUCCESS;
+	}
+	
+	public String apiLogout() throws Exception {
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpSession session = request.getSession();
+		
+		session.invalidate();
+		
+		return SUCCESS;
 	}
 	
 	public String validateUser() throws Exception {
