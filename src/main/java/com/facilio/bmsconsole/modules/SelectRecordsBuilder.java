@@ -31,7 +31,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private List<FacilioField> selectFields;
 	private Connection conn;
 	private int level = 0;
-	private ModuleBean modBean;
 	private String moduleName;
 	private long moduleId = -1;
 	private WhereBuilder where = new WhereBuilder();
@@ -158,13 +157,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	private ModuleBean getModuleBean() throws Exception {
-		if (this.modBean == null) {
-			this.modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		}
-		return this.modBean;
-	}
-
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
@@ -174,14 +166,18 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if(propList != null && propList.size() > 0) {
 			List<FacilioField> lookupFields = getLookupFields();
 			for(Map<String, Object> props : propList) {
-				if(lookupFields.size() > 0) {
-					for(FacilioField field : lookupFields) {
-						Long recordId = (Long) props.remove(field.getName());
-						if(recordId != null) {
-							Object lookedupObj = getLookupVal(field, recordId);
-							if(lookedupObj != null) {
-								props.put(field.getName(), lookedupObj);
-							}
+				for(FacilioField lookupField : lookupFields) {
+					Long recordId = (Long) props.remove(lookupField.getName());
+					if(recordId != null) {
+						Object lookedupObj = null;
+						if(level <= LEVEL) {
+							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
+						}
+						else {
+							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+						}
+						if(lookedupObj != null) {
+							props.put(lookupField.getName(), lookedupObj);
 						}
 					}
 				}
@@ -201,12 +197,18 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			List<FacilioField> lookupFields = getLookupFields();
 			if(lookupFields.size() > 0) {
 				for(Map<String, Object> props : propList) {
-					for(FacilioField field : lookupFields) {
-						Long recordId = (Long) props.remove(field.getName());
+					for(FacilioField lookupField : lookupFields) {
+						Long recordId = (Long) props.remove(lookupField.getName());
 						if(recordId != null) {
-							Object lookedupObj = getLookupVal(field, recordId);
+							Object lookedupObj = null;
+							if(level <= LEVEL) {
+								lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
+							}
+							else {
+								lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+							}
 							if(lookedupObj != null) {
-								props.put(field.getName(), lookedupObj);
+								props.put(lookupField.getName(), lookedupObj);
 							}
 						}
 					}
@@ -252,45 +254,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return builder.get();
 	}
 	
-	private Object getLookupVal(FacilioField field, long id) throws Exception {
-		if(id != 0) {
-			LookupField lookupField = (LookupField) field;
+	private Object getEmptyLookupVal(LookupField lookupField, long id) throws Exception {
+		if(id > 0) {
 			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-				if(level <= LEVEL) {
-					return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
-				}
-				else {
-					return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
-				}
+				return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
 			}
 			else {
 				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
 				if(moduleClass != null) {
-					if(level <= LEVEL) {
-						List<FacilioField> lookupBeanFields = getModuleBean().getAllFields(lookupField.getLookupModule().getName());
-						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level+1)
-																							.connection(conn)
-																							.table(lookupField.getLookupModule().getTableName())
-																							.moduleName(lookupField.getLookupModule().getName())
-																							.beanClass(moduleClass)
-																							.select(lookupBeanFields)
-																							.andCustomWhere("ID = ?", id);
-						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
-						if(records != null && records.size() > 0) {
-							return records.get(0);
-						}
-						else {
-							return null;
-						}
-					}
-					else {
-						ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
-						lookedupModule.setId(id);
-						return lookedupModule;
-					}
+					ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
+					lookedupModule.setId(id);
+					return lookedupModule;
 				}
 				else {
-					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+field);
+					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
 				}
 			}
 		}

@@ -199,7 +199,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddWorkOrderChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(getAddTicketChain());
         c.addCommand(new AddRequesterCommand());
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());

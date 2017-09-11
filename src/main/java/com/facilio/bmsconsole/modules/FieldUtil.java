@@ -1,11 +1,19 @@
 package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.transaction.FacilioConnectionPool;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FieldUtil {
@@ -86,13 +94,13 @@ public class FieldUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <E extends ModuleBaseWithCustomFields> Map<String, Object> getAsProperties(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
 	{
 		Map<String, Object> properties = null;
 		if(bean != null) 
 		{
 			ObjectMapper mapper = new ObjectMapper();
-			//mapper.setSerializationInclusion(Include.NON_DEFAULT);
+			mapper.setSerializationInclusion(Include.NON_DEFAULT);
 			properties = mapper.convertValue(bean, Map.class);
 			
 			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
@@ -102,5 +110,46 @@ public class FieldUtil {
 			}
 		}
 		return properties;
+	}
+	
+	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {
+		if(id > 0) {
+			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+				return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
+			}
+			else {
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				if(moduleClass != null) {
+					try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
+						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
+																							.connection(conn)
+																							.table(lookupField.getLookupModule().getTableName())
+																							.moduleName(lookupField.getLookupModule().getName())
+																							.beanClass(moduleClass)
+																							.select(lookupBeanFields)
+																							.andCustomWhere("ID = ?", id);
+						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
+						if(records != null && records.size() > 0) {
+							return records.get(0);
+						}
+						else {
+							return null;
+						}
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+						throw e;
+					}
+				}
+				else {
+					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
+				}
+			}	
+		}
+		else {
+			return null;
+		}
 	}
 }

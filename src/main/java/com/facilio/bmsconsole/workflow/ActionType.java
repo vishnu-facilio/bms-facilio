@@ -13,11 +13,13 @@ public enum ActionType {
 			@Override
 			public void performAction(JSONObject obj) {
 				// TODO Auto-generated method stub
-				try {
-					AwsUtil.sendEmail(obj);
-				}
-				catch(Exception e) {
-					e.printStackTrace();
+				if(obj != null) {
+					try {
+						AwsUtil.sendEmail(obj);
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};

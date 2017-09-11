@@ -31,6 +31,10 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		this.type = StatusType.typeMap.get(type);
 	}
 	
+	@Override
+	public String toString() {
+		return status;
+	}
 	
 	public static enum StatusType {
 		REQUESTED(5, "Requested"),
