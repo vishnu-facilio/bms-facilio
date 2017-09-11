@@ -847,7 +847,7 @@ CREATE INDEX time_Index on Energy_Data (ADDED_TIME);
 CREATE INDEX date_Index on Energy_Data (ADDED_DATE);
 CREATE INDEX device_Index on Energy_Data (DEVICE_ID);
 
---Trigger change starts..
+-- Trigger change starts..
 -- Create trigger for calculating TOTAL_ENERGY_CONSUMPTION_DELTA in Energy_Data table
 DELIMITER $$
 CREATE TRIGGER calculate_delta BEFORE INSERT ON Energy_Data FOR EACH ROW
@@ -865,7 +865,7 @@ NEW.PHASE_ENERGY_B_DELTA = NEW.PHASE_ENERGY_B - PREV_PHASE_ENERGY_B;
 END IF;
 END; $$
 DELIMITER ;
---Trigger change Ends..
+-- Trigger change Ends..
 
 CREATE TABLE IF NOT EXISTS File (
   FILE_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -1020,6 +1020,6 @@ CREATE TABLE IF NOT EXISTS PortalInfo (
 );
 
 
---Insert Queries
---Add entry in Jobs for workorderemail parser
+-- Insert Queries
+-- Add entry in Jobs for workorderemail parser
 INSERT INTO Jobs (JOBNAME, ISPERIODIC, PERIOD, NEXTEXECUTIONTIME, EXECUTORNAME) VALUES ('WorkOrderEmailParser', true, 300, UNIX_TIMESTAMP()+30,'system');
