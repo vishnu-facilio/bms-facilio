@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fw.OrgInfo;
 
 public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	private TicketContext ticket;
@@ -149,5 +150,9 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	}
 	public List<AttachmentContext> getAttachments() {
 		return this.attachments;
+	}
+	
+	public String getUrl() {
+		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".facilstack.com:8080/bms/app/index#workorder/"+getId();
 	}
 }

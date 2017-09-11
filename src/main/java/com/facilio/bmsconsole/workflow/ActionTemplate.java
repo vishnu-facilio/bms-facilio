@@ -5,5 +5,5 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 public interface ActionTemplate {
-	public JSONObject getTemplate(Map<String, String> placeHolders);
+	public JSONObject getTemplate(Map<String, Object> placeHolders);
 }

@@ -7,7 +7,7 @@ import com.opensymphony.xwork2.util.Element;
 
 public class ModuleBaseWithCustomFields {
 	
-	private long orgId = 0;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -15,7 +15,7 @@ public class ModuleBaseWithCustomFields {
 		this.orgId = orgId;
 	}
 	
-	private long moduleId = 0;
+	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
 	}
