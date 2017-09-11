@@ -12,6 +12,14 @@ import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	
+	private boolean sendForApproval = false;
+	public boolean getSendForApproval() {
+		return sendForApproval;
+	}
+	public void setSendForApproval(boolean sendForApproval) {
+		this.sendForApproval = sendForApproval;
+	}
+	
 	private String subject;
 	public String getSubject() {
 		return subject;

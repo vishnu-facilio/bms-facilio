@@ -69,6 +69,7 @@ public class TicketAPI {
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
 																.select(modBean.getAllFields("ticketstatus"))
+																.andCustomWhere("STATUS = ?", status)
 																.orderBy("ID");
 			List<TicketStatusContext> statuses = builder.get();
 			return (Long) statuses.get(0).getId();

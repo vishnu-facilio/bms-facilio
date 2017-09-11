@@ -35,6 +35,14 @@ public class FormLayout {
 				second.addField(field);
 			}
 		}
+		FacilioField sendForApproval = new FacilioField();
+		sendForApproval.setName("sendForApproval");
+		sendForApproval.setDisplayName("Send For Approval");
+		sendForApproval.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
+		sendForApproval.setDataType(com.facilio.bmsconsole.modules.FieldType.BOOLEAN);
+		sendForApproval.setModuleName("ticket");
+		sendForApproval.setDefault(true);
+		first.addField(sendForApproval);
 		panels.add(first);
 		panels.add(second);
 		

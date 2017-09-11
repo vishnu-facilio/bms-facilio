@@ -36,7 +36,13 @@ public class AddTicketCommand implements Command {
 				ticket.setScheduleId(scheduleObj.getScheduleId());
 			}
 			ticket.setCreatedDate(System.currentTimeMillis());
-			if(ticket.getStatus() == null)
+			if(ticket.getSendForApproval())
+			{
+				TicketStatusContext tsc = new TicketStatusContext();
+				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Requested"));
+				ticket.setStatus(tsc);
+			}
+			else if(ticket.getStatus() == null)
 			{
 				TicketStatusContext tsc = new TicketStatusContext();
 				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
