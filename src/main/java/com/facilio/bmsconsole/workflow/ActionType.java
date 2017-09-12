@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.twilio.sdk.Twilio;
 
 public enum ActionType {
 		EMAIL_NOTIFICATION(1) {
@@ -22,9 +23,45 @@ public enum ActionType {
 					}
 				}
 			}
+		},
+		SMS_NOTIFICATION(2)
+		{
+			@Override
+			public void performAction(JSONObject obj) {
+				// TODO Auto-generated method stub
+				if(obj != null) {
+					try {
+						
+						String message = (String) obj.get("message");
+						String to = (String) obj.get("to");
+						
+						String accountSid = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
+						String authToken = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
+
+						Twilio.init(accountSid, authToken);
+
+						com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid,
+						    new com.twilio.sdk.type.PhoneNumber(to),  // To number
+						    new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
+						    message                    // SMS body
+						).execute();
+
+						
+						//com.twilio.sdk.resource.lookups.v1.PhoneNumber
+					//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
+						System.out.println(tmessage.getSid());
+						
+						//AwsUtil.sendEmail(obj);
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		};
 		
-		private int val;
+	
+	private int val;
 		private ActionType(int val) {
 			// TODO Auto-generated constructor stub
 			this.val = val;
@@ -47,5 +84,14 @@ public enum ActionType {
 				typeMap.put(type.getVal(), type);
 			}
 			return typeMap;
+		}
+		public static void main(String arg[])
+		{
+			System.out.println("hello world");
+			ActionType t = ActionType.SMS_NOTIFICATION;
+			JSONObject json = new JSONObject();
+			json.put("to", "+919840425388");
+			json.put("message", "hello world");
+			t.performAction(json);
 		}
 	}
