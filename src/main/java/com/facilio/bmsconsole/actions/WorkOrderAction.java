@@ -96,7 +96,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workOrderIds);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
@@ -143,12 +143,12 @@ public class WorkOrderAction extends ActionSupport {
 		this.workOrderId = workOrderId;
 	}
 	
-	private List<Long> workOrderIds;
-	public List<Long> getWorkOrderIds() {
-		return workOrderIds;
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
 	}
-	public void setWorkOrderIds(List<Long> workOrderIds) {
-		this.workOrderIds = workOrderIds;
+	public void setId(List<Long> id) {
+		this.id = id;
 	}
 	
 	private int rowsUpdated;
