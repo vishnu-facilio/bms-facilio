@@ -55,19 +55,14 @@ public class ReportsUtil
 
 	
    //generic
-	private  static StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn, boolean groupFields)
+	private  static StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn)
 	{
-		if(!groupFields)
-		{
-			return new StringBuilder(select).append(groupByColumn).append(separator).append(query);
-		}
-		return new StringBuilder(select).append(groupByColumn).append(separator).
-		append(query).append(groupByColumn);
+		return new StringBuilder(select).append(groupByColumn).append(separator).append(query);
 	}
 	
 	
 	//generic..
-	private  static StringBuilder getBaseQuery(HashMap<String,StringBuilder> queryFields, boolean groupFields)
+	private  static StringBuilder getBaseQuery(HashMap<String,StringBuilder> queryFields)
 	{
 		StringBuilder selectFields=queryFields.get("selectFields");
 		StringBuilder table=queryFields.get("table");
@@ -80,10 +75,6 @@ public class ReportsUtil
 		if(inCol!=null)
 		{
 			baseQuery= baseQuery.append(andOperator).append(inCol).append(inClause); 
-		}
-		if(groupFields)
-		{
-			baseQuery= baseQuery.append(groupBy);
 		}
 		return baseQuery;
 	}
@@ -263,7 +254,8 @@ public class ReportsUtil
 	private  static JSONObject getData (String fetchQuery, String from, String end, Long... devices)
 	{
 		HashMap<String, JSONArray> map =null;
-		String key_1=null;
+		
+		
 		
 		logger.log(Level.INFO, "The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
 		
@@ -295,7 +287,7 @@ public class ReportsUtil
 					
 					
 					ResultSetMetaData meta = rs.getMetaData();
-					key_1=meta.getColumnLabel(1);
+					String key_1=meta.getColumnLabel(1);
 					String key_2=meta.getColumnLabel(2);
 					String key_3=meta.getColumnLabel(3);
 					
@@ -311,12 +303,12 @@ public class ReportsUtil
 					data.put(key_3, reqData);
 					
 					logger.log(Level.INFO, rs.getRow()+": Row data: "+data);
-					JSONArray array =(JSONArray) map.get(timeKey);
+					JSONArray array =(JSONArray) map.get(deviceName);
 					
 					if(array==null) 
 					{
 						array= new JSONArray();
-						map.put(timeKey,array);
+						map.put(deviceName,array);
 					}	
 					array.add(data);
 				}
@@ -332,29 +324,21 @@ public class ReportsUtil
 			logger.log(Level.SEVERE, "Error while fetching data with query:\n "+fetchQuery, e);
 		}
 		
-		return getResultJson(map, key_1);
+		return getResultJson(map);
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	private static JSONObject getResultJson(HashMap<String, JSONArray> map, String keyParam)
+	private static JSONObject getResultJson(HashMap<String, JSONArray> map)
 	{
 		if (map==null || map.isEmpty())
 		{
 			return null;
 		}
 		JSONObject resultJson = new JSONObject();
-		
-		JSONArray keys = new JSONArray();
-		keys.addAll(map.keySet());
-		resultJson.put("keys", keys);
-		
 		JSONArray data = new JSONArray();
 		data.addAll(map.values());
 		resultJson.put("data", data);
-		
-		resultJson.put("keyParam", keyParam);
-			
 		return resultJson;
 	}
 	
@@ -364,7 +348,7 @@ public class ReportsUtil
 	private static JSONObject getData(int category, HashMap<String,StringBuilder> queryFields,
 			String fromDate, String endDate, boolean groupFields, Long... deviceId)
 	{
-		StringBuilder baseQuery=getBaseQuery( queryFields, groupFields);
+		StringBuilder baseQuery=getBaseQuery( queryFields);
 		HashMap<String,Object> hMap=getQueryParams(category);
 		
 		StringBuilder groupByCol=(StringBuilder)hMap.remove(FacilioConstants.Reports.GROUPBY_COLUMN);
@@ -374,11 +358,13 @@ public class ReportsUtil
 		fromRange=fromRange.equals("0")?fromDate:fromRange;
 		endRange=endRange.equals("0")?endDate:endRange;
 		
-		StringBuilder finalQuery=getQuery(baseQuery, groupByCol, groupFields);
+		groupByCol= new StringBuilder().append(fieldsDevice).append(separator).append(groupByCol);
+		
+		StringBuilder finalQuery=getQuery(baseQuery, groupByCol);
 
 		if(groupFields)
 		{
-			finalQuery=finalQuery.append(separator).append(fieldsDevice);
+			finalQuery=finalQuery.append(groupBy).append(groupByCol);
 		}
 		return getData(finalQuery.toString(), fromRange, endRange, deviceId);
 	}
