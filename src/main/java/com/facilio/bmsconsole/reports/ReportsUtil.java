@@ -263,8 +263,7 @@ public class ReportsUtil
 	private  static JSONObject getData (String fetchQuery, String from, String end, Long... devices)
 	{
 		HashMap<String, JSONArray> map =null;
-		
-		String deviceName=null;
+		String key_1=null;
 		
 		logger.log(Level.INFO, "The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
 		
@@ -296,7 +295,7 @@ public class ReportsUtil
 					
 					
 					ResultSetMetaData meta = rs.getMetaData();
-					String key_1=meta.getColumnLabel(1);
+					key_1=meta.getColumnLabel(1);
 					String key_2=meta.getColumnLabel(2);
 					String key_3=meta.getColumnLabel(3);
 					
@@ -305,7 +304,7 @@ public class ReportsUtil
 					String reqData =rs.getObject(key_3).toString();
 					
 					//currently this is expensive as we are hitting the db.. later it will return from cache..
-					deviceName=getDeviceName(deviceId);
+					String deviceName=getDeviceName(deviceId);
 					
 					data.put(key_1, timeKey);
 					data.put(key_2, deviceName);
@@ -333,12 +332,12 @@ public class ReportsUtil
 			logger.log(Level.SEVERE, "Error while fetching data with query:\n "+fetchQuery, e);
 		}
 		
-		return getResultJson(map);
+		return getResultJson(map, key_1);
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	private static JSONObject getResultJson(HashMap<String, JSONArray> map)
+	private static JSONObject getResultJson(HashMap<String, JSONArray> map, String keyParam)
 	{
 		if (map==null || map.isEmpty())
 		{
@@ -353,6 +352,8 @@ public class ReportsUtil
 		JSONArray data = new JSONArray();
 		data.addAll(map.values());
 		resultJson.put("data", data);
+		
+		resultJson.put("keyParam", keyParam);
 			
 		return resultJson;
 	}
