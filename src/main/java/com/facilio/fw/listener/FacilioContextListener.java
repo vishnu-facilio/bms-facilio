@@ -1,5 +1,6 @@
 package com.facilio.fw.listener;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import org.flywaydb.core.Flyway;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -41,6 +43,22 @@ public class FacilioContextListener implements ServletContextListener {
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool
+			
+			File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
+			Connection c = FacilioConnectionPool.getInstance().getConnection();
+			try
+			{
+			scriptRunner.runScript(c);
+			}
+			catch(Exception e)
+			{
+				
+			}
+			finally
+			{
+				c.close();
+			}
 			
 			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
 		} catch (Exception e) {

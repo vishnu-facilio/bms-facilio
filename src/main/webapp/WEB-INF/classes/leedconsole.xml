@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="leedconsole" strict-method-invocation="false" namespace="/leed"  extends="struts-default,json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<interceptors>
+		
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/service/login.jsp
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+			</global-results>
+
+		
+  	
+    <!-- This should display form to collect username password-->
+    <action name="urjanetlogin" class="com.facilio.integration.actions.Home" >
+		<result >/leed/login.jsp</result>
+		</action>
+	    <!-- This should redirect to callback url..-->
+	
+	<action name="loginsubmit" class="com.facilio.integration.actions.Home" method="loginSubmit">
+		
+		<result >/leed/login.jsp</result>
+		</action>
+				
+		
+		
+	<action name="respondToken" class="com.facilio.integration.actions.Home" method="getToken">
+		
+		<result >/leed/login.jsp</result>
+		</action>
+	<action name="index" >
+		
+		<result >/leed/index.jsp</result>
+		</action>		
+  
+	</package>
+	
+		
+</struts>
