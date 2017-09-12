@@ -210,6 +210,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateWorkOrderChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getWorkOrderDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());

@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -110,37 +111,93 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	@Override
-	public int update(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		checkForNull();
-		fields.add(FieldFactory.getOrgIdField(tableName));
-		fields.add(FieldFactory.getModuleIdField(tableName));
-		fields.add(FieldFactory.getIdField(tableName));
-		builder.fields(fields);
+	public int update(E bean) throws Exception {
+		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
+		return update(moduleProps);
+	}
+	
+	public int update(Map<String, Object> moduleProps) throws Exception {
+		if(moduleProps != null) {
+			checkForNull();
+			
+			moduleProps.remove("orgId");
+			moduleProps.remove("moduleId");
+			moduleProps.remove("id");
+			
+			WhereBuilder whereCondition = new WhereBuilder();
+			
+			Condition orgCondition = new Condition();
+			orgCondition.setField(FieldFactory.getOrgIdField(tableName));
+			orgCondition.setOperator(NumberOperators.EQUALS);
+			orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			whereCondition.andCondition(orgCondition);
+			
+			Condition moduleCondition = new Condition();
+			moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
+			moduleCondition.setOperator(NumberOperators.EQUALS);
+			moduleCondition.setValue(String.valueOf(getModuleId()));
+			whereCondition.andCondition(moduleCondition);
+			
+			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+			where = whereCondition;
+			
+			updateLookupFields(moduleProps);
+			
+			fields.add(FieldFactory.getOrgIdField(tableName));
+			fields.add(FieldFactory.getModuleIdField(tableName));
+			fields.add(FieldFactory.getIdField(tableName));
+			builder.fields(fields);
+			
+			builder.andCustomWhere(where.getWhereClause(), where.getValues());
+			
+			return builder.update(moduleProps);
+		}
+		return 0;
+	}
+	
+	private void updateLookupFields(Map<String, Object> moduleProps) throws Exception {
+		for(FacilioField field : fields) {
+			if(field.getDataType() == FieldType.LOOKUP) {
+				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
+				if(lookupProps != null) {
+					if(lookupProps.get("id") != null) {
+						moduleProps.put(field.getName(), lookupProps.get("id"));
+					}
+					else {
+						LookupField lookupField = (LookupField) field;
+						if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+							//Not sure if we are handling update of special fields like this
+						}
+						else {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
+							
+							UpdateRecordBuilder<ModuleBaseWithCustomFields> lookupUpdateBuilder = new UpdateRecordBuilder<>()
+																									.connection(conn)
+																									.moduleName(lookupField.getLookupModule().getName())
+																									.table(lookupField.getLookupModule().getTableName())
+																									.fields(lookupBeanFields)
+																									.andCustomWhere(getParentWhereClauseForLookup(field.getColumnName()), where.getValues());
+							lookupUpdateBuilder.update(lookupProps);
+						}
+						moduleProps.remove(field.getName());
+					}
+				}
+			}
+		}
+	}
+	
+	private String getParentWhereClauseForLookup(String columnName) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(" ID in (SELECT ")
+				.append(columnName)
+				.append(" FROM ")
+				.append(tableName)
+				.append(" WHERE ")
+				.append(where.getWhereClause())
+				.append(")");
 		
-		WhereBuilder whereCondition = new WhereBuilder();
-		
-		Condition orgCondition = new Condition();
-		orgCondition.setField(FieldFactory.getOrgIdField(tableName));
-		orgCondition.setOperator(NumberOperators.EQUALS);
-		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
-		whereCondition.andCondition(orgCondition);
-		
-		Condition moduleCondition = new Condition();
-		moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
-		moduleCondition.setOperator(NumberOperators.EQUALS);
-		moduleCondition.setValue(String.valueOf(getModuleId()));
-		whereCondition.andCondition(moduleCondition);
-		
-		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
-		
-		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
-		
-		Map<String, Object> moduleProps = FieldUtil.<E>getAsProperties(bean);
-		moduleProps.remove("orgId");
-		moduleProps.remove("moduleId");
-		moduleProps.remove("id");
-		
-		return builder.update(moduleProps);
+		return builder.toString();
 	}
 	
 	private void checkForNull() {
