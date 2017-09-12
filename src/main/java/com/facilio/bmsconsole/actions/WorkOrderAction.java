@@ -90,6 +90,20 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String approveWorkOrder() throws Exception {
+		
+		workorder.setTicket(ticket);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+		updateWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return updateWorkOrder();
+	}
+	
 	public String updateWorkOrder() throws Exception {
 //		System.out.println(workOrderIds);
 //		System.out.println(workorder);
