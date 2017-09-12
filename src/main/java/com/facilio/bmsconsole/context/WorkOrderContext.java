@@ -90,7 +90,7 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		if(ticket != null) {
 			return ticket.getScheduleId();
 		}
-		return 0;
+		return -1;
 	}
 	
 	public ScheduleContext getSchedule() {
@@ -104,7 +104,7 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		if(ticket != null) {
 			return ticket.getAssetId();
 		}
-		return 0;
+		return -1;
 	}
 	
 	public BaseSpaceContext getSpace() {
@@ -118,14 +118,14 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		if(ticket != null) {
 			return ticket.getCreatedDate();
 		}
-		return 0;
+		return -1;
 	}
 	
 	public long getDueDate() {
 		if(ticket != null) {
 			return ticket.getDueDate();
 		}
-		return 0;
+		return -1;
 	}
 	
 	private List<TaskContext> tasks;

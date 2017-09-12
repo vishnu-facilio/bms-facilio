@@ -297,6 +297,8 @@ public class FacilioConstants {
 		
 		public static final String RECORD = "record";
 		public static final String RECORD_ID = "recordId";
+		public static final String RECORD_ID_LIST = "recordIds";
+		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String EVENT_TYPE = "eventType";
 		
 		public static final String USER_ID = "userId";
