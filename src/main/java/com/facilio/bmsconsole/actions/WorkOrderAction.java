@@ -108,6 +108,7 @@ public class WorkOrderAction extends ActionSupport {
 //		System.out.println(workOrderIds);
 //		System.out.println(workorder);
 		
+		workorder.setTicket(ticket);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
