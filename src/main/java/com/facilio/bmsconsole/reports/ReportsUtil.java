@@ -55,19 +55,14 @@ public class ReportsUtil
 
 	
    //generic
-	private  static StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn, boolean groupFields)
+	private  static StringBuilder getQuery(StringBuilder query, StringBuilder groupByColumn)
 	{
-		if(!groupFields)
-		{
-			return new StringBuilder(select).append(groupByColumn).append(separator).append(query);
-		}
-		return new StringBuilder(select).append(groupByColumn).append(separator).
-		append(query).append(groupByColumn);
+		return new StringBuilder(select).append(groupByColumn).append(separator).append(query);
 	}
 	
 	
 	//generic..
-	private  static StringBuilder getBaseQuery(HashMap<String,StringBuilder> queryFields, boolean groupFields)
+	private  static StringBuilder getBaseQuery(HashMap<String,StringBuilder> queryFields)
 	{
 		StringBuilder selectFields=queryFields.get("selectFields");
 		StringBuilder table=queryFields.get("table");
@@ -80,10 +75,6 @@ public class ReportsUtil
 		if(inCol!=null)
 		{
 			baseQuery= baseQuery.append(andOperator).append(inCol).append(inClause); 
-		}
-		if(groupFields)
-		{
-			baseQuery= baseQuery.append(groupBy);
 		}
 		return baseQuery;
 	}
@@ -264,7 +255,7 @@ public class ReportsUtil
 	{
 		HashMap<String, JSONArray> map =null;
 		
-		String deviceName=null;
+		
 		
 		logger.log(Level.INFO, "The pstmt with "+from+" & "+end+" is \n"+fetchQuery);
 		
@@ -305,19 +296,19 @@ public class ReportsUtil
 					String reqData =rs.getObject(key_3).toString();
 					
 					//currently this is expensive as we are hitting the db.. later it will return from cache..
-					deviceName=getDeviceName(deviceId);
+					String deviceName=getDeviceName(deviceId);
 					
 					data.put(key_1, timeKey);
 					data.put(key_2, deviceName);
 					data.put(key_3, reqData);
 					
 					logger.log(Level.INFO, rs.getRow()+": Row data: "+data);
-					JSONArray array =(JSONArray) map.get(timeKey);
+					JSONArray array =(JSONArray) map.get(deviceName);
 					
 					if(array==null) 
 					{
 						array= new JSONArray();
-						map.put(timeKey,array);
+						map.put(deviceName,array);
 					}	
 					array.add(data);
 				}
@@ -345,15 +336,9 @@ public class ReportsUtil
 			return null;
 		}
 		JSONObject resultJson = new JSONObject();
-		
-		JSONArray keys = new JSONArray();
-		keys.addAll(map.keySet());
-		resultJson.put("keys", keys);
-		
 		JSONArray data = new JSONArray();
 		data.addAll(map.values());
 		resultJson.put("data", data);
-			
 		return resultJson;
 	}
 	
@@ -363,7 +348,7 @@ public class ReportsUtil
 	private static JSONObject getData(int category, HashMap<String,StringBuilder> queryFields,
 			String fromDate, String endDate, boolean groupFields, Long... deviceId)
 	{
-		StringBuilder baseQuery=getBaseQuery( queryFields, groupFields);
+		StringBuilder baseQuery=getBaseQuery( queryFields);
 		HashMap<String,Object> hMap=getQueryParams(category);
 		
 		StringBuilder groupByCol=(StringBuilder)hMap.remove(FacilioConstants.Reports.GROUPBY_COLUMN);
@@ -373,11 +358,13 @@ public class ReportsUtil
 		fromRange=fromRange.equals("0")?fromDate:fromRange;
 		endRange=endRange.equals("0")?endDate:endRange;
 		
-		StringBuilder finalQuery=getQuery(baseQuery, groupByCol, groupFields);
+		groupByCol= new StringBuilder().append(fieldsDevice).append(separator).append(groupByCol);
+		
+		StringBuilder finalQuery=getQuery(baseQuery, groupByCol);
 
 		if(groupFields)
 		{
-			finalQuery=finalQuery.append(separator).append(fieldsDevice);
+			finalQuery=finalQuery.append(groupBy).append(groupByCol);
 		}
 		return getData(finalQuery.toString(), fromRange, endRange, deviceId);
 	}

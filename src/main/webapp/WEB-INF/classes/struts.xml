@@ -17,6 +17,8 @@
 	<include file="bmsconsole.xml" />
 	<include file="serviceportal.xml" />
 	<include file="integration.xml" />
+	<include file="leedconsole.xml" />
+	
 	
 	<!-- Add packages here -->
 
