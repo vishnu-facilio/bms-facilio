@@ -30,13 +30,13 @@ public class TicketAPI {
 		{
 			pstmt = conn.prepareStatement("SELECT * FROM File "
 					+ " INNER JOIN Ticket_Attachment ON File.FILE_ID = Ticket_Attachment.FILE_ID"
-					+ " WHERE Ticket_Attachment.TICKETID = ?");
+					+ " WHERE Ticket_Attachment.TICKET_ID = ?");
 			pstmt.setLong(1, ticketId);
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
 				AttachmentContext ac = new AttachmentContext();
-				ac.setAttachmentId(rs.getLong("WORK_ORDER_ATTACHMENT_ID"));
+				ac.setAttachmentId(rs.getLong("TICKET_ATTACHMENT_ID"));
 				ac.setFileId(rs.getLong("FILE_ID"));
 				ac.setOrgId(rs.getLong("ORGID"));
 				ac.setFileName(rs.getString("FILE_NAME"));
