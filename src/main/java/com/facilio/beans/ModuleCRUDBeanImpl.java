@@ -3,7 +3,6 @@ package com.facilio.beans;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
