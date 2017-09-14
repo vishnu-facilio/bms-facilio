@@ -10,9 +10,37 @@
 Welcome to BuildingDetails
 <table width="100%" class="table table-striped table-hover" id="building">
 	<tbody>
-   				<s:iterator var="build" value="building">
-   				<s:property value="#build.name" />
-   				</s:iterator>
+				<tr>
+				<td> Building Name : </td>
+   				<td><s:property value="building.name" /></td>
+   				</tr>
+				<tr>
+				<td>Campus : </td>
+   				<td><s:property value="building.campus" /></td>
+   				</tr>
+				<tr>
+				<td>Current Occupancy : </td>
+   				<td><s:property value="building.currentOccupancy" /></td>
+   				</tr>
+   				<tr>
+				<td>Max Occupancy : </td>
+   				<td><s:property value="building.maxOccupancy" /></td>
+   				</tr>
+   				<tr>
+				<td>Area : </td>
+   				<td><s:property value="building.area" /></td>
+   				</tr>
+				<tr>
+				<td>Location : </td>
+   				<td><s:property value="building.location" /></td>
+   				</tr>
+				<tr>
+				<td>Floors : </td>
+   				<td><s:property value="building.floors" /></td>
+   				</tr>
+				
+	
+
 	</tbody>
 </table>
 </body>
