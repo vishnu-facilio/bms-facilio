@@ -33,6 +33,16 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogin">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
@@ -105,6 +115,11 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,skills,skills\[\d+\],skills\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
+			<result name="success" type="json">
+				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
