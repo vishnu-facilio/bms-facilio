@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import java.text.ParseException;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	private TicketContext ticket;
@@ -20,127 +23,27 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.parentWorkOrder = parentWorkOrder;
 	}
 	
-	public long getParentId() {
-		if(parentWorkOrder != null) {
-			return parentWorkOrder.getId();
-		}
-		return 0;
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
 	}
-	public void setParentId(long parentId) {
-		parentWorkOrder = new WorkOrderContext();
-		parentWorkOrder.setId(parentId);
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
+	public void setCreatedTime(String createdTime) {
+		if(createdTime != null && !createdTime.isEmpty()) {
+			try {
+				this.createdTime = FacilioConstants.HTML5_DATE_FORMAT.parse(createdTime).getTime();
+			}
+			catch (ParseException e) {
+				try {
+					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
 	}
 	
-	private String parentModuleLinkName;
-	public String getParentModuleLinkName() {
-		return parentModuleLinkName;
-	}
-	public void setParentModuleLinkName(String parentModuleLinkName) {
-		this.parentModuleLinkName = parentModuleLinkName;
-	}
-	
-	public String getSubject() {
-		if(ticket != null) {
-			return ticket.getSubject();
-		}
-		return null;
-	}
-	
-	public String getDescription() {
-		if(ticket != null) {
-			return ticket.getDescription();
-		}
-		return null;
-	}
-	
-	public TicketStatusContext getStatus() {
-		if(ticket != null) {
-			return ticket.getStatus();
-		}
-		return null;
-	}
-	
-	public TicketPriorityContext getPriority() {
-		if(ticket != null) {
-			return ticket.getPriority();
-		}
-		return null;
-	}
-	
-	public TicketCategoryContext getCategory() {
-		if(ticket != null) {
-			return ticket.getCategory();
-		}
-		return null;
-	}
-	
-	public int getSourceType() {
-		if(ticket != null) {
-			return ticket.getSourceType();
-		}
-		return 0;
-	}
-	
-	public SourceType getSourceTypeEnum() {
-		if(ticket != null) {
-			return ticket.getSourceTypeEnum();
-		}
-		return null;
-	}
-	
-	public GroupContext getAssignmentGroup() {
-		if(ticket != null) {
-			return ticket.getAssignmentGroup();
-		}
-		return null;
-	}
-	
-	public UserContext getAssignedTo() {
-		if(ticket != null) {
-			return ticket.getAssignedTo();
-		}
-		return null;
-	}
-	
-	public long getScheduleId() {
-		if(ticket != null) {
-			return ticket.getScheduleId();
-		}
-		return 0;
-	}
-	
-	public ScheduleContext getSchedule() {
-		if(ticket != null) {
-			return ticket.getSchedule();
-		}
-		return null;
-	}
-	
-	public long getAssetId() {
-		if(ticket != null) {
-			return ticket.getAssetId();
-		}
-		return 0;
-	}
-	
-	public BaseSpaceContext getSpace() {
-		if(ticket != null) {
-			return ticket.getSpace();
-		}
-		return null;
-	}
-	
-	public long getCreatedDate() {
-		if(ticket != null) {
-			return ticket.getCreatedDate();
-		}
-		return 0;
-	}
-	
-	public long getDueDate() {
-		if(ticket != null) {
-			return ticket.getDueDate();
-		}
-		return 0;
-	}
 }

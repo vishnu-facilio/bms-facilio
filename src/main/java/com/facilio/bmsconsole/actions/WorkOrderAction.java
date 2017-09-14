@@ -1,14 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -23,7 +18,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -86,13 +80,39 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
-		if(workorder.getTicket().getSchedule() != null && workorder.getTicket().getSchedule().getScheduledStart() != 0) {
-			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, workorder.getTicket().getSchedule());
-		}
-		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
 		setWorkOrderId(workorder.getId());
+		return SUCCESS;
+	}
+	
+	public String approveWorkOrder() throws Exception {
+		
+		workorder.setTicket(ticket);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+		updateWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return updateWorkOrder();
+	}
+	
+	public String updateWorkOrder() throws Exception {
+//		System.out.println(workOrderIds);
+//		System.out.println(workorder);
+		
+		workorder.setTicket(ticket);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
+		updateWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
 		return SUCCESS;
 	}
 	
@@ -132,6 +152,22 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setWorkOrderId(long workOrderId) {
 		this.workOrderId = workOrderId;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+	
+	private int rowsUpdated;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
 	}
 	
 	public String workOrderList() throws Exception {

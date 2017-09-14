@@ -5,7 +5,7 @@
 		<s:if test="#panel.title != null">
 			<div class="form-section"><s:property value="#panel.title"/> :</div>
 		</s:if>
-		<s:iterator value="#panel" status="rowstatus" var="field">
+		<s:iterator value="#panel.fields" status="rowstatus" var="field">
 			<div class="form-group">
 					<label>
 						<s:if test="%{#field.icon != null && #field.icon != ''}">

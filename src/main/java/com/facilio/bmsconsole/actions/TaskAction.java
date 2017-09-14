@@ -79,10 +79,6 @@ public class TaskAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
-		if(ticket.getSchedule() != null && ticket.getSchedule().getScheduledStart() != 0) {
-			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, ticket.getSchedule());
-		}
-		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		

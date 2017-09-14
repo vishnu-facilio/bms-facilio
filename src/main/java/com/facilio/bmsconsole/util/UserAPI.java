@@ -28,14 +28,14 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
 			
 			pstmt.setLong(1, orgId);
 			
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				orgUsers.put(rs.getLong("ORG_USERID"), rs.getString("EMAIL"));
+				orgUsers.put(rs.getLong("ORG_USERID"), rs.getString("NAME"));
 			}
 			
 			return orgUsers;

@@ -570,7 +570,14 @@
 				<param name="includeProperties">workOrderId</param>
 			</result>
 		</action>
-
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
@@ -592,11 +599,26 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
+		
+		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="approveWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">appliedFilters,appliedFilters\[\d+\],workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
+				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
@@ -1128,14 +1150,26 @@
 	
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
 		<action name="addFromMail"
 			class="com.facilio.bmsconsole.actions.SupportMailParseAction">
-			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="json">
-				<param name="enableSMD">true</param>
-			</interceptor-ref>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderId</param>
+			</result>
+		</action>
+		
+		<action name="addAlarm"
+			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarm">
+			<result name="success" type="json">
+				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
 	</package>

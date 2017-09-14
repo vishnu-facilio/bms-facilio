@@ -86,27 +86,29 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			try {
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
-				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-				
-				int paramIndex = 1;
-				for(Map.Entry<String, Object> entry : value.entrySet()) {
-					FacilioField field = fieldMap.get(entry.getKey());
-					if(field != null) {
-						FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
+				if(sql != null && !sql.isEmpty()) {
+					pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+					
+					int paramIndex = 1;
+					for(Map.Entry<String, Object> entry : value.entrySet()) {
+						FacilioField field = fieldMap.get(entry.getKey());
+						if(field != null) {
+							FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
+						}
 					}
-				}
-				
-				Object[] whereValues = where.getValues();
-				if(whereValues != null) {
-					for(int i=0; i<whereValues.length; i++) {
-						Object whereValue = whereValues[i];
-						pstmt.setObject(paramIndex++, whereValue);
+					
+					Object[] whereValues = where.getValues();
+					if(whereValues != null) {
+						for(int i=0; i<whereValues.length; i++) {
+							Object whereValue = whereValues[i];
+							pstmt.setObject(paramIndex++, whereValue);
+						}
 					}
+					
+					int rowCount = pstmt.executeUpdate();
+					System.out.println("Updated "+rowCount+" records.");
+					return rowCount;
 				}
-				
-				int rowCount = pstmt.executeUpdate();
-				System.out.println("Updated "+rowCount+" records.");
-				return rowCount;
 			}
 			catch(SQLException e) {
 				e.printStackTrace();
@@ -147,7 +149,11 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			}
 		}
 		
-		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
+		if(isFirst) {
+			return null; //Nothing to update
+		}
+		
+		if(where.getWhereClause() != null && !where.getWhereClause().trim().isEmpty()) {
 			sql.append(" WHERE ")
 				.append(where.getWhereClause());
 		}

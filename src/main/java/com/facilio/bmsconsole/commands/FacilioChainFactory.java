@@ -45,7 +45,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTicketCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
-//		addCleanUpCommand(c);
+		addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -210,6 +210,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateWorkOrderChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getWorkOrderDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
@@ -228,6 +238,17 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetWorkOrderListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddAlarmChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(getAddTicketChain());
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddAlarmCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
