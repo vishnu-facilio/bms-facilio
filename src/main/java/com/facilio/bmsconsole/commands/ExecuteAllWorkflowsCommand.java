@@ -35,7 +35,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(record != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId = modBean.getModule("workorder").getModuleId();
+			long moduleId = modBean.getModule(moduleName).getModuleId();
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());

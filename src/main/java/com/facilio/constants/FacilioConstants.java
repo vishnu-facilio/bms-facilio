@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.CampusContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -20,6 +21,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 
 public class FacilioConstants {
@@ -330,14 +332,14 @@ public class FacilioConstants {
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
 		
+		public static final String WORK_ORDER_REQUEST = "workorderrequest";
+		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
+		
 		public static final String ALARM = "alarm";
 		public static final String ALARM_LIST = "alarms";
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
-		
-		public static final String TASK_STATUS = "taskstatus";
-		public static final String TASK_STATUS_LIST = "taskstatuses";
 		
 		public static final String NOTE_ID = "noteId";
 		public static final String NOTE = "note";
@@ -419,6 +421,7 @@ public class FacilioConstants {
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String FILTERS = "filters";
+		public static final String FILTER_CONDITIONS = "filterConditions";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -429,7 +432,8 @@ public class FacilioConstants {
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
-			//classMap.put(TASK_STATUS, TaskStatusContext.class);
+			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
+			classMap.put(ALARM, AlarmContext.class);
 			classMap.put(CAMPUS, CampusContext.class);
 			classMap.put(BUILDING, BuildingContext.class);
 			classMap.put(FLOOR, FloorContext.class);

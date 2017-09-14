@@ -11,21 +11,19 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class WorkOrderAction extends ActionSupport {
-	
-	public String newWorkOrder() throws Exception {
+public class WorkOrderRequestAction extends ActionSupport {
+	public String newWorkOrderRequest() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain newTicket = FacilioChainFactory.getNewWorkOrderChain();
+		Chain newTicket = FacilioChainFactory.getNewWorkOrderRequestChain();
 		newTicket.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -58,7 +56,7 @@ public class WorkOrderAction extends ActionSupport {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
+
 	private List<Long> attachmentId;
 	public List<Long> getAttachmentId() {
 		return attachmentId;
@@ -67,64 +65,53 @@ public class WorkOrderAction extends ActionSupport {
 		this.attachmentId = attachmentId;
 	}
 	
-	public String addWorkOrder() throws Exception {
+	public String approveWorkOrderRequest() throws Exception {
+		FacilioContext context = new FacilioContext();
+		//set Event
+		return updateWorkOrderRequest(context);
+	}
+	
+	private String updateWorkOrderRequest(FacilioContext context) throws Exception {
+//		System.out.println(id);
+//		System.out.println(workorderrequest);
+		
+		workorderrequest.setTicket(ticket);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderRequestChain();
+		updateWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String addWorkOrderRequest() throws Exception {
+		
+		if(workorderrequest == null) {
+			workorderrequest = new WorkOrderRequestContext();
+		}
+		workorderrequest.setTicket(ticket);
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
-		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TICKET, workorderrequest.getTicket());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
-		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderRequestChain();
 		addWorkOrder.execute(context);
-		setWorkOrderId(workorder.getId());
+		setWorkOrderRequestId(workorderrequest.getId());
 		return SUCCESS;
 	}
 	
-	public String approveWorkOrder() throws Exception {
-		
-		workorder.setTicket(ticket);
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
-		updateWorkOrder.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return updateWorkOrder();
+	private WorkOrderRequestContext workorderrequest;
+	public WorkOrderRequestContext getWorkorderrequest() {
+		return workorderrequest;
 	}
-	
-	public String updateWorkOrder() throws Exception {
-//		System.out.println(workOrderIds);
-//		System.out.println(workorder);
-		
-		workorder.setTicket(ticket);
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
-		updateWorkOrder.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return SUCCESS;
+	public void setWorkorderrequest(WorkOrderRequestContext workorderrequest) {
+		this.workorderrequest = workorderrequest;
 	}
-	
-	public String viewWorkOrder() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
-		
-		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDetailsChain();
-		getWorkOrderChain.execute(context);
-		
-		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		
-		return SUCCESS;
-	}
-	
+
 	private TicketContext ticket;
 	public TicketContext getTicket() {
 		return ticket;
@@ -133,20 +120,12 @@ public class WorkOrderAction extends ActionSupport {
 		this.ticket = ticket;
 	}
 	
-	private WorkOrderContext workorder;
-	public WorkOrderContext getWorkorder() {
-		return workorder;
+	private long workOrderRequestId;
+	public long getWorkOrderRequestId() {
+		return workOrderRequestId;
 	}
-	public void setWorkorder(WorkOrderContext workorder) {
-		this.workorder = workorder;
-	}
-	
-	private long workOrderId;
-	public long getWorkOrderId() {
-		return workOrderId;
-	}
-	public void setWorkOrderId(long workOrderId) {
-		this.workOrderId = workOrderId;
+	public void setWorkOrderRequestId(long workOrderRequestId) {
+		this.workOrderRequestId = workOrderRequestId;
 	}
 	
 	private List<Long> id;
@@ -156,7 +135,7 @@ public class WorkOrderAction extends ActionSupport {
 	public void setId(List<Long> id) {
 		this.id = id;
 	}
-	
+
 	private int rowsUpdated;
 	public int getRowsUpdated() {
 		return rowsUpdated;
@@ -164,8 +143,23 @@ public class WorkOrderAction extends ActionSupport {
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
 	}
+
 	
-	public String workOrderList() throws Exception {
+	public String viewWorkOrderRequest() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getWorkOrderRequestId());
+		
+		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderRequestDetailsChain();
+		getWorkOrderChain.execute(context);
+		
+		setWorkorderrequest((WorkOrderRequestContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		
+		return SUCCESS;
+	}
+	
+	public String workOrderRequestList() throws Exception {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
@@ -176,11 +170,11 @@ public class WorkOrderAction extends ActionSupport {
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
  		}
  		System.out.println("View Name : "+getViewName());
- 		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
+ 		Chain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
  		workOrderListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+		setWorkOrderRequests((List<WorkOrderRequestContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST));
 		
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if(cv != null) {
@@ -190,27 +184,12 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<WorkOrderContext> workOrders;
-	public List<WorkOrderContext> getWorkOrders() {
-		return workOrders;
+	private List<WorkOrderRequestContext> workOrderRequests;
+	public List<WorkOrderRequestContext> getWorkOrderRequests() {
+		return workOrderRequests;
 	}
-	public void setWorkOrders(List<WorkOrderContext> workOrders) {
-		this.workOrders = workOrders;
-	}
-	
-	public String getModuleLinkName()
-	{
-		return FacilioConstants.ContextNames.WORK_ORDER;
-	}
-	
-	public ViewLayout getViewlayout()
-	{
-		return ViewLayout.getViewWorkOrderLayout();
-	}
-	
-	public List<WorkOrderContext> getRecords() 
-	{
-		return workOrders;
+	public void setWorkOrderRequests(List<WorkOrderRequestContext> workOrderRequests) {
+		this.workOrderRequests = workOrderRequests;
 	}
 	
 	private String viewName = null;
@@ -221,24 +200,24 @@ public class WorkOrderAction extends ActionSupport {
 		this.viewName = viewName;
 	}
 	
-	private String displayName = "All Work Orders";
+	public String getModuleLinkName()
+	{
+		return FacilioConstants.ContextNames.WORK_ORDER_REQUEST;
+	}
+	
+	public ViewLayout getViewlayout()
+	{
+		return ViewLayout.getViewWorkOrderLayout();
+	}
+	
+	private String displayName = "All Work Order Requests";
 	public String getViewDisplayName() {
 		return displayName;
 	}
 	public void setViewDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	
-	public RecordSummaryLayout getRecordSummaryLayout()
-	{
-		return RecordSummaryLayout.getRecordSummaryTicketLayout();
-	}
-	
-	public WorkOrderContext getRecord() 
-	{
-		return workorder;
-	}
-	
+
 	String filters;
 	public void setFilters(String filters)
 	{
