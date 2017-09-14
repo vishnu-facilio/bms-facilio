@@ -330,14 +330,14 @@ public class FacilioConstants {
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
 		
+		public static final String ALARM = "alarm";
+		public static final String ALARM_LIST = "alarms";
+		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
 		
 		public static final String TASK_STATUS = "taskstatus";
 		public static final String TASK_STATUS_LIST = "taskstatuses";
-		
-		public static final String SCHEDULE_ID = "scheduleId";
-		public static final String SCHEDULE_OBJECT = "scheduleObject";
 		
 		public static final String NOTE_ID = "noteId";
 		public static final String NOTE = "note";
@@ -404,16 +404,16 @@ public class FacilioConstants {
 		
 		public static String getPKColumn(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
-				return "WORK_ORDER_ID";
+				return "TICKET_ID";
 			}
-			return "WORK_ORDER_ID";
+			return "TICKET_ID";
 		}
 		
 		public static String getAttachmentTableName(String module) {
 			if ("Tickets".equalsIgnoreCase(module)) {
-				return "WorkOrder_Attachment";
+				return "Ticket_Attachment";
 			}
-			return "WorkOrder_Attachment";
+			return "Ticket_Attachment";
 		}
 
 		public static final String CV_NAME = "cvName";

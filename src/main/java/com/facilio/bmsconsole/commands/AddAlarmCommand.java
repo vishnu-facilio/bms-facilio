@@ -6,36 +6,34 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.workflow.EventContext;
 import com.facilio.constants.FacilioConstants;
 
-public class AddWorkOrderCommand implements Command {
+public class AddAlarmCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		if(workOrder != null) {
+		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
+		if(alarm != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			workOrder.setCreatedTime(System.currentTimeMillis());
 			
-			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
+			alarm.setCreatedTime(System.currentTimeMillis());
+			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)
 																.fields(fields)
 																.connection(conn);
-			long workOrderId = builder.insert(workOrder);
-			workOrder.setId(workOrderId);
-			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
+			long alarmId = builder.insert(alarm);
+			alarm.setId(alarmId);
+			context.put(FacilioConstants.ContextNames.RECORD, alarm);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
 		}
 		else {
@@ -43,5 +41,5 @@ public class AddWorkOrderCommand implements Command {
 		}
 		return false;
 	}
-
+	
 }

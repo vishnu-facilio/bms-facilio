@@ -6,12 +6,10 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.util.ScheduleObjectAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -30,12 +28,6 @@ public class AddTicketCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			ScheduleContext scheduleObj = ticket.getSchedule();
-			if(scheduleObj != null) {
-				scheduleObj.setScheduleId(ScheduleObjectAPI.addScheduleObject(scheduleObj, conn));
-				ticket.setScheduleId(scheduleObj.getScheduleId());
-			}
-			ticket.setCreatedDate(System.currentTimeMillis());
 			if(ticket.getSendForApproval())
 			{
 				TicketStatusContext tsc = new TicketStatusContext();

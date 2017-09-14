@@ -115,44 +115,6 @@ public class WorkOrderAPI {
 		return notes;
 	}
 	
-	public static List<AttachmentContext> getRelatedAttachments(long workOrderId, Connection conn) throws SQLException 
-	{
-		List<AttachmentContext> attachments = new ArrayList<>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			pstmt = conn.prepareStatement("SELECT * FROM File "
-					+ " INNER JOIN WorkOrder_Attachment ON File.FILE_ID = WorkOrder_Attachment.FILE_ID"
-					+ " WHERE WorkOrder_Attachment.WORK_ORDER_ID = ?");
-			pstmt.setLong(1, workOrderId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				AttachmentContext ac = new AttachmentContext();
-				ac.setAttachmentId(rs.getLong("WORK_ORDER_ATTACHMENT_ID"));
-				ac.setFileId(rs.getLong("FILE_ID"));
-				ac.setOrgId(rs.getLong("ORGID"));
-				ac.setFileName(rs.getString("FILE_NAME"));
-				ac.setFileSize(rs.getLong("FILE_SIZE"));
-				ac.setContentType(rs.getString("CONTENT_TYPE"));
-				ac.setUploadedBy(rs.getLong("UPLOADED_BY"));
-				ac.setUploadedTime(rs.getLong("UPLOADED_TIME"));
-				attachments.add(ac);
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting related attachments." +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
-		}
-		return attachments;
-	}
-	
 	public static long addS3MessageId(String s3Id) throws SQLException {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			

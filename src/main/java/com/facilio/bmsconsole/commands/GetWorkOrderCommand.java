@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.ScheduleObjectAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -40,12 +40,11 @@ public class GetWorkOrderCommand implements Command {
 			if(workOrders.size() > 0) {
 				WorkOrderContext workOrder = workOrders.get(0);
 				
-				workOrder.getTicket().setSchedule(ScheduleObjectAPI.getScheduleObject(workOrder.getTicket().getScheduleId(), conn));
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
 				workOrder.setTasks(WorkOrderAPI.getRelatedTasks(workOrderId, conn));
 				workOrder.setNotes(WorkOrderAPI.getRelatedNotes(workOrderId, conn));
-				workOrder.setAttachments(WorkOrderAPI.getRelatedAttachments(workOrderId, conn));
+				workOrder.setAttachments(TicketAPI.getRelatedAttachments(workOrder.getTicket().getId(), conn));
 			}
 		}
 		else {

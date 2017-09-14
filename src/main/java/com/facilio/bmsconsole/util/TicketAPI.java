@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -26,9 +27,9 @@ public class TicketAPI {
 	
 	private static Logger logger = Logger.getLogger(TicketAPI.class.getName());
 	
-	public static List<FileContext> getRelatedAttachments(long ticketId, Connection conn) throws SQLException 
+	public static List<AttachmentContext> getRelatedAttachments(long ticketId, Connection conn) throws SQLException 
 	{
-		List<FileContext> attachments = new ArrayList<>();
+		List<AttachmentContext> attachments = new ArrayList<>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try 
@@ -40,15 +41,21 @@ public class TicketAPI {
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
-				FileContext fc = new FileContext();
-				fc.setFileId(rs.getLong("FILE_ID"));
-				fc.setFileName(rs.getString("FILE_NAME"));
-				attachments.add(fc);
+				AttachmentContext ac = new AttachmentContext();
+				ac.setAttachmentId(rs.getLong("WORK_ORDER_ATTACHMENT_ID"));
+				ac.setFileId(rs.getLong("FILE_ID"));
+				ac.setOrgId(rs.getLong("ORGID"));
+				ac.setFileName(rs.getString("FILE_NAME"));
+				ac.setFileSize(rs.getLong("FILE_SIZE"));
+				ac.setContentType(rs.getString("CONTENT_TYPE"));
+				ac.setUploadedBy(rs.getLong("UPLOADED_BY"));
+				ac.setUploadedTime(rs.getLong("UPLOADED_TIME"));
+				attachments.add(ac);
 			}
 		}
 		catch (SQLException e) 
 		{
-			logger.log(Level.SEVERE, "Exception while getting all tasks" +e.getMessage(), e);
+			logger.log(Level.SEVERE, "Exception while getting related attachments." +e.getMessage(), e);
 			throw e;
 		}
 		finally 

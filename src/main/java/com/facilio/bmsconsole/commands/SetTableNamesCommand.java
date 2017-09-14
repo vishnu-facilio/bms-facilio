@@ -44,6 +44,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("workorder", "WorkOrders");
 	}
 	
+	public static SetTableNamesCommand getForAlarm() {
+		return new SetTableNamesCommand("alarm", "Alarms");
+	}
+	
 	public static SetTableNamesCommand getForTask() {
 		return new SetTableNamesCommand("task", "Tasks");
 	}
