@@ -274,6 +274,23 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateTaskChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateTaskCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getDeleteTaskChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new DeleteTaskCommand());
+		return c;
+	}
+	
 	public static Chain getTaskDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());

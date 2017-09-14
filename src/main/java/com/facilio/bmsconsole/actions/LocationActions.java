@@ -126,6 +126,9 @@ public class LocationActions extends ActionSupport {
 	public List<LocationContext> getLocations() {
 		return locations;
 	}
+	public List<LocationContext> getRecords() {
+		return locations;
+	}
 	public void setLocations(List<LocationContext> locations) {
 		this.locations = locations;
 	}
