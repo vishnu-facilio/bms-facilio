@@ -11,9 +11,11 @@
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
 		<interceptors>
-		
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
@@ -38,6 +40,11 @@
 		</action>
 	    <!-- This should redirect to callback url..-->
 	
+	<action name="buildingdetails" class="com.facilio.leed.actions.BuildingHome" method="detailspage">
+		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+		<result >/leed/BuildingDetails.jsp</result>
+	</action>
+		
 	<action name="loginsubmit" class="com.facilio.integration.actions.Home" method="loginSubmit">
 		
 		<result >/leed/login.jsp</result>
