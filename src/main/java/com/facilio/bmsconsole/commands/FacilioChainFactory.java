@@ -198,10 +198,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddWorkOrderChain() {
+	public static Chain getAddWorkOrderWithTicketChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddTicketChain());
-        c.addCommand(new AddRequesterCommand());
+        c.addCommand(getAddWorkOrderChain());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddWorkOrderChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddRequesterCommand());
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
