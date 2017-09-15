@@ -125,6 +125,38 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.dueDate = dueDate;
 	}
 	
+	private int noOfNotes;
+	public int getNoOfNotes() {
+		return noOfNotes;
+	}
+	public void setNoOfNotes(int noOfNotes) {
+		this.noOfNotes = noOfNotes;
+	}
+	
+	private int noOfAttachments;
+	public int getNoOfAttachments() {
+		return noOfAttachments;
+	}
+	public void setNoOfAttachments(int noOfAttachments) {
+		this.noOfAttachments = noOfAttachments;
+	}
+	
+	private int noOfTasks;
+	public int getNoOfTasks() {
+		return noOfTasks;
+	}
+	public void setNoOfTasks(int noOfTasks) {
+		this.noOfTasks = noOfTasks;
+	}
+	
+	private int noOfClosedTasks;
+	public int getNoOfClosedTasks() {
+		return noOfClosedTasks;
+	}
+	public void setNoOfClosedTasks(int noOfClosedTasks) {
+		this.noOfClosedTasks = noOfClosedTasks;
+	}
+
 	private long scheduledStart = -1;
 	public long getScheduledStart() {
 		return scheduledStart;
