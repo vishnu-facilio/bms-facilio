@@ -38,34 +38,36 @@ public class ExecuteAllWorkflowsCommand implements Command
 			long moduleId = modBean.getModule(moduleName).getModuleId();
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-			List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
-			
-			if(workflowRules != null && workflowRules.size() > 0) {
-				Map<String, Object> placeHolders = new HashMap<>();
-				appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
-				appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-				appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+			if(eventType != null) {
+				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
 				
-				for(WorkflowRuleContext workflowRule : workflowRules)
-				{
-					Criteria criteria = workflowRule.getCriteria();
-					boolean flag = criteria.computePredicate().evaluate(record);
-					if(flag)
+				if(workflowRules != null && workflowRules.size() > 0) {
+					Map<String, Object> placeHolders = new HashMap<>();
+					appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
+					appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+					appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+					
+					for(WorkflowRuleContext workflowRule : workflowRules)
 					{
-						long workflowRuleId = workflowRule.getId();
-						List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
-						if(actions != null) {
-							for(ActionContext action : actions)
-							{
-								ActionTemplate template = action.getTemplate();
-								if(template != null) {
-									JSONObject actionObj = template.getTemplate(placeHolders);
-									action.getActionType().performAction(actionObj);
+						Criteria criteria = workflowRule.getCriteria();
+						boolean flag = criteria.computePredicate().evaluate(record);
+						if(flag)
+						{
+							long workflowRuleId = workflowRule.getId();
+							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
+							if(actions != null) {
+								for(ActionContext action : actions)
+								{
+									ActionTemplate template = action.getTemplate();
+									if(template != null) {
+										JSONObject actionObj = template.getTemplate(placeHolders);
+										action.getActionType().performAction(actionObj);
+									}
 								}
 							}
 						}
 					}
-				}
+				}	
 			}
 		}
 		return false;
