@@ -67,6 +67,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	
 	public String approveWorkOrderRequest() throws Exception {
+		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
 		FacilioContext context = new FacilioContext();
 		//set Event
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.APPROVE_WORK_ORDER_REQUEST);
@@ -97,7 +98,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 		{
 			workorderrequest.setTicket(ticket);
 		}
-		
+		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, workorderrequest.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());

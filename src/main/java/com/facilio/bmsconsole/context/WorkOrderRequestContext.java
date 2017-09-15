@@ -26,7 +26,7 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		this.requester = requester;
 	}
 	
-	private RequestStatus status = RequestStatus.OPEN;
+	private RequestStatus status;
 	public int getStatus() {
 		if(status != null) {
 			return status.getIntVal();
@@ -36,7 +36,7 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 	public void setStatus(int status) {
 		this.status = RequestStatus.statusMap.get(status);
 	}
-	public void setUrgency(RequestStatus status) {
+	public void setStatus(RequestStatus status) {
 		this.status = status;
 	}
 	public String getStatusVal() {
