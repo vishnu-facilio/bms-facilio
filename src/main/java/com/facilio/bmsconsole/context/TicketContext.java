@@ -213,23 +213,36 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.actualWorkEnd = actualWorkEnd;
 	}
 	
-	private List<AttachmentContext> attachments;
-	public List<AttachmentContext> getAttachments()
-	{
-		return this.attachments;
-	}
-	
-	public void setAttachments(List<AttachmentContext> attachments)
-	{
-		this.attachments = attachments;
-	}
-	
 	private BaseSpaceContext space;
 	public BaseSpaceContext getSpace() {
 		return space;
 	}
 	public void setSpace(BaseSpaceContext space) {
 		this.space = space;
+	}
+	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return this.tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
+	}
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes() {
+		return this.notes;
+	}
+	public void setNotes(List<NoteContext> notes){
+		this.notes = notes;
+	}
+	
+	private List<AttachmentContext> attachments;
+	public void setAttachments(List<AttachmentContext> attachments) {
+		this.attachments = attachments;
+	}
+	public List<AttachmentContext> getAttachments() {
+		return this.attachments;
 	}
 	
 	public static enum SourceType {

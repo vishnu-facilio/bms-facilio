@@ -400,14 +400,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddTaskNoteChain() {
-		Chain c = new ChainBase();
-		c.addCommand(getAddNoteChain());
-		c.addCommand(new AddTaskNoteCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());

@@ -334,7 +334,7 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getWorkorderEmailFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		String tableName = "WorkOrder_EMail";
+		String tableName = "WorkOrderRequest_EMail";
 		
 		fields.add(getIdField(tableName));
 		

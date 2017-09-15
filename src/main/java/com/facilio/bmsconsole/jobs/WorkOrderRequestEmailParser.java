@@ -27,13 +27,13 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.transaction.FacilioConnectionPool;
 
-public class WorkOrderEmailParser extends FacilioJob {
+public class WorkOrderRequestEmailParser extends FacilioJob {
 
 	public static final String S3_BUCKET_NAME = "ses-support-mail-parser";
 	
 	private Map<String, Object> updateIsProcessed = new HashMap<>();
 	
-	public WorkOrderEmailParser() {
+	public WorkOrderRequestEmailParser() {
 		// TODO Auto-generated constructor stub
 		updateIsProcessed.put("isProcessed", true);
 	}
@@ -41,12 +41,12 @@ public class WorkOrderEmailParser extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
-		System.out.println("Workorder Email Parser");
+		System.out.println("Workorder Request Email Parser");
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.connection(conn)
 															.select(FieldFactory.getWorkorderEmailFields())
-															.table("WorkOrder_EMail")
+															.table("WorkOrderRequest_EMail")
 															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
 			List<Map<String, Object>> emailProps = selectBuilder.get();
 			StringBuilder idsToBeRemoved = new StringBuilder("ID in (");

@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-
 public class EventContext {
 	private long eventId;
 	public long getEventId() {

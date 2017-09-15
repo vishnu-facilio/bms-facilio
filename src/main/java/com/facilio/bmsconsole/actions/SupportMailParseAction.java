@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.WorkOrderRequestAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SupportMailParseAction extends ActionSupport {
@@ -11,7 +11,7 @@ public class SupportMailParseAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(s3.toJSONString());
-		System.out.println("Added to WorkorderEmail table with id : "+WorkOrderAPI.addS3MessageId((String) s3.get("messageId")));
+		System.out.println("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId((String) s3.get("messageId")));
 		return SUCCESS;
 	}
 	
