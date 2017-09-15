@@ -27,14 +27,14 @@ public class ViewFactory {
 	private static Map<String, FacilioView> initViews() {
 		
 		Map<String, FacilioView> viewMap = new HashMap<>();
-		viewMap.put("allrequests", getAllWorkorderRequests());
+		//viewMap.put("allrequests", getAllWorkorderRequests());
 		viewMap.put("allopentickets", getAllOpenTickets());
 		viewMap.put("myopentickets", getMyOpenTickets());
 		viewMap.put("overduetickets", getAllOverdueTickets());
 		viewMap.put("myoverduetickets", getMyOverdueTickets());
 		viewMap.put("mytickets", getMyTickets());
 		viewMap.put("mytasks", getMyTasks());
-		viewMap.put("all", getAllWorkorders());
+		//viewMap.put("all", getAllWorkorders());
 		
 		return viewMap;
 	}
@@ -49,7 +49,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.NOT_EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.REQUESTED.getIntVal()));
+		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, statusOpen);
@@ -71,7 +71,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.REQUESTED.getIntVal()));
+		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, statusOpen);
@@ -195,7 +195,7 @@ public class ViewFactory {
 		ticketField.setName("ticket");
 		ticketField.setColumnName("TICKET_ID");
 		ticketField.setDataType(FieldType.LOOKUP);
-		ticketField.setModuleTableName("WorkOrders");
+		ticketField.setModuleTableName("WorkOrderRequests");
 		ticketField.setLookupModule(ticketModule);
 		
 		Condition ticketCondition = new Condition();

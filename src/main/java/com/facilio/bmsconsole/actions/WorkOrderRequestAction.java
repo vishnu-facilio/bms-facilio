@@ -91,7 +91,10 @@ public class WorkOrderRequestAction extends ActionSupport {
 		if(workorderrequest == null) {
 			workorderrequest = new WorkOrderRequestContext();
 		}
-		workorderrequest.setTicket(ticket);
+		if(workorderrequest.getTicket() == null)
+		{
+			workorderrequest.setTicket(ticket);
+		}
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, workorderrequest.getTicket());

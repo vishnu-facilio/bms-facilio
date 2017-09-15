@@ -28,13 +28,7 @@ public class AddTicketCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			if(ticket.getSendForApproval())
-			{
-				TicketStatusContext tsc = new TicketStatusContext();
-				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Requested"));
-				ticket.setStatus(tsc);
-			}
-			else if(ticket.getStatus() == null)
+			if(ticket.getStatus() == null)
 			{
 				TicketStatusContext tsc = new TicketStatusContext();
 				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));

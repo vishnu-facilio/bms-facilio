@@ -653,13 +653,6 @@
 			</result>
 		</action>
 		
-		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="approveWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
@@ -704,11 +697,46 @@
 		</action>
 	</package>
 	
+	<package name="workOrderRequestApi" namespace="/api/workorderrequest" extends="home">
+	
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequestId</param>
+			</result>
+		</action>
+		
+		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="workOrderRequestSummary" namespace="/app/workorderrequest/summary" extends="ticket">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="workOrderRequestId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
+		</action>
+	</package>
+	
+	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary" extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="workOrderRequestId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorderrequest.*</param>
+			</result>
 		</action>
 	</package>
 	
