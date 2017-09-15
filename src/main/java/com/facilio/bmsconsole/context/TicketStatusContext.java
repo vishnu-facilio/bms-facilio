@@ -37,12 +37,8 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public static enum StatusType {
-		REQUESTED(5, "Requested"),
 		OPEN(1, "Open"),
-		PENDING(2, "Pending"),
-		RESOLVED(3, "Resolved"),
-		CLOSED(4, "Closed"),
-		INCOMPLETE(6, "Incomplete")
+		CLOSED(2, "Closed"),
 		;
 		
 		private int intVal;
