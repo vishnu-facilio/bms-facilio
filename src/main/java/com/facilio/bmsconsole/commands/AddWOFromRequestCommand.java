@@ -58,6 +58,7 @@ public class AddWOFromRequestCommand implements Command {
 		WorkOrderContext wo = new WorkOrderContext();
 		wo.setTicket(request.getTicket());
 		wo.setRequester(request.getRequester());
+		wo.setWoId(request.getWoId());
 		wo.setCreatedTime(System.currentTimeMillis());
 		
 		FacilioContext context = new FacilioContext();

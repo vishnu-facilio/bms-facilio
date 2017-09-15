@@ -25,6 +25,14 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		this.requester = requester;
 	}
 	
+	private long woId;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
+	
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;

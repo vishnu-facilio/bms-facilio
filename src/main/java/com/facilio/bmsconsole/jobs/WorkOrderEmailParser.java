@@ -17,7 +17,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.fw.BeanFactory;
@@ -56,7 +56,7 @@ public class WorkOrderEmailParser extends FacilioJob {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						createWorkOrder(rawEmail);
+						createWorkOrderRequest(rawEmail);
 						if(!isEmpty) {
 							idsToBeRemoved.append(", ");
 						}
@@ -87,18 +87,18 @@ public class WorkOrderEmailParser extends FacilioJob {
 		}
 	}
 	
-	private void createWorkOrder(S3Object rawEmail) throws Exception {
+	private void createWorkOrderRequest(S3Object rawEmail) throws Exception {
 		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
 		MimeMessageParser parser = new MimeMessageParser(emailMsg);
 		parser.parse();
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
 		
 		if(supportEmail != null) {
-			WorkOrderContext workOrder = new WorkOrderContext();
+			WorkOrderRequestContext workOrderRequest = new WorkOrderRequestContext();
 			
 			RequesterContext requester = new RequesterContext();
 			requester.setEmail(parser.getFrom());
-			workOrder.setRequester(requester);
+			workOrderRequest.setRequester(requester);
 			
 			TicketContext ticket = new TicketContext();
 			ticket.setSubject(parser.getSubject());
@@ -107,10 +107,10 @@ public class WorkOrderEmailParser extends FacilioJob {
 				ticket.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
 			
-			workOrder.setTicket(ticket);
+			workOrderRequest.setTicket(ticket);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrder(workOrder));
+			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));
 		}
 	}
 	

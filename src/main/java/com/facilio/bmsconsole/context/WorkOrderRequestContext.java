@@ -26,6 +26,26 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		this.requester = requester;
 	}
 	
+	private RequestStatus status = RequestStatus.OPEN;
+	public int getStatus() {
+		if(status != null) {
+			return status.getIntVal();
+		}
+		return -1;
+	}
+	public void setStatus(int status) {
+		this.status = RequestStatus.statusMap.get(status);
+	}
+	public void setUrgency(RequestStatus status) {
+		this.status = status;
+	}
+	public String getStatusVal() {
+		if(status != null) {
+			return status.getStringVal();
+		}
+		return null;
+	}
+	
 	private WORUrgency urgency;
 	public int getUrgency() {
 		if(urgency != null) {
@@ -46,6 +66,14 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	
+	private long woId;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
+
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;
@@ -100,6 +128,40 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		}
 		public Map<Integer, WORUrgency> getAllTypes() {
 			return urgencyMap;
+		}
+	}
+	
+	public static enum RequestStatus {
+		OPEN(1, "Open"),
+		APPROVED(2, "Active"),
+		REJECTED(3, "Suppressed");
+		
+		private int intVal;
+		private String strVal;
+		
+		private RequestStatus(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		private static final Map<Integer, RequestStatus> statusMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, RequestStatus> initTypeMap() {
+			Map<Integer, RequestStatus> typeMap = new HashMap<>();
+			
+			for(RequestStatus type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, RequestStatus> getAllTypes() {
+			return statusMap;
 		}
 	}
 }
