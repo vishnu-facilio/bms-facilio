@@ -30,15 +30,11 @@ public class AddTicketCommand implements Command {
 			
 			if(ticket.getSendForApproval())
 			{
-				TicketStatusContext tsc = new TicketStatusContext();
-				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Requested"));
-				ticket.setStatus(tsc);
+				ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Requested"));
 			}
 			else if(ticket.getStatus() == null)
 			{
-				TicketStatusContext tsc = new TicketStatusContext();
-				tsc.setId(TicketAPI.getStatusId(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
-				ticket.setStatus(tsc);
+				ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
 			}
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
 																.moduleName(moduleName)

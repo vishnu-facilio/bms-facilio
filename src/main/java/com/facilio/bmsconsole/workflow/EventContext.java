@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+
 public class EventContext {
 	private long eventId;
 	public long getEventId() {
@@ -47,7 +53,10 @@ public class EventContext {
 		CREATE(1),
 		EDIT(2),
 		DELETE(4),
-		CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue());
+		CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()),
+		APPROVE_WORK_ORDER_REQUEST(8),
+		ASSIGN_ALARM(16)
+		;
 
 	    private int eventType;
 
@@ -60,19 +69,20 @@ public class EventContext {
 	    }
 	    
 	    public static EventType valueOf(int eventTypeVal) {
-	    	if (eventTypeVal == CREATE.getValue()) {
-	    		return CREATE;
-	    	}
-	    	else if (eventTypeVal == EDIT.getValue()) {
-	    		return EDIT;
-	    	}
-	    	else if (eventTypeVal == DELETE.getValue()) {
-	    		return DELETE;
-	    	}
-	    	else if (eventTypeVal == CREATE_OR_EDIT.getValue()) {
-	    		return EventType.CREATE_OR_EDIT;
-	    	}
-	    	return CREATE;
+	    	return typeMap.get(eventTypeVal);
 	    }
+	    
+	    private static final Map<Integer, EventType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, EventType> initTypeMap() {
+			Map<Integer, EventType> typeMap = new HashMap<>();
+			
+			for(EventType type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, EventType> getAllTypes() {
+			return typeMap;
+		}
 	}
 }

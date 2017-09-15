@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -68,6 +69,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 	public String approveWorkOrderRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		//set Event
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.APPROVE_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	

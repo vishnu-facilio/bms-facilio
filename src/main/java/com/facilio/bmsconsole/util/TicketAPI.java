@@ -59,7 +59,7 @@ public class TicketAPI {
 		return attachments;
 	}
 	
-	public static Long getStatusId(long orgId, String status) throws Exception
+	public static TicketStatusContext getStatus(long orgId, String status) throws Exception
 	{
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
 		{
@@ -73,7 +73,7 @@ public class TicketAPI {
 																.andCustomWhere("STATUS = ?", status)
 																.orderBy("ID");
 			List<TicketStatusContext> statuses = builder.get();
-			return (Long) statuses.get(0).getId();
+			return statuses.get(0);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

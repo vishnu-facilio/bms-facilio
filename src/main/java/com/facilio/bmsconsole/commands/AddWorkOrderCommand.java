@@ -1,16 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.EventContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 
 public class AddWorkOrderCommand implements Command {
 
@@ -24,6 +32,8 @@ public class AddWorkOrderCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrder.setCreatedTime(System.currentTimeMillis());
+			
+			updateTicketStatus(workOrder.getTicket(), conn);
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
@@ -42,4 +52,21 @@ public class AddWorkOrderCommand implements Command {
 		return false;
 	}
 
+	private void updateTicketStatus(TicketContext ticket, Connection conn) throws Exception {
+		TicketStatusContext status = ticket.getStatus();
+		if(ticket.getAssignedTo() != null && (status == null || !status.getStatus().equals("Assigned"))) {
+			TicketContext updatedTicket = new TicketContext();
+			updatedTicket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(((ModuleBean) BeanFactory.lookup("ModuleBean")).getField("status", FacilioConstants.ContextNames.TICKET));
+			
+			UpdateRecordBuilder<TicketContext> builder = new UpdateRecordBuilder<TicketContext>()
+					.moduleName(FacilioConstants.ContextNames.TICKET)
+					.table("Tickets")
+					.connection(conn)
+					.fields(fields)
+					.andCustomWhere("ID = ?", ticket.getId());
+			builder.update(updatedTicket);
+		}
+	}
 }
