@@ -114,14 +114,14 @@ public class TicketAPI {
 		try 
 		{
 			pstmt = conn.prepareStatement("SELECT * FROM Notes "
-					+ " INNER JOIN Ticket_Note ON Notes.NOTEID = Ticket_Note.NOTE_ID"
+					+ " INNER JOIN Ticket_Note ON Notes.NOTEID = Ticket_Note.NOTEID"
 					+ " WHERE Ticket_Note.TICKET_ID = ?");
 			pstmt.setLong(1, ticketId);
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
 				NoteContext nc = new NoteContext();
-				nc.setNoteId(rs.getLong("NOTE_ID"));
+				nc.setNoteId(rs.getLong("NOTEID"));
 				nc.setBody(rs.getString("BODY"));
 				nc.setCreationTime(rs.getLong("CREATION_TIME"));
 				notes.add(nc);
@@ -139,14 +139,14 @@ public class TicketAPI {
 		return notes;
 	}
 	
-	public static long addWorkOrderNote(long ticketId, long noteId, Connection conn) throws Exception
+	public static long addTicketNote(long ticketId, long noteId, Connection conn) throws Exception
 	{
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Long areaId = null;
 		try
 		{
-			pstmt = conn.prepareStatement("INSERT INTO Ticket_Note (TICKET_ID, NOTE_ID) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Ticket_Note (TICKET_ID, NOTEID) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1, ticketId);
 			pstmt.setLong(2, noteId);
 			

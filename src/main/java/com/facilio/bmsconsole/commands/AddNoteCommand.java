@@ -45,7 +45,7 @@ public class AddNoteCommand implements Command {
 			note.setNoteId((long) props.get("id"));
 			if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals(FacilioConstants.ContextNames.TICKET))
 			{
-				TicketAPI.addWorkOrderNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
+				TicketAPI.addTicketNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
 				if(note.getNotifyRequester())
 				{
 					JSONObject mailJson = new JSONObject();
