@@ -88,7 +88,8 @@ public class RequesterAPI {
 		RequesterContext rc = new RequesterContext();
 		rc.setEmail(rs.getString("EMAIL"));
 		rc.setName(rs.getString("NAME"));
-		
+		rc.setId(rs.getLong("REQUESTER_ID"));
+		rc.setOrgId(rs.getLong("ORGID"));
 		return rc;
 	}
 }
