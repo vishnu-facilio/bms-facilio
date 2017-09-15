@@ -706,6 +706,13 @@
 			</result>
 		</action>
 		
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
