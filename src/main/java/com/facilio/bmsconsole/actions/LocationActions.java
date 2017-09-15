@@ -7,9 +7,9 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.LocationAPI;
@@ -124,6 +124,9 @@ public class LocationActions extends ActionSupport {
 	
 	private List<LocationContext> locations = null;
 	public List<LocationContext> getLocations() {
+		return locations;
+	}
+	public List<LocationContext> getRecords() {
 		return locations;
 	}
 	public void setLocations(List<LocationContext> locations) {

@@ -82,7 +82,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			return sourceType.getIntVal();
 		}
 		else {
-			return 0;
+			return -1;
 		}
 	}
 	public void setSourceType(int type) {
@@ -125,36 +125,101 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.dueDate = dueDate;
 	}
 	
-	private long createdDate = -1;
-	public long getCreatedDate() {
-		return createdDate;
+	private long scheduledStart = -1;
+	public long getScheduledStart() {
+		return scheduledStart;
 	}
 	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
-	public void setCreatedDate(String createdDate) {
-		if(createdDate != null && !createdDate.isEmpty()) {
-			try {
-				this.createdDate = FacilioConstants.HTML5_DATE_FORMAT.parse(createdDate).getTime();
-			}
-			catch (ParseException e) {
+	public void setScheduledStart(String scheduledStart) {
+ 		if(scheduledStart != null && !scheduledStart.isEmpty()) {
+ 			try {
+				this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT.parse(scheduledStart).getTime();
+			} catch (ParseException e) {
 				try {
-					this.createdDate = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdDate).getTime();
+					this.scheduledStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(scheduledStart).getTime();
 				} catch (ParseException e1) {
 					e1.printStackTrace();
 				}
 			}
-		}
-	}
-	public void setCreatedDate(long createdDate) {
-		this.createdDate = createdDate;
+ 		}
+ 	}
+	public void setScheduledStart(long scheduledStart) {
+		this.scheduledStart = scheduledStart;
 	}
 	
-	private List<FileContext> attachments;
-	public List<FileContext> getAttachments()
+	private long estimatedEnd = -1;
+	public long getEstimatedEnd() {
+		return estimatedEnd;
+	}
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
+	public void setEstimatedEnd(String estimatedEnd) {
+ 		if(estimatedEnd != null && !estimatedEnd.isEmpty()) {
+ 			try {
+				this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(estimatedEnd).getTime();
+			} catch (ParseException e) {
+				try {
+					this.estimatedEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(estimatedEnd).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+ 		}
+ 	}
+	public void setEstimatedEnd(long estimatedEnd) {
+		this.estimatedEnd = estimatedEnd;
+	}
+	
+	private long actualWorkStart = -1;
+	public long getActualWorkStart() {
+		return actualWorkStart;
+	}
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
+	public void setActualWorkStart(String actualWorkStart) {
+ 		if(actualWorkStart != null && !actualWorkStart.isEmpty()) {
+ 			try {
+				this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkStart).getTime();
+			} catch (ParseException e) {
+				try {
+					this.actualWorkStart = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkStart).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+ 		}
+ 	}
+	public void setActualWorkStart(long actualWorkStart) {
+		this.actualWorkStart = actualWorkStart;
+	}
+	
+	private long actualWorkEnd = -1;
+	public long getActualWorkEnd() {
+		return actualWorkEnd;
+	}
+	@TypeConversion(converter = "java.lang.String", value = "java.lang.String")
+	public void setActualWorkEnd(String actualWorkEnd) {
+ 		if(actualWorkEnd != null && !actualWorkEnd.isEmpty()) {
+ 			try {
+				this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT.parse(actualWorkEnd).getTime();
+			} catch (ParseException e) {
+				try {
+					this.actualWorkEnd = FacilioConstants.HTML5_DATE_FORMAT_1.parse(actualWorkEnd).getTime();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+ 		}
+ 	}
+	public void setActualWorkEnd(long actualWorkEnd) {
+		this.actualWorkEnd = actualWorkEnd;
+	}
+	
+	private List<AttachmentContext> attachments;
+	public List<AttachmentContext> getAttachments()
 	{
 		return this.attachments;
 	}
 	
-	public void setAttachments(List<FileContext> attachments)
+	public void setAttachments(List<AttachmentContext> attachments)
 	{
 		this.attachments = attachments;
 	}
@@ -165,22 +230,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setSpace(BaseSpaceContext space) {
 		this.space = space;
-	}
-	
-	private ScheduleContext schedule;
-	public ScheduleContext getSchedule() {
-		return schedule;
-	}
-	public void setSchedule(ScheduleContext schedule) {
-		this.schedule = schedule;
-	}
-	
-	private long scheduleId = -1;
-	public long getScheduleId() {
-		return scheduleId;
-	}
-	public void setScheduleId(long scheduleId) {
-		this.scheduleId = scheduleId;
 	}
 	
 	public static enum SourceType {

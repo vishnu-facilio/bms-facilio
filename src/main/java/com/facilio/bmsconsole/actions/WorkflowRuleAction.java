@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;

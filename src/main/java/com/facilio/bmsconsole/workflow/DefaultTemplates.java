@@ -9,8 +9,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.fw.OrgInfo;
-
 public enum DefaultTemplates implements ActionTemplate {
 	WORKORDER_ASSIGN(1),
 	WORKORDER_ACTIVITY_FOLLOWUP(2)

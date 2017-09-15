@@ -33,6 +33,16 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogin">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
@@ -88,7 +98,7 @@
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,setup,locations,locations\[\d+\],locations\[\d+\].*</param>
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userPickList">
@@ -104,7 +114,12 @@
 		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,skills,skills\[\d+\],skills\[\d+\].*</param>
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
+			<result name="success" type="json">
+				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
@@ -135,6 +150,49 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
+			</result>
+		</action>
+	</package>
+	<package name="taskApi" namespace="/api/task" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">taskId</param>
+			</result>
+		</action>
+		
+		<action name="assign" class="com.facilio.bmsconsole.actions.TaskAction" method="assignTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction" method="updateStatus">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="updateTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.TaskAction" method="deleteTask">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 	</package>
@@ -243,6 +301,16 @@
 	</action>
 	
 	<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<param name="permission">WORKORDER_READ</param>
+		<result name="success">/jsps/listview.jsp</result>
+	</action>
+	
+	<action name="workorderrequest" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+		<param name="permission">WORKORDER_READ</param>
+		<result name="success">/jsps/listview.jsp</result>
+	</action>
+	
+	<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
 		<param name="permission">WORKORDER_READ</param>
 		<result name="success">/jsps/listview.jsp</result>
 	</action>
@@ -585,13 +653,6 @@
 			</result>
 		</action>
 		
-		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="approveWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
@@ -605,6 +666,92 @@
 			<result name="success" type="json">
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
+		</action>
+	</package>
+	
+	<package name="workOrderRequest" namespace="/app/workorderrequest" extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success">/jsps/newForm.jsp</result>
+			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequestId</param>
+			</result>
+		</action>
+		
+		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="workOrderRequestApi" namespace="/api/workorderrequest" extends="home">
+	
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequestId</param>
+			</result>
+		</action>
+		
+		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="workOrderRequestSummary" namespace="/app/workorderrequest/summary" extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="workOrderRequestId">{1}</param>
+			<result name="success">/jsps/recordsummary.jsp</result>
+		</action>
+	</package>
+	
+	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary" extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="workOrderRequestId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorderrequest.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="alarm" namespace="/app/alarm" extends="home">
+		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction" method="assignAlarm">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+	
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
 	
@@ -1135,14 +1282,26 @@
 	
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
 		<action name="addFromMail"
 			class="com.facilio.bmsconsole.actions.SupportMailParseAction">
-			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="json">
-				<param name="enableSMD">true</param>
-			</interceptor-ref>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderId</param>
+			</result>
+		</action>
+		
+		<action name="addAlarm"
+			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarm">
+			<result name="success" type="json">
+				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
 	</package>

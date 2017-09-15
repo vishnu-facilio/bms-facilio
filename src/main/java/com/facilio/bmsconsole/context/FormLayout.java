@@ -14,7 +14,11 @@ public class FormLayout {
 		List<NewPanel> panels =new ArrayList<NewPanel>();
 		
 		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		panels.add(first);
+		
 		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		panels.add(second);
+		
 		FacilioField requesterEmail = new FacilioField();
 		requesterEmail.setName("email");
 		requesterEmail.setDisplayName("Requester Email");
@@ -24,12 +28,28 @@ public class FormLayout {
 		requesterEmail.setDefault(true);
 		second.addField(requesterEmail);
 		
+
+		NewPanel third =  new NewPanel(NewPanel.Type.FULL).setTitle("Scheduling");
+		panels.add(third);
+		
+		NewPanel fourth =  new NewPanel(NewPanel.Type.HALF);
+		panels.add(fourth);
+		
+		NewPanel fifth =  new NewPanel(NewPanel.Type.HALF);
+		panels.add(fifth);
+		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("scheduleId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester")) {
+			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester") || field.getName().equals("createdTime")) {
 				continue;
 			}
-			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("createdDate") || field.getName().equals("assignmentGroup")) {
+			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("space") || field.getName().equals("assignmentGroup") ) {
 				first.addField(field);
+			}
+			else if(field.getName().equals("scheduledStart") || field.getName().equals("actualWorkStart")){
+				fourth.addField(field);
+			}
+			else if(field.getName().equals("estimatedEnd") || field.getName().equals("actualWorkEnd")) {
+				fifth.addField(field);
 			}
 			else {
 				second.addField(field);
@@ -43,55 +63,6 @@ public class FormLayout {
 		sendForApproval.setModuleName("ticket");
 		sendForApproval.setDefault(true);
 		first.addField(sendForApproval);
-		panels.add(first);
-		panels.add(second);
-		
-		NewPanel third =  new NewPanel(NewPanel.Type.FULL).setTitle("Scheduling");
-		panels.add(third);
-		
-		NewPanel fourth =  new NewPanel(NewPanel.Type.HALF);
-		FacilioField scheduleStart = new FacilioField();
-		scheduleStart.setName("scheduledStart");
-		scheduleStart.setDisplayName("Scheduled Start");
-		scheduleStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
-		scheduleStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		scheduleStart.setModuleName("ticket.schedule");
-		scheduleStart.setDefault(true);
-		fourth.addField(scheduleStart);
-	 
-		FacilioField actualWorkStart = new FacilioField();
-		actualWorkStart.setName("actualWorkStart");
-		actualWorkStart.setDisplayName("Actual Work Start");
-		actualWorkStart.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
-		actualWorkStart.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		actualWorkStart.setModuleName("ticket.schedule");
-		actualWorkStart.setDefault(true);
-		fourth.addField(actualWorkStart);
-		panels.add(fourth);
-		
-		NewPanel fifth =  new NewPanel(NewPanel.Type.HALF);
-		FacilioField estimatedEnd = new FacilioField();
-		estimatedEnd.setName("estimatedEnd");
-		estimatedEnd.setDisplayName("Estimated End");
-		estimatedEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
-		estimatedEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		estimatedEnd.setModuleName("ticket.schedule");
-		estimatedEnd.setDefault(true);
-		fifth.addField(estimatedEnd);
-	 
-		FacilioField actualWorkEnd = new FacilioField();
-		actualWorkEnd.setName("actualWorkEnd");
-		actualWorkEnd.setDisplayName("Actual Work End");
-		actualWorkEnd.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
-		actualWorkEnd.setDataType(com.facilio.bmsconsole.modules.FieldType.DATE_TIME);
-		actualWorkEnd.setModuleName("ticket.schedule");
-		actualWorkEnd.setDefault(true);
-		fifth.addField(actualWorkEnd);
-		panels.add(fifth);
-		
-//		Panel third =  new Panel(Panel.Type.FULL);
-//		third.add(new Field("Attachments","inputAttachment","attachmentId",Field.FieldType.FILE).setIcon("fa fa-paperclip").setFileField(new FileField().setDisplayType(FileField.DISPLAY_TYPE_SECTION)));
-//		panels.add(third);
 		
 		return panels;
 		

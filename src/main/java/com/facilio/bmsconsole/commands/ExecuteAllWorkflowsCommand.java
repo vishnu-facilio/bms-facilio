@@ -25,7 +25,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
@@ -36,36 +35,39 @@ public class ExecuteAllWorkflowsCommand implements Command
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(record != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId = modBean.getModule("workorder").getModuleId();
+			long moduleId = modBean.getModule(moduleName).getModuleId();
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-			List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
-			
-			Map<String, Object> placeHolders = new HashMap<>();
-			appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
-			appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-			appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
-			if(workflowRules != null) {
-				for(WorkflowRuleContext workflowRule : workflowRules)
-				{
-					Criteria criteria = workflowRule.getCriteria();
-					boolean flag = criteria.computePredicate().evaluate(record);
-					if(flag)
+			if(eventType != null) {
+				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
+				
+				if(workflowRules != null && workflowRules.size() > 0) {
+					Map<String, Object> placeHolders = new HashMap<>();
+					appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
+					appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+					appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+					
+					for(WorkflowRuleContext workflowRule : workflowRules)
 					{
-						long workflowRuleId = workflowRule.getId();
-						List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
-						if(actions != null) {
-							for(ActionContext action : actions)
-							{
-								ActionTemplate template = action.getTemplate();
-								if(template != null) {
-									JSONObject actionObj = template.getTemplate(placeHolders);
-									action.getActionType().performAction(actionObj);
+						Criteria criteria = workflowRule.getCriteria();
+						boolean flag = criteria.computePredicate().evaluate(record);
+						if(flag)
+						{
+							long workflowRuleId = workflowRule.getId();
+							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
+							if(actions != null) {
+								for(ActionContext action : actions)
+								{
+									ActionTemplate template = action.getTemplate();
+									if(template != null) {
+										JSONObject actionObj = template.getTemplate(placeHolders);
+										action.getActionType().performAction(actionObj);
+									}
 								}
 							}
 						}
 					}
-				}
+				}	
 			}
 		}
 		return false;

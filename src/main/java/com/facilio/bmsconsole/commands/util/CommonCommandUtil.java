@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.ScheduleContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -13,17 +12,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fw.OrgInfo;
 
 public class CommonCommandUtil {
-	public static ScheduleContext getScheduleContextFromRS(ResultSet rs) throws SQLException {
-		ScheduleContext sc = new ScheduleContext();
-		sc.setScheduleId(rs.getLong("SCHEDULEID"));
-		sc.setOrgId(rs.getLong("ORGID"));
-		sc.setScheduledStartFromTimestamp(rs.getLong("SCHEDULED_START"));
-		sc.setEstimatedEndFromTimestamp(rs.getLong("ESTIMATED_END"));
-		sc.setActualWorkStartFromTimestamp(rs.getLong("ACTUAL_WORK_START"));
-		sc.setActualWorkEndFromTimestamp(rs.getLong("ACTUAL_WORK_END"));
-		return sc;
-	}
-	
 	public static NoteContext getNoteContextFromRS(ResultSet rs) throws SQLException {
 		NoteContext context = new NoteContext();
 		context.setNoteId(rs.getLong("NOTEID"));

@@ -49,10 +49,6 @@ public class AddRequesterCommand implements Command {
 				requester.setRequesterId((long) requesterMap.get("requesterId"));
 			}
 		}
-		else 
-		{
-			throw new IllegalArgumentException("Requester Object cannot be null");
-		}
 		return false;
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
-public class GetWorkOrderListCommand implements Command {
+public class GetWorkOrderRequestListCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -25,11 +25,11 @@ public class GetWorkOrderListCommand implements Command {
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+		SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
 														.connection(conn)
 														.table(dataTableName)
 														.moduleName(moduleName)
-														.beanClass(WorkOrderContext.class)
+														.beanClass(WorkOrderRequestContext.class)
 														.select(fields)
 														.orderBy("ID");
 
@@ -45,9 +45,10 @@ public class GetWorkOrderListCommand implements Command {
 			}
 		}
 		
-		List<WorkOrderContext> workOrders = builder.get();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		List<WorkOrderRequestContext> workOrderRequests = builder.get();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
 		
 		return false;
 	}
+
 }

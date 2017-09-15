@@ -17,15 +17,19 @@ public class LoginUtil {
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
 	public static UserInfo getUserInfo(CognitoUser cognitoUser) throws Exception {
-		return getUserInfo(null,cognitoUser);
+		return getUserInfo(null, cognitoUser, false);
 	}
 	
-	public static UserInfo getUserInfo(String threadpoolname,CognitoUser cognitoUser) throws Exception {
+	public static UserInfo getUserInfo(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
+		return getUserInfo(null, cognitoUser, addUserEntryIfNotExists);
+	}
+	
+	public static UserInfo getUserInfo(String threadpoolname, CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
 		
 		UserInfo userInfo = new UserInfo();
 		
 		UserContext usrCtx = UserAPI.getUser(cognitoUser.getEmail());
-		if (usrCtx == null) {
+		if (usrCtx == null && addUserEntryIfNotExists) {
 			
 			JSONObject userAttributes = CognitoUtil.getUserAttributes(cognitoUser.getEmail());
 			if (userAttributes == null) {
@@ -51,12 +55,14 @@ public class LoginUtil {
 		userInfo.setTimeZone(cognitoUser.getTimezone());
 		userInfo.setAdditionalProps(cognitoUser.getAdditionalProps());
 		
-		userInfo.setUserId(usrCtx.getUserId());
-		userInfo.setOrgUserId(usrCtx.getOrgUserId());
-		userInfo.setOrgId(usrCtx.getOrgId());
-		userInfo.setName(usrCtx.getName());
-		userInfo.setActive(usrCtx.getUserStatus());
-		userInfo.setRole(usrCtx.getRole());
+		if (usrCtx != null) {
+			userInfo.setUserId(usrCtx.getUserId());
+			userInfo.setOrgUserId(usrCtx.getOrgUserId());
+			userInfo.setOrgId(usrCtx.getOrgId());
+			userInfo.setName(usrCtx.getName());
+			userInfo.setActive(usrCtx.getUserStatus());
+			userInfo.setRole(usrCtx.getRole());
+		}
 		return userInfo;
 	}
 	

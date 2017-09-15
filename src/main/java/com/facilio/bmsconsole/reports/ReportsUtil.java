@@ -291,15 +291,15 @@ public class ReportsUtil
 					String key_2=meta.getColumnLabel(2);
 					String key_3=meta.getColumnLabel(3);
 					
-					String timeKey =rs.getObject(key_1).toString();
-					long deviceId = (Long)rs.getObject(key_2);
+					long deviceId = (Long)rs.getObject(key_1);
+					String timeKey =rs.getObject(key_2).toString();
 					String reqData =rs.getObject(key_3).toString();
 					
 					//currently this is expensive as we are hitting the db.. later it will return from cache..
 					String deviceName=getDeviceName(deviceId);
 					
-					data.put(key_1, timeKey);
-					data.put(key_2, deviceName);
+					data.put(key_1, deviceName);
+					data.put(key_2, timeKey);
 					data.put(key_3, reqData);
 					
 					logger.log(Level.INFO, rs.getRow()+": Row data: "+data);
@@ -372,11 +372,7 @@ public class ReportsUtil
 	//generic..
 	private static int getDeviceCount(Long...deviceId)
 	{
-		int deviceCount=0;
-		if(deviceId!=null){
-			deviceCount=deviceId.length;
-		}
-		return deviceCount;
+		return (deviceId==null)?0:deviceId.length;
 	}
 	
 	//generic..
@@ -835,8 +831,7 @@ public class ReportsUtil
 	private static HashMap<String, StringBuilder> getFields(int size,StringBuilder fetchColumn, StringBuilder betweenCol)
 	{
 		HashMap<String, StringBuilder> queryFields = new HashMap<String, StringBuilder>();
-		StringBuilder dataSelect = new StringBuilder(fieldsDevice).append(separator).append(fetchColumn);
-		queryFields.put("selectFields",dataSelect);
+		queryFields.put("selectFields",fetchColumn);
 		queryFields.put("table", FacilioConstants.Reports.ENERGY_TABLE);
 		queryFields.put("betweenColumn", betweenCol);
 		if(size!=0)

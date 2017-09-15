@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -79,14 +80,77 @@ public class TaskAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
-		if(ticket.getSchedule() != null && ticket.getSchedule().getScheduledStart() != 0) {
-			context.put(FacilioConstants.ContextNames.SCHEDULE_OBJECT, ticket.getSchedule());
-		}
-		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		
 		setTaskId(task.getId());
+		
+		return SUCCESS;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+	
+	private int rowsUpdated;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
+	}
+	
+	public String assignTask() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASK, task);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+		updateTask.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String updateStatus() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASK, task);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+		updateTask.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String updateTask() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASK, task);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
+		updateTask.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteTask() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Command deleteTask = FacilioChainFactory.getDeleteTaskChain();
+		deleteTask.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
 		return SUCCESS;
 	}
