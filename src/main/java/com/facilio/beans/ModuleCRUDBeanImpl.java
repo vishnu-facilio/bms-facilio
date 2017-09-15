@@ -20,7 +20,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			
-			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderWithTicketChain();
 			addWorkOrder.execute(context);
 			return workorder.getId();
 		}
