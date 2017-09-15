@@ -1,25 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class GetWorkOrderListCommand implements Command {
 
