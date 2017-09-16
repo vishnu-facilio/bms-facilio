@@ -76,16 +76,8 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String updateWorkOrderRequest() throws Exception {
 		
-		workorderrequest.setTicket(ticket);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderRequestChain();
-		updateWorkOrder.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return SUCCESS;
+		return updateWorkOrderRequest(context);
 	}
 	
 	private String updateWorkOrderRequest(FacilioContext context) throws Exception {

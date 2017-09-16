@@ -85,11 +85,17 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			return -1;
 		}
 	}
+	public String getSourceTypeVal() {
+		if(sourceType != null) {
+			sourceType.getStringVal();
+		}
+		return null;
+	}
 	public void setSourceType(int type) {
 		this.sourceType = SourceType.typeMap.get(type);
 	}
-	public SourceType getSourceTypeEnum() {
-		return sourceType;
+	public void setSourceType(SourceType type) {
+		this.sourceType = type;
 	}
 		
 	private long assetId = -1;
@@ -281,7 +287,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		
 		WEB(1, "Web"),
 		EMAIL(2, "E Mail"),
-		SMS(3, "SMS")
+		SMS(3, "SMS"),
+		ALARM(4, "Alarm")
 		;
 		
 		private int intVal;
