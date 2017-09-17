@@ -107,7 +107,10 @@ public class SQLScriptRunner {
 			if(substitutor != null) {
 				sql = substitutor.replace(command.toString());
 			}
-			
+			else {
+				sql = command.toString();
+			}
+					
 			hasResults = stmt.execute(sql);
 			
 			rs = stmt.getResultSet();
