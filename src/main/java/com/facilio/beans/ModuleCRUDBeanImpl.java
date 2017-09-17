@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
@@ -38,6 +39,22 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
 			addAlarmChain.execute(context);
 			return alarm.getId();
+		}
+		return -1;
+	}
+
+	@Override
+	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception {
+		// TODO Auto-generated method stub
+		if(workOrderRequest != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.TICKET, workOrderRequest.getTicket());
+			context.put(FacilioConstants.ContextNames.REQUESTER, workOrderRequest.getRequester());
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderRequest);
+			
+			Command addWorkOrderRequest = FacilioChainFactory.getAddWorkOrderRequestChain();
+			addWorkOrderRequest.execute(context);
+			return workOrderRequest.getId();
 		}
 		return -1;
 	}

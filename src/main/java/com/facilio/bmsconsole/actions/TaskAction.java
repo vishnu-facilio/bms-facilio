@@ -105,34 +105,21 @@ public class TaskAction extends ActionSupport {
 	}
 	
 	public String assignTask() throws Exception {
-		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TASK, task);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-		updateTask.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return SUCCESS;
+		return updateTask(context);
 	}
 	
 	public String updateStatus() throws Exception {
-		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TASK, task);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateTask = FacilioChainFactory.getUpdateTaskChain();
-		updateTask.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return SUCCESS;
+		return updateTask(context);
 	}
 	
 	public String updateTask() throws Exception {
-		
 		FacilioContext context = new FacilioContext();
+		return updateTask(context);
+	}
+	
+	private String updateTask(FacilioContext context) throws Exception {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		

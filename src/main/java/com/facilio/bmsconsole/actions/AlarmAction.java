@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -52,7 +53,8 @@ public class AlarmAction extends ActionSupport {
 		TicketContext ticket = new TicketContext();
 		ticket.setSubject("Alarm "+Math.round(Math.random()*100));
 		ticket.setDescription("ddd");
-		ticket.setScheduledStart(System.currentTimeMillis());
+		ticket.setSourceType(TicketContext.SourceType.ALARM);
+//		ticket.setScheduledStart(System.currentTimeMillis());
 		alarm.setTicket(ticket);
 		
 		return alarm;
@@ -85,6 +87,7 @@ public class AlarmAction extends ActionSupport {
 	public String assignAlarm() throws Exception {
 		FacilioContext context = new FacilioContext();
 		//set Event
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_ALARM);
 		return updateAlarm(context);
 	}
 	

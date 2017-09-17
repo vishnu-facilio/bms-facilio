@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetWorkOrderRequestCommand implements Command {
@@ -38,6 +39,8 @@ public class GetWorkOrderRequestCommand implements Command {
 				WorkOrderRequestContext workOrderRequest = workOrderRequests.get(0);
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
+				
+				TicketAPI.loadRelatedModules(workOrderRequest.getTicket(), conn);
 			}
 		}
 		else {

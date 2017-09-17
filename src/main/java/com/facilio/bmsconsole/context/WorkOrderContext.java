@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
-import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +24,14 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 		this.requester = requester;
 	}
 	
+	private long woId;
+	public long getWoId() {
+		return woId;
+	}
+	public void setWoId(long woId) {
+		this.woId = woId;
+	}
+	
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;
@@ -46,30 +53,6 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	}
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
-	}
-	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
-		return this.tasks;
-	}
-	public void setTasks(List<TaskContext> tasks) {
-		this.tasks = tasks;
-	}
-	
-	private List<NoteContext> notes;
-	public List<NoteContext> getNotes() {
-		return this.notes;
-	}
-	public void setNotes(List<NoteContext> notes){
-		this.notes = notes;
-	}
-	
-	private List<AttachmentContext> attachments;
-	public void setAttachments(List<AttachmentContext> attachments) {
-		this.attachments = attachments;
-	}
-	public List<AttachmentContext> getAttachments() {
-		return this.attachments;
 	}
 	
 	public String getUrl() {

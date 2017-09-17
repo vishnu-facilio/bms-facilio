@@ -15,14 +15,14 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.ticket = ticket;
 	}
 	
-	private WorkOrderContext parentWorkOrder;
-	public WorkOrderContext getParentWorkOrder() {
-		return parentWorkOrder;
+	private long parentTicketId = -1;
+	public long getParentTicketId() {
+		return parentTicketId;
 	}
-	public void setParentWorkOrder(WorkOrderContext parentWorkOrder) {
-		this.parentWorkOrder = parentWorkOrder;
+	public void setParentTicketId(long parentTicketId) {
+		this.parentTicketId = parentTicketId;
 	}
-	
+
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;

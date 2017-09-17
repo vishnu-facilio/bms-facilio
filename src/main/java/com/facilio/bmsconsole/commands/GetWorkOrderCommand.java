@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetWorkOrderCommand implements Command {
@@ -42,9 +41,7 @@ public class GetWorkOrderCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
-				workOrder.setTasks(WorkOrderAPI.getRelatedTasks(workOrderId, conn));
-				workOrder.setNotes(WorkOrderAPI.getRelatedNotes(workOrderId, conn));
-				workOrder.setAttachments(TicketAPI.getRelatedAttachments(workOrder.getTicket().getId(), conn));
+				TicketAPI.loadRelatedModules(workOrder.getTicket(), conn);
 			}
 		}
 		else {

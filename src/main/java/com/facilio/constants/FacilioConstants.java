@@ -405,14 +405,14 @@ public class FacilioConstants {
 		public static final String RESULT = "result";
 		
 		public static String getPKColumn(String module) {
-			if ("Tickets".equalsIgnoreCase(module)) {
+			if (TICKET.equalsIgnoreCase(module)) {
 				return "TICKET_ID";
 			}
 			return "TICKET_ID";
 		}
 		
 		public static String getAttachmentTableName(String module) {
-			if ("Tickets".equalsIgnoreCase(module)) {
+			if (TICKET.equalsIgnoreCase(module)) {
 				return "Ticket_Attachment";
 			}
 			return "Ticket_Attachment";

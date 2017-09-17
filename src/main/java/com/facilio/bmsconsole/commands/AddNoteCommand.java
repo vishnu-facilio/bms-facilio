@@ -11,7 +11,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -43,9 +43,9 @@ public class AddNoteCommand implements Command {
 													.addRecord(props);
 			builder.save();
 			note.setNoteId((long) props.get("id"));
-			if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals("workorder"))
+			if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals(FacilioConstants.ContextNames.TICKET))
 			{
-				WorkOrderAPI.addWorkOrderNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
+				TicketAPI.addTicketNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
 				if(note.getNotifyRequester())
 				{
 					JSONObject mailJson = new JSONObject();

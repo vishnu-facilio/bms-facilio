@@ -85,11 +85,17 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 			return -1;
 		}
 	}
+	public String getSourceTypeVal() {
+		if(sourceType != null) {
+			sourceType.getStringVal();
+		}
+		return null;
+	}
 	public void setSourceType(int type) {
 		this.sourceType = SourceType.typeMap.get(type);
 	}
-	public SourceType getSourceTypeEnum() {
-		return sourceType;
+	public void setSourceType(SourceType type) {
+		this.sourceType = type;
 	}
 		
 	private long assetId = -1;
@@ -125,6 +131,38 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.dueDate = dueDate;
 	}
 	
+	private int noOfNotes;
+	public int getNoOfNotes() {
+		return noOfNotes;
+	}
+	public void setNoOfNotes(int noOfNotes) {
+		this.noOfNotes = noOfNotes;
+	}
+	
+	private int noOfAttachments;
+	public int getNoOfAttachments() {
+		return noOfAttachments;
+	}
+	public void setNoOfAttachments(int noOfAttachments) {
+		this.noOfAttachments = noOfAttachments;
+	}
+	
+	private int noOfTasks;
+	public int getNoOfTasks() {
+		return noOfTasks;
+	}
+	public void setNoOfTasks(int noOfTasks) {
+		this.noOfTasks = noOfTasks;
+	}
+	
+	private int noOfClosedTasks;
+	public int getNoOfClosedTasks() {
+		return noOfClosedTasks;
+	}
+	public void setNoOfClosedTasks(int noOfClosedTasks) {
+		this.noOfClosedTasks = noOfClosedTasks;
+	}
+
 	private long scheduledStart = -1;
 	public long getScheduledStart() {
 		return scheduledStart;
@@ -213,17 +251,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.actualWorkEnd = actualWorkEnd;
 	}
 	
-	private List<AttachmentContext> attachments;
-	public List<AttachmentContext> getAttachments()
-	{
-		return this.attachments;
-	}
-	
-	public void setAttachments(List<AttachmentContext> attachments)
-	{
-		this.attachments = attachments;
-	}
-	
 	private BaseSpaceContext space;
 	public BaseSpaceContext getSpace() {
 		return space;
@@ -232,11 +259,36 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.space = space;
 	}
 	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return this.tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
+	}
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes() {
+		return this.notes;
+	}
+	public void setNotes(List<NoteContext> notes){
+		this.notes = notes;
+	}
+	
+	private List<AttachmentContext> attachments;
+	public void setAttachments(List<AttachmentContext> attachments) {
+		this.attachments = attachments;
+	}
+	public List<AttachmentContext> getAttachments() {
+		return this.attachments;
+	}
+	
 	public static enum SourceType {
 		
 		WEB(1, "Web"),
 		EMAIL(2, "E Mail"),
-		SMS(3, "SMS")
+		SMS(3, "SMS"),
+		ALARM(4, "Alarm")
 		;
 		
 		private int intVal;

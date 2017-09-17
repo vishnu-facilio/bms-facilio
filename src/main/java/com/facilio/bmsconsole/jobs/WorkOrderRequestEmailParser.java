@@ -17,7 +17,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.fw.BeanFactory;
@@ -27,13 +27,13 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.transaction.FacilioConnectionPool;
 
-public class WorkOrderEmailParser extends FacilioJob {
+public class WorkOrderRequestEmailParser extends FacilioJob {
 
 	public static final String S3_BUCKET_NAME = "ses-support-mail-parser";
 	
 	private Map<String, Object> updateIsProcessed = new HashMap<>();
 	
-	public WorkOrderEmailParser() {
+	public WorkOrderRequestEmailParser() {
 		// TODO Auto-generated constructor stub
 		updateIsProcessed.put("isProcessed", true);
 	}
@@ -41,12 +41,12 @@ public class WorkOrderEmailParser extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
-		System.out.println("Workorder Email Parser");
+		System.out.println("Workorder Request Email Parser");
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.connection(conn)
 															.select(FieldFactory.getWorkorderEmailFields())
-															.table("WorkOrder_EMail")
+															.table("WorkOrderRequest_EMail")
 															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
 			List<Map<String, Object>> emailProps = selectBuilder.get();
 			StringBuilder idsToBeRemoved = new StringBuilder("ID in (");
@@ -56,7 +56,7 @@ public class WorkOrderEmailParser extends FacilioJob {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						createWorkOrder(rawEmail);
+						createWorkOrderRequest(rawEmail);
 						if(!isEmpty) {
 							idsToBeRemoved.append(", ");
 						}
@@ -87,18 +87,18 @@ public class WorkOrderEmailParser extends FacilioJob {
 		}
 	}
 	
-	private void createWorkOrder(S3Object rawEmail) throws Exception {
+	private void createWorkOrderRequest(S3Object rawEmail) throws Exception {
 		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
 		MimeMessageParser parser = new MimeMessageParser(emailMsg);
 		parser.parse();
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
 		
 		if(supportEmail != null) {
-			WorkOrderContext workOrder = new WorkOrderContext();
+			WorkOrderRequestContext workOrderRequest = new WorkOrderRequestContext();
 			
 			RequesterContext requester = new RequesterContext();
 			requester.setEmail(parser.getFrom());
-			workOrder.setRequester(requester);
+			workOrderRequest.setRequester(requester);
 			
 			TicketContext ticket = new TicketContext();
 			ticket.setSubject(parser.getSubject());
@@ -107,10 +107,10 @@ public class WorkOrderEmailParser extends FacilioJob {
 				ticket.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
 			
-			workOrder.setTicket(ticket);
+			workOrderRequest.setTicket(ticket);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrder(workOrder));
+			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));
 		}
 	}
 	
