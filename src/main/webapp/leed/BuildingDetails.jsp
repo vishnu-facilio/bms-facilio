@@ -38,10 +38,19 @@ Welcome to BuildingDetails
 				<td>Floors : </td>
    				<td><s:property value="building.floors" /></td>
    				</tr>
+				<tr>
+				<td>UtilityProviders : </td>
+   				<td><s:property value="building.utilityProviders[0].name" /></td>
+   				</tr>
 				
 	
 
 	</tbody>
 </table>
+<div>
+<s:iterator var="utilityProvider" value="building.utilityProviders" >
+	<s:property value="#utilityProvider.name" />
+</s:iterator>
+</div>
 </body>
 </html>

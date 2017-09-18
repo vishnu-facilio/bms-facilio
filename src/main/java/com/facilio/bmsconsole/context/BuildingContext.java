@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.leed.context.UtilityProviderContext;
 
 public class BuildingContext extends ModuleBaseWithCustomFields {
 	
@@ -66,5 +70,14 @@ public class BuildingContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFloors(int floors) {
 		this.floors = floors;
+	}
+	
+	private List<UtilityProviderContext> utilityProviders = new ArrayList<>();
+	public List<UtilityProviderContext> getUtilityProviders() {
+		return this.utilityProviders;
+	}
+	
+	public void setUtilityProviders(List<UtilityProviderContext> utilityProviders) {
+		this.utilityProviders = utilityProviders;
 	}
 }
