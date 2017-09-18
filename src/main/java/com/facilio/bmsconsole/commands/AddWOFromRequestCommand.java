@@ -41,6 +41,7 @@ public class AddWOFromRequestCommand implements Command {
 																	.moduleName(moduleName)
 																	.beanClass(WorkOrderRequestContext.class)
 																	.select(fields)
+																	.andCondition(idCondition)
 																	.orderBy("ID");
 			
 			List<WorkOrderRequestContext> workOrderRequests = builder.get();
