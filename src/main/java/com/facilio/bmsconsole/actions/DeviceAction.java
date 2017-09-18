@@ -24,12 +24,17 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.device.Device;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.constants.FacilioConstants.Reports;
+import com.facilio.constants.FacilioConstants.Reports.Energy;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -492,4 +497,38 @@ public class DeviceAction extends ActionSupport
 			}
 		}
 	}
+	public String getDevices() throws Exception 
+	{
+		System.out.println("::::GetDevices");
+		List<Device> allDevice=DeviceAPI.getDevices();
+		setDeviceList(allDevice);
+		//setEnergyContsant();
+		return SUCCESS;
+	}
+	private List<Device> deviceList = null;
+	
+	public List<Device> getDeviceList() {
+		return deviceList;
+	}
+	public void setDeviceList(List<Device> deviceList) {
+		this.deviceList = deviceList;
+		System.out.println("SetReport:"+this.deviceList);
+		
+	}
+	private Map<String, Integer> energyContsant;
+	
+	public void setEnergyContsant(Map<String, Integer> energyContsant) {
+		this.energyContsant = energyContsant;
+	}
+	
+	public Map<String, Integer> getEnergyConstant()
+    {
+		//System.out.println(FieldUtil.<Energy>getAsProperties(Energy));
+    		return Energy.Energy_Data;
+    }
+	public Map<String, Integer> getDateFilter()
+    {
+		//System.out.println(FieldUtil.<Energy>getAsProperties(Energy));
+    		return Reports.DateFilter;
+    }
 }
