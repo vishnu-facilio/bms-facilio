@@ -151,6 +151,7 @@ public class ImportMetaInfo
 			fields.add("PHASE_ENERGY_R");
 			fields.add("PHASE_ENERGY_Y");
 			fields.add("PHASE_ENERGY_B");
+			fields.add("Device_id");
 			
 			return fields;
 		}

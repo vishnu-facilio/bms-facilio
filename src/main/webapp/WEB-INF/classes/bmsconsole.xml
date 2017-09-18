@@ -767,17 +767,31 @@
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
-			</result>
-		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+ 			</result>
+ 		</action>
+ 		
+ 		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
+ 			</result>
+ 		</action>
+ 	</package>
+	
+	<package name="reportsApi" namespace="/api/report" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="reportdata">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-	</package>
-	
+	</package>	
+	<package name="devicesApi" namespace="/api/device" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+			<result name="success" type="json">
+				<param name="includeProperties">^deviceList.*,energyConstant.*,dateFilter.*</param>
+			</result>
+		</action>
+	</package>	
 	<package name="campusApi" namespace="/api/campus" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
@@ -793,6 +807,7 @@
 			</result>
 		</action>
 	</package>
+	
 	
 	<package name="buildingApi" namespace="/api/building" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">

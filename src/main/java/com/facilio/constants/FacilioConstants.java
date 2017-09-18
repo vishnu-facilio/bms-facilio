@@ -493,6 +493,36 @@ public class FacilioConstants {
 		public static final int CUSTOM_WITH_DATE  = 17;
 		public static final int CUSTOM_WITH_WEEK  = 18 ;
 		public static final int CUSTOM_WITH_MONTH = 19;
+		public static final Map<String, Integer> DateFilter = new HashMap<>();
+		static {
+			 DateFilter.put("THIS_HOUR",THIS_HOUR);
+				DateFilter.put("LAST_HOUR",LAST_HOUR);
+				
+				DateFilter.put("TODAY",TODAY);
+				DateFilter.put("YESTERDAY",YESTERDAY);
+				
+				DateFilter.put("THIS_WEEK",THIS_WEEK);
+				DateFilter.put("LAST_WEEK",LAST_WEEK);
+				
+				DateFilter.put("THIS_MONTH",THIS_MONTH);
+				DateFilter.put("LAST_MONTH",LAST_MONTH);
+				
+				DateFilter.put("LAST_7_DAYS",LAST_7_DAYS);
+				DateFilter.put("LAST_30_DAYS",LAST_30_DAYS);
+				
+				DateFilter.put("THIS_YEAR",THIS_YEAR);
+				DateFilter.put("LAST_YEAR",LAST_YEAR);
+				
+				DateFilter.put("THIS_MONTH_WITH_WEEK ",THIS_MONTH_WITH_WEEK);
+				DateFilter.put("LAST_MONTH_WITH_WEEK",LAST_MONTH_WITH_WEEK);
+				
+				DateFilter.put("THIS_YEAR_WITH_WEEK ",THIS_YEAR_WITH_WEEK);
+				DateFilter.put("LAST_YEAR_WITH_WEEK",LAST_YEAR_WITH_WEEK);
+				
+				DateFilter.put("CUSTOM_WITH_DATE",CUSTOM_WITH_DATE);
+				DateFilter.put("CUSTOM_WITH_WEEK",CUSTOM_WITH_WEEK);
+				DateFilter.put("CUSTOM_WITH_MONTH",CUSTOM_WITH_MONTH);
+		}
 		
 		
 		public static class Energy
@@ -587,9 +617,96 @@ public class FacilioConstants {
 			
 			public static final int FREQUENCY_B=59;
 			public static final int FREQUENCY_B_AVERAGE=60;
+			public static final Map<String, Integer> Energy_Data = new HashMap<>();
+			
+			static 
+			{
+				Energy_Data.put("TOTAL ENERGY CONSUMPTION DELTA", TOTAL_ENERGY_CONSUMPTION_DELTA);
+				Energy_Data.put("TOTAL ENERGY CONSUMPTION DELTA SUM",TOTAL_ENERGY_CONSUMPTION_DELTA_SUM);
+				Energy_Data.put("TOTAL_ENERGY_CONSUMPTION_DELTA_COST",TOTAL_ENERGY_CONSUMPTION_DELTA_COST);
+				
+				Energy_Data.put("PHASE_ENERGY_R_DELTA",PHASE_ENERGY_R_DELTA);
+				Energy_Data.put("PHASE_ENERGY_R_DELTA_SUM" , PHASE_ENERGY_R_DELTA_SUM);
+			    Energy_Data.put("PHASE_ENERGY_R_DELTA_COST",PHASE_ENERGY_R_DELTA_COST);
+				Energy_Data.put("PHASE_ENERGY_Y_DELTA",PHASE_ENERGY_Y_DELTA);
+				Energy_Data.put("PHASE_ENERGY_Y_DELTA_SUM",PHASE_ENERGY_Y_DELTA_SUM);
+				Energy_Data.put("PHASE_ENERGY_Y_DELTA_COST",PHASE_ENERGY_Y_DELTA_COST);
+				Energy_Data.put("PHASE_ENERGY_B_DELTA",PHASE_ENERGY_B_DELTA);
+		        Energy_Data.put("PHASE_ENERGY_B_DELTA_SUM",PHASE_ENERGY_B_DELTA_SUM);
+			    Energy_Data.put("PHASE_ENERGY_B_DELTA_COST",PHASE_ENERGY_B_DELTA_COST);		
+                Energy_Data.put("POWER_FACTOR_R",POWER_FACTOR_R);
+			    Energy_Data.put("POWER_FACTOR_R_AVERAGE",POWER_FACTOR_R_AVERAGE);
+				Energy_Data.put("POWER_FACTOR_Y",POWER_FACTOR_Y);
+				Energy_Data.put("POWER_FACTOR_Y_AVERAGE",POWER_FACTOR_Y_AVERAGE);
+				Energy_Data.put("POWER_FACTOR_B",POWER_FACTOR_B);
+				Energy_Data.put("POWER_FACTOR_B_AVERAGE",POWER_FACTOR_B_AVERAGE);
+				Energy_Data.put("ACTIVE_POWER_R",ACTIVE_POWER_R);
+				Energy_Data.put("ACTIVE_POWER_R_SUM",ACTIVE_POWER_R_SUM);
+				Energy_Data.put("ACTIVE_POWER_Y",ACTIVE_POWER_Y);
+				Energy_Data.put("ACTIVE_POWER_Y_SUM",ACTIVE_POWER_Y_SUM);
+				
+				Energy_Data.put("ACTIVE_POWER_B",ACTIVE_POWER_B);
+				Energy_Data.put("ACTIVE_POWER_B_SUM",ACTIVE_POWER_B_SUM);
+				
+				
+				Energy_Data.put("APPARANT_POWER_R",APPARANT_POWER_R);
+				Energy_Data.put("APPARANT_POWER_R_SUM",APPARANT_POWER_R_SUM);
+				
+				Energy_Data.put("APPARANT_POWER_Y",APPARANT_POWER_Y);
+				Energy_Data.put("APPARANT_POWER_Y_SUM",APPARANT_POWER_Y_SUM);
+				
+				Energy_Data.put("APPARANT_POWER_B",APPARANT_POWER_B);
+				Energy_Data.put("APPARANT_POWER_B_SUM",APPARANT_POWER_B_SUM);
+				
+				Energy_Data.put("REACTIVE_POWER_R",REACTIVE_POWER_R);
+				Energy_Data.put("REACTIVE_POWER_R_SUM",REACTIVE_POWER_R_SUM);
+				
+				Energy_Data.put("REACTIVE_POWER_Y",REACTIVE_POWER_Y);
+				Energy_Data.put("REACTIVE_POWER_Y_SUM",REACTIVE_POWER_Y_SUM);
+				
+				Energy_Data.put("REACTIVE_POWER_B",REACTIVE_POWER_B);
+				Energy_Data.put("REACTIVE_POWER_B_SUM",REACTIVE_POWER_B_SUM);
+				
+				Energy_Data.put("PHASE_VOLTAGE_R",PHASE_VOLTAGE_R);
+				Energy_Data.put("PHASE_VOLTAGE_R_AVERAGE",PHASE_VOLTAGE_R_AVERAGE);
+				
+				Energy_Data.put("PHASE_VOLTAGE_Y",PHASE_VOLTAGE_Y);
+				Energy_Data.put("PHASE_VOLTAGE_Y_AVERAGE",PHASE_VOLTAGE_Y_AVERAGE);
+				
+				Energy_Data.put("PHASE_VOLTAGE_B",PHASE_VOLTAGE_B);
+				Energy_Data.put("PHASE_VOLTAGE_B_AVERAGE",PHASE_VOLTAGE_B_AVERAGE);
+				
+				Energy_Data.put("LINE_VOLTAGE_R",LINE_VOLTAGE_R);
+				Energy_Data.put("LINE_VOLTAGE_R_AVERAGE",LINE_VOLTAGE_R_AVERAGE);
+				
+				Energy_Data.put("LINE_VOLTAGE_Y",LINE_VOLTAGE_Y);
+				Energy_Data.put("LINE_VOLTAGE_Y_AVERAGE",LINE_VOLTAGE_Y_AVERAGE);
+				
+				Energy_Data.put("LINE_VOLTAGE_B",LINE_VOLTAGE_B);
+				Energy_Data.put("LINE_VOLTAGE_B_AVERAGE",LINE_VOLTAGE_B_AVERAGE);
+				
+				Energy_Data.put("LINE_CURRENT_R",LINE_CURRENT_R);
+				Energy_Data.put("LINE_CURRENT_R_AVERAGE",LINE_CURRENT_R_AVERAGE);
+				
+				Energy_Data.put("LINE_CURRENT_Y",LINE_CURRENT_Y);
+				Energy_Data.put("LINE_CURRENT_Y_AVERAGE",LINE_CURRENT_Y_AVERAGE);
+				
+				Energy_Data.put("LINE_CURRENT_B",LINE_CURRENT_B);
+				Energy_Data.put("LINE_CURRENT_B_AVERAGE",LINE_CURRENT_B_AVERAGE);
+				
+				
+				Energy_Data.put("FREQUENCY_R",FREQUENCY_R);
+				Energy_Data.put("FREQUENCY_R_AVERAGE",FREQUENCY_R_AVERAGE);
+				
+				Energy_Data.put("FREQUENCY_Y",FREQUENCY_Y);
+				Energy_Data.put("FREQUENCY_Y_AVERAGE",FREQUENCY_Y_AVERAGE);
+				
+				Energy_Data.put("FREQUENCY_B",FREQUENCY_B);
+				Energy_Data.put("FREQUENCY_B_AVERAGE",FREQUENCY_B_AVERAGE);
+				
+			}
 			
 		}
-
 	}
 	
 }
