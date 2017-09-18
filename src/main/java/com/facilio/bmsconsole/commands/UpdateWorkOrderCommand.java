@@ -12,8 +12,10 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateWorkOrderCommand implements Command {
@@ -42,7 +44,20 @@ public class UpdateWorkOrderCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(workOrder));
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.EDIT);
+			
+			if(EventType.ASSIGN_TICKET == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE)) {
+				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+						.connection(conn)
+						.table(dataTableName)
+						.moduleName(moduleName)
+						.beanClass(WorkOrderContext.class)
+						.select(fields)
+						.andCustomWhere("ID = ?", recordIds.get(0))
+						.orderBy("ID");
+
+				List<WorkOrderContext> workOrders = builder.get();
+				context.put(FacilioConstants.ContextNames.RECORD, workOrders.get(0));
+			}
 		}
 		return false;
 	}

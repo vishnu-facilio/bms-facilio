@@ -87,7 +87,7 @@ public class AlarmAction extends ActionSupport {
 	public String assignAlarm() throws Exception {
 		FacilioContext context = new FacilioContext();
 		//set Event
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_ALARM);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
 		return updateAlarm(context);
 	}
 	
