@@ -31,6 +31,8 @@ public class AddTicketCommand implements Command {
 			{
 				ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
 			}
+			ticket.setSerialNumber(TicketAPI.getMaxSerialNumberOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid())+1);
+			
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)

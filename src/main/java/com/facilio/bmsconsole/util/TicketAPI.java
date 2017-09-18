@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,11 +18,13 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class TicketAPI {
@@ -201,5 +204,37 @@ public class TicketAPI {
 			ticket.setNotes(getRelatedNotes(ticket.getId(), conn));
 			ticket.setAttachments(getRelatedAttachments(ticket.getId(), conn));
 		}
+	}
+	
+	private static List<FacilioField> maxSerialNumberField = null;
+	public static long getMaxSerialNumberOfOrg(long orgId) throws Exception {
+		
+		if(maxSerialNumberField == null) {
+			FacilioField field = new FacilioField();
+			field.setColumnName("MAX(SERIAL_NUMBER)");
+			field.setName("maxSerialNumber");
+			field.setDataType(FieldType.NUMBER);
+			
+			maxSerialNumberField = new ArrayList<>();
+			maxSerialNumberField.add(field);
+		}
+		
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder builder =  new GenericSelectRecordBuilder()
+														.connection(conn)
+														.select(maxSerialNumberField)
+														.table("Tickets")
+														.andCustomWhere("ORGID = ?", orgId);
+			
+			List<Map<String, Object>> maxValue = builder.get();
+			if(maxValue != null && !maxValue.isEmpty() && maxValue.get(0).get("maxSerialNumber") != null) {
+				return (long) maxValue.get(0).get("maxSerialNumber");
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return 0;
 	}
 }
