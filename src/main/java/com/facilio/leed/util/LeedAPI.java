@@ -9,9 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.leed.context.UtilityProviderContext;
-import com.facilio.leed.objects.UtilityProvider;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
