@@ -77,7 +77,29 @@ public class TicketAPI {
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
 																.select(modBean.getAllFields("ticketstatus"))
-																.andCustomWhere("STATUS = ?", status)
+																.andCustomWhere("ORGID = ? AND STATUS = ?", orgId, status)
+																.orderBy("ID");
+			List<TicketStatusContext> statuses = builder.get();
+			return statuses.get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static TicketStatusContext getStatus(long orgId, long id) throws Exception
+	{
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+																.connection(conn)
+																.table("TicketStatus")
+																.moduleName("ticketstatus")
+																.beanClass(TicketStatusContext.class)
+																.select(modBean.getAllFields("ticketstatus"))
+																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id)
 																.orderBy("ID");
 			List<TicketStatusContext> statuses = builder.get();
 			return statuses.get(0);

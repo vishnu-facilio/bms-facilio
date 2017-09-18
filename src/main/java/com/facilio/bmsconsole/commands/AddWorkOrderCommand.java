@@ -54,6 +54,11 @@ public class AddWorkOrderCommand implements Command {
 
 	private void updateTicketStatus(TicketContext ticket, Connection conn) throws Exception {
 		TicketStatusContext status = ticket.getStatus();
+		
+		if(status.getStatus() == null) {
+			status = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), status.getId());
+		}
+		
 		if(ticket.getAssignedTo() != null && (status == null || !status.getStatus().equals("Assigned"))) {
 			TicketContext updatedTicket = new TicketContext();
 			updatedTicket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
