@@ -65,14 +65,6 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
-	
-	private long woId;
-	public long getWoId() {
-		return woId;
-	}
-	public void setWoId(long woId) {
-		this.woId = woId;
-	}
 
 	private long createdTime = -1;
 	public long getCreatedTime() {

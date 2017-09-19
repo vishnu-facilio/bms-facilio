@@ -653,6 +653,13 @@
 			</result>
 		</action>
 		
+		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="assignWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">

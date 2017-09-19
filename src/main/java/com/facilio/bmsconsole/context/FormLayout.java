@@ -29,8 +29,8 @@ public class FormLayout {
 		second.addField(requesterEmail);
 		
 
-		NewPanel third =  new NewPanel(NewPanel.Type.FULL).setTitle("Scheduling");
-		panels.add(third);
+//		NewPanel third =  new NewPanel(NewPanel.Type.FULL).setTitle("Scheduling");
+//		panels.add(third);
 		
 		NewPanel fourth =  new NewPanel(NewPanel.Type.HALF);
 		panels.add(fourth);
@@ -39,17 +39,17 @@ public class FormLayout {
 		panels.add(fifth);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester") || field.getName().equals("createdTime")) {
+			if(field.getName().equals("noOfClosedTasks") || field.getName().equals("noOfTasks") || field.getName().equals("noOfAttachments") || field.getName().equals("noOfNotes") || field.getName().equals("serialNumber") || field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester") || field.getName().equals("createdTime")) {
 				continue;
 			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("space") || field.getName().equals("assignmentGroup") ) {
 				first.addField(field);
 			}
 			else if(field.getName().equals("scheduledStart") || field.getName().equals("actualWorkStart")){
-				fourth.addField(field);
+				//fourth.addField(field);
 			}
 			else if(field.getName().equals("estimatedEnd") || field.getName().equals("actualWorkEnd")) {
-				fifth.addField(field);
+				//fifth.addField(field);
 			}
 			else {
 				second.addField(field);

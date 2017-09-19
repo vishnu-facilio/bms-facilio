@@ -41,6 +41,7 @@ public class AddWOFromRequestCommand implements Command {
 																	.moduleName(moduleName)
 																	.beanClass(WorkOrderRequestContext.class)
 																	.select(fields)
+																	.andCondition(idCondition)
 																	.orderBy("ID");
 			
 			List<WorkOrderRequestContext> workOrderRequests = builder.get();
@@ -58,7 +59,6 @@ public class AddWOFromRequestCommand implements Command {
 		WorkOrderContext wo = new WorkOrderContext();
 		wo.setTicket(request.getTicket());
 		wo.setRequester(request.getRequester());
-		wo.setWoId(request.getWoId());
 		wo.setCreatedTime(System.currentTimeMillis());
 		
 		FacilioContext context = new FacilioContext();

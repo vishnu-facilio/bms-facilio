@@ -27,9 +27,9 @@ public class ViewFactory {
 	private static Map<String, FacilioView> initViews() {
 		
 		Map<String, FacilioView> viewMap = new HashMap<>();
-		//viewMap.put("allrequests", getAllWorkorderRequests());
-		viewMap.put("allopentickets", getAllOpenTickets());
-		viewMap.put("myopentickets", getMyOpenTickets());
+		viewMap.put("allrequests", getAllWorkorderOpenRequests());
+		viewMap.put("allopen", getAllOpenTickets());
+		viewMap.put("myopen", getMyOpenTickets());
 		viewMap.put("overduetickets", getAllOverdueTickets());
 		viewMap.put("myoverduetickets", getMyOverdueTickets());
 		viewMap.put("mytickets", getMyTickets());
@@ -95,12 +95,8 @@ public class ViewFactory {
 		statusOpen.setOperator(NumberOperators.EQUALS);
 		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
 		
-		Map<Integer, Condition> conditions = new HashMap<>();
-		conditions.put(1, statusOpen);
-		
 		Criteria criteria = new Criteria();
-		criteria.setConditions(conditions);
-		criteria.setPattern("(1)");
+		criteria.addAndCondition(statusOpen);
 		
 		return criteria;
 	}
@@ -161,60 +157,31 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 	
-	private static FacilioView getAllWorkorderRequests() {
-		FacilioModule module = new FacilioModule();
-		module.setName("ticketstatus");
-		module.setTableName("TicketStatus");
-		module.setDisplayName("Ticket Status");
+	private static FacilioView getAllWorkorderOpenRequests() {
 		
-		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
-		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModuleTableName("Tickets");
-		statusField.setLookupModule(module);
+		FacilioField field = new FacilioField();
+		field.setName("status");
+		field.setColumnName("STATUS");
+		field.setDataType(FieldType.NUMBER);
+		field.setModuleTableName("WorkOrderRequests");
 		
-		Condition ticketRequested = new Condition();
-		ticketRequested.setField(statusField);
-		ticketRequested.setOperator(LookupOperator.LOOKUP);
-		ticketRequested.setCriteriaValue(getRequestedStatusCriteria());
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(DateOperators.IS);
+		condition.setValue("1");
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
-		conditions.put(1, ticketRequested);
-		
-		Criteria ticketCriteria = new Criteria();
-		ticketCriteria.setConditions(conditions);
-		ticketCriteria.setPattern("(1)");
-		
-		FacilioModule ticketModule = new FacilioModule();
-		ticketModule.setName("ticket");
-		ticketModule.setTableName("Tickets");
-		ticketModule.setDisplayName("Tickets");
-		
-		LookupField ticketField = new LookupField();
-		ticketField.setName("ticket");
-		ticketField.setColumnName("TICKET_ID");
-		ticketField.setDataType(FieldType.LOOKUP);
-		ticketField.setModuleTableName("WorkOrderRequests");
-		ticketField.setLookupModule(ticketModule);
-		
-		Condition ticketCondition = new Condition();
-		ticketCondition.setField(ticketField);
-		ticketCondition.setOperator(LookupOperator.LOOKUP);
-		ticketCondition.setCriteriaValue(ticketCriteria);
-		
-		Map<Integer, Condition> ticketConditions = new HashMap<>();
-		ticketConditions.put(1, ticketCondition);
+		conditions.put(1, condition);
 		
 		Criteria criteria = new Criteria();
-		criteria.setConditions(ticketConditions);
+		criteria.setConditions(conditions);
 		criteria.setPattern("(1)");
 		
-		FacilioView openTicketsView = new FacilioView();
-		openTicketsView.setName("allrequests");
-		openTicketsView.setDisplayName("Work Order Requests");
-		openTicketsView.setCriteria(criteria);
-		return openTicketsView;
+		FacilioView allRequestsView = new FacilioView();
+		allRequestsView.setName("allrequests");
+		allRequestsView.setDisplayName("Workorder Requests");
+		allRequestsView.setCriteria(criteria);
+		return allRequestsView;
 	}
 	
 	private static FacilioView getAllOpenTickets() {
@@ -236,26 +203,86 @@ public class ViewFactory {
 		ticketOpen.setOperator(LookupOperator.LOOKUP);
 		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
 		
-		Map<Integer, Condition> conditions = new HashMap<>();
-		conditions.put(1, ticketOpen);
-		
 		Criteria criteria = new Criteria();
-		criteria.setConditions(conditions);
-		criteria.setPattern("(1)");
+		criteria.addAndCondition(ticketOpen);
+		
+		FacilioModule module2 = new FacilioModule();
+		module2.setName("ticket");
+		module2.setTableName("Tickets");
+		module2.setDisplayName("Tickets");
+		
+		LookupField field = new LookupField();
+		field.setName("ticket");
+		field.setColumnName("TICKET_ID");
+		field.setDataType(FieldType.LOOKUP);
+		field.setModuleTableName("WorkOrders");
+		field.setLookupModule(module2);
+		
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(criteria);
+		
+		Criteria criteria2 = new Criteria();
+		criteria2.addAndCondition(condition);
 		
 		FacilioView openTicketsView = new FacilioView();
-		openTicketsView.setName("allopentickets");
-		openTicketsView.setDisplayName("All Open Tickets");
-		openTicketsView.setCriteria(criteria);
+		openTicketsView.setName("allopen");
+		openTicketsView.setDisplayName("All Open");
+		openTicketsView.setCriteria(criteria2);
+		
 		return openTicketsView;
 	}
 	
 	private static FacilioView getMyOpenTickets() {
-		FacilioView view = getAllOpenTickets();
-		view.setName("myopentickets");
-		view.setDisplayName("My Open Tickets");
-		view.getCriteria().addAndCondition(getMyUserCondition("Tickets"));
-		return view;
+		
+		FacilioModule module = new FacilioModule();
+		module.setName("ticketstatus");
+		module.setTableName("TicketStatus");
+		module.setDisplayName("Ticket Status");
+		
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModuleTableName("Tickets");
+		statusField.setLookupModule(module);
+		
+		Condition ticketOpen = new Condition();
+		ticketOpen.setField(statusField);
+		ticketOpen.setOperator(LookupOperator.LOOKUP);
+		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketOpen);
+		criteria.addAndCondition(getMyUserCondition("Tickets"));
+		
+		FacilioModule module2 = new FacilioModule();
+		module2.setName("ticket");
+		module2.setTableName("Tickets");
+		module2.setDisplayName("Tickets");
+		
+		LookupField field = new LookupField();
+		field.setName("ticket");
+		field.setColumnName("TICKET_ID");
+		field.setDataType(FieldType.LOOKUP);
+		field.setModuleTableName("WorkOrders");
+		field.setLookupModule(module2);
+		
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(criteria);
+		
+		Criteria criteria2 = new Criteria();
+		criteria2.addAndCondition(condition);
+		
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("allopen");
+		openTicketsView.setDisplayName("All Open");
+		openTicketsView.setCriteria(criteria2);
+		
+		return openTicketsView;
 	}
 	
 	private static FacilioView getAllOverdueTickets() {
