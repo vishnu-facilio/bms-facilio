@@ -139,7 +139,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.serialNumber = serialNumber;
 	}
 
-	private int noOfNotes;
+	private int noOfNotes = -1;
 	public int getNoOfNotes() {
 		return noOfNotes;
 	}
@@ -147,7 +147,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.noOfNotes = noOfNotes;
 	}
 	
-	private int noOfAttachments;
+	private int noOfAttachments = -1;
 	public int getNoOfAttachments() {
 		return noOfAttachments;
 	}
@@ -155,7 +155,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.noOfAttachments = noOfAttachments;
 	}
 	
-	private int noOfTasks;
+	private int noOfTasks = -1;
 	public int getNoOfTasks() {
 		return noOfTasks;
 	}
@@ -163,7 +163,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.noOfTasks = noOfTasks;
 	}
 	
-	private int noOfClosedTasks;
+	private int noOfClosedTasks = -1;
 	public int getNoOfClosedTasks() {
 		return noOfClosedTasks;
 	}
