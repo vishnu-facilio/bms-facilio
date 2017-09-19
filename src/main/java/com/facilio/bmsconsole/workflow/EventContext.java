@@ -53,7 +53,8 @@ public class EventContext {
 		DELETE(4),
 		CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()),
 		APPROVE_WORK_ORDER_REQUEST(8),
-		ASSIGN_ALARM(16)
+		ASSIGN_ALARM(16),
+		ALARM_STATUS_CHANGE(32)
 		;
 
 	    private int eventType;

@@ -16,11 +16,12 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AlarmAction extends ActionSupport {
 	public String addAlarm() throws Exception {
-		AlarmContext alarm = getAlarmFromParams();
+		getAlarmFromParams(alarm);
 		if(alarm != null) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
 			setAlarmId(bean.addAlarm(alarm));
@@ -44,18 +45,19 @@ public class AlarmAction extends ActionSupport {
 		this.alarmParams = alarmParams;
 	}
 	
-	private AlarmContext getAlarmFromParams() {
+	private AlarmContext getAlarmFromParams(AlarmContext alarm) {
 		//Process alarm params
-		AlarmContext alarm = new AlarmContext();
+		if (alarm == null) {
+			alarm = new AlarmContext();
+			alarm.setType(AlarmContext.AlarmType.MAINTENANCE);
+			
+			TicketContext ticket = new TicketContext();
+			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
+			ticket.setDescription("ddd");
+		}
 		alarm.setStatus(AlarmContext.AlarmStatus.ACTIVE);
-		alarm.setType(AlarmContext.AlarmType.MAINTENANCE);
-		alarm.setOrgId(1);
-		TicketContext ticket = new TicketContext();
-		ticket.setSubject("Alarm "+Math.round(Math.random()*100));
-		ticket.setDescription("ddd");
-		ticket.setSourceType(TicketContext.SourceType.ALARM);
-//		ticket.setScheduledStart(System.currentTimeMillis());
-		alarm.setTicket(ticket);
+		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
 		
 		return alarm;
 	}
@@ -91,10 +93,19 @@ public class AlarmAction extends ActionSupport {
 		return updateAlarm(context);
 	}
 	
+	public String updateStatus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		//set Event
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_STATUS_CHANGE);
+		return updateAlarm(context);
+	}
+	
 	private String updateAlarm(FacilioContext context) throws Exception {
 //		System.out.println(id);
 //		System.out.println(alarm);
-		alarm.setTicket(ticket);
+		if (ticket != null) {
+			alarm.setTicket(ticket);
+		}
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
