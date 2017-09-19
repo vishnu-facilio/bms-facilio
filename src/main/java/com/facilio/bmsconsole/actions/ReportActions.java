@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,10 +23,15 @@ public class ReportActions extends ActionSupport {
 		int duration = Integer.valueOf(strDurat);
 		String strEngery = String.valueOf(report.get("energydata"));
 		int energyData =Integer.valueOf(strEngery);
-		//int deviceId =Integer.valueOf(strDevice);
-		//System.out.println(duration);
-		//System.out.println(data);
-		JSONObject reportDatas=ReportsUtil.getEnergyData(energyData,duration);
+		List<Long> deviceList = new ArrayList<Long>();
+		Long[] deviceLong = null;
+		deviceList = (ArrayList) report.get("device");
+		if (deviceList!= null)
+		{
+		deviceLong = deviceList.toArray(new Long[0]);
+		System.out.println(deviceLong);
+		}
+		JSONObject reportDatas=ReportsUtil.getEnergyData(energyData,duration,deviceLong);
 		setReportData(reportDatas);
 		return SUCCESS;
 	}

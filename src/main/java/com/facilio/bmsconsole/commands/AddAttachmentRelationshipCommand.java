@@ -33,8 +33,9 @@ public class AddAttachmentRelationshipCommand implements Command {
 		}
 		
 		PreparedStatement pstmt = null;
+		Connection conn = null;
 		try {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			conn = ((FacilioContext) context).getConnectionWithTransaction();
 			pstmt = conn.prepareStatement("INSERT INTO "+ticketAttachmentTable+" ("+pkColumn+", FILE_ID) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
 			
 			for (long attachmentId : attachmentIdList) {
@@ -50,7 +51,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, null);
+			DBUtil.closeAll(conn, pstmt, null);
 		}
 		
 		return false;

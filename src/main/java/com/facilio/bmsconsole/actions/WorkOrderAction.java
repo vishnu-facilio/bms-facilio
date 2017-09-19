@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -81,26 +82,21 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String approveWorkOrder() throws Exception {
+	public String assignWorkOrder() throws Exception {
 		
-		workorder.setTicket(ticket);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
-		updateWorkOrder.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
-		return updateWorkOrder();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
+		return updateWorkOrder(context);
 	}
 	
 	public String updateWorkOrder() throws Exception {
-//		System.out.println(workOrderIds);
-//		System.out.println(workorder);
+		FacilioContext context = new FacilioContext();
+		return updateWorkOrder(context);
+	}
+	
+	private String updateWorkOrder(FacilioContext context) throws Exception {
 		
 		workorder.setTicket(ticket);
-		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		

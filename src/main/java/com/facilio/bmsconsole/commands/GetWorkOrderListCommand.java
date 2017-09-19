@@ -31,7 +31,7 @@ public class GetWorkOrderListCommand implements Command {
 														.moduleName(moduleName)
 														.beanClass(WorkOrderContext.class)
 														.select(fields)
-														.orderBy("ID");
+														.orderBy("CREATED_TIME desc");
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();

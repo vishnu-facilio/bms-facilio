@@ -24,7 +24,7 @@ public class AddWOFromAlarmCommand implements Command {
 		// TODO Auto-generated method stub
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if(EventType.ASSIGN_ALARM == eventType && recordIds != null && !recordIds.isEmpty()) {
+		if(EventType.ASSIGN_TICKET == eventType && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -41,6 +41,7 @@ public class AddWOFromAlarmCommand implements Command {
 																	.moduleName(moduleName)
 																	.beanClass(AlarmContext.class)
 																	.select(fields)
+																	.andCondition(idCondition)
 																	.orderBy("ID");
 			
 			List<AlarmContext> alarms = builder.get();
