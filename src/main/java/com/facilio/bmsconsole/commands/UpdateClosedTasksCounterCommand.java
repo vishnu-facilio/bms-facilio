@@ -68,12 +68,12 @@ public class UpdateClosedTasksCounterCommand implements Command {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)
 														.select(fields)
-														.table("TASKS")
-														.innerJoin("TICKETS")
-														.on("TASKS.TICKET_ID = TICKETS.ID")
-														.innerJoin("TICKETSTATUS")
-														.on("TICKETS.STATUS_ID = TICKETSTATUS.ID")
-														.andCustomWhere("TASKS.PARENT_TICKET_ID = ? AND TICKETSTATUS.STATUS_TYPE = 2", parentTicketId);
+														.table("Tasks")
+														.innerJoin("Tickets")
+														.on("Tasks.TICKET_ID = Tickets.ID")
+														.innerJoin("TicketStatus")
+														.on("Tickets.STATUS_ID = TicketStatus.ID")
+														.andCustomWhere("Tasks.PARENT_TICKET_ID = ? AND TicketStatus.STATUS_TYPE = 2", parentTicketId);
 			
 			List<Map<String, Object>> rs = builder.get();
 			if(rs != null && !rs.isEmpty()) {
