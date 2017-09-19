@@ -31,6 +31,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private List<FacilioField> selectFields;
 	private Connection conn;
 	private int level = 0;
+	private int maxLevel = LEVEL;
 	private String moduleName;
 	private long moduleId = -1;
 	private WhereBuilder where = new WhereBuilder();
@@ -47,6 +48,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public SelectRecordsBuilder<E> select(List<FacilioField> selectFields) {
 		this.selectFields = selectFields;
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> maxLevel(int maxLevel) {
+		this.maxLevel = maxLevel;
 		return this;
 	}
 	
@@ -170,7 +176,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 					Long recordId = (Long) props.remove(lookupField.getName());
 					if(recordId != null) {
 						Object lookedupObj = null;
-						if(level <= LEVEL) {
+						if(level <= maxLevel) {
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
@@ -201,7 +207,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						Long recordId = (Long) props.remove(lookupField.getName());
 						if(recordId != null) {
 							Object lookedupObj = null;
-							if(level <= LEVEL) {
+							if(level <= maxLevel) {
 								lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 							}
 							else {
