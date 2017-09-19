@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.modules;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -176,7 +177,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 					Long recordId = (Long) props.remove(lookupField.getName());
 					if(recordId != null) {
 						Object lookedupObj = null;
-						if(level <= maxLevel) {
+						if(level < maxLevel) {
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
@@ -193,6 +194,38 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		return beans;
+	}
+	
+	public Map<Long, E> getAsMap() throws Exception {
+		checkForNull(true);
+		List<Map<String, Object>> propList = getAsJustProps();
+		
+		Map<Long, E> beanMap = new HashMap<>();
+		
+		if(propList != null && propList.size() > 0) {
+			List<FacilioField> lookupFields = getLookupFields();
+			for(Map<String, Object> props : propList) {
+				for(FacilioField lookupField : lookupFields) {
+					Long recordId = (Long) props.remove(lookupField.getName());
+					if(recordId != null) {
+						Object lookedupObj = null;
+						if(level < maxLevel) {
+							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
+						}
+						else {
+							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+						}
+						if(lookedupObj != null) {
+							props.put(lookupField.getName(), lookedupObj);
+						}
+					}
+				}
+				E bean = beanClass.newInstance();
+				BeanUtils.populate(bean, props);
+				beanMap.put(bean.getId(), bean);
+			}
+		}
+		return beanMap;
 	}
 	
 	public List<Map<String, Object>> getAsProps() throws Exception {
