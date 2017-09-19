@@ -83,7 +83,8 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 
 	public static enum AlarmStatus {
 		ACTIVE(1, "Active"),
-		SUPPRESS(2, "Suppressed");
+		SUPPRESS(2, "Suppressed"),
+		CLEAR(3, "Cleared");
 		
 		private int intVal;
 		private String strVal;
