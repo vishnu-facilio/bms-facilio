@@ -14,10 +14,11 @@ public class LoadViewCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
 		if(viewName != null && !viewName.isEmpty()) {
 			
-			FacilioView view = ViewFactory.getView(viewName);
+			FacilioView view = ViewFactory.getView(moduleName + "-" +viewName);
 			
 			if(view != null) {
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);

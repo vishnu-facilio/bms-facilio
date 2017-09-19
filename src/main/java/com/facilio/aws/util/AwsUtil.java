@@ -248,7 +248,7 @@ public class AwsUtil
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception 
 	{
-		mailJson.put("sender", "shivaraj@facilio.com");
+		mailJson.put("sender", "support@facilio.com");
         Destination destination = new Destination().withToAddresses(new String[] { (String) mailJson.get("to") });
         Content subjectContent = new Content().withData((String) mailJson.get("subject"));
         Content bodyContent = new Content().withData((String) mailJson.get("message"));
