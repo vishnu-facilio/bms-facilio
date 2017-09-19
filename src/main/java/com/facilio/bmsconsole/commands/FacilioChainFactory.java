@@ -366,6 +366,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
+		c.addCommand(new UpdateClosedTasksCounterCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
