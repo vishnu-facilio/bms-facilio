@@ -41,6 +41,7 @@ public class AddWOFromAlarmCommand implements Command {
 																	.moduleName(moduleName)
 																	.beanClass(AlarmContext.class)
 																	.select(fields)
+																	.andCondition(idCondition)
 																	.orderBy("ID");
 			
 			List<AlarmContext> alarms = builder.get();
