@@ -2,7 +2,9 @@ package com.facilio.tasker;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -17,6 +19,7 @@ public class FacilioScheduler {
 	
 	public static final Map<String, Class<? extends FacilioJob>> JOBS_MAP = new HashMap<>();
 	
+	private static final List<Executor> executors = new ArrayList<>();
 	public static void initScheduler() throws IOException, InterruptedException, JAXBException {
 		
 		getJobObjectsFromConf();
@@ -69,9 +72,15 @@ public class FacilioScheduler {
 		if(executorsConf.getExecutors() != null) {
 			for(ExecutorsConf.ExecutorConf executorConf : executorsConf.getExecutors()) {
 				if(executorConf.getName() != null && !executorConf.getName().isEmpty() && executorConf.getPeriod() != -1 && executorConf.getThreads() != -1) {
-					new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod());
+					executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod()));
 				}
 			}
+		}
+	}
+	
+	public static void stopSchedulers() {
+		for(Executor executor : executors) {
+			executor.shutdown();
 		}
 	}
 }

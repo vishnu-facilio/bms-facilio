@@ -69,4 +69,8 @@ public class Executor implements Runnable {
 		}
 	}
 	
+	public void shutdown() {
+		executor.shutdownNow();
+	}
+	
 }

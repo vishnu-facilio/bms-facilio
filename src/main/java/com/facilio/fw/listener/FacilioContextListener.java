@@ -25,6 +25,7 @@ public class FacilioContextListener implements ServletContextListener {
 		// TODO Auto-generated method stub
 //		System.out.println("Listener Destroyed");
 		RedisManager.getInstance().release(); // destroying redis connection pool
+		FacilioScheduler.stopSchedulers();
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
