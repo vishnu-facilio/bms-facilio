@@ -76,7 +76,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 																.connection(conn)
 																.fields(FieldFactory.getWorkorderEmailFields())
-																.table("WorkOrder_Email")
+																.table("WorkOrderRequest_EMail")
 																.andCustomWhere(idsToBeRemoved.toString());
 				updateBuilder.update(updateIsProcessed);
 			}

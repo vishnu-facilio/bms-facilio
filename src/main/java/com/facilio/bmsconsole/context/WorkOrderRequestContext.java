@@ -125,8 +125,8 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 	
 	public static enum RequestStatus {
 		OPEN(1, "Open"),
-		APPROVED(2, "Active"),
-		REJECTED(3, "Suppressed");
+		APPROVED(2, "Approved"),
+		REJECTED(3, "Rejected");
 		
 		private int intVal;
 		private String strVal;

@@ -25,6 +25,10 @@ public class AddWorkOrderRequestCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrderRequest.setCreatedTime(System.currentTimeMillis());
 			
+			if(workOrderRequest.getStatus() == -1) {
+				workOrderRequest.setStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+			}
+			
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)
