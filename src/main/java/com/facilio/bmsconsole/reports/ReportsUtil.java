@@ -358,15 +358,21 @@ public class ReportsUtil
 		fromRange=fromRange.equals("0")?fromDate:fromRange;
 		endRange=endRange.equals("0")?endDate:endRange;
 		
-		groupByCol= new StringBuilder().append(fieldsDevice).append(separator).append(groupByCol);
+		StringBuilder groupByColumns= new StringBuilder().append(fieldsDevice).append(separator).append(groupByCol);
 		
-		StringBuilder finalQuery=getQuery(baseQuery, groupByCol);
+		StringBuilder finalQuery=getQuery(baseQuery, groupByColumns);
 
 		if(groupFields)
 		{
-			finalQuery=finalQuery.append(groupBy).append(groupByCol);
+			finalQuery=finalQuery.append(groupBy).append(groupByColumns);
 		}
-		return getData(finalQuery.toString(), fromRange, endRange, deviceId);
+		JSONObject resultJson= getData(finalQuery.toString(), fromRange, endRange, deviceId);
+		if(resultJson==null)
+		{
+			return null;
+		}
+		resultJson.put("axisKey", groupByCol.toString());
+		return resultJson;
 	}
 	
 	//generic..
