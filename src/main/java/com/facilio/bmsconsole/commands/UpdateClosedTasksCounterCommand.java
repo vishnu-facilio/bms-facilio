@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -63,7 +64,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(field);
-		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)
@@ -73,7 +74,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 														.on("Tasks.TICKET_ID = Tickets.ID")
 														.innerJoin("TicketStatus")
 														.on("Tickets.STATUS_ID = TicketStatus.ID")
-														.andCustomWhere("Tasks.PARENT_TICKET_ID = ? AND TicketStatus.STATUS_TYPE = 2", parentTicketId);
+														.andCustomWhere("TicketStatus.ORGID = ? AND Tickets.ORGID = ? AND Tasks.PARENT_TICKET_ID = ? AND TicketStatus.STATUS_TYPE = 2", orgId, orgId, parentTicketId);
 			
 			List<Map<String, Object>> rs = builder.get();
 			if(rs != null && !rs.isEmpty()) {
