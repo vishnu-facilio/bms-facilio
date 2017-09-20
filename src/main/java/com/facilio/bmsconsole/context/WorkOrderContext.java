@@ -48,6 +48,6 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public String getUrl() {
-		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".facilstack.com:8080/bms/app/index#workorder/"+getId();
+		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId();
 	}
 }
