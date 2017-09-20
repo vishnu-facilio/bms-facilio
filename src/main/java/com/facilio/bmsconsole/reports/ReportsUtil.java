@@ -49,7 +49,7 @@ public class ReportsUtil
 
 	private  static StringBuilder andOperator = new StringBuilder(" AND ");
 
-	//private  static StringBuilder orOperator = new StringBuilder(" OR ");
+	private  static StringBuilder fieldsDay = new StringBuilder("ADDED_DAY");
 
 	private  static StringBuilder separator = new StringBuilder(" , ");
 
@@ -163,6 +163,20 @@ public class ReportsUtil
 			groupByCol.append(fieldsWeek);
 			break;
 		}
+		case FacilioConstants.Reports.THIS_WEEK:
+		{
+			fromRange=DateTimeUtil.getWeekStartTime();
+			endRange=DateTimeUtil.getCurrenTime();
+			groupByCol.append(fieldsDay);
+			break;
+		}
+		case FacilioConstants.Reports.LAST_WEEK:
+		{
+			fromRange=DateTimeUtil.getWeekStartTime(-1);
+			endRange=DateTimeUtil.getWeekStartTime() - 1;
+			groupByCol.append(fieldsDay);
+			break;
+		}
 		case FacilioConstants.Reports.CUSTOM_WITH_WEEK:
 		{
 			groupByCol.append(fieldsWeek);
@@ -202,18 +216,6 @@ public class ReportsUtil
 		{
 			fromRange=DateTimeUtil.getDayStartTime(-30);
 			endRange=DateTimeUtil.getDayStartTime()-1;
-			break;
-		}
-		case FacilioConstants.Reports.THIS_WEEK:
-		{
-			fromRange=DateTimeUtil.getWeekStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
-			break;
-		}
-		case FacilioConstants.Reports.LAST_WEEK:
-		{
-			fromRange=DateTimeUtil.getWeekStartTime(-1);
-			endRange=DateTimeUtil.getWeekStartTime() - 1;
 			break;
 		}
 		}
