@@ -149,6 +149,7 @@ public class TicketAPI {
 				nc.setNoteId(rs.getLong("NOTEID"));
 				nc.setBody(rs.getString("BODY"));
 				nc.setCreationTime(rs.getLong("CREATION_TIME"));
+				nc.setOwnerId(rs.getLong("OWNERID"));
 				notes.add(nc);
 			}
 		}

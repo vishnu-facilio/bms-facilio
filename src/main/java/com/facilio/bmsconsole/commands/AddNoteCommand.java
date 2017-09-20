@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ public class AddNoteCommand implements Command {
 		{
 			note.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			note.setCreationTime(System.currentTimeMillis());
+			note.setOwnerId(UserInfo.getCurrentUser().getOrgUserId());
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.setSerializationInclusion(Include.NON_DEFAULT);
 			Map<String, Object> props = mapper.convertValue(note, Map.class);
