@@ -335,6 +335,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateAlarmCommand());
+		c.addCommand(new AddWOFromAlarmCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
