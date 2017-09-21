@@ -39,7 +39,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			if(eventType != null) {
-				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
+				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
 				
 				if(workflowRules != null && workflowRules.size() > 0) {
 					Map<String, Object> placeHolders = new HashMap<>();
