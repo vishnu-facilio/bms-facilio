@@ -10,8 +10,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public enum DefaultTemplates implements ActionTemplate {
-	WORKORDER_ASSIGN(1),
-	WORKORDER_ACTIVITY_FOLLOWUP(2)
+	WORKORDER_ASSIGN_EMAIL(1),
+	WORKORDER_ACTIVITY_FOLLOWUP(2),
+	WORKORDER_ASSIGN_SMS(3)
 	;
 	
 	private int val;
@@ -52,23 +53,28 @@ public enum DefaultTemplates implements ActionTemplate {
 	
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
-		JSONObject mailJson = null;
+		JSONObject json = null;
 		switch(templateVal) {
 			case 1:
-				mailJson = new JSONObject();
-				mailJson.put("sender", "support@${org.orgDomain}.facilio.com");
-				mailJson.put("to", "${workorder.ticket.assignedTo.email}");
-				mailJson.put("subject", "Workorder Assigned");
-				mailJson.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				json = new JSONObject();
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.ticket.assignedTo.email}");
+				json.put("subject", "Workorder Assigned");
+				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
 				break;
 			case 2:
-				mailJson = new JSONObject();
-				mailJson.put("sender", "support@${org.orgDomain}.facilio.com");
-				mailJson.put("to", "shivaraj@thingscient.com");
-				mailJson.put("subject", "Workorder Follow");
-				mailJson.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
+				json = new JSONObject();
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "shivaraj@thingscient.com");
+				json.put("subject", "Workorder Follow");
+				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
 				break;
+			case 3:
+				json = new JSONObject();
+				json.put("to", "+919003625354");
+				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				
 		}
-		return mailJson;
+		return json;
 	}
 }
