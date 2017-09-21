@@ -51,7 +51,7 @@ public class ReportsUtil
 
 	private  static StringBuilder fieldsDay = new StringBuilder("ADDED_DAY");
 
-	private  static StringBuilder separator = new StringBuilder(" , ");
+	private  static StringBuilder separator = new StringBuilder(",");
 
 	
    //generic
@@ -97,6 +97,7 @@ public class ReportsUtil
 	{
 		Long fromRange=0L,endRange=0L;
 		StringBuilder groupByCol=new StringBuilder();
+		StringBuilder orderByCol=new StringBuilder(" ORDER BY ");
 
 		switch(category)
 		{
@@ -105,6 +106,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getDayStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsHour);
+			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_YEAR:
@@ -112,6 +114,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getYearStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsMonth);
+			orderByCol.append(fieldsMonth).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_YEAR:
@@ -119,6 +122,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getYearStartTime(-1);
 			endRange=DateTimeUtil.getYearStartTime()-1;
 			groupByCol.append(fieldsMonth);
+			orderByCol.append(fieldsMonth).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_YEAR_WITH_WEEK:
@@ -126,6 +130,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getYearStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsWeek);
+			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_YEAR_WITH_WEEK:
@@ -133,6 +138,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getYearStartTime(-1);
 			endRange=DateTimeUtil.getYearStartTime()-1;
 			groupByCol.append(fieldsWeek);
+			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_HOUR:
@@ -140,6 +146,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getHourStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsHour);
+			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_HOUR:
@@ -147,6 +154,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getHourStartTime(-1);
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsHour);
+			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_MONTH_WITH_WEEK:
@@ -154,6 +162,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getMonthStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
 			groupByCol.append(fieldsWeek);
+			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_MONTH_WITH_WEEK:
@@ -161,30 +170,35 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getMonthStartTime(-1);
 			endRange=DateTimeUtil.getMonthStartTime()-1;
 			groupByCol.append(fieldsWeek);
+			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_WEEK:
 		{
 			fromRange=DateTimeUtil.getWeekStartTime();
 			endRange=DateTimeUtil.getCurrenTime();
-			groupByCol.append(fieldsDay);
+			groupByCol.append(fieldsDay).append(separator).append(fieldsDate);
+			orderByCol.append(fieldsDate).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_WEEK:
 		{
 			fromRange=DateTimeUtil.getWeekStartTime(-1);
 			endRange=DateTimeUtil.getWeekStartTime() - 1;
-			groupByCol.append(fieldsDay);
+			groupByCol.append(fieldsDay).append(separator).append(fieldsDate);
+			orderByCol.append(fieldsDate).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.CUSTOM_WITH_WEEK:
 		{
 			groupByCol.append(fieldsWeek);
+			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.CUSTOM_WITH_MONTH:
 		{
 			groupByCol.append(fieldsMonth);
+			orderByCol.append(fieldsMonth).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_MONTH:
@@ -204,6 +218,7 @@ public class ReportsUtil
 			fromRange=DateTimeUtil.getDayStartTime(-1);
 			endRange=DateTimeUtil.getDayStartTime()-1;
 			groupByCol.append(fieldsHour);
+			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_7_DAYS:
@@ -223,12 +238,14 @@ public class ReportsUtil
 		if(groupByCol.length()==0)
 		{
 		  groupByCol=fieldsDate;
+		  orderByCol.append(fieldsDate).append(" ASC");
 		}
 
 		HashMap <String,Object> hMap = new HashMap <String,Object>  ();
 		hMap.put(FacilioConstants.Reports.RANGE_FROM, fromRange);
 		hMap.put(FacilioConstants.Reports.RANGE_END, endRange);
 		hMap.put(FacilioConstants.Reports.GROUPBY_COLUMN, groupByCol);
+		hMap.put(FacilioConstants.Reports.ORDERBY_COLUMN, orderByCol);
 		return hMap;
 	}
 	
@@ -287,26 +304,23 @@ public class ReportsUtil
 					
 					JSONObject data  = new JSONObject ();
 					
-					
 					ResultSetMetaData meta = rs.getMetaData();
-					String key_1=meta.getColumnLabel(1);
-					String key_2=meta.getColumnLabel(2);
-					String key_3=meta.getColumnLabel(3);
+					int selectCount=meta.getColumnCount();
 					
-					long deviceId = (Long)rs.getObject(key_1);
-					String timeKey =rs.getObject(key_2).toString();
-					String reqData =rs.getObject(key_3).toString();
-					
+					//under the assumption deviceid will be the first select column..
+					long deviceId = (Long)rs.getObject(1);
 					//currently this is expensive as we are hitting the db.. later it will return from cache..
 					String deviceName=getDeviceName(deviceId);
-					
-					data.put(key_1, deviceName);
-					data.put(key_2, timeKey);
-					data.put(key_3, reqData);
+					data.put(meta.getColumnLabel(1), deviceName);
+
+					for(int i=2;i<=selectCount;i++)
+					{
+						String key=meta.getColumnLabel(i);
+						data.put(key,rs.getObject(key).toString() );
+					}
 					
 					logger.log(Level.INFO, rs.getRow()+": Row data: "+data);
 					JSONArray array =(JSONArray) map.get(deviceName);
-					
 					if(array==null) 
 					{
 						array= new JSONArray();
@@ -354,6 +368,7 @@ public class ReportsUtil
 		HashMap<String,Object> hMap=getQueryParams(category);
 		
 		StringBuilder groupByCol=(StringBuilder)hMap.remove(FacilioConstants.Reports.GROUPBY_COLUMN);
+		StringBuilder orderByCol=(StringBuilder)hMap.remove(FacilioConstants.Reports.ORDERBY_COLUMN);
 		String fromRange=((Long)hMap.remove(FacilioConstants.Reports.RANGE_FROM)).toString();
 		String endRange=((Long)hMap.remove(FacilioConstants.Reports.RANGE_END)).toString();
 		
@@ -368,12 +383,22 @@ public class ReportsUtil
 		{
 			finalQuery=finalQuery.append(groupBy).append(groupByColumns);
 		}
+		finalQuery=finalQuery.append(orderByCol);
+		
 		JSONObject resultJson= getData(finalQuery.toString(), fromRange, endRange, deviceId);
 		if(resultJson==null)
 		{
 			return null;
 		}
-		resultJson.put("axisKey", groupByCol.toString());
+		String groupBy=groupByCol.toString();
+		
+		int end=groupBy.indexOf(",");
+		if(end>0)
+		{
+			groupBy=groupBy.substring(0, end);
+		}
+		
+		resultJson.put("axisKey", groupBy);
 		return resultJson;
 	}
 	

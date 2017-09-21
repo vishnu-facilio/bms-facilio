@@ -462,6 +462,7 @@ public class FacilioConstants {
 		public static final String RANGE_FROM = "fromRange";
 		public static final String RANGE_END = "endRange";
 		public static final String GROUPBY_COLUMN = "groupByCol";
+		public static final String ORDERBY_COLUMN = "orderByCol";
 		
 		public static final StringBuilder ENERGY_TABLE= new StringBuilder(" ENERGY_DATA ");
 		
