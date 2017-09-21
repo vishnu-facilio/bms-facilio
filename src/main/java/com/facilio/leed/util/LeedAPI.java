@@ -44,6 +44,34 @@ public class LeedAPI {
 		}
 		
 	}
+	 
+	public static List<UtilityProviderContext> getAllUtilityProviders(Long buildingId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT UP.PROVIDER_ID,UP.ORGID,UP.NAME,UP.DISPLAYNAME,UP.COUNTRY FROM UtilityProvider as UP, Building_Provider as BP WHERE UP.PROVIDER_ID = BP.PROVIDER_ID AND BP.BUILDING_ID=? ORDER BY UP.NAME");
+			pstmt.setLong(1, buildingId);
+			
+			List<UtilityProviderContext> utilityproviders = new ArrayList<>();
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				UtilityProviderContext upc = getUtilityProviderObjectFromRS(rs);
+				utilityproviders.add(upc);
+			}
+			
+			return utilityproviders;
+			
+		}catch(SQLException e)
+		{
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
 	
 	public static List<UtilityProviderContext> getAllUtilityProviders(long orgId) throws SQLException {
 		Connection conn = null;

@@ -45,13 +45,14 @@ public class GetBuildingCommand implements Command {
 				
 				context.put(GetNotesCommand.MODULEID_COLUMN, "BUILDING_ID");
 				context.put(GetNotesCommand.MODULE_ID, buildingId);
-				
+/*Suresh Included for testing				
 				UtilityProviderContext upc = new UtilityProviderContext();
 				upc.setName("Test");
 				System.out.println("################ test ##############");
 				List<UtilityProviderContext> upcs = new ArrayList<>();
 				upcs.add(upc);
 				building.setUtilityProviders(upcs);
+*/
 			}
 			
 

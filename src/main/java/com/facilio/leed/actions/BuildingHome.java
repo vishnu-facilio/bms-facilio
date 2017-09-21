@@ -45,7 +45,7 @@ public class BuildingHome extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		
-		Chain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
+		Chain getBuildingChain = FacilioChainFactory.getBuildingUtilityProviderDetailsChain();
 		
 		getBuildingChain.execute(context);
 		
