@@ -35,6 +35,43 @@ public class ReportActions extends ActionSupport {
 		setReportData(reportDatas);
 		return SUCCESS;
 	}
+	 
+	public String reportDashboard() throws Exception 
+	{
+		Long deviceLong = (long) 4;
+		JSONObject energyConsumptionMonth = ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.TOTAL_ENERGY_CONSUMPTION_DELTA_SUM,FacilioConstants.Reports.THIS_YEAR,deviceLong);
+		JSONObject energyConsumptionThisWeek = ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.TOTAL_ENERGY_CONSUMPTION_DELTA_SUM,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject energyConsumptionLastWeek = ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.TOTAL_ENERGY_CONSUMPTION_DELTA_SUM,FacilioConstants.Reports.LAST_WEEK);
+		JSONObject phaseEnergyConsumptionB =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.PHASE_ENERGY_B_DELTA_SUM,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject phaseEnergyConsumptionR =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.PHASE_ENERGY_R_DELTA_SUM,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject phaseEnergyConsumptionY =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.PHASE_ENERGY_Y_DELTA_SUM,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject powerFactorB =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.POWER_FACTOR_Y_AVERAGE,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject powerFactorR =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.POWER_FACTOR_Y_AVERAGE,FacilioConstants.Reports.THIS_WEEK);
+		JSONObject powerFactorY =  ReportsUtil.getEnergyData(FacilioConstants.Reports.Energy.POWER_FACTOR_Y_AVERAGE,FacilioConstants.Reports.LAST_30_DAYS);
+		JSONObject wholeData = new JSONObject();
+		wholeData.put("energyConsumptionMonth",energyConsumptionMonth);
+		wholeData.put("energyConsumptionThisWeek",energyConsumptionThisWeek);
+		wholeData.put("energyConsumptionLastWeek", energyConsumptionLastWeek);
+		wholeData.put("phaseEnergyConsumptionB", phaseEnergyConsumptionB);
+		wholeData.put("phaseEnergyConsumptionR", phaseEnergyConsumptionR);
+		wholeData.put("phaseEnergyConsumptionY", phaseEnergyConsumptionY);
+		wholeData.put("powerFactorB", powerFactorB);
+		wholeData.put("powerFactorR", powerFactorR);
+		wholeData.put("powerFactorY", powerFactorY);
+		setReportAllData(wholeData);
+ 		return SUCCESS;
+		
+	}
+	private JSONObject reportAllData = null;
+	
+	public JSONObject getReportAllData() {
+		return reportAllData;
+	}
+	public void setReportAllData(JSONObject reportAllData) {
+		this.reportAllData = reportAllData;		
+	}
+	
+	
 	private JSONObject reportData = null;
 	
 	public JSONObject getReportData() {

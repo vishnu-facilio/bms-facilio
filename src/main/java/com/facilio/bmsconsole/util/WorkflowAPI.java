@@ -54,7 +54,7 @@ public class WorkflowAPI {
 		}
 	}
 	
-	public static List<WorkflowRuleContext> getWorkflowRulesFromEvent(long orgId, long moduleId, int eventType) throws Exception {
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromEvent(long orgId, long moduleId, int eventType) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.connection(conn)
@@ -62,7 +62,7 @@ public class WorkflowAPI {
 					.select(FieldFactory.getWorkflowRuleFields())
 					.innerJoin("Event")
 					.on("Workflow_Rule.EVENT_ID = Event.ID")
-					.andCustomWhere("Workflow_Rule.ORGID = ? AND Event.MODULEID = ? AND ? & Event.EVENT_TYPE = ?", orgId, moduleId, eventType, eventType)
+					.andCustomWhere("Workflow_Rule.ORGID = ? AND Event.MODULEID = ? AND ? & Event.EVENT_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, eventType, eventType)
 					.orderBy("EXECUTION_ORDER");
 			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
 		}

@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.leed.commands.GetUtilityProvidersCommand;
 import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
@@ -559,6 +560,17 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getBuildingUtilityProviderDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetBuildingCommand());
+		c.addCommand(new GetUtilityProvidersCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -2,11 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -31,7 +34,8 @@ public class GetAlarmListCommand implements Command {
 														.moduleName(moduleName)
 														.beanClass(AlarmContext.class)
 														.select(fields)
-														.orderBy("ID");
+														.orderBy("ID")
+														.maxLevel(0);
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
@@ -46,9 +50,31 @@ public class GetAlarmListCommand implements Command {
 		}
 		
 		List<AlarmContext> alarms = builder.get();
+		loadTickets(alarms, conn);
 		context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
 		
 		return false;
+	}
+	
+	private void loadTickets(List<AlarmContext> alarms, Connection conn) throws Exception {
+		if(alarms != null && !alarms.isEmpty()) {
+			StringBuilder ids = new StringBuilder();
+			boolean isFirst = true;
+			for(AlarmContext alarm : alarms) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					ids.append(",");
+				}
+				ids.append(alarm.getTicket().getId());
+			}
+			
+			Map<Long, TicketContext> tickets = CommonCommandUtil.getTickets(ids.toString(), conn);
+			for(AlarmContext alarm : alarms) {
+				alarm.setTicket(tickets.get(alarm.getTicket().getId()));
+			}
+		}
 	}
 
 }
