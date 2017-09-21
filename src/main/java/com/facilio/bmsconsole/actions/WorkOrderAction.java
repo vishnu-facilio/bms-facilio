@@ -13,12 +13,15 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -99,6 +102,18 @@ public class WorkOrderAction extends ActionSupport {
 		workorder.setTicket(ticket);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		// updating start time, end time when workorder status changes
+		if (workorder.getTicket().getStatus() != null) {
+			
+			TicketStatusContext statusObj = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), workorder.getTicket().getStatus().getId());
+			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
+				workorder.getTicket().setActualWorkStart(System.currentTimeMillis());
+			}
+			else if ("Resolved".equalsIgnoreCase(statusObj.getStatus())) {
+				workorder.getTicket().setActualWorkEnd(System.currentTimeMillis());
+			} 
+		}
 		
 		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
