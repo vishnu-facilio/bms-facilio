@@ -64,7 +64,13 @@ public class GenerateCondtionsFromFiltersCommand implements Command {
 									isFirst = false;
 								}
 								if (obj.indexOf("_") != -1) {
-									values.append(obj.substring(0, obj.indexOf("_")));
+									try {
+										long id = Long.parseLong(obj.split("_")[0]);
+										values.append(id+"");
+									}
+									catch (Exception e) {
+										values.append(obj);
+									}
 								}
 								else {
 									values.append(obj);
