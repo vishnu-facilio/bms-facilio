@@ -63,7 +63,12 @@ public class GenerateCondtionsFromFiltersCommand implements Command {
 								{
 									isFirst = false;
 								}
-								values.append(obj.substring(0, obj.indexOf("_")));
+								if (obj.indexOf("_") != -1) {
+									values.append(obj.substring(0, obj.indexOf("_")));
+								}
+								else {
+									values.append(obj);
+								}
 							}
 							childCondition.setValue(values.toString());
 						}

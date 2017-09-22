@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -255,10 +256,12 @@ public class WorkOrderReportAction extends ActionSupport {
 					.table("WorkOrders")
 					.innerJoin("Tickets")
 					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.innerJoin("TicketStatus")
+					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.leftJoin("TicketCategory")
 					.on("Tickets.CATEGORY_ID = TicketCategory.ID")
 					.groupBy("TicketCategory.ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ?", orgId, orgId);
+					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
 
 			List<Map<String, Object>> rs = builder.get();
 			return rs;
@@ -305,7 +308,7 @@ public class WorkOrderReportAction extends ActionSupport {
 					.innerJoin("Tickets")
 					.on("WorkOrderRequests.TICKET_ID = Tickets.ID")
 					.groupBy("Tickets.SOURCE_TYPE")
-					.andCustomWhere("WorkOrderRequests.ORGID = ? AND Tickets.ORGID = ?", orgId, orgId)
+					.andCustomWhere("WorkOrderRequests.ORGID = ? AND Tickets.ORGID = ? AND WorkOrderRequests.STATUS = ?", orgId, orgId, WorkOrderRequestContext.RequestStatus.OPEN.getIntVal())
 					.andCondition(createdTime);
 
 			List<Map<String, Object>> rs = builder.get();
@@ -399,8 +402,10 @@ public class WorkOrderReportAction extends ActionSupport {
 					.table("WorkOrders")
 					.innerJoin("Tickets")
 					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.innerJoin("TicketStatus")
+					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.groupBy("Tickets.SPACE_ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND Tickets.SPACE_ID IS NOT NULL AND Tickets.SPACE_ID > 0", orgId, orgId)
+					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ? AND Tickets.SPACE_ID IS NOT NULL AND Tickets.SPACE_ID > 0", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal())
 					.limit(10);
 
 			List<Map<String, Object>> rs = builder.get();
