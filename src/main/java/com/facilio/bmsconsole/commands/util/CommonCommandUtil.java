@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -33,6 +35,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class CommonCommandUtil {
@@ -113,7 +116,46 @@ public class CommonCommandUtil {
 		}
 	}
 	
+	public static Map<Long, RequesterContext> getRequesters(String ids, Connection conn) throws Exception {
+		
+		FacilioField field = new FacilioField();
+		field.setName("requesterId");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("REQUESTER_ID");
+		field.setModuleTableName("Requester");
+		
+		Condition idCondition = new Condition();
+		idCondition.setField(field);
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(ids);
+		
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+											.connection(conn)
+											.table("Requester")
+											.select(FieldFactory.getRequesterFields())
+											.andCondition(idCondition);
+		List<Map<String, Object>> requesterList = builder.get();
+		
+		Map<Long, RequesterContext> requesters = new HashMap<>();
+		for(Map<String, Object> requester : requesterList)
+		{
+			requesters.put((Long) requester.get("requesterId"), getRequesterObject(requester));
+		}
+		return requesters;
+	}
+	
+	private static RequesterContext getRequesterObject(Map<String, Object> requester) throws SQLException {
+		
+		RequesterContext rc = new RequesterContext();
+		rc.setEmail((String) requester.get("email"));
+		rc.setName((String) requester.get("name"));
+		rc.setId((Long) requester.get("requesterId"));
+		return rc;
+	}
+	
 	public static Map<Long, TicketContext> getTickets(String ids, Connection conn) throws Exception {
+		
 		Condition idCondition = new Condition();
 		idCondition.setField(FieldFactory.getIdField("Tickets"));
 		idCondition.setOperator(NumberOperators.EQUALS);

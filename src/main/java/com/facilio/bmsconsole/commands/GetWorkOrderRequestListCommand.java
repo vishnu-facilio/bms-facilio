@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -50,10 +51,41 @@ public class GetWorkOrderRequestListCommand implements Command {
 		}
 		
 		List<WorkOrderRequestContext> workOrderRequests = builder.get();
+		loadRequesters(workOrderRequests, conn);
 		loadTickets(workOrderRequests, conn);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
 		
 		return false;
+	}
+	
+	private void loadRequesters(List<WorkOrderRequestContext> workOrderRequests, Connection conn) throws Exception {
+		if(workOrderRequests != null && !workOrderRequests.isEmpty()) {
+			StringBuilder ids = new StringBuilder();
+			boolean isFirst = true;
+			for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
+				if(workOrderRequest.getRequester() != null)
+				{
+					if(isFirst) {
+						isFirst = false;
+					}
+					else {
+						ids.append(",");
+					}
+					ids.append(workOrderRequest.getRequester().getRequesterId());
+				}
+			}
+			
+			if(ids.length() > 0)
+			{
+				Map<Long, RequesterContext> requesters = CommonCommandUtil.getRequesters(ids.toString(), conn);
+				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
+					if(workOrderRequest.getRequester() != null)
+					{
+						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getRequesterId()));
+					}
+				}
+			}
+		}
 	}
 	
 	private void loadTickets(List<WorkOrderRequestContext> workOrderRequests, Connection conn) throws Exception {
@@ -76,5 +108,4 @@ public class GetWorkOrderRequestListCommand implements Command {
 			}
 		}
 	}
-
 }
