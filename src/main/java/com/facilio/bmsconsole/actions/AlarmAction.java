@@ -58,6 +58,7 @@ public class AlarmAction extends ActionSupport {
 		alarm.setStatus(AlarmContext.AlarmStatus.ACTIVE);
 		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
+		alarm.setIsAcknowledged(false);
 		
 		return alarm;
 	}

@@ -34,7 +34,7 @@ public class GetAlarmListCommand implements Command {
 														.moduleName(moduleName)
 														.beanClass(AlarmContext.class)
 														.select(fields)
-														.orderBy("ID")
+														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
 		if(view != null) {

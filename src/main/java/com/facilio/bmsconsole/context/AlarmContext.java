@@ -38,6 +38,15 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	
+	private Boolean isAcknowledged;
+	public void setIsAcknowledged(Boolean isAcknowledged) {
+		this.isAcknowledged = isAcknowledged;
+	}
+	
+	public Boolean getIsAcknowledged() {
+		return this.isAcknowledged;
+	}
+	
 	private AlarmType type;
 	public int getType() {
 		if(type != null) {
