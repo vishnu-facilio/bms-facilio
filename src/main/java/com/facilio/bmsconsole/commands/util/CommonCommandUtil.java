@@ -27,8 +27,11 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -324,6 +327,44 @@ public class CommonCommandUtil {
 			catch(Exception e) {
 				e.printStackTrace();
 				throw e;
+			}
+		}
+	}
+	
+	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {
+		if(beanMap != null) {
+			if(moduleName != null && !moduleName.isEmpty() && !LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> fields = modBean.getAllFields(moduleName);
+				
+				if(fields != null && !fields.isEmpty()) {
+					for(FacilioField field : fields) {
+						if(field.getDataType() == FieldType.LOOKUP) {
+							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
+							if(props != null) {
+								LookupField lookupField = (LookupField) field;
+								if(props.size() <= 2) {
+									Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);
+									placeHolders.put(prefix+"."+field.getName(), lookupVal);
+									props = FieldUtil.getAsProperties(lookupVal);
+								}
+								String childModuleName = lookupField.getLookupModule() == null?lookupField.getSpecialType():lookupField.getLookupModule().getName();
+								appendModuleNameInKey(childModuleName, prefix+"."+field.getName(), props, placeHolders);
+							}
+						}
+						else {
+							placeHolders.put(prefix+"."+field.getName(), beanMap.remove(field.getName()));
+						}
+					}
+				}
+			}
+			for(Map.Entry<String, Object> entry : beanMap.entrySet()) {
+				if(entry.getValue() instanceof Map<?, ?>) {
+					appendModuleNameInKey(null, prefix+"."+entry.getKey(), (Map<String, Object>) entry.getValue(), placeHolders);
+				}
+				else {
+					placeHolders.put(prefix+"."+entry.getKey(), entry.getValue());
+				}
 			}
 		}
 	}

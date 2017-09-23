@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
@@ -47,6 +48,7 @@ public class AddNoteCommand implements Command {
 			note.setNoteId((long) props.get("id"));
 			if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals(FacilioConstants.ContextNames.TICKET))
 			{
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 				TicketAPI.addTicketNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
 				if(note.getNotifyRequester())
 				{

@@ -12,7 +12,8 @@ import org.json.simple.parser.ParseException;
 public enum DefaultTemplates implements ActionTemplate {
 	WORKORDER_ASSIGN_EMAIL(1),
 	WORKORDER_ACTIVITY_FOLLOWUP(2),
-	WORKORDER_ASSIGN_SMS(3)
+	WORKORDER_ASSIGN_SMS(3),
+	TASK_COMMENT_EMAIL(4)
 	;
 	
 	private int val;
@@ -73,6 +74,13 @@ public enum DefaultTemplates implements ActionTemplate {
 				json = new JSONObject();
 				json.put("to", "+919003625354");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				break;
+			case 4:
+				json = new JSONObject();
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${ticket.assignedTo.email}");
+				json.put("subject", "New Comment added");
+				json.put("message", "A new comment has been added in your WorkOrder.");
 				
 		}
 		return json;

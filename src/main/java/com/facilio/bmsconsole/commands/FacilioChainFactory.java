@@ -735,6 +735,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateNotePropsCommand());
 		c.addCommand(new AddNoteCommand());
+		c.addCommand(new ExecuteNoteWorkflowCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

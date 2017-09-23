@@ -23,19 +23,21 @@ public class CriteriaAPI {
 			pstmt.setLong(2, criteriaId);
 			
 			rs = pstmt.executeQuery();
-			boolean first = true;
+			boolean isCriteriaNull = true;
 			Criteria criteria = null;
 			Map<Integer, Condition> conditions = new HashMap<>();
 			
 			while(rs.next()) {
-				if(first) {
+				if(isCriteriaNull) {
 					criteria = getCriteriaFromRS(rs);
-					first = false;
+					isCriteriaNull = false;
 				}
 				Condition condition = getConditionFromRS(rs, orgId, conn);
 				conditions.put(condition.getSequence(), condition);
 			}
-			criteria.setConditions(conditions);
+			if(!isCriteriaNull) {
+				criteria.setConditions(conditions);
+			}
 			return criteria;
 		}
 		catch(SQLException e) {

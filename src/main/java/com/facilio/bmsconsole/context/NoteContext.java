@@ -50,7 +50,7 @@ public class NoteContext {
 		this.body = body;
 	}
 	
-	private long parentId = 0;
+	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
 	}

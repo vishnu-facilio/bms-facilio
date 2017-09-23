@@ -80,9 +80,9 @@ public class WorkflowAPI {
 				long criteriaId = workflow.getCriteriaId();
 				workflow.setCriteria(CriteriaAPI.getCriteria(orgId, criteriaId, conn));
 				
-				if(workflow.getCriteria() == null) {
+				/*if(workflow.getCriteria() == null) {
 					throw new RuntimeException("Criteria cannot be null for WorkflowRule : "+workflow.getId());
-				}
+				}*/
 				
 				workflows.add(workflow);
 			}

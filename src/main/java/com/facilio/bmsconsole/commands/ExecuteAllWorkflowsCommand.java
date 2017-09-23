@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -34,18 +35,18 @@ public class ExecuteAllWorkflowsCommand implements Command
 		Object record = context.get(FacilioConstants.ContextNames.RECORD);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(record != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId = modBean.getModule(moduleName).getModuleId();
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			if(eventType != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				long moduleId = modBean.getModule(moduleName).getModuleId();
 				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
 				
 				if(workflowRules != null && workflowRules.size() > 0) {
 					Map<String, Object> placeHolders = new HashMap<>();
-					appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
-					appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-					appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
 					
 					for(WorkflowRuleContext workflowRule : workflowRules)
 					{
@@ -71,43 +72,5 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 		}
 		return false;
-	}
-	
-	private void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {
-		if(beanMap != null) {
-			if(moduleName != null && !moduleName.isEmpty() && !LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = modBean.getAllFields(moduleName);
-				
-				if(fields != null && !fields.isEmpty()) {
-					for(FacilioField field : fields) {
-						if(field.getDataType() == FieldType.LOOKUP) {
-							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
-							if(props != null) {
-								LookupField lookupField = (LookupField) field;
-								if(props.size() <= 2) {
-									Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);
-									placeHolders.put(prefix+"."+field.getName(), lookupVal);
-									props = FieldUtil.getAsProperties(lookupVal);
-								}
-								String childModuleName = lookupField.getLookupModule() == null?lookupField.getSpecialType():lookupField.getLookupModule().getName();
-								appendModuleNameInKey(childModuleName, prefix+"."+field.getName(), props, placeHolders);
-							}
-						}
-						else {
-							placeHolders.put(prefix+"."+field.getName(), beanMap.remove(field.getName()));
-						}
-					}
-				}
-			}
-			for(Map.Entry<String, Object> entry : beanMap.entrySet()) {
-				if(entry.getValue() instanceof Map<?, ?>) {
-					appendModuleNameInKey(null, prefix+"."+entry.getKey(), (Map<String, Object>) entry.getValue(), placeHolders);
-				}
-				else {
-					placeHolders.put(prefix+"."+entry.getKey(), entry.getValue());
-				}
-			}
-		}
 	}
 }

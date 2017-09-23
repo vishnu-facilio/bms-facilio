@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 
 public class WorkflowRuleContext {
 	
-	private long orgId = 0;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -12,7 +12,7 @@ public class WorkflowRuleContext {
 		this.orgId = orgId;
 	}
 	
-	private long id;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}
@@ -36,7 +36,7 @@ public class WorkflowRuleContext {
 		this.description = description;
 	}
 	
-	private long eventId;
+	private long eventId = -1;
 	public long getEventId() {
 		return eventId;
 	}
@@ -44,7 +44,7 @@ public class WorkflowRuleContext {
 		this.eventId = eventId;
 	}
 	
-	private long criteriaId;
+	private long criteriaId = -1;
 	public long getCriteriaId() {
 		return criteriaId;
 	}
@@ -60,7 +60,7 @@ public class WorkflowRuleContext {
 		this.criteria = criteria;
 	}
 
-	private int executionOrder = 1;
+	private int executionOrder = -1;
 	public int getExecutionOrder() {
 		return executionOrder;
 	}
@@ -76,7 +76,7 @@ public class WorkflowRuleContext {
 		this.status = status;
 	}
 	
-	private int ruleType;
+	private int ruleType = -1;
 	public int getRuleType() {
 		return ruleType;
 	}
