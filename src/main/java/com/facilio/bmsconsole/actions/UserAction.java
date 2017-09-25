@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,10 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport {
@@ -161,6 +165,66 @@ public class UserAction extends ActionSupport {
 
 		Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
 		addUser.execute(context);
+		
+		return SUCCESS;
+	}
+
+	private File avatar;
+	
+	public File getAvatar() {
+		return avatar;
+	}
+	public void setAvatar(File avatar) {
+		this.avatar = avatar;
+	}
+	
+	private String avatarFileName;
+
+	public String getAvatarFileName() {
+		return avatarFileName;
+	}
+
+	public void setAvatarFileName(String avatarFileName) {
+		this.avatarFileName = avatarFileName;
+	}
+	
+	private String avatarContentType;
+	public String getAvatarContentType() {
+		return avatarContentType;
+	}
+
+	public void setAvatarContentType(String avatarContentType) {
+		this.avatarContentType = avatarContentType;
+	}
+	
+	private String avatarUrl;
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+	
+	public String getAvatarUrl() {
+		return this.avatarUrl;
+	}
+	
+	public String uploadUserAvatar() throws Exception {
+		
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+		
+		UserAPI.updateUserPhoto(userId, fileId, null);
+		
+		setAvatarUrl(fs.getPrivateUrl(fileId));
+		
+		return SUCCESS;
+	}
+	
+	public String deleteUserAvatar() throws Exception {
+		
+		long photoId = UserInfo.getCurrentUser().getPhotoId();
+		if (photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			fs.deleteFile(photoId);
+		}
 		
 		return SUCCESS;
 	}

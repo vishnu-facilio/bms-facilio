@@ -269,4 +269,6 @@ public abstract class FileStore {
 	public abstract boolean deleteFiles(List<Long> fileId) throws Exception;
 	
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
+	
+	public abstract String getPrivateUrl(long fileId) throws Exception;
 }

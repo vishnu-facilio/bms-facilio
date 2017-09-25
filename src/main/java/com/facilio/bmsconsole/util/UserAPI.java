@@ -411,6 +411,34 @@ public class UserAPI {
 		}
 	}
 	
+	public static boolean updateUserPhoto(long userId, long photoId, Connection conn) throws Exception {
+
+		boolean isLocalConn = false;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isLocalConn = true;
+			}
+
+			String insertquery1 = "update Users set PHOTO_ID=? where USERID=?";
+			PreparedStatement ps1 = conn.prepareStatement(insertquery1);
+			ps1.setLong(1, photoId);
+			ps1.setLong(2, userId);
+			ps1.executeUpdate();
+			ps1.close();
+			
+			return true;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			if (isLocalConn) {
+				DBUtil.closeAll(conn, null);
+			}
+		}
+	}
+	
 	private static UserContext getUserObjectFromRS(ResultSet rs) throws SQLException {
 		
 		UserContext uc = new UserContext();
@@ -423,6 +451,7 @@ public class UserAPI {
 		uc.setUserStatus(rs.getBoolean("USER_STATUS"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
 		uc.setRoleId(rs.getLong("ROLE_ID"));
+		uc.setPhotoId(rs.getLong("PHOTO_ID"));
 		
 		return uc;
 	}
@@ -439,6 +468,7 @@ public class UserAPI {
 		uc.setUserStatus(rs.getBoolean("USER_STATUS"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
 		uc.setRoleId(rs.getLong("ROLE_ID"));
+		uc.setPhotoId(rs.getLong("PHOTO_ID"));
 		
 		RoleContext rc = new RoleContext();
 		rc.setRoleId(rs.getLong("ROLE_ID"));

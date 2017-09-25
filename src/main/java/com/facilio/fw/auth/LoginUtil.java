@@ -62,6 +62,7 @@ public class LoginUtil {
 			userInfo.setName(usrCtx.getName());
 			userInfo.setActive(usrCtx.getUserStatus());
 			userInfo.setRole(usrCtx.getRole());
+			userInfo.setPhotoId(usrCtx.getPhotoId());
 		}
 		return userInfo;
 	}
