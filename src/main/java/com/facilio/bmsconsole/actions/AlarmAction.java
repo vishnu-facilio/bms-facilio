@@ -10,8 +10,10 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
@@ -45,7 +47,7 @@ public class AlarmAction extends ActionSupport {
 		this.alarmParams = alarmParams;
 	}
 	
-	private AlarmContext getAlarmFromParams(AlarmContext alarm) {
+	private AlarmContext getAlarmFromParams(AlarmContext alarm) throws Exception {
 		//Process alarm params
 		if (alarm == null) {
 			alarm = new AlarmContext();
@@ -59,7 +61,19 @@ public class AlarmAction extends ActionSupport {
 		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
-		
+		if(alarm.getDeviceId() == -1)
+		{
+			Long deviceId = DeviceAPI.addDevice(alarm.getTicket().getSpace().getName(), alarm.getTicket().getSpace().getId());
+			alarm.setDeviceId(deviceId);
+		}
+		else
+		{
+			Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
+			
+			BaseSpaceContext space = new BaseSpaceContext();
+			space.setId(spaceId);
+			alarm.getTicket().setSpace(space);
+		}
 		return alarm;
 	}
 	

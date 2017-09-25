@@ -122,6 +122,11 @@
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+			<result name="success" type="json">
+				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
