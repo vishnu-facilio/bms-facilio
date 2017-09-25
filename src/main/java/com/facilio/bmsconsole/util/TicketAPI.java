@@ -15,6 +15,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -84,6 +85,28 @@ public class TicketAPI {
 																.orderBy("ID");
 			List<TicketStatusContext> statuses = builder.get();
 			return statuses.get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static TicketCategoryContext getCategory(long orgId, String category) throws Exception
+	{
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+																.connection(conn)
+																.table("TicketCategory")
+																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
+																.beanClass(TicketCategoryContext.class)
+																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
+																.andCustomWhere("ORGID = ? AND NAME = ?", orgId, category)
+																.orderBy("ID");
+			List<TicketCategoryContext> categories = builder.get();
+			return categories.get(0);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
