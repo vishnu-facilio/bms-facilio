@@ -177,6 +177,9 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public List<HashMap<String, Object>> getFollowers() throws Exception {
+		if(getId() == -1) {
+			return null;
+		}
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
