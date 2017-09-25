@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands.util;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -23,6 +25,7 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -30,9 +33,12 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -366,6 +372,43 @@ public class CommonCommandUtil {
 					placeHolders.put(prefix+"."+entry.getKey(), entry.getValue());
 				}
 			}
+		}
+	}
+	
+	public static void updateAlarmDetailsInTicket(AlarmContext alarm, Connection conn) throws Exception {
+		boolean isChanged = false;
+		if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
+		{
+			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
+			if(category != null) {
+				alarm.getTicket().setCategory(category);
+				isChanged = true;
+			}
+		}
+		if(alarm.getDeviceId() != -1) {
+			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
+			if(device != null) {
+				String description;
+				if(alarm.getIsAcknowledged()) {
+					 description = MessageFormat.format("Alarm raised from {0} of type {1} has been acknowledged",device.getName(),"MOM");
+				}
+				else {
+					description = MessageFormat.format("Alarm raised from {0} of type {1} is yet to be acknowledged",device.getName(),"MOM");
+				}
+				alarm.getTicket().setDescription(description);
+				isChanged = true;
+			}
+		}
+		if(isChanged) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+					.connection(conn)
+					.moduleName(FacilioConstants.ContextNames.TICKET)
+					.table("Tickets")
+					.fields(modBean.getAllFields(FacilioConstants.ContextNames.TICKET))
+					.andCustomWhere("ID = ?", alarm.getTicket().getId());
+			
+			updateBuilder.update(alarm.getTicket());
 		}
 	}
 }

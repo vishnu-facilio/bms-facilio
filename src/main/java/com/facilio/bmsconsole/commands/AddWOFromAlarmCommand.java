@@ -9,21 +9,17 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class AddWOFromAlarmCommand implements Command {
 
@@ -63,14 +59,6 @@ public class AddWOFromAlarmCommand implements Command {
 		return false;
 	}
 	
-	private ModuleBean modBean = null;
-	private ModuleBean getModuleBean() throws InstantiationException, IllegalAccessException {
-		if(modBean == null) {
-			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		}
-		return modBean;
-	}
-	
 	private long addWorkOrder(AlarmContext alarm, Connection conn) throws Exception {
 		WorkOrderContext wo = getWorkOrderFromTicketId(alarm.getTicket().getId(), conn); 
 		
@@ -78,25 +66,7 @@ public class AddWOFromAlarmCommand implements Command {
 			wo = new WorkOrderContext();
 			wo.setTicket(alarm.getTicket());
 			wo.setCreatedTime(System.currentTimeMillis());
-			
-			if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
-			{
-				TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
-				if(category != null) {
-					wo.getTicket().setCategory(category);
-					
-					getModuleBean();
-					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-							.connection(conn)
-							.moduleName(FacilioConstants.ContextNames.TICKET)
-							.table("Tickets")
-							.fields(modBean.getAllFields(FacilioConstants.ContextNames.TICKET))
-							.andCustomWhere("ID = ?", wo.getTicket().getId());
-					
-					updateBuilder.update(wo.getTicket());
-				}
-			}
-			
+			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			
@@ -110,7 +80,7 @@ public class AddWOFromAlarmCommand implements Command {
 	
 	private WorkOrderContext getWorkOrderFromTicketId(long ticketId, Connection conn) throws Exception {
 		
-		getModuleBean();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 														.connection(conn)
 														.table("WorkOrders")
