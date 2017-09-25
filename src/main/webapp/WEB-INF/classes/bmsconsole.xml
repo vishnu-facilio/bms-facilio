@@ -122,6 +122,11 @@
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+			<result name="success" type="json">
+				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
@@ -900,6 +905,20 @@
 		</action>
 	</package>
 	
+		<package name="setupApi" namespace="/api/setup" extends="home">
+	
+	<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			<param name="includeProperties">users.*</param></result>
+		</action>
+<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
+	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+            <result name="success" type="json">
+			<param name="includeProperties">groups.*</param></result>
+			</action>		
+			
+	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
@@ -1183,7 +1202,12 @@
 	</package>
 	
 	<package name="users" namespace="/app/setup/users" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+	<action name="list" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			<param name="includeProperties">users.*</param></result>
+		</action>
+  	<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/usersListPopup.jsp</result>
 		</action>

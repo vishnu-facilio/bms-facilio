@@ -354,6 +354,35 @@ public class DeviceAPI
 		}
 	}
 	
+	public static Long addDevice(String name, Long spaceId) throws Exception
+	{
+		Long deviceId = AssetsAPI.addAsset(name, OrgInfo.getCurrentOrgInfo().getOrgid());
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Device (DEVICE_ID, SPACE_ID) VALUES (?, ?)");
+			pstmt.setLong(1, deviceId);
+			pstmt.setLong(2, spaceId);
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add device");
+			}
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while adding device" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return deviceId;
+	}
+	
 	public static void addDevice(Long assetId, Long serviceId, Long zoneid, Long buildingId, Long controllerId, Long parentDeviceId, int deviceType, int status) throws Exception
 	{
 		Connection conn = null;
@@ -881,7 +910,8 @@ public class DeviceAPI
 							.setId(rs.getLong("DEVICE_ID"))
 							.setName(rs.getString("NAME"))
 							.setParentId(rs.getLong("PARENT_DEVICE_ID"))
-							.setStatus(rs.getInt("STATUS"));
+							.setStatus(rs.getInt("STATUS"))
+							.setSpaceId(rs.getLong("SPACE_ID"));
 				}
 			}
 			catch (SQLException e) 

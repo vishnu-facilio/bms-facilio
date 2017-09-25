@@ -95,4 +95,16 @@ public class Device
 	{
 		return this.instances;
 	}
+	
+	private long spaceId = -1;
+	public Long getSpaceId()
+	{
+		return this.spaceId;
+	}
+	
+	public Device setSpaceId(long spaceId)
+	{
+		this.spaceId = spaceId;
+		return this;
+	}
 }
