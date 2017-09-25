@@ -124,5 +124,10 @@ public class LocalFileStore extends FileStore {
 		else {
 			return false;
 		}
-	}	
+	}
+	
+	@Override
+	public String getPrivateUrl(long fileId) throws Exception {
+		return null;
+	}
 }

@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -35,9 +37,11 @@ public class UserInfo {
 	private long userId;
 	private long orgId;
 	private long orgUserId;
+	private long photoId;
 	private String name;
 	private boolean isActive;
 	private RoleContext role;
+	private String avatarUrl;
 	private String subdomain;
 
 	private static ThreadLocal<UserInfo> userlocal = new ThreadLocal<UserInfo>();
@@ -186,6 +190,22 @@ public class UserInfo {
 
 	public void setRole(RoleContext role) {
 		this.role = role;
+	}
+	
+	public long getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
+	}
+	
+	public String getAvatarUrl() throws Exception {
+		if (this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.photoId);
+		}
+		return null;
 	}
 	
 	public void setAdditionalProps(JSONObject additionalProps) {

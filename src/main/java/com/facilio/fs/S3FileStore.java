@@ -2,9 +2,12 @@ package com.facilio.fs;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
@@ -105,5 +108,26 @@ public class S3FileStore extends FileStore {
 		// deleting old file from s3
 		AwsUtil.getAmazonS3Client().deleteObject(getBucketName(), oldFilePath);
 		return true;
+	}
+	
+	@Override
+	public String getPrivateUrl(long fileId) throws Exception {
+		FileInfo fileInfo = getFileInfo(fileId);
+		if (fileInfo == null) {
+			return null;
+		}
+		
+		java.util.Date expiration = new java.util.Date();
+		long msec = expiration.getTime();
+		msec += 24 * 60 * 60 * 1000; // 24 hour.
+		expiration.setTime(msec);
+		             
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
+		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
+		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
+		generatePresignedUrlRequest.setExpiration(expiration);
+		             
+		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
+		return url.toString();
 	}
 }

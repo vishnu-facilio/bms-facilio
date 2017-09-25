@@ -972,6 +972,19 @@
 		</action>
 	</package>
 	
+	<package name="userAvatarApi" namespace="/api/settings/users/avatar" extends="home">
+		<action name="upload" class="com.facilio.bmsconsole.actions.UserAction" method="uploadUserAvatar">
+			<result name="success" type="json">
+				<param name="includeProperties">avatarUrl</param>
+			</result>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.UserAction" method="deleteUserAvatar">
+			<result name="success" type="json">
+				<param name="includeProperties">avatarUrl</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="leed" namespace="/app/leed" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>

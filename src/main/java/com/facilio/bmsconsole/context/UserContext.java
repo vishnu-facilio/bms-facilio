@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 
 public class UserContext {
 	
@@ -121,6 +123,23 @@ public class UserContext {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+	
+	private long photoId;
+	public long getPhotoId() {
+		return photoId;
+	}
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
+	}
+	
+	public String getAvatarUrl() throws Exception {
+		if (this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.photoId);
+		}
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 		return "UserContext [orgId=" + orgId + ", userId=" + userId + ", orgUserId=" + orgUserId + ", name=" + name
