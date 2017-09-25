@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -40,6 +41,7 @@ public class ViewFactory {
 		viewMap.put("workorder-myoverduetickets", getMyOverdueTickets());
 		viewMap.put("workorder-mytickets", getMyTickets());
 		viewMap.put("workorder-mytasks", getMyTasks());
+		viewMap.put("workorder-firesafetywo", getFireSafetyWOs());
 		
 		//viewMap.put("workorder-all", getAllWorkorders());
 		
@@ -479,5 +481,73 @@ public class ViewFactory {
 		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
 		
 		return myUserCondition;
+	}
+	
+	private static Criteria getFireSafetyCategoryCriteria() {
+		FacilioField categoryNameField = new FacilioField();
+		categoryNameField.setName("name");
+		categoryNameField.setColumnName("NAME");
+		categoryNameField.setDataType(FieldType.STRING);
+		categoryNameField.setModuleTableName("TicketCategory");
+		
+		Condition fireSafety = new Condition();
+		fireSafety.setField(categoryNameField);
+		fireSafety.setOperator(StringOperators.IS);
+		fireSafety.setValue("Fire Safety");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(fireSafety);
+		
+		return criteria;
+	}
+	
+	private static FacilioView getFireSafetyWOs() {
+		//All Open Tickets
+		FacilioModule categoryModule = new FacilioModule();
+		categoryModule.setName(FacilioConstants.ContextNames.TICKET_CATEGORY);
+		categoryModule.setTableName("TicketCategory");
+		categoryModule.setDisplayName("Ticket Category");
+		
+		LookupField categoryField = new LookupField();
+		categoryField.setName("category");
+		categoryField.setColumnName("CATEGORY_ID");
+		categoryField.setDataType(FieldType.LOOKUP);
+		categoryField.setModuleTableName("Tickets");
+		categoryField.setLookupModule(categoryModule);
+		
+		Condition fireSafetyTickets = new Condition();
+		fireSafetyTickets.setField(categoryField);
+		fireSafetyTickets.setOperator(LookupOperator.LOOKUP);
+		fireSafetyTickets.setCriteriaValue(getFireSafetyCategoryCriteria());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(fireSafetyTickets);
+		
+		FacilioModule ticketModule = new FacilioModule();
+		ticketModule.setName(FacilioConstants.ContextNames.TICKET);
+		ticketModule.setTableName("Tickets");
+		ticketModule.setDisplayName("Tickets");
+		
+		LookupField field = new LookupField();
+		field.setName("ticket");
+		field.setColumnName("TICKET_ID");
+		field.setDataType(FieldType.LOOKUP);
+		field.setModuleTableName("WorkOrders");
+		field.setLookupModule(ticketModule);
+		
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(criteria);
+		
+		Criteria fireSafetyWOcriteria = new Criteria();
+		fireSafetyWOcriteria.addAndCondition(condition);
+		
+		FacilioView fireSafetyWOView = new FacilioView();
+		fireSafetyWOView.setName("firesafetywo");
+		fireSafetyWOView.setDisplayName("Fire Safety Work Orders");
+		fireSafetyWOView.setCriteria(fireSafetyWOcriteria);
+		
+		return fireSafetyWOView;
 	}
 }
