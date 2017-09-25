@@ -36,12 +36,12 @@ public class ViewFactory {
 		viewMap.put("workorder-myopen", getMyOpenTickets());
 		viewMap.put("workorder-unassigned", getUnassignedWorkorders());
 		viewMap.put("workorder-closed", getAllClosedTickets());
+		viewMap.put("workorder-openfirealarms", getFireSafetyWOs());
 		
 		viewMap.put("workorder-overduetickets", getAllOverdueTickets());
 		viewMap.put("workorder-myoverduetickets", getMyOverdueTickets());
 		viewMap.put("workorder-mytickets", getMyTickets());
 		viewMap.put("workorder-mytasks", getMyTasks());
-		viewMap.put("workorder-firesafetywo", getFireSafetyWOs());
 		
 		//viewMap.put("workorder-all", getAllWorkorders());
 		
@@ -544,8 +544,8 @@ public class ViewFactory {
 		fireSafetyWOcriteria.addAndCondition(condition);
 		
 		FacilioView fireSafetyWOView = new FacilioView();
-		fireSafetyWOView.setName("firesafetywo");
-		fireSafetyWOView.setDisplayName("Fire Safety Work Orders");
+		fireSafetyWOView.setName("openfirealarms");
+		fireSafetyWOView.setDisplayName("Fire Alarm Workorders");
 		fireSafetyWOView.setCriteria(fireSafetyWOcriteria);
 		
 		return fireSafetyWOView;

@@ -68,7 +68,8 @@ public class AddWOFromAlarmCommand implements Command {
 		wo.setTicket(alarm.getTicket());
 		wo.setCreatedTime(System.currentTimeMillis());
 		
-		if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) {
+		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
+		{
 			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
 			if(category != null) {
 				wo.getTicket().setCategory(category);
