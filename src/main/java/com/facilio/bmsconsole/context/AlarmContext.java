@@ -89,6 +89,15 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
+	
+	private long deviceId = -1;
+	public long getDeviceId() {
+		return deviceId;
+	}
+	
+	public void setDeviceId(long deviceId) {
+		this.deviceId = deviceId;
+	}
 
 	public static enum AlarmStatus {
 		ACTIVE(1, "Active"),

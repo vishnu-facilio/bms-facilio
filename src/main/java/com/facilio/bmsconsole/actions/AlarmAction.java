@@ -53,7 +53,7 @@ public class AlarmAction extends ActionSupport {
 			
 			TicketContext ticket = new TicketContext();
 			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
-			ticket.setDescription("ddd");
+			ticket.setDescription("Alarm Testing");
 		}
 		alarm.setStatus(AlarmContext.AlarmStatus.ACTIVE);
 		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
