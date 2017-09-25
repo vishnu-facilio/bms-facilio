@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -20,7 +21,10 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
@@ -28,6 +32,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 import com.twilio.sdk.Twilio;
@@ -251,6 +256,7 @@ public class AlarmAction extends ActionSupport {
 		
 		long alarmId = getAlarm().getId();
 		String alarmSubject = getAlarm().getTicket().getSubject();
+		String alarmType = getAlarm().getTypeVal();
 
 		List<HashMap<String, Object>> followers = new ArrayList<>();
 		
@@ -262,12 +268,12 @@ public class AlarmAction extends ActionSupport {
 				JSONObject mailJson = new JSONObject();
 				mailJson.put("sender", "support@thingscient.com");
 				mailJson.put("to", value);
-				mailJson.put("subject", "[ALARM] "+alarmSubject);
+				mailJson.put("subject", "[ALARM] ["+alarmType+"] "+alarmSubject);
 				mailJson.put("message", message);
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
-				value = sendSMS(value, "[ALARM] "+alarmSubject+" - "+message);
+				value = sendSMS(value, "[ALARM] ["+alarmType+"] "+alarmSubject+" - "+message);
 				to.put("value", value);
 			}
 			
@@ -371,6 +377,54 @@ public class AlarmAction extends ActionSupport {
 		finally 
 		{
 			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	private long workorderId;
+	public void setWorkorderId(long workorderId) {
+		this.workorderId = workorderId;
+	}
+	
+	public long getWorkorderId() {
+		return this.workorderId;
+	}
+	
+	public String viewWorkorder() throws Exception {
+		
+		setWorkorderId(getAlarmWorkOrderId(this.id.get(0)));
+		return SUCCESS;
+	}
+	
+	private long getAlarmWorkOrderId(long ticketId) throws Exception {
+		
+		FacilioField idFld = new FacilioField();
+		idFld.setName("ID");
+		idFld.setColumnName("ID");
+		idFld.setModuleTableName("WorkOrders");
+		idFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(idFld);
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.select(fields)
+					.table("WorkOrders")
+					.innerJoin("Tickets")
+					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND Tickets.ID=?", orgId, orgId, ticketId);
+
+			List<Map<String, Object>> rs = builder.get();
+			if (rs != null && !rs.isEmpty()) {
+				return (Long) rs.get(0).get("ID");
+			}
+			return -1;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 }
