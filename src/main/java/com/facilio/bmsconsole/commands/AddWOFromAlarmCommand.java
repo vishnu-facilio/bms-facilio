@@ -63,36 +63,67 @@ public class AddWOFromAlarmCommand implements Command {
 		return false;
 	}
 	
-	private long addWorkOrder(AlarmContext alarm, Connection conn) throws Exception {
-		WorkOrderContext wo = new WorkOrderContext();
-		wo.setTicket(alarm.getTicket());
-		wo.setCreatedTime(System.currentTimeMillis());
-		
-		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
-		{
-			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
-			if(category != null) {
-				wo.getTicket().setCategory(category);
-				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-						.connection(conn)
-						.moduleName(FacilioConstants.ContextNames.TICKET)
-						.table("Tickets")
-						.fields(modBean.getAllFields(FacilioConstants.ContextNames.TICKET))
-						.andCustomWhere("ID = ?", wo.getTicket().getId());
-				
-				updateBuilder.update(wo.getTicket());
-			}
+	private ModuleBean modBean = null;
+	private ModuleBean getModuleBean() throws InstantiationException, IllegalAccessException {
+		if(modBean == null) {
+			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		}
+		return modBean;
+	}
+	
+	private long addWorkOrder(AlarmContext alarm, Connection conn) throws Exception {
+		WorkOrderContext wo = getWorkOrderFromTicketId(alarm.getTicket().getId(), conn); 
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+		if( wo == null) {
+			wo = new WorkOrderContext();
+			wo.setTicket(alarm.getTicket());
+			wo.setCreatedTime(System.currentTimeMillis());
+			
+			if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
+			{
+				TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
+				if(category != null) {
+					wo.getTicket().setCategory(category);
+					
+					getModuleBean();
+					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+							.connection(conn)
+							.moduleName(FacilioConstants.ContextNames.TICKET)
+							.table("Tickets")
+							.fields(modBean.getAllFields(FacilioConstants.ContextNames.TICKET))
+							.andCustomWhere("ID = ?", wo.getTicket().getId());
+					
+					updateBuilder.update(wo.getTicket());
+				}
+			}
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+			
+			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+			addWorkOrder.execute(context);
+			
+			return wo.getId();
+		}
+		return -1;
+	}
+	
+	private WorkOrderContext getWorkOrderFromTicketId(long ticketId, Connection conn) throws Exception {
 		
-		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
-		addWorkOrder.execute(context);
+		getModuleBean();
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+														.connection(conn)
+														.table("WorkOrders")
+														.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+														.beanClass(WorkOrderContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+														.andCustomWhere("TICKET_ID = ?", ticketId);
 		
-		return wo.getId();
+		List<WorkOrderContext> workOrders = builder.get();
+		if(workOrders != null && !workOrders.isEmpty()) {
+			return workOrders.get(0);
+		}
+		return null;
 	}
 
 }

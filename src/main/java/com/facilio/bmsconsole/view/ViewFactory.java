@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -108,6 +109,27 @@ public class ViewFactory {
 		criteria.addAndCondition(statusOpen);
 		
 		return criteria;
+	}
+	
+	private static Condition getOpenTicketCondition() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ticketstatus");
+		module.setTableName("TicketStatus");
+		module.setDisplayName("Ticket Status");
+		
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModuleTableName("Tickets");
+		statusField.setLookupModule(module);
+		
+		Condition ticketOpen = new Condition();
+		ticketOpen.setField(statusField);
+		ticketOpen.setOperator(LookupOperator.LOOKUP);
+		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
+		
+		return ticketOpen;
 	}
 	
 	private static Criteria getCloseStatusCriteria() {
@@ -256,25 +278,9 @@ public class ViewFactory {
 	
 	private static FacilioView getAllOpenTickets() {
 		//All Open Tickets
-		FacilioModule module = new FacilioModule();
-		module.setName("ticketstatus");
-		module.setTableName("TicketStatus");
-		module.setDisplayName("Ticket Status");
-		
-		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
-		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModuleTableName("Tickets");
-		statusField.setLookupModule(module);
-		
-		Condition ticketOpen = new Condition();
-		ticketOpen.setField(statusField);
-		ticketOpen.setOperator(LookupOperator.LOOKUP);
-		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(ticketOpen);
+		criteria.addAndCondition(getOpenTicketCondition());
 		
 		FacilioModule module2 = new FacilioModule();
 		module2.setName("ticket");
@@ -356,25 +362,8 @@ public class ViewFactory {
 	
 	private static FacilioView getMyOpenTickets() {
 		
-		FacilioModule module = new FacilioModule();
-		module.setName("ticketstatus");
-		module.setTableName("TicketStatus");
-		module.setDisplayName("Ticket Status");
-		
-		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
-		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModuleTableName("Tickets");
-		statusField.setLookupModule(module);
-		
-		Condition ticketOpen = new Condition();
-		ticketOpen.setField(statusField);
-		ticketOpen.setOperator(LookupOperator.LOOKUP);
-		ticketOpen.setCriteriaValue(getOpenStatusCriteria());
-		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(ticketOpen);
+		criteria.addAndCondition(getOpenTicketCondition());
 		criteria.addAndCondition(getMyUserCondition("Tickets"));
 		
 		FacilioModule module2 = new FacilioModule();
@@ -515,13 +504,26 @@ public class ViewFactory {
 		categoryField.setModuleTableName("Tickets");
 		categoryField.setLookupModule(categoryModule);
 		
-		Condition fireSafetyTickets = new Condition();
-		fireSafetyTickets.setField(categoryField);
-		fireSafetyTickets.setOperator(LookupOperator.LOOKUP);
-		fireSafetyTickets.setCriteriaValue(getFireSafetyCategoryCriteria());
+		Condition fireSafetyCategory = new Condition();
+		fireSafetyCategory.setField(categoryField);
+		fireSafetyCategory.setOperator(LookupOperator.LOOKUP);
+		fireSafetyCategory.setCriteriaValue(getFireSafetyCategoryCriteria());
 		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(fireSafetyTickets);
+		FacilioField sourceField = new FacilioField();
+		sourceField.setName("sourceType");
+		sourceField.setColumnName("SOURCE_TYPE");
+		sourceField.setDataType(FieldType.NUMBER);
+		sourceField.setModuleTableName("Tickets");
+		
+		Condition alarmSourceCondition = new Condition();
+		alarmSourceCondition.setField(sourceField);
+		alarmSourceCondition.setOperator(NumberOperators.EQUALS);
+		alarmSourceCondition.setValue(String.valueOf(TicketContext.SourceType.ALARM.getIntVal()));
+		
+		Criteria ticketCriteria = new Criteria();
+		ticketCriteria.addAndCondition(fireSafetyCategory);
+		ticketCriteria.addAndCondition(getOpenTicketCondition());
+		ticketCriteria.addAndCondition(alarmSourceCondition);
 		
 		FacilioModule ticketModule = new FacilioModule();
 		ticketModule.setName(FacilioConstants.ContextNames.TICKET);
@@ -538,7 +540,7 @@ public class ViewFactory {
 		Condition condition = new Condition();
 		condition.setField(field);
 		condition.setOperator(LookupOperator.LOOKUP);
-		condition.setCriteriaValue(criteria);
+		condition.setCriteriaValue(ticketCriteria);
 		
 		Criteria fireSafetyWOcriteria = new Criteria();
 		fireSafetyWOcriteria.addAndCondition(condition);
