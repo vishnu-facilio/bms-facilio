@@ -899,6 +899,14 @@
 		</action>
 	</package>
 	
+		<package name="setupApi" namespace="/api/setup" extends="home">
+	
+	<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			<param name="includeProperties">users.*</param></result>
+		</action>
+	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
@@ -1182,6 +1190,11 @@
 	</package>
 	
 	<package name="users" namespace="/app/setup/users" extends="home">
+	<action name="list" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			<param name="includeProperties">users.*</param></result>
+		</action>
 		<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/usersListPopup.jsp</result>
