@@ -261,16 +261,12 @@ public class AlarmAction extends ActionSupport {
 		String message = (String) notificationObj.get("message");
 		
 		long alarmId = getAlarm().getId();
-		String alarmSubject = getAlarm().getTicket().getSubject();
-		String alarmType = getAlarm().getTypeVal();
 
 		List<HashMap<String, Object>> followers = new ArrayList<>();
 		
 		for (HashMap<String, Object> to : toList) {
 			String type = (String) to.get("type");
 			String value = (String) to.get("value");
-			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
-			BaseSpaceContext space = getSpace(device.getSpaceId());
 			if ("email".equalsIgnoreCase(type)) {
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ALARM, FacilioConstants.ContextNames.ALARM, FieldUtil.getAsProperties(alarm), placeHolders);
@@ -288,14 +284,7 @@ public class AlarmAction extends ActionSupport {
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
-				String sms = null;
-				if(message != null && !message.isEmpty()) {
-					sms = MessageFormat.format("[ALARM] [{0}] {1} in {2} - {3}", alarmType, alarmSubject, space.getName(), message);
-				}
-				else {
-					sms = MessageFormat.format("[ALARM] [{0}] {1} in {2}", alarmType, alarmSubject, space.getName());
-				}
-				value = sendSMS(value, sms);
+				value = CommonCommandUtil.sendAlarmSMS(alarm, value, message);
 				to.put("value", value);
 			}
 			
@@ -312,45 +301,6 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	private BaseSpaceContext getSpace(long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			BaseSpaceContext space = SpaceAPI.getBaseSpace(id, OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
-			return space;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	
-	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
-	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
-	public String sendSMS(String to, String message) {
-
-		try {
-
-			Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
-
-			com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,
-					new com.twilio.sdk.type.PhoneNumber(to),  // To number
-					new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
-					message                    // SMS body
-					).execute();
-
-
-			//com.twilio.sdk.resource.lookups.v1.PhoneNumber
-			//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
-			System.out.println(tmessage.getSid());
-			System.out.println(tmessage.getTo());
-
-			return tmessage.getTo();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public HashMap<String, Object> getAlarmFollower(long alarmId, String follower) throws Exception {
 		
 		Connection conn = null;
