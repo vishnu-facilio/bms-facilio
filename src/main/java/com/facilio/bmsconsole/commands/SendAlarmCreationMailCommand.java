@@ -26,8 +26,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class SendAlarmCreationMailCommand implements Command {
 
-	private static final String EMAIL1 = "manthosh@facilio.com";
-	private static final String EMAIL2 = "shivaraj@facilio.com";
+	private static final String EMAIL1 = "prabhu@facilio.com";
+	private static final String EMAIL2 = "raj@facilio.com";
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
