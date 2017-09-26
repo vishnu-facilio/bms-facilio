@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,19 +19,24 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -263,17 +269,33 @@ public class AlarmAction extends ActionSupport {
 		for (HashMap<String, Object> to : toList) {
 			String type = (String) to.get("type");
 			String value = (String) to.get("value");
-
+			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
+			BaseSpaceContext space = getSpace(device.getSpaceId());
 			if ("email".equalsIgnoreCase(type)) {
-				JSONObject mailJson = new JSONObject();
-				mailJson.put("sender", "support@thingscient.com");
-				mailJson.put("to", value);
-				mailJson.put("subject", "[ALARM] ["+alarmType+"] "+alarmSubject);
-				mailJson.put("message", message);
+				Map<String, Object> placeHolders = new HashMap<>();
+				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ALARM, FacilioConstants.ContextNames.ALARM, FieldUtil.getAsProperties(alarm), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+				
+				placeHolders.put("follower.email", value);
+				JSONObject mailJson = DefaultTemplates.ALARM_CREATION_EMAIL.getTemplate(placeHolders);
+				
+				if(message != null && !message.isEmpty()) {
+					String body = (String) mailJson.get("message");
+					mailJson.put("message", body+"\n\n"+message);
+				}
+				
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
-				value = sendSMS(value, "[ALARM] ["+alarmType+"] "+alarmSubject+" - "+message);
+				String sms = null;
+				if(message != null && !message.isEmpty()) {
+					sms = MessageFormat.format("[ALARM] [{0}] {1} in {2} - {3}", alarmType, alarmSubject, space.getName(), message);
+				}
+				else {
+					sms = MessageFormat.format("[ALARM] [{0}] {1} in {2}", alarmType, alarmSubject, space.getName());
+				}
+				value = sendSMS(value, sms);
 				to.put("value", value);
 			}
 			
@@ -290,6 +312,17 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	private BaseSpaceContext getSpace(long id) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			BaseSpaceContext space = SpaceAPI.getBaseSpace(id, OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+			return space;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
 	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
 	public String sendSMS(String to, String message) {
