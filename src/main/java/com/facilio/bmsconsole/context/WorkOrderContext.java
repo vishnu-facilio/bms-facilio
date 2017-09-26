@@ -49,6 +49,6 @@ public class WorkOrderContext extends ModuleBaseWithCustomFields {
 	
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
-		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId();
+		return "http://www.fazilio.com/app/workorders/open/summary/"+getId();
 	}
 }

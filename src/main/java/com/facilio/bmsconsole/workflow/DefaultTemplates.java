@@ -61,8 +61,8 @@ public enum DefaultTemplates implements ActionTemplate {
 				json = new JSONObject();
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
 				json.put("to", "${workorder.ticket.assignedTo.email}");
-				json.put("subject", "Workorder Assigned");
-				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				json.put("subject", "New Workorder Assigned");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.ticket.subject}\nDescription : \n${workorder.ticket.description}\nPlease follow ${workorder.url} to view the work order.");
 				break;
 			case 2:
 				json = new JSONObject();
@@ -88,7 +88,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
 				json.put("to", "${follower.email}");
 				json.put("subject", "New Alarm created");
-				json.put("message", "Hi,\n\n${alarm.ticket.description}\nPlease follow this ${alarm.url} to view the alarm and acknowledge it as soon as possible.");
+				json.put("message", "Hi,\n\n${alarm.ticket.description}\nPlease follow ${alarm.url} to view the alarm and acknowledge it as soon as possible.");
 				break;
 				
 		}
