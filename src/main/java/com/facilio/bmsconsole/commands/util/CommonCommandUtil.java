@@ -392,10 +392,10 @@ public class CommonCommandUtil {
 				String description;
 				BaseSpaceContext space = SpaceAPI.getBaseSpace(device.getSpaceId(), OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
 				if(alarm.getIsAcknowledged()) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}, Mövenpick Hotel",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}, Movenpick Hotel",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}, Mövenpick Hotel",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}, Movenpick Hotel",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
 				}
 				alarm.getTicket().setDescription(description);
 				isChanged = true;
@@ -419,10 +419,10 @@ public class CommonCommandUtil {
 		BaseSpaceContext space = getSpace(device.getSpaceId());
 		String sms = null;
 		if(message != null && !message.isEmpty()) {
-			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Mövenpick Hotel - {3}", alarm.getType(), alarm.getTicket().getSubject(), space.getName(), message);
+			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Movenpick Hotel - {3}", alarm.getTypeVal(), alarm.getTicket().getSubject(), space.getName(), message);
 		}
 		else {
-			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Mövenpick Hotel", alarm.getType(), alarm.getTicket().getSubject(), space.getName());
+			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Movenpick Hotel", alarm.getTypeVal(), alarm.getTicket().getSubject(), space.getName());
 		}
 		return sendSMS(to, sms);
 	}
