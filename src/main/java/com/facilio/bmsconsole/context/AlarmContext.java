@@ -211,4 +211,13 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 	}
+	
+	public String getUrl() {
+		if(super.getId() == -1) {
+			return null;
+		}
+		else {
+			return "http://fazilio.com/app/firealarm/alarms";
+		}
+	}
 }

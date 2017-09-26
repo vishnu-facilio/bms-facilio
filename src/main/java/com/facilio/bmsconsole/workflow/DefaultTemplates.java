@@ -13,7 +13,8 @@ public enum DefaultTemplates implements ActionTemplate {
 	WORKORDER_ASSIGN_EMAIL(1),
 	WORKORDER_ACTIVITY_FOLLOWUP(2),
 	WORKORDER_ASSIGN_SMS(3),
-	TASK_COMMENT_EMAIL(4)
+	TASK_COMMENT_EMAIL(4),
+	ALARM_CREATION_EMAIL(5)
 	;
 	
 	private int val;
@@ -81,6 +82,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${ticket.assignedTo.email}");
 				json.put("subject", "New Comment added");
 				json.put("message", "A new comment has been added in your WorkOrder.");
+				break;
+			case 5:
+				json = new JSONObject();
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${follower.email}");
+				json.put("subject", "New Alarm created [Alarm ${alarm.id}]");
+				json.put("message", "${alarm.ticket.description}. Please follow the link below to view the alarm.\n${alarm.url}");
+				break;
 				
 		}
 		return json;

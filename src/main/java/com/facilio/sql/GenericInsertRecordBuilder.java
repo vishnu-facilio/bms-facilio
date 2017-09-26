@@ -64,10 +64,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			String sql = constructInsertStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
-			int paramIndex = 1;
-			
 			for(Map<String, Object> value : values) {
 				pstmt.clearParameters();
+				int paramIndex = 1;
 				for(FacilioField field : fields) {
 					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
 				}
@@ -77,11 +76,11 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			pstmt.executeBatch();
 			rs = pstmt.getGeneratedKeys();
 			List<Long> ids = new ArrayList<>();
-			paramIndex = 0;
+			int itr = 0;
 			while(rs.next()) {
 				long id = rs.getLong(1);
 				ids.add(id);
-				Map<String, Object> props = values.get(paramIndex++);
+				Map<String, Object> props = values.get(itr++);
 				if(props != null) {
 					props.put("id", id);
 				}
