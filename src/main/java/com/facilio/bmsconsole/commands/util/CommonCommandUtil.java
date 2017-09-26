@@ -377,7 +377,7 @@ public class CommonCommandUtil {
 	
 	public static void updateAlarmDetailsInTicket(AlarmContext alarm, Connection conn) throws Exception {
 		boolean isChanged = false;
-		if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
+		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
 		{
 			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
 			if(category != null) {
