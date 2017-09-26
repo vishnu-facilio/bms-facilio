@@ -87,8 +87,8 @@ public enum DefaultTemplates implements ActionTemplate {
 				json = new JSONObject();
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
 				json.put("to", "${follower.email}");
-				json.put("subject", "New Alarm created [Alarm ${alarm.id}]");
-				json.put("message", "${alarm.ticket.description}. Please follow the link below to view the alarm.\n${alarm.url}");
+				json.put("subject", "New Alarm created");
+				json.put("message", "Hi,\n\n${alarm.ticket.description}\nPlease follow this ${alarm.url} to view the alarm and acknowledge it as soon as possible.");
 				break;
 				
 		}
