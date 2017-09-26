@@ -31,7 +31,7 @@ public class ViewFactory {
 		
 		Map<String, FacilioView> viewMap = new HashMap<>();
 		viewMap.put("workorderrequest-open", getAllWorkorderOpenRequests());
-		viewMap.put("workorderrequest-rejected", getAllWorkorderOpenRequests());
+		viewMap.put("workorderrequest-rejected", getAllWorkorderRejectedRequests());
 		
 		viewMap.put("workorder-open", getAllOpenTickets());
 		viewMap.put("workorder-myopen", getMyOpenTickets());
@@ -261,6 +261,33 @@ public class ViewFactory {
 		condition.setField(field);
 		condition.setOperator(DateOperators.IS);
 		condition.setValue("1");
+		
+		Map<Integer, Condition> conditions = new HashMap<>();
+		conditions.put(1, condition);
+		
+		Criteria criteria = new Criteria();
+		criteria.setConditions(conditions);
+		criteria.setPattern("(1)");
+		
+		FacilioView allRequestsView = new FacilioView();
+		allRequestsView.setName("allrequests");
+		allRequestsView.setDisplayName("Workorder Requests");
+		allRequestsView.setCriteria(criteria);
+		return allRequestsView;
+	}
+	
+	private static FacilioView getAllWorkorderRejectedRequests() {
+		
+		FacilioField field = new FacilioField();
+		field.setName("status");
+		field.setColumnName("STATUS");
+		field.setDataType(FieldType.NUMBER);
+		field.setModuleTableName("WorkOrderRequests");
+		
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(DateOperators.IS);
+		condition.setValue("3");
 		
 		Map<Integer, Condition> conditions = new HashMap<>();
 		conditions.put(1, condition);
