@@ -390,10 +390,10 @@ public class CommonCommandUtil {
 			if(device != null) {
 				String description;
 				if(alarm.getIsAcknowledged()) {
-					 description = MessageFormat.format("Alarm raised from {0} of type {1} has been acknowledged",device.getName(),"MOM");
+					description = MessageFormat.format("Alarm raised from {0} of type {1} has been acknowledged. Alarm Type : {2}.",device.getName(),"MOM", alarm.getTypeVal());
 				}
 				else {
-					description = MessageFormat.format("Alarm raised from {0} of type {1} is yet to be acknowledged",device.getName(),"MOM");
+					description = MessageFormat.format("Alarm raised from {0} of type {1} is yet to be acknowledged. Alarm Type : {2}.",device.getName(),"MOM", alarm.getTypeVal());
 				}
 				alarm.getTicket().setDescription(description);
 				isChanged = true;

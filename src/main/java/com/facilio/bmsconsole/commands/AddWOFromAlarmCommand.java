@@ -66,7 +66,6 @@ public class AddWOFromAlarmCommand implements Command {
 			wo = new WorkOrderContext();
 			wo.setTicket(alarm.getTicket());
 			wo.setCreatedTime(System.currentTimeMillis());
-			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			

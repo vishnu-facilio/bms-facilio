@@ -7,11 +7,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 
@@ -41,8 +43,28 @@ public class UpdateAlarmCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
+			
+			SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+															.connection(conn)
+															.table(dataTableName)
+															.moduleName(moduleName)
+															.beanClass(AlarmContext.class)
+															.select(fields)
+															.andCondition(idCondition);
+			
+			List<AlarmContext> alarms = builder.get();
+			
+			if(alarms != null && !alarms.isEmpty()) {
+				for(AlarmContext alarmObj : alarms) {
+					CommonCommandUtil.updateAlarmDetailsInTicket(alarmObj, conn);
+				}
+			}
 		}
 		return false;
+	}
+	
+	private void updateAlarmTicket(Condition idCondition, Connection conn) {
+		
 	}
 
 }

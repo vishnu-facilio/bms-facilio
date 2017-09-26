@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -35,6 +36,7 @@ public class AddAlarmCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
+			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");
