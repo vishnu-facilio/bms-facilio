@@ -37,8 +37,8 @@ public class SendAlarmCreationMailCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			addFollowers(alarm, conn);
 			sendEmail(alarm);
-			CommonCommandUtil.sendAlarmSMS(alarm, "+971564183015", null);
-			CommonCommandUtil.sendAlarmSMS(alarm, "+971565036481", null);
+//			CommonCommandUtil.sendAlarmSMS(alarm, "+971564183015", null);
+//			CommonCommandUtil.sendAlarmSMS(alarm, "+971565036481", null);
 		}
 		return false;
 	}
