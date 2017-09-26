@@ -389,11 +389,12 @@ public class CommonCommandUtil {
 			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
 			if(device != null) {
 				String description;
+				BaseSpaceContext space = SpaceAPI.getBaseSpace(device.getSpaceId(), OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
 				if(alarm.getIsAcknowledged()) {
-					description = MessageFormat.format("Alarm raised from {0} of type {1} has been acknowledged. Alarm Type : {2}.",device.getName(),device.getType(), alarm.getTypeVal());
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("Alarm raised from {0} of type {1} is yet to be acknowledged. Alarm Type : {2}.",device.getName(),device.getType(), alarm.getTypeVal());
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
 				}
 				alarm.getTicket().setDescription(description);
 				isChanged = true;
