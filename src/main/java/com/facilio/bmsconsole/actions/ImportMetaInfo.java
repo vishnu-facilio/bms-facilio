@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -151,7 +152,7 @@ public class ImportMetaInfo
 			fields.add("PHASE_ENERGY_R");
 			fields.add("PHASE_ENERGY_Y");
 			fields.add("PHASE_ENERGY_B");
-			fields.add("Device_id");
+			//fields.add("Device_id");
 			
 			return fields;
 		}
@@ -160,9 +161,15 @@ public class ImportMetaInfo
 			
 	}
 	
+	public void populateFieldMapping()
+	{
+		for(Object field: fields)
+		{
+			this.fieldMapping.put((String)field,"-1");
+		}
+	}
 	
-	
-	private HashMap fieldMapping = new HashMap();
+	private HashMap fieldMapping = new LinkedHashMap();
 	public HashMap getFieldMapping() {
 		System.out.println(fieldMapping);
 		return fieldMapping;
@@ -170,11 +177,11 @@ public class ImportMetaInfo
 	public void setFieldMapping(HashMap fieldMapping) {
 		this.fieldMapping = fieldMapping;
 	}
-	public String[] getFieldValue(String key) {
+	public String getFieldValue(String key) {
 
-		return (String[])fieldMapping.get(key);
+		return (String)fieldMapping.get(key);
 	}
-	public void setFieldMapping(String key,String[] Value) {
+	public void setFieldMapping(String key,String Value) {
 		this.fieldMapping.put(key, Value);
 	}
 	
@@ -185,23 +192,23 @@ public class ImportMetaInfo
 		while(keys.hasNext())
 		{
 			String key =(String) keys.next();
-			String []values = (String [])fieldMapping.get(key);
-			json.put(key, values[0]);
+			String value = (String)fieldMapping.get(key);
+			json.put(key, value);
 		}
 		
 		return json;
 	}
 	
-	public HashMap getFieldMap(String jsonString) throws Exception
+	public HashMap<String,String> getFieldMap(String jsonString) throws Exception
 	{
-		HashMap <String,String[]> fieldMap = new HashMap();
+		HashMap <String,String> fieldMap = new LinkedHashMap<String,String>();
 		JSONParser parser = new JSONParser();
 		JSONObject json=(JSONObject)parser.parse(jsonString);
 		Iterator keys = json.keySet().iterator();
 		while(keys.hasNext())
 		{
 			String key =(String) keys.next();
-			String values[] = {(String) json.get(key)};
+			String values = (String) json.get(key);
 			fieldMap.put(key, values);
 		}
 		return fieldMap;

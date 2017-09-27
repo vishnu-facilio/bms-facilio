@@ -54,6 +54,10 @@ public class ImportDataAction extends ActionSupport {
 							metainfo.setFieldMapping(metainfo.getFieldMap(fieldMapping));
 						}
 					}
+					else
+					{
+						metainfo.populateFieldMapping();
+					}
 				}
 				catch(SQLException e)
 				{

@@ -199,26 +199,21 @@ public class ProcessXLS implements Command {
 			HashMap <String,Object> additionalColVals= new HashMap<String,Object>();
 			for (String dbColName: dbCols) 
 			{
-				Object value=null;
-				
-				
-				String[] valArray=(String [])fieldMapping.get(dbColName);
-				if(valArray!=null)
-				{
-					String cellName = valArray[0];
-					value=colVal.get(cellName);
-				}
+				String cellName = (String)fieldMapping.get(dbColName);
+				Object value=colVal.get(cellName);
 
 				if (value!=null || (value=additionalColVals.get(dbColName))!=null) {
+					
+					//we have to make sure we need to have this column for all the collected data table.. 
+					if(dbColName.equalsIgnoreCase("ADDED_TIME"))
+					{
+						//value=getAddedTime(value);
+						additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue());	
+					}
 					pstmt.setObject(idx, value);
 				}
 				else {
 					pstmt.setObject(idx, 0.0);
-				}
-				//we have to make sure we need to have this column for all the collected data table.. 
-				if(dbColName.equalsIgnoreCase("ADDED_TIME"))
-				{
-					additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue());	
 				}
 				idx++;
 			}

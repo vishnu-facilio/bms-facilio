@@ -1505,6 +1505,24 @@
 			</result>
 		</action>
 	</package>	
+	<package name="importapi" namespace="/api/import" extends="home">
+		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
+		<result name="success" type="json">
+				<param name="includeProperties">metainfo.*</param>
+			</result>
+		</action>
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+	</package>		
+	
 	<package name="campus" namespace="/app/campus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
