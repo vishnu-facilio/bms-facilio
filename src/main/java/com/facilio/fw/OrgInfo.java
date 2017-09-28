@@ -2,6 +2,7 @@ package com.facilio.fw;
 
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.OrgApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,11 +26,12 @@ public class OrgInfo {
 		}
 	}
 
-	public OrgInfo(long orgid, String orgName, String orgDomain)
+	public OrgInfo(long orgid, String orgName, String orgDomain, UserContext superAdmin)
 	{
 		this.orgid = orgid;
 		this.orgName = orgName;
 		this.orgDomain = orgDomain;
+		this.superAdmin = superAdmin;
 	}
 
 	public long getOrgid() {
@@ -54,6 +56,14 @@ public class OrgInfo {
 
 	public void setOrgDomain(String orgDomain) {
 		this.orgDomain = orgDomain;
+	}
+	
+	private UserContext superAdmin;
+	public UserContext getSuperAdmin() {
+		return superAdmin;
+	}
+	public void setSuperAdmin(UserContext superAdmin) {
+		this.superAdmin = superAdmin;
 	}
 
 	public static OrgInfo getCurrentOrgInfo()

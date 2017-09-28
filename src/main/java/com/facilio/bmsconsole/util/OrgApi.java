@@ -77,11 +77,12 @@ public class OrgApi {
 			long userId = rs1.getLong(1);
 			ps2.close();
 			
-			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,?,true,true,(select ROLE_ID from Role where NAME='Administrator' limit 1))";
+			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,?,true,true,(select ROLE_ID from Role where NAME=? limit 1))";
 			PreparedStatement ps3 = conn.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);
 			ps3.setLong(1,userId);
 			ps3.setLong(2, orgId);
 			ps3.setLong(3, System.currentTimeMillis());
+			ps3.setString(4, FacilioConstants.Role.SUPER_ADMIN);
 			ps3.executeUpdate();
 			ps3.close();
 			
@@ -95,7 +96,7 @@ public class OrgApi {
 				scriptRunner.runScript(conn);
 			}
 			
-			OrgInfo orgInfo = new OrgInfo(orgId, orgName, orgSubdomain);
+			OrgInfo orgInfo = new OrgInfo(orgId, orgName, orgSubdomain, UserAPI.getOrgSuperAdmin(orgId));
 			return orgInfo;
 		}
 		catch (SQLException e) {
@@ -179,7 +180,7 @@ public class OrgApi {
 				String orgName = rs.getString("ORGNAME");
 				String orgSubdomain = rs.getString("FACILIODOMAINNAME");
 				
-				return new OrgInfo(id, orgName, orgSubdomain);
+				return new OrgInfo(id, orgName, orgSubdomain, UserAPI.getOrgSuperAdmin(id));
 			}
 		}
 		catch (SQLException e) {
@@ -192,7 +193,7 @@ public class OrgApi {
 		return null;
 	}
 	
-public static Object updateOrgsettings (OrgContext context, Connection conn) throws Exception{
+	public static Object updateOrgsettings (OrgContext context, Connection conn) throws Exception{
 	
 
 	boolean isLocalConn = false;

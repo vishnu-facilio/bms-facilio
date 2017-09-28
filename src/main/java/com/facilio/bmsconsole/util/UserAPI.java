@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -217,9 +218,34 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.USERID = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE Users.USERID = ?");
 			pstmt.setLong(1, userId);
 			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
+	public static UserContext getOrgSuperAdmin(long orgId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID INNER JOIN Role ON ORG_Users.ROLE_ID = Role.ROLE_ID WHERE ORG_Users.ORGID = ? AND Role.NAME = ?");
+			pstmt.setLong(1, orgId);
+			pstmt.setString(2, FacilioConstants.Role.SUPER_ADMIN);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				UserContext tc = getUserObjectFromRS(rs);
@@ -242,7 +268,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORG_USERID  = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE ORG_Users.ORG_USERID  = ?");
 			pstmt.setLong(1, orgUserId);
 			
 			rs = pstmt.executeQuery();
