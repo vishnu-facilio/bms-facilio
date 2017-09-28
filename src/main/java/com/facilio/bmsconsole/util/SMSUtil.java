@@ -25,6 +25,7 @@ public class SMSUtil {
 		
 		//com.twilio.sdk.resource.lookups.v1.PhoneNumber
 	//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
+		System.out.println(tmessage.getSid());
 		return tmessage.getSid();
 		
 		//AwsUtil.sendEmail(obj);

@@ -6,7 +6,7 @@ import com.facilio.fs.FileStoreFactory;
 
 public class UserContext {
 	
-	private long orgId = 0;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -14,7 +14,7 @@ public class UserContext {
 		this.orgId = orgId;
 	}
 	
-	private long userId = 0;
+	private long userId = -1;
 	public long getUserId() {
 		return userId;
 	}
@@ -22,7 +22,7 @@ public class UserContext {
 		this.userId = userId;
 	}
 	
-	private long orgUserId = 0;
+	private long orgUserId = -1;
 	public long getOrgUserId() {
 		return orgUserId;
 	}
@@ -65,7 +65,7 @@ public class UserContext {
 		this.password = password;
 	}
 	
-	private long invitedTime = 0;
+	private long invitedTime = -1;
 	public long getInvitedTime() {
 		return invitedTime;
 	}
