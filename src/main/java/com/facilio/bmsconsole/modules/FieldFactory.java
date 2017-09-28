@@ -354,4 +354,42 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getTicketActivityFields() {
+
+		String tableName = "Ticket_Activity";
+		
+		FacilioField tId = new FacilioField();
+		tId.setName("ticketId");
+		tId.setDataType(FieldType.NUMBER);
+		tId.setColumnName("TICKET_ID");
+		tId.setModuleTableName(tableName);
+		
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.NUMBER);
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setModuleTableName(tableName);
+		
+		LookupField modifiedBy = new LookupField();
+		modifiedBy.setName("modifiedBy");
+		modifiedBy.setDataType(FieldType.LOOKUP);
+		modifiedBy.setColumnName("MODIFIED_BY");
+		modifiedBy.setModuleTableName(tableName);
+		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USER);
+		
+		FacilioField activityType = new FacilioField();
+		activityType.setName("activityType");
+		activityType.setDataType(FieldType.NUMBER);
+		activityType.setColumnName("ACTIVITY_TYPE");
+		activityType.setModuleTableName(tableName);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(tId);
+		fields.add(modifiedTime);
+		fields.add(modifiedBy);
+		fields.add(activityType);
+		
+		return fields;
+	}
 }	
