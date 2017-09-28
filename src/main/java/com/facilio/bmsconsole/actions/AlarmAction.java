@@ -83,19 +83,11 @@ public class AlarmAction extends ActionSupport {
 		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
 
-		if(alarm.getDeviceId() == -1)
-		{
-			Long deviceId = DeviceAPI.addDevice(alarm.getTicket().getSpace().getName(), alarm.getTicket().getSpace().getId());
-			alarm.setDeviceId(deviceId);
-		}
-		else
-		{
-			Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
-			
-			BaseSpaceContext space = new BaseSpaceContext();
-			space.setId(spaceId);
-			alarm.getTicket().setSpace(space);
-		}
+		Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
+		
+		BaseSpaceContext space = new BaseSpaceContext();
+		space.setId(spaceId);
+		alarm.getTicket().setSpace(space);
 		return alarm;
 	}
 
@@ -190,7 +182,7 @@ public class AlarmAction extends ActionSupport {
 
 		return SUCCESS;
 	}
-
+	
 	private List<AlarmContext> alarms;
 	public List<AlarmContext> getAlarms() {
 		return alarms;

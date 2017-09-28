@@ -354,22 +354,25 @@ public class DeviceAPI
 		}
 	}
 	
-	public static Long addDevice(String name, Long spaceId) throws Exception
+	public static Long addDevice(Device device) throws Exception
 	{
-		Long deviceId = AssetsAPI.addAsset(name, OrgInfo.getCurrentOrgInfo().getOrgid());
+		Long deviceId = AssetsAPI.addAsset(device.getName(), OrgInfo.getCurrentOrgInfo().getOrgid());
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Device (DEVICE_ID, SPACE_ID) VALUES (?, ?)");
+			pstmt = conn.prepareStatement("INSERT INTO Device (DEVICE_ID, SPACE_ID, DEVICE_TYPE, STATUS) VALUES (?, ?, ?, ?)");
 			pstmt.setLong(1, deviceId);
-			pstmt.setLong(2, spaceId);
+			pstmt.setLong(2, device.getSpaceId());
+			pstmt.setString(3, device.getType());
+			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add device");
 			}
+			device.setId(deviceId);
 		}
 		catch(SQLException | RuntimeException e) 
 		{
@@ -799,11 +802,11 @@ public class DeviceAPI
 			rs = pstmt.executeQuery();
 			while(rs.next()) 
 			{
-				Device device = new Device()
-						.setId(rs.getLong("DEVICE_ID"))
-						.setName(rs.getString("NAME"))
-						.setParentId(rs.getLong("PARENT_DEVICE_ID"))
-						.setStatus(rs.getInt("STATUS"));
+				Device device = new Device();
+				device.setId(rs.getLong("DEVICE_ID"));
+				device.setName(rs.getString("NAME"));
+				device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
+				device.setStatus(rs.getInt("STATUS"));
 				deviceList.put(rs.getLong("DEVICE_ID"), device);
 			}
 		}
@@ -906,12 +909,13 @@ public class DeviceAPI
 			{
 				if(rs.next()) 
 				{
-					return new Device()
-							.setId(rs.getLong("DEVICE_ID"))
-							.setName(rs.getString("NAME"))
-							.setParentId(rs.getLong("PARENT_DEVICE_ID"))
-							.setStatus(rs.getInt("STATUS"))
-							.setSpaceId(rs.getLong("SPACE_ID"));
+					Device device = new Device();
+					device.setId(rs.getLong("DEVICE_ID"));
+					device.setName(rs.getString("NAME"));
+					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
+					device.setStatus(rs.getInt("STATUS"));
+					device.setSpaceId(rs.getLong("SPACE_ID"));
+					return device;
 				}
 			}
 			catch (SQLException e) 
@@ -944,11 +948,12 @@ public class DeviceAPI
 				List<Device> deviceList= new ArrayList<Device>();
 				while(rs.next()) 
 				{
-					Device device =new Device()
-								.setId(rs.getLong("DEVICE_ID"))
-								.setName(rs.getString("NAME"))
-								.setParentId(rs.getLong("PARENT_DEVICE_ID"))
-								.setStatus(rs.getInt("STATUS"));
+					Device device = new Device();
+					device.setId(rs.getLong("DEVICE_ID"));
+					device.setName(rs.getString("NAME"));
+					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
+					device.setType(rs.getString("DEVICE_TYPE"));
+					device.setSpaceId(rs.getLong("SPACE_ID"));
 					deviceList.add(device);
 				}
 				return deviceList;

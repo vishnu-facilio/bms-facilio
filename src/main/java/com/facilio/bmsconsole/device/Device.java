@@ -40,10 +40,9 @@ public class Device
 		return this;
 	}
 	
-	public Device setName(String name)
+	public void setName(String name)
 	{
 		this.name = name;
-		return this;
 	}
 	
 	public void add(Device device)
@@ -97,50 +96,23 @@ public class Device
 		return this.instances;
 	}
 	
-	private long spaceId = -1;
+	private Long spaceId;
 	public Long getSpaceId()
 	{
 		return this.spaceId;
 	}
 	
-	public Device setSpaceId(long spaceId)
+	public void setSpaceId(Long spaceId)
 	{
 		this.spaceId = spaceId;
-		return this;
+	}
+	
+	private String type;
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	public String getType() {
-		if(this.name != null) {
-			return typeMap.get(this.name);
-		}
-		return null;
-	}
-	
-	private static final Map<String, String> typeMap = Collections.unmodifiableMap(initTypeMap());
-	private static Map<String, String> initTypeMap() {
-		Map<String, String> typeMap = new HashMap<>();
-		
-		typeMap.put("1 Lp 1", "Mi/f");
-		typeMap.put("2 Lp 1", "OH");
-		typeMap.put("3 Lp 1", "OH");
-		typeMap.put("4 Lp 1", "MCP");
-		typeMap.put("5 Lp 1", "MCP");
-		typeMap.put("6 Lp 1", "OH");
-		typeMap.put("7 Lp 1", "OH");
-		typeMap.put("8 Lp 1", "MCP");
-		typeMap.put("9 Lp 1", "OH");
-		typeMap.put("10 Lp 1", "Mi/f");
-		typeMap.put("11 Lp 1", "OH");
-		typeMap.put("12 Lp 1", "OH");
-		typeMap.put("13 Lp 1", "OH");
-		typeMap.put("14 Lp 1", "OH");
-		typeMap.put("15 Lp 1", "OH");
-		typeMap.put("16 Lp 1", "OH");
-		typeMap.put("17 Lp 1", "MCP");
-		typeMap.put("18 Lp 1", "MCP");
-		typeMap.put("19 Lp 1", "Li/f");
-		typeMap.put("20 Lp 1", "OHM");
-		
-		return typeMap;
+		return this.type;
 	}
 }

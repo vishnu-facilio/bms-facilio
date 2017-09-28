@@ -24,9 +24,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -35,6 +37,7 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Reports;
 import com.facilio.constants.FacilioConstants.Reports.Energy;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.tasker.FacilioTimer;
@@ -100,25 +103,25 @@ public class DeviceAction extends ActionSupport
 		}
 	}
 	
-	public void addDevice()
-	{
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String name = request.getParameter("deviceName");
-		Long controllerId = Long.parseLong(request.getParameter("controllerId"));
-		try 
-		{
-			Long deviceId = AssetsAPI.getAssetId(name, OrgInfo.getCurrentOrgInfo().getOrgid());
-			if(deviceId == null)
-			{
-				deviceId = AssetsAPI.addAsset(name, OrgInfo.getCurrentOrgInfo().getOrgid());
-				DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);
-			}
-		}
-		catch (Exception e) 
-		{
-			logger.log(Level.SEVERE, "Exception while adding device" +e.getMessage(), e);
-		}
-	}
+//	public void addDevice()
+//	{
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		String name = request.getParameter("deviceName");
+//		Long controllerId = Long.parseLong(request.getParameter("controllerId"));
+//		try 
+//		{
+//			Long deviceId = AssetsAPI.getAssetId(name, OrgInfo.getCurrentOrgInfo().getOrgid());
+//			if(deviceId == null)
+//			{
+//				deviceId = AssetsAPI.addAsset(name, OrgInfo.getCurrentOrgInfo().getOrgid());
+//				DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);
+//			}
+//		}
+//		catch (Exception e) 
+//		{
+//			logger.log(Level.SEVERE, "Exception while adding device" +e.getMessage(), e);
+//		}
+//	}
 	
 	public void rearrangeDevices()
 	{
@@ -510,16 +513,35 @@ public class DeviceAction extends ActionSupport
 		//setEnergyContsant();
 		return SUCCESS;
 	}
-	private List<Device> deviceList = null;
 	
+	private List<Device> deviceList = null;
 	public List<Device> getDeviceList() {
 		return deviceList;
 	}
 	public void setDeviceList(List<Device> deviceList) {
 		this.deviceList = deviceList;
-		System.out.println("SetReport:"+this.deviceList);
-		
 	}
+	
+	private Device device;
+	public Device getDevice() {
+		return device;
+	}
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
+	public String addDevice() throws Exception 
+	{
+		DeviceAPI.addDevice(device);
+		return SUCCESS;
+	}
+	
+	public String deviceList() throws Exception {
+		
+		setDeviceList(DeviceAPI.getDevices());
+		return SUCCESS;
+	}
+	
 	private Map<String, Integer> energyContsant;
 	
 	public void setEnergyContsant(Map<String, Integer> energyContsant) {
