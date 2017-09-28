@@ -392,4 +392,33 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getAlarmFollowersFeilds() {
+		String tableName = "AlarmFollowers";
+		
+		FacilioField alarmId = new FacilioField();
+		alarmId.setName("alarmId");
+		alarmId.setDataType(FieldType.NUMBER);
+		alarmId.setColumnName("ALARM_ID");
+		alarmId.setModuleTableName(tableName);
+		
+		FacilioField followerType = new FacilioField();
+		followerType.setName("type");
+		followerType.setDataType(FieldType.STRING);
+		followerType.setColumnName("FOLLOWER_TYPE");
+		followerType.setModuleTableName(tableName);
+		
+		FacilioField follower = new FacilioField();
+		follower.setName("follower");
+		follower.setDataType(FieldType.STRING);
+		follower.setColumnName("FOLLOWER");
+		follower.setModuleTableName(tableName);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(alarmId);
+		fields.add(followerType);
+		fields.add(follower);
+		
+		return fields;
+	}
 }	

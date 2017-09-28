@@ -51,7 +51,11 @@ public class ExecuteAllWorkflowsCommand implements Command
 					for(WorkflowRuleContext workflowRule : workflowRules)
 					{
 						Criteria criteria = workflowRule.getCriteria();
-						boolean flag = criteria.computePredicate().evaluate(record);
+						boolean flag = true;
+						if(criteria != null) {
+							flag = criteria.computePredicate().evaluate(record);
+						}
+						
 						if(flag)
 						{
 							long workflowRuleId = workflowRule.getId();
@@ -62,7 +66,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 									ActionTemplate template = action.getTemplate();
 									if(template != null) {
 										JSONObject actionObj = template.getTemplate(placeHolders);
-										action.getActionType().performAction(actionObj);
+										action.getActionType().performAction(actionObj, context);
 									}
 								}
 							}

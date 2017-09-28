@@ -239,18 +239,22 @@ public class FacilioConstants {
 	
 	public static class Role 
 	{
+		public static final String SUPER_ADMIN 	= "Super Administrator";
 		public static final String ADMINISTRATOR 	= "Administrator";
 		public static final String MANAGER 		    = "Manager";
 		public static final String DISPATCHER 		= "Dispatcher";
 		public static final String TECHNICIAN 		= "Technician";
 		
-		public static final Map<String, Long> DEFAULT_ROLES = new HashMap<>();
+		public static final Map<String, Long> DEFAULT_ROLES = Collections.unmodifiableMap(initPermissions());
 		
-		static 
+		private static Map<String, Long> initPermissions()
 		{
-			DEFAULT_ROLES.put(ADMINISTRATOR, 0L); // 0 means full permission
+			Map<String, Long> defaultRoles = new HashMap<>();
 			
-			DEFAULT_ROLES.put(MANAGER, Permission.getSumOf(
+			defaultRoles.put(SUPER_ADMIN, 0L); // 0 means full permission
+			defaultRoles.put(ADMINISTRATOR, 0L); // 0 means full permission
+			
+			defaultRoles.put(MANAGER, Permission.getSumOf(
 					Permission.USER_ACCESS_ADMINISTER,
 					Permission.GROUP_ACCESS_ADMINISTER,
 					Permission.WORKORDER_ACCESS_CREATE_ANY,
@@ -269,7 +273,7 @@ public class FacilioConstants {
 					Permission.REPORTS_ACCESS_ENABLE
 					));
 			
-			DEFAULT_ROLES.put(DISPATCHER, Permission.getSumOf(
+			defaultRoles.put(DISPATCHER, Permission.getSumOf(
 					Permission.WORKORDER_ACCESS_CREATE_ANY,
 					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
 					Permission.WORKORDER_ACCESS_READ_ANY,
@@ -284,7 +288,7 @@ public class FacilioConstants {
 					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
 					));
 			
-			DEFAULT_ROLES.put(TECHNICIAN, Permission.getSumOf(
+			defaultRoles.put(TECHNICIAN, Permission.getSumOf(
 					Permission.WORKORDER_ACCESS_UPDATE_OWN, 
 					Permission.WORKORDER_ACCESS_READ_OWN,
 					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
@@ -292,6 +296,8 @@ public class FacilioConstants {
 					Permission.TASK_ACCESS_READ_OWN,
 					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
 					));
+			
+			return defaultRoles;
 		}
 	}
 	
@@ -454,6 +460,11 @@ public class FacilioConstants {
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
 		public static final long LOGGED_IN_USER_ID = -99;
+	}
+	
+	public static class Workflow {
+		public static final String NOTIFIED_EMAILS = "notifiedEmails";
+		public static final String NOTIFIED_SMS = "notifiedSMS";
 	}
 	
 	public static class Reports 

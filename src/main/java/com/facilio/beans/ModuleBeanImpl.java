@@ -9,8 +9,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.commands.data.StateInfo;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -308,5 +313,37 @@ public class ModuleBeanImpl implements ModuleBean {
 	public ServicePortalInfo getServicePortalInfo() throws Exception
 	{
 		return ServicePortalInfo.getServicePortalInfo();
+	}
+
+	@Override
+	public JSONObject getStateFlow(String module) throws Exception {
+	//String query = "select STATE_ID,TicketStatus.STATUS , GROUP_CONCAT(concat('{\"',NEXT_STATE_ID,'\":','\"',ts2.STATUS,'\"}')) from TicketStateFlow , TicketStatus, TicketStatus ts2 where TicketStatus.ID=TicketStateFlow.STATE_ID and TicketStateFlow.NEXT_STATE_ID=ts2.ID  group by STATE_ID";
+		
+		//FacilioModule fm = getModule("ticketstatus");
+		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID="+OrgInfo.getCurrentOrgInfo().getOrgid()+" group by STATE_ID ";
+
+		System.out.println(nextstatequery);
+		java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery(nextstatequery);
+		
+		JSONObject stateflow =new JSONObject();
+		while (rs.next())
+		{
+			String oldstate = rs.getString(1);
+			String nextstates = rs.getString(2);
+			System.out.println("["+ nextstates +"]");
+			JSONArray nextstats =(JSONArray) new JSONParser().parse("["+ nextstates +"]");
+		
+			//System.out.println("For  "+oldstate+"\n"+stateflow);
+
+			stateflow.put(oldstate, nextstats);
+		}
+		//System.out.println("The stateflow for ticket "+stateflow);
+		
+		
+		return stateflow;
+
+		
 	}
 }
