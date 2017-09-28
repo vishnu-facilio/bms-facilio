@@ -18,6 +18,8 @@
 	<include file="serviceportal.xml" />
 	<include file="integration.xml" />
 	<include file="leedconsole.xml" />
+	<include file="setup.xml" />
+	
 	
 	
 	<!-- Add packages here -->
