@@ -937,7 +937,10 @@
             <result name="success" type="json">
 			<param name="includeProperties">groups.*</param></result>
 			</action>		
-			
+		<action name="stateflow" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="showStateFlow">
+            <result name="success" type="json">
+			<param name="includeProperties">stateFlow.*</param></result>
+			</action>	
 	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">

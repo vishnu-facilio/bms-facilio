@@ -1,6 +1,10 @@
 package com.facilio.beans;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,5 +25,8 @@ public interface ModuleBean extends RootBean {
 	public long addField(FacilioField field) throws Exception;
 	
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
+	
+	public JSONObject getStateFlow(String module) throws  Exception;
+	
 
 }
