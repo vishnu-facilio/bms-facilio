@@ -59,7 +59,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 								ActionTemplate template = action.getTemplate();
 								if(template != null) {
 									JSONObject actionObj = template.getTemplate(placeHolders);
-									action.getActionType().performAction(actionObj);
+									action.getActionType().performAction(actionObj, context);
 								}
 							}
 						}

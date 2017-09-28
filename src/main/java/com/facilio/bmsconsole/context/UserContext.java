@@ -142,10 +142,7 @@ public class UserContext {
 	
 	@Override
 	public String toString() {
-		return "UserContext [orgId=" + orgId + ", userId=" + userId + ", orgUserId=" + orgUserId + ", name=" + name
-				+ ", email=" + email + ", password=" + password + ", invitedTime=" + invitedTime + ", userStatus="
-				+ userStatus + ", inviteAcceptStatus=" + inviteAcceptStatus + ", roleId=" + roleId + ", role=" + role
-				+ ", timezone=" + timezone + ", phone=" + phone + "]";
+		return email;
 	}
 	
 }

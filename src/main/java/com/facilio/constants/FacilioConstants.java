@@ -462,6 +462,11 @@ public class FacilioConstants {
 		public static final long LOGGED_IN_USER_ID = -99;
 	}
 	
+	public static class Workflow {
+		public static final String NOTIFIED_EMAILS = "notifiedEmails";
+		public static final String NOTIFIED_SMS = "notifiedSMS";
+	}
+	
 	public static class Reports 
 
 	{
