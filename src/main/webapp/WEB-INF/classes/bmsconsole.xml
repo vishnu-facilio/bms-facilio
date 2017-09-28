@@ -941,6 +941,17 @@
             <result name="success" type="json">
 			<param name="includeProperties">stateFlow.*</param></result>
 			</action>	
+	<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction" method="changeStatus">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">user.orgUserId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>			
 	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
