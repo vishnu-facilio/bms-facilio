@@ -229,7 +229,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarm">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">alarmId</param>
+				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
 		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction" method="assignAlarm">
