@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.constants.FacilioConstants;
 
 public class RoleContext {
@@ -107,5 +109,78 @@ public class RoleContext {
 			return true;
 		}
 		return (permissions & permission.getPermission()) == permission.getPermission();
+	}
+	
+	public JSONObject getAccessControl() throws Exception {
+		
+		JSONObject orgPermission = new JSONObject();
+		orgPermission.put("administer", (permissions & FacilioConstants.Permission.ORG_ACCESS_ADMINISTER.getPermission()) == FacilioConstants.Permission.ORG_ACCESS_ADMINISTER.getPermission());
+		orgPermission.put("delete", (permissions & FacilioConstants.Permission.ORG_ACCESS_DELETE.getPermission()) == FacilioConstants.Permission.ORG_ACCESS_DELETE.getPermission());
+		
+		JSONObject userPermission = new JSONObject();
+		userPermission.put("administer", (permissions & FacilioConstants.Permission.USER_ACCESS_ADMINISTER.getPermission()) == FacilioConstants.Permission.USER_ACCESS_ADMINISTER.getPermission());
+		userPermission.put("delete", (permissions & FacilioConstants.Permission.USER_ACCESS_DELETE.getPermission()) == FacilioConstants.Permission.USER_ACCESS_DELETE.getPermission());
+		
+		JSONObject groupPermission = new JSONObject();
+		groupPermission.put("administer", (permissions & FacilioConstants.Permission.GROUP_ACCESS_ADMINISTER.getPermission()) == FacilioConstants.Permission.GROUP_ACCESS_ADMINISTER.getPermission());
+		groupPermission.put("delete", (permissions & FacilioConstants.Permission.GROUP_ACCESS_DELETE.getPermission()) == FacilioConstants.Permission.GROUP_ACCESS_DELETE.getPermission());
+		
+		JSONObject workorderCreatePermission = new JSONObject();
+		workorderCreatePermission.put("any", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_CREATE_ANY.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_CREATE_ANY.getPermission());
+		workorderCreatePermission.put("accessible_spaces", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES.getPermission());
+		
+		JSONObject workorderUpdatePermission = new JSONObject();
+		workorderUpdatePermission.put("any", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_ANY.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_ANY.getPermission());
+		workorderUpdatePermission.put("accessible_spaces", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES.getPermission());
+		workorderUpdatePermission.put("own", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_OWN.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_UPDATE_OWN.getPermission());
+		
+		JSONObject workorderDeletePermission = new JSONObject();
+		workorderDeletePermission.put("any", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_ANY.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_ANY.getPermission());
+		workorderDeletePermission.put("accessible_spaces", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES.getPermission());
+		workorderDeletePermission.put("own", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_OWN.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_DELETE_OWN.getPermission());
+		
+		JSONObject workorderCanAssignPermission = new JSONObject();
+		workorderCanAssignPermission.put("any", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_ANY.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_ANY.getPermission());
+		workorderCanAssignPermission.put("accessible_spaces", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES.getPermission());
+		workorderCanAssignPermission.put("own", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_OWN.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_ASSIGN_OWN.getPermission());
+		
+		JSONObject workorderCanBeAssignedPermission = new JSONObject();
+		workorderCanBeAssignedPermission.put("any", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY.getPermission());
+		workorderCanBeAssignedPermission.put("accessible_spaces", (permissions & FacilioConstants.Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ACCESSIBLE_SPACES.getPermission()) == FacilioConstants.Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ACCESSIBLE_SPACES.getPermission());
+		
+		JSONObject workorderPermission = new JSONObject();
+		workorderPermission.put("create", workorderCreatePermission);
+		workorderPermission.put("update", workorderUpdatePermission);
+		workorderPermission.put("delete", workorderDeletePermission);
+		workorderPermission.put("can_assign", workorderCanAssignPermission);
+		workorderPermission.put("can_be_assigned", workorderCanBeAssignedPermission);
+		
+		JSONObject spaceManagementPermission = new JSONObject();
+		spaceManagementPermission.put("access", (permissions & FacilioConstants.Permission.SPACEMANAGEMENT_ACCESS_ENABLE.getPermission()) == FacilioConstants.Permission.SPACEMANAGEMENT_ACCESS_ENABLE.getPermission());
+		
+		JSONObject fireAlarmsPermission = new JSONObject();
+		fireAlarmsPermission.put("access", (permissions & FacilioConstants.Permission.FIREALARM_ACCESS_ENABLE.getPermission()) == FacilioConstants.Permission.FIREALARM_ACCESS_ENABLE.getPermission());
+		
+		JSONObject dashboardPermission = new JSONObject();
+		dashboardPermission.put("access", (permissions & FacilioConstants.Permission.DASHBOARD_ACCESS_ENABLE.getPermission()) == FacilioConstants.Permission.DASHBOARD_ACCESS_ENABLE.getPermission());
+		
+		JSONObject reportsPermission = new JSONObject();
+		reportsPermission.put("access", (permissions & FacilioConstants.Permission.REPORTS_ACCESS_ENABLE.getPermission()) == FacilioConstants.Permission.REPORTS_ACCESS_ENABLE.getPermission());
+		
+		JSONObject setupPermission = new JSONObject();
+		setupPermission.put("access", hasPermission(FacilioConstants.PermissionGroup.SETUP.name()));
+		
+		JSONObject accessControl = new JSONObject();
+		accessControl.put("org", orgPermission);
+		accessControl.put("user", userPermission);
+		accessControl.put("group", userPermission);
+		accessControl.put("workorder", workorderPermission);
+		accessControl.put("space_management", spaceManagementPermission);
+		accessControl.put("fire_alarm", spaceManagementPermission);
+		accessControl.put("dashboard", dashboardPermission);
+		accessControl.put("reports", reportsPermission);
+		accessControl.put("setup", setupPermission);
+		
+		return accessControl;
 	}
 }

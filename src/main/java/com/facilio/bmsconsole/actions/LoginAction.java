@@ -46,6 +46,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
@@ -420,9 +421,15 @@ public class LoginAction extends ActionSupport{
 		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
 		UserInfo curUser = UserInfo.getCurrentUser();
 		
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", FacilioConstants.Permission.toMap());
+		appProps.put("permissions_groups", FacilioConstants.PermissionGroup.toMap());
+		
 		account = new HashMap<>();
 		account.put("org", curOrg);
 		account.put("user", curUser);
+		
+		account.put("appProps", appProps);
 		
 		return SUCCESS;
 	}

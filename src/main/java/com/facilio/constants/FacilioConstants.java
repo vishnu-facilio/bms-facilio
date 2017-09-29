@@ -1,8 +1,10 @@
 package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -131,7 +133,9 @@ public class FacilioConstants {
 		
 		REPORTS_ACCESS_ENABLE(17179869184L),
 		
-		SPACEMANAGEMENT_ACCESS_ENABLE(34359738368L);
+		SPACEMANAGEMENT_ACCESS_ENABLE(34359738368L),
+		
+		FIREALARM_ACCESS_ENABLE(68719476736L);
 		
 		long permission;
 		
@@ -149,6 +153,14 @@ public class FacilioConstants {
 				sumOf += perm.getPermission();
 			}
 			return sumOf;
+		}
+		
+		public static Map<String, Long> toMap() {
+			HashMap<String, Long> permissionMap = new HashMap<>();
+			for (Permission permission : Permission.values()) {
+				permissionMap.put(permission.name(), permission.getPermission());
+			}
+			return permissionMap;
 		}
 	}
 	
@@ -234,6 +246,18 @@ public class FacilioConstants {
 				sumOf += perm.getPermission();
 			}
 			return sumOf;
+		}
+		
+		public static Map<String, List<String>> toMap() {
+			HashMap<String, List<String>> permissionGroupMap = new HashMap<>();
+			for (PermissionGroup permissionGroup : PermissionGroup.values()) {
+				List<String> permissions = new ArrayList<>();
+				for (Permission permission : permissionGroup.getPermission()) {
+					permissions.add(permission.name());
+				}
+				permissionGroupMap.put(permissionGroup.name(), permissions);
+			}
+			return permissionGroupMap;
 		}
 	}
 	
