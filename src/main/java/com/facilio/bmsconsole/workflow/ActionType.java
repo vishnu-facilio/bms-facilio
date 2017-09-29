@@ -65,7 +65,17 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
-					JSONArray toEmails = (JSONArray) obj.remove("to");
+					JSONArray toEmails = null;
+					Object toAddr = obj.remove("to");
+					
+					if(toAddr instanceof JSONArray) {
+						toEmails = (JSONArray) toAddr;
+					}
+					else if(toAddr instanceof String) {
+						toEmails = new JSONArray();
+						toEmails.add((String) toAddr);
+					}
+					
 					if(toEmails != null && !toEmails.isEmpty()) {
 						List<String> emails = new ArrayList<>();
 						for(Object toEmail : toEmails) {
@@ -92,7 +102,16 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
-					JSONArray tos = (JSONArray) obj.remove("to");
+					JSONArray tos = null;
+					Object toNums = obj.remove("to");
+					
+					if(toNums instanceof JSONArray) {
+						tos = (JSONArray) toNums;
+					}
+					else if(toNums instanceof String) {
+						tos = new JSONArray();
+						tos.add((String) toNums);
+					}
 					if(tos != null && !tos.isEmpty()) {
 						List<String> sms = new ArrayList<>();
 						for(Object toObj : tos) {

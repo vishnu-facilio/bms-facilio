@@ -42,6 +42,17 @@ public enum DefaultTemplates implements ActionTemplate {
 		return null;
 	};
 	
+	public JSONObject getOriginalTemplate() {
+		JSONParser parser = new JSONParser();
+		try {
+			return (JSONObject) parser.parse(templateJson);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static DefaultTemplates getDefaultTemplate(int val) {
 		return TYPE_MAP.get(val);
 	}

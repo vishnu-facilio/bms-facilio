@@ -18,7 +18,10 @@ public class ActionContext {
 	}
 	
 	public int getActionTypeVal() {
-		return actionType.getVal();
+		if(actionType != null) {
+			return actionType.getVal();
+		}
+		return -1;
 	}
 	public void setActionTypeVal(int actionTypeVal) {
 		this.actionType = ActionType.getActionType(actionTypeVal);

@@ -9,8 +9,10 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ActionAPI {
@@ -22,10 +24,48 @@ public class ActionAPI {
 					.table("Action")
 					.innerJoin("Workflow_Rule_Action")
 					.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
-					.andCustomWhere("Workflow_Rule_Action.WORKFLOW_RULE_ID = ?", workflowRuleId);
+					.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ?", orgId, workflowRuleId);
 			return getActionsFromPropList(actionBuilder.get());
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static List<ActionContext> getActionsFromWorkflowRuleName(long orgId, String workflowName) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.select(FieldFactory.getActionFields())
+					.table("Action")
+					.innerJoin("Workflow_Rule_Action")
+					.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
+					.innerJoin("Workflow_Rule")
+					.on("Workflow_Rule_Action.WORKFLOW_RULE_ID = Workflow_Rule.ID")
+					.andCustomWhere("Action.ORGID = ? AND Workflow_Rule.NAME = ?", orgId, workflowName);
+			return getActionsFromPropList(actionBuilder.get());
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static int updateAction(long orgId, ActionContext action, long id) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
+			
+			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.connection(conn)
+																.table("Action")
+																.fields(FieldFactory.getActionFields())
+																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+
+			return updateRecordBuilder.update(actionProps);
+
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 			throw e;
 		}

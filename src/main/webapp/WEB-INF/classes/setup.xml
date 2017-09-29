@@ -71,7 +71,35 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
-		</action>					
+		</action>	
+		<action name="addalarmemail" class="com.facilio.bmsconsole.actions.NotificationAction" method="addAlarmEMailNotifier">
+            <result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		<action name="addalarmsms" class="com.facilio.bmsconsole.actions.NotificationAction" method="addAlarmSMSNotifier">
+            <result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>	
+		<action name="addalarmrules" class="com.facilio.bmsconsole.actions.NotificationAction" method="alarmCreationRulesList">
+            <result name="success" type="json">
+				<param name="root">alarmCreationRules</param>
+			</result>
+		</action>
+		
+		<action name="turnonrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOnWorkflow">
+            <result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="turnoffrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOffWorkflow">
+            <result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+					
 	</package>
 
 </struts>

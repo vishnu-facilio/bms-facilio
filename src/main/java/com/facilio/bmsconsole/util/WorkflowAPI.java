@@ -10,22 +10,18 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WorkflowAPI {
 	
-	public static long addWorkflowRule(WorkflowRuleContext rule) throws SQLException {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_DEFAULT);
-		Map<String, Object> ruleProps = mapper.convertValue(rule, Map.class);
-		
+	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.connection(conn)
 														.table("Workflow_Rule")
@@ -34,7 +30,23 @@ public class WorkflowAPI {
 			insertBuilder.save();
 			return (long) ruleProps.get("id");
 		}
-		catch(SQLException e) {
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static int updateWorkflowRule(long orgId, WorkflowRuleContext rule, long id) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.connection(conn)
+														.table("Workflow_Rule")
+														.fields(FieldFactory.getWorkflowRuleFields())
+														.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+			return updateBuilder.update(ruleProps);
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 			throw e;
 		}

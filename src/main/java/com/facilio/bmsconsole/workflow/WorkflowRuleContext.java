@@ -68,8 +68,8 @@ public class WorkflowRuleContext {
 		this.executionOrder = executionOrder;
 	}
 	
-	private boolean status;
-	public boolean isStatus() {
+	private Boolean status;
+	public Boolean isStatus() {
 		return status;
 	}
 	public void setStatus(boolean status) {

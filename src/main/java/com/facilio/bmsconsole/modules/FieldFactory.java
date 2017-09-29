@@ -470,7 +470,7 @@ public class FieldFactory {
 		emailTo.setName("to");
 		emailTo.setDataType(FieldType.STRING);
 		emailTo.setColumnName("TO_ADDR");
-		emailFrom.setModuleTableName(tableName);
+		emailTo.setModuleTableName(tableName);
 		fields.add(emailTo);
 		
 		FacilioField emailSubject = new FacilioField();
@@ -523,14 +523,6 @@ public class FieldFactory {
 		smsMsg.setColumnName("MSG");
 		smsMsg.setModuleTableName(tableName);
 		fields.add(smsMsg);
-		
-		return fields;
-	}
-	
-	public static List<FacilioField> getTemplateFields() {
-		List<FacilioField> fields = getUserTemplateFields();
-		fields.addAll(getEMailTemplateFields(false));
-		fields.addAll(getSMSTemplateFields(false));
 		
 		return fields;
 	}

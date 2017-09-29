@@ -791,6 +791,28 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getAddAlarmEMailNotifierChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddOrUpdateAlarmEMailTemplateCommand());
+		c.addCommand(new UpdateAlarmCreationActionCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAlarmCreationRulesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadAlarmCreationRulesCommand());
+		return c;
+	}
+	
+	public static Chain getAddAlarmSMSNotifierChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddOrUpdateAlarmSMSTemplateCommand());
+		c.addCommand(new UpdateAlarmCreationActionCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }
 class TransactionChain extends ChainBase
 {

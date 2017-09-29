@@ -432,8 +432,6 @@ public class FacilioConstants {
 		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
 		public static final String EMAIL_SETTING = "emailSetting";
 		
-		public static final String TEMPLATE = "template";
-		
 		public static final String RESULT = "result";
 		
 		public static String getPKColumn(String module) {
@@ -489,8 +487,16 @@ public class FacilioConstants {
 	}
 	
 	public static class Workflow {
+		public static final String TEMPLATE = "template";
+		
 		public static final String NOTIFIED_EMAILS = "notifiedEmails";
+		public static final String NOTIFICATION_EMAIL = "notificationEMail";
+		
 		public static final String NOTIFIED_SMS = "notifiedSMS";
+		public static final String NOTIFICATION_SMS = "notificationSMS";
+		
+		public static final String WORKFLOW = "workflow";
+		public static final String WORKFLOW_LIST = "workflows";
 	}
 	
 	public static class Reports 

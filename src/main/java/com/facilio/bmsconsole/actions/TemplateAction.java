@@ -13,7 +13,7 @@ public class TemplateAction extends ActionSupport {
 	public String addEmail() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
 		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);
@@ -34,7 +34,7 @@ public class TemplateAction extends ActionSupport {
 	public String addSms() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TEMPLATE, smsTemplate);
+		context.put(FacilioConstants.Workflow.TEMPLATE, smsTemplate);
 		
 		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);

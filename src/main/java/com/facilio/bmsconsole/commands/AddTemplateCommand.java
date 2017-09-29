@@ -15,16 +15,15 @@ public class AddTemplateCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		UserTemplate template = (UserTemplate) context.get(FacilioConstants.ContextNames.TEMPLATE);
+		UserTemplate template = (UserTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		
 		if(template != null) {
-			template.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			if(template instanceof EMailTemplate) {
-				long id = TemplateAPI.addEmailTemplate((EMailTemplate) template);
+				long id = TemplateAPI.addEmailTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), (EMailTemplate) template);
 				template.setId(id);
 			}
 			else if(template instanceof SMSTemplate) {
-				long id = TemplateAPI.addSMSTemplate((SMSTemplate) template);
+				long id = TemplateAPI.addSMSTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), (SMSTemplate) template);
 				template.setId(id);
 			}
 		}
