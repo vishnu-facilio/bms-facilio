@@ -181,9 +181,9 @@ public class FieldFactory {
 		fields.add(actionType);
 		
 		FacilioField templateType = new FacilioField();
-		templateType.setName("templateType");
+		templateType.setName("defaultTemplateId");
 		templateType.setDataType(FieldType.NUMBER);
-		templateType.setColumnName("TEMPLATE_TYPE");
+		templateType.setColumnName("DEFAULT_TEMPLATE_ID");
 		templateType.setModuleTableName(tableName);
 		fields.add(templateType);
 		

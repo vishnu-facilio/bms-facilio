@@ -38,7 +38,7 @@ public class ActionAPI {
 			for(Map<String, Object> prop : props) {
 				ActionContext action = new ActionContext();
 				BeanUtils.populate(action, prop);
-				if(action.getTemplateId() != 0) {
+				if(action.getTemplateId() != -1) {
 					action.setTemplate(null); //Template should be obtained from some api
 				}
 				actions.add(action);

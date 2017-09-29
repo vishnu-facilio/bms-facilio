@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.data.StateInfo;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.constants.FacilioConstants;

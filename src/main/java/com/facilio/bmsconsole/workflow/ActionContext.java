@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.workflow;
 
 public class ActionContext {
-	private long id;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}
@@ -9,7 +9,7 @@ public class ActionContext {
 		this.id = id;
 	}
 	
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -36,19 +36,19 @@ public class ActionContext {
 		this.actionType = actionType;
 	}
 	
-	private int templateType;
-	public int getTemplateType() {
-		return templateType;
+	private int defaultTemplateId = -1;
+	public int getDefaultTemplateId() {
+		return defaultTemplateId;
 	}
-	public void setTemplateType(int templateType) {
-		this.template = DefaultTemplates.getDefaultTemplate(templateType);
+	public void setDefaultTemplateId(int defaultTemplateId) {
+		this.template = DefaultTemplates.getDefaultTemplate(defaultTemplateId);
 		if(template == null) {
-			throw new IllegalArgumentException("No DefaultTemplate exists with value : "+templateType);
+			throw new IllegalArgumentException("No DefaultTemplate exists with value : "+defaultTemplateId);
 		}
-		this.templateType = templateType;
+		this.defaultTemplateId = defaultTemplateId;
 	}
 	
-	private long templateId;
+	private long templateId = -1;
 	public long getTemplateId() {
 		return templateId;
 	}

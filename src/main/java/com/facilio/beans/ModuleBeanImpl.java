@@ -12,10 +12,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.commands.data.StateInfo;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
