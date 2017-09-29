@@ -147,6 +147,8 @@ public abstract class FileStore {
 	
 	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
 	
+	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
+	
 	public FileInfo getFileInfo(long fileId) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;

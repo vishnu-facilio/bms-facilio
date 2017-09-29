@@ -784,6 +784,13 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getAddTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }
 class TransactionChain extends ChainBase
 {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,14 +31,18 @@ public class ActionAPI {
 		}
 	}
 	
-	private static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws IllegalAccessException, InvocationTargetException {
+	private static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<ActionContext> actions = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				ActionContext action = new ActionContext();
 				BeanUtils.populate(action, prop);
 				if(action.getTemplateId() != -1) {
-					action.setTemplate(null); //Template should be obtained from some api
+					action.setTemplate(TemplateAPI.getTemplate(action.getOrgId(), action.getTemplateId())); //Template should be obtained from some api
+					
+					if(action.getTemplate() == null) {
+						throw new IllegalArgumentException("Invalid template ID for action : "+action.getId());
+					}
 				}
 				actions.add(action);
 			}
