@@ -57,7 +57,7 @@ public class SpaceAPI {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Floor.ID, Floor.NAME, Space.ID, Space.NAME FROM BaseSpace "
+			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Building.CAMPUS_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID FROM BaseSpace "
 					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
 					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
 					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
