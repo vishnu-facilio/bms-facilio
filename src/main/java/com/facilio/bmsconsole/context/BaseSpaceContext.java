@@ -10,6 +10,14 @@ public class BaseSpaceContext {
 		this.id = id;
 	}
 	
+	private long childId;
+	public long getChildId() {
+		return childId;
+	}
+	public void setChildId(long childId) {
+		this.childId = childId;
+	}
+	
 	private long orgId = 0;
 	public long getOrgId() {
 		return orgId;
@@ -32,5 +40,21 @@ public class BaseSpaceContext {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	private String parentType;
+	public String getParentType() {
+		return parentType;
+	}
+	public void setParentType(String parentType) {
+		this.parentType = parentType;
+	}
+	
+	private long parentId;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
 	}
 }

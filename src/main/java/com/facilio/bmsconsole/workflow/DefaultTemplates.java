@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,7 +14,9 @@ public enum DefaultTemplates implements ActionTemplate {
 	WORKORDER_ASSIGN_EMAIL(1),
 	WORKORDER_ACTIVITY_FOLLOWUP(2),
 	WORKORDER_ASSIGN_SMS(3),
-	TASK_COMMENT_EMAIL(4)
+	TASK_COMMENT_EMAIL(4),
+	ALARM_CREATION_EMAIL(5),
+	ALARM_CREATION_SMS(6),
 	;
 	
 	private int val;
@@ -54,33 +57,44 @@ public enum DefaultTemplates implements ActionTemplate {
 	
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
-		JSONObject json = null;
+		JSONObject json = new JSONObject();
 		switch(templateVal) {
 			case 1:
-				json = new JSONObject();
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
-				json.put("to", "${workorder.ticket.assignedTo.email}");
-				json.put("subject", "Workorder Assigned");
-				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				json.put("to", "${workorder.ticket.assignedTo.email:-}");
+				json.put("subject", "New Workorder Assigned");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.ticket.subject}\nDescription : \n${workorder.ticket.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 2:
-				json = new JSONObject();
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
 				json.put("to", "shivaraj@thingscient.com");
 				json.put("subject", "Workorder Follow");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
 				break;
 			case 3:
-				json = new JSONObject();
-				json.put("to", "+919003625354");
+				json.put("to", "${workorder.ticket.assignedTo.phone:-}");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
 				break;
 			case 4:
-				json = new JSONObject();
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
-				json.put("to", "${ticket.assignedTo.email}");
+				json.put("to", "${ticket.assignedTo.email:-}");
 				json.put("subject", "New Comment added");
 				json.put("message", "A new comment has been added in your WorkOrder.");
+				break;
+			case 5:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				JSONArray emails = new JSONArray();
+				emails.add("${org.superAdmin.email:-}");
+				json.put("to", emails);
+				json.put("subject", "New Alarm raised");
+				json.put("message", "${alarm.ticket.description}\n\nPlease follow ${alarm.url} to view the alarm and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio");
+				break;
+			case 6:
+				JSONArray smsList = new JSONArray();
+				smsList.add("${org.superAdmin.phone:-}");
+				json.put("to", smsList);
+				json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.ticket.subject} @ ${alarm.space.name}");
+				break;
 				
 		}
 		return json;

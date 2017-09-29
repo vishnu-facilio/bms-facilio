@@ -746,6 +746,13 @@
 			</result>
 		</action>
 		
+		<action name="reject" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
@@ -770,6 +777,13 @@
 		</action>
 		
 		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="reject" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
@@ -815,6 +829,22 @@
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="templateApi" namespace="/api/template" extends="home">
+		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction" method="addEmail">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction" method="addSms">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
 		</action>
 	</package>
 	
@@ -909,21 +939,6 @@
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
-	</package>
-	
-		<package name="setupApi" namespace="/api/setup" extends="home">
-	
-	<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
-			<param name="permission">USER_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-			<param name="includeProperties">users.*</param></result>
-		</action>
-<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
-	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
-            <result name="success" type="json">
-			<param name="includeProperties">groups.*</param></result>
-			</action>		
-			
 	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
@@ -1491,6 +1506,24 @@
 			</result>
 		</action>
 	</package>	
+	<package name="importapi" namespace="/api/import" extends="home">
+		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
+		<result name="success" type="json">
+				<param name="includeProperties">metainfo.*</param>
+			</result>
+		</action>
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+	</package>		
+	
 	<package name="campus" namespace="/app/campus" extends="home">
 		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>

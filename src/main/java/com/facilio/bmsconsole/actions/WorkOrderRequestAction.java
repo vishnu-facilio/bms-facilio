@@ -74,6 +74,13 @@ public class WorkOrderRequestAction extends ActionSupport {
 		return updateWorkOrderRequest(context);
 	}
 	
+	public String rejectWorkOrderRequest() throws Exception {
+		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
+		FacilioContext context = new FacilioContext();
+		//set Event
+		return updateWorkOrderRequest(context);
+	}
+	
 	public String updateWorkOrderRequest() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

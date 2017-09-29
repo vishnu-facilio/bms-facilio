@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+<package name="setupPackage" namespace="/api/setup" extends="home">
+<interceptors>
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="defaultInterceptor" />
+		
+		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+			<param name="includeProperties">users.*</param></result>
+		</action>
+		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
+	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+            <result name="success" type="json">
+			<param name="includeProperties">groups.*</param></result>
+		</action>		
+		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="deviceList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="devicelayout" class="com.facilio.bmsconsole.actions.DeviceAction" method="newDevice">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">device.*</param>
+			</result>
+		</action>
+		<action name="stateflow" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="showStateFlow">
+            <result name="success" type="json">
+			<param name="includeProperties">stateFlow.*</param></result>
+		</action>	
+		<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction" method="changeStatus">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">user.orgUserId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+	    <action name="adduser" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>					
+	</package>
+
+</struts>

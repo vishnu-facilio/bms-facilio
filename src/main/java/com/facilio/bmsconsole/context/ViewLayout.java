@@ -110,7 +110,7 @@ public class ViewLayout {
 		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
-		viewLayout.addColumn(new ViewColumn("Managed By", "managedBy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Managed By", "managedBy", "email", ViewColumn.ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}
@@ -148,7 +148,6 @@ public class ViewLayout {
 		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Building", "building", "name", ViewColumn.ColumnType.LOOKUP));
-		viewLayout.addColumn(new ViewColumn("Main Level", "mainLevel", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
@@ -160,10 +159,10 @@ public class ViewLayout {
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
-		viewLayout.addColumn(new ViewColumn("Display Name", "displayName", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Building", "building", "name", ViewColumn.ColumnType.LOOKUP));
+		viewLayout.addColumn(new ViewColumn("Floor", "floor", "name", ViewColumn.ColumnType.LOOKUP));
 		viewLayout.addColumn(new ViewColumn("Category", "spaceCategoryId", ViewColumn.ColumnType.TEXT));
-		viewLayout.addColumn(new ViewColumn("Occupiable", "occupiable", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));

@@ -104,7 +104,7 @@ public class RoleContext {
 	
 	public boolean hasPermission(FacilioConstants.Permission permission)
 	{
-		if(name.equals(FacilioConstants.Role.ADMINISTRATOR))
+		if(permissions == 0)
 		{
 			return true;
 		}

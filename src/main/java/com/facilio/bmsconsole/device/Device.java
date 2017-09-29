@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.device;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +40,9 @@ public class Device
 		return this;
 	}
 	
-	public Device setName(String name)
+	public void setName(String name)
 	{
 		this.name = name;
-		return this;
 	}
 	
 	public void add(Device device)
@@ -96,15 +96,23 @@ public class Device
 		return this.instances;
 	}
 	
-	private long spaceId = -1;
+	private Long spaceId;
 	public Long getSpaceId()
 	{
 		return this.spaceId;
 	}
 	
-	public Device setSpaceId(long spaceId)
+	public void setSpaceId(Long spaceId)
 	{
 		this.spaceId = spaceId;
-		return this;
+	}
+	
+	private String type;
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return this.type;
 	}
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,19 +19,24 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -77,19 +83,11 @@ public class AlarmAction extends ActionSupport {
 		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
 
-		if(alarm.getDeviceId() == -1)
-		{
-			Long deviceId = DeviceAPI.addDevice(alarm.getTicket().getSpace().getName(), alarm.getTicket().getSpace().getId());
-			alarm.setDeviceId(deviceId);
-		}
-		else
-		{
-			Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
-			
-			BaseSpaceContext space = new BaseSpaceContext();
-			space.setId(spaceId);
-			alarm.getTicket().setSpace(space);
-		}
+		Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
+		
+		BaseSpaceContext space = new BaseSpaceContext();
+		space.setId(spaceId);
+		alarm.getTicket().setSpace(space);
 		return alarm;
 	}
 
@@ -184,7 +182,7 @@ public class AlarmAction extends ActionSupport {
 
 		return SUCCESS;
 	}
-
+	
 	private List<AlarmContext> alarms;
 	public List<AlarmContext> getAlarms() {
 		return alarms;
@@ -255,25 +253,30 @@ public class AlarmAction extends ActionSupport {
 		String message = (String) notificationObj.get("message");
 		
 		long alarmId = getAlarm().getId();
-		String alarmSubject = getAlarm().getTicket().getSubject();
-		String alarmType = getAlarm().getTypeVal();
 
 		List<HashMap<String, Object>> followers = new ArrayList<>();
 		
 		for (HashMap<String, Object> to : toList) {
 			String type = (String) to.get("type");
 			String value = (String) to.get("value");
-
 			if ("email".equalsIgnoreCase(type)) {
-				JSONObject mailJson = new JSONObject();
-				mailJson.put("sender", "support@thingscient.com");
-				mailJson.put("to", value);
-				mailJson.put("subject", "[ALARM] ["+alarmType+"] "+alarmSubject);
-				mailJson.put("message", message);
+				Map<String, Object> placeHolders = new HashMap<>();
+				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ALARM, FacilioConstants.ContextNames.ALARM, FieldUtil.getAsProperties(alarm), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+				
+				placeHolders.put("follower.email", value);
+				JSONObject mailJson = DefaultTemplates.ALARM_CREATION_EMAIL.getTemplate(placeHolders);
+				
+				if(message != null && !message.isEmpty()) {
+					String body = (String) mailJson.get("message");
+					mailJson.put("message", body+"\n\n"+message);
+				}
+				
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
-				value = sendSMS(value, "[ALARM] ["+alarmType+"] "+alarmSubject+" - "+message);
+				value = CommonCommandUtil.sendAlarmSMS(alarm, value, message);
 				to.put("value", value);
 			}
 			
@@ -290,34 +293,6 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
-	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
-	public String sendSMS(String to, String message) {
-
-		try {
-
-			Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
-
-			com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,
-					new com.twilio.sdk.type.PhoneNumber(to),  // To number
-					new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
-					message                    // SMS body
-					).execute();
-
-
-			//com.twilio.sdk.resource.lookups.v1.PhoneNumber
-			//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
-			System.out.println(tmessage.getSid());
-			System.out.println(tmessage.getTo());
-
-			return tmessage.getTo();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public HashMap<String, Object> getAlarmFollower(long alarmId, String follower) throws Exception {
 		
 		Connection conn = null;

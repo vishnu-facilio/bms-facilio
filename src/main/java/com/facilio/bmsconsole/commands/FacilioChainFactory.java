@@ -203,6 +203,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddTicketChain());
         c.addCommand(getAddWorkOrderChain());
+        c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -315,6 +316,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddAlarmCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new AddAlarmFollowersCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -779,6 +781,13 @@ public class FacilioChainFactory {
 	public static Chain getDeleteSupportEmailChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteSupportEmailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

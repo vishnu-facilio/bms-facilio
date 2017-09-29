@@ -181,9 +181,9 @@ public class FieldFactory {
 		fields.add(actionType);
 		
 		FacilioField templateType = new FacilioField();
-		templateType.setName("templateType");
+		templateType.setName("defaultTemplateId");
 		templateType.setDataType(FieldType.NUMBER);
-		templateType.setColumnName("TEMPLATE_TYPE");
+		templateType.setColumnName("DEFAULT_TEMPLATE_ID");
 		templateType.setModuleTableName(tableName);
 		fields.add(templateType);
 		
@@ -351,6 +351,186 @@ public class FieldFactory {
 		isProcessField.setColumnName("IS_PROCESSED");
 		isProcessField.setModuleTableName(tableName);
 		fields.add(isProcessField);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTicketActivityFields() {
+
+		String tableName = "Ticket_Activity";
+		
+		FacilioField tId = new FacilioField();
+		tId.setName("ticketId");
+		tId.setDataType(FieldType.NUMBER);
+		tId.setColumnName("TICKET_ID");
+		tId.setModuleTableName(tableName);
+		
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.NUMBER);
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setModuleTableName(tableName);
+		
+		LookupField modifiedBy = new LookupField();
+		modifiedBy.setName("modifiedBy");
+		modifiedBy.setDataType(FieldType.LOOKUP);
+		modifiedBy.setColumnName("MODIFIED_BY");
+		modifiedBy.setModuleTableName(tableName);
+		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USER);
+		
+		FacilioField activityType = new FacilioField();
+		activityType.setName("activityType");
+		activityType.setDataType(FieldType.NUMBER);
+		activityType.setColumnName("ACTIVITY_TYPE");
+		activityType.setModuleTableName(tableName);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(tId);
+		fields.add(modifiedTime);
+		fields.add(modifiedBy);
+		fields.add(activityType);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getAlarmFollowersFeilds() {
+		String tableName = "AlarmFollowers";
+		
+		FacilioField alarmId = new FacilioField();
+		alarmId.setName("alarmId");
+		alarmId.setDataType(FieldType.NUMBER);
+		alarmId.setColumnName("ALARM_ID");
+		alarmId.setModuleTableName(tableName);
+		
+		FacilioField followerType = new FacilioField();
+		followerType.setName("type");
+		followerType.setDataType(FieldType.STRING);
+		followerType.setColumnName("FOLLOWER_TYPE");
+		followerType.setModuleTableName(tableName);
+		
+		FacilioField follower = new FacilioField();
+		follower.setName("follower");
+		follower.setDataType(FieldType.STRING);
+		follower.setColumnName("FOLLOWER");
+		follower.setModuleTableName(tableName);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(alarmId);
+		fields.add(followerType);
+		fields.add(follower);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getUserTemplateFields() {
+		String tableName = "Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(tableName));
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModuleTableName(tableName);
+		fields.add(name);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("type");
+		typeField.setDataType(FieldType.NUMBER);
+		typeField.setColumnName("TEMPLATE_TYPE");
+		typeField.setModuleTableName(tableName);
+		fields.add(typeField);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getEMailTemplateFields() {
+		return getEMailTemplateFields(true);
+	}
+	
+	private static List<FacilioField> getEMailTemplateFields(boolean isIdNeeded) {
+		String tableName = "EMail_Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		if(isIdNeeded) {
+			fields.add(getIdField(tableName));
+		}
+		
+		FacilioField emailFrom = new FacilioField();
+		emailFrom.setName("from");
+		emailFrom.setDataType(FieldType.STRING);
+		emailFrom.setColumnName("FROM_ADDR");
+		emailFrom.setModuleTableName(tableName);
+		fields.add(emailFrom);
+		
+		FacilioField emailTo = new FacilioField();
+		emailTo.setName("to");
+		emailTo.setDataType(FieldType.STRING);
+		emailTo.setColumnName("TO_ADDR");
+		emailFrom.setModuleTableName(tableName);
+		fields.add(emailTo);
+		
+		FacilioField emailSubject = new FacilioField();
+		emailSubject.setName("subject");
+		emailSubject.setDataType(FieldType.STRING);
+		emailSubject.setColumnName("SUBJECT");
+		emailSubject.setModuleTableName(tableName);
+		fields.add(emailSubject);
+		
+		FacilioField emailBody = new FacilioField();
+		emailBody.setName("bodyId");
+		emailBody.setDataType(FieldType.STRING);
+		emailBody.setColumnName("BODY_ID");
+		emailBody.setModuleTableName(tableName);
+		fields.add(emailBody);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getSMSTemplateFields() {
+		return getSMSTemplateFields(true);
+	}
+	
+	private static List<FacilioField> getSMSTemplateFields(boolean isIdNeeded) {
+		String tableName = "SMS_Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		if(isIdNeeded) {
+			fields.add(getIdField(tableName));
+		}
+		
+		FacilioField smsFrom = new FacilioField();
+		smsFrom.setName("from");
+		smsFrom.setDataType(FieldType.STRING);
+		smsFrom.setColumnName("FROM_NUM");
+		smsFrom.setModuleTableName(tableName);
+		fields.add(smsFrom);
+		
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.STRING);
+		smsTo.setColumnName("TO_NUM");
+		smsTo.setModuleTableName(tableName);
+		fields.add(smsTo);
+		
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("msg");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModuleTableName(tableName);
+		fields.add(smsMsg);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTemplateFields() {
+		List<FacilioField> fields = getUserTemplateFields();
+		fields.addAll(getEMailTemplateFields(false));
+		fields.addAll(getSMSTemplateFields(false));
 		
 		return fields;
 	}

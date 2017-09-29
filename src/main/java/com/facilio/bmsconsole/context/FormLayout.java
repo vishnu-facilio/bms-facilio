@@ -126,46 +126,56 @@ public class FormLayout {
 	public static List<NewPanel> getNewFloorLayout(List<FacilioField> fields)
 	{
 		List<NewPanel> panels = new ArrayList<NewPanel>();
-		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
 		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId")) {
+			if(field.getName().equals("baseSpaceId") || field.getName().equals("mainLevel")) {
 				continue;
 			}
-			if(field.getName().equals("name") || field.getName().equals("building") || field.getName().equals("area")) {
+			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			else {
+			else if(field.getName().equals("building") || field.getName().equals("area")) {
 				second.addField(field);
+			}
+			else {
+				third.addField(field);
 			}
 		}
 		
 		panels.add(first);
 		panels.add(second);
+		panels.add(third);
 		return panels;
 	}
 	
 	public static List<NewPanel> getNewSpaceLayout(List<FacilioField> fields)
 	{
 		List<NewPanel> panels = new ArrayList<NewPanel>();
-		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel first =  new NewPanel(NewPanel.Type.FULL);
 		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId")) {
+			if(field.getName().equals("baseSpaceId") || field.getName().equals("displayName") || field.getName().equals("availability") || field.getName().equals("occupiable")) {
 				continue;
 			}
-			if(field.getName().equals("name") || field.getName().equals("displayName") || field.getName().equals("building") || field.getName().equals("floor") || field.getName().equals("area")) {
+			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			else {
+			if(field.getName().equals("building") || field.getName().equals("floor")) {
 				second.addField(field);
+			}
+			else {
+				third.addField(field);
 			}
 		}
 		
 		panels.add(first);
 		panels.add(second);
+		panels.add(third);
 		return panels;
 	}
 	
