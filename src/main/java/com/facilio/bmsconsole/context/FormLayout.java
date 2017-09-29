@@ -165,7 +165,7 @@ public class FormLayout {
 			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			if(field.getName().equals("building") || field.getName().equals("floor")) {
+			else if(field.getName().equals("building") || field.getName().equals("floor")) {
 				second.addField(field);
 			}
 			else {
