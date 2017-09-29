@@ -110,7 +110,7 @@ public class ViewLayout {
 		viewLayout.addColumn(new ViewColumn("Max Occupancy", "maxOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Current Occupancy", "currentOccupancy", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Area", "area", ViewColumn.ColumnType.TEXT));
-		viewLayout.addColumn(new ViewColumn("Managed By", "managedBy", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Managed By", "managedBy", "email", ViewColumn.ColumnType.LOOKUP));
 		
 		return viewLayout;
 	}
