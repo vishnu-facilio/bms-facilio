@@ -91,7 +91,7 @@ public class SpaceAPI {
 		ResultSet rs = null;
 		try 
 		{
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Floor.ID, Floor.NAME, Space.ID, Space.NAME FROM BaseSpace "
+			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Building.CAMPUS_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID FROM BaseSpace "
 					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
 					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
 					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
@@ -123,21 +123,45 @@ public class SpaceAPI {
 		{
 			bs.setName(rs.getString("Campus.NAME"));
 			bs.setType("Campus");
+			bs.setChildId(rs.getLong("Campus.ID"));
 		}
 		else if(rs.getLong("Building.ID") != 0)
 		{
 			bs.setName(rs.getString("Building.NAME"));
 			bs.setType("Building");
+			bs.setChildId(rs.getLong("Building.ID"));
+			if(rs.getLong("Building.CAMPUS_ID") != 0)
+			{
+				bs.setParentType("Campus");
+				bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
+			}
 		}
 		else if(rs.getLong("Floor.ID") != 0)
 		{
 			bs.setName(rs.getString("Floor.NAME"));
 			bs.setType("Floor");
+			bs.setChildId(rs.getLong("Floor.ID"));
+			if(rs.getLong("Floor.BUILDING_ID") != 0)
+			{
+				bs.setParentType("Building");
+				bs.setParentId(rs.getLong("Floor.BUILDING_ID"));
+			}
 		}
 		else if(rs.getLong("Space.ID") != 0)
 		{
 			bs.setName(rs.getString("Space.NAME"));
 			bs.setType("Space");
+			bs.setChildId(rs.getLong("Space.ID"));
+			if(rs.getLong("Space.FLOOR_ID") != 0)
+			{
+				bs.setParentType("Floor");
+				bs.setParentId(rs.getLong("Space.FLOOR_ID"));
+			}
+			else if(rs.getLong("Space.BUILDING_ID") != 0)
+			{
+				bs.setParentType("Building");
+				bs.setParentId(rs.getLong("Space.BUILDING_ID"));
+			}
 		}
 		return bs;
 	}
