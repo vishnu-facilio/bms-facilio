@@ -421,4 +421,117 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getUserTemplateFields() {
+		String tableName = "Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(tableName));
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModuleTableName(tableName);
+		fields.add(name);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("type");
+		typeField.setDataType(FieldType.NUMBER);
+		typeField.setColumnName("TEMPLATE_TYPE");
+		typeField.setModuleTableName(tableName);
+		fields.add(typeField);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getEMailTemplateFields() {
+		return getEMailTemplateFields(true);
+	}
+	
+	private static List<FacilioField> getEMailTemplateFields(boolean isIdNeeded) {
+		String tableName = "EMail_Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		if(isIdNeeded) {
+			fields.add(getIdField(tableName));
+		}
+		
+		FacilioField emailFrom = new FacilioField();
+		emailFrom.setName("from");
+		emailFrom.setDataType(FieldType.STRING);
+		emailFrom.setColumnName("FROM_ADDR");
+		emailFrom.setModuleTableName(tableName);
+		fields.add(emailFrom);
+		
+		FacilioField emailTo = new FacilioField();
+		emailTo.setName("to");
+		emailTo.setDataType(FieldType.STRING);
+		emailTo.setColumnName("TO_ADDR");
+		emailFrom.setModuleTableName(tableName);
+		fields.add(emailTo);
+		
+		FacilioField emailSubject = new FacilioField();
+		emailSubject.setName("subject");
+		emailSubject.setDataType(FieldType.STRING);
+		emailSubject.setColumnName("SUBJECT");
+		emailSubject.setModuleTableName(tableName);
+		fields.add(emailSubject);
+		
+		FacilioField emailBody = new FacilioField();
+		emailBody.setName("bodyId");
+		emailBody.setDataType(FieldType.STRING);
+		emailBody.setColumnName("BODY_ID");
+		emailBody.setModuleTableName(tableName);
+		fields.add(emailBody);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getSMSTemplateFields() {
+		return getSMSTemplateFields(true);
+	}
+	
+	private static List<FacilioField> getSMSTemplateFields(boolean isIdNeeded) {
+		String tableName = "SMS_Templates";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		if(isIdNeeded) {
+			fields.add(getIdField(tableName));
+		}
+		
+		FacilioField smsFrom = new FacilioField();
+		smsFrom.setName("from");
+		smsFrom.setDataType(FieldType.STRING);
+		smsFrom.setColumnName("FROM_NUM");
+		smsFrom.setModuleTableName(tableName);
+		fields.add(smsFrom);
+		
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.STRING);
+		smsTo.setColumnName("TO_NUM");
+		smsTo.setModuleTableName(tableName);
+		fields.add(smsTo);
+		
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("msg");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModuleTableName(tableName);
+		fields.add(smsMsg);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTemplateFields() {
+		List<FacilioField> fields = getUserTemplateFields();
+		fields.addAll(getEMailTemplateFields(false));
+		fields.addAll(getSMSTemplateFields(false));
+		
+		return fields;
+	}
 }	

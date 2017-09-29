@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 public class LocalFileStore extends FileStore {
 
 	public LocalFileStore(long orgId, long userId) {
@@ -45,6 +47,38 @@ public class LocalFileStore extends FileStore {
 			createFile.createNewFile();
 			
 	        is = new FileInputStream(file);
+	        os = new FileOutputStream(createFile);
+	        byte[] buffer = new byte[4096];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	        os.flush();
+	        
+	        updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	    } catch (IOException ioe) {
+	    	deleteFileEntry(fileId);
+	    	throw ioe;
+	    } finally {
+	        is.close();
+	        os.close();
+	    }
+		return fileId;
+	}
+	
+	@Override
+	public long addFile(String fileName, String content, String contentType) throws Exception {
+		long fileId = addDummyFileEntry(fileName);
+		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileSize = content.length();
+		
+		InputStream is = null;
+	    OutputStream os = null;
+	    try {
+	    	File createFile = new File(filePath);
+			createFile.createNewFile();
+			
+	        is = IOUtils.toInputStream(content);
 	        os = new FileOutputStream(createFile);
 	        byte[] buffer = new byte[4096];
 	        int length;

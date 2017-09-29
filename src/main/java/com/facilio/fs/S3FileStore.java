@@ -55,6 +55,28 @@ public class S3FileStore extends FileStore {
 	    	throw e;
 	    }
 	}
+	
+	@Override
+	public long addFile(String fileName, String content, String contentType) throws Exception {
+		long fileId = addDummyFileEntry(fileName);
+		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
+		long fileSize = content.length();
+		
+	    try {
+	    	PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, content);
+	    	if (rs != null) {
+	    		updateFileEntry(fileId, fileName, filePath, fileSize, contentType);
+	    		return fileId;
+	    	}
+	    	else {
+	    		deleteFileEntry(fileId);
+	    		return -1;
+	    	}
+	    } catch (Exception e) {
+	    	deleteFileEntry(fileId);
+	    	throw e;
+	    }
+	}
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {

@@ -832,6 +832,22 @@
 		</action>
 	</package>
 	
+	<package name="templateApi" namespace="/api/template" extends="home">
+		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction" method="addEmail">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction" method="addSms">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="attachmentApi" namespace="/api/attachment" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
