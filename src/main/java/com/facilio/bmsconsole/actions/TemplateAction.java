@@ -6,20 +6,11 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TemplateAction extends ActionSupport {
 	public String addEmail() throws Exception {
-		
-		emailTemplate = new EMailTemplate();
-		emailTemplate.setName("Create Alarm Email");
-		emailTemplate.setType(UserTemplate.Type.EMAIL);
-		emailTemplate.setFrom("support@fazilio.com");
-		emailTemplate.setTo("manthosh@facilio.com");
-		emailTemplate.setSubject("Create Alarm");
-		emailTemplate.setBody("Test creation of template");
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE, emailTemplate);
@@ -41,12 +32,6 @@ public class TemplateAction extends ActionSupport {
 	}
 
 	public String addSms() throws Exception {
-		
-		smsTemplate = new SMSTemplate();
-		smsTemplate.setName("Create Alarm SMS");
-		smsTemplate.setType(UserTemplate.Type.SMS);
-		smsTemplate.setTo("+919003625354");
-		smsTemplate.setMsg("Test sms template");
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE, smsTemplate);
