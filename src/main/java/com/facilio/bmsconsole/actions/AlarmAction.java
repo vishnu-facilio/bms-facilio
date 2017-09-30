@@ -283,6 +283,7 @@ public class AlarmAction extends ActionSupport {
 					mailJson.put("message", body+"\n\n"+message);
 				}
 				
+				mailJson.put("to", value);
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
