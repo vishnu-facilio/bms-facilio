@@ -5,8 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -104,6 +116,130 @@ public class AlarmReportAction extends ActionSupport {
 					.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=1 AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, orgId);
 			List<Map<String, Object>> rs = builder.get();
 			return rs;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String map() throws Exception {
+		buildingStats = new JSONArray();
+		List<BuildingContext> buildings = getBuildings();
+		if(buildings != null && !buildings.isEmpty()) {
+			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+				for(BuildingContext building : buildings) {
+					JSONObject buildingObj = new JSONObject();
+					buildingObj.put("id", building.getBaseSpaceId());
+					buildingObj.put("name", building.getName());
+					
+					if(building.getLocation() != null) {
+						JSONObject location = new JSONObject();
+						location.put("lat", building.getLocation().getLat());
+						location.put("lng", building.getLocation().getLng());
+						buildingObj.put("location", location);
+					}
+					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), building.getBaseSpaceId(), conn);
+					buildingObj.put("stats", getBuildingAlarmStats(allSpaces));
+					buildingStats.add(buildingObj);
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		return SUCCESS;
+	}
+	
+	private JSONArray buildingStats;
+	public JSONArray getBuildingStats() {
+		return buildingStats;
+	}
+	public void setBuildingStats(JSONArray buildingStats) {
+		this.buildingStats = buildingStats;
+	}
+
+	private JSONObject getBuildingAlarmStats(List<BaseSpaceContext> spaces) throws Exception {
+		JSONObject statsObj = new JSONObject();
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("type");
+		typeField.setColumnName("ALARM_TYPE");
+		typeField.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		fields.add(typeField);
+		
+		StringBuilder where = new StringBuilder();
+		where.append("Alarms.ORGID = ? AND Tickets.SPACE_ID IN (");
+		
+		boolean isFirst = true;
+		for(BaseSpaceContext space : spaces) {
+			if(isFirst) {
+				isFirst = false;
+			}
+			else {
+				where.append(", ");
+			}
+			where.append(space.getId());
+		}
+		where.append(")");
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.select(fields)
+					.table("Alarms")
+					.innerJoin("Tickets")
+					.on("Alarms.TICKET_ID = Tickets.ID")
+					.groupBy("ALARM_TYPE")
+					.andCustomWhere(where.toString(), orgId);
+			List<Map<String, Object>> stats = builder.get();
+			
+			if(stats != null && !stats.isEmpty()) {
+				int total = 0;
+				for(Map<String, Object> stat : stats) {
+					int type = (int) stat.get("type");
+					long count = (long) stat.get("count");
+					
+					statsObj.put(AlarmType.getType(type).getStringVal(), count);
+					total += count;
+				}
+				statsObj.put("Total", total);
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return statsObj;
+	}
+	
+	private List<BuildingContext> getBuildings() throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> buildingFields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+			
+			SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
+					.connection(conn)
+					.table("Building")
+					.moduleName(FacilioConstants.ContextNames.BUILDING)
+					.beanClass(BuildingContext.class)
+					.select(buildingFields)
+					.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.orderBy("ID");
+			return builder.get();
 		}
 		catch(Exception e) {
 			e.printStackTrace();

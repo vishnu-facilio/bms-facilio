@@ -185,6 +185,10 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 			return strVal;
 		}
 		
+		public static AlarmType getType(int val) {
+			return typeMap.get(val);
+		}
+		
 		private static final Map<Integer, AlarmType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, AlarmType> initTypeMap() {
 			Map<Integer, AlarmType> typeMap = new HashMap<>();
