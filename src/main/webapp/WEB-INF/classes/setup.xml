@@ -82,9 +82,9 @@
 				<param name="includeProperties">result</param>
 			</result>
 		</action>	
-		<action name="addalarmrules" class="com.facilio.bmsconsole.actions.NotificationAction" method="alarmCreationRulesList">
+		<action name="alarmrules" class="com.facilio.bmsconsole.actions.NotificationAction" method="alarmCreationRulesList">
             <result name="success" type="json">
-				<param name="root">alarmCreationRules</param>
+				<param name="includeProperties">alarmCreationRules.*,emails.*,phoneNumbers.*</param>
 			</result>
 		</action>
 		

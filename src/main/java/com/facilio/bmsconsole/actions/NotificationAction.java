@@ -1,13 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.EMailTemplate;
+import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -78,7 +84,49 @@ public class NotificationAction extends ActionSupport {
 		
 		alarmCreationRules = (List<WorkflowRuleContext>) context.get(FacilioConstants.Workflow.WORKFLOW_LIST);
 		
+		EMailTemplate emailTemplate = (EMailTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.EMAIL);
+		if(emailTemplate != null)
+		{
+			setEmails(Arrays.asList(emailTemplate.getTo().split(", ")));
+		}
+		else
+		{
+			List<String> emails = new ArrayList<>();
+			emails.add(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getEmail());
+			setEmails(emails);
+		}
+		
+		SMSTemplate smsTemplate = (SMSTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.SMS);
+		if(smsTemplate != null)
+		{
+			setPhoneNumbers(Arrays.asList(smsTemplate.getTo().split(", ")));
+		}
+		else
+		{
+			List<String> phoneNumbers = new ArrayList<>();
+			phoneNumbers.add(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getPhone());
+			setPhoneNumbers(phoneNumbers);
+		}
+		
 		return SUCCESS;
+	}
+	
+	private List<String> emails;
+	public List<String> getEmails() {
+		return this.emails;
+	}
+	
+	public void setEmails(List<String> emails) {
+		this.emails = emails;
+	}
+	
+	private List<String> phoneNumbers;
+	public List<String> getPhoneNumbers() {
+		return this.phoneNumbers;
+	}
+	
+	public void setPhoneNumbers(List<String> phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 	
 	private List<WorkflowRuleContext> alarmCreationRules;
