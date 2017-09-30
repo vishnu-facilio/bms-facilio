@@ -419,6 +419,10 @@ public class WorkOrderReportAction extends ActionSupport {
 					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(spaceId, orgId, conn);
 					
 					primaryLocation = baseSpace.getName();
+					if("Space".equals(baseSpace.getType()) && "Building".equals(baseSpace.getParentType()))
+					{
+						secondaryLocation = SpaceAPI.getBuildingSpace(baseSpace.getParentId(), orgId, conn).getName();
+					}
 					
 					row.put("primary_location", primaryLocation);
 					row.put("secondary_location", secondaryLocation);

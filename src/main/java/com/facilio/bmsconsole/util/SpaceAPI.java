@@ -53,6 +53,34 @@ public class SpaceAPI {
 		return areaId;
 	}
 	
+	public static BaseSpaceContext getBuildingSpace(long id, long orgId, Connection conn) throws SQLException {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Building.ID, Building.NAME, Building.CAMPUS_ID FROM BaseSpace "
+					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
+					+ " WHERE BaseSpace.ORGID = ? AND Building.ID = ?");
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, id);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				return getBuildingSpaceFromRS(rs);
+			}
+			else {
+				return null;
+			}
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(pstmt, rs);
+		}
+	}
+	
 	public static BaseSpaceContext getBaseSpace(long id, long orgId, Connection conn) throws SQLException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -456,6 +484,24 @@ public class SpaceAPI {
 			{
 				bs.setParentType("Building");
 				bs.setParentId(rs.getLong("Space.BUILDING_ID"));
+			}
+		}
+		return bs;
+	}
+	
+	private static BaseSpaceContext getBuildingSpaceFromRS(ResultSet rs) throws SQLException {
+		BaseSpaceContext bs = new BaseSpaceContext();
+		bs.setId(rs.getLong("BaseSpace.ID"));
+		bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
+		if(rs.getLong("Building.ID") != 0)
+		{
+			bs.setName(rs.getString("Building.NAME"));
+			bs.setType("Building");
+			bs.setChildId(rs.getLong("Building.ID"));
+			if(rs.getLong("Building.CAMPUS_ID") != 0)
+			{
+				bs.setParentType("Campus");
+				bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
 			}
 		}
 		return bs;
