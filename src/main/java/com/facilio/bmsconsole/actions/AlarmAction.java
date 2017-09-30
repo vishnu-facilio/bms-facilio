@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +22,12 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
@@ -41,7 +39,6 @@ import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
-import com.twilio.sdk.Twilio;
 
 public class AlarmAction extends ActionSupport {
 	public String addAlarm() throws Exception {
@@ -133,6 +130,19 @@ public class AlarmAction extends ActionSupport {
 		if (ticket != null) {
 			alarm.setTicket(ticket);
 		}
+		
+		if(alarm.getIsAcknowledged() != null && alarm.getIsAcknowledged()) {
+			alarm.setAcknowledgedTime(System.currentTimeMillis());
+			
+			UserContext currentUser = new UserContext();
+			currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
+			alarm.setAcknowledgedBy(currentUser);
+		}
+		
+		if(alarm.getStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
+			alarm.setClearedTime(System.currentTimeMillis());
+		}
+		
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 

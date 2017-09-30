@@ -50,11 +50,26 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 	public void setIsAcknowledged(Boolean isAcknowledged) {
 		this.isAcknowledged = isAcknowledged;
 	}
-	
 	public Boolean getIsAcknowledged() {
 		return this.isAcknowledged;
 	}
 	
+	private UserContext acknowledgedBy;
+	public UserContext getAcknowledgedBy() {
+		return acknowledgedBy;
+	}
+	public void setAcknowledgedBy(UserContext acknowledgedBy) {
+		this.acknowledgedBy = acknowledgedBy;
+	}
+
+	private long acknowledgedTime;
+	public long getAcknowledgedTime() {
+		return acknowledgedTime;
+	}
+	public void setAcknowledgedTime(long acknowledgedTime) {
+		this.acknowledgedTime = acknowledgedTime;
+	}
+
 	private AlarmType type;
 	public int getType() {
 		if(type != null) {
@@ -98,6 +113,14 @@ public class AlarmContext extends ModuleBaseWithCustomFields {
 		this.createdTime = createdTime;
 	}
 	
+	private long clearedTime;
+	public long getClearedTime() {
+		return clearedTime;
+	}
+	public void setClearedTime(long clearedTime) {
+		this.clearedTime = clearedTime;
+	}
+
 	private long deviceId = -1;
 	public long getDeviceId() {
 		return deviceId;
