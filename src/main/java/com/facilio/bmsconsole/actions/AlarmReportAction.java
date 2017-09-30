@@ -73,7 +73,7 @@ public class AlarmReportAction extends ActionSupport {
 					.connection(conn)
 					.select(fields)
 					.table("Alarms")
-					.andCustomWhere("Alarms.ORGID=? AND (Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)", orgId, false);
+					.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=1 AND (Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)", orgId, false);
 			List<Map<String, Object>> rs = builder.get();
 			return rs;
 		}
@@ -101,7 +101,7 @@ public class AlarmReportAction extends ActionSupport {
 					.table("Alarms")
 					.innerJoin("Tickets")
 					.on("Alarms.TICKET_ID = Tickets.ID")
-					.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, orgId);
+					.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=1 AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, orgId);
 			List<Map<String, Object>> rs = builder.get();
 			return rs;
 		}
