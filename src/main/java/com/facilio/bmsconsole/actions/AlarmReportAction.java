@@ -179,7 +179,7 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(typeField);
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Tickets.SPACE_ID IN (");
+		where.append("Alarms.ORGID = ? AND Alarms.STATUS = 1 AND Tickets.SPACE_ID IN (");
 		
 		boolean isFirst = true;
 		for(BaseSpaceContext space : spaces) {
