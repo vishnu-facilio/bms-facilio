@@ -937,7 +937,7 @@ public class DeviceAPI
 			
 	 public static List<Device> getDevices() throws SQLException
 	 {
-		String sql="SELECT * FROM Device LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID AND Assets.ORGID =?";
+		String sql="SELECT * FROM Device LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID where ORGID = ?";
 		
 		try (Connection conn =FacilioConnectionPool.INSTANCE.getConnection();PreparedStatement pstmt=conn.prepareStatement(sql) )
 		{
