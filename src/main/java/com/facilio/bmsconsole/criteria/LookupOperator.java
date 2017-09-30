@@ -79,6 +79,7 @@ public enum LookupOperator implements Operator<Criteria> {
 	private static Map<String, Operator> initOperatorMap() {
 		Map<String, Operator> operatorMap = new HashMap<>();
 		operatorMap.putAll(PickListOperators.getAllOperators());
+		operatorMap.putAll(BuildingOperator.getAllOperators());
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}
