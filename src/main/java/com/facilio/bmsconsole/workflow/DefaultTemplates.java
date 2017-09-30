@@ -104,7 +104,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				JSONArray smsList = new JSONArray();
 				smsList.add("${org.superAdmin.phone:-}");
 				json.put("to", smsList);
-				json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.ticket.subject} @ ${alarm.space.name}");
+				json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.ticket.subject} @ ${alarm.ticket.space.name}");
 				break;
 				
 		}
