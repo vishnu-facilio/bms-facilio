@@ -894,7 +894,13 @@
 		
 		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="map">
 			<result name="success" type="json">
-				<param name="root">buildingStats</param>
+				<param name="root">alarmTypeStats</param>
+			</result>
+		</action>
+		
+		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="resolution">
+			<result name="success" type="json">
+				<param name="root">alarmResolutionStats</param>
 			</result>
 		</action>
 	</package>

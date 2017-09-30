@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -43,7 +46,6 @@ public class AlarmReportAction extends ActionSupport {
 		period = period.toUpperCase();
 		return this.period;
 	}
-
 	public void setPeriod(String period) {
 		this.period = period;
 	}
@@ -125,7 +127,7 @@ public class AlarmReportAction extends ActionSupport {
 	
 	@SuppressWarnings("unchecked")
 	public String map() throws Exception {
-		buildingStats = new JSONArray();
+		alarmTypeStats = new JSONArray();
 		List<BuildingContext> buildings = getBuildings();
 		if(buildings != null && !buildings.isEmpty()) {
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
@@ -141,8 +143,8 @@ public class AlarmReportAction extends ActionSupport {
 						buildingObj.put("location", location);
 					}
 					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), building.getBaseSpaceId(), conn);
-					buildingObj.put("stats", getBuildingAlarmStats(allSpaces));
-					buildingStats.add(buildingObj);
+					buildingObj.put("stats", getBuildingAlarmTypeStats(allSpaces));
+					alarmTypeStats.add(buildingObj);
 				}
 			}
 			catch(Exception e) {
@@ -153,15 +155,15 @@ public class AlarmReportAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private JSONArray buildingStats;
-	public JSONArray getBuildingStats() {
-		return buildingStats;
+	private JSONArray alarmTypeStats;
+	public JSONArray getAlarmTypeStats() {
+		return alarmTypeStats;
 	}
-	public void setBuildingStats(JSONArray buildingStats) {
-		this.buildingStats = buildingStats;
+	public void setAlarmTypeStats(JSONArray alarmTypeStats) {
+		this.alarmTypeStats = alarmTypeStats;
 	}
 
-	private JSONObject getBuildingAlarmStats(List<BaseSpaceContext> spaces) throws Exception {
+	private JSONObject getBuildingAlarmTypeStats(List<BaseSpaceContext> spaces) throws Exception {
 		JSONObject statsObj = new JSONObject();
 		
 		FacilioField countFld = new FacilioField();
@@ -245,6 +247,121 @@ public class AlarmReportAction extends ActionSupport {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String resolution() throws Exception {
+		alarmResolutionStats = new JSONObject();
+		List<BuildingContext> buildings = getBuildings();
+		if(buildings != null && !buildings.isEmpty()) {
+			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+				JSONArray buildingArray = new JSONArray();
+				for(BuildingContext building : buildings) {
+					JSONObject buildingObj = new JSONObject();
+					buildingObj.put("id", building.getBaseSpaceId());
+					buildingObj.put("name", building.getName());
+					
+					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), building.getBaseSpaceId(), conn);
+					buildingObj.put("stats", getBuildingAlarmResolutionStats(allSpaces));
+					
+					buildingArray.add(buildingObj);
+				}
+				alarmResolutionStats.put("buildings", buildingArray);
+				
+				JSONObject total  = new JSONObject();
+				total.put("buildings", buildings.size());
+				total.put("stats", getBuildingAlarmResolutionStats(null));
+				
+				alarmResolutionStats.put("total", total);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		return SUCCESS;
+	}
+	
+	private JSONObject getBuildingAlarmResolutionStats(List<BaseSpaceContext> spaces) throws Exception {
+		JSONObject statsObj = new JSONObject();
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("avg");
+		countFld.setColumnName("AVG(ACKNOWLEDGED_TIME-CREATED_TIME)");
+		countFld.setDataType(FieldType.DECIMAL);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("type");
+		typeField.setColumnName("ALARM_TYPE");
+		typeField.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		fields.add(typeField);
+		
+		FacilioField createdTimeFld = new FacilioField();
+		createdTimeFld.setName("createdTime");
+		createdTimeFld.setColumnName("CREATED_TIME");
+		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setDataType(FieldType.DATE_TIME);
+		
+		Condition createdTime = new Condition();
+		createdTime.setField(createdTimeFld);
+		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
+		
+		StringBuilder where = new StringBuilder();
+		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
+		if(spaces != null && !spaces.isEmpty()) {
+			where.append(" AND Tickets.SPACE_ID IN (");
+			boolean isFirst = true;
+			for(BaseSpaceContext space : spaces) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					where.append(", ");
+				}
+				where.append(space.getId());
+			}
+			where.append(")");
+		}
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.select(fields)
+					.table("Alarms")
+					.innerJoin("Tickets")
+					.on("Alarms.TICKET_ID = Tickets.ID")
+					.groupBy("ALARM_TYPE")
+					.andCustomWhere(where.toString(), orgId)
+					.andCondition(createdTime);
+			List<Map<String, Object>> stats = builder.get();
+			
+			if(stats != null && !stats.isEmpty()) {
+				for(Map<String, Object> stat : stats) {
+					int type = (int) stat.get("type");
+					double count = ((BigDecimal) stat.get("avg")).doubleValue();
+					
+					statsObj.put(AlarmType.getType(type).getStringVal(), count);
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return statsObj;
+	}
+	
+	private JSONObject alarmResolutionStats;
+	public JSONObject getAlarmResolutionStats() {
+		return alarmResolutionStats;
+	}
+	public void setAlarmResolutionStats(JSONObject alarmResolutionStats) {
+		this.alarmResolutionStats = alarmResolutionStats;
 	}
 	
 	/*
