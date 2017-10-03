@@ -915,6 +915,7 @@ public class DeviceAPI
 					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
 					device.setStatus(rs.getInt("STATUS"));
 					device.setSpaceId(rs.getLong("SPACE_ID"));
+					device.setType(rs.getString("DEVICE_TYPE"));
 					return device;
 				}
 			}
