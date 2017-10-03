@@ -41,7 +41,7 @@ public class AlarmReportAction extends ActionSupport {
 	private String period;
 	public String getPeriod() {
 		if (this.period == null) {
-			this.period = "TODAY";
+			this.period = "CURRENT_WEEK";
 		}
 		period = period.toUpperCase();
 		return this.period;
