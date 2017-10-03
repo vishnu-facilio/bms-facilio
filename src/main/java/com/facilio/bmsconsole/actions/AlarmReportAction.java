@@ -392,18 +392,19 @@ public class AlarmReportAction extends ActionSupport {
 		avgFld.setColumnName(average);
 		avgFld.setDataType(FieldType.DECIMAL);
 		
-		FacilioField typeField = new FacilioField();
-		typeField.setName("acknowledged");
-		typeField.setColumnName("ACKNOWLEDGED_BY");
-		typeField.setDataType(FieldType.NUMBER);
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
+		fields.add(avgFld);
+		
 		if(groupBy)
 		{
-		 fields.add(avgFld);
+			FacilioField technicianField = new FacilioField();
+			technicianField.setName("acknowledged");
+			technicianField.setColumnName("ACKNOWLEDGED_BY");
+			technicianField.setDataType(FieldType.NUMBER);
+			fields.add(technicianField);
 		}
-		fields.add(typeField);
 		
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
