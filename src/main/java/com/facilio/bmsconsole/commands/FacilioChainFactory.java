@@ -225,6 +225,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ClearAlarmOnWOCloseCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

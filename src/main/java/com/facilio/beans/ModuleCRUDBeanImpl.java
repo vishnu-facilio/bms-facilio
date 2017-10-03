@@ -1,5 +1,7 @@
 package com.facilio.beans;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
@@ -55,6 +57,22 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Command addWorkOrderRequest = FacilioChainFactory.getAddWorkOrderRequestChain();
 			addWorkOrderRequest.execute(context);
 			return workOrderRequest.getId();
+		}
+		return -1;
+	}
+	
+	@Override
+	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception {
+		// TODO Auto-generated method stub
+		if(alarm != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ALARM, alarm);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+			
+			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
+			updateAlarm.execute(context);
+			
+			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}
 		return -1;
 	}

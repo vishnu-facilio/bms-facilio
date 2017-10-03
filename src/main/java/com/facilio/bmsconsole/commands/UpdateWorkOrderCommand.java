@@ -45,7 +45,7 @@ public class UpdateWorkOrderCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(workOrder));
 			
-			if(EventType.ASSIGN_TICKET == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE)) {
+			if(EventType.ASSIGN_TICKET == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE) || EventType.CLOSE_WORK_ORDER == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.connection(conn)
 						.table(dataTableName)

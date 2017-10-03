@@ -131,18 +131,6 @@ public class AlarmAction extends ActionSupport {
 			alarm.setTicket(ticket);
 		}
 		
-		if(alarm.getIsAcknowledged() != null && alarm.getIsAcknowledged()) {
-			alarm.setAcknowledgedTime(System.currentTimeMillis());
-			
-			UserContext currentUser = new UserContext();
-			currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
-			alarm.setAcknowledgedBy(currentUser);
-		}
-		
-		if(alarm.getStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
-			alarm.setClearedTime(System.currentTimeMillis());
-		}
-		
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 

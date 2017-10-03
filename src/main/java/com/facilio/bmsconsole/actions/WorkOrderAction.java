@@ -92,6 +92,18 @@ public class WorkOrderAction extends ActionSupport {
 		return updateWorkOrder(context);
 	}
 	
+	public String closeWorkOrder() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
+		
+		workorder = new WorkOrderContext();
+		ticket = new TicketContext();
+		ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed")); //We shouldn't allow close to be edited
+		workorder.setTicket(ticket);
+		
+		return updateWorkOrder(context);
+	}
+	
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		return updateWorkOrder(context);

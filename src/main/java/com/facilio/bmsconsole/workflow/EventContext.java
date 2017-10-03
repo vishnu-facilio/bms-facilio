@@ -54,7 +54,8 @@ public class EventContext {
 		CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()),
 		APPROVE_WORK_ORDER_REQUEST(8),
 		ASSIGN_TICKET(16),
-		ADD_TICKET_NOTE(32)
+		ADD_TICKET_NOTE(32),
+		CLOSE_WORK_ORDER(64)
 		;
 
 	    private int eventType;

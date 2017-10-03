@@ -716,6 +716,13 @@
 			</result>
 		</action>
 		
+		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="closeWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
