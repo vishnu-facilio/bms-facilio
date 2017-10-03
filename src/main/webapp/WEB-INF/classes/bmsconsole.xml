@@ -898,7 +898,13 @@
 			</result>
 		</action>
 		
-		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="resolution">
+		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="spaceResponse">
+			<result name="success" type="json">
+				<param name="root">alarmResolutionStats</param>
+			</result>
+		</action>
+		
+		<action name="techresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="technicianResponse">
 			<result name="success" type="json">
 				<param name="root">alarmResolutionStats</param>
 			</result>
