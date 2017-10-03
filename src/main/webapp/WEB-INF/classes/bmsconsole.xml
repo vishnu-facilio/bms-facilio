@@ -907,13 +907,13 @@
 		
 		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="spaceResponse">
 			<result name="success" type="json">
-				<param name="root">alarmResolutionStats</param>
+				<param name="root">alarmResponseStats</param>
 			</result>
 		</action>
 		
 		<action name="techresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="technicianResponse">
 			<result name="success" type="json">
-				<param name="root">alarmResolutionStats</param>
+				<param name="root">alarmResponseStats</param>
 			</result>
 		</action>
 	</package>
