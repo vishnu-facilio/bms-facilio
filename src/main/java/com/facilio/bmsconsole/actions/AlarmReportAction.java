@@ -250,8 +250,8 @@ public class AlarmReportAction extends ActionSupport {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String resolution() throws Exception {
-		alarmResolutionStats = new JSONObject();
+	public String spaceResponse() throws Exception {
+		alarmResponseStats = new JSONObject();
 		List<BuildingContext> buildings = getBuildings();
 		if(buildings != null && !buildings.isEmpty()) {
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
@@ -266,13 +266,13 @@ public class AlarmReportAction extends ActionSupport {
 					
 					buildingArray.add(buildingObj);
 				}
-				alarmResolutionStats.put("buildings", buildingArray);
+				alarmResponseStats.put("buildings", buildingArray);
 				
 				JSONObject total  = new JSONObject();
 				total.put("buildings", buildings.size());
 				total.put("stats", getBuildingAlarmResolutionStats(null));
 				
-				alarmResolutionStats.put("total", total);
+				alarmResponseStats.put("total", total);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -356,12 +356,109 @@ public class AlarmReportAction extends ActionSupport {
 		return statsObj;
 	}
 	
-	private JSONObject alarmResolutionStats;
-	public JSONObject getAlarmResolutionStats() {
-		return alarmResolutionStats;
+	private JSONObject alarmResponseStats;
+	public JSONObject getAlarmResponseStats() {
+		return alarmResponseStats;
 	}
-	public void setAlarmResolutionStats(JSONObject alarmResolutionStats) {
-		this.alarmResolutionStats = alarmResolutionStats;
+	public void setAlarmResponseStats(JSONObject alarmResponseStats) {
+		this.alarmResponseStats = alarmResponseStats;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public String technicianResponse() throws Exception {
+		
+		alarmResponseStats = new JSONObject();
+		alarmResponseStats.put("technicians", getResponseStats(true));
+		alarmResponseStats.put("total", getResponseStats(false));
+		return SUCCESS;
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	private JSONArray getResponseStats(boolean groupBy) throws Exception {
+		
+		JSONArray jsonArray = new JSONArray();
+		FacilioField countFld = new FacilioField();
+		countFld.setName("total");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+		
+		
+		String average="AVG(ACKNOWLEDGED_TIME-CREATED_TIME)";
+		FacilioField avgFld = new FacilioField();
+		avgFld.setName("average");
+		avgFld.setColumnName(average);
+		avgFld.setDataType(FieldType.DECIMAL);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("acknowledged");
+		typeField.setColumnName("ACKNOWLEDGED_BY");
+		typeField.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		if(groupBy)
+		{
+		 fields.add(avgFld);
+		}
+		fields.add(typeField);
+		
+		FacilioField createdTimeFld = new FacilioField();
+		createdTimeFld.setName("createdTime");
+		createdTimeFld.setColumnName("CREATED_TIME");
+		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setDataType(FieldType.DATE_TIME);
+		
+		Condition createdTime = new Condition();
+		createdTime.setField(createdTimeFld);
+		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
+		
+		StringBuilder where = new StringBuilder();
+		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
+		
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.connection(conn)
+					.select(fields)
+					.table("Alarms");
+					if(groupBy)
+					{
+						builder.groupBy("ACKNOWLEDGED_BY");
+					}
+					 builder.andCustomWhere(where.toString(), orgId)
+					.andCondition(createdTime)
+					.orderBy(average);
+			List<Map<String, Object>> stats = builder.get();
+			
+			
+			if(stats != null && !stats.isEmpty()) {
+				for(Map<String, Object> stat : stats) {
+					
+					JSONObject statsObj = new JSONObject();
+					long total = (long) stat.get("total");
+					double avg = ((BigDecimal) stat.get("average")).doubleValue();
+					if(groupBy)
+					{
+						long acknowledger = (long) stat.get("acknowledged");
+						statsObj.put("technician", acknowledger);
+					}
+					statsObj.put("average", avg);
+					statsObj.put("total", total);
+					jsonArray.add(statsObj);
+				}
+			
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return jsonArray;
 	}
 	
 	/*
