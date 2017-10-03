@@ -72,6 +72,16 @@ public class BuildingContext extends ModuleBaseWithCustomFields {
 		this.floors = floors;
 	}
 	
+	private long leedId;
+	public void setLeedId(long leedId)
+	{
+		this.leedId = leedId;
+	}
+	public long getLeedId()
+	{
+		return this.leedId;
+	}
+	
 	private List<UtilityProviderContext> utilityProviders = new ArrayList<>();
 	public List<UtilityProviderContext> getUtilityProviders() {
 		return this.utilityProviders;
