@@ -14,11 +14,14 @@ import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SetupActions<T> extends ActionSupport {
@@ -180,6 +183,10 @@ public String importData() throws Exception {
 	public String showNotificationSettings() throws Exception {
 		
 		setSetup(SetupLayout.getEmailNotificationsLayout());
+		
+		//OrgContext org = OrgApi.getOrgContext();
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid());
+		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
 	
