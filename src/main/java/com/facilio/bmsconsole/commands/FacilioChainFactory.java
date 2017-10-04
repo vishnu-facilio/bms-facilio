@@ -128,7 +128,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Command getAddUserCommand() {
+	public static Chain getAddUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateFieldsCommand());
 		c.addCommand(new AddUserCommand());

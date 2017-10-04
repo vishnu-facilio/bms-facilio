@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -17,9 +16,8 @@ public class AddUserCommand implements Command {
 		UserContext user = (UserContext) context.get(FacilioConstants.ContextNames.USER);
 		
 		if (user != null) {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			long userId = UserAPI.addUser(user, conn);
+			long userId = UserAPI.addUser(user);
 			
 			context.put(FacilioConstants.ContextNames.USER_ID, userId);
 		}

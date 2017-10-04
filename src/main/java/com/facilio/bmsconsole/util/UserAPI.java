@@ -311,9 +311,10 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static long addUser(UserContext context, Connection conn) throws Exception {
+	public static long addUser(UserContext context) throws Exception {
 
 		boolean isLocalConn = false;
+		Connection conn =null;
 		try {
 			String orgName = OrgApi.getOrgDomainFromId(context.getOrgId());
 			
@@ -350,6 +351,7 @@ public class UserAPI {
 				ResultSet rs2 = ps2.getGeneratedKeys();
 				rs2.next();
 				long orgUserId = rs2.getLong(1);
+				rs2.close();
 				ps2.close();
 
 				context.setUserId(userId);

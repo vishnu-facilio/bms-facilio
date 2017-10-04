@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.amazonaws.services.cognitoidp.model.InvalidParameterException;
@@ -21,6 +22,7 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport {
@@ -101,7 +103,7 @@ public class UserAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.USER, user);
 		
 		try {
-			Command addUser = FacilioChainFactory.getAddUserCommand();
+			Chain addUser = FacilioChainFactory.getAddUserCommand();
 			addUser.execute(context);
 			setUserId(user.getUserId());
 		}
@@ -162,7 +164,9 @@ public class UserAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
-
+		Map params = ActionContext.getContext().getParameters();
+		
+System.out.println("User object is "+params+"\n"+ user);
 		Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
 		addUser.execute(context);
 		

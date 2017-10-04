@@ -10,11 +10,13 @@ import org.apache.commons.chain.Command;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class GroupAction extends ActionSupport {
@@ -42,6 +44,8 @@ public class GroupAction extends ActionSupport {
 		setSetup(SetupLayout.getGroupsListLayout());
 		setGroups(GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		
+		List<RoleContext> roles = UserAPI.getRolesOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
+		ActionContext.getContext().getValueStack().set("roles", roles);
 		return SUCCESS;
 	}
 	
