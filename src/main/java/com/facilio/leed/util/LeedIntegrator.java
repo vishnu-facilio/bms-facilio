@@ -2,11 +2,7 @@ package com.facilio.leed.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Base64;
 
 import org.apache.http.Header;
@@ -45,42 +41,42 @@ public class LeedIntegrator {
 		System.out.println(response);
 	}
 	
-	public JSONObject getAssetDetail(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getAssetDetail(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getAssetList() throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getAssetList() throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getMeters(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getMeters(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getAssetMeterDetail(String leedId, String meterId) throws ClientProtocolException,IOException,ParseException
+	public static JSONObject getAssetMeterDetail(String leedId, String meterId) throws ClientProtocolException,IOException,ParseException
 	{
 		String urlString = serverURL+"arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getPerformanceScores(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getPerformanceScores(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/scores/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject searchAsset(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject searchAsset(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString;
 		if(leedId != null)
@@ -96,47 +92,47 @@ public class LeedIntegrator {
 		
 	}
 	
-	public JSONObject searchAsset() throws ClientProtocolException, IOException, ParseException
+	public static JSONObject searchAsset() throws ClientProtocolException, IOException, ParseException
 	{
 		return searchAsset(null);
 	}
 	
-	public JSONObject getConsumptionList(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException 
+	public static JSONObject getConsumptionList(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException 
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/consumption/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getConsumptionDetail(String leedId, String meterId, String consumptionId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getConsumptionDetail(String leedId, String meterId, String consumptionId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/consumption/ID:"+consumptionId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getEnvironmentSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getEnvironmentSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/environment/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getEnvironmentSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getEnvironmentSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/environment/summarize/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getFuelCategory() throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getFuelCategory() throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/fuel/category/";
 		JSONObject response =  getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getTransitSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getTransitSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/transit/";
 		JSONObject response = getURLResponse(urlString);
@@ -144,28 +140,28 @@ public class LeedIntegrator {
 		
 	}
 	
-	public JSONObject getTransitSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getTransitSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/transit/summarize/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getWaste(String leedId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getWaste(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/waste/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject getWasteDetails(String leedId, String wasteId) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getWasteDetails(String leedId, String wasteId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/waste/ID:"+wasteId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public JSONObject createMeter(String leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject createMeter(String leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/";
 		/*
@@ -178,7 +174,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public JSONObject updateMeter(String leedId,String meterId,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject updateMeter(String leedId,String meterId,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 	/*
 	 * Note that in updateInfo json, name and type attributes are required attributes
@@ -188,7 +184,7 @@ public class LeedIntegrator {
 		return response; 
 	}
 	
-	public JSONObject createConsumption(String leedId,String meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject createConsumption(String leedId,String meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample consumptionData json 
 //		{
@@ -202,7 +198,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public JSONObject updateConsumption(String leedId, String meterId, String consumptionId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject updateConsumption(String leedId, String meterId, String consumptionId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample updateInfo. Note that same interval cannot be given for update. 
 //		{
@@ -215,7 +211,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public JSONObject updateAsset(String leedId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject updateAsset(String leedId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample updateInfo JSON 
 //		{
@@ -323,7 +319,7 @@ public class LeedIntegrator {
     }
 	
 	
-	public JSONObject getPostResponse(String URL, JSONObject data) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject getPostResponse(String URL, JSONObject data) throws ClientProtocolException, IOException, ParseException
 	{
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(URL);

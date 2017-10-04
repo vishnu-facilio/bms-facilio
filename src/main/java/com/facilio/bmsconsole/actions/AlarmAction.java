@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -129,18 +128,6 @@ public class AlarmAction extends ActionSupport {
 		//		System.out.println(alarm);
 		if (ticket != null) {
 			alarm.setTicket(ticket);
-		}
-		
-		if(alarm.getIsAcknowledged() != null && alarm.getIsAcknowledged()) {
-			alarm.setAcknowledgedTime(System.currentTimeMillis());
-			
-			UserContext currentUser = new UserContext();
-			currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
-			alarm.setAcknowledgedBy(currentUser);
-		}
-		
-		if(alarm.getStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
-			alarm.setClearedTime(System.currentTimeMillis());
 		}
 		
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);

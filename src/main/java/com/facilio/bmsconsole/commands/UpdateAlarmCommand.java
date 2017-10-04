@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.UserInfo;
 
 public class UpdateAlarmCommand implements Command {
 
@@ -35,6 +37,18 @@ public class UpdateAlarmCommand implements Command {
 			idCondition.setField(FieldFactory.getIdField(dataTableName));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
+			
+			if(alarm.getIsAcknowledged() != null && alarm.getIsAcknowledged()) {
+				alarm.setAcknowledgedTime(System.currentTimeMillis());
+				
+				UserContext currentUser = new UserContext();
+				currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
+				alarm.setAcknowledgedBy(currentUser);
+			}
+			
+			if(alarm.getStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
+				alarm.setClearedTime(System.currentTimeMillis());
+			}
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
 																		.connection(conn)
@@ -61,10 +75,6 @@ public class UpdateAlarmCommand implements Command {
 			}
 		}
 		return false;
-	}
-	
-	private void updateAlarmTicket(Condition idCondition, Connection conn) {
-		
 	}
 
 }

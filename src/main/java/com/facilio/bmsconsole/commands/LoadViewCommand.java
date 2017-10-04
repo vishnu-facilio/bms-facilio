@@ -3,9 +3,13 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 
 public class LoadViewCommand implements Command {
 
@@ -17,38 +21,21 @@ public class LoadViewCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
 		if(viewName != null && !viewName.isEmpty()) {
+			FacilioView view = null;
+			boolean isCVEnabled = true;
+			if(isCVEnabled) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				long moduleId = modBean.getModule(moduleName).getModuleId();
+				view = ViewAPI.getView(viewName, moduleId, OrgInfo.getCurrentOrgInfo().getOrgid());
+			}
 			
-			FacilioView view = ViewFactory.getView(moduleName + "-" +viewName);
+			if(view == null) {
+				view = ViewFactory.getView(moduleName + "-" +viewName);
+			}
 			
 			if(view != null) {
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
 			}
-			
-//			PreparedStatement pstmt = null;
-//			ResultSet rs = null;
-//			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-//			try {
-//				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-//				pstmt = conn.prepareStatement("SELECT * FROM Views WHERE ORGID = ? AND NAME = ?");
-//				pstmt.setLong(1, orgId);
-//				pstmt.setString(2, viewName);
-//				
-//				rs = pstmt.executeQuery();
-//				
-//				if(rs.next()) {
-//					FacilioView view = CommonCommandUtil.getViewFromRS(rs);
-//					Criteria criteria = CriteriaUtil.getCriteria(view.getCriteriaId(),conn);
-//					view.setCriteria(criteria);
-//					context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
-//				}
-//			}
-//			catch(SQLException e) {
-//				e.printStackTrace();
-//				throw e;
-//			}
-//			finally {
-//				DBUtil.closeAll(pstmt, rs);
-//			}
 		}
 		
 		return false;

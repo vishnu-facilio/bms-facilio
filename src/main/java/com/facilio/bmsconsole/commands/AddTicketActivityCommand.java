@@ -1,19 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
