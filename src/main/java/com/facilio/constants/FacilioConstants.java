@@ -434,6 +434,12 @@ public class FacilioConstants {
 		
 		public static final String RESULT = "result";
 		
+		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
+		
+		public static final String LeedID = "leedID";
+		
+		public static final String MeterID = "meterID";
+		
 		public static String getPKColumn(String module) {
 			if (TICKET.equalsIgnoreCase(module)) {
 				return "TICKET_ID";

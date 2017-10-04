@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.GetUtilityProvidersCommand;
 import com.facilio.transaction.FacilioTransactionManager;
 
@@ -578,6 +579,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addConsumptionDataChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddConsumptionForLeed());
+		c.addCommand(new AddConsumptionData());
+		return c;
+	}
 	public static Chain getAllFloorChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForFloor());
