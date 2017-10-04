@@ -13,7 +13,6 @@ import org.json.simple.JSONObject;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
-import com.twilio.sdk.Twilio;
 
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
