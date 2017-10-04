@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public class FacilioView {
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -14,7 +17,7 @@ public class FacilioView {
 		this.orgId = orgId;
 	}
 	
-	private long viewId;
+	private long viewId = -1;
 	public long getViewId() {
 		return viewId;
 	}
@@ -38,7 +41,24 @@ public class FacilioView {
 		this.displayName = displayName;
 	}
 	
-	private long moduleId;
+	private ViewType type;
+	public int getType() {
+		if(type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+	public ViewType getTypeEnum() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = ViewType.TYPE_MAP.get(type);
+	}
+	public void setType(ViewType type) {
+		this.type = type;
+	}
+	
+	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
 	}
@@ -46,7 +66,7 @@ public class FacilioView {
 		this.moduleId = moduleId;
 	}
 	
-	private long criteriaId;
+	private long criteriaId = -1;
 	public long getCriteriaId() {
 		return criteriaId;
 	}
@@ -68,5 +88,29 @@ public class FacilioView {
 	}
 	public void setFields(List<FacilioField> fields) {
 		this.fields = fields;
+	}
+	
+	public static enum ViewType {
+		TABLE_LIST(1);
+		
+		private int intVal;
+		
+		private ViewType(int val) {
+			// TODO Auto-generated constructor stub
+			this.intVal = val;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		
+		private static final Map<Integer, ViewType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ViewType> initTypeMap() {
+			Map<Integer, ViewType> typeMap = new HashMap<>();
+			for(ViewType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
 	}
 }

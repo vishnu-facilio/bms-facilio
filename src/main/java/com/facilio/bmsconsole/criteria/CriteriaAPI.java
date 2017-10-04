@@ -67,7 +67,7 @@ public class CriteriaAPI {
 		condition.setCriteriaValueId(rs.getLong("Conditions.CRITERIA_VAL_ID"));
 		condition.setComputedWhereClause(rs.getString("Conditions.COMPUTED_WHERE_CLAUSE"));
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioField field = modBean.getField(condition.getFieldId());
 		condition.setField(field);
 		
