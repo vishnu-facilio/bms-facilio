@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.leed.context.UtilityProviderContext;
 
 public class BuildingContext extends ModuleBaseWithCustomFields {
@@ -79,5 +81,21 @@ public class BuildingContext extends ModuleBaseWithCustomFields {
 	
 	public void setUtilityProviders(List<UtilityProviderContext> utilityProviders) {
 		this.utilityProviders = utilityProviders;
+	}
+	
+	private long photoId;
+	public long getPhotoId() {
+		return photoId;
+	}
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
+	}
+
+	public String getAvatarUrl() throws Exception {
+		if (this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.photoId);
+		}
+		return null;
 	}
 }

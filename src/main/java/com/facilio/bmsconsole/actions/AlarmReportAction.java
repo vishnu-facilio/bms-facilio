@@ -135,6 +135,7 @@ public class AlarmReportAction extends ActionSupport {
 					JSONObject buildingObj = new JSONObject();
 					buildingObj.put("id", building.getBaseSpaceId());
 					buildingObj.put("name", building.getName());
+					buildingObj.put("avatarUrl", building.getAvatarUrl());
 					
 					if(building.getLocation() != null) {
 						JSONObject location = new JSONObject();

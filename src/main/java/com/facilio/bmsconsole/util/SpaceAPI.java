@@ -85,7 +85,7 @@ public class SpaceAPI {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Building.CAMPUS_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID FROM BaseSpace "
+			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
 					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
 					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
 					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
@@ -237,7 +237,7 @@ public class SpaceAPI {
 				}
 				
 				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT BaseSpace.ID, BaseSpace.ORGID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.BUILDING_ID FROM BaseSpace ")
+				sql.append("SELECT BaseSpace.ID, BaseSpace.ORGID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID FROM BaseSpace ")
 					.append(" LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID")
 					.append(" LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID")
 					.append(" WHERE BaseSpace.ORGID = ? AND (Floor.BUILDING_ID IN (")
@@ -277,6 +277,9 @@ public class SpaceAPI {
 						{
 							bs.setParentType("Building");
 							bs.setParentId(rs.getLong("Space.BUILDING_ID"));
+						}
+						if (rs.getLong("Space.SPACE_CATEGORY_ID") != 0) {
+							bs.setCategoryId(rs.getLong("Space.SPACE_CATEGORY_ID"));
 						}
 					}
 					areas.add(bs);
@@ -380,7 +383,7 @@ public class SpaceAPI {
 			try 
 			{
 				
-				pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Building.CAMPUS_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID FROM BaseSpace "
+				pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
 						+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
 						+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
 						+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
@@ -413,7 +416,7 @@ public class SpaceAPI {
 		ResultSet rs = null;
 		try 
 		{
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Building.ID, Building.NAME, Building.CAMPUS_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID FROM BaseSpace "
+			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
 					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
 					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
 					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
@@ -447,6 +450,10 @@ public class SpaceAPI {
 			bs.setName(rs.getString("Campus.NAME"));
 			bs.setType("Campus");
 			bs.setChildId(rs.getLong("Campus.ID"));
+			if(rs.getLong("Campus.PHOTO_ID") != 0)
+			{
+				bs.setPhotoId(rs.getLong("Campus.PHOTO_ID"));
+			}
 		}
 		else if(rs.getLong("Building.ID") != 0)
 		{
@@ -458,6 +465,10 @@ public class SpaceAPI {
 				bs.setParentType("Campus");
 				bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
 			}
+			if(rs.getLong("Building.PHOTO_ID") != 0)
+			{
+				bs.setPhotoId(rs.getLong("Building.PHOTO_ID"));
+			}
 		}
 		else if(rs.getLong("Floor.ID") != 0)
 		{
@@ -468,6 +479,10 @@ public class SpaceAPI {
 			{
 				bs.setParentType("Building");
 				bs.setParentId(rs.getLong("Floor.BUILDING_ID"));
+			}
+			if(rs.getLong("Floor.PHOTO_ID") != 0)
+			{
+				bs.setPhotoId(rs.getLong("Floor.PHOTO_ID"));
 			}
 		}
 		else if(rs.getLong("Space.ID") != 0)
@@ -484,6 +499,13 @@ public class SpaceAPI {
 			{
 				bs.setParentType("Building");
 				bs.setParentId(rs.getLong("Space.BUILDING_ID"));
+			}
+			if (rs.getLong("Space.SPACE_CATEGORY_ID") != 0) {
+				bs.setCategoryId(rs.getLong("Space.SPACE_CATEGORY_ID"));
+			}
+			if(rs.getLong("Space.PHOTO_ID") != 0)
+			{
+				bs.setPhotoId(rs.getLong("Space.PHOTO_ID"));
 			}
 		}
 		return bs;
