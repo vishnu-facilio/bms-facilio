@@ -526,8 +526,8 @@ public class FieldFactory {
 		String tableName = "";
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(tableName));
-		fields.add(getOrgIdField(tableName));
+//		fields.add(getIdField(tableName));
+//		fields.add(getOrgIdField(tableName));
 		fields.add(getNameField(tableName));
 		
 		FacilioField displayName = new FacilioField();
@@ -542,7 +542,7 @@ public class FieldFactory {
 		type.setDataType(FieldType.NUMBER);
 		type.setColumnName("VIEW_TYPE");
 		type.setModuleTableName(tableName);
-		fields.add(type);
+//		fields.add(type);
 		
 		fields.add(getModuleIdField(tableName));
 		
