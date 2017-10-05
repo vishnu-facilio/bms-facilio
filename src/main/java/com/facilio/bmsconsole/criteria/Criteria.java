@@ -12,7 +12,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
 public class Criteria {
-	private long criteriaId;
+	private long criteriaId = -1;
 
 	public long getCriteriaId() {
 		return criteriaId;
@@ -21,7 +21,7 @@ public class Criteria {
 		this.criteriaId = criteriaId;
 	}
 	
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -76,11 +76,13 @@ public class Criteria {
 	
 	public List<Object> getComputedValues() {
 		List<Object> list = new ArrayList<>();
-		for(Condition condition : conditions.values()) {
-			List<Object> computedValues = condition.getComputedValues();
-			if(computedValues != null && computedValues.size() > 0) {
-				for(Object val : computedValues) {
-					list.add(val);
+		if(conditions != null && !conditions.isEmpty()) {
+			for(Condition condition : conditions.values()) {
+				List<Object> computedValues = condition.getComputedValues();
+				if(computedValues != null && computedValues.size() > 0) {
+					for(Object val : computedValues) {
+						list.add(val);
+					}
 				}
 			}
 		}
@@ -149,9 +151,10 @@ public class Criteria {
 			StringBuilder newPattern = new StringBuilder();
 			newPattern.append("(")
 						.append(pattern)
-						.append(" && ")
+						.append(")")
+						.append(" and ")
 						.append(sequence)
-						.append(")");
+						;
 			setPattern(newPattern.toString());
 		}
 		else {
@@ -161,6 +164,37 @@ public class Criteria {
 			
 			conditions = new HashMap<>();
 			conditions.put(1, condition);
+		}
+	}
+	
+	public void addAndConditions(List<Condition> newConditions) {
+		if(newConditions != null && !newConditions.isEmpty()) {
+			int sequence = 1;
+			StringBuilder newPattern = new StringBuilder();
+			if(pattern != null && !pattern.isEmpty()) {
+				sequence = conditions.size() + 1;
+				newPattern.append("(")
+							.append(pattern)
+							.append(")")
+							.append(" and ");
+			}
+			else {
+				conditions = new HashMap<>();
+			}
+			
+			boolean isFirst = true;
+			for(Condition condition : newConditions) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					newPattern.append(" and ");
+				}
+				newPattern.append(sequence);
+				condition.setSequence(sequence);
+				conditions.put(sequence++, condition);
+			}
+			setPattern(newPattern.toString());
 		}
 	}
 }

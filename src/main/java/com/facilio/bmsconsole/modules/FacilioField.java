@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class FacilioField implements Serializable {
 	
-	private long fieldId;
+	private long fieldId = -1;
 	public long getFieldId() {
 		return fieldId;
 	}
@@ -15,7 +15,7 @@ public class FacilioField implements Serializable {
 		this.fieldId = fieldId;
 	}
 	
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -23,7 +23,7 @@ public class FacilioField implements Serializable {
 		this.orgId = orgId;
 	}
 	
-	private long moduleId;
+	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
 	}
@@ -47,7 +47,7 @@ public class FacilioField implements Serializable {
 		this.columnName = columnName;
 	}
 	
-	private int sequenceNumber;
+	private int sequenceNumber = -1;
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}
