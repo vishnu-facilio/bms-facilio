@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -13,7 +12,6 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

@@ -1,10 +1,13 @@
 package com.facilio.leed.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.EnergyDataContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -54,5 +57,56 @@ public class BuildingHome extends ActionSupport {
 		System.out.println(">>>>>>>>>> Comes Here >>>>>>>>>>>");
 		
 		return SUCCESS;
+	}
+	
+	private String leedID;
+	
+	public String getLeedID()
+	{
+		return leedID;
+	}
+	
+	public void setLeedID(String leedID)
+	{
+		this.leedID = leedID;
+	}
+	
+	private String meterID;
+	
+	public String getMeterID()
+	{
+		return meterID;
+	}
+	
+	public void setMeterID(String meterID)
+	{
+		this.meterID = meterID;
+	}
+	
+	private List<EnergyDataContext> energyData;
+	
+	public List<EnergyDataContext> getEnergyData() 
+	{
+		return energyData;
+	}
+	
+	public void setEnergyData(List<EnergyDataContext> energyData) 
+	{
+		this.energyData = energyData;
+	}
+	
+	public String addConsumptionData() throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		context.put(FacilioConstants.ContextNames.LeedID, getLeedID());
+		context.put(FacilioConstants.ContextNames.MeterID, getMeterID());
+		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getEnergyData());
+		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
+		addConsumptionDataChain.execute(context);
+		
+		
+		return SUCCESS;
+		
 	}
 }

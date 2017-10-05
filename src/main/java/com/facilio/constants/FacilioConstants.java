@@ -25,7 +25,6 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
 
 public class FacilioConstants {
 	
@@ -435,6 +434,12 @@ public class FacilioConstants {
 		public static final String EMAIL_SETTING = "emailSetting";
 		
 		public static final String RESULT = "result";
+		
+		public static final String COMSUMPTIONDATA_LIST = "comsumptionDataList";
+		
+		public static final String LeedID = "leedID";
+		
+		public static final String MeterID = "meterID";
 		
 		public static String getPKColumn(String module) {
 			if (TICKET.equalsIgnoreCase(module)) {

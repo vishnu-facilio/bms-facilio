@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +21,6 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.device.Device;
@@ -40,7 +38,6 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
@@ -81,17 +78,6 @@ public class CommonCommandUtil {
 		field.setPlaceHolder(rs.getString("Fields.PLACE_HOLDER"));
 		
 		return field;
-	}
-	
-	public static FacilioView getViewFromRS(ResultSet rs) throws SQLException {
-		FacilioView view = new FacilioView();
-		view.setViewId(rs.getLong("VIEWID"));
-		view.setOrgId(rs.getLong("ORGID"));
-		view.setName(rs.getString("NAME"));
-		view.setDisplayName(rs.getString("DISPLAY_NAME"));
-		view.setModuleId(rs.getLong("MODULEID"));
-		view.setCriteriaId(rs.getLong("CRITERIAID"));
-		return view;
 	}
 	
 	public static FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {

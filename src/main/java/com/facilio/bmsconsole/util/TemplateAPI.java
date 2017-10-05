@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;

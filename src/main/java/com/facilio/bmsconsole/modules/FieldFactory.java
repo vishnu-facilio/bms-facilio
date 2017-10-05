@@ -50,6 +50,16 @@ public class FieldFactory {
 		return field;
 	}
 	
+	public static FacilioField getNameField(String tableName) {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModuleTableName(tableName);
+		
+		return name;
+	}
+	
 	public static List<FacilioField> getEmailSettingFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		String tableName = "EmailSettings";
@@ -113,12 +123,7 @@ public class FieldFactory {
 		fields.add(getIdField(tableName));
 		fields.add(getOrgIdField(tableName));
 		
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setDataType(FieldType.STRING);
-		name.setColumnName("NAME");
-		name.setModuleTableName(tableName);
-		fields.add(name);
+		fields.add(getNameField(tableName));
 		
 		FacilioField description = new FacilioField();
 		description.setName("description");
@@ -249,12 +254,7 @@ public class FieldFactory {
 		field1.setModuleTableName(tableName);
 		fields.add(field1);
 		
-		FacilioField field2 = new FacilioField();
-		field2.setName("name");
-		field2.setDataType(FieldType.STRING);
-		field2.setColumnName("NAME");
-		field2.setModuleTableName(tableName);
-		fields.add(field2);
+		fields.add(getNameField(tableName));
 		
 		FacilioField field3 = new FacilioField();
 		field3.setName("cognitoId");
@@ -436,12 +436,7 @@ public class FieldFactory {
 		fields.add(getIdField(tableName));
 		fields.add(getOrgIdField(tableName));
 		
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setDataType(FieldType.STRING);
-		name.setColumnName("NAME");
-		name.setModuleTableName(tableName);
-		fields.add(name);
+		fields.add(getNameField(tableName));
 		
 		FacilioField typeField = new FacilioField();
 		typeField.setName("type");
@@ -532,5 +527,127 @@ public class FieldFactory {
 		fields.add(smsMsg);
 		
 		return fields;
+	}
+	
+	public static List<FacilioField> getCriteriaFields() {
+		String tableName = "Criteria";
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField criteriaId = new FacilioField();
+		criteriaId.setName("criteriaId");
+		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setColumnName("CRITERIAID");
+		criteriaId.setModuleTableName(tableName);
+		fields.add(criteriaId);
+		
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField pattern = new FacilioField();
+		pattern.setName("pattern");
+		pattern.setDataType(FieldType.STRING);
+		pattern.setColumnName("PATTERN");
+		pattern.setModuleTableName(tableName);
+		fields.add(pattern);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getConditionFields() {
+		String tableName = "Conditions";
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField conditionId = new FacilioField();
+		conditionId.setName("conditionId");
+		conditionId.setDataType(FieldType.NUMBER);
+		conditionId.setColumnName("CONDITIONID");
+		conditionId.setModuleTableName(tableName);
+		fields.add(conditionId);
+		
+		FacilioField parentCriteriaId = new FacilioField();
+		parentCriteriaId.setName("parentCriteriaId");
+		parentCriteriaId.setDataType(FieldType.NUMBER);
+		parentCriteriaId.setColumnName("PARENT_CRITERIA_ID");
+		parentCriteriaId.setModuleTableName(tableName);
+		fields.add(parentCriteriaId);
+		
+		FacilioField sequence = new FacilioField();
+		sequence.setName("sequence");
+		sequence.setDataType(FieldType.NUMBER);
+		sequence.setColumnName("SEQUENCE");
+		sequence.setModuleTableName(tableName);
+		fields.add(sequence);
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELDID");
+		fieldId.setModuleTableName(tableName);
+		fields.add(fieldId);
+		
+		FacilioField operatorStr = new FacilioField();
+		operatorStr.setName("operatorStr");
+		operatorStr.setDataType(FieldType.STRING);
+		operatorStr.setColumnName("OPERATOR");
+		operatorStr.setModuleTableName(tableName);
+		fields.add(operatorStr);
+		
+		FacilioField value = new FacilioField();
+		value.setName("value");
+		value.setDataType(FieldType.STRING);
+		value.setColumnName("VAL");
+		value.setModuleTableName(tableName);
+		fields.add(value);
+		
+		FacilioField criteriaValueId = new FacilioField();
+		criteriaValueId.setName("criteriaValueId");
+		criteriaValueId.setDataType(FieldType.NUMBER);
+		criteriaValueId.setColumnName("CRITERIA_VAL_ID");
+		criteriaValueId.setModuleTableName(tableName);
+		fields.add(criteriaValueId);
+		
+		FacilioField computedWhereClause = new FacilioField();
+		computedWhereClause.setName("computedWhereClause");
+		computedWhereClause.setDataType(FieldType.NUMBER);
+		computedWhereClause.setColumnName("COMPUTED_WHERE_CLAUSE");
+		computedWhereClause.setModuleTableName(tableName);
+		fields.add(computedWhereClause);
+		
+		return fields;
+		
+	}
+	
+	public static List<FacilioField> getViewFields() {
+		String tableName = "Views";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(tableName));
+		fields.add(getOrgIdField(tableName));
+		fields.add(getNameField(tableName));
+		
+		FacilioField displayName = new FacilioField();
+		displayName.setName("displayName");
+		displayName.setDataType(FieldType.STRING);
+		displayName.setColumnName("DISPLAY_NAME");
+		displayName.setModuleTableName(tableName);
+		fields.add(displayName);
+		
+		FacilioField type = new FacilioField();
+		type.setName("type");
+		type.setDataType(FieldType.NUMBER);
+		type.setColumnName("VIEW_TYPE");
+		type.setModuleTableName(tableName);
+		fields.add(type);
+		
+		fields.add(getModuleIdField(tableName));
+		
+		FacilioField criteria = new FacilioField();
+		criteria.setName("criteriaId");
+		criteria.setDataType(FieldType.NUMBER);
+		criteria.setColumnName("CRITERIAID");
+		criteria.setModuleTableName(tableName);
+		fields.add(criteria);
+		
+		return fields;
+		
 	}
 }	

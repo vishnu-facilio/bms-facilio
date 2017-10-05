@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,11 +15,8 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.UserInfo;

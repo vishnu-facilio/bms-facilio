@@ -1,18 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Reports.Energy;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ReportActions extends ActionSupport {

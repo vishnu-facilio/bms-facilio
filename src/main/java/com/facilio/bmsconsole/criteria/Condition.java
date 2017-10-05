@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 
 public class Condition {
 	
-	private long conditionId;
+	private long conditionId = -1;
 	public long getConditionId() {
 		return conditionId;
 	}
@@ -17,7 +17,7 @@ public class Condition {
 		this.conditionId = conditionId;
 	}
 	
-	private long parentCriteriaId;
+	private long parentCriteriaId = -1;
 	public long getParentCriteriaId() {
 		return parentCriteriaId;
 	}
@@ -25,7 +25,7 @@ public class Condition {
 		this.parentCriteriaId = parentCriteriaId;
 	}
 	
-	private int sequence;
+	private int sequence = -1;
 	public int getSequence() {
 		return sequence;
 	}
@@ -33,7 +33,7 @@ public class Condition {
 		this.sequence = sequence;
 	}
  	
-	private long fieldId;
+	private long fieldId = -1;
 	public long getFieldId() {
 		return fieldId;
 	}
@@ -74,7 +74,7 @@ public class Condition {
 		this.value = value;
 	}
 	
-	private long criteriaValueId;
+	private long criteriaValueId = -1;
 	public long getCriteriaValueId() {
 		return criteriaValueId;
 	}
@@ -92,7 +92,7 @@ public class Condition {
 	
 	private String computedWhereClause;
 	public String getComputedWhereClause() {
-		if(computedWhereClause == null) {
+		if(computedWhereClause == null && operator != null) {
 			if(operator == LookupOperator.LOOKUP) {
 				computedWhereClause = operator.getWhereClause(field, criteriaValue);
 			}
@@ -107,20 +107,26 @@ public class Condition {
 	}
 	
 	public List<Object> getComputedValues() {
-		if(operator == LookupOperator.LOOKUP) {
-			return operator.computeValues(criteriaValue);
+		if(operator != null) {
+			if(operator == LookupOperator.LOOKUP) {
+				return operator.computeValues(criteriaValue);
+			}
+			else {
+				return operator.computeValues(value);
+			}
 		}
-		else {
-			return operator.computeValues(value);
-		}
+		return null;
 	}
 	
 	public Predicate getPredicate() {
-		if(operator == LookupOperator.LOOKUP) {
-			return operator.getPredicate(field, criteriaValue);
+		if(operator != null) {
+			if(operator == LookupOperator.LOOKUP) {
+				return operator.getPredicate(field, criteriaValue);
+			}
+			else {
+				return operator.getPredicate(field, value);
+			}
 		}
-		else {
-			return operator.getPredicate(field, value);
-		}
+		return null;
 	}
 }

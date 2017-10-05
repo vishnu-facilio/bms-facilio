@@ -9,7 +9,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
