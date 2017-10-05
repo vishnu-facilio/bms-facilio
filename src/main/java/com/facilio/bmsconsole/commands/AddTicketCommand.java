@@ -22,6 +22,10 @@ public class AddTicketCommand implements Command {
 		TicketContext ticket = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
 		
 		if(ticket != null) {
+			if(ticket.getSourceType() == -1)
+			{
+				ticket.setSourceType(TicketContext.SourceType.WEB);
+			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

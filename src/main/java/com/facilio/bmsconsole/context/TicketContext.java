@@ -87,7 +87,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public String getSourceTypeVal() {
 		if(sourceType != null) {
-			sourceType.getStringVal();
+			return sourceType.getStringVal();
 		}
 		return null;
 	}

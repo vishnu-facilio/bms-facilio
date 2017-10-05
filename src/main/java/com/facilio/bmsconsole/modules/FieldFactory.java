@@ -384,11 +384,18 @@ public class FieldFactory {
 		activityType.setColumnName("ACTIVITY_TYPE");
 		activityType.setModuleTableName(tableName);
 		
+		FacilioField info = new FacilioField();
+		info.setName("info");
+		info.setDataType(FieldType.STRING);
+		info.setColumnName("INFO");
+		info.setModuleTableName(tableName);
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(tId);
 		fields.add(modifiedTime);
 		fields.add(modifiedBy);
 		fields.add(activityType);
+		fields.add(info);
 		
 		return fields;
 	}

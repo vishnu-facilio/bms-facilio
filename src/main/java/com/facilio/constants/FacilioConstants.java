@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 
 public class FacilioConstants {
 	
@@ -332,6 +333,7 @@ public class FacilioConstants {
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String EVENT_TYPE = "eventType";
+		public static final String ACTIVITY_TYPE = "activityType";
 		
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
@@ -760,4 +762,38 @@ public class FacilioConstants {
 		}
 	}
 	
+	public static enum ActivityType {
+	    
+		CREATE_WORKORDER(1),
+		UPDATE_WORKORDER(2),
+		ASSIGN_WORKORDER(3)
+		;
+
+	    private int activityType;
+
+	    ActivityType(int activityType) {
+	        this.activityType = activityType;
+	    }
+
+	    public int getValue() {
+	        return activityType;
+	    }
+	    
+	    public static ActivityType valueOf(int eventTypeVal) {
+	    	return typeMap.get(eventTypeVal);
+	    }
+	    
+	    private static final Map<Integer, ActivityType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ActivityType> initTypeMap() {
+			Map<Integer, ActivityType> typeMap = new HashMap<>();
+			
+			for(ActivityType type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, ActivityType> getAllTypes() {
+			return typeMap;
+		}
+	}
 }

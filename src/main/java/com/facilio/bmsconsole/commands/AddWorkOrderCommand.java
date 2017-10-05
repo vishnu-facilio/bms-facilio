@@ -16,7 +16,9 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 

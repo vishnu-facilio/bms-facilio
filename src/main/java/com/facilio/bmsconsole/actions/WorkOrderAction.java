@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EventContext.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -78,6 +79,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE_WORKORDER);
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderWithTicketChain();
 		addWorkOrder.execute(context);
@@ -89,6 +91,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_WORKORDER);
 		return updateWorkOrder(context);
 	}
 	
@@ -126,7 +129,10 @@ public class WorkOrderAction extends ActionSupport {
 				workorder.getTicket().setActualWorkEnd(System.currentTimeMillis());
 			} 
 		}
-		
+		if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null)
+		{
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.UPDATE_WORKORDER);
+		}
 		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
