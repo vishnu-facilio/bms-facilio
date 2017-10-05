@@ -589,13 +589,13 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(avgFld);
 		
 		if(groupBy)
-		{
-			
+		{	
 			FacilioField assignedToFld = new FacilioField();
 			assignedToFld.setName("technician");
 			assignedToFld.setColumnName("ASSIGNED_TO_ID");
 			assignedToFld.setModuleTableName("Tickets");
 			assignedToFld.setDataType(FieldType.NUMBER);
+			fields.add(assignedToFld);
 		}
 		
 		FacilioField createdTimeFld = new FacilioField();
