@@ -46,6 +46,12 @@ public class GroupAction extends ActionSupport {
 		
 		List<RoleContext> roles = UserAPI.getRolesOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
 		ActionContext.getContext().getValueStack().set("roles", roles);
+		ActionContext.getContext().getValueStack().set("groups", getGroups());
+
+		
+		System.out.println(getGroups());
+
+		System.out.println(roles);
 		return SUCCESS;
 	}
 	
