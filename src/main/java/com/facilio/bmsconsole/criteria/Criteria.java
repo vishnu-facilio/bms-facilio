@@ -55,21 +55,23 @@ public class Criteria {
 	private String whereClause;
 	public String computeWhereClause() {
 		if(whereClause == null || whereClause.isEmpty()) {
-			Matcher matcher = REG_EX.matcher(pattern);
-			StringBuilder builder = new StringBuilder();
-			int i = 0;
-			while (matcher.find()) {
-				Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
-				if (condition == null) {
-					throw new IllegalArgumentException("Pattern and conditions don't match");
+			if(conditions != null && !conditions.isEmpty()) {
+				Matcher matcher = REG_EX.matcher(pattern);
+				StringBuilder builder = new StringBuilder();
+				int i = 0;
+				while (matcher.find()) {
+					Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
+					if (condition == null) {
+						throw new IllegalArgumentException("Pattern and conditions don't match");
+					}
+					String computedCondition = condition.getComputedWhereClause();
+					builder.append(pattern.substring(i, matcher.start()));
+					builder.append(computedCondition);
+					i = matcher.end();
 				}
-				String computedCondition = condition.getComputedWhereClause();
-				builder.append(pattern.substring(i, matcher.start()));
-				builder.append(computedCondition);
-				i = matcher.end();
+				builder.append(pattern.substring(i, pattern.length()));
+				whereClause =  builder.toString();
 			}
-			builder.append(pattern.substring(i, pattern.length()));
-			whereClause =  builder.toString();
 		}
 		return whereClause;
 	}

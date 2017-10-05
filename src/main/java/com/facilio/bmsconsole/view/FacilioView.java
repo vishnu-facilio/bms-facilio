@@ -17,14 +17,14 @@ public class FacilioView {
 		this.orgId = orgId;
 	}
 	
-	private long viewId = -1;
-	public long getViewId() {
-		return viewId;
+	private long id = -1;
+	public long getId() {
+		return id;
 	}
-	public void setViewId(long viewId) {
-		this.viewId = viewId;
+	public void setId(long id) {
+		this.id = id;
 	}
-	
+
 	private String name;
 	public String getName() {
 		return name;

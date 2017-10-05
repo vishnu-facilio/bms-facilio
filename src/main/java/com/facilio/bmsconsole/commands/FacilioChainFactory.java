@@ -822,6 +822,16 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getAddViewChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new AddCVCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 class TransactionChain extends ChainBase
 {

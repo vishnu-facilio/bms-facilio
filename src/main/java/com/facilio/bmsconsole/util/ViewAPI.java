@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -41,5 +45,29 @@ public class ViewAPI {
 		}
 		return null;
 	}
-
+	
+	public static long addView(FacilioView view, long orgId) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			Criteria criteria = view.getCriteria();
+			if(criteria != null) {
+				long criteriaId = CriteriaAPI.addCriteria(criteria, orgId);
+				view.setCriteriaId(criteriaId);
+			}
+			
+			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.connection(conn)
+															.table("Views")
+															.fields(FieldFactory.getViewFields())
+															.addRecord(viewProp);
+			insertBuilder.save();
+			
+			return (long) viewProp.get("id");
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
+	}
 }

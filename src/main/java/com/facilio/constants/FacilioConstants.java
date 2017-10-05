@@ -457,6 +457,7 @@ public class FacilioConstants {
 
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
+		public static final String NEW_CV = "newCV";
 		public static final String FILTERS = "filters";
 		public static final String FILTER_CONDITIONS = "filterConditions";
 		

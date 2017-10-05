@@ -687,6 +687,15 @@
 		</action>
 	</package>
 	
+	<package name="viewApi" namespace="/api/view" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction" method="newWorkOrder">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewId</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="workOrderApi" namespace="/api/workorder" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
