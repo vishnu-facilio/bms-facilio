@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -103,7 +104,7 @@ public class AddConsumptionForLeed implements Command {
 		Map<Long, String> utilityproviders = new LinkedHashMap<>();
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (DEVICE_ID, ADDED_TIME, TOTAL_ENERGY_CONSUMPTION_DELTA, ADDED_DATE, ADDED_MONTH, ADDED_WEEK, ADDED_DAY, ADDED_HOUR) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (DEVICE_ID, ADDED_TIME, TOTAL_ENERGY_CONSUMPTION_DELTA, ADDED_DATE, ADDED_MONTH, ADDED_WEEK, ADDED_DAY, ADDED_HOUR) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, deviceId);
 			pstmt.setLong(2, added_time);
@@ -113,9 +114,13 @@ public class AddConsumptionForLeed implements Command {
 			pstmt.setObject(6, added_week);
 			pstmt.setObject(7, added_day);
 			pstmt.setObject(8, added_hour);
-			
-			rs = pstmt.executeQuery();
-				
+			pstmt.executeUpdate();
+			rs = pstmt.getGeneratedKeys();
+			long id = 0;
+			if(rs.next())
+			{
+				id = rs.getLong(1);
+			}				
 		}
 		catch (SQLException e) {
 			throw e;
