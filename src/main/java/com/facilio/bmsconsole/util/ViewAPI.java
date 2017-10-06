@@ -12,6 +12,8 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.FacilioView.ViewType;
+import com.facilio.fw.OrgInfo;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -47,6 +49,7 @@ public class ViewAPI {
 	}
 	
 	public static long addView(FacilioView view, long orgId) throws Exception {
+		view.setOrgId(orgId);
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {

@@ -607,7 +607,7 @@ public class FieldFactory {
 		
 		FacilioField computedWhereClause = new FacilioField();
 		computedWhereClause.setName("computedWhereClause");
-		computedWhereClause.setDataType(FieldType.NUMBER);
+		computedWhereClause.setDataType(FieldType.STRING);
 		computedWhereClause.setColumnName("COMPUTED_WHERE_CLAUSE");
 		computedWhereClause.setModuleTableName(tableName);
 		fields.add(computedWhereClause);

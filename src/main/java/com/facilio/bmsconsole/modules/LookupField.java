@@ -22,20 +22,23 @@ public class LookupField extends FacilioField {
 	
 	public String getLookupIcon() {
 		
-		if(LookupSpecialTypeUtil.isSpecialType(specialType)) {
+		if(specialType != null && LookupSpecialTypeUtil.isSpecialType(specialType)) {
 			return LookupSpecialTypeUtil.getLookupIcon(specialType);
 		}
-		
-		String lookupModuleName = lookupModule.getName();
-		if ("locations".equalsIgnoreCase(lookupModuleName)) {
-			return "fa fa-map-marker";
+		if(lookupModule != null)
+		{
+			String lookupModuleName = lookupModule.getName();
+			if ("locations".equalsIgnoreCase(lookupModuleName)) {
+				return "fa fa-map-marker";
+			}
+			if ("assets".equalsIgnoreCase(lookupModuleName)) {
+				return "fa fa-tablet";
+			}
+			else if ("building".equalsIgnoreCase(lookupModuleName)) {
+				return "fa fa-building";
+			}
+			return "fa fa-search";
 		}
-		if ("assets".equalsIgnoreCase(lookupModuleName)) {
-			return "fa fa-tablet";
-		}
-		else if ("building".equalsIgnoreCase(lookupModuleName)) {
-			return "fa fa-building";
-		}
-		return "fa fa-search";
+		return null;
 	}
 }

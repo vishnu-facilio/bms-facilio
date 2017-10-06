@@ -5,11 +5,15 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 
 public class AddCVCommand implements Command {
@@ -24,7 +28,9 @@ public class AddCVCommand implements Command {
 			Criteria viewCriteria = null;
 			List<Condition> conditions = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 			if(parentView != null && parentView.getCriteria() != null) {
-				viewCriteria = parentView.getCriteria();
+				viewCriteria = new Criteria();
+				viewCriteria.setPattern(parentView.getCriteria().getPattern());
+				viewCriteria.setConditions(parentView.getCriteria().getConditions());
 				viewCriteria.addAndConditions(conditions);
 			}
 			else if(conditions != null && !conditions.isEmpty()) {
@@ -32,6 +38,20 @@ public class AddCVCommand implements Command {
 				viewCriteria.addAndConditions(conditions);
 			}
 			view.setCriteria(viewCriteria);
+			if(view.getTypeEnum() == null)
+			{
+				view.setType(ViewType.TABLE_LIST);
+			}
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule moduleObj = modBean.getModule(moduleName);
+			
+			view.setModuleId(moduleObj.getModuleId());
+			if(view.getName() == null)
+			{
+				view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			}
+			
 			long viewId = ViewAPI.addView(view, OrgInfo.getCurrentOrgInfo().getOrgid());
 			view.setId(viewId);
 		}
