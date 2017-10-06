@@ -15,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FieldUtil {
 	
@@ -101,6 +102,7 @@ public class FieldUtil {
 		{
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.setSerializationInclusion(Include.NON_DEFAULT);
+			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 			properties = mapper.convertValue(bean, Map.class);
 			
 			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");

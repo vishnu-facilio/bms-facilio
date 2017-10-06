@@ -35,6 +35,9 @@ public class Condition {
  	
 	private long fieldId = -1;
 	public long getFieldId() {
+		if(field != null) {
+			return field.getFieldId();
+		}
 		return fieldId;
 	}
 	public void setFieldId(long fieldId) {
@@ -51,6 +54,9 @@ public class Condition {
 	
 	private String operatorStr;
 	public String getOperatorStr() {
+		if(operator != null) {
+			return operator.getOperator();
+		}
 		return operatorStr;
 	}
 	public void setOperatorStr(String operatorStr) {
