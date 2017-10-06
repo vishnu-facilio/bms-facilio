@@ -15,6 +15,11 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class LeedAPI {
 
+	public static void addConsumptionData() throws SQLException
+	{
+		
+	}
+	
 	public static Map<Long, String> getUtilityProviders(long orgId) throws SQLException 
 	{
 		Connection conn = null;

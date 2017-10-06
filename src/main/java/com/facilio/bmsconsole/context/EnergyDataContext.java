@@ -18,6 +18,16 @@ public class EnergyDataContext {
 		this.addedTime = addedTime;
 	}
 
+	private long startTime = -1;
+	public long getStartTime()
+	{
+		return startTime;
+	}
+	public void setStartTime(long startTime)
+	{
+		this.startTime = startTime;
+	}
+	
 	private float totalEnergyConsumptionDelta = 0;
 	public float getTotalEnergyConsumptionDelta() {
 		return totalEnergyConsumptionDelta;

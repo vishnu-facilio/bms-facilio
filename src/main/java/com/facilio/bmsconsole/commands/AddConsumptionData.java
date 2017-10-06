@@ -20,9 +20,7 @@ public class AddConsumptionData implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		
-		
-		return false;
+		return true;
 	}
 
 }
