@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,34 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ViewAPI {
+	
+	public static List<FacilioView> getAllViews(long moduleId, long orgId) throws Exception {
+		
+		List<FacilioView> views = new ArrayList<>();
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+		{
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.connection(conn)
+													.select(FieldFactory.getViewFields())
+													.table("Views")
+													.andCustomWhere("ORGID = ? AND MODULEID = ?", orgId, moduleId);
+			
+			List<Map<String, Object>> viewProps = builder.get();
+			for(Map<String, Object> viewProp : viewProps) 
+			{
+				FacilioView view = new FacilioView();
+				BeanUtils.populate(view, viewProp);
+				views.add(view);
+			}
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			throw e;
+		}
+		return views;
+	}
+	
 	public static FacilioView getView(String name, long moduleId, long orgId) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()

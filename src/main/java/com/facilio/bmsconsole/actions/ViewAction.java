@@ -1,16 +1,32 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewAction extends ActionSupport {
+	
+	public String viewList() throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule moduleObj = modBean.getModule("workorder");
+		
+		setViews(ViewAPI.getAllViews(moduleObj.getModuleId(), OrgInfo.getCurrentOrgInfo().getOrgid()));
+		return SUCCESS;
+	}
 	
 	public String addView() throws Exception {
 		
@@ -39,6 +55,14 @@ public class ViewAction extends ActionSupport {
 	}
 	public void setViewId(long viewId) {
 		this.viewId = viewId;
+	}
+
+	private List<FacilioView> views;
+	public List<FacilioView> getViews() {
+		return views;
+	}
+	public void setViews(List<FacilioView> views) {
+		this.views = views;
 	}
 
 	private FacilioView view;

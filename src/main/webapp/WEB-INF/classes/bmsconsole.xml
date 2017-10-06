@@ -133,6 +133,11 @@
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction" method="viewList">
+			<result name="success" type="json">
+				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	<package name="skillApi" namespace="/api/skill" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
