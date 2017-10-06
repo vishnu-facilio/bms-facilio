@@ -576,8 +576,7 @@ public class AlarmReportAction extends ActionSupport {
 		countFld.setName("total");
 		countFld.setColumnName("COUNT(*)");
 		countFld.setDataType(FieldType.NUMBER);
-		
-		String average="AVG(CLEARED_TIME-ACKNOWLEDGED_TIME)";
+		String average="AVG(CLEARED_TIME-IFNULL(ACKNOWLEDGED_TIME,CREATED_TIME))";
 		FacilioField avgFld = new FacilioField();
 		avgFld.setName("average");
 		avgFld.setColumnName(average);
