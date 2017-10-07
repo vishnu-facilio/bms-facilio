@@ -66,8 +66,8 @@ public class CriteriaAPI {
 							throw new IllegalArgumentException("Module Name is empty for field : "+field);
 						}
 						field = modBean.getField(field.getName(), moduleName);
-						condition.setField(field);
 					}
+					condition.setFieldId(field.getFieldId());
 					
 					if(condition.getCriteriaValue() != null) {
 						if (condition.getCriteriaValue().getCriteriaId() == -1) {

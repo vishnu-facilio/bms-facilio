@@ -35,7 +35,10 @@ public class Condition {
  	
 	private long fieldId = -1;
 	public long getFieldId() {
-		if(field != null) {
+		if(fieldId != -1) {
+			return fieldId;
+		}
+		else if(field != null) {
 			return field.getFieldId();
 		}
 		return fieldId;
