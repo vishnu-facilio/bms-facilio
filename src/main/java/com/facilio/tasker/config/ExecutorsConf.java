@@ -63,9 +63,17 @@ public class ExecutorsConf {
 			this.threads = threads;
 		}
 		
+		private int maxRetry = -1;
+		@XmlAttribute(name="maxRetry") 
+		public int getMaxRetry() {
+			return maxRetry;
+		}
+		public void setMaxRetry(int maxRetry) {
+			this.maxRetry = maxRetry;
+		}
 		@Override
 		public String toString() {
-			return "(name, period, threads)=("+name+", "+period+", "+threads+")";
+			return "(name, period, threads, maxRetry)=("+name+", "+period+", "+threads+", "+maxRetry+")";
 		}
 		
 		@Override

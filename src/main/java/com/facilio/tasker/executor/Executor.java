@@ -12,14 +12,25 @@ import com.facilio.tasker.job.JobStore;
 
 public class Executor implements Runnable {
 	
+	private static final int MAX_RETRY = 5;
+	
 	private ScheduledExecutorService executor = null;
 	private String name = null;
 	private int bufferPeriod;
+	private int maxRetry = MAX_RETRY;
 	
 	public Executor(String name, int noOfThreads, int bufferPeriod) {
 		// TODO Auto-generated constructor stub
+		this(name, noOfThreads, bufferPeriod, -1);
+	}
+	
+	public Executor(String name, int noOfThreads, int bufferPeriod, int maxRetry) {
+		// TODO Auto-generated constructor stub
 		this.name = name;
 		this.bufferPeriod = bufferPeriod;
+		if(maxRetry != -1) {
+			this.maxRetry = maxRetry;
+		}
 		
 		executor = Executors.newScheduledThreadPool(noOfThreads+1);
 		executor.scheduleAtFixedRate(this, 0, bufferPeriod*1000, TimeUnit.MILLISECONDS);
@@ -56,21 +67,30 @@ public class Executor implements Runnable {
 //		}
 	}
 	
-	void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
+	private void scheduleJob(JobContext jc) throws InstantiationException, IllegalAccessException  {
 		Class<? extends FacilioJob> jobClass = FacilioScheduler.JOBS_MAP.get(jc.getJobName());
 		if(jobClass != null) {
 			FacilioJob job = jobClass.newInstance();
 			job.setJobContext(jc);
+			job.setExecutor(this);
 			System.out.println("Scheduling : "+jc);
-			executor.schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)), TimeUnit.SECONDS);
+			schedule(job, (jc.getExecutionTime()-(System.currentTimeMillis()/1000)));
 		}
 		else {
 			System.err.println(String.format("No such Job with jobname : %s", jc.getJobName()));
 		}
 	}
 	
+	public void schedule(FacilioJob job, long delay) {
+		executor.schedule(job, delay, TimeUnit.SECONDS);
+	}
+	
 	public void shutdown() {
 		executor.shutdownNow();
+	}
+	
+	public int getMaxRetry() {
+		return maxRetry;
 	}
 	
 }

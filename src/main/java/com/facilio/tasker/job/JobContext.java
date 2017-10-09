@@ -2,18 +2,7 @@ package com.facilio.tasker.job;
 
 public class JobContext {
 	
-	public JobContext(long jobId, long orgId, String jobName, int period, boolean isPeriodic, long executionTime) {
-		// TODO Auto-generated constructor stub
-		this.jobId = jobId;
-		this.orgId = orgId;
-		this.jobName = jobName;
-		this.period = period;
-		this.isPeriodic = isPeriodic;
-		this.executionTime = executionTime;
-	}
-	
-	private long jobId ;
-	
+	private long jobId = -1;
 	public long getJobId() {
 		return jobId;
 	}
@@ -21,8 +10,7 @@ public class JobContext {
 		this.jobId = jobId;
 	}
 	
-	private long orgId;
-	
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -31,7 +19,6 @@ public class JobContext {
 	}
 	
 	private String jobName;
-	
 	public String getJobName() {
 		return jobName;
 	}
@@ -39,8 +26,23 @@ public class JobContext {
 		this.jobName = jobName;
 	}
 	
-	private boolean isPeriodic;
+	private boolean active;
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 	
+	private int transactionTimeout = -1;
+	public int getTransactionTimeout() {
+		return transactionTimeout;
+	}
+	public void setTransactionTimeout(int transactionTimeout) {
+		this.transactionTimeout = transactionTimeout;
+	}
+
+	private boolean isPeriodic;
 	public boolean isPeriodic() {
 		return isPeriodic;
 	}
@@ -48,8 +50,7 @@ public class JobContext {
 		this.isPeriodic = isPeriodic;
 	}
 	
-	private int period;
-	
+	private int period = -1;
 	public int getPeriod() {
 		return period;
 	}
@@ -57,8 +58,7 @@ public class JobContext {
 		this.period = period;
 	}
 	
-	private long executionTime;
-	
+	private long executionTime = -1;
 	public long getExecutionTime() {
 		return executionTime;
 	}
@@ -66,6 +66,13 @@ public class JobContext {
 		this.executionTime = executionTime;
 	}
 	
+	private String executorName;
+	public String getExecutorName() {
+		return executorName;
+	}
+	public void setExecutorName(String executorName) {
+		this.executorName = executorName;
+	}
 	@Override
 	public String toString() {
 		return jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;

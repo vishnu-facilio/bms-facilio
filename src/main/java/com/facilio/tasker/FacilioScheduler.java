@@ -72,7 +72,12 @@ public class FacilioScheduler {
 		if(executorsConf.getExecutors() != null) {
 			for(ExecutorsConf.ExecutorConf executorConf : executorsConf.getExecutors()) {
 				if(executorConf.getName() != null && !executorConf.getName().isEmpty() && executorConf.getPeriod() != -1 && executorConf.getThreads() != -1) {
-					executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod()));
+					if(executorConf.getMaxRetry() != -1) {
+						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod(), executorConf.getMaxRetry()));
+					}
+					else {
+						executors.add(new Executor(executorConf.getName(), executorConf.getThreads(), executorConf.getPeriod()));
+					}
 				}
 			}
 		}
