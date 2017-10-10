@@ -84,15 +84,15 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getEventFields() 
+	public static List<FacilioField> getWorkflowEventFields() 
 	{
 		List<FacilioField> fields = new ArrayList<>();
-		String tableName = "Event";
+		String tableName = "Workflow_Event";
 		
 		FacilioField field = new FacilioField();
-		field.setName("eventId");
+		field.setName("id");
 		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("EVENT_ID");
+		field.setColumnName("ID");
 		field.setModuleTableName(tableName);
 		fields.add(field);
 		

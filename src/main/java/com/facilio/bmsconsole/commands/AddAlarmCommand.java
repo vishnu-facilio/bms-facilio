@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAlarmCommand implements Command {
@@ -35,7 +35,7 @@ public class AddAlarmCommand implements Command {
 			alarm.setId(alarmId);
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
 			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 		}
 		else {

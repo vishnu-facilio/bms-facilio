@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 
@@ -35,7 +35,7 @@ public class DeleteTaskCommand implements Command {
 					.where(sql, recordIds.toArray());
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.DELETE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.DELETE);
 		}
 		return false;
 	}

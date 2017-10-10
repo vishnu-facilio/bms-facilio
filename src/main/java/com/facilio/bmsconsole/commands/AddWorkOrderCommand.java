@@ -15,8 +15,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.EventContext;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.BeanFactory;
@@ -46,7 +46,7 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

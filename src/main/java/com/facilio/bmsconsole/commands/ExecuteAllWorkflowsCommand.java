@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionTemplate;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

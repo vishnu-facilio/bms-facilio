@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventContext {
+public class WorkflowEventContext {
 	private long eventId;
 	public long getEventId() {
 		return eventId;

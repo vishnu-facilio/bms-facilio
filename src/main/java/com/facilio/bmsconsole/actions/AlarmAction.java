@@ -29,7 +29,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;

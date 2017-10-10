@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.EventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.OrgInfo;

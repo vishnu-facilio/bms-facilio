@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddWorkOrderRequestCommand implements Command {
@@ -38,7 +38,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			workOrderRequest.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrderRequest);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

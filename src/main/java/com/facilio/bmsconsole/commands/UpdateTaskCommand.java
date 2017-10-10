@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.workflow.EventContext;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateTaskCommand implements Command {
@@ -42,7 +42,7 @@ public class UpdateTaskCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventContext.EventType.EDIT);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.EDIT);
 		}
 		return false;
 	}
