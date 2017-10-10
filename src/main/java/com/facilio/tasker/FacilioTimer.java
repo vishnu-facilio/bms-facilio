@@ -1,5 +1,6 @@
 package com.facilio.tasker;
 
+import com.cronutils.model.Cron;
 import com.facilio.fw.OrgInfo;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
@@ -10,10 +11,65 @@ public class FacilioTimer {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static long schedulePeriodicJob(String jobName, long delay, int period, String executorName) throws Exception {
+	public static void scheduleJob(JobContext jc, long delay) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		jc.setExecutionTime(nextExecutionTime);
+		
+		JobStore.addJob(jc);
+	}
+	
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(true);
+		jc.setCron(cron);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		JobStore.addJob(jc);
+	}
+	
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName, int maxExecution) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(true);
+		jc.setCron(cron);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		jc.setMaxExecution(maxExecution);
+		JobStore.addJob(jc);
+	}
+	
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName, long endTime) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(true);
+		jc.setCron(cron);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		jc.setEndExecutionTime(endTime);
+		JobStore.addJob(jc);
+	}
+	
+	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -21,13 +77,46 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		return JobStore.addJob(jc);
+		JobStore.addJob(jc);
 	}
 	
-	public static long scheduleOneTimeJob(String jobName, int delay, String executorName) throws Exception {
+	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, int maxExecution) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(true);
+		jc.setPeriod(period);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		jc.setMaxExecution(maxExecution);
+		JobStore.addJob(jc);
+	}
+	
+	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, long endTime) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(true);
+		jc.setPeriod(period);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		jc.setEndExecutionTime(endTime);
+		JobStore.addJob(jc);
+	}
+	
+	public static void scheduleOneTimeJob(long jobId, String jobName, int delay, String executorName) throws Exception {
+		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(false);
@@ -35,7 +124,7 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		return JobStore.addJob(jc);
+		JobStore.addJob(jc);
 	}
 	
 	private static long getCurrentOrgId() {

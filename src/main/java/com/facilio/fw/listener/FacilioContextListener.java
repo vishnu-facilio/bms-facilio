@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -12,11 +14,18 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 
+import com.cronutils.builder.CronBuilder;
+import com.cronutils.model.Cron;
+import com.cronutils.model.field.expression.FieldExpression;
+import com.cronutils.model.field.expression.FieldExpressionFactory;
+import com.cronutils.model.field.value.SpecialChar;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.job.CronUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {
@@ -61,7 +70,18 @@ public class FacilioContextListener implements ServletContextListener {
 				c.close();
 			}
 			
-			//FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
+			/*List<FieldExpression> expressions = new ArrayList<>();
+			expressions.add(FieldExpressionFactory.on(7));
+			expressions.add(FieldExpressionFactory.on(8));
+			Cron cron = CronBuilder.cron(CronUtil.DEFAULT_CRON_DEFN)
+					.withYear(FieldExpressionFactory.always())
+					.withMinute(FieldExpressionFactory.every(2))
+					.withHour(FieldExpressionFactory.on(15))
+					.withDoM(FieldExpressionFactory.and(expressions))
+					.withMonth(FieldExpressionFactory.always())
+					.withDoW(FieldExpressionFactory.always())
+					.instance();
+			FacilioTimer.scheduleCalendarJob(1, "test", 30, cron, "priority", 1507638900l);*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

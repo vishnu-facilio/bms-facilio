@@ -17,16 +17,16 @@ public abstract class FacilioJob implements Runnable {
 		this.executor = executor;
 	}
 	
-	private int executionCount = 1;
+	private int retryExecutionCount = 1;
 	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+jc.getPeriod();
+		long nextExecutionTime = getNextExecutionTime();
 		
 		try {
-			executionCount++;
+			retryExecutionCount++;
 			
 			if(jc.getTransactionTimeout() != -1) {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().setTransactionTimeout(jc.getTransactionTimeout());
@@ -34,11 +34,11 @@ public abstract class FacilioJob implements Runnable {
 			
 			execute(jc);
 			
-			if(jc.isPeriodic()) {
-				JobStore.updateNextExecutionTime(jc.getJobId(), nextExecutionTime);
+			if(nextExecutionTime != -1) {
+				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(),  nextExecutionTime, jc.getCurrentExecutionCount()+1);
 			}
 			else {
-				JobStore.setInActive(jc.getJobId());
+				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 			}
 		}
 		catch(Exception e) {
@@ -49,15 +49,31 @@ public abstract class FacilioJob implements Runnable {
 		
 	}
 	
+	private long getNextExecutionTime() {
+		if(jc.isPeriodic() && (jc.getMaxExecution() == -1 || jc.getCurrentExecutionCount()+1 < jc.getMaxExecution())) {
+			long nextExecutionTime = -1; 
+			if(jc.getPeriod() != -1) {
+				nextExecutionTime = (System.currentTimeMillis()/1000)+jc.getPeriod();
+			}
+			else if(jc.getCron() != null) {
+				nextExecutionTime = CronUtil.nextExecutionTime(jc.getCron(), jc.getOrgId());
+			}
+			if(jc.getEndExecutionTime() == -1 || nextExecutionTime <= jc.getEndExecutionTime()) {
+				return nextExecutionTime;
+			}
+		}
+		return -1;
+	}
+	
 	private void reschedule() {
-		if(executionCount <= executor.getMaxRetry()) {
-			System.out.println("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+executionCount+" time.");
+		if(retryExecutionCount <= executor.getMaxRetry()) {
+			System.out.println("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
 			executor.schedule(this, 1);
 		}
 		else {
 			System.out.println("Max retry exceeded for : "+jc+".\nSo making it inactive");
 			try {
-				JobStore.setInActive(jc.getJobId());
+				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

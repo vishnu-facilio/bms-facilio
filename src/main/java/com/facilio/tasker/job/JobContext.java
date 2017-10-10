@@ -1,5 +1,7 @@
 package com.facilio.tasker.job;
 
+import com.cronutils.model.Cron;
+
 public class JobContext {
 	
 	private long jobId = -1;
@@ -58,6 +60,24 @@ public class JobContext {
 		this.period = period;
 	}
 	
+	public String getCronExpression() {
+		if(cron != null) {
+			return cron.asString();
+		}
+		return null;
+	}
+	public void setCronExpression(String cronExpression) {
+		this.cron = CronUtil.parse(cronExpression);
+	}
+	
+	private Cron cron;
+	public Cron getCron() {
+		return cron;
+	}
+	public void setCron(Cron cron) {
+		this.cron = cron;
+	}
+
 	private long executionTime = -1;
 	public long getExecutionTime() {
 		return executionTime;
@@ -73,6 +93,31 @@ public class JobContext {
 	public void setExecutorName(String executorName) {
 		this.executorName = executorName;
 	}
+	
+	private long endExecutionTime = -1;
+	public long getEndExecutionTime() {
+		return endExecutionTime;
+	}
+	public void setEndExecutionTime(long endExecutionTime) {
+		this.endExecutionTime = endExecutionTime;
+	}
+	
+	private int maxExecution = -1;
+	public int getMaxExecution() {
+		return maxExecution;
+	}
+	public void setMaxExecution(int maxExecution) {
+		this.maxExecution = maxExecution;
+	}
+	
+	private int currentExecutionCount = 0;
+	public int getCurrentExecutionCount() {
+		return currentExecutionCount;
+	}
+	public void setCurrentExecutionCount(int currentExecutionCount) {
+		this.currentExecutionCount = currentExecutionCount;
+	}
+	
 	@Override
 	public String toString() {
 		return jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;

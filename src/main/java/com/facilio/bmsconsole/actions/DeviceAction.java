@@ -77,8 +77,8 @@ public class DeviceAction extends ActionSupport
 			if(type == 1)
 			{
 				String publicip = request.getParameter("publicip");
-				Long jobId = FacilioTimer.schedulePeriodicJob("DeviceDataExtractor", 15, timeinterval, "facilio");
-				DeviceAPI.addController(controllerId, type, publicip, timeinterval, jobId);
+				FacilioTimer.schedulePeriodicJob(controllerId, "DeviceDataExtractor", 15, timeinterval, "facilio");
+				DeviceAPI.addController(controllerId, type, publicip, timeinterval, null);
 				DeviceAPI.discoverDevices(controllerId, OrgInfo.getCurrentOrgInfo().getOrgid());
 			}
 			else
@@ -155,10 +155,10 @@ public class DeviceAction extends ActionSupport
 		int polltime = 30;//Integer.parseInt(request.getParameter("polltime"));
 		try 
 		{
-			Long jobId = FacilioTimer.schedulePeriodicJob("DeviceDataExtractor", 15, polltime, "facilio");
-			DeviceAPI.updateController(deviceId, jobId, true);
+			FacilioTimer.schedulePeriodicJob(deviceId, "DeviceDataExtractor", 15, polltime, "facilio");
+//			DeviceAPI.updateController(deviceId, jobId, true);
 			
-			FacilioTimer.schedulePeriodicJob("IotConnector", 15, 20, "facilio");
+			FacilioTimer.schedulePeriodicJob(deviceId, "IotConnector", 15, 20, "facilio");
 		}
 		catch (Exception e) 
 		{

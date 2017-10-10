@@ -50,8 +50,8 @@ public class AdminAction extends ActionSupport
 		Integer period = Integer.parseInt(request.getParameter("period"));
 		try 
 		{
-			Long jobId = FacilioTimer.schedulePeriodicJob(name, 15, period, "facilio");
-			AdminAPI.addSystemJob(jobId);
+			FacilioTimer.schedulePeriodicJob(1, name, 15, period, "facilio");
+			AdminAPI.addSystemJob(1l);
 		}
 		catch (Exception e) 
 		{

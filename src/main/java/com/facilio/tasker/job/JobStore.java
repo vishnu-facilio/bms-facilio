@@ -14,20 +14,10 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class JobStore {
 	
-	public static long addJob(JobContext job) throws Exception {
+	public static void addJob(JobContext job) throws Exception {
 		if(job != null) {
 			
-			if(job.getJobName() == null || job.getJobName().isEmpty()) {
-				throw new IllegalArgumentException("Job name cannot be null");
-			}
-			
-			if(job.getExecutorName() == null || job.getExecutorName().isEmpty()) {
-				throw new IllegalArgumentException("Job executor name cannot be null. Job : "+job.getJobName());
-			}
-			
-			if(job.getExecutionTime() == -1) {
-				throw new IllegalArgumentException("Invalid execution time for Job : "+job.getJobName());
-			}
+			checkForNull(job);
 			
 			Connection conn = null;
 			PreparedStatement pstmt = null;
@@ -35,39 +25,65 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, NEXT_EXECUTION_TIME, EXECUTOR_NAME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, CRON_EXPRESSION, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				
+				pstmt.setLong(1, job.getJobId());
 				
 				if(job.getOrgId() != -1) {
-					pstmt.setLong(1, job.getOrgId());
+					pstmt.setLong(2, job.getOrgId());
 				}
 				else {
-					pstmt.setNull(1, Types.BIGINT);
+					pstmt.setNull(2, Types.BIGINT);
 				}
 				
-				pstmt.setString(2, job.getJobName());
-				pstmt.setBoolean(3, true);
+				pstmt.setString(3, job.getJobName());
+				pstmt.setBoolean(4, true);
 				
 				if(job.getTransactionTimeout() != -1) {
-					pstmt.setInt(4, job.getTransactionTimeout());
+					pstmt.setInt(5, job.getTransactionTimeout());
 				}
 				else {
-					pstmt.setNull(4, Types.INTEGER);
+					pstmt.setNull(5, Types.INTEGER);
 				}
 				
-				pstmt.setBoolean(5, job.isPeriodic());
-				pstmt.setInt(6, job.getPeriod());
-				pstmt.setLong(7, job.getExecutionTime());
-				pstmt.setString(8, job.getExecutorName());
+				pstmt.setBoolean(6, job.isPeriodic());
+				
+				if(job.getPeriod() != -1) {
+					pstmt.setInt(7, job.getPeriod());
+				}
+				else {
+					pstmt.setNull(7, Types.INTEGER);
+				}
+				
+				if(job.getCronExpression() != null && !job.getCronExpression().isEmpty()) {
+					pstmt.setString(8, job.getCronExpression());
+				}
+				else {
+					pstmt.setNull(8, Types.VARCHAR);
+				}
+				
+				pstmt.setLong(9, job.getExecutionTime());
+				pstmt.setString(10, job.getExecutorName());
+				
+				if(job.getEndExecutionTime() != -1) {
+					pstmt.setLong(11, job.getEndExecutionTime());
+				}
+				else {
+					pstmt.setNull(11, Types.BIGINT);
+				}
+				
+				if(job.getMaxExecution() != -1) {
+					pstmt.setInt(12, job.getMaxExecution());
+				}
+				else {
+					pstmt.setNull(12, Types.INTEGER);
+				}
 				
 				if(pstmt.executeUpdate() < 1) {
 					throw new Exception("Unable to schedule");
 				}
 				else {
-					rs = pstmt.getGeneratedKeys();
-					rs.next();
-					long jobId = rs.getLong(1);
-					System.out.println("Added job with job id : "+jobId);
-					return jobId;
+					System.out.println("Added job : "+job);
 				}
 			}
 			catch(SQLException e) {
@@ -82,17 +98,41 @@ public class JobStore {
 		}
 	}
 	
-	public static long updateNextExecutionTime(long jobId, long nextExecutionTime) throws SQLException {
+	private static void checkForNull(JobContext job) {
+		if(job.getJobId() == -1) {
+			throw new IllegalArgumentException("Job ID cannot be null");
+		}
+		
+		if(job.getJobName() == null || job.getJobName().isEmpty()) {
+			throw new IllegalArgumentException("Job name cannot be null");
+		}
+		
+		if(job.getExecutorName() == null || job.getExecutorName().isEmpty()) {
+			throw new IllegalArgumentException("Job executor name cannot be null. Job : "+job.getJobName());
+		}
+		
+		if(job.getExecutionTime() == -1) {
+			throw new IllegalArgumentException("Invalid execution time for Job : "+job.getJobName());
+		}
+		
+		if(job.isPeriodic() && job.getPeriod() == -1 && job.getCron() == null) {
+			throw new IllegalArgumentException("Either period or cron should be specified for recurring job : "+job);
+		}
+	}
+	
+	public static long updateNextExecutionTimeAndCount(long jobId, String jobName, long nextExecutionTime, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ? where JOBID = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setLong(1, nextExecutionTime);
-			pstmt.setLong(2, jobId);
+			pstmt.setInt(2, executionCount);
+			pstmt.setLong(3, jobId);
+			pstmt.setString(4, jobName);
 			
 			return pstmt.executeUpdate();
 		}
@@ -105,18 +145,42 @@ public class JobStore {
 		
 	}
 	
-	public static long setInActive(long jobId) throws SQLException {
+	public static long setInActiveAndUpdateCount(long jobId, String jobName, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			
+			pstmt.setBoolean(1, false);
+			pstmt.setInt(2, executionCount);
+			pstmt.setLong(3, jobId);
+			pstmt.setString(4, jobName);
+			return pstmt.executeUpdate();
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt);
+		}
+		
+	}
+	
+	public static long setInActive(long jobId, String jobName) throws SQLException {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setBoolean(1, false);
 			pstmt.setLong(2, jobId);
-			
+			pstmt.setString(3, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -144,23 +208,7 @@ public class JobStore {
 			
 			rs = getPstmt.executeQuery();
 			while(rs.next()) {
-				JobContext jc = new JobContext();
-				
-				jc.setJobId(rs.getLong("JOBID"));
-				if(rs.getObject("ORGID") != null) {
-					jc.setOrgId(rs.getLong("ORGID"));
-				}
-				jc.setJobName(rs.getString("JOBNAME"));
-				jc.setActive(rs.getBoolean("IS_ACTIVE"));
-				if(rs.getObject("TRANSACTION_TIMEOUT") != null) {
-					jc.setTransactionTimeout(rs.getInt("TRANSACTION_TIMEOUT"));
-				}
-				jc.setIsPeriodic(rs.getBoolean("IS_PERIODIC"));
-				jc.setPeriod(rs.getInt("PERIOD"));
-				jc.setExecutionTime(rs.getLong("NEXT_EXECUTION_TIME"));
-				jc.setExecutorName(rs.getString("EXECUTOR_NAME"));
-				
-				jcs.add(jc);
+				jcs.add(getJobFromRS(rs));
 			}
 		}
 		catch(SQLException e) {
@@ -171,5 +219,51 @@ public class JobStore {
 		}
 		
 		return jcs;
+	}
+	
+	private static JobContext getJobFromRS(ResultSet rs) throws SQLException {
+		JobContext jc = new JobContext();
+		
+		jc.setJobId(rs.getLong("JOBID"));
+		
+		if(rs.getObject("ORGID") != null) {
+			jc.setOrgId(rs.getLong("ORGID"));
+		}
+		
+		jc.setJobName(rs.getString("JOBNAME"));
+		
+		jc.setActive(rs.getBoolean("IS_ACTIVE"));
+		
+		if(rs.getObject("TRANSACTION_TIMEOUT") != null) {
+			jc.setTransactionTimeout(rs.getInt("TRANSACTION_TIMEOUT"));
+		}
+		
+		jc.setIsPeriodic(rs.getBoolean("IS_PERIODIC"));
+		
+		if(rs.getObject("PERIOD") != null) {
+			jc.setPeriod(rs.getInt("PERIOD"));
+		}
+		
+		if(rs.getObject("CRON_EXPRESSION") != null) {
+			jc.setCronExpression(rs.getString("CRON_EXPRESSION"));
+		}
+		
+		jc.setExecutionTime(rs.getLong("NEXT_EXECUTION_TIME"));
+		
+		jc.setExecutorName(rs.getString("EXECUTOR_NAME"));
+		
+		if(rs.getObject("END_EXECUTION_TIME") != null) {
+			jc.setEndExecutionTime(rs.getLong("END_EXECUTION_TIME"));
+		}
+		
+		if(rs.getObject("MAX_EXECUTION") != null) {
+			jc.setMaxExecution(rs.getInt("MAX_EXECUTION"));
+		}
+		
+		if(rs.getObject("CURRENT_EXECUTION_COUNT") != null) {
+			jc.setCurrentExecutionCount(rs.getInt("CURRENT_EXECUTION_COUNT"));
+		}
+		
+		return jc;
 	}
 }
