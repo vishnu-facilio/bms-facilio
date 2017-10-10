@@ -24,7 +24,6 @@ import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.google.gson.JsonObject;
 
 public class AddConsumptionForLeed implements Command {
 

@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +12,6 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.fw.OrgInfo;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;

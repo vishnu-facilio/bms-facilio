@@ -5,8 +5,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -14,18 +12,11 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 
-import com.cronutils.builder.CronBuilder;
-import com.cronutils.model.Cron;
-import com.cronutils.model.field.expression.FieldExpression;
-import com.cronutils.model.field.expression.FieldExpressionFactory;
-import com.cronutils.model.field.value.SpecialChar;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.job.CronUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {
