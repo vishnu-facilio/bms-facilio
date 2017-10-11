@@ -43,13 +43,25 @@ public class SupportEmailContext {
 	}
 	
 	private long autoAssignGroupId;
-	public long getAutoAssignGroupId() {
+	public Long getAutoAssignGroupId() {
+		if(autoAssignGroupId==0)
+		{
+			return null;
+		}
 		return autoAssignGroupId;
 	}
 	public void setAutoAssignGroupId(long autoAssignGroupId) {
 		this.autoAssignGroupId = autoAssignGroupId;
 	}
 	
+	@Override
+	public String toString() {
+		return "SupportEmailContext [id=" + id + ", orgId=" + orgId + ", replyName=" + replyName + ", actualEmail="
+				+ actualEmail + ", fwdEmail=" + fwdEmail + ", autoAssignGroupId=" + autoAssignGroupId
+				+ ", autoAssignGroup=" + autoAssignGroup + ", verified=" + verified + ", primarySupportMail="
+				+ primarySupportMail + "]";
+	}
+
 	private GroupContext autoAssignGroup;
 	public GroupContext getAutoAssignGroup() {
 		return autoAssignGroup;

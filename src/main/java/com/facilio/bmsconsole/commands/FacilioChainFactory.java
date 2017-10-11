@@ -781,9 +781,9 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getUpdateSupportEmailChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());
-		addCleanUpCommand(c);
+		//addCleanUpCommand(c);
 		return c;
 	}
 	

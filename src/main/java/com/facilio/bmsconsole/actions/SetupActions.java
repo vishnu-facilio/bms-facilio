@@ -263,7 +263,6 @@ public String importData() throws Exception {
 	public String updateSupportEmailSetting() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
-		
 		Chain updateSupportEmail = FacilioChainFactory.getUpdateSupportEmailChain();
 		updateSupportEmail.execute(context);
 		
@@ -308,7 +307,12 @@ public String importData() throws Exception {
 	public void setSupportEmail(SupportEmailContext supportEmail) {
 		this.supportEmail = supportEmail;
 	}
-	
+	public SupportEmailContext getSupportEmailContext() {
+		return supportEmail;
+	}
+	public void setSupportEmailContext(SupportEmailContext supportEmail) {
+		this.supportEmail = supportEmail;
+	}
 	public String showSubscriptions() throws Exception {
 		
 		return SUCCESS;
