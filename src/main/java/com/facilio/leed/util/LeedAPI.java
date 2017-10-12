@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,7 +236,7 @@ public class LeedAPI {
 			
 			if(pstmt.executeUpdate() < 1) 
 			{
-				throw new RuntimeException("Unable to add UtilityProvider instance");
+				throw new RuntimeException("Unable to add LeedEnergyMeter instance");
 			}
 		}
 		catch(SQLException  | RuntimeException e)
@@ -249,62 +250,90 @@ public class LeedAPI {
 
 	}
 	
-	public static void addEnergyData(long deviceId,long added_time, double kwh_delta,HashMap<String,Object> timeData) throws SQLException 
+	public static long getMeterId(long deviceId) throws SQLException, RuntimeException
 	{
-		/*
-		 * ADDED_DATE DATE,
-		ADDED_MONTH INT,
-		ADDED_WEEK INT,
-		ADDED_DAY VARCHAR(100),
-		ADDED_HOUR INT,
-	
-		columnVals.put("date", date);
-		columnVals.put("month", month);
-		columnVals.put("week", week);
-		columnVals.put("day", day);
-		columnVals.put("hour",hour);
-		columnVals.put("year", year);
-		 */
-		String added_date = (String)timeData.get("date");
-		int added_month = (int)timeData.get("month");
-		int added_week = (int)timeData.get("week");
-		String added_day = (String)timeData.get("day");
-		int added_hour = (int)timeData.get("hour");
-		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
-		Map<Long, String> utilityproviders = new LinkedHashMap<>();
-		try {
+		long meterId = 0;
+		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (DEVICE_ID, ADDED_TIME, TOTAL_ENERGY_CONSUMPTION_DELTA, ADDED_DATE, ADDED_MONTH, ADDED_WEEK, ADDED_DAY, ADDED_HOUR) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
-			
-			pstmt.setLong(1, deviceId);
-			pstmt.setLong(2, added_time);
-			pstmt.setDouble(3, kwh_delta);
-			pstmt.setObject(4, added_date);
-			pstmt.setObject(5, added_month);
-			pstmt.setObject(6, added_week);
-			pstmt.setObject(7, added_day);
-			pstmt.setObject(8, added_hour);
-			pstmt.executeUpdate();
-			rs = pstmt.getGeneratedKeys();
-			long id = 0;
-			if(rs.next())
+			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICEID = ?");
+			pstmt.setLong(1,deviceId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
 			{
-				id = rs.getLong(1);
-			}				
-		}
-		catch (SQLException e) {
+				meterId = rs.getLong("METERID");
+			}
+		}catch(SQLException | RuntimeException e)
+		{
 			throw e;
 		}
-		finally {
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return meterId;
+	}
+
+	public static void addConsumptionData(List<HashMap> dataMapList) throws SQLException , RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (DEVICE_ID, ADDED_TIME, TOTAL_ENERGY_CONSUMPTION_DELTA, ADDED_DATE, ADDED_MONTH, ADDED_WEEK, ADDED_DAY, ADDED_HOUR) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+			Iterator itr = dataMapList.iterator();
+			while(itr.hasNext())
+			{
+				HashMap dataMap = (HashMap)itr.next();
+				pstmt.setLong(1, (long)dataMap.get("deviceId"));
+				pstmt.setLong(2, (long)dataMap.get("endTime"));
+				pstmt.setDouble(3, (double)dataMap.get("consumption"));
+				
+				HashMap<String, Object> timeData = (HashMap<String, Object>)dataMap.get("timeData");
+				String added_date = (String)timeData.get("date");
+				int added_month = (int)timeData.get("month");
+				int added_week = (int)timeData.get("week");
+				String added_day = (String)timeData.get("day");
+				int added_hour = (int)timeData.get("hour");
+				
+				pstmt.setObject(4, added_date);
+				pstmt.setObject(5, added_month);
+				pstmt.setObject(6, added_week);
+				pstmt.setObject(7, added_day);
+				pstmt.setObject(8, added_hour);
+				pstmt.addBatch();				
+			}
+			pstmt.executeBatch();
+			rs = pstmt.getGeneratedKeys();
+			int loopcount = 0;
+			pstmt = conn.prepareStatement("INSERT INTO ConsumptionInfo(ENERGYDATAID, CONSUMPTIONID, STARTDATE) VALUES(?, ?, ?) ");
+			while(rs.next())
+			{
+				long energyId = rs.getLong(1);
+				pstmt.setLong(1, energyId);
+				HashMap dataMap = dataMapList.get(loopcount);
+				pstmt.setLong(2, (long)dataMap.get("consumptionId"));
+				pstmt.setLong(3, (long)dataMap.get("startTime"));				
+				pstmt.addBatch();
+				loopcount++;
+			}				
+			pstmt.executeBatch();
+			
+		}
+		catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		
 	}
-
-	
 	
 }

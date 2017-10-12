@@ -7,16 +7,16 @@ import com.facilio.bmsconsole.device.Device;
 
 public class ConsumptionInfoContext extends EnergyDataContext {
 
-	private long startDate;
+	private long startTime;
 	private long consumptionId;
 	
-	public long getstartDate()
+	public long getStartTime()
 	{
-		return this.startDate;
+		return this.startTime;
 	}
-	public void setstartDate(long startDate)
+	public void setStartTime(long startTime)
 	{
-		this.startDate = startDate;
+		this.startTime = startTime;
 	}
 	
 	public long getConsumptionId()

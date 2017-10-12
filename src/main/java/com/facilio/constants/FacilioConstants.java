@@ -446,6 +446,7 @@ public class FacilioConstants {
 		public static final String METERNAME = "METERNAME";
 		public static final String FUELTYPE = "FUELTYPE";
 		public static final String UTILITYPROVIDER = "UtilityProvider";
+		public static final String DEVICEID = "DEVICEID";
 		
 		public static String getPKColumn(String module) {
 			if (TICKET.equalsIgnoreCase(module)) {

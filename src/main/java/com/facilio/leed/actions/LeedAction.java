@@ -105,6 +105,16 @@ public class LeedAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long deviceId;
+	
+	
+	public long getDeviceId() {
+		return deviceId;
+	}
+	public void setDeviceId(long deviceId) {
+		this.deviceId = deviceId;
+	}
+
 	private String meterName;
 	
 	public String getMeterName() {
@@ -183,9 +193,8 @@ public class LeedAction extends ActionSupport {
 	public String addConsumptionData() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
-		context.put(FacilioConstants.ContextNames.METERID, getMeterID());
+		context.put(FacilioConstants.ContextNames.DEVICEID, getDeviceId());
 		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getEnergyData());
 		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);

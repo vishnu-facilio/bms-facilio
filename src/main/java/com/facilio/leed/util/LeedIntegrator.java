@@ -184,7 +184,7 @@ public class LeedIntegrator {
 		return response; 
 	}
 	
-	public static JSONObject createConsumption(String leedId,String meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject createConsumption(long leedId,long meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample consumptionData json 
 //		{
