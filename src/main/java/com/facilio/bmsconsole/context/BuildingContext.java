@@ -6,7 +6,6 @@ import java.util.List;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.leed.context.UtilityProviderContext;
 
 public class BuildingContext extends ModuleBaseWithCustomFields {
 	
@@ -83,16 +82,7 @@ public class BuildingContext extends ModuleBaseWithCustomFields {
 	{
 		return this.leedId;
 	}
-	
-	private List<UtilityProviderContext> utilityProviders = new ArrayList<>();
-	public List<UtilityProviderContext> getUtilityProviders() {
-		return this.utilityProviders;
-	}
-	
-	public void setUtilityProviders(List<UtilityProviderContext> utilityProviders) {
-		this.utilityProviders = utilityProviders;
-	}
-	
+
 	private long photoId;
 	public long getPhotoId() {
 		return photoId;

@@ -2,6 +2,16 @@ package com.facilio.bmsconsole.context;
 
 public class EnergyDataContext {
 	
+	private long energyDataId;
+	public long getEnergyDataId()
+	{
+		return this.energyDataId;
+	}
+	public void setEnergyDataId(long energyDataId)
+	{
+		this.energyDataId = energyDataId;
+	}
+	
 	private long deviceId = -1;
 	public long getDeviceId() {
 		return deviceId;
@@ -18,16 +28,6 @@ public class EnergyDataContext {
 		this.addedTime = addedTime;
 	}
 
-	private long startTime = -1;
-	public long getStartTime()
-	{
-		return startTime;
-	}
-	public void setStartTime(long startTime)
-	{
-		this.startTime = startTime;
-	}
-	
 	private float totalEnergyConsumptionDelta = 0;
 	public float getTotalEnergyConsumptionDelta() {
 		return totalEnergyConsumptionDelta;

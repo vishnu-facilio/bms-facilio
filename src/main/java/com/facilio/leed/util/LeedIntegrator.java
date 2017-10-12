@@ -161,7 +161,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public static JSONObject createMeter(String leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
+	public static JSONObject createMeter(long leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/";
 		/*

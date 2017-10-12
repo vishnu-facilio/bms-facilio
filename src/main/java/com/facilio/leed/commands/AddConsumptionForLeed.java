@@ -15,12 +15,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.EnergyDataContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.leed.context.UtilityProviderContext;
-import com.facilio.leed.util.LeedAPI;
+import com.facilio.leed.context.ConsumptionInfoContext;
 import com.facilio.leed.util.LeedIntegrator;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -30,18 +27,18 @@ public class AddConsumptionForLeed implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		long buildingId = (long)context.get(FacilioConstants.ContextNames.ID);
-		String LeedId = (String) context.get(FacilioConstants.ContextNames.LeedID);
-		String MeterId = (String) context.get(FacilioConstants.ContextNames.MeterID);
-		List<EnergyDataContext> energyDataList = (List<EnergyDataContext>)context.get(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST);
+		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
+		String LeedId = (String) context.get(FacilioConstants.ContextNames.LEEDID);
+		String MeterId = (String) context.get(FacilioConstants.ContextNames.METERID);
+		List<ConsumptionInfoContext> energyDataList = (List<ConsumptionInfoContext>)context.get(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST);
 		Iterator data = energyDataList.iterator();
 		while(data.hasNext())
 		{
-			EnergyDataContext energyData = (EnergyDataContext)data.next();
+			ConsumptionInfoContext energyData = (ConsumptionInfoContext)data.next();
 			long addedTime = energyData.getAddedTime();
 			HashMap<String, Object> timeData = DateTimeUtil.getTimeData(addedTime); 	
-			float consumption = energyData.getTotalEnergyConsumptionDelta();
-			long startTime  = energyData.getStartTime();
+			double consumption = energyData.getTotalEnergyConsumptionDelta();
+			long startTime  = energyData.getstartDate();
 			JSONObject consumptionJSON = new JSONObject();
 			String stdate_str = DateTimeUtil.getDateTime(startTime).toString();
 			String endate_Str = DateTimeUtil.getDateTime(addedTime).toString();
@@ -53,24 +50,13 @@ public class AddConsumptionForLeed implements Command {
 			long consumptionId = -1;
 			if(response != null)
 			{
-			 consumptionId = (long)response.get("id");
+			 consumptionId = (long)((JSONObject)response.get("message")).get("id");
 			 
 			}
-			
-			
-			
+			addEnergyData(Long.parseLong(MeterId),addedTime, consumption,timeData);
 		}
 		
-		if(buildingId > 0)
-		{
-			List<UtilityProviderContext> utilityproviders = LeedAPI.getAllUtilityProviders(buildingId);
-			
-			BuildingContext buildingcontext = (BuildingContext)context.get(FacilioConstants.ContextNames.BUILDING);
-			if(utilityproviders != null && !utilityproviders.isEmpty() && buildingcontext != null) {
-				buildingcontext.setUtilityProviders(utilityproviders);
-			}
-						
-		}
+		
 		return false;
 	}
 	

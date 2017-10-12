@@ -372,7 +372,7 @@ public class DeviceAPI
 			{
 				throw new RuntimeException("Unable to add device");
 			}
-			device.setId(deviceId);
+			device.setDeviceId(deviceId);
 		}
 		catch(SQLException | RuntimeException e) 
 		{
@@ -384,6 +384,37 @@ public class DeviceAPI
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return deviceId;
+	}
+	
+	public static void addMeterDevice(Long assetId, Long space_Id) throws SQLException,RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Device (DEVICE_ID, SPACE_ID, DEVICE_TYPE, STATUS) VALUES (?, ?, ?, ?)");
+			pstmt.setLong(1, assetId);
+			pstmt.setLong(2, space_Id);
+			pstmt.setInt(3, 2);  //What is deviceType ? Setting it as 2. Check with Shivaraj.
+			pstmt.setInt(4, 1);
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add meter device");
+			}
+			
+		}
+		catch(SQLException | RuntimeException e) 
+		{
+			logger.log(Level.SEVERE, "Exception while adding device" +e.getMessage(), e);
+			throw e;
+		}
+		finally 
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
 	}
 	
 	public static void addDevice(Long assetId, Long serviceId, Long zoneid, Long buildingId, Long controllerId, Long parentDeviceId, int deviceType, int status) throws Exception
@@ -803,7 +834,7 @@ public class DeviceAPI
 			while(rs.next()) 
 			{
 				Device device = new Device();
-				device.setId(rs.getLong("DEVICE_ID"));
+				device.setDeviceId(rs.getLong("DEVICE_ID"));
 				device.setName(rs.getString("NAME"));
 				device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
 				device.setStatus(rs.getInt("STATUS"));
@@ -910,7 +941,7 @@ public class DeviceAPI
 				if(rs.next()) 
 				{
 					Device device = new Device();
-					device.setId(rs.getLong("DEVICE_ID"));
+					device.setDeviceId(rs.getLong("DEVICE_ID"));
 					device.setName(rs.getString("NAME"));
 					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
 					device.setStatus(rs.getInt("STATUS"));
@@ -950,7 +981,7 @@ public class DeviceAPI
 				while(rs.next()) 
 				{
 					Device device = new Device();
-					device.setId(rs.getLong("DEVICE_ID"));
+					device.setDeviceId(rs.getLong("DEVICE_ID"));
 					device.setName(rs.getString("NAME"));
 					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
 					device.setType(rs.getString("DEVICE_TYPE"));

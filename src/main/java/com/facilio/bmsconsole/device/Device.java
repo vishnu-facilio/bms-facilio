@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class Device 
+import com.facilio.bmsconsole.context.Assets;
+
+public class Device extends Assets
 {
 	private static Logger logger = Logger.getLogger(Device.class.getName());
 	
-	private Long id;
+	private Long deviceId;
 	private transient Long parentId;
 	private transient int status;
-	private String name;
 	private List<Device> children;
 	private transient List<Map<String, Object>> instances;
 	public Device()
@@ -21,12 +22,14 @@ public class Device
 		
 	}
 	
-	public Device setId(Long id)
-	{
-		this.id = id;
-		return this;
+	public Long getDeviceId() {
+		return deviceId;
 	}
-	
+
+	public void setDeviceId(Long deviceId) {
+		this.deviceId = deviceId;
+	}
+
 	public Device setParentId(Long parentId)
 	{
 		this.parentId = parentId;
@@ -38,12 +41,7 @@ public class Device
 		this.status = status;
 		return this;
 	}
-	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
+		
 	public void add(Device device)
 	{
 		if(this.children == null)
@@ -51,16 +49,6 @@ public class Device
 			this.children = new ArrayList<>();
 		}
 		this.children.add(device);
-	}
-	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public Long getId()
-	{
-		return this.id;
 	}
 	
 	public Long getParentId()
