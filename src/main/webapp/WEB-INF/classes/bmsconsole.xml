@@ -1405,7 +1405,7 @@
 			</result>
 		</action>
 		
-		<action name="getGroupMembers" class="com.facilio.bmsconsole.group.actions.GetGroupMembersAction">
+		<action name="getGroupMembers" class="com.facilio.bmsconsole.actions.GetGroupMembersAction">
 			<result name="success" type="json">
 				<param name="root">members</param>
 			</result>

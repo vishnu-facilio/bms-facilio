@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.group.actions;
+package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
 import java.util.List;

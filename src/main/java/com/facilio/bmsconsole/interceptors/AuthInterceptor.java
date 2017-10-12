@@ -34,10 +34,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
 
-		String output = "Pre-Processing"; 
-		System.out.println(output);
-
+	
 		try {
+			System.out.println("AuthInterceptor");
 			// Step 1: Validating ID Token
 			HttpServletRequest request = ServletActionContext.getRequest();
 
@@ -83,13 +82,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 			{
 				requestSubdomain = serverName.replaceAll(RequestUtil.HOSTNAME, "");
 				 request.setAttribute("isMobile", false);
-				 System.out.println("desktop");
+				 //System.out.println("desktop");
 			}
 			else
 			{
 				requestSubdomain = serverName.replaceAll(RequestUtil.MOBILE_HOSTNAME, "");
 				request.setAttribute("isMobile", true);
-				 System.out.println("mobile");
+				 //System.out.println("mobile");
 
 			}
 			
@@ -138,8 +137,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 		String result = arg0.invoke();
 
 		/* let us do some post-processing */
-		output = "Post-Processing"; 
-		System.out.println(output);
+		//output = "Post-Processing"; 
+		//System.out.println(output);
 
 		return result;
 	}
