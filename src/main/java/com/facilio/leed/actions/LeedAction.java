@@ -183,7 +183,7 @@ public class LeedAction extends ActionSupport {
 	public String addConsumptionData() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.METERID, getMeterID());
 		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getEnergyData());

@@ -50,7 +50,7 @@
 		</action>
 		
 		<action name="leedlist" class="com.facilio.leed.actions.LeedAction" method="leedList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
@@ -185,7 +185,7 @@
 		<result >/leed/login.jsp</result>
 		</action>
 	    <!-- This should redirect to callback url..-->
-	
+	<!-- 
 	<action name="buildingdetails" class="com.facilio.leed.actions.BuildingHome" method="detailspage">
 		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 		<result >/leed/BuildingDetails.jsp</result>
@@ -195,7 +195,7 @@
 		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 		<result >/leed/BuildingDetails.jsp</result>
 	</action>
-		
+	-->
 	<action name="loginsubmit" class="com.facilio.integration.actions.Home" method="loginSubmit">
 		
 		<result >/leed/login.jsp</result>
