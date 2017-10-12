@@ -103,88 +103,88 @@ public class ReportsUtil
 		{
 		case FacilioConstants.Reports.TODAY:
 		{
-			fromRange=DateTimeUtil.getDayStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getDayStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsHour);
 			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_YEAR:
 		{
-			fromRange=DateTimeUtil.getYearStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getYearStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsMonth);
 			orderByCol.append(fieldsMonth).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_YEAR:
 		{
-			fromRange=DateTimeUtil.getYearStartTime(-1);
-			endRange=DateTimeUtil.getYearStartTime()-1;
+			fromRange=DateTimeUtil.getYearStartTime(-1,true);
+			endRange=DateTimeUtil.getYearStartTime(true)-1;
 			groupByCol.append(fieldsMonth);
 			orderByCol.append(fieldsMonth).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_YEAR_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getYearStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getYearStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsWeek);
 			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_YEAR_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getYearStartTime(-1);
-			endRange=DateTimeUtil.getYearStartTime()-1;
+			fromRange=DateTimeUtil.getYearStartTime(-1,true);
+			endRange=DateTimeUtil.getYearStartTime(true)-1;
 			groupByCol.append(fieldsWeek);
 			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_HOUR:
 		{
-			fromRange=DateTimeUtil.getHourStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getHourStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsHour);
 			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_HOUR:
 		{
-			fromRange=DateTimeUtil.getHourStartTime(-1);
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getHourStartTime(-1,true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsHour);
 			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_MONTH_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getMonthStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsWeek);
 			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_MONTH_WITH_WEEK:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime(-1);
-			endRange=DateTimeUtil.getMonthStartTime()-1;
+			fromRange=DateTimeUtil.getMonthStartTime(-1,true);
+			endRange=DateTimeUtil.getMonthStartTime(true)-1;
 			groupByCol.append(fieldsWeek);
 			orderByCol.append(fieldsWeek).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.THIS_WEEK:
 		{
-			fromRange=DateTimeUtil.getWeekStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getWeekStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			groupByCol.append(fieldsDay).append(separator).append(fieldsDate);
 			orderByCol.append(fieldsDate).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_WEEK:
 		{
-			fromRange=DateTimeUtil.getWeekStartTime(-1);
-			endRange=DateTimeUtil.getWeekStartTime() - 1;
+			fromRange=DateTimeUtil.getWeekStartTime(-1,true);
+			endRange=DateTimeUtil.getWeekStartTime(true) - 1;
 			groupByCol.append(fieldsDay).append(separator).append(fieldsDate);
 			orderByCol.append(fieldsDate).append(" ASC");
 			break;
@@ -203,34 +203,34 @@ public class ReportsUtil
 		}
 		case FacilioConstants.Reports.THIS_MONTH:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime();
-			endRange=DateTimeUtil.getCurrenTime();
+			fromRange=DateTimeUtil.getMonthStartTime(true);
+			endRange=DateTimeUtil.getCurrenTime(true);
 			break;
 		}
 		case FacilioConstants.Reports.LAST_MONTH:
 		{
-			fromRange=DateTimeUtil.getMonthStartTime(-1);
-			endRange=DateTimeUtil.getMonthStartTime()-1;
+			fromRange=DateTimeUtil.getMonthStartTime(-1,true);
+			endRange=DateTimeUtil.getMonthStartTime(true)-1;
 			break;
 		}
 		case FacilioConstants.Reports.YESTERDAY:
 		{
-			fromRange=DateTimeUtil.getDayStartTime(-1);
-			endRange=DateTimeUtil.getDayStartTime()-1;
+			fromRange=DateTimeUtil.getDayStartTime(-1,true);
+			endRange=DateTimeUtil.getDayStartTime(true)-1;
 			groupByCol.append(fieldsHour);
 			orderByCol.append(fieldsHour).append(" ASC");
 			break;
 		}
 		case FacilioConstants.Reports.LAST_7_DAYS:
 		{
-			fromRange=DateTimeUtil.getDayStartTime(7);
-			endRange=DateTimeUtil.getDayStartTime()-1;
+			fromRange=DateTimeUtil.getDayStartTime(7,true);
+			endRange=DateTimeUtil.getDayStartTime(true)-1;
 			break;
 		}
 		case FacilioConstants.Reports.LAST_30_DAYS:
 		{
-			fromRange=DateTimeUtil.getDayStartTime(-30);
-			endRange=DateTimeUtil.getDayStartTime()-1;
+			fromRange=DateTimeUtil.getDayStartTime(-30,true);
+			endRange=DateTimeUtil.getDayStartTime(true)-1;
 			break;
 		}
 		}
