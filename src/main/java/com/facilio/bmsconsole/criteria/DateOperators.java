@@ -21,7 +21,7 @@ public enum DateOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return field.getModuleTableName()+"."+field.getColumnName()+" = "+value;
+				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = "+value;
 			}
 			return null;
 		}
@@ -55,11 +55,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" != ")
@@ -96,7 +96,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), "<", value);
+			return greaterOrLessThan(field.getExtendedModule().getTableName()+"."+field.getColumnName(), "<", value);
 		}
 
 		@Override
@@ -125,7 +125,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getModuleTableName()+"."+field.getColumnName(), ">", value);
+			return greaterOrLessThan(field.getExtendedModule().getTableName()+"."+field.getColumnName(), ">", value);
 		}
 
 		@Override
@@ -154,7 +154,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, false);
+			return betweenWhereClause(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, false);
 		}
 
 		@Override
@@ -174,7 +174,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getModuleTableName()+"."+field.getColumnName(), value, true);
+			return betweenWhereClause(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, true);
 		}
 
 		@Override
@@ -197,11 +197,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))");
@@ -243,11 +243,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))");
@@ -290,7 +290,7 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))");
@@ -333,11 +333,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(CURDATE()))");
@@ -379,7 +379,7 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(CURDATE())");
@@ -421,11 +421,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
@@ -467,11 +467,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))");
@@ -513,11 +513,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
@@ -559,11 +559,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))");
@@ -606,11 +606,11 @@ public enum DateOperators implements Operator<String> {
 				StringBuilder builder = new StringBuilder();
 				//Condition is >= first day of this week and < first day of next week
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))");
@@ -652,11 +652,11 @@ public enum DateOperators implements Operator<String> {
 			if(field != null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))");
@@ -698,7 +698,7 @@ public enum DateOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("CEIL((UNIX_TIMESTAMP(CURDATE())-(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000))/(24*3600)) = ")
@@ -737,7 +737,7 @@ public enum DateOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("FLOOR(((")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append("/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) = ")

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 
 public class FormLayout {
 	
@@ -24,7 +25,7 @@ public class FormLayout {
 		requesterEmail.setDisplayName("Requester Email");
 		requesterEmail.setDisplayType(FacilioField.FieldDisplayType.EMAIL);
 		requesterEmail.setDataType(com.facilio.bmsconsole.modules.FieldType.STRING);
-		requesterEmail.setModuleName("requester");
+		requesterEmail.setModule(ModuleFactory.getRequesterModule());
 		requesterEmail.setDefault(true);
 		second.addField(requesterEmail);
 		
@@ -60,7 +61,7 @@ public class FormLayout {
 		sendForApproval.setDisplayName("Send For Approval");
 		sendForApproval.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
 		sendForApproval.setDataType(com.facilio.bmsconsole.modules.FieldType.BOOLEAN);
-		sendForApproval.setModuleName("ticket");
+		sendForApproval.setModule(ModuleFactory.getTicketsModule());
 		sendForApproval.setDefault(true);
 		first.addField(sendForApproval);
 		
@@ -226,7 +227,7 @@ public class FormLayout {
 		field.setDisplayName("Content");
 		field.setDataType(FieldType.STRING);
 		field.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
-		field.setModuleName("note");
+		field.setModule(ModuleFactory.getNotesModule());
 		field.setDefault(true);
 		
 		first.add(field);

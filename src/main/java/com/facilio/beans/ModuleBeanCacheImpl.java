@@ -40,6 +40,25 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	}
 
 	@Override
+	public FacilioModule getModule(long moduleId) throws Exception {
+		
+		FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleId));
+		
+		if (moduleObj == null) {
+			
+			moduleObj = super.getModule(moduleId);
+			
+			CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
+			
+			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
+		}
+		else {
+			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
+		}
+		return moduleObj;
+	}
+	
+	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		
 		FacilioField fieldObj = (FacilioField) CacheUtil.get(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), moduleName));
@@ -110,7 +129,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		
 		if (fieldId > 0) {
 			// clearing primary field and all fields of this module from cache
-			CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModuleName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModuleName()));
+			CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 		}
 		return fieldId;
 	}

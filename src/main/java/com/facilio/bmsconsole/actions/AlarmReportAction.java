@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -325,7 +326,7 @@ public class AlarmReportAction extends ActionSupport {
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
 		Condition createdTime = new Condition();
@@ -399,7 +400,7 @@ public class AlarmReportAction extends ActionSupport {
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
 		Condition createdTime = new Condition();
@@ -516,7 +517,7 @@ public class AlarmReportAction extends ActionSupport {
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
 		Condition createdTime = new Condition();
@@ -592,7 +593,7 @@ public class AlarmReportAction extends ActionSupport {
 			FacilioField assignedToFld = new FacilioField();
 			assignedToFld.setName("technician");
 			assignedToFld.setColumnName("ASSIGNED_TO_ID");
-			assignedToFld.setModuleTableName("Tickets");
+			assignedToFld.setModule(ModuleFactory.getTicketsModule());
 			assignedToFld.setDataType(FieldType.NUMBER);
 			fields.add(assignedToFld);
 		}
@@ -600,7 +601,7 @@ public class AlarmReportAction extends ActionSupport {
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModuleTableName("Alarms");
+		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
 		Condition createdTime = new Condition();

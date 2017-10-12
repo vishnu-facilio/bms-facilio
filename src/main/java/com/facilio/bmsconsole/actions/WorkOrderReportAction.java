@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.OrgInfo;
@@ -82,19 +83,19 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField statusIdFld = new FacilioField();
 		statusIdFld.setName("status_id");
 		statusIdFld.setColumnName("ID");
-		statusIdFld.setModuleTableName("TicketStatus");
+		statusIdFld.setModule(ModuleFactory.getTicketStatusModule());
 		statusIdFld.setDataType(FieldType.NUMBER);
 		
 		FacilioField statusFld = new FacilioField();
 		statusFld.setName("status");
 		statusFld.setColumnName("STATUS");
-		statusFld.setModuleTableName("TicketStatus");
+		statusFld.setModule(ModuleFactory.getTicketStatusModule());
 		statusFld.setDataType(FieldType.STRING);
 		
 		FacilioField statusTypeFld = new FacilioField();
 		statusTypeFld.setName("status_type");
 		statusTypeFld.setColumnName("STATUS_TYPE");
-		statusTypeFld.setModuleTableName("TicketStatus");
+		statusTypeFld.setModule(ModuleFactory.getTicketStatusModule());
 		statusTypeFld.setDataType(FieldType.NUMBER);
 
 		FacilioField countFld = new FacilioField();
@@ -135,19 +136,19 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField woIdFld = new FacilioField();
 		woIdFld.setName("id");
 		woIdFld.setColumnName("ID");
-		woIdFld.setModuleTableName("WorkOrders");
+		woIdFld.setModule(ModuleFactory.getWorkOrdersModule());
 		woIdFld.setDataType(FieldType.NUMBER);
 		
 		FacilioField dueDateFld = new FacilioField();
 		dueDateFld.setName("dueDate");
 		dueDateFld.setColumnName("DUE_DATE");
-		dueDateFld.setModuleTableName("Tickets");
+		dueDateFld.setModule(ModuleFactory.getTicketsModule());
 		dueDateFld.setDataType(FieldType.DATE_TIME);
 		
 		FacilioField actualWorkEndFld = new FacilioField();
 		actualWorkEndFld.setName("actualWorkEnd");
 		actualWorkEndFld.setColumnName("ACTUAL_WORK_END");
-		actualWorkEndFld.setModuleTableName("Tickets");
+		actualWorkEndFld.setModule(ModuleFactory.getTicketsModule());
 		actualWorkEndFld.setDataType(FieldType.DATE_TIME);
 
 		List<FacilioField> fields = new ArrayList<>();
@@ -222,19 +223,19 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField categoryIdFld = new FacilioField();
 		categoryIdFld.setName("category_id");
 		categoryIdFld.setColumnName("ID");
-		categoryIdFld.setModuleTableName("TicketCategory");
+		categoryIdFld.setModule(ModuleFactory.getTicketCategoryModule());
 		categoryIdFld.setDataType(FieldType.NUMBER);
 		
 		FacilioField categoryFld = new FacilioField();
 		categoryFld.setName("category");
 		categoryFld.setColumnName("NAME");
-		categoryFld.setModuleTableName("TicketCategory");
+		categoryFld.setModule(ModuleFactory.getTicketCategoryModule());
 		categoryFld.setDataType(FieldType.STRING);
 		
 		FacilioField categoryDescFld = new FacilioField();
 		categoryDescFld.setName("category_desc");
 		categoryDescFld.setColumnName("DESCRIPTION");
-		categoryDescFld.setModuleTableName("TicketCategory");
+		categoryDescFld.setModule(ModuleFactory.getTicketCategoryModule());
 		categoryDescFld.setDataType(FieldType.STRING);
 
 		FacilioField countFld = new FacilioField();
@@ -277,7 +278,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField sourceTypeFld = new FacilioField();
 		sourceTypeFld.setName("source_type");
 		sourceTypeFld.setColumnName("SOURCE_TYPE");
-		sourceTypeFld.setModuleTableName("Tickets");
+		sourceTypeFld.setModule(ModuleFactory.getTicketsModule());
 		sourceTypeFld.setDataType(FieldType.NUMBER);
 
 		FacilioField countFld = new FacilioField();
@@ -292,7 +293,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModuleTableName("WorkOrderRequests");
+		createdTimeFld.setModule(ModuleFactory.getWorkOrderRequestsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
 		Condition createdTime = new Condition();
@@ -325,19 +326,19 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField assignedToFld = new FacilioField();
 		assignedToFld.setName("technician_id");
 		assignedToFld.setColumnName("ASSIGNED_TO_ID");
-		assignedToFld.setModuleTableName("Tickets");
+		assignedToFld.setModule(ModuleFactory.getTicketsModule());
 		assignedToFld.setDataType(FieldType.NUMBER);
 		
 		FacilioField assignedToNameFld = new FacilioField();
 		assignedToNameFld.setName("technician_name");
 		assignedToNameFld.setColumnName("NAME");
-		assignedToNameFld.setModuleTableName("Users");
+		assignedToNameFld.setModule(ModuleFactory.getUsersModule());
 		assignedToNameFld.setDataType(FieldType.STRING);
 		
 		FacilioField assignedToEmailFld = new FacilioField();
 		assignedToEmailFld.setName("technician_email");
 		assignedToEmailFld.setColumnName("EMAIL");
-		assignedToEmailFld.setModuleTableName("Users");
+		assignedToEmailFld.setModule(ModuleFactory.getUsersModule());
 		assignedToEmailFld.setDataType(FieldType.STRING);
 		
 		FacilioField countFld = new FacilioField();
@@ -382,7 +383,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioField spaceIdFld = new FacilioField();
 		spaceIdFld.setName("space_id");
 		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModuleTableName("Tickets");
+		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
 		spaceIdFld.setDataType(FieldType.NUMBER);
 
 		FacilioField countFld = new FacilioField();

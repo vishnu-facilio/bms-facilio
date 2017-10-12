@@ -142,7 +142,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				else {
 					sql.append(", ");
 				}
-				sql.append(field.getModuleTableName())
+				sql.append(field.getExtendedModule().getTableName())
 					.append(".")
 					.append(field.getColumnName())
 					.append(" = ?");

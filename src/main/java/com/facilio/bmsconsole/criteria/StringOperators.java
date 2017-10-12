@@ -20,7 +20,7 @@ public enum StringOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getModuleTableName())
+					builder.append(field.getExtendedModule().getTableName())
 							.append(".")
 							.append(field.getColumnName())
 							.append(" IN (");
@@ -29,7 +29,7 @@ public enum StringOperators implements Operator<String> {
 					return builder.toString();
 				}
 				else {
-					return field.getModuleTableName()+"."+field.getColumnName()+" = ?";
+					return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = ?";
 				}
 			}
 			return null;
@@ -57,11 +57,11 @@ public enum StringOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName());
 				if(value.contains(",")) {
@@ -98,7 +98,7 @@ public enum StringOperators implements Operator<String> {
 		@Override
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
-			return contains(field.getModuleTableName()+"."+field.getColumnName(), value, false);
+			return contains(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, false);
 		}
 
 		@Override
@@ -123,11 +123,11 @@ public enum StringOperators implements Operator<String> {
 			if(field != null && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(contains(field.getModuleTableName()+"."+field.getColumnName(), value, true))
+						.append(contains(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, true))
 						.append(")");
 				return builder.toString();
 			}

@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
@@ -373,7 +374,7 @@ public class AlarmAction extends ActionSupport {
 		FacilioField idFld = new FacilioField();
 		idFld.setName("ID");
 		idFld.setColumnName("ID");
-		idFld.setModuleTableName("WorkOrders");
+		idFld.setModule(ModuleFactory.getWorkOrdersModule());
 		idFld.setDataType(FieldType.NUMBER);
 
 		List<FacilioField> fields = new ArrayList<>();

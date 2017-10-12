@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
@@ -30,11 +31,15 @@ public class AddWOFromAlarmCommand implements Command {
 		if(EventType.ASSIGN_TICKET == eventType && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
-			idCondition.setField(FieldFactory.getIdField(dataTableName));
+			idCondition.setField(FieldFactory.getIdField(module));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
 			

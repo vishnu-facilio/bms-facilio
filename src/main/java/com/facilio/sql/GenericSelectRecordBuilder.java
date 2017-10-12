@@ -177,8 +177,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				Map<String, Object> record = new HashMap<>();
 				for(FacilioField field : selectFields) {
 					String key = null;
-					if(field.getModuleTableName() != null && !field.getModuleTableName().isEmpty()) {
-						key = field.getModuleTableName()+"."+field.getColumnName();
+					if(field.getExtendedModule() != null) {
+						key = field.getExtendedModule().getTableName()+"."+field.getColumnName();
 					}
 					else {
 						key = field.getColumnName();
@@ -216,8 +216,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			else {
 				sql.append(", ");
 			}
-			if(field.getModuleTableName() != null && !field.getModuleTableName().isEmpty()) {
-				sql.append(field.getModuleTableName())
+			if(field.getExtendedModule() != null) {
+				sql.append(field.getExtendedModule().getTableName())
 					.append(".");
 			}
 			sql.append(field.getColumnName());

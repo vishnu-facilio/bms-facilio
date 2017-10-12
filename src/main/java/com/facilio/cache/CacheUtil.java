@@ -28,6 +28,10 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleName;
 	}
 	
+	public static String MODULE_KEY(long orgId, long moduleId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleId;
+	}
+	
 	public static String FIELDS_KEY(long orgId, String moduleName) {
 		return MODULE_KEY(orgId, moduleName) + KEY_SEPARATOR + FIELDS;
 	}

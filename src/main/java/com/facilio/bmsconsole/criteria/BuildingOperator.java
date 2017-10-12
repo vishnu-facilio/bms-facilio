@@ -31,7 +31,7 @@ public enum BuildingOperator implements Operator<String> {
 			try {
 				if(field.getColumnName() != null && value != null && !value.isEmpty()) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getModuleTableName())
+					builder.append(field.getExtendedModule().getTableName())
 							.append(".")
 							.append(field.getColumnName())
 							.append(" IN (");

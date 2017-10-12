@@ -41,7 +41,7 @@ public class LoadMainFieldCommand implements Command {
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().resume(trans);
 			FacilioField defaultField = modBean.getPrimaryField(moduleName);
 			
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModuleTableName());
+			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, defaultField.getModule().getTableName());
 			context.put(FacilioConstants.ContextNames.DEFAULT_FIELD, defaultField);
 		}
 		catch (SQLException e) {

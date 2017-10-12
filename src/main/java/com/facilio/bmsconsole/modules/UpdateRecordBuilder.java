@@ -124,14 +124,17 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			WhereBuilder whereCondition = new WhereBuilder();
 			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
 			Condition orgCondition = new Condition();
-			orgCondition.setField(FieldFactory.getOrgIdField(tableName));
+			orgCondition.setField(FieldFactory.getOrgIdField(module));
 			orgCondition.setOperator(NumberOperators.EQUALS);
 			orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
 			whereCondition.andCondition(orgCondition);
 			
 			Condition moduleCondition = new Condition();
-			moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
+			moduleCondition.setField(FieldFactory.getModuleIdField(module));
 			moduleCondition.setOperator(NumberOperators.EQUALS);
 			moduleCondition.setValue(String.valueOf(getModuleId()));
 			whereCondition.andCondition(moduleCondition);
@@ -141,9 +144,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			updateLookupFields(moduleProps);
 			
-			fields.add(FieldFactory.getOrgIdField(tableName));
-			fields.add(FieldFactory.getModuleIdField(tableName));
-			fields.add(FieldFactory.getIdField(tableName));
+			fields.add(FieldFactory.getOrgIdField(module));
+			fields.add(FieldFactory.getModuleIdField(module));
+			fields.add(FieldFactory.getIdField(module));
 			builder.fields(fields);
 			
 			builder.andCustomWhere(where.getWhereClause(), where.getValues());

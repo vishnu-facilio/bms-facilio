@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 
 public interface ModuleBean extends RootBean {
 
+	public FacilioModule getModule(long moduleId) throws Exception;
+	
 	public FacilioModule getModule(String moduleName) throws Exception;
 	
 	public FacilioField getPrimaryField(String moduleName) throws Exception;

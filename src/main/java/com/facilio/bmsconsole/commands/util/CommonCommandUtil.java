@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -57,43 +58,6 @@ public class CommonCommandUtil {
 		return context;
 	}
 	
-	public static FacilioField getFieldFromRS(ResultSet rs) throws SQLException {
-		FacilioField field = new FacilioField();
-		field.setFieldId(rs.getLong("Fields.FIELDID"));
-		field.setOrgId(rs.getLong("Fields.ORGID"));
-		field.setModuleId(rs.getLong("Fields.MODULEID"));
-		field.setName(rs.getString("Fields.NAME"));
-		field.setDisplayName(rs.getString("Fields.DISPLAY_NAME"));
-		field.setDisplayType(rs.getInt("Fields.DISPLAY_TYPE"));
-		field.setColumnName(rs.getString("Fields.COLUMN_NAME"));
-		field.setSequenceNumber(rs.getInt("Fields.SEQUENCE_NUMBER"));
-		field.setDataType(FieldType.getCFType(rs.getInt("Fields.DATA_TYPE")));
-		field.setDataTypeCode(rs.getInt("Fields.DATA_TYPE"));
-		field.setDefault(rs.getBoolean("Fields.IS_DEFAULT"));
-		field.setMainField(rs.getBoolean("Fields.IS_MAIN_FIELD"));
-		field.setRequired(rs.getBoolean("Fields.REQUIRED"));
-		field.setDisabled(rs.getBoolean("Fields.DISABLED"));
-		field.setStyleClass(rs.getString("Fields.STYLE_CLASS"));
-		field.setIcon(rs.getString("Fields.ICON"));
-		field.setPlaceHolder(rs.getString("Fields.PLACE_HOLDER"));
-		
-		return field;
-	}
-	
-	public static FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {
-		long moduleId = rs.getLong("MODULEID");
-		if(moduleId != 0) {
-		FacilioModule module = new FacilioModule();
-			module.setModuleId(moduleId);
-			module.setOrgId(rs.getLong("ORGID"));
-			module.setName(rs.getString("NAME"));
-			module.setDisplayName(rs.getString("DISPLAY_NAME"));
-			module.setTableName(rs.getString("TABLE_NAME"));
-			return module;
-		}
-		return null;
-	}
-	
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
 		String orgEmailDomain = "@"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".facilio.com";
@@ -118,7 +82,7 @@ public class CommonCommandUtil {
 		field.setName("requesterId");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("REQUESTER_ID");
-		field.setModuleTableName("Requester");
+		field.setModule(ModuleFactory.getRequesterModule());
 		
 		Condition idCondition = new Condition();
 		idCondition.setField(field);
@@ -153,7 +117,7 @@ public class CommonCommandUtil {
 	public static Map<Long, TicketContext> getTickets(String ids, Connection conn) throws Exception {
 		
 		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getIdField("Tickets"));
+		idCondition.setField(FieldFactory.getIdField(ModuleFactory.getTicketsModule()));
 		idCondition.setOperator(NumberOperators.EQUALS);
 		idCondition.setValue(ids);
 		

@@ -17,7 +17,7 @@ public enum CommonOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return field.getModuleTableName()+"."+field.getColumnName()+" IS NULL";
+				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" IS NULL";
 			}
 			return null;
 		}
@@ -36,7 +36,7 @@ public enum CommonOperators implements Operator<String> {
 		public String getWhereClause(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return field.getModuleTableName()+"."+field.getColumnName()+" IS NOT NULL";
+				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" IS NOT NULL";
 			}
 			return null;
 		}

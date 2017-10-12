@@ -23,14 +23,27 @@ public class FacilioField implements Serializable {
 		this.orgId = orgId;
 	}
 	
-	private long moduleId = -1;
-	public long getModuleId() {
-		return moduleId;
+	private FacilioModule module;
+	public FacilioModule getModule() {
+		return module;
 	}
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
+	public void setModule(FacilioModule module) {
+		this.module = module;
 	}
 	
+	private FacilioModule extendedModule;
+	public FacilioModule getExtendedModule() {
+		if(extendedModule != null) {
+			return extendedModule;
+		}
+		else {
+			return module;
+		}
+	}
+	public void setExtendedModule(FacilioModule extendedModule) {
+		this.extendedModule = extendedModule;
+	}
+
 	private String name;
 	public String getName() {
 		return name;
@@ -87,22 +100,6 @@ public class FacilioField implements Serializable {
 		this.isMainField = isMainField;
 	}
 	
-	private String moduleName;
-	public String getModuleName() {
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-	
-	private String moduleTableName;
-	public String getModuleTableName() {
-		return moduleTableName;
-	}
-	public void setModuleTableName(String moduleTableName) {
-		this.moduleTableName = moduleTableName;
-	}
-	
 	private boolean required;
 	public boolean isRequired() {
 		return required;
@@ -152,7 +149,8 @@ public class FacilioField implements Serializable {
 	}
 	
 	public String getInputName() {
-		if(moduleName != null &&! moduleName.isEmpty()) {
+		if(module != null) {
+			String moduleName = module.getName();
 			if(dataType == FieldType.LOOKUP) {
 				//return moduleName+".customProps['"+name+FacilioConstants.ContextNames.ID+"']";
 				return moduleName+"."+name+".id";
@@ -181,7 +179,7 @@ public class FacilioField implements Serializable {
 	
 	public String toString()
 	{
-		return "\n"+moduleName + "- "+name + "- " +dataType;
+		return "\n"+module.getName()+ " - "+name + " - " +dataType;
 	}
 	
 	public enum FieldDisplayType {

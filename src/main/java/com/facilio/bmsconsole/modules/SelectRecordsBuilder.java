@@ -268,21 +268,24 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	private List<Map<String, Object>> getAsJustProps() throws Exception {
-		selectFields.add(FieldFactory.getOrgIdField(tableName));
-		selectFields.add(FieldFactory.getModuleIdField(tableName));
-		selectFields.add(FieldFactory.getIdField(tableName));
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		selectFields.add(FieldFactory.getOrgIdField(module));
+		selectFields.add(FieldFactory.getModuleIdField(module));
+		selectFields.add(FieldFactory.getIdField(module));
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
 		
 		Condition orgCondition = new Condition();
-		orgCondition.setField(FieldFactory.getOrgIdField(tableName));
+		orgCondition.setField(FieldFactory.getOrgIdField(module));
 		orgCondition.setOperator(NumberOperators.EQUALS);
 		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		whereCondition.andCondition(orgCondition);
 		
 		Condition moduleCondition = new Condition();
-		moduleCondition.setField(FieldFactory.getModuleIdField(tableName));
+		moduleCondition.setField(FieldFactory.getModuleIdField(module));
 		moduleCondition.setOperator(NumberOperators.EQUALS);
 		moduleCondition.setValue(String.valueOf(getModuleId()));
 		whereCondition.andCondition(moduleCondition);

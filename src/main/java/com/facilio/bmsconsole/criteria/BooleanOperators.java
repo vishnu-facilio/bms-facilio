@@ -24,11 +24,11 @@ public enum BooleanOperators implements Operator<String> {
 			else {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" IS NULL OR ")
-						.append(field.getModuleTableName())
+						.append(field.getExtendedModule().getTableName())
 						.append(".")
 						.append(field.getColumnName())
 						.append(" = false)");
