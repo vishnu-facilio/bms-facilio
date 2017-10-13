@@ -33,7 +33,7 @@ public class LeedAPI {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("select * from LeedConfiguration ,Building where LeedConfiguration.BUILDINGID = Building.ID and Building.ORGID = ?");
 			pstmt.setLong(1,orgId);
-			
+			rs = pstmt.executeQuery();
 			while(rs.next())
 			{
 				LeedConfigurationContext context = new LeedConfigurationContext();
