@@ -120,6 +120,22 @@ public class ViewLayout {
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("LeedID", "leedId", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Building Status", "buildingStatus", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Energy Score", "energyScore", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Water Score", "waterScore", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Waste Score", "wasteScore", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Human Experience Score", "humanExperienceScore", ViewColumn.ColumnType.NUMBER));
+		viewLayout.addColumn(new ViewColumn("Transport Score", "transportScore", ViewColumn.ColumnType.NUMBER));
+		
+		return viewLayout;
+	}
+	
+	public static ViewLayout getViewLeedListLayout()
+	{
+		ViewLayout viewLayout = new ViewLayout();
+		viewLayout.setPkColumnId("id");
+		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Contact", "contact", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Phone", "phone", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("Lat", "lat", ViewColumn.ColumnType.TEXT));
