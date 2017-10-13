@@ -7,13 +7,13 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
@@ -70,7 +70,7 @@ public class GetAlarmListCommand implements Command {
 				ids.append(alarm.getTicket().getId());
 			}
 			
-			Map<Long, TicketContext> tickets = CommonCommandUtil.getTickets(ids.toString(), conn);
+			Map<Long, TicketContext> tickets = TicketAPI.getTickets(ids.toString(), conn);
 			for(AlarmContext alarm : alarms) {
 				alarm.setTicket(tickets.get(alarm.getTicket().getId()));
 			}

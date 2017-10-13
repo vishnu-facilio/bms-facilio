@@ -50,7 +50,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if(workOrderRequest != null) {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.TICKET, workOrderRequest.getTicket());
 			context.put(FacilioConstants.ContextNames.REQUESTER, workOrderRequest.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
 			

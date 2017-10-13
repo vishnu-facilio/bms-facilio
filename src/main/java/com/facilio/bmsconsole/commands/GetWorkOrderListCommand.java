@@ -2,18 +2,15 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
@@ -51,7 +48,7 @@ public class GetWorkOrderListCommand implements Command {
 		
 		List<WorkOrderContext> workOrders = selectBuilder.get();
 		
-		CommonCommandUtil.loadTicketLookups(workOrders);
+		TicketAPI.loadTicketLookups(workOrders);
 		
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		

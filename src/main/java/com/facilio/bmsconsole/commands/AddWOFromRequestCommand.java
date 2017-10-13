@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -64,12 +65,12 @@ public class AddWOFromRequestCommand implements Command {
 	
 	private long addWorkOrder(WorkOrderRequestContext request) throws Exception {
 		WorkOrderContext wo = new WorkOrderContext();
-		wo.setTicket(request.getTicket());
-		wo.setRequester(request.getRequester());
+		BeanUtils.copyProperties(wo, request);
 		wo.setCreatedTime(System.currentTimeMillis());
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+		context.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);

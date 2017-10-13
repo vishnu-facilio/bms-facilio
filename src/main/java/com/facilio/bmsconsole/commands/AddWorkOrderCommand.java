@@ -33,13 +33,19 @@ public class AddWorkOrderCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			
-			updateTicketStatus(workOrder, conn);
+			TicketAPI.updateTicketStatus(workOrder);
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.dataTableName(dataTableName)
 																.fields(fields)
 																.connection(conn);
+			
+			Integer insertLevel = (Integer) context.get(FacilioConstants.ContextNames.INSERT_LEVEL);
+			if(insertLevel != null) {
+				builder.level(insertLevel);
+			}
+			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
@@ -50,20 +56,5 @@ public class AddWorkOrderCommand implements Command {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");
 		}
 		return false;
-	}
-
-	private void updateTicketStatus(WorkOrderContext workOrder, Connection conn) throws Exception {
-		TicketStatusContext status = workOrder.getStatus();
-		
-		if(status != null) {
-			status = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), status.getId());
-		}
-		else {
-			workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
-		}
-		
-		if(workOrder.getAssignedTo() != null && (status == null || !status.getStatus().equals("Assigned"))) {
-			workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
-		}
 	}
 }

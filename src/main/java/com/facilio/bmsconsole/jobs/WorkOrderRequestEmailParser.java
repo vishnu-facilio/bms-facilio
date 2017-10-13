@@ -100,14 +100,11 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			requester.setEmail(parser.getFrom());
 			workOrderRequest.setRequester(requester);
 			
-			TicketContext ticket = new TicketContext();
-			ticket.setSubject(parser.getSubject());
-			ticket.setDescription(parser.getPlainContent());
+			workOrderRequest.setSubject(parser.getSubject());
+			workOrderRequest.setDescription(parser.getPlainContent());
 			if(supportEmail.getAutoAssignGroup() != null) {
-				ticket.setAssignmentGroup(supportEmail.getAutoAssignGroup());
+				workOrderRequest.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
-			
-			workOrderRequest.setTicket(ticket);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));

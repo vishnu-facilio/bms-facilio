@@ -6,11 +6,14 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class GetWorkOrderRequestCommand implements Command {
 
@@ -22,6 +25,10 @@ public class GetWorkOrderRequestCommand implements Command {
 		if(workOrderRequestId > 0) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
@@ -31,7 +38,7 @@ public class GetWorkOrderRequestCommand implements Command {
 																.moduleName(moduleName)
 																.beanClass(WorkOrderRequestContext.class)
 																.select(fields)
-																.andCustomWhere("ID = ?", workOrderRequestId)
+																.andCustomWhere(module.getTableName()+".ID = ?", workOrderRequestId)
 																.orderBy("ID");
 			
 			List<WorkOrderRequestContext> workOrderRequests = builder.get();
@@ -40,7 +47,7 @@ public class GetWorkOrderRequestCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
 				
-				TicketAPI.loadRelatedModules(workOrderRequest.getTicket(), conn);
+				TicketAPI.loadRelatedModules(workOrderRequest, conn);
 			}
 		}
 		else {

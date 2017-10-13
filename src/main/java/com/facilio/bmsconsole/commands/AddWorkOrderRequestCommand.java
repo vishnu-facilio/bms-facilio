@@ -9,8 +9,10 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 
 public class AddWorkOrderRequestCommand implements Command {
 
@@ -25,9 +27,11 @@ public class AddWorkOrderRequestCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrderRequest.setCreatedTime(System.currentTimeMillis());
 			
-			if(workOrderRequest.getStatus() == -1) {
-				workOrderRequest.setStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+			if(workOrderRequest.getRequestStatus() == -1) {
+				workOrderRequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 			}
+			
+			TicketAPI.updateTicketStatus(workOrderRequest);
 			
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()
 																.moduleName(moduleName)

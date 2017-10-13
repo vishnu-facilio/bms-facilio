@@ -117,6 +117,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 				
 				insertBuilder.save();
 			}
+			currentLevel++;
 		}
 		return (long) moduleProps.get("id");
 	}

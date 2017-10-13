@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -67,7 +66,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	
 	public String approveWorkOrderRequest() throws Exception {
-		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
 		FacilioContext context = new FacilioContext();
 		//set Event
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.APPROVE_WORK_ORDER_REQUEST);
@@ -75,7 +74,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	
 	public String rejectWorkOrderRequest() throws Exception {
-		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
 		FacilioContext context = new FacilioContext();
 		//set Event
 		return updateWorkOrderRequest(context);
@@ -91,7 +90,6 @@ public class WorkOrderRequestAction extends ActionSupport {
 //		System.out.println(id);
 //		System.out.println(workorderrequest);
 		
-		workorderrequest.setTicket(ticket);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
@@ -104,16 +102,8 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String addWorkOrderRequest() throws Exception {
 		
-		if(workorderrequest == null) {
-			workorderrequest = new WorkOrderRequestContext();
-		}
-		if(workorderrequest.getTicket() == null)
-		{
-			workorderrequest.setTicket(ticket);
-		}
-		workorderrequest.setStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TICKET, workorderrequest.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
@@ -130,14 +120,6 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	public void setWorkorderrequest(WorkOrderRequestContext workorderrequest) {
 		this.workorderrequest = workorderrequest;
-	}
-
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
 	}
 	
 	private long workOrderRequestId;

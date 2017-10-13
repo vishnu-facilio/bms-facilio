@@ -9,15 +9,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
-public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
-	}
-	
+public class WorkOrderRequestContext extends TicketContext {
 	private RequesterContext requester;
 	public RequesterContext getRequester() {
 		return requester;
@@ -26,22 +18,22 @@ public class WorkOrderRequestContext extends ModuleBaseWithCustomFields {
 		this.requester = requester;
 	}
 	
-	private RequestStatus status;
-	public int getStatus() {
-		if(status != null) {
-			return status.getIntVal();
+	private RequestStatus requestStatus;
+	public int getRequestStatus() {
+		if(requestStatus != null) {
+			return requestStatus.getIntVal();
 		}
 		return -1;
 	}
-	public void setStatus(int status) {
-		this.status = RequestStatus.statusMap.get(status);
+	public void setRequestStatus(int requestStatus) {
+		this.requestStatus = RequestStatus.statusMap.get(requestStatus);
 	}
-	public void setStatus(RequestStatus status) {
-		this.status = status;
+	public void setRequestStatus(RequestStatus requestStatus) {
+		this.requestStatus = requestStatus;
 	}
-	public String getStatusVal() {
-		if(status != null) {
-			return status.getStringVal();
+	public String getRequestStatusVal() {
+		if(requestStatus != null) {
+			return requestStatus.getStringVal();
 		}
 		return null;
 	}

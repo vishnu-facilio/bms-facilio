@@ -9,12 +9,12 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.RequesterContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
@@ -52,7 +52,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 		
 		List<WorkOrderRequestContext> workOrderRequests = builder.get();
 		loadRequesters(workOrderRequests, conn);
-		loadTickets(workOrderRequests, conn);
+		TicketAPI.loadTicketLookups(workOrderRequests);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
 		
 		return false;
@@ -84,27 +84,6 @@ public class GetWorkOrderRequestListCommand implements Command {
 						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getRequesterId()));
 					}
 				}
-			}
-		}
-	}
-	
-	private void loadTickets(List<WorkOrderRequestContext> workOrderRequests, Connection conn) throws Exception {
-		if(workOrderRequests != null && !workOrderRequests.isEmpty()) {
-			StringBuilder ids = new StringBuilder();
-			boolean isFirst = true;
-			for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
-				if(isFirst) {
-					isFirst = false;
-				}
-				else {
-					ids.append(",");
-				}
-				ids.append(workOrderRequest.getTicket().getId());
-			}
-			
-			Map<Long, TicketContext> tickets = CommonCommandUtil.getTickets(ids.toString(), conn);
-			for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
-				workOrderRequest.setTicket(tickets.get(workOrderRequest.getTicket().getId()));
 			}
 		}
 	}
