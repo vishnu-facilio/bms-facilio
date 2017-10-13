@@ -53,7 +53,7 @@ public class UpdateAlarmCommand implements Command {
 				alarm.setAcknowledgedBy(currentUser);
 			}
 			
-			if(alarm.getStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
+			if(alarm.getAlarmStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
 				alarm.setClearedTime(System.currentTimeMillis());
 			}
 			

@@ -75,16 +75,16 @@ public class AlarmAction extends ActionSupport {
 			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
 			ticket.setDescription("Alarm Testing");
 		}
-		alarm.setStatus(AlarmContext.AlarmStatus.ACTIVE);
+		alarm.setAlarmStatus(AlarmContext.AlarmStatus.ACTIVE);
 		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		alarm.getTicket().setSourceType(TicketContext.SourceType.ALARM);
+		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
 
 		Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
 		
 		BaseSpaceContext space = new BaseSpaceContext();
 		space.setId(spaceId);
-		alarm.getTicket().setSpace(space);
+		alarm.setSpace(space);
 		return alarm;
 	}
 
@@ -94,14 +94,6 @@ public class AlarmAction extends ActionSupport {
 	}
 	public void setAlarm(AlarmContext alarm) {
 		this.alarm = alarm;
-	}
-
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
 	}
 
 	private String moduleName;
@@ -127,10 +119,6 @@ public class AlarmAction extends ActionSupport {
 	private String updateAlarm(FacilioContext context) throws Exception {
 		//		System.out.println(id);
 		//		System.out.println(alarm);
-		if (ticket != null) {
-			alarm.setTicket(ticket);
-		}
-		
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 

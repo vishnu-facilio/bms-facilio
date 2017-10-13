@@ -31,12 +31,13 @@ public class AddAlarmCommand implements Command {
 																.dataTableName(dataTableName)
 																.fields(fields)
 																.connection(conn);
+			
+			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 			long alarmId = builder.insert(alarm);
 			alarm.setId(alarmId);
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
-			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

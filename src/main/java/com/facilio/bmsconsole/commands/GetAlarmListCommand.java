@@ -37,10 +37,10 @@ public class GetAlarmListCommand implements Command {
 														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
-		if(view != null) {
-			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
-		}
+//		if(view != null) {
+//			Criteria criteria = view.getCriteria();
+//			builder.andCriteria(criteria);
+//		}
 		
 		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {
@@ -50,31 +50,10 @@ public class GetAlarmListCommand implements Command {
 		}
 		
 		List<AlarmContext> alarms = builder.get();
-		loadTickets(alarms, conn);
+		TicketAPI.loadTicketLookups(alarms);
 		context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
 		
 		return false;
-	}
-	
-	private void loadTickets(List<AlarmContext> alarms, Connection conn) throws Exception {
-		if(alarms != null && !alarms.isEmpty()) {
-			StringBuilder ids = new StringBuilder();
-			boolean isFirst = true;
-			for(AlarmContext alarm : alarms) {
-				if(isFirst) {
-					isFirst = false;
-				}
-				else {
-					ids.append(",");
-				}
-				ids.append(alarm.getTicket().getId());
-			}
-			
-			Map<Long, TicketContext> tickets = TicketAPI.getTickets(ids.toString(), conn);
-			for(AlarmContext alarm : alarms) {
-				alarm.setTicket(tickets.get(alarm.getTicket().getId()));
-			}
-		}
 	}
 
 }

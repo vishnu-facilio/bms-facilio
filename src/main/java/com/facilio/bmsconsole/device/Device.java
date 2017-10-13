@@ -29,6 +29,13 @@ public class Device extends Assets
 	public void setDeviceId(Long deviceId) {
 		this.deviceId = deviceId;
 	}
+	
+	public long getId() {
+		return deviceId;
+	}
+	public void setId(long id) {
+		this.deviceId = id;
+	}
 
 	public Device setParentId(Long parentId)
 	{

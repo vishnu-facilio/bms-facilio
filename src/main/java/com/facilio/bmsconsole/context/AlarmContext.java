@@ -11,37 +11,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
-public class AlarmContext extends ModuleBaseWithCustomFields {
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
-	}
-	
-	private AlarmStatus status;
-	public int getStatus() {
-		if(status != null) {
-			return status.getIntVal();
+public class AlarmContext extends TicketContext {
+	private AlarmStatus alarmStatus;
+	public int getAlarmStatus() {
+		if(alarmStatus != null) {
+			return alarmStatus.getIntVal();
 		}
 		return -1;
 	}
-	public void setStatus(int status) {
-		this.status = AlarmStatus.statusMap.get(status);
+	public void setAlarmStatus(int alarmStatus) {
+		this.alarmStatus = AlarmStatus.statusMap.get(alarmStatus);
 	}
-	public void setStatus(AlarmStatus status) {
-		this.status = status;
+	public void setAlarmStatus(AlarmStatus alarmStatus) {
+		this.alarmStatus = alarmStatus;
 	}
-	public String getStatusVal() {
-		if(status != null) {
-			return status.getStringVal();
+	public String getAlarmStatusVal() {
+		if(alarmStatus != null) {
+			return alarmStatus.getStringVal();
 		}
 		return null;
 	}

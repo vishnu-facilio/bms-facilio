@@ -315,7 +315,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddAlarmChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(getAddTicketChain());
+//		c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddAlarmCommand());

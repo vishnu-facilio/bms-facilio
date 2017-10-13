@@ -35,7 +35,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if(alarm != null) {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.TICKET, alarm.getTicket());
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);
 			
 			Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
