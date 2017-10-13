@@ -12,6 +12,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> selectFields;
@@ -22,7 +23,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private String having;
 	private String orderBy;
 	private int limit;
-	private Connection conn = null;
 	
 	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
@@ -133,19 +133,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return this;
 	}
 	
-	@Override
+	@Deprecated
 	public GenericSelectRecordBuilder connection(Connection conn) {
-		this.conn = conn;
 		return this;
 	}
 	
 	private void checkForNull(boolean checkBean) {
 		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Table Name cannot be empty");
-		}
-		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
 		}
 		
 		if(selectFields == null || selectFields.size() <= 0) {
@@ -158,7 +153,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		checkForNull(false);
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			
 			String sql = constructSelectStatement();
 			pstmt = conn.prepareStatement(sql);
@@ -256,7 +251,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return sql.toString();
 	}
 	
-	public static class GenericJoinBuilder implements JoinBuilderIfc<Map<String, Object>> {
+	public static class GenericJoinBuilder implements SelectJoinBuilderIfc<Map<String, Object>> {
 
 		private GenericSelectRecordBuilder parentBuilder;
 		private GenericJoinBuilder(GenericSelectRecordBuilder parentBuilder) {

@@ -37,10 +37,10 @@ public class GetWorkOrderListCommand implements Command {
 														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
-		if(view != null) {
-			Criteria criteria = view.getCriteria();
-			selectBuilder.andCriteria(criteria);
-		}
+//		if(view != null) {
+//			Criteria criteria = view.getCriteria();
+//			selectBuilder.andCriteria(criteria);
+//		}
 		
 		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {
@@ -50,31 +50,9 @@ public class GetWorkOrderListCommand implements Command {
 		}
 		
 		List<WorkOrderContext> workOrders = selectBuilder.get();
-		loadTickets(workOrders, conn);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		
 		return false;
-	}
-	
-	private void loadTickets(List<WorkOrderContext> workOrders, Connection conn) throws Exception {
-		if(workOrders != null && !workOrders.isEmpty()) {
-			StringBuilder ids = new StringBuilder();
-			boolean isFirst = true;
-			for(WorkOrderContext workOrder : workOrders) {
-				if(isFirst) {
-					isFirst = false;
-				}
-				else {
-					ids.append(",");
-				}
-				ids.append(workOrder.getTicket().getId());
-			}
-			
-			Map<Long, TicketContext> tickets = CommonCommandUtil.getTickets(ids.toString(), conn);
-			for(WorkOrderContext workOrder : workOrders) {
-				workOrder.setTicket(tickets.get(workOrder.getTicket().getId()));
-			}
-		}
 	}
 	
 }

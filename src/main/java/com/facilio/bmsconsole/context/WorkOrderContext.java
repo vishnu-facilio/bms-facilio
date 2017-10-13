@@ -6,15 +6,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
-public class WorkOrderContext extends ModuleBaseWithCustomFields {
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
-	}
-	
+public class WorkOrderContext extends TicketContext {
 	private RequesterContext requester;
 	public RequesterContext getRequester() {
 		return requester;

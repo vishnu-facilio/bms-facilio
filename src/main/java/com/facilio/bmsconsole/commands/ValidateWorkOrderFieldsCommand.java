@@ -7,33 +7,34 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ValidateFieldsCommand implements Command {
+public class ValidateWorkOrderFieldsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		TicketContext ticketContext = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
-		if (ticketContext != null) {
+		WorkOrderContext woContext = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		if (woContext != null) {
 
-			if(ticketContext.getSubject() == null || ticketContext.getSubject().isEmpty()) {
-				throw new IllegalArgumentException("Subejct is invalid");
+			if(woContext.getSubject() == null || woContext.getSubject().isEmpty()) {
+				throw new IllegalArgumentException("Subject is invalid");
 			}
 			else {
-				ticketContext.setSubject(ticketContext.getSubject().trim());
+				woContext.setSubject(woContext.getSubject().trim());
 			}
 
-			if(ticketContext.getDescription() == null || ticketContext.getDescription().isEmpty()) {
+			if(woContext.getDescription() == null || woContext.getDescription().isEmpty()) {
 				throw new IllegalArgumentException("Description is invalid");
 			}
 			else {
-				ticketContext.setDescription(ticketContext.getDescription().trim());
+				woContext.setDescription(woContext.getDescription().trim());
 			}
 
-			if(ticketContext.getDueDate() == 0) {
+			if(woContext.getDueDate() == 0) {
 				Calendar cal = Calendar.getInstance();
-				ticketContext.setDueDate((cal.getTimeInMillis())+TicketContext.DEFAULT_DURATION);
+				woContext.setDueDate((cal.getTimeInMillis())+TicketContext.DEFAULT_DURATION);
 			}
 		}
 		else if (context instanceof UserContext) {

@@ -19,11 +19,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if(workorder != null) {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
+//			context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			
-			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderWithTicketChain();
+			Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
 			return workorder.getId();
 		}

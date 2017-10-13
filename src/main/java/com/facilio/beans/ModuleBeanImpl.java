@@ -78,12 +78,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			rs = pstmt.executeQuery();
 			
-			if (rs.next()) {
-				return getModuleFromRS(rs);
-			}
-			else {
-				return null;
-			}
+			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
@@ -108,12 +103,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			rs = pstmt.executeQuery();
 			
-			if (rs.next()) {
-				return getModuleFromRS(rs);
-			}
-			else {
-				return null;
-			}
+			return getModuleFromRS(rs);
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
@@ -443,27 +433,25 @@ public class ModuleBeanImpl implements ModuleBean {
 		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID="+OrgInfo.getCurrentOrgInfo().getOrgid()+" group by STATE_ID ";
 
 		System.out.println(nextstatequery);
-		java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
-		Statement stmt = con.createStatement();
-		ResultSet rs = stmt.executeQuery(nextstatequery);
-		
-		JSONObject stateflow =new JSONObject();
-		while (rs.next())
-		{
-			String oldstate = rs.getString(1);
-			String nextstates = rs.getString(2);
-			System.out.println("["+ nextstates +"]");
-			JSONArray nextstats =(JSONArray) new JSONParser().parse("["+ nextstates +"]");
-		
-			//System.out.println("For  "+oldstate+"\n"+stateflow);
-
-			stateflow.put(oldstate, nextstats);
+		try(java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(nextstatequery);) {
+			
+			JSONObject stateflow =new JSONObject();
+			while (rs.next())
+			{
+				String oldstate = rs.getString(1);
+				String nextstates = rs.getString(2);
+				System.out.println("["+ nextstates +"]");
+				JSONArray nextstats =(JSONArray) new JSONParser().parse("["+ nextstates +"]");
+			
+				//System.out.println("For  "+oldstate+"\n"+stateflow);
+	
+				stateflow.put(oldstate, nextstats);
+			}
+			//System.out.println("The stateflow for ticket "+stateflow);
+			return stateflow;
 		}
-		//System.out.println("The stateflow for ticket "+stateflow);
-		
-		
-		return stateflow;
-
 		
 	}
 }

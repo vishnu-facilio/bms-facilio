@@ -1,6 +1,5 @@
 package com.facilio.sql;
 
-import java.sql.Connection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -11,13 +10,13 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	
 	public SelectBuilderIfc<E> table(String tableName);
 	
-	public JoinBuilderIfc<E> innerJoin(String tableName);
+	public SelectJoinBuilderIfc<E> innerJoin(String tableName);
 	
-	public JoinBuilderIfc<E> leftJoin(String tableName);
+	public SelectJoinBuilderIfc<E> leftJoin(String tableName);
 	
-	public JoinBuilderIfc<E> rightJoin(String tableName);
+	public SelectJoinBuilderIfc<E> rightJoin(String tableName);
 	
-	public JoinBuilderIfc<E> fullJoin(String tableName);
+	public SelectJoinBuilderIfc<E> fullJoin(String tableName);
 	
 	public SelectBuilderIfc<E> groupBy(String groupBy);
 	
@@ -27,8 +26,6 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	
 	public SelectBuilderIfc<E> limit(int limit);
 	
-	public SelectBuilderIfc<E> connection(Connection conn);
-
 	List<E> get() throws Exception;
 	
 }

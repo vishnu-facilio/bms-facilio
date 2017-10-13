@@ -33,7 +33,7 @@ public class AddWorkOrderCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			
-			updateTicketStatus(workOrder.getTicket(), conn);
+			updateTicketStatus(workOrder, conn);
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
@@ -52,26 +52,18 @@ public class AddWorkOrderCommand implements Command {
 		return false;
 	}
 
-	private void updateTicketStatus(TicketContext ticket, Connection conn) throws Exception {
-		TicketStatusContext status = ticket.getStatus();
+	private void updateTicketStatus(WorkOrderContext workOrder, Connection conn) throws Exception {
+		TicketStatusContext status = workOrder.getStatus();
 		
-		if(status.getStatus() == null) {
+		if(status != null) {
 			status = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), status.getId());
 		}
+		else {
+			workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
+		}
 		
-		if(ticket.getAssignedTo() != null && (status == null || !status.getStatus().equals("Assigned"))) {
-			TicketContext updatedTicket = new TicketContext();
-			updatedTicket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(((ModuleBean) BeanFactory.lookup("ModuleBean")).getField("status", FacilioConstants.ContextNames.TICKET));
-			
-			UpdateRecordBuilder<TicketContext> builder = new UpdateRecordBuilder<TicketContext>()
-					.moduleName(FacilioConstants.ContextNames.TICKET)
-					.table("Tickets")
-					.connection(conn)
-					.fields(fields)
-					.andCustomWhere("ID = ?", ticket.getId());
-			builder.update(updatedTicket);
+		if(workOrder.getAssignedTo() != null && (status == null || !status.getStatus().equals("Assigned"))) {
+			workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
 		}
 	}
 }

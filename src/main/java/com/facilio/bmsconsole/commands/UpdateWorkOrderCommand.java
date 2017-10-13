@@ -58,7 +58,7 @@ public class UpdateWorkOrderCommand implements Command {
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
 						.select(fields)
-						.andCustomWhere("ID = ?", recordIds.get(0))
+						.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0))
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();

@@ -28,8 +28,8 @@ public class AddTicketActivityCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		TicketContext ticket = workOrder.getTicket();
+		TicketContext ticket = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		//TicketContext ticket = workOrder.getTicket();
 		if(ticket != null) 
 		{
 			Long ticketId = ticket.getId();
@@ -48,7 +48,7 @@ public class AddTicketActivityCommand implements Command {
 						.orderBy("ID");
 
 				List<WorkOrderContext> workorders = builder.get();
-				ticketId = workorders.get(0).getTicket().getId();
+				ticketId = workorders.get(0).getId();
 			}
 			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			
@@ -59,7 +59,7 @@ public class AddTicketActivityCommand implements Command {
 			map.put("activityType", activityType.getValue());
 			
 			JSONObject fieldJson = new JSONObject();
-			Map<String, Object> moduleProps = FieldUtil.<TicketContext>getAsProperties(ticket);
+			Map<String, Object> moduleProps = FieldUtil.getAsProperties(ticket);
 			Iterator<String> props = moduleProps.keySet().iterator();
 			while(props.hasNext())
 			{

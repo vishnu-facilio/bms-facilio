@@ -13,7 +13,9 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.UpdateBuilderIfc;
+import com.facilio.sql.UpdateJoinBuilderIfc;
 import com.facilio.sql.WhereBuilder;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
@@ -22,7 +24,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private String moduleName;
 	private long moduleId = -1;
 	private String tableName;
-	private Connection conn;
 	private List<FacilioField> fields = new ArrayList<>();
 	private WhereBuilder where = new WhereBuilder();
 	
@@ -42,10 +43,30 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
+	@Deprecated
 	public UpdateRecordBuilder<E> connection(Connection conn) {
-		this.conn = conn;
 		builder.connection(conn);
 		return this;
+	}
+
+	@Override
+	public JoinRecordBuilder<E> innerJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.innerJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> leftJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.leftJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> rightJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.rightJoin(tableName));
+	}
+	
+	@Override
+	public JoinRecordBuilder<E> fullJoin(String tableName) {
+		return new JoinRecordBuilder<E>(this, builder.fullJoin(tableName));
 	}
 
 	@Override
@@ -149,6 +170,15 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			fields.add(FieldFactory.getIdField(module));
 			builder.fields(fields);
 			
+			FacilioModule prevModule = module;
+			FacilioModule extendedModule = module.getExtendModule();
+			while(extendedModule != null) {
+				builder.innerJoin(extendedModule.getTableName())
+						.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+				prevModule = extendedModule;
+				extendedModule = extendedModule.getExtendModule();
+			}
+			
 			builder.andCustomWhere(where.getWhereClause(), where.getValues());
 			
 			return builder.update(moduleProps);
@@ -174,7 +204,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 							List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
 							
 							UpdateRecordBuilder<ModuleBaseWithCustomFields> lookupUpdateBuilder = new UpdateRecordBuilder<>()
-																									.connection(conn)
 																									.moduleName(lookupField.getLookupModule().getName())
 																									.table(lookupField.getLookupModule().getTableName())
 																									.fields(lookupBeanFields)
@@ -211,12 +240,27 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			throw new IllegalArgumentException("Data Table Name cannot be empty");
 		}
 		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
-		}
-		
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
+	}
+	
+	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateJoinBuilderIfc<E> {
+		private UpdateRecordBuilder<E> parentBuilder;
+		private GenericJoinBuilder joinBuilder;
+		
+		private JoinRecordBuilder(UpdateRecordBuilder<E> parentBuilder, GenericJoinBuilder joinBuilder) {
+			this.parentBuilder = parentBuilder;
+			this.joinBuilder = joinBuilder;
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public UpdateRecordBuilder<E> on(String condition) {
+			// TODO Auto-generated method stub
+			joinBuilder.on(condition);
+			return parentBuilder;
+		}
+		
 	}
 }

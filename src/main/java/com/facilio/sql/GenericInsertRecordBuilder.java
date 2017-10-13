@@ -11,12 +11,12 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> fields;
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
-	private Connection conn = null;
 	
 	@Override
 	public GenericInsertRecordBuilder table(String tableName) {
@@ -42,9 +42,8 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		return this;
 	}
 
-	@Override
+	@Deprecated
 	public GenericInsertRecordBuilder connection(Connection conn) {
-		this.conn = conn;
 		return this;
 	}
 
@@ -60,7 +59,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		try {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			String sql = constructInsertStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
@@ -134,10 +133,6 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Table Name cannot be empty");
-		}
-		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
 		}
 		
 		if(fields == null || fields.size() < 1) {

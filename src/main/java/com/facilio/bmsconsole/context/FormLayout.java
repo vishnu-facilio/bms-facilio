@@ -61,7 +61,7 @@ public class FormLayout {
 		sendForApproval.setDisplayName("Send For Approval");
 		sendForApproval.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
 		sendForApproval.setDataType(com.facilio.bmsconsole.modules.FieldType.BOOLEAN);
-		sendForApproval.setModule(ModuleFactory.getTicketsModule());
+		sendForApproval.setModule(ModuleFactory.getWorkOrdersModule());
 		sendForApproval.setDefault(true);
 		first.addField(sendForApproval);
 		

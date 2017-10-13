@@ -83,13 +83,13 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
+//		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE_WORKORDER);
 		
-		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderWithTicketChain();
+		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
 		setWorkOrderId(workorder.getId());
 		return SUCCESS;
@@ -153,9 +153,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		
 		workorder = new WorkOrderContext();
-		ticket = new TicketContext();
-		ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed")); //We shouldn't allow close to be edited
-		workorder.setTicket(ticket);
+		workorder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed")); //We shouldn't allow close to be edited
 		
 		return updateWorkOrder(context);
 	}
@@ -167,19 +165,18 @@ public class WorkOrderAction extends ActionSupport {
 	
 	private String updateWorkOrder(FacilioContext context) throws Exception {
 		
-		workorder.setTicket(ticket);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		// updating start time, end time when workorder status changes
-		if (workorder.getTicket().getStatus() != null) {
+		if (workorder.getStatus() != null) {
 			
-			TicketStatusContext statusObj = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), workorder.getTicket().getStatus().getId());
+			TicketStatusContext statusObj = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), workorder.getStatus().getId());
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
-				workorder.getTicket().setActualWorkStart(System.currentTimeMillis());
+				workorder.setActualWorkStart(System.currentTimeMillis());
 			}
 			else if ("Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-				workorder.getTicket().setActualWorkEnd(System.currentTimeMillis());
+				workorder.setActualWorkEnd(System.currentTimeMillis());
 			} 
 		}
 		if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null)
@@ -205,14 +202,6 @@ public class WorkOrderAction extends ActionSupport {
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		return SUCCESS;
-	}
-	
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
 	}
 	
 	private WorkOrderContext workorder;

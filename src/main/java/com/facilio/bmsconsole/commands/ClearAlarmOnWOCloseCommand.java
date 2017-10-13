@@ -24,7 +24,7 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(EventType.CLOSE_WORK_ORDER == eventType && workOrder != null) {
-			if(workOrder.getTicket().getSourceType() == TicketContext.SourceType.ALARM.getIntVal()) {
+			if(workOrder.getSourceType() == TicketContext.SourceType.ALARM.getIntVal()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				SelectRecordsBuilder<AlarmContext> alarmBuilder = new SelectRecordsBuilder<AlarmContext>()
 																	.connection(((FacilioContext) context).getConnectionWithTransaction())
@@ -32,7 +32,7 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 																	.table("Alarms")
 																	.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
 																	.beanClass(AlarmContext.class)
-																	.andCustomWhere("TICKET_ID = ?", workOrder.getTicket().getId());
+																	.andCustomWhere("TICKET_ID = ?", workOrder.getId());
 				
 				List<AlarmContext> alarms = alarmBuilder.get();
 				if(alarms != null && !alarms.isEmpty()) {

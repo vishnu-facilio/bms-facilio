@@ -18,8 +18,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
-import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
+import com.facilio.sql.SelectJoinBuilderIfc;
 import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
@@ -30,7 +30,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private List<FacilioField> selectFields;
-	private Connection conn;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
@@ -147,9 +146,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	@Override
+	@Deprecated
 	public SelectRecordsBuilder<E> connection(Connection conn) {
-		this.conn = conn;
 		builder.connection(conn);
 		return this;
 	}
@@ -292,6 +290,15 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 		
+		FacilioModule prevModule = module;
+		FacilioModule extendedModule = module.getExtendModule();
+		while(extendedModule != null) {
+			builder.innerJoin(extendedModule.getTableName())
+					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+			prevModule = extendedModule;
+			extendedModule = extendedModule.getExtendModule();
+		}
+		
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		return builder.get();
 	}
@@ -333,10 +340,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
-		}
-		
 		if(selectFields == null || selectFields.size() <= 0) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
@@ -355,7 +358,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this.moduleId;
 	}
 	
-	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<E> {
+	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements SelectJoinBuilderIfc<E> {
 		private SelectRecordsBuilder<E> parentBuilder;
 		private GenericJoinBuilder joinBuilder;
 		

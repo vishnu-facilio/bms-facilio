@@ -1,6 +1,5 @@
 package com.facilio.sql;
 
-import java.sql.Connection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -12,5 +11,11 @@ public interface UpdateBuilderIfc<E> extends WhereBuilderIfc<UpdateBuilderIfc<E>
 	
 	public int update(E value) throws Exception;
 	
-	public UpdateBuilderIfc<E> connection(Connection conn);
+	public UpdateJoinBuilderIfc<E> innerJoin(String tableName);
+	
+	public UpdateJoinBuilderIfc<E> leftJoin(String tableName);
+	
+	public UpdateJoinBuilderIfc<E> rightJoin(String tableName);
+	
+	public UpdateJoinBuilderIfc<E> fullJoin(String tableName);
 }

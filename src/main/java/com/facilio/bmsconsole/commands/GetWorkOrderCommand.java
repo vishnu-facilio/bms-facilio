@@ -41,7 +41,7 @@ public class GetWorkOrderCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
-				TicketAPI.loadRelatedModules(workOrder.getTicket(), conn);
+				TicketAPI.loadRelatedModules(workOrder, conn);
 			}
 		}
 		else {

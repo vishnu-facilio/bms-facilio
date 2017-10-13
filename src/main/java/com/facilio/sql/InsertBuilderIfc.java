@@ -1,6 +1,5 @@
 package com.facilio.sql;
 
-import java.sql.Connection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -17,6 +16,4 @@ public interface InsertBuilderIfc<E> {
 	
 	public void save() throws Exception;
 	
-	public InsertBuilderIfc<E> connection(Connection conn);
-
 }

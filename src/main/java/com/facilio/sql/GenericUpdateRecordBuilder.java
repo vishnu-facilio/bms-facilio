@@ -12,14 +12,15 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
 	private List<FacilioField> fields;
 	private Map<String, FacilioField> fieldMap;
 	private String tableName;
 	private Map<String, Object> value;
+	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
-	private Connection conn = null;
 	
 	public GenericUpdateRecordBuilder table(String tableName) {
 		this.tableName = tableName;
@@ -31,9 +32,41 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		return this;
 	}
 	
+	@Deprecated
 	public GenericUpdateRecordBuilder connection(Connection conn) {
-		this.conn = conn;
 		return this;
+	}
+	
+	@Override
+	public GenericJoinBuilder innerJoin(String tableName) {
+		joinBuilder.append(" INNER JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder leftJoin(String tableName) {
+		joinBuilder.append(" LEFT JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder rightJoin(String tableName) {
+		joinBuilder.append(" RIGHT JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
+	}
+	
+	@Override
+	public GenericJoinBuilder fullJoin(String tableName) {
+		joinBuilder.append(" FULL JOIN ")
+					.append(tableName)
+					.append(" ");
+		return new GenericJoinBuilder(this);
 	}
 	
 	public GenericUpdateRecordBuilder andCustomWhere(String whereCondition, Object... values) {
@@ -83,7 +116,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if(value != null && value.size() > 0) {
 			PreparedStatement pstmt = null;
 			
-			try {
+			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
 				if(sql != null && !sql.isEmpty()) {
@@ -131,6 +164,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private String constructUpdateStatement() {
 		StringBuilder sql = new StringBuilder("UPDATE ");
 		sql.append(tableName)
+			.append(joinBuilder.toString())
 			.append(" SET ");
 		boolean isFirst = true;
 		for(String propKey : value.keySet()) {
@@ -178,12 +212,27 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			throw new IllegalArgumentException("Table Name cannot be empty");
 		}
 		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
-		}
-		
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
+		}
+		
+	}
+	
+	public static class GenericJoinBuilder implements UpdateJoinBuilderIfc<Map<String, Object>> {
+
+		private GenericUpdateRecordBuilder parentBuilder;
+		private GenericJoinBuilder(GenericUpdateRecordBuilder parentBuilder) {
+			// TODO Auto-generated constructor stub
+			this.parentBuilder = parentBuilder;
+		}
+		
+		@Override
+		public GenericUpdateRecordBuilder on(String condition) {
+			// TODO Auto-generated method stub
+			parentBuilder.joinBuilder.append("ON ")
+										.append(condition)
+										.append(" ");
+			return parentBuilder;
 		}
 		
 	}

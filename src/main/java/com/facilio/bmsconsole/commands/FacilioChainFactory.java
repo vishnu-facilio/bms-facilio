@@ -42,7 +42,7 @@ public class FacilioChainFactory {
 	
 	private static Chain getAddTicketChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(SetTableNamesCommand.getForTicket());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTicketCommand());
@@ -130,7 +130,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddUserCommand() {
 		Chain c = new ChainBase();
-		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new AddUserCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -152,7 +152,7 @@ public class FacilioChainFactory {
 	
 	public static Command getAddGroupCommand() {
 		Chain c = new ChainBase();
-		c.addCommand(new ValidateFieldsCommand());
+		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new AddGroupCommand());
 		c.addCommand(new AddGroupMembersCommand());
 		addCleanUpCommand(c);
@@ -200,19 +200,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddWorkOrderWithTicketChain() {
-		Chain c = new TransactionChain();
-		c.addCommand(getAddTicketChain());
-        c.addCommand(getAddWorkOrderChain());
-        //c.addCommand(new AddTicketActivityCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
+//	public static Chain getAddWorkOrderWithTicketChain() {
+//		Chain c = new TransactionChain();
+//		c.addCommand(getAddTicketChain());
+//        c.addCommand(getAddWorkOrderChain());
+//        //c.addCommand(new AddTicketActivityCommand());
+//		addCleanUpCommand(c);
+//		return c;
+//	}
 	
 	public static Chain getAddWorkOrderChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new AddRequesterCommand());
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());

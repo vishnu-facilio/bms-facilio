@@ -224,10 +224,11 @@ public class ModuleFactory {
 	}
 	
 	public static FacilioModule getAlarmsModule() {
-		FacilioModule requesterModule = new FacilioModule();
-		requesterModule.setName(FacilioConstants.ContextNames.ALARM);
-		requesterModule.setDisplayName("Alarms");
-		requesterModule.setTableName("Alarms");
-		return requesterModule;
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName(FacilioConstants.ContextNames.ALARM);
+		alarmModule.setDisplayName("Alarms");
+		alarmModule.setTableName("Alarms");
+		alarmModule.setExtendModule(getTicketsModule());
+		return alarmModule;
 	}
 }
