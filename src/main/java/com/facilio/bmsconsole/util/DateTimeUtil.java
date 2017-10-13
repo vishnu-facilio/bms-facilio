@@ -107,7 +107,7 @@ public class DateTimeUtil
 			//for getting current time
 			return getDateTime(zoneId);	
 		}
-		if(seconds!=null && seconds[0]==true){
+		if(seconds!=null && seconds.length>0 && seconds[0]==true){
 			return ZonedDateTime.ofInstant(Instant.ofEpochSecond(time), zoneId);
 		}
 		return ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), zoneId);
@@ -130,7 +130,7 @@ public class DateTimeUtil
 	
 	public static long getCurrenTime(ZoneId zoneId,Boolean... seconds)
 	{   
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.now(zoneId));
 		}
 	    return getMillis(ZonedDateTime.now(zoneId),false);	
@@ -143,7 +143,7 @@ public class DateTimeUtil
 	
 	public static long getDayStartTime(ZoneId zoneId,int interval,Boolean... seconds )
 	{
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(getMidnight(zoneId).plusDays(interval));
 		}
 		return getMillis(getMidnight(zoneId).plusDays(interval),true);
@@ -155,7 +155,7 @@ public class DateTimeUtil
 	}
 	public static long getDayStartTime(ZoneId zoneId, Boolean... seconds)
 	{
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(getMidnight(zoneId));
 		}
 		return getMillis(getMidnight(zoneId),true);
@@ -170,7 +170,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator
 		//for the previous month
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getMonthFirst(zoneId),LocalTime.MIDNIGHT,zoneId));
 		}
 		return getMillis(ZonedDateTime.of(getMonthFirst(zoneId),LocalTime.MIDNIGHT,zoneId),true);
@@ -185,7 +185,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 		//for a particular month by required interval -1.
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getMonthFirst(zoneId),LocalTime.MIDNIGHT,zoneId).
 					plusMonths(interval));
 		}
@@ -207,7 +207,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 		//for the previous week
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getWeekFirst(zoneId,locale),LocalTime.MIDNIGHT,zoneId))	;
 		}
 		return getMillis(ZonedDateTime.of(getWeekFirst(zoneId,locale),LocalTime.MIDNIGHT,zoneId),true)	;
@@ -226,7 +226,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 		//for a particular week by sending required interval -1..
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getWeekFirst(zoneId,locale),LocalTime.MIDNIGHT,zoneId).
 					plusWeeks(interval));
 		}
@@ -243,7 +243,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator
 		//for the previous year
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getYearFirst(zoneId),LocalTime.MIDNIGHT,zoneId));
 		}
 		return getMillis(ZonedDateTime.of(getYearFirst(zoneId),LocalTime.MIDNIGHT,zoneId),true);
@@ -258,7 +258,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 		//for a particular year by required interval -1.
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(ZonedDateTime.of(getYearFirst(zoneId),LocalTime.MIDNIGHT,zoneId).
 					plusYears(interval)); 	
 		}
@@ -275,7 +275,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator
 		//for the previous hour.
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(getHourFirst(zoneId));
 		}
 		return getMillis(getHourFirst(zoneId),true);	
@@ -290,7 +290,7 @@ public class DateTimeUtil
 	{
 		//this can also be used as the end range with less than operator 
 				//for a particular hour by required interval -1.
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(getHourFirst(zoneId).plusHours(interval));
 		}
 		return getMillis(getHourFirst(zoneId).plusHours(interval),true);
@@ -304,7 +304,7 @@ public class DateTimeUtil
 	public static long getStartTime(ZoneId zoneId,int day, int month, int year,Boolean... seconds)
 	{ 
 		ZonedDateTime zdt=ZonedDateTime.of(year, month, day, 0, 0, 0, 0, zoneId);
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(zdt);
 		}
 		return getMillis(zdt,true);
@@ -318,7 +318,7 @@ public class DateTimeUtil
 	public static long getEndTime(ZoneId zoneId, int day, int month, int year,Boolean... seconds)
 	{ 
 		ZonedDateTime zdt=ZonedDateTime.of(year, month, day, 23, 59, 59, 0, zoneId);
-		if(seconds!=null && seconds[0]==true) {
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
 			return getSeconds(zdt);
 		}
 		return getMillis(zdt,false);
