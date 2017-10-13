@@ -10,11 +10,13 @@ public class LeedConfigurationContext extends BuildingContext {
 
 	private long leedId;
 	private String buildingStatus;
+	private long leedScore;
 	private long energyScore;
 	private long waterScore;
 	private long wasteScore;
 	private long humanExperienceScore;
 	private long transportScore;	
+	
 	
 	public long getLeedId() 
 	{
@@ -30,6 +32,13 @@ public class LeedConfigurationContext extends BuildingContext {
 	}
 	public void setBuildingStatus(String buildingStatus) {
 		this.buildingStatus = buildingStatus;
+	}
+	
+	public long getLeedScore() {
+		return leedScore;
+	}
+	public void setLeedScore(long leedScore) {
+		this.leedScore = leedScore;
 	}
 	
 	public long getEnergyScore() {

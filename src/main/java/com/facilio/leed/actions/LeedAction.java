@@ -66,7 +66,7 @@ public class LeedAction extends ActionSupport {
 	
 	public ViewLayout getViewlayout()
 	{
-		return ViewLayout.getViewLocationLayout();
+		return ViewLayout.getViewLeedListLayout();
 	}
 
 	private long buildingId;

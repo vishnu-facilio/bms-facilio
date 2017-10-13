@@ -41,6 +41,12 @@ public class LeedAPI {
 				context.setName(rs.getString("NAME"));
 				context.setLeedId(rs.getLong("LEEDID"));
 				context.setBuildingStatus(rs.getString("BUILDINGSTATUS"));
+				Long leedScore = rs.getLong("LEEDSCORE");
+				if(leedScore == null)
+				{
+					leedScore = 0L;
+				}
+				context.setLeedScore(leedScore);
 				Long energyScore = rs.getLong("ENERGYSCORE");
 				if(energyScore == null)
 				{

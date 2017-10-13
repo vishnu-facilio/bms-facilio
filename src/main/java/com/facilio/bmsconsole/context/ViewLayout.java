@@ -115,13 +115,14 @@ public class ViewLayout {
 		return viewLayout;
 	}
 	
-	public static ViewLayout getViewLocationLayout()
+	public static ViewLayout getViewLeedListLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
 		viewLayout.addColumn(new ViewColumn("Name", "name", ViewColumn.ColumnType.TEXT));
 		viewLayout.addColumn(new ViewColumn("LeedID", "leedId", ViewColumn.ColumnType.NUMBER));
 		viewLayout.addColumn(new ViewColumn("Building Status", "buildingStatus", ViewColumn.ColumnType.TEXT));
+		viewLayout.addColumn(new ViewColumn("Leed Score", "leedScore", ViewColumn.ColumnType.NUMBER));
 		viewLayout.addColumn(new ViewColumn("Energy Score", "energyScore", ViewColumn.ColumnType.NUMBER));
 		viewLayout.addColumn(new ViewColumn("Water Score", "waterScore", ViewColumn.ColumnType.NUMBER));
 		viewLayout.addColumn(new ViewColumn("Waste Score", "wasteScore", ViewColumn.ColumnType.NUMBER));
@@ -131,7 +132,7 @@ public class ViewLayout {
 		return viewLayout;
 	}
 	
-	public static ViewLayout getViewLeedListLayout()
+	public static ViewLayout getViewLocationLayout()
 	{
 		ViewLayout viewLayout = new ViewLayout();
 		viewLayout.setPkColumnId("id");
