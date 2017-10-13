@@ -119,11 +119,17 @@ public class FieldUtil {
 		return properties;
 	}
 	
-	public static <E> E getAsBean(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
-	{
+	private static ObjectMapper getMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);
 		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		
+		return mapper;
+	}
+	
+	public static <E> E getAsBean(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
+	{
+		ObjectMapper mapper = getMapper();
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
@@ -133,16 +139,14 @@ public class FieldUtil {
 		Map<String, Object> properties = null;
 		if(bean != null) 
 		{
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+			ObjectMapper mapper = getMapper();
 			properties = mapper.convertValue(bean, Map.class);
 			
-			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-			if(customProps != null)
-			{
-				properties.putAll(customProps);
-			}
+//			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
+//			if(customProps != null)
+//			{
+//				properties.putAll(customProps);
+//			}
 		}
 		return properties;
 	}

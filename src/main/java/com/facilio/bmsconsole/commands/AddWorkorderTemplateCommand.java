@@ -23,7 +23,7 @@ public class AddWorkorderTemplateCommand implements Command {
 		JSONObject content = FieldUtil.getPropertiesAsJson(workorder);
 		workorderTemplate.setContent(content.toString());
 		
-		workorderTemplate.setName(workorder.getTicket().getSubject());
+		workorderTemplate.setName(workorder.getSubject());
 		workorderTemplate.setType(UserTemplate.Type.WORKORDER);
 
 		long templateId = TemplateAPI.addWorkorderTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), workorderTemplate);

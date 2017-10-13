@@ -72,9 +72,9 @@ public enum DefaultTemplates implements ActionTemplate {
 		switch(templateVal) {
 			case 1:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
-				json.put("to", "${workorder.ticket.assignedTo.email:-}");
+				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New Workorder Assigned");
-				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.ticket.subject}\nDescription : \n${workorder.ticket.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 2:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -83,7 +83,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
 				break;
 			case 3:
-				json.put("to", "${workorder.ticket.assignedTo.phone:-}");
+				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
 				break;
 			case 4:
@@ -98,13 +98,13 @@ public enum DefaultTemplates implements ActionTemplate {
 				emails.add("${org.superAdmin.email:-}");
 				json.put("to", emails);
 				json.put("subject", "New Alarm raised");
-				json.put("message", "${alarm.ticket.description}\n\nPlease follow ${alarm.url} to view the alarm and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio");
+				json.put("message", "${alarm.description}\n\nPlease follow ${alarm.url} to view the alarm and acknowledge it as soon as possible.\n\nRegards,\nTeam Facilio");
 				break;
 			case 6:
 				JSONArray smsList = new JSONArray();
 				smsList.add("${org.superAdmin.phone:-}");
 				json.put("to", smsList);
-				json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.ticket.subject} @ ${alarm.ticket.space.name}");
+				json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.subject} @ ${alarm.space.name}");
 				break;
 				
 		}

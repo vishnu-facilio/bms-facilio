@@ -39,6 +39,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER, getWorkOrdersModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWorkOrderRequestsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
+		moduleMap.put("workordertemplate", getWorkorderTemplateModule());
+		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
 		return moduleMap;
 	}
 			
@@ -229,6 +231,22 @@ public class ModuleFactory {
 		alarmModule.setDisplayName("Alarms");
 		alarmModule.setTableName("Alarms");
 		alarmModule.setExtendModule(getTicketsModule());
+		return alarmModule;
+	}
+	
+	public static FacilioModule getWorkorderTemplateModule() {
+		FacilioModule workorderTemplateModule = new FacilioModule();
+		workorderTemplateModule.setName("workordertemplate");
+		workorderTemplateModule.setDisplayName("Workorder Template");
+		workorderTemplateModule.setTableName("Workorder_Template");
+		return workorderTemplateModule;
+	}
+	
+	public static FacilioModule getPreventiveMaintenancetModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName("preventivemaintenance");
+		alarmModule.setDisplayName("Preventive Maintenance");
+		alarmModule.setTableName("Preventive_Maintenance");
 		return alarmModule;
 	}
 }

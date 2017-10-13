@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.modules;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.opensymphony.xwork2.util.Element;
 
 public class ModuleBaseWithCustomFields {
@@ -33,15 +35,20 @@ public class ModuleBaseWithCustomFields {
 	
 	@Element( value = java.lang.String.class )
 	private Map<String, Object> customProps = new HashMap<>();
+	
+	@JsonAnyGetter
 	public Map<String, Object> getCustomProps() {
 		return customProps;
 	}
 	public void setCustomProps(Map<String, Object> customProps) {
 		this.customProps = customProps;
 	}
+	
+	@JsonAnySetter
 	public void setCustomProp(String key, Object value) {
 		customProps.put(key, value);
 	}
+	
 	public Object getCustomProp(String key) {
 		return customProps.get(key);
 	}
