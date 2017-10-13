@@ -529,6 +529,96 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getWorkorderTemplateFields() {
+		String tableName = "Workorder_Template";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(tableName));
+		
+		FacilioField content = new FacilioField();
+		content.setName("contentId");
+		content.setDataType(FieldType.STRING);
+		content.setColumnName("CONTENT_ID");
+		content.setModuleTableName(tableName);
+		fields.add(content);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getPreventiveMaintenanceFields() {
+		String tableName = "Preventive_Maintenance";
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("preventiveMaintenanceId");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("PREVENTIVE_MAINTENANCE_ID");
+		id.setModuleTableName(tableName);
+		fields.add(id);
+		
+		fields.add(getOrgIdField(tableName));
+		
+		FacilioField title = new FacilioField();
+		title.setName("title");
+		title.setDataType(FieldType.STRING);
+		title.setColumnName("TITLE");
+		title.setModuleTableName(tableName);
+		fields.add(title);
+		
+		FacilioField pmType = new FacilioField();
+		pmType.setName("pmType");
+		pmType.setDataType(FieldType.NUMBER);
+		pmType.setColumnName("PM_TYPE");
+		pmType.setModuleTableName(tableName);
+		fields.add(pmType);
+		
+		FacilioField status = new FacilioField();
+		status.setName("status");
+		status.setDataType(FieldType.NUMBER);
+		status.setColumnName("STATUS");
+		status.setModuleTableName(tableName);
+		fields.add(status);
+		
+		FacilioField createdBy = new FacilioField();
+		createdBy.setName("createdBy");
+		createdBy.setDataType(FieldType.NUMBER);
+		createdBy.setColumnName("CREATED_BY");
+		createdBy.setModuleTableName(tableName);
+		fields.add(createdBy);
+		
+		FacilioField modifiedBy = new FacilioField();
+		modifiedBy.setName("modifiedBy");
+		modifiedBy.setDataType(FieldType.NUMBER);
+		modifiedBy.setColumnName("MODIFIED_BY");
+		modifiedBy.setModuleTableName(tableName);
+		fields.add(modifiedBy);
+		
+		FacilioField creationTime = new FacilioField();
+		creationTime.setName("creationTime");
+		creationTime.setDataType(FieldType.NUMBER);
+		creationTime.setColumnName("CREATION_TIME");
+		creationTime.setModuleTableName(tableName);
+		fields.add(creationTime);
+		
+		FacilioField lastModifiedTime = new FacilioField();
+		lastModifiedTime.setName("lastModifiedTime");
+		lastModifiedTime.setDataType(FieldType.NUMBER);
+		lastModifiedTime.setColumnName("LAST_MODIFIED_TIME");
+		lastModifiedTime.setModuleTableName(tableName);
+		fields.add(lastModifiedTime);
+		
+		FacilioField templateId = new FacilioField();
+		templateId.setName("templateId");
+		templateId.setDataType(FieldType.NUMBER);
+		templateId.setColumnName("TEMPLATE_ID");
+		templateId.setModuleTableName(tableName);
+		fields.add(templateId);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getCriteriaFields() {
 		String tableName = "Criteria";
 		List<FacilioField> fields = new ArrayList<>();

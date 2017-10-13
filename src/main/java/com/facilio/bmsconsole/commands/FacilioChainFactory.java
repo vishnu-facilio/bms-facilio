@@ -800,6 +800,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddWorkorderTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddWorkorderTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddPreventiveMaintenanceChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddWorkorderTemplateCommand());
+		c.addCommand(new AddPreventiveMaintenanceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddTemplateChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());

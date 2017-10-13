@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,12 +9,16 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -92,6 +97,34 @@ public class FieldUtil {
 					pstmt.setNull(paramIndex, Types.BIGINT);
 				}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONObject getPropertiesAsJson(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	{
+		JSONObject properties = null;
+		if(bean != null) 
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.setSerializationInclusion(Include.NON_DEFAULT);
+			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+			properties = mapper.convertValue(bean, JSONObject.class);
+			
+			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
+			if(customProps != null)
+			{
+				properties.putAll(customProps);
+			}
+		}
+		return properties;
+	}
+	
+	public static <E> E getAsBean(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_DEFAULT);
+		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
 	@SuppressWarnings("unchecked")

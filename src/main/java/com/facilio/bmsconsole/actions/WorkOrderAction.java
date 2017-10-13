@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -11,15 +12,19 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.OrgInfo;
@@ -73,7 +78,10 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	
 	public String addWorkOrder() throws Exception {
-		
+		return addWorkOrder(workorder);
+	}
+	
+	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
@@ -84,6 +92,51 @@ public class WorkOrderAction extends ActionSupport {
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderWithTicketChain();
 		addWorkOrder.execute(context);
 		setWorkOrderId(workorder.getId());
+		return SUCCESS;
+	}
+	
+	private Long templateId;
+	public Long getTemplateId() {
+		return templateId;
+	}
+	public void setTemplateId(Long templateId) {
+		this.templateId = templateId;
+	}
+	
+	public String addWorkOrderFromTemplate() throws Exception {
+		
+		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), getTemplateId());
+		JSONParser parser = new JSONParser();
+		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
+		
+		WorkOrderContext workorder = FieldUtil.getAsBean(content, WorkOrderContext.class);
+		
+		return addWorkOrder(workorder);
+	}
+	
+	public String addWorkOrderTemplate() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		
+		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
+		addTemplate.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String addPreventiveMaintenance() throws Exception {
+		
+		PreventiveMaintenance pm = new PreventiveMaintenance();
+		
+		//TODO
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		
+		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
+		addTemplate.execute(context);
+		
 		return SUCCESS;
 	}
 	
