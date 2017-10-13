@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 

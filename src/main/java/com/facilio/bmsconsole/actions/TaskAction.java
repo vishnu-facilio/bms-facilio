@@ -70,14 +70,8 @@ public class TaskAction extends ActionSupport {
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
 		
-		if(task == null) {
-			task = new TaskContext();
-		}
-		task.setTicket(ticket);
-		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
-		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
@@ -155,14 +149,6 @@ public class TaskAction extends ActionSupport {
 		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
 		
 		return SUCCESS;
-	}
-	
-	private TicketContext ticket;
-	public TicketContext getTicket() {
-		return ticket;
-	}
-	public void setTicket(TicketContext ticket) {
-		this.ticket = ticket;
 	}
 	
 	private TaskContext task;

@@ -361,7 +361,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddTaskChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(getAddTicketChain());
+		//c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());

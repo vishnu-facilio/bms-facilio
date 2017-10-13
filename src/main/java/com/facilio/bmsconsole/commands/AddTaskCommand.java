@@ -17,9 +17,8 @@ public class AddTaskCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		TicketContext ticket = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-		if(ticket != null && task != null) {
+		if(task != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
@@ -35,7 +34,7 @@ public class AddTaskCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
 		}
 		else {
-			throw new IllegalArgumentException("Task/ Ticket Object cannot be null");
+			throw new IllegalArgumentException("Task Object cannot be null");
 		}
 		
 		return false;

@@ -28,12 +28,12 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
 			long parentTicketId = task.getParentTicketId();
-			if(parentTicketId != -1 && task.getTicket() != null && task.getTicket().getStatus() != null) {
+			if(parentTicketId != -1 && task.getStatus() != null) {
 				TicketContext ticket = new TicketContext();
 				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.TICKET);
+				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.TASK);
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(field);
 				
@@ -71,7 +71,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 														.select(fields)
 														.table("Tasks")
 														.innerJoin("Tickets")
-														.on("Tasks.TICKET_ID = Tickets.ID")
+														.on("Tasks.ID = Tickets.ID")
 														.innerJoin("TicketStatus")
 														.on("Tickets.STATUS_ID = TicketStatus.ID")
 														.andCustomWhere("TicketStatus.ORGID = ? AND Tickets.ORGID = ? AND Tasks.PARENT_TICKET_ID = ? AND TicketStatus.STATUS_TYPE = 2", orgId, orgId, parentTicketId);

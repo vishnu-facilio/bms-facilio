@@ -294,13 +294,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			FacilioModule module = getMod(moduleName);
 			
 			if(module != null) {
-				String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields WHERE Fields.ORGID = ? and Fields.NAME = ? and Fields.MODULEID = ?";
+				String sql = "SELECT Fields.FIELDID, Fields.ORGID, Fields.MODULEID, Fields.EXTENDED_MODULEID, Fields.NAME, Fields.DISPLAY_NAME, Fields.DISPLAY_TYPE, Fields.COLUMN_NAME, Fields.SEQUENCE_NUMBER, Fields.DATA_TYPE, Fields.IS_DEFAULT, Fields.IS_MAIN_FIELD, Fields.REQUIRED, Fields.DISABLED, Fields.STYLE_CLASS, Fields.ICON, Fields.PLACE_HOLDER FROM Fields WHERE Fields.ORGID = ? and Fields.NAME = ? and Fields.MODULEID = ?";
 				Map<Long, FacilioModule> moduleMap = splitModules(module);
 				
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setLong(1, orgId);
 				pstmt.setString(2, fieldName);
-				pstmt.setString(3, moduleName);
+				pstmt.setLong(3, module.getModuleId());
 				
 				rs = pstmt.executeQuery();
 				if(rs.next()) {

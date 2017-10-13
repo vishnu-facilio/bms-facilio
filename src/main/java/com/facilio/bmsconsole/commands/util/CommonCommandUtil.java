@@ -144,7 +144,17 @@ public class CommonCommandUtil {
 		return tickets;
 	}
 	
-	private static void loadTicketStatus(Collection<TicketContext> tickets) throws Exception {
+	
+	public static void loadTicketLookups(Collection<? extends TicketContext> tickets) throws Exception {
+		CommonCommandUtil.loadTicketStatus(tickets);
+		CommonCommandUtil.loadTicketPriority(tickets);
+		CommonCommandUtil.loadTicketCategory(tickets);
+		CommonCommandUtil.loadTicketUsers(tickets);
+		CommonCommandUtil.loadTicketGroups(tickets);
+		CommonCommandUtil.loadTicketSpaces(tickets);
+	}
+	
+	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
@@ -172,7 +182,7 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void loadTicketPriority(Collection<TicketContext> tickets) throws Exception {
+	private static void loadTicketPriority(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY);
@@ -200,7 +210,7 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void loadTicketCategory(Collection<TicketContext> tickets) throws Exception {
+	private static void loadTicketCategory(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY);
@@ -228,7 +238,7 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void loadTicketUsers(Collection<TicketContext> tickets) throws Exception {
+	private static void loadTicketUsers(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			List<UserContext> users = UserAPI.getUsersOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
 			
@@ -246,7 +256,7 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void loadTicketGroups(Collection<TicketContext> tickets) throws Exception {
+	private static void loadTicketGroups(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
 			
@@ -264,7 +274,7 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void loadTicketSpaces(Collection<TicketContext> tickets) throws Exception {
+	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);

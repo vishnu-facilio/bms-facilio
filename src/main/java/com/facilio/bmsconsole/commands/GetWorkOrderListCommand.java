@@ -50,6 +50,9 @@ public class GetWorkOrderListCommand implements Command {
 		}
 		
 		List<WorkOrderContext> workOrders = selectBuilder.get();
+		
+		CommonCommandUtil.loadTicketLookups(workOrders);
+		
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		
 		return false;

@@ -16,9 +16,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 
 public class UpdateWorkOrderCommand implements Command {
 
@@ -33,6 +35,10 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			
+			if(workOrder.getAssignedTo() != null) {
+				workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
+			}
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
@@ -58,7 +64,7 @@ public class UpdateWorkOrderCommand implements Command {
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
 						.select(fields)
-						.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0))
+						.andCustomWhere(module.getTableName()+".ID = ?", recordIds.get(0))
 						.orderBy("ID");
 
 				List<WorkOrderContext> workOrders = builder.get();
