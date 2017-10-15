@@ -117,7 +117,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("Alarms")
 					.innerJoin("Tickets")
-					.on("Alarms.TICKET_ID = Tickets.ID")
+					.on("Alarms.ID = Tickets.ID")
 					.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=? AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, AlarmStatus.ACTIVE.getIntVal(), orgId);
 			List<Map<String, Object>> rs = builder.get();
 			return rs;
@@ -206,7 +206,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("Alarms")
 					.innerJoin("Tickets")
-					.on("Alarms.TICKET_ID = Tickets.ID")
+					.on("Alarms.ID = Tickets.ID")
 					.groupBy("ALARM_TYPE")
 					.andCustomWhere(where.toString(), orgId);
 			List<Map<String, Object>> stats = builder.get();
@@ -357,7 +357,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("Alarms")
 					.innerJoin("Tickets")
-					.on("Alarms.TICKET_ID = Tickets.ID")
+					.on("Alarms.ID = Tickets.ID")
 					.groupBy("ALARM_TYPE")
 					.andCustomWhere(where.toString(), orgId)
 					.andCondition(createdTime);
@@ -431,7 +431,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("Alarms")
 					.innerJoin("Tickets")
-					.on("Alarms.TICKET_ID = Tickets.ID")
+					.on("Alarms.ID = Tickets.ID")
 					.groupBy("ALARM_TYPE")
 					.andCustomWhere(where.toString(), orgId,AlarmStatus.CLEAR.getIntVal())
 					.andCondition(createdTime);
@@ -619,7 +619,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("Alarms")
 					.innerJoin("Tickets")
-					.on("Alarms.TICKET_ID = Tickets.ID");
+					.on("Alarms.ID = Tickets.ID");
 					if(groupBy)
 					{
 						builder.groupBy("Tickets.ASSIGNED_TO_ID");
@@ -691,7 +691,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("WorkOrders")
 					.innerJoin("Tickets")
-					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.on("WorkOrders.ID = Tickets.ID")
 					.innerJoin("TicketStatus")
 					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.CLOSED.getIntVal())
@@ -780,7 +780,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("WorkOrders")
 					.innerJoin("Tickets")
-					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.on("WorkOrders.ID = Tickets.ID")
 					.innerJoin("TicketStatus")
 					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.leftJoin("TicketCategory")
@@ -831,7 +831,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("WorkOrderRequests")
 					.innerJoin("Tickets")
-					.on("WorkOrderRequests.TICKET_ID = Tickets.ID")
+					.on("WorkOrderRequests.ID = Tickets.ID")
 					.groupBy("Tickets.SOURCE_TYPE")
 					.andCustomWhere("WorkOrderRequests.ORGID = ? AND Tickets.ORGID = ? AND WorkOrderRequests.STATUS = ?", orgId, orgId, WorkOrderRequestContext.RequestStatus.OPEN.getIntVal())
 					.andCondition(createdTime);
@@ -883,7 +883,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("WorkOrders")
 					.innerJoin("Tickets")
-					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.on("WorkOrders.ID = Tickets.ID")
 					.innerJoin("TicketStatus")
 					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.innerJoin("ORG_Users")
@@ -926,7 +926,7 @@ public class AlarmReportAction extends ActionSupport {
 					.select(fields)
 					.table("WorkOrders")
 					.innerJoin("Tickets")
-					.on("WorkOrders.TICKET_ID = Tickets.ID")
+					.on("WorkOrders.ID = Tickets.ID")
 					.innerJoin("TicketStatus")
 					.on("Tickets.STATUS_ID = TicketStatus.ID")
 					.groupBy("Tickets.SPACE_ID")
