@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -34,10 +35,10 @@ public class GetWorkOrderListCommand implements Command {
 														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
-//		if(view != null) {
-//			Criteria criteria = view.getCriteria();
-//			selectBuilder.andCriteria(criteria);
-//		}
+		if(view != null) {
+			Criteria criteria = view.getCriteria();
+			selectBuilder.andCriteria(criteria);
+		}
 		
 		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {

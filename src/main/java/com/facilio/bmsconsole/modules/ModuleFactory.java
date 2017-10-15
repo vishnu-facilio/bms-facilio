@@ -38,6 +38,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.TICKET, getTicketsModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER, getWorkOrdersModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWorkOrderRequestsModule());
+		moduleMap.put(FacilioConstants.ContextNames.TASK, getTasksModule());
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put("workordertemplate", getWorkorderTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
@@ -221,6 +222,15 @@ public class ModuleFactory {
 		workOrderRequestsModule.setName(FacilioConstants.ContextNames.WORK_ORDER_REQUEST);
 		workOrderRequestsModule.setDisplayName("Work Order Requests");
 		workOrderRequestsModule.setTableName("WorkOrderRequests");
+		workOrderRequestsModule.setExtendModule(getTicketsModule());
+		return workOrderRequestsModule;
+	}
+	
+	public static FacilioModule getTasksModule() {
+		FacilioModule workOrderRequestsModule = new FacilioModule();
+		workOrderRequestsModule.setName(FacilioConstants.ContextNames.TASK);
+		workOrderRequestsModule.setDisplayName("Tasks");
+		workOrderRequestsModule.setTableName("Tasks");
 		workOrderRequestsModule.setExtendModule(getTicketsModule());
 		return workOrderRequestsModule;
 	}

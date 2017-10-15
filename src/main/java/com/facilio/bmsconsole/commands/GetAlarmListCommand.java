@@ -37,10 +37,10 @@ public class GetAlarmListCommand implements Command {
 														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
-//		if(view != null) {
-//			Criteria criteria = view.getCriteria();
-//			builder.andCriteria(criteria);
-//		}
+		if(view != null) {
+			Criteria criteria = view.getCriteria();
+			builder.andCriteria(criteria);
+		}
 		
 		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {
