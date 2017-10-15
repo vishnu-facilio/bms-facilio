@@ -15,7 +15,10 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
@@ -73,10 +76,16 @@ public class ExecuteNoteWorkflowCommand implements Command {
 	private TicketContext getParentTicket (NoteContext note,Connection conn) throws Exception {
 		long parentTicketId = note.getParentId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField field = modBean.getField("assignedTo", FacilioConstants.ContextNames.TICKET);
+		
+		LookupField userField = new LookupField();
+		userField.setName("assignedTo");
+		userField.setColumnName("ASSIGNED_TO_ID");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getTicketsModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(field);
+		fields.add(userField);
 		
 		SelectRecordsBuilder<TicketContext> ticketBuilder = new SelectRecordsBuilder<TicketContext>()
 																.select(fields)
