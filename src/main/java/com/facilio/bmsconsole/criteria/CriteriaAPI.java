@@ -61,7 +61,7 @@ public class CriteriaAPI {
 					
 					FacilioField field = condition.getField();
 					if(field.getFieldId() == -1) {
-						String moduleName = field.getExtendedModule().getName();
+						String moduleName = field.getModule().getName();
 						if(moduleName == null || moduleName.isEmpty()) {
 							throw new IllegalArgumentException("Module Name is empty for field : "+field);
 						}
