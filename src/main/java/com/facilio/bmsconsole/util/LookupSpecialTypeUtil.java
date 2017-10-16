@@ -8,11 +8,11 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -27,10 +27,10 @@ public class LookupSpecialTypeUtil {
 	
 	public static Map<Long, String> getPickList(String specialType) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
-			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
+			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return RequesterAPI.getAllRequesters(OrgInfo.getCurrentOrgInfo().getOrgid());
+			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.REQUESTER.getValue());
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
@@ -92,7 +92,7 @@ public class LookupSpecialTypeUtil {
 			return UserAPI.getUserFromOrgUserId(id);
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return RequesterAPI.getRequesterFromId(id);
+			return UserAPI.getUserFromOrgUserId(id);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return GroupAPI.getGroup(id);
@@ -128,7 +128,7 @@ public class LookupSpecialTypeUtil {
 			return user;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			RequesterContext requester = new RequesterContext();
+			UserContext requester = new UserContext();
 			requester.setId(id);
 			return requester;
 		}

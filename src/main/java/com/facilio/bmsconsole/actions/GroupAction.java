@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -66,7 +67,7 @@ public class GroupAction extends ActionSupport {
 	public String newGroup() throws Exception {
 		
 		setSetup(SetupLayout.getNewGroupLayout());
-		userList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
+		userList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		
 		return SUCCESS;
 	}

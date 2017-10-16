@@ -6,11 +6,11 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class WorkOrderContext extends TicketContext {
-	private RequesterContext requester;
-	public RequesterContext getRequester() {
+	private UserContext requester;
+	public UserContext getRequester() {
 		return requester;
 	}
-	public void setRequester(RequesterContext requester) {
+	public void setRequester(UserContext requester) {
 		this.requester = requester;
 	}
 	

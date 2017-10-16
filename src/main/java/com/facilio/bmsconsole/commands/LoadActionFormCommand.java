@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 
 public class LoadActionFormCommand implements Command {
@@ -58,7 +59,7 @@ public class LoadActionFormCommand implements Command {
 //			}
 //		}
 //		return userList;
-		return UserAPI.getOrgUsers(orgId);
+		return UserAPI.getOrgUsers(orgId, UserType.USER.getValue());
 	}
 	
 	private Map<Long, String> getAssetList() throws SQLException {

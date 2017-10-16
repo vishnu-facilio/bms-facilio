@@ -813,4 +813,38 @@ public class FacilioConstants {
 			return typeMap;
 		}
 	}
+	
+	public static enum UserType {
+	    
+		USER(1),
+		REQUESTER(2)
+		;
+
+	    private int userType;
+
+	    UserType(int userType) {
+	        this.userType = userType;
+	    }
+
+	    public int getValue() {
+	        return userType;
+	    }
+	    
+	    public static UserType valueOf(int eventTypeVal) {
+	    	return typeMap.get(eventTypeVal);
+	    }
+	    
+	    private static final Map<Integer, UserType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, UserType> initTypeMap() {
+			Map<Integer, UserType> typeMap = new HashMap<>();
+			
+			for(UserType type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, UserType> getAllTypes() {
+			return typeMap;
+		}
+	}
 }

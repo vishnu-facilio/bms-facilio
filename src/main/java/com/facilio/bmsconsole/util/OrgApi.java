@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AddressContext;
 import com.facilio.bmsconsole.context.OrgContext;
 //import com.facilio.bmsconsole.context.servicePortalContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
@@ -77,12 +78,13 @@ public class OrgApi {
 			long userId = rs1.getLong(1);
 			ps2.close();
 			
-			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,?,true,true,(select ROLE_ID from Role where NAME=? limit 1))";
+			String insertquery3 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,INVITATION_ACCEPT_STATUS,ROLE_ID,USER_TYPE) values (?,?,?,true,true,(select ROLE_ID from Role where NAME=? limit 1), ?)";
 			PreparedStatement ps3 = conn.prepareStatement(insertquery3, Statement.RETURN_GENERATED_KEYS);
 			ps3.setLong(1,userId);
 			ps3.setLong(2, orgId);
 			ps3.setLong(3, System.currentTimeMillis());
 			ps3.setString(4, FacilioConstants.Role.SUPER_ADMIN);
+			ps3.setInt(5, UserType.USER.getValue());
 			ps3.executeUpdate();
 			ps3.close();
 			
