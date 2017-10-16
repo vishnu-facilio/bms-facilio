@@ -14,9 +14,9 @@ import org.apache.commons.mail.util.MimeMessageParser;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
@@ -96,7 +96,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		if(supportEmail != null) {
 			WorkOrderRequestContext workOrderRequest = new WorkOrderRequestContext();
 			
-			RequesterContext requester = new RequesterContext();
+			UserContext requester = new UserContext();
 			requester.setEmail(parser.getFrom());
 			workOrderRequest.setRequester(requester);
 			

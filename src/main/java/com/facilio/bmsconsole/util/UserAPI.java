@@ -14,13 +14,14 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class UserAPI {
 	
-	public static Map<Long, String> getOrgUsers(long orgId) throws SQLException {
+	public static Map<Long, String> getOrgUsers(long orgId, int type) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -29,9 +30,10 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
 			
 			pstmt.setLong(1, orgId);
+			pstmt.setInt(2, type);
 			
 			rs = pstmt.executeQuery();
 			
@@ -286,15 +288,16 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static UserContext getUser(String email) throws SQLException {
+	public static UserContext getRequester(String email) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.USER_TYPE = ?");
 			pstmt.setString(1, email);
+			pstmt.setInt(2, UserType.REQUESTER.getValue());
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -309,6 +312,79 @@ public class UserAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return null;
+	}
+	
+	public static UserContext getUser(String email) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID and ORG_Users.USER_TYPE = ?");
+			pstmt.setString(1, email);
+			pstmt.setInt(2, UserType.USER.getValue());
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				UserContext tc = getUserObjectFromRS(rs);
+				return tc;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
+	public static long addRequester(UserContext context) throws Exception {
+
+		Connection conn =null;
+		try {
+			
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			
+			String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?, ?)";
+			PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
+			ps1.setString(1, context.getName());
+			ps1.setString(2, null);
+			ps1.setBoolean(3, true);
+			ps1.setString(4, context.getEmail());
+			ps1.executeUpdate();
+			ResultSet rs1 = ps1.getGeneratedKeys();
+			rs1.next();
+			long userId = rs1.getLong(1);
+			ps1.close();
+			
+			String insertquery2 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,USER_STATUS,INVITATION_ACCEPT_STATUS,USER_TYPE) values (?,?,?,?,?,?,?)";
+			PreparedStatement ps2 = conn.prepareStatement(insertquery2, Statement.RETURN_GENERATED_KEYS);
+			ps2.setLong(1,userId);
+			ps2.setLong(2, context.getOrgId());
+			ps2.setLong(3, System.currentTimeMillis());
+			ps2.setBoolean(4, false);
+			ps2.setBoolean(5, true);
+			ps2.setBoolean(6, true);
+			ps2.setInt(7, UserType.REQUESTER.getValue());
+			ps2.executeUpdate();
+			ResultSet rs2 = ps2.getGeneratedKeys();
+			rs2.next();
+			long orgUserId = rs2.getLong(1);
+			rs2.close();
+			ps2.close();
+
+			context.setUserId(userId);
+			context.setOrgUserId(orgUserId);
+			return userId;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, null);
+		}
 	}
 	
 	public static long addUser(UserContext context) throws Exception {
@@ -338,7 +414,7 @@ public class UserAPI {
 				long userId = rs1.getLong(1);
 				ps1.close();
 				
-				String insertquery2 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,USER_STATUS,INVITATION_ACCEPT_STATUS,ROLE_ID) values (?,?,?,?,?,?,?)";
+				String insertquery2 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,USER_STATUS,INVITATION_ACCEPT_STATUS,ROLE_ID,USER_TYPE) values (?,?,?,?,?,?,?,?)";
 				PreparedStatement ps2 = conn.prepareStatement(insertquery2, Statement.RETURN_GENERATED_KEYS);
 				ps2.setLong(1,userId);
 				ps2.setLong(2, context.getOrgId());
@@ -347,6 +423,7 @@ public class UserAPI {
 				ps2.setBoolean(5, true);
 				ps2.setBoolean(6, true);
 				ps2.setLong(7, context.getRoleId());
+				ps2.setInt(8, UserType.USER.getValue());
 				ps2.executeUpdate();
 				ResultSet rs2 = ps2.getGeneratedKeys();
 				rs2.next();
@@ -478,7 +555,10 @@ public class UserAPI {
 		uc.setInvitedTime(rs.getLong("INVITEDTIME"));
 		uc.setUserStatus(rs.getBoolean("USER_STATUS"));
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
-		uc.setRoleId(rs.getLong("ROLE_ID"));
+		if(rs.getLong("ROLE_ID") != 0)
+		{
+			uc.setRoleId(rs.getLong("ROLE_ID"));
+		}
 		uc.setPhotoId(rs.getLong("PHOTO_ID"));
 		
 		return uc;

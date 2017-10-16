@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands.util;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +14,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.RequesterContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.device.Device;
@@ -31,8 +33,10 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.twilio.sdk.Twilio;
@@ -67,42 +71,38 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	public static Map<Long, RequesterContext> getRequesters(String ids, Connection conn) throws Exception {
+	public static Map<Long, UserContext> getRequesters(String ids, Connection conn) throws Exception {
 		
-		FacilioField field = new FacilioField();
-		field.setName("requesterId");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("REQUESTER_ID");
-		field.setModule(ModuleFactory.getRequesterModule());
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		
-		Condition idCondition = new Condition();
-		idCondition.setField(field);
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(ids);
+		Map<Long, UserContext> requesters = new HashMap<>();
 		
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-											.connection(conn)
-											.table("Requester")
-											.select(FieldFactory.getRequesterFields())
-											.andCondition(idCondition);
-		List<Map<String, Object>> requesterList = builder.get();
-		
-		Map<Long, RequesterContext> requesters = new HashMap<>();
-		for(Map<String, Object> requester : requesterList)
-		{
-			requesters.put((Long) requester.get("requesterId"), getRequesterObject(requester));
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
+			
+			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
+			pstmt.setInt(2, UserType.REQUESTER.getValue());
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				UserContext rc = new UserContext();
+				rc.setEmail((String)rs.getString("EMAIL"));
+				rc.setName((String) rs.getString("NAME"));
+				
+				requesters.put(rs.getLong("ORG_USERID"), rc);
+			}
+			
+			return requesters;
 		}
-		return requesters;
-	}
-	
-	private static RequesterContext getRequesterObject(Map<String, Object> requester) throws SQLException {
-		
-		RequesterContext rc = new RequesterContext();
-		rc.setEmail((String) requester.get("email"));
-		rc.setName((String) requester.get("name"));
-		rc.setId((Long) requester.get("requesterId"));
-		return rc;
+		catch (SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
 	}
 	
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap, Map<String, Object> placeHolders) throws Exception {

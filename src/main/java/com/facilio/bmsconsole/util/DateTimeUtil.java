@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -73,19 +75,10 @@ public class DateTimeUtil
 		return ZonedDateTime.of(LocalDate.now(zoneId), lTime, zoneId);
 	}
 	
-	public static HashMap<String,Object> getTimeData(long addedTime)
-	{
-		return getTimeData(getZoneId(),addedTime);
-	}
-	
-	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime)
-	{
-		ZonedDateTime zdt = getDateTime(zoneId,addedTime,true);
-		
+	public static HashMap<String, Object> getTimeData(ZonedDateTime zdt) {
 		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 		String date=zdt.toLocalDate().toString();
 		String day=zdt.getDayOfWeek().toString();
-		
 		HashMap<String,Object> columnVals = new LinkedHashMap<String, Object>() ;
 		columnVals.put("date",date);
 		columnVals.put("week",week);
@@ -94,6 +87,34 @@ public class DateTimeUtil
 		columnVals.put("hour",zdt.getHour());
 		columnVals.put("year",zdt.getYear());
 		return columnVals;
+	}
+	
+	public static ZoneId getZoneId(String zoneId)
+	{
+		return ZoneId.of(zoneId);
+	}
+	
+	public static Locale getLocale(String language, String country)
+	{
+		return new Locale(language, country);
+	}
+	
+	public static HashMap<String,Object> getTimeData(long addedTime)
+	{
+		return getTimeData(getZoneId(),addedTime);
+	}
+	
+	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime)
+	{
+		ZonedDateTime zdt = getDateTime(zoneId,addedTime,true);
+		return getTimeData(zdt);
+	}
+
+	public static HashMap<String,Object> getTimeData(ZoneId zoneId,String timeStamp)
+	{
+		LocalDateTime ldt = Timestamp.valueOf(timeStamp).toLocalDateTime();
+		ZonedDateTime zdt= ZonedDateTime.of(ldt, zoneId);
+		return getTimeData(zdt);
 	}
 	
 	public static ZonedDateTime getDateTime(long time, Boolean... seconds)
@@ -348,6 +369,18 @@ public class DateTimeUtil
 		LocalDate startDate=getDateTime(zoneId,startTimestamp).toLocalDate();
 		LocalDate endDate= getDateTime(zoneId,endTimestamp).toLocalDate();
 		return Period.between(startDate, endDate).getDays();
+	}
+	
+	public long getTime(String timeStamp, Boolean... seconds)
+	{
+		//eg: timeStamp="2017-08-09T10:06:10.894752+04:00"; 
+		//    timeStamp="2017-08-09T10:06:10.894752Z";
+		ZonedDateTime zDateTime= ZonedDateTime.parse(timeStamp);
+		
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
+			return  getSeconds(zDateTime);
+		}
+		return getMillis(zDateTime, false);
 	}
 }
 

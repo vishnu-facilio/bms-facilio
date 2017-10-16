@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -36,7 +37,7 @@ public class WorkflowRuleAction extends ActionSupport {
 			}
 		}
 		
-		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid());
+		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		return "newAssignmentRule";
 	}
 	
