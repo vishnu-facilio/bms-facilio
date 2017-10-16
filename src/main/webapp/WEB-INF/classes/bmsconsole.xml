@@ -138,6 +138,18 @@
 				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">tasks,tasks\[\d+\],tasks\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="note" class="com.facilio.bmsconsole.actions.NoteAction" method="noteList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">notes,notes\[\d+\],notes\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	<package name="skillApi" namespace="/api/skill" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">

@@ -107,9 +107,13 @@ public class S3FileStore extends FileStore {
 		
 		List<String> filePathList = getFilePathList(fileId);
 		
-		DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
-				.withKeys(filePathList.toArray(new String[filePathList.size()]));
-		AwsUtil.getAmazonS3Client().deleteObjects(dor);
+		try {
+			DeleteObjectsRequest dor = new DeleteObjectsRequest(getBucketName())
+					.withKeys(filePathList.toArray(new String[filePathList.size()]));
+			AwsUtil.getAmazonS3Client().deleteObjects(dor);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return deleteFileEntries(fileId);
 	}
 

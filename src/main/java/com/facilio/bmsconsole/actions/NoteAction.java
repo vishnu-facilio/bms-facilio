@@ -70,5 +70,48 @@ public class NoteAction extends ActionSupport {
 	{
 		return FacilioConstants.ContextNames.NOTE;
 	}
+	
+	private String module;
+	public String getModule() {
+		return this.module;
+	}
+	
+	public void setModule(String module) {
+		this.module = module;
+	}
+	
+	private long recordId;
+	public long getRecordId() {
+		return this.recordId;
+	}
+	
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
+	}
+	
+	private List<NoteContext> notes;
+	public List<NoteContext> getNotes() {
+		return notes;
+	}
+	public void setNotes(List<NoteContext> notes) {
+		this.notes = notes;
+	}
+	
+	public String noteList() throws Exception {
+		
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+
+			Chain getRelatedNoteChain = FacilioChainFactory.getRelatedNotesChain();
+			getRelatedNoteChain.execute(context);
+
+			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return SUCCESS;
+	}
  }
 

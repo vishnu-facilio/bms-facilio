@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -166,31 +167,65 @@ public class TaskAction extends ActionSupport {
 		this.taskId = taskId;
 	}
 	
+	private String module;
+	public String getModule() {
+		return this.module;
+	}
+	
+	public void setModule(String module) {
+		this.module = module;
+	}
+	
+	private long recordId;
+	public long getRecordId() {
+		return this.recordId;
+	}
+	
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
+	}
+	
 	//Task List
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
-		
-//		if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_ANY)) {
-//			this.viewName = null;
-//		}
-//		else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_OWN)) {
-//			this.viewName = "mytasks";
-//		}
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		
-		Chain taskListChain = FacilioChainFactory.getTaskListChain();
-		taskListChain.execute(context);
-		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
-		
-		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		if(cv != null) {
-			setViewDisplayName(cv.getDisplayName());
+
+		if (this.module != null && this.recordId > 0 && getViewName() == null) {
+			try {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+				context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+
+				Chain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
+				getRelatedTasksChain.execute(context);
+
+				setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		
+		else {
+//			if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_ANY)) {
+//				this.viewName = null;
+//			}
+//			else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.TASK_ACCESS_READ_OWN)) {
+//				this.viewName = "mytasks";
+//			}
+
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+
+			Chain taskListChain = FacilioChainFactory.getTaskListChain();
+			taskListChain.execute(context);
+
+			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+			setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+
+			FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+			if(cv != null) {
+				setViewDisplayName(cv.getDisplayName());
+			}
+		}
+
 		return SUCCESS;
 	}
 	

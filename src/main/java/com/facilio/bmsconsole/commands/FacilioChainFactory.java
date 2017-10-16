@@ -409,6 +409,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getRelatedTasksChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new GetRelatedTasksCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getRelatedNotesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetRelatedNotesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
