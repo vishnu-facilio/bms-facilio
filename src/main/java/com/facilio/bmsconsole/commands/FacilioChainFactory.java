@@ -9,6 +9,7 @@ import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
+import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
@@ -601,7 +602,12 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}*/
-	
+	public static Chain LeedDetailsPageChain()
+	{
+		Chain c = new ChainBase();
+		c.addCommand(new LeedBuildingDetailsCommand());
+		return c;
+	}
 	public static Chain addConsumptionDataChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddConsumptionForLeed());

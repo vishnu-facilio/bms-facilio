@@ -90,7 +90,46 @@ public class LeedAPI {
 		}
 		return leedList;
 	}
-	
+	public static LeedConfigurationContext fetchLeedConfigurationContext(long buildingId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		LeedConfigurationContext context = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select * from Building,LeedConfiguration where BUILDING.ID = LeedConfiguration.BUILDINGID and LeedConfiguration.BUILDINGID = ?");
+			pstmt.setLong(1,buildingId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				context = new LeedConfigurationContext();
+				context.setId(rs.getLong("BUILDINGID"));
+				context.setLeedId(rs.getLong("LEEDID"));
+				context.setBuildingStatus(rs.getString("BUILDINGSTATUS"));
+				context.setEnergyScore(rs.getLong("ENERGYSCORE"));
+				context.setEnergyScore(rs.getLong("WATERSCORE"));
+				context.setEnergyScore(rs.getLong("WASTESCORE"));
+				context.setEnergyScore(rs.getLong("HUMANEXPERIENCESCORE"));
+				context.setEnergyScore(rs.getLong("TRANSPORTSCORE"));
+				context.setEnergyScore(rs.getLong("LEEDSCORE"));
+				context.setArea(rs.getLong("AREA"));
+				context.setName(rs.getString("NAME"));
+				context.setPhotoId(rs.getLong("PHOTO_ID"));
+			}
+			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return context;
+	}
 	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
@@ -102,10 +141,10 @@ public class LeedAPI {
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICEID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICEID = Device.DEVICE_ID")
-				.append("LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
-				.append("LEFT JOIN Building ON Device.SPACE_ID = Building.BASE_SPACE_ID")
-				.append("WHERE Building.ID = ?");		
+			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICE_ID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICE_ID = Device.DEVICE_ID")
+				.append(" LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
+				.append(" LEFT JOIN Building ON Device.SPACE_ID = Building.BASE_SPACE_ID")
+				.append(" WHERE Building.ID = ?");		
 			pstmt =  conn.prepareStatement(sql.toString());
 			pstmt.setLong(1,buildingId);
 			rs = pstmt.executeQuery();
@@ -114,7 +153,7 @@ public class LeedAPI {
 				LeedEnergyMeterContext context = new LeedEnergyMeterContext();
 				context.setName(rs.getString("NAME"));
 				context.setMeterId(rs.getLong("METERID"));
-				context.setDeviceId(rs.getLong("DEVICEID"));
+				context.setDeviceId(rs.getLong("DEVICE_ID"));
 				meterList.add(context);
 			}
 			
@@ -122,7 +161,12 @@ public class LeedAPI {
 		{
 			throw e;
 		}
-		
+		finally
+		{
+			System.out.println(meterList);
+			DBUtil.closeAll(conn, pstmt, rs);
+			
+		}
 		return meterList;
 	}
 	

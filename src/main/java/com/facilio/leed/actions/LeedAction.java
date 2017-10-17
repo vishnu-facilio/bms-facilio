@@ -81,7 +81,7 @@ public class LeedAction extends ActionSupport {
 	
 	public String meterList() throws Exception
 	{
-		setMeterList(LeedAPI.fetchMeterListForBuilding(buildingId));
+		setMeterList(LeedAPI.fetchMeterListForBuilding(getBuildingId()));
 		return SUCCESS;
 	}
 	
@@ -100,8 +100,12 @@ public class LeedAction extends ActionSupport {
 	public String leedDetails() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		
-		
+		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
+		Chain LeedDetailsPageChain = FacilioChainFactory.LeedDetailsPageChain();
+		LeedDetailsPageChain.execute(context);
+		LeedConfigurationContext leedConfigurationContext = (LeedConfigurationContext)context.get(FacilioConstants.ContextNames.LEED);
+		setLeedConfigurationContext(leedConfigurationContext);
+		meterList();
 		return SUCCESS;
 	}
 	
