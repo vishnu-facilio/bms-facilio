@@ -877,6 +877,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddEventChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new ExecuteEventTransformRulesCommand());
+		c.addCommand(new ExecuteEventMappingRulesCommand());
 		c.addCommand(new AddEventCommand());
 		addCleanUpCommand(c);
 		return c;

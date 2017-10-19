@@ -36,5 +36,4 @@ public class AddEventCommand implements Command {
 		}
 		return false;
 	}
-	
 }

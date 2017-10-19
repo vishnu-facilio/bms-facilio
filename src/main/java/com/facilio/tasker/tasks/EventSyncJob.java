@@ -56,7 +56,7 @@ public class EventSyncJob extends FacilioJob{
 		}
 		catch (Exception e) 
 		{
-			logger.log(Level.SEVERE, "Exeception while executing EventSyncJob :::"+e.getMessage(), e);
+			logger.log(Level.SEVERE, "Exception while executing EventSyncJob :::"+e.getMessage(), e);
 		}
 	}
 
