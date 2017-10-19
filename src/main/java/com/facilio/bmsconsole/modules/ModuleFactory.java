@@ -259,4 +259,12 @@ public class ModuleFactory {
 		alarmModule.setTableName("Preventive_Maintenance");
 		return alarmModule;
 	}
+	
+	public static FacilioModule getEventModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName("event");
+		alarmModule.setDisplayName("Event");
+		alarmModule.setTableName("Event");
+		return alarmModule;
+	}
 }

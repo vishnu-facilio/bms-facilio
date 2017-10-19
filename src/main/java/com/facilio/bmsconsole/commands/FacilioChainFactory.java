@@ -875,6 +875,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddEventChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddEventCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 class TransactionChain extends ChainBase
 {
