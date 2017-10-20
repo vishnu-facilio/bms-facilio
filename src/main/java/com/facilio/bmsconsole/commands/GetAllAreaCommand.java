@@ -17,7 +17,7 @@ public class GetAllAreaCommand implements Command{
 		// TODO Auto-generated method stub
 		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(OrgInfo.getCurrentOrgInfo().getOrgid(), conn));
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces());
 		
 		return false;
 	}

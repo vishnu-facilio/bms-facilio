@@ -73,8 +73,4 @@ public class ActionForm {
 	public void setAssetList(Map<Long, String> assetList) {
 		this.assetList = assetList;
 	}
-	
-	public Map<Integer, String> getSpaceAvailabilityList() {
-		return SpaceContext.getAllAvailability();
-	}
 }

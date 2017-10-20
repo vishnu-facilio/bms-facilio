@@ -139,13 +139,13 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioField field = new FacilioField();
 		field.setFieldId(rs.getLong("Fields.FIELDID"));
 		field.setOrgId(rs.getLong("Fields.ORGID"));
-		field.setModule(moduleMap.get(rs.getLong("Fields.MODULEID")));
 		if(rs.getObject("Fields.EXTENDED_MODULEID") != null) {
 			field.setExtendedModule(moduleMap.get(rs.getLong("Fields.EXTENDED_MODULEID")));
 			if(field.getExtendedModule() == null) {
-				throw new IllegalArgumentException("Invalid Extended module id in Field : "+field.getName()+"::"+field.getModule().getName());
+				throw new IllegalArgumentException("Invalid Extended module id in Field : "+rs.getString("Fields.NAME")+"::Module Id : "+rs.getLong("Fields.MODULEID"));
 			}
 		}
+		field.setModule(moduleMap.get(rs.getLong("Fields.MODULEID")));
 		field.setName(rs.getString("Fields.NAME"));
 		field.setDisplayName(rs.getString("Fields.DISPLAY_NAME"));
 		field.setDisplayType(rs.getInt("Fields.DISPLAY_TYPE"));

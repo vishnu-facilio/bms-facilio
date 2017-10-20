@@ -78,10 +78,10 @@ public class FormLayout {
 		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId")) {
+			if(field.getName().equals("spaceType") || field.getName().equals("lastCurrentOccupancy") || field.getName().equals("lastCurrentOccupancyTime") || field.getName().equals("lastAssignedOccupancy") || field.getName().equals("lastAssignedOccupancyTime")) {
 				continue;
 			}
-			if(field.getName().equals("name") || field.getName().equals("location") || field.getName().equals("description")) {
+			if(field.getName().equals("name") || field.getName().equals("location") || field.getName().equals("description") || field.getName().equals("operationHoursStart") || field.getName().equals("maxOccupancy") || field.getName().equals("noOfBuildings")) {
 				first.addField(field);
 			}
 			else {
@@ -104,13 +104,13 @@ public class FormLayout {
 		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		 
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId")) {
+			if(field.getName().equals("spaceType") || field.getName().equals("lastCurrentOccupancy") || field.getName().equals("lastCurrentOccupancyTime") || field.getName().equals("lastAssignedOccupancy") || field.getName().equals("lastAssignedOccupancyTime")) {
 				continue;
 			}
 			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			else if(field.getName().equals("campus") || field.getName().equals("floors") || field.getName().equals("location")){
+			else if(field.getName().equals("location") || field.getName().equals("description") || field.getName().equals("operationHoursStart") || field.getName().equals("maxOccupancy") || field.getName().equals("noOfFloors")){
 				second.addField(field);
 			}
 			else {
@@ -132,13 +132,13 @@ public class FormLayout {
 		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId") || field.getName().equals("mainLevel")) {
+			if(field.getName().equals("siteId") || field.getName().equals("spaceType") || field.getName().equals("lastCurrentOccupancy") || field.getName().equals("lastCurrentOccupancyTime") || field.getName().equals("lastAssignedOccupancy") || field.getName().equals("lastAssignedOccupancyTime")) {
 				continue;
 			}
 			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			else if(field.getName().equals("building") || field.getName().equals("area")) {
+			else if(field.getName().equals("location") || field.getName().equals("description") || field.getName().equals("operationHoursStart") || field.getName().equals("maxOccupancy")) {
 				second.addField(field);
 			}
 			else {
@@ -160,13 +160,13 @@ public class FormLayout {
 		NewPanel third =  new NewPanel(NewPanel.Type.HALF);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("baseSpaceId") || field.getName().equals("displayName") || field.getName().equals("availability") || field.getName().equals("occupiable")) {
+			if(field.getName().equals("siteId") || field.getName().equals("spaceType") || field.getName().equals("lastCurrentOccupancy") || field.getName().equals("lastCurrentOccupancyTime") || field.getName().equals("lastAssignedOccupancy") || field.getName().equals("lastAssignedOccupancyTime")) {
 				continue;
 			}
 			if(field.getName().equals("name")) {
 				first.addField(field);
 			}
-			else if(field.getName().equals("building") || field.getName().equals("floor")) {
+			else if(field.getName().equals("building") || field.getName().equals("location") || field.getName().equals("description") || field.getName().equals("operationHoursStart") || field.getName().equals("maxOccupancy")) {
 				second.addField(field);
 			}
 			else {

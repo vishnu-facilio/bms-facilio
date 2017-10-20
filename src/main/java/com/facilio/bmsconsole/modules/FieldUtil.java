@@ -168,7 +168,7 @@ public class FieldUtil {
 																							.moduleName(lookupField.getLookupModule().getName())
 																							.beanClass(moduleClass)
 																							.select(lookupBeanFields)
-																							.andCustomWhere("ID = ?", id);
+																							.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
 						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
 						if(records != null && records.size() > 0) {
 							return records.get(0);

@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.CampusContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SkillContext;
@@ -399,8 +399,8 @@ public class FacilioConstants {
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String DEFAULT_FIELD = "defaultField";
 		
-		public static final String CAMPUS = "campus";
-		public static final String CAMPUS_LIST = "campuses";
+		public static final String SITE = "site";
+		public static final String SITE_LIST = "sites";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
@@ -486,7 +486,7 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM, AlarmContext.class);
-			classMap.put(CAMPUS, CampusContext.class);
+			classMap.put(SITE, SiteContext.class);
 			classMap.put(BUILDING, BuildingContext.class);
 			classMap.put(FLOOR, FloorContext.class);
 			classMap.put(SPACE, SpaceContext.class);

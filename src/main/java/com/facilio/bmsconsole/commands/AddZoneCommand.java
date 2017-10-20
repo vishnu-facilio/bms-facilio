@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -21,6 +22,7 @@ public class AddZoneCommand implements Command {
 		ZoneContext zone = (ZoneContext) context.get(FacilioConstants.ContextNames.ZONE);
 		if(zone != null) 
 		{
+			zone.setSpaceType(SpaceType.ZONE);
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();

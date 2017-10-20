@@ -155,7 +155,7 @@ public class CommonCommandUtil {
 			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
 			if(device != null) {
 				String description;
-				BaseSpaceContext space = SpaceAPI.getBaseSpace(device.getSpaceId(), OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+				BaseSpaceContext space = SpaceAPI.getBaseSpace(device.getSpaceId());
 				if(alarm.getIsAcknowledged()) {
 					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
 				}
@@ -210,7 +210,7 @@ public class CommonCommandUtil {
 	
 	private static BaseSpaceContext getSpace(long id) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			BaseSpaceContext space = SpaceAPI.getBaseSpace(id, OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+			BaseSpaceContext space = SpaceAPI.getBaseSpace(id);
 			return space;
 		}
 		catch(Exception e) {

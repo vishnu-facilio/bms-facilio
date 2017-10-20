@@ -6,12 +6,11 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddBuildingCommand implements Command {
 	
@@ -23,9 +22,7 @@ public class AddBuildingCommand implements Command {
 		BuildingContext building = (BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING);
 		if(building != null) 
 		{
-			
-			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
-			building.setBaseSpaceId(spaceId);
+			building.setSpaceType(SpaceType.BUILDING);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);

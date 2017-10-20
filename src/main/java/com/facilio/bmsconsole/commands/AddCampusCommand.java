@@ -6,12 +6,11 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.CampusContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddCampusCommand implements Command {
 	
@@ -20,24 +19,23 @@ public class AddCampusCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		CampusContext campus = (CampusContext) context.get(FacilioConstants.ContextNames.CAMPUS);
-		if(campus != null) 
+		SiteContext site = (SiteContext) context.get(FacilioConstants.ContextNames.SITE);
+		if(site != null) 
 		{
+			site.setSpaceType(SpaceType.SITE);
 			//Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-			Long spaceId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
-			campus.setBaseSpaceId(spaceId);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
-			InsertRecordBuilder<CampusContext> builder = new InsertRecordBuilder<CampusContext>()
+			InsertRecordBuilder<SiteContext> builder = new InsertRecordBuilder<SiteContext>()
 															.moduleName(moduleName)
 															.dataTableName(dataTableName)
 															.fields(fields)
 															.connection(conn);
-			long id = builder.insert(campus);
-			campus.setId(id);
+			long id = builder.insert(site);
+			site.setId(id);
 			
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}

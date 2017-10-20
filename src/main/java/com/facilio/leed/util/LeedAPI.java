@@ -114,7 +114,7 @@ public class LeedAPI {
 				context.setEnergyScore(rs.getLong("HUMANEXPERIENCESCORE"));
 				context.setEnergyScore(rs.getLong("TRANSPORTSCORE"));
 				context.setEnergyScore(rs.getLong("LEEDSCORE"));
-				context.setArea(rs.getLong("AREA"));
+				context.setArea(rs.getInt("AREA"));
 				context.setName(rs.getString("NAME"));
 				context.setPhotoId(rs.getLong("PHOTO_ID"));
 			}

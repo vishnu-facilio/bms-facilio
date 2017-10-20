@@ -104,6 +104,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		for(FacilioModule currentModule : modules) {
 			if(currentLevel >= level) {
 				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
+				if(currentFields == null) {
+					currentFields = new ArrayList<>();
+				}
 				currentFields.add(FieldFactory.getIdField(currentModule));
 				currentFields.add(FieldFactory.getOrgIdField(currentModule));
 				currentFields.add(FieldFactory.getModuleIdField(currentModule));

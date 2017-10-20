@@ -8,7 +8,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.CampusContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -28,7 +28,7 @@ public class CampusAction extends ActionSupport {
 		getAllCampus.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setCampuses((List<CampusContext>) context.get(FacilioConstants.ContextNames.CAMPUS_LIST));
+		setCampuses((List<SiteContext>) context.get(FacilioConstants.ContextNames.SITE_LIST));
 		
 		return SUCCESS;
 	}
@@ -58,13 +58,13 @@ public class CampusAction extends ActionSupport {
 	public String addCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		System.out.println("The campus is "+campus);
-		context.put(FacilioConstants.ContextNames.CAMPUS, campus);
+		System.out.println("The campus is "+site);
+		context.put(FacilioConstants.ContextNames.SITE, site);
 		
 		Chain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
 		
-		setCampusId(campus.getId());
+		setCampusId(site.getId());
 		
 		return SUCCESS;
 	}
@@ -77,7 +77,7 @@ public class CampusAction extends ActionSupport {
 		Chain getCampusChain = FacilioChainFactory.getCampusDetailsChain();
 		getCampusChain.execute(context);
 		
-		setCampus((CampusContext) context.get(FacilioConstants.ContextNames.CAMPUS));
+		setSite((SiteContext) context.get(FacilioConstants.ContextNames.SITE));
 		
 		return SUCCESS;
 	}
@@ -107,16 +107,14 @@ public class CampusAction extends ActionSupport {
 		this.actionForm = actionForm;
 	}
 	
-	private CampusContext campus;
-	public CampusContext getCampus() 
-	{
-		return campus;
+	private SiteContext site;
+	public SiteContext getSite() {
+		return site;
 	}
-	public void setCampus(CampusContext campus) 
-	{
-		this.campus = campus;
+	public void setSite(SiteContext site) {
+		this.site = site;
 	}
-	
+
 	private long campusId;
 	public long getCampusId() 
 	{
@@ -127,19 +125,19 @@ public class CampusAction extends ActionSupport {
 		this.campusId = campusId;
 	}
 	
-	private List<CampusContext> campuses;
-	public List<CampusContext> getCampuses() 
+	private List<SiteContext> campuses;
+	public List<SiteContext> getCampuses() 
 	{
 		return campuses;
 	}
-	public void setCampuses(List<CampusContext> campuses) 
+	public void setCampuses(List<SiteContext> campuses) 
 	{
 		this.campuses = campuses;
 	}
 	
 	public String getModuleLinkName()
 	{
-		return FacilioConstants.ContextNames.CAMPUS;
+		return FacilioConstants.ContextNames.SITE;
 	}
 	
 	public ViewLayout getViewlayout()
@@ -157,13 +155,13 @@ public class CampusAction extends ActionSupport {
 		return "All Campus";
 	}
 	
-	public List<CampusContext> getRecords() 
+	public List<SiteContext> getRecords() 
 	{
 		return campuses;
 	}
 	
-	public CampusContext getRecord() 
+	public SiteContext getRecord() 
 	{
-		return campus;
+		return site;
 	}
 }

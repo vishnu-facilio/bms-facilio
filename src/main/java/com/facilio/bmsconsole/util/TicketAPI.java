@@ -450,7 +450,7 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
+				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces();
 				
 				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
 				for(BaseSpaceContext space : spaces) {

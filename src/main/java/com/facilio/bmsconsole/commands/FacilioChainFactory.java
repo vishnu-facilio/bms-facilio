@@ -508,7 +508,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAllCampusChain() {
 		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForCampus());
+		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllCampusCommand());
@@ -518,7 +518,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getNewCampusChain() {
 		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForCampus());
+		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -529,7 +529,7 @@ public class FacilioChainFactory {
 	public static Chain getAddCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
-		c.addCommand(SetTableNamesCommand.getForCampus());
+		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddCampusCommand());
 		addCleanUpCommand(c);
@@ -538,7 +538,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getCampusDetailsChain() {
 		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForCampus());
+		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetCampusCommand());

@@ -1,144 +1,156 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
 	
-	public static Long addSpaceBase(Long orgId) throws Exception
-	{
-		 Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Long areaId = null;
-		try
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO BaseSpace (ORGID) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
-			pstmt.setLong(1, orgId);
-			
-			if(pstmt.executeUpdate() < 1) 
-			{
-				throw new RuntimeException("Unable to add area");
-			}
-			else 
-			{
-				rs = pstmt.getGeneratedKeys();
-				rs.next();
-				areaId = rs.getLong(1);
-			}
+	public static SiteContext getSiteSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(SiteContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<SiteContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
 		}
-		catch(SQLException | RuntimeException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while adding asset" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return areaId;
+		return null;
 	}
 	
-	public static BaseSpaceContext getBuildingSpace(long id, long orgId, Connection conn) throws SQLException {
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Building.ID, Building.NAME, Building.CAMPUS_ID FROM BaseSpace "
-					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
-					+ " WHERE BaseSpace.ORGID = ? AND Building.ID = ?");
-			pstmt.setLong(1, orgId);
-			pstmt.setLong(2, id);
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				return getBuildingSpaceFromRS(rs);
-			}
-			else {
-				return null;
-			}
+	public static BuildingContext getBuildingSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(BuildingContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<BuildingContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		return null;
 	}
 	
-	public static BaseSpaceContext getBaseSpace(long id, long orgId, Connection conn) throws SQLException {
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
-					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
-					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
-					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
-					+ " LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID"
-					+ " WHERE BaseSpace.ORGID = ? AND BaseSpace.ID = ?");
-			pstmt.setLong(1, orgId);
-			pstmt.setLong(2, id);
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				return getBaseSpaceFromRS(rs);
-			}
-			else {
-				return null;
-			}
+	public static FloorContext getFloorSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+		
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(FloorContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<FloorContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
 		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(pstmt, rs);
-		}
+		return null;
 	}
 	
-	public static List<BaseSpaceContext> getBaseSpaceWithChildren(long orgId, long id, Connection conn) throws SQLException {
+	public static SpaceContext getSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(SpaceContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<SpaceContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+		return null;
+	}
+	
+	public static BaseSpaceContext getBaseSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+		return null;
+	}
+	
+	public static List<BaseSpaceContext> getBaseSpaceWithChildren(long id) throws Exception {
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
-		return getBaseSpaceWithChildren(orgId, ids, conn);
+		return getBaseSpaceWithChildren(ids);
 	}
 	
-	public static List<BaseSpaceContext> getBaseSpaceWithChildren(long orgId, List<Long> ids, Connection conn) throws SQLException
+	public static List<BaseSpaceContext> getBaseSpaceWithChildren(List<Long> ids) throws Exception
 	{
-		List<BaseSpaceContext> parentSpaces = getBaseSpaces(ids, orgId, conn);
+		List<BaseSpaceContext> parentSpaces = getBaseSpaces(ids);
 		
 		if(parentSpaces != null && !parentSpaces.isEmpty()) {
 			List<BaseSpaceContext> spaces = new ArrayList<>();
 			for(BaseSpaceContext parentSpace : parentSpaces) {
 				spaces.add(parentSpace);
-				String type = parentSpace.getType();
+				SpaceType type = parentSpace.getSpaceTypeEnum();
+				List<BaseSpaceContext> childSpaces = null;
 				switch(type) {
-					case "Campus":
-							spaces.addAll(getCampusChildren(orgId, parentSpace.getChildId(), conn));
+					case SITE:
+							childSpaces = getSiteChildren(parentSpace.getId());
 							break;
-					case "Building":
-							spaces.addAll(getBuildingChildren(orgId, parentSpace.getChildId(), conn));
+					case BUILDING:
+							childSpaces = getBuildingChildren(parentSpace.getId());
 							break;
-					case "Floor":
-							spaces.addAll(getFloorChildren(orgId, parentSpace.getChildId(), conn));
+					case FLOOR:
+							childSpaces = getFloorChildren(parentSpace.getId());
 							break;
-					case "Space":
-							break;		
+					case SPACE:
+					case ZONE:
+							childSpaces = getZoneChildren(parentSpace.getId());
+							break;
+				}
+				if(childSpaces != null && !childSpaces.isEmpty()) {
+					spaces.addAll(childSpaces);
 				}
 			}
 			return spaces;
@@ -146,227 +158,169 @@ public class SpaceAPI {
 		return null;
 	}
 	
-	private static List<BaseSpaceContext> getCampusChildren(long orgId, long campusId, Connection conn) throws SQLException {
-		List<Long> campusIds = new ArrayList<>();
-		campusIds.add(campusId);
-		return getCampusChildren(orgId, campusIds, conn);
+	private static List<BaseSpaceContext> getSiteChildren(long siteId) throws Exception {
+		List<Long> siteIds = new ArrayList<>();
+		siteIds.add(siteId);
+		return getSiteChildren(siteIds);
 	}
 	
-	private static List<BaseSpaceContext> getCampusChildren(long orgId, List<Long> campusIds, Connection conn) throws SQLException {
-		List<BaseSpaceContext> areas = new ArrayList<>();
-		if(campusIds != null && !campusIds.isEmpty()) {
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try 
-			{
-				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT BaseSpace.ID, BaseSpace.ORGID, Building.ID, Building.NAME, Building.CAMPUS_ID FROM BaseSpace ")
-					.append(" LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID ")
-					.append(" WHERE BaseSpace.ORGID = ? AND Building.CAMPUS_ID IN (");
-				
-				boolean isFirst = true;
-				for(long campusId : campusIds) {
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						sql.append(", ");
-					}
-					sql.append(campusId);
-				}
-				sql.append(")");
-				
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setLong(1, orgId);
-				rs = pstmt.executeQuery();
-				List<Long> buildingIds = new ArrayList<>();
-				while(rs.next()) 
-				{
-					BaseSpaceContext bs = new BaseSpaceContext();
-					bs.setId(rs.getLong("BaseSpace.ID"));
-					bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
-					bs.setName(rs.getString("Building.NAME"));
-					bs.setType("Building");
-					bs.setChildId(rs.getLong("Building.ID"));
-					bs.setParentType("Campus");
-					bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
-					areas.add(bs);
-					buildingIds.add(bs.getChildId());
-				}
-				
-				if(!buildingIds.isEmpty()) {
-					areas.addAll(getBuildingChildren(orgId, buildingIds, conn));
-				}
-			}
-			catch (SQLException e) 
-			{
-				logger.log(Level.SEVERE, "Exception while getting Buildings" +e.getMessage(), e);
-				throw e;
-			}
-			finally 
-			{
-				DBUtil.closeAll(pstmt, rs);
-			}
-		}
-		return areas;
-	}
-	
-	private static List<BaseSpaceContext> getBuildingChildren(long orgId, long buildingId, Connection conn) throws SQLException {
-		List<Long> buildingIds = new ArrayList<>();
-		buildingIds.add(buildingId);
-		return getBuildingChildren(orgId, buildingIds, conn);
-	}
-	
-	private static List<BaseSpaceContext> getBuildingChildren(long orgId, List<Long> buildingIds, Connection conn) throws SQLException {
-		List<BaseSpaceContext> areas = new ArrayList<>();
-		if(buildingIds != null && !buildingIds.isEmpty()) {
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try 
-			{
-				StringBuilder buildings = new StringBuilder();
-				boolean isFirst = true;
-				for(long buildingId : buildingIds) {
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						buildings.append(", ");
-					}
-					buildings.append(buildingId);
-				}
-				
-				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT BaseSpace.ID, BaseSpace.ORGID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Space.ID, Space.NAME, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID FROM BaseSpace ")
-					.append(" LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID")
-					.append(" LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID")
-					.append(" WHERE BaseSpace.ORGID = ? AND (Floor.BUILDING_ID IN (")
-					.append(buildings)
-					.append(") OR Space.BUILDING_ID IN (")
-					.append(buildings)
-					.append("))")
-					;
-				
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setLong(1, orgId);
-				rs = pstmt.executeQuery();
-				List<Long> floorIds = new ArrayList<>();
-				while(rs.next()) 
-				{
-					BaseSpaceContext bs = new BaseSpaceContext();
-					bs.setId(rs.getLong("BaseSpace.ID"));
-					bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
-					if(rs.getLong("Floor.ID") != 0)
-					{
-						bs.setName(rs.getString("Floor.NAME"));
-						bs.setType("Floor");
-						bs.setChildId(rs.getLong("Floor.ID"));
-						if(rs.getLong("Floor.BUILDING_ID") != 0)
-						{
-							bs.setParentType("Building");
-							bs.setParentId(rs.getLong("Floor.BUILDING_ID"));
-						}
-						floorIds.add(bs.getChildId());
-					}
-					else if(rs.getLong("Space.ID") != 0)
-					{
-						bs.setName(rs.getString("Space.NAME"));
-						bs.setType("Space");
-						bs.setChildId(rs.getLong("Space.ID"));
-						if(rs.getLong("Space.BUILDING_ID") != 0)
-						{
-							bs.setParentType("Building");
-							bs.setParentId(rs.getLong("Space.BUILDING_ID"));
-						}
-						if (rs.getLong("Space.SPACE_CATEGORY_ID") != 0) {
-							bs.setCategoryId(rs.getLong("Space.SPACE_CATEGORY_ID"));
-						}
-					}
-					areas.add(bs);
-				}
-				
-				if(!floorIds.isEmpty()) {
-					areas.addAll(getFloorChildren(orgId, floorIds, conn));
-				}
-			}
-			catch (SQLException e) 
-			{
-				logger.log(Level.SEVERE, "Exception while getting Spaces and Floors" +e.getMessage(), e);
-				throw e;
-			}
-			finally 
-			{
-				DBUtil.closeAll(pstmt, rs);
-			}
-		}
-		return areas;
-	}
-	
-	private static List<BaseSpaceContext> getFloorChildren(long orgId, long floorId, Connection conn) throws SQLException {
-		List<Long> floorIds = new ArrayList<>();
-		floorIds.add(floorId);
-		return getFloorChildren(orgId, floorIds, conn);
-	}
-	
-	private static List<BaseSpaceContext> getFloorChildren(long orgId, List<Long> floorIds, Connection conn) throws SQLException {
-		List<BaseSpaceContext> areas = new ArrayList<>();
-		if(floorIds != null && !floorIds.isEmpty()) {
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try 
-			{
-				StringBuilder sql = new StringBuilder();
-				sql.append("SELECT BaseSpace.ID, BaseSpace.ORGID, Space.ID, Space.NAME, Space.FLOOR_ID FROM BaseSpace ")
-					.append(" LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID")
-					.append(" WHERE BaseSpace.ORGID = ? AND Space.FLOOR_ID IN (");
-				
-				boolean isFirst = true;
-				for(long floorId : floorIds) {
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						sql.append(", ");
-					}
-					sql.append(floorId);
-				}
-				sql.append(")");
-				
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setLong(1, orgId);
-				rs = pstmt.executeQuery();
-				while(rs.next()) 
-				{
-					BaseSpaceContext bs = new BaseSpaceContext();
-					bs.setId(rs.getLong("BaseSpace.ID"));
-					bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
-					bs.setName(rs.getString("Space.NAME"));
-					bs.setType("Space");
-					bs.setChildId(rs.getLong("Space.ID"));
-					bs.setParentType("Floor");
-					bs.setParentId(rs.getLong("Space.FLOOR_ID"));
-					areas.add(bs);
-				}
-			}
-			catch (SQLException e) 
-			{
-				logger.log(Level.SEVERE, "Exception while getting Buildings" +e.getMessage(), e);
-				throw e;
-			}
-			finally 
-			{
-				DBUtil.closeAll(pstmt, rs);
-			}
-		}
-		return areas;
-	}
-	
-	public static List<BaseSpaceContext> getBaseSpaces(List<Long> idList, long orgId, Connection conn) throws SQLException
-	{
-		List<BaseSpaceContext> areas = new ArrayList<>();
-		if(idList != null && !idList.isEmpty()) {
+	private static List<BaseSpaceContext> getSiteChildren(List<Long> siteIds) throws Exception {
+		if(siteIds != null && !siteIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			
 			StringBuilder ids = new StringBuilder();
+			ids.append(module.getTableName())
+								.append(".SITE_ID IN (");
+			boolean isFirst = true;
+			for(long id : siteIds) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					ids.append(", ");
+				}
+				ids.append(id);
+			}
+			ids.append(")");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.andCustomWhere(ids.toString());
+			List<BaseSpaceContext> spaces = selectBuilder.get();
+			return spaces;
+		}
+		return null;
+	}
+	
+	private static List<BaseSpaceContext> getBuildingChildren(long buildingId) throws Exception {
+		List<Long> buildingIds = new ArrayList<>();
+		buildingIds.add(buildingId);
+		return getBuildingChildren(buildingIds);
+	}
+	
+	private static List<BaseSpaceContext> getBuildingChildren(List<Long> buildingIds) throws Exception {
+		if(buildingIds != null && !buildingIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			StringBuilder ids = new StringBuilder();
+			ids.append(module.getTableName())
+								.append(".BUILDING_ID IN (");
+			boolean isFirst = true;
+			for(long id : buildingIds) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					ids.append(", ");
+				}
+				ids.append(id);
+			}
+			ids.append(")");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.andCustomWhere(ids.toString());
+			List<BaseSpaceContext> spaces = selectBuilder.get();
+			return spaces;
+		}
+		return null;
+	}
+	
+	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {
+		List<Long> floorIds = new ArrayList<>();
+		floorIds.add(floorId);
+		return getFloorChildren(floorIds);
+	}
+	
+	private static List<BaseSpaceContext> getFloorChildren(List<Long> floorIds) throws Exception {
+		if(floorIds != null && !floorIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			StringBuilder ids = new StringBuilder();
+			ids.append(module.getTableName())
+								.append(".FLOOR_ID IN (");
+			boolean isFirst = true;
+			for(long id : floorIds) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					ids.append(", ");
+				}
+				ids.append(id);
+			}
+			ids.append(")");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.andCustomWhere(ids.toString());
+			List<BaseSpaceContext> spaces = selectBuilder.get();
+			return spaces;
+		}
+		return null;
+	}
+	
+	private static List<BaseSpaceContext> getZoneChildren(long zoneId) throws Exception {
+		List<Long> zoneIds = new ArrayList<>();
+		zoneIds.add(zoneId);
+		return getZoneChildren(zoneIds);
+	}
+	
+	private static List<BaseSpaceContext> getZoneChildren(List<Long> zoneIds) throws Exception {
+		if(zoneIds != null && !zoneIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			StringBuilder ids = new StringBuilder();
+			ids.append("Zone_Space.ZONE_ID IN (");
+			boolean isFirst = true;
+			for(long id : zoneIds) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					ids.append(", ");
+				}
+				ids.append(id);
+			}
+			ids.append(")");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.innerJoin("Zone_Space")
+																		.on("BaseSpace.ID = Zone_Space.ZONE_ID")
+																		.moduleName(module.getName())
+																		.andCustomWhere(ids.toString());
+																		
+			List<BaseSpaceContext> spaces = selectBuilder.get();
+			return spaces;
+		}
+		return null;
+	}
+	
+	public static List<BaseSpaceContext> getBaseSpaces(List<Long> idList) throws Exception
+	{
+		if(idList != null && !idList.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			StringBuilder ids = new StringBuilder();
+			ids.append(module.getTableName())
+								.append(".ID IN (");
 			boolean isFirst = true;
 			for(long id : idList) {
 				if(isFirst) {
@@ -377,155 +331,34 @@ public class SpaceAPI {
 				}
 				ids.append(id);
 			}
+			ids.append(")");
 			
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			try 
-			{
-				
-				pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
-						+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
-						+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
-						+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
-						+ " LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID"
-						+ " WHERE BaseSpace.ORGID = ? AND BaseSpace.ID IN ("+ids.toString()+")");
-				pstmt.setLong(1, orgId);
-				rs = pstmt.executeQuery();
-				while(rs.next()) 
-				{
-					areas.add(getBaseSpaceFromRS(rs));
-				}
-			}
-			catch (SQLException e) 
-			{
-				logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
-				throw e;
-			}
-			finally 
-			{
-				DBUtil.closeAll(pstmt, rs);
-			}
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			
+			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																		.select(fields)
+																		.table(module.getTableName())
+																		.moduleName(module.getName())
+																		.andCustomWhere(ids.toString());
+			List<BaseSpaceContext> spaces = selectBuilder.get();
+			return spaces;
 		}
-		return areas;
+		return null;
 	}
 	
-	public static List<BaseSpaceContext> getAllBaseSpaces(Long orgId, Connection conn) throws SQLException
+	public static List<BaseSpaceContext> getAllBaseSpaces() throws Exception
 	{
-		List<BaseSpaceContext> areas = new ArrayList<>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			pstmt = conn.prepareStatement("SELECT BaseSpace.ID, BaseSpace.ORGID, Campus.ID, Campus.NAME, Campus.PHOTO_ID, Building.ID, Building.NAME, Building.CAMPUS_ID, Building.PHOTO_ID, Floor.ID, Floor.NAME, Floor.BUILDING_ID, Floor.PHOTO_ID, Space.ID, Space.NAME, Space.FLOOR_ID, Space.BUILDING_ID, Space.SPACE_CATEGORY_ID, Space.PHOTO_ID FROM BaseSpace "
-					+ " LEFT JOIN Campus ON BaseSpace.ID = Campus.BASE_SPACE_ID"
-					+ " LEFT JOIN Building ON BaseSpace.ID = Building.BASE_SPACE_ID"
-					+ " LEFT JOIN Floor ON BaseSpace.ID = Floor.BASE_SPACE_ID"
-					+ " LEFT JOIN Space ON BaseSpace.ID = Space.BASE_SPACE_ID"
-					+ " WHERE BaseSpace.ORGID = ?");
-			pstmt.setLong(1, orgId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				areas.add(getBaseSpaceFromRS(rs));
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting all controllers" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
-		}
-		return areas;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(BaseSpaceContext.class);
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		return spaces;
 	}
 	
-	private static BaseSpaceContext getBaseSpaceFromRS(ResultSet rs) throws SQLException {
-		BaseSpaceContext bs = new BaseSpaceContext();
-		bs.setId(rs.getLong("BaseSpace.ID"));
-		bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
-		if(rs.getLong("Campus.ID") != 0)
-		{
-			bs.setName(rs.getString("Campus.NAME"));
-			bs.setType("Campus");
-			bs.setChildId(rs.getLong("Campus.ID"));
-			if(rs.getLong("Campus.PHOTO_ID") != 0)
-			{
-				bs.setPhotoId(rs.getLong("Campus.PHOTO_ID"));
-			}
-		}
-		else if(rs.getLong("Building.ID") != 0)
-		{
-			bs.setName(rs.getString("Building.NAME"));
-			bs.setType("Building");
-			bs.setChildId(rs.getLong("Building.ID"));
-			if(rs.getLong("Building.CAMPUS_ID") != 0)
-			{
-				bs.setParentType("Campus");
-				bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
-			}
-			if(rs.getLong("Building.PHOTO_ID") != 0)
-			{
-				bs.setPhotoId(rs.getLong("Building.PHOTO_ID"));
-			}
-		}
-		else if(rs.getLong("Floor.ID") != 0)
-		{
-			bs.setName(rs.getString("Floor.NAME"));
-			bs.setType("Floor");
-			bs.setChildId(rs.getLong("Floor.ID"));
-			if(rs.getLong("Floor.BUILDING_ID") != 0)
-			{
-				bs.setParentType("Building");
-				bs.setParentId(rs.getLong("Floor.BUILDING_ID"));
-			}
-			if(rs.getLong("Floor.PHOTO_ID") != 0)
-			{
-				bs.setPhotoId(rs.getLong("Floor.PHOTO_ID"));
-			}
-		}
-		else if(rs.getLong("Space.ID") != 0)
-		{
-			bs.setName(rs.getString("Space.NAME"));
-			bs.setType("Space");
-			bs.setChildId(rs.getLong("Space.ID"));
-			if(rs.getLong("Space.FLOOR_ID") != 0)
-			{
-				bs.setParentType("Floor");
-				bs.setParentId(rs.getLong("Space.FLOOR_ID"));
-			}
-			else if(rs.getLong("Space.BUILDING_ID") != 0)
-			{
-				bs.setParentType("Building");
-				bs.setParentId(rs.getLong("Space.BUILDING_ID"));
-			}
-			if (rs.getLong("Space.SPACE_CATEGORY_ID") != 0) {
-				bs.setCategoryId(rs.getLong("Space.SPACE_CATEGORY_ID"));
-			}
-			if(rs.getLong("Space.PHOTO_ID") != 0)
-			{
-				bs.setPhotoId(rs.getLong("Space.PHOTO_ID"));
-			}
-		}
-		return bs;
-	}
-	
-	private static BaseSpaceContext getBuildingSpaceFromRS(ResultSet rs) throws SQLException {
-		BaseSpaceContext bs = new BaseSpaceContext();
-		bs.setId(rs.getLong("BaseSpace.ID"));
-		bs.setOrgId(rs.getLong("BaseSpace.ORGID"));
-		if(rs.getLong("Building.ID") != 0)
-		{
-			bs.setName(rs.getString("Building.NAME"));
-			bs.setType("Building");
-			bs.setChildId(rs.getLong("Building.ID"));
-			if(rs.getLong("Building.CAMPUS_ID") != 0)
-			{
-				bs.setParentType("Campus");
-				bs.setParentId(rs.getLong("Building.CAMPUS_ID"));
-			}
-		}
-		return bs;
-	}
 }

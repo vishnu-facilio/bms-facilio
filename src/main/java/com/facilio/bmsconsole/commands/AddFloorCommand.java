@@ -6,12 +6,13 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddFloorCommand implements Command {
 	
@@ -23,10 +24,9 @@ public class AddFloorCommand implements Command {
 		FloorContext floor = (FloorContext) context.get(FacilioConstants.ContextNames.FLOOR);
 		if(floor != null) 
 		{
-			Long areaId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
-			floor.setBaseSpaceId(areaId);
+			floor.setSpaceType(SpaceType.FLOOR);
+			updateSiteId(floor);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -46,5 +46,13 @@ public class AddFloorCommand implements Command {
 			throw new IllegalArgumentException("Floor Object cannot be null");
 		}
 		return false;
+	}
+	
+	private void updateSiteId(FloorContext floor) throws Exception {
+		if(floor.getBuilding() != null) {
+			long buildingId = floor.getBuilding().getId();
+			BuildingContext building = (BuildingContext) SpaceAPI.getBuildingSpace(buildingId);
+			floor.setSiteId(building.getSiteId());
+		}
 	}
 }

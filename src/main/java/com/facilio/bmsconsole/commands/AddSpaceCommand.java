@@ -6,12 +6,14 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddSpaceCommand implements Command {
 	
@@ -23,10 +25,9 @@ public class AddSpaceCommand implements Command {
 		SpaceContext space = (SpaceContext) context.get(FacilioConstants.ContextNames.SPACE);
 		if(space != null) 
 		{
-			Long areaId = SpaceAPI.addSpaceBase(OrgInfo.getCurrentOrgInfo().getOrgid());
-			space.setBaseSpaceId(areaId);
+			space.setSpaceType(SpaceType.SPACE);
+			updateSiteAndBuildingId(space);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
-
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -46,5 +47,20 @@ public class AddSpaceCommand implements Command {
 			throw new IllegalArgumentException("Space Object cannot be null");
 		}
 		return false;
+	}
+	
+	private void updateSiteAndBuildingId(SpaceContext space) throws Exception {
+		if(space.getBuilding() != null) {
+			long buildingId = space.getBuilding().getId();
+			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
+			space.setSiteId(building.getSiteId());
+		}
+		
+		if(space.getFloor() != null) {
+			long floorId = space.getFloor().getId();
+			FloorContext floor = SpaceAPI.getFloorSpace(floorId);
+			space.setSiteId(floor.getSiteId());
+			space.setBuilding(floor.getBuilding());
+		}
 	}
 }

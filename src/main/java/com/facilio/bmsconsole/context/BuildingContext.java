@@ -1,61 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-
-public class BuildingContext extends ModuleBaseWithCustomFields {
-	
-	private long baseSpaceId;
-	public long getBaseSpaceId() {
-		return baseSpaceId;
-	}
-	public void setBaseSpaceId(long baseSpaceId) {
-		this.baseSpaceId = baseSpaceId;
-	}
-	
-	private CampusContext campus;
-	public CampusContext getCampus() {
-		return campus;
-	}
-	public void setCampus(CampusContext campus) {
-		this.campus = campus;
-	}
-	
-	private String name;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	private int currentOccupancy;
-	public int getCurrentOccupancy() {
-		return currentOccupancy;
-	}
-	public void setCurrentOccupancy(int currentOccupancy) {
-		this.currentOccupancy = currentOccupancy;
-	}
-	
-	private int maxOccupancy;
-	public int getMaxOccupancy() {
-		return maxOccupancy;
-	}
-	public void setMaxOccupancy(int maxOccupancy) {
-		this.maxOccupancy = maxOccupancy;
-	}
-	
-	private long area;
-	public long getArea() {
-		return area;
-	}
-	public void setArea(long area) {
-		this.area = area;
-	}
+public class BuildingContext extends BaseSpaceContext {
 	
 	private LocationContext location;
 	public LocationContext getLocation() {
@@ -65,27 +10,46 @@ public class BuildingContext extends ModuleBaseWithCustomFields {
 		this.location = location;
 	}
 	
-	private int floors;
-	public int getFloors() {
-		return floors;
+	private UserContext managedBy;
+	public UserContext getManagedBy() {
+		return managedBy;
 	}
-	public void setFloors(int floors) {
-		this.floors = floors;
+	public void setManagedBy(UserContext managedBy) {
+		this.managedBy = managedBy;
 	}
 	
-	private long photoId;
-	public long getPhotoId() {
-		return photoId;
+	private int noOfFloors = -1;
+	public int getNoOfFloors() {
+		return noOfFloors;
 	}
-	public void setPhotoId(long photoId) {
-		this.photoId = photoId;
+	public void setNoOfFloors(int noOfFloors) {
+		this.noOfFloors = noOfFloors;
 	}
-
-	public String getAvatarUrl() throws Exception {
-		if (this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
+	
+	private int grossFloorArea = -1;
+	public int getGrossFloorArea() {
+		return grossFloorArea;
+	}
+	public void setGrossFloorArea(int grossFloorArea) {
+		this.grossFloorArea = grossFloorArea;
+	}
+	
+	private SiteContext site;
+	public SiteContext getSite() {
+		return site;
+	}
+	public void setSite(SiteContext site) {
+		this.site = site;
+		if(site != null) {
+			super.setSiteId(site.getId());
 		}
-		return null;
+	}
+	
+	@Override
+	public long getSiteId() {
+		if(site != null) {
+			return site.getId();
+		}
+		return super.getSiteId();
 	}
 }

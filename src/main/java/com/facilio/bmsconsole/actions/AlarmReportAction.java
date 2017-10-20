@@ -136,7 +136,7 @@ public class AlarmReportAction extends ActionSupport {
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 				for(BuildingContext building : buildings) {
 					JSONObject buildingObj = new JSONObject();
-					buildingObj.put("id", building.getBaseSpaceId());
+					buildingObj.put("id", building.getId());
 					buildingObj.put("name", building.getName());
 					buildingObj.put("avatarUrl", building.getAvatarUrl());
 					
@@ -146,7 +146,7 @@ public class AlarmReportAction extends ActionSupport {
 						location.put("lng", building.getLocation().getLng());
 						buildingObj.put("location", location);
 					}
-					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), building.getBaseSpaceId(), conn);
+					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
 					buildingObj.put("stats", getBuildingAlarmTypeStats(allSpaces));
 					alarmTypeStats.add(buildingObj);
 				}
@@ -268,10 +268,10 @@ public class AlarmReportAction extends ActionSupport {
 				JSONArray buildingArray = new JSONArray();
 				for(BuildingContext building : buildings) {
 					JSONObject buildingObj = new JSONObject();
-					buildingObj.put("id", building.getBaseSpaceId());
+					buildingObj.put("id", building.getId());
 					buildingObj.put("name", building.getName());
 					
-					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), building.getBaseSpaceId(), conn);
+					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
 					if(requestType.equals("spaceResponse"))
 					{
 						buildingObj.put("stats", getBuildingAlarmResolutionStats(allSpaces));

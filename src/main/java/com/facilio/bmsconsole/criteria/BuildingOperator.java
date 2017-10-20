@@ -59,6 +59,12 @@ public enum BuildingOperator implements Operator<String> {
 			}
 			catch(SQLException e) {
 				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			return null;
 		}
@@ -102,7 +108,7 @@ public enum BuildingOperator implements Operator<String> {
 		return operatorMap;
 	}
 	
-	private static List<BaseSpaceContext> getAllBuildingIds(String value) throws SQLException {
+	private static List<BaseSpaceContext> getAllBuildingIds(String value) throws NumberFormatException, Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			if(value.contains(",")) {
 				List<Long> ids = new ArrayList<>();
@@ -110,10 +116,10 @@ public enum BuildingOperator implements Operator<String> {
 				for(String val : values) {
 					ids.add(Long.parseLong(val));
 				}
-				return SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), ids, conn);
+				return SpaceAPI.getBaseSpaceWithChildren(ids);
 			}
 			else {
-				return SpaceAPI.getBaseSpaceWithChildren(OrgInfo.getCurrentOrgInfo().getOrgid(), Long.parseLong(value), conn);
+				return SpaceAPI.getBaseSpaceWithChildren(Long.parseLong(value));
 			}
 		}
 		catch(SQLException e) {

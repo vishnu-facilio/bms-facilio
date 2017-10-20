@@ -60,8 +60,8 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("taskstatus", "TaskStatus");
 	}
 	
-	public static SetTableNamesCommand getForCampus() {
-		return new SetTableNamesCommand("campus", "Campus");
+	public static SetTableNamesCommand getForSite() {
+		return new SetTableNamesCommand("site", "Site");
 	}
 	
 	public static SetTableNamesCommand getForBuilding() {

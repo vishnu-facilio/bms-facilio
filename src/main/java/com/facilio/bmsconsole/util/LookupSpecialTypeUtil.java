@@ -41,33 +41,15 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			Connection conn = null;
-			try {
-				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
-				Map<Long, String> spaceList = new HashMap<>();
-				
-				if(spaces != null) {
-					for(BaseSpaceContext space : spaces) {
-						spaceList.put(space.getId(), space.getName()+" ("+space.getType()+")");
-					}
-				}
-				return spaceList;
-			}
-			catch(SQLException e) {
-				e.printStackTrace();
-				throw e;
-			}
-			finally {
-				if(conn != null) {
-					try {
-						conn.close();
-					}
-					catch(SQLException e) {
-						e.printStackTrace();
-					}
+			List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces();
+			Map<Long, String> spaceList = new HashMap<>();
+			
+			if(spaces != null) {
+				for(BaseSpaceContext space : spaces) {
+					spaceList.put(space.getId(), space.getName()+" ("+space.getSpaceTypeVal()+")");
 				}
 			}
+			return spaceList;
 		}
 		return null;
 	}
@@ -98,25 +80,7 @@ public class LookupSpecialTypeUtil {
 			return GroupAPI.getGroup(id);
 		}
 		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			Connection conn = null;
-			try {
-				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				return SpaceAPI.getBaseSpace(id, OrgInfo.getCurrentOrgInfo().getOrgid(), conn);
-			}
-			catch(SQLException e) {
-				e.printStackTrace();
-				throw e;
-			}
-			finally {
-				if(conn != null) {
-					try {
-						conn.close();
-					}
-					catch(SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			return SpaceAPI.getBaseSpace(id);
 		}
 		return null;
 	}

@@ -417,12 +417,12 @@ public class WorkOrderReportAction extends ActionSupport {
 					String primaryLocation = "--";
 					String secondaryLocation = "--";
 					
-					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(spaceId, orgId, conn);
+					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(spaceId);
 					
 					primaryLocation = baseSpace.getName();
-					if("Space".equals(baseSpace.getType()) && "Building".equals(baseSpace.getParentType()))
+					if(baseSpace.getSpaceTypeEnum() == BaseSpaceContext.SpaceType.SPACE && baseSpace.getBuildingId() != -1)
 					{
-						secondaryLocation = SpaceAPI.getBuildingSpace(baseSpace.getParentId(), orgId, conn).getName();
+						secondaryLocation = SpaceAPI.getBuildingSpace(baseSpace.getBuildingId()).getName();
 					}
 					
 					row.put("primary_location", primaryLocation);
