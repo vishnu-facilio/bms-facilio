@@ -109,7 +109,9 @@ public class SpaceAPI {
 																	.select(fields)
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
+																	.beanClass(BaseSpaceContext.class)
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		
 		if(spaces != null && !spaces.isEmpty()) {
@@ -189,6 +191,7 @@ public class SpaceAPI {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -227,6 +230,7 @@ public class SpaceAPI {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -265,6 +269,7 @@ public class SpaceAPI {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -304,6 +309,7 @@ public class SpaceAPI {
 																		.innerJoin("Zone_Space")
 																		.on("BaseSpace.ID = Zone_Space.ZONE_ID")
 																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
 																		
 			List<BaseSpaceContext> spaces = selectBuilder.get();
@@ -339,6 +345,7 @@ public class SpaceAPI {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
+																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;

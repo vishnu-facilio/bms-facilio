@@ -243,7 +243,7 @@ public class AlarmReportAction extends ActionSupport {
 					.moduleName(FacilioConstants.ContextNames.BUILDING)
 					.beanClass(BuildingContext.class)
 					.select(buildingFields)
-					.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.andCustomWhere("Building.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
 					.orderBy("ID");
 			return builder.get();
 		}
