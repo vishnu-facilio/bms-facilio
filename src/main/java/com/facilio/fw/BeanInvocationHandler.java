@@ -32,7 +32,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 			
 			OrgInfo oldorginfo = null;
 
-			if (orgid != 0 && OrgInfo.getCurrentOrgInfo() != null && OrgInfo.getCurrentOrgInfo().getOrgid() != orgid) {
+			if (orgid != 0 && ((OrgInfo.getCurrentOrgInfo() != null && OrgInfo.getCurrentOrgInfo().getOrgid() != orgid) || OrgInfo.getCurrentOrgInfo() == null)) {
 				OrgInfo orginfo = OrgApi.getOrgInfo(orgid);
 				oldorginfo = OrgInfo.getCurrentOrgInfo();
 				OrgInfo.setCurrentOrgInfo(orginfo);
