@@ -32,7 +32,6 @@ public class GetWorkOrderListCommand implements Command {
 														.moduleName(moduleName)
 														.beanClass(WorkOrderContext.class)
 														.select(fields)
-														.orderBy("CREATED_TIME desc")
 														.maxLevel(0);
 
 		if(view != null) {
@@ -45,6 +44,16 @@ public class GetWorkOrderListCommand implements Command {
 			for(Condition condition : conditionList) {
 				selectBuilder.andCondition(condition);
 			}
+		}
+		
+		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+		if (searchCriteria != null) {
+			selectBuilder.andCriteria(searchCriteria);
+		}
+		
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		if (orderBy != null && !orderBy.isEmpty()) {
+			selectBuilder.orderBy(orderBy);
 		}
 		
 		List<WorkOrderContext> workOrders = selectBuilder.get();

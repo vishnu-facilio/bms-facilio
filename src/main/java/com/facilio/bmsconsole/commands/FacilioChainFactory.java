@@ -234,6 +234,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteWorkOrderChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new DeleteWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getWorkOrderDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
@@ -252,6 +261,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -298,6 +309,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetWorkOrderRequestListCommand());
 		addCleanUpCommand(c);
 		return c;

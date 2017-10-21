@@ -169,6 +169,31 @@ public class Criteria {
 		}
 	}
 	
+	public void addOrCondition(Condition condition) {
+		if(pattern != null && !pattern.isEmpty()) {
+			int sequence = conditions.size()+1;
+			condition.setSequence(sequence);
+			conditions.put(sequence, condition);
+			
+			StringBuilder newPattern = new StringBuilder();
+			newPattern.append("(")
+						.append(pattern)
+						.append(")")
+						.append(" or ")
+						.append(sequence)
+						;
+			setPattern(newPattern.toString());
+		}
+		else {
+			conditions = new HashMap<>();
+			pattern = "1";
+			condition.setSequence(1);
+			
+			conditions = new HashMap<>();
+			conditions.put(1, condition);
+		}
+	}
+	
 	public void addAndConditions(List<Condition> newConditions) {
 		if(newConditions != null && !newConditions.isEmpty()) {
 			int sequence = 1;

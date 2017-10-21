@@ -474,6 +474,10 @@ public class FacilioConstants {
 		public static final String NEW_CV = "newCV";
 		public static final String FILTERS = "filters";
 		public static final String FILTER_CONDITIONS = "filterConditions";
+		public static final String SEARCH = "search";
+		public static final String SEARCH_CRITERIA = "searchCriteria";
+		public static final String SORTING = "sorting";
+		public static final String SORTING_QUERY = "sortingQuery";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

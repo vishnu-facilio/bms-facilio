@@ -171,6 +171,24 @@ public class WorkOrderRequestAction extends ActionSupport {
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
  		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "workorderrequest.subject,workorderrequest.description");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		
+ 		JSONObject sorting = new JSONObject();
+ 		if (getOrderBy() != null) {
+ 			sorting.put("orderBy", getOrderBy());
+ 			sorting.put("orderType", getOrderType());
+ 		}
+ 		else {
+ 			sorting.put("orderBy", "createdTime");
+ 			sorting.put("orderType", "desc");
+ 		}
+ 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 		
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
  		workOrderListChain.execute(context);
@@ -229,5 +247,32 @@ public class WorkOrderRequestAction extends ActionSupport {
 	public String getFilters()
 	{
 		return this.filters;
+	}
+	
+	String orderBy;
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+	
+	public String getOrderBy() {
+		return this.orderBy;
+	}
+	
+	String orderType;
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	
+	public String getOrderType() {
+		return this.orderType;
+	}
+	
+	String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	
+	public String getSearch() {
+		return this.search;
 	}
 }
