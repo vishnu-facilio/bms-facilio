@@ -42,9 +42,9 @@ public class LeedAPI {
 				context.setLeedId(rs.getLong("LEEDID"));
 				context.setBuildingStatus(rs.getString("BUILDINGSTATUS"));
 				context.setPhotoId(rs.getLong("PHOTO_ID"));
-				context.setArea(rs.getLong("AREA"));
-				context.setArea(rs.getLong("CURRENT_OCCUPANCY"));
-				context.setArea(rs.getLong("MAX_OCCUPANCY"));
+				context.setArea(rs.getInt("AREA"));
+				context.setArea(rs.getInt("CURRENT_OCCUPANCY"));
+				context.setArea(rs.getInt("MAX_OCCUPANCY"));
 				Long leedScore = rs.getLong("LEEDSCORE");
 				if(leedScore == null)
 				{
