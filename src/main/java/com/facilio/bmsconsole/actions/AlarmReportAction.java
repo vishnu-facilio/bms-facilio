@@ -638,7 +638,7 @@ public class AlarmReportAction extends ActionSupport {
 						long technician = (long) stat.get("technician");
 						statsObj.put("technician", technician);
 					}
-					double avg = ((BigDecimal) stat.get("average")).doubleValue();
+					double avg = stat.get("average") != null ? ((BigDecimal) stat.get("average")).doubleValue() : 0d;
 					statsObj.put("average", avg);
 					statsObj.put("total", total);
 					jsonArray.add(statsObj);
