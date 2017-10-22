@@ -55,109 +55,16 @@
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<!-- 
-		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
-			<param name="permission">WORKORDER_READ</param>
-			<result name="success" type="json">
-				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="attachmentList">
-			<param name="permission">WORKORDER_CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-	    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
-			<result name="success" type="json">
-				<param name="root">pickList</param>
-			</result>
-		</action>
-		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userPickList">
-	    	<result name="success" type="json">
-				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
-	    	<result name="success" type="json">
-				<param name="includeProperties">groups,groups\[\d+\],groups\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
-			<result name="success" type="json">
-				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
-			<result name="success" type="json">
-				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
-			<param name="permission">WORKORDER_READ</param>
-			<result name="success" type="json">
-				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction" method="viewList">
-			<result name="success" type="json">
-				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
-			</result>
-		</action>
-		-->
 	</package>
 	
 	<package name="leedSummaryApi" namespace="/api/leed/energy" extends="leedApi">
-		<action name="*" class="com.facilio.leed.actions.LeedAction" method="leedDetails">
+		<action name="*" class="com.facilio.leed.actions.LeedAction" method="meterList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">leedConfigurationContext.*,meterList,meterList\[\d+\],meterList\[\d+\].*</param>
+				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*</param>
 			</result>
-		</action>		
+		</action>				
 	</package>
 
 <!-- Suresh : API Page Ends here -->
