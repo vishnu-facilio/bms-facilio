@@ -11,5 +11,6 @@ artifacts:
     - appspec.yml
     - scripts/kill_server.sh
     - scripts/start_server.sh
+    - scripts/replace_conf.sh
   discard-paths: yes
 
