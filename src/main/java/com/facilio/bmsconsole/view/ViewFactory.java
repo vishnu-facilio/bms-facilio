@@ -134,7 +134,7 @@ public class ViewFactory {
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(ModuleFactory.getWorkOrdersModule());
+		userField.setModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 		
 		Condition userFieldCondition = new Condition();
