@@ -5,7 +5,7 @@ files:
     destination: /home/ubuntu/apache-tomcat-9.0.0.M21/webapps
   - source: /kill_server.sh
     destination: /home/ubuntu/
-  - source: /repalce_conf.sh
+  - source: /replace_conf.sh
     destination: /home/ubuntu/
   - source: /start_server.sh
     destination: /home/ubuntu/
