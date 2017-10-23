@@ -887,17 +887,8 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-	
-	public static Chain getAddEventChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ExecuteEventTransformRulesCommand());
-		c.addCommand(new ExecuteEventMappingRulesCommand());
-		c.addCommand(new AddEventCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 }
+
 class TransactionChain extends ChainBase
 {
 	public boolean execute(Context context)

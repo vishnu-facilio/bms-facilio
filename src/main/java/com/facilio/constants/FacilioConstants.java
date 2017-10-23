@@ -366,9 +366,6 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		
-//		public static final String EVENT = "event";
-//		public static final String EVENT_LIST = "events";
-		
 		public static final String ALARM = "alarm";
 		public static final String ALARM_LIST = "alarms";
 		
