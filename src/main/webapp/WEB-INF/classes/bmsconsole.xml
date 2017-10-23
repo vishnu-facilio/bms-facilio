@@ -1530,6 +1530,7 @@
 				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
+		
 	</package>
 
 	<package name="login" strict-method-invocation="false" namespace="/" extends='struts-default,tiles-default,json-default'>

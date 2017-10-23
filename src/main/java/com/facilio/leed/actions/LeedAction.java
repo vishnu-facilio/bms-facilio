@@ -3,6 +3,7 @@ package com.facilio.leed.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -97,6 +98,28 @@ public class LeedAction extends ActionSupport {
 		return this.meterList;
 	}
 	
+	public String importLeedList() throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		Chain FetchAssetsFromArcChain = FacilioChainFactory.FetchAssetsFromArcChain();
+		FetchAssetsFromArcChain.execute(context);
+		leedList();
+		return SUCCESS;
+	}
+	
+	public String addLeedConfiguration() throws Exception
+	{
+		LeedConfigurationContext context = new LeedConfigurationContext();
+		context.setId(1);
+		context.setLeedId(20000);
+		context.setBuildingStatus("Registered");
+		context.setLeedScore(55);
+		context.setEnergyScore(33);
+		context.setWaterScore(15);
+		context.setWasteScore(8);
+		LeedAPI.addLeedConfiguration(context);
+		return SUCCESS;
+	}
 	public String leedDetails() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
@@ -127,6 +150,19 @@ public class LeedAction extends ActionSupport {
 	public void setMeterName(String meterName) {
 		this.meterName = meterName;
 	}
+	
+	private JSONObject consumptionData;
+	
+	public JSONObject getConsumptionData()
+	{
+		return this.consumptionData;
+	}
+	
+	public void setConsumptionData(JSONObject consumptionData)
+	{
+		this.consumptionData = consumptionData;
+	}
+	
 /*	public String detailspage() throws Exception
 	{
 		setBuildingId(1);
@@ -203,6 +239,13 @@ public class LeedAction extends ActionSupport {
 		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
 		return SUCCESS;	
+	}
+	
+	public String fetchConsumptionData() throws Exception
+	{
+		JSONObject consumptionData =  LeedAPI.getConsumptionData(getDeviceId());
+		setConsumptionData(consumptionData);		
+		return SUCCESS;
 	}
 	
 	/*	private BuildingContext buildingContext;
