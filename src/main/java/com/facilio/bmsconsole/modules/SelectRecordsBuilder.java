@@ -146,6 +146,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
+	@Override
+	public SelectRecordsBuilder<E> offset(int offset) {
+		builder.offset(offset);
+		return this;
+	}
+	
 	@Deprecated
 	public SelectRecordsBuilder<E> connection(Connection conn) {
 		builder.connection(conn);
