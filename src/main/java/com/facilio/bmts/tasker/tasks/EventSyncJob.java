@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.chain.impl.ChainBase;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -22,12 +20,9 @@ import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmts.bmsconsole.commands.AddEventCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRulesCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventTransformRulesCommand;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.TransactionExceptionHandler;
 import com.facilio.bmts.bmsconsole.context.EventContext;
+import com.facilio.bmts.constants.BmtsConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -106,22 +101,9 @@ public class EventSyncJob extends FacilioJob{
 	    }
 	    
 	    FacilioContext context = new FacilioContext();
-	    context.put("event", event);
-	    Command addEvent = getAddEventChain();
+	    context.put(BmtsConstants.EVENT, event);
+	    
+	    Command addEvent = BmtsConstants.getAddEventChain();
 	    addEvent.execute(context);
-	}
-	
-	public static Chain getAddEventChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ExecuteEventTransformRulesCommand());
-		c.addCommand(new ExecuteEventMappingRulesCommand());
-		c.addCommand(new AddEventCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	private static void addCleanUpCommand(Chain c)
-	{
-		c.addCommand(new TransactionExceptionHandler());
 	}
 }

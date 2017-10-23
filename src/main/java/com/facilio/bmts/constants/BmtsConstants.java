@@ -3,14 +3,35 @@ package com.facilio.bmts.constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.impl.ChainBase;
+
+import com.facilio.bmsconsole.commands.TransactionExceptionHandler;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmts.bmsconsole.commands.AddEventCommand;
+import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRulesCommand;
+import com.facilio.bmts.bmsconsole.commands.ExecuteEventTransformRulesCommand;
 
 public class BmtsConstants {
 	
 	public static final String EVENT = "event";
 	public static final String EVENT_LIST = "events";
+	
+	public static Chain getAddEventChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ExecuteEventTransformRulesCommand());
+		c.addCommand(new ExecuteEventMappingRulesCommand());
+		c.addCommand(new AddEventCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	private static void addCleanUpCommand(Chain c)
+	{
+		c.addCommand(new TransactionExceptionHandler());
+	}
 	
 	public static FacilioModule getEventModule() {
 		FacilioModule alarmModule = new FacilioModule();
