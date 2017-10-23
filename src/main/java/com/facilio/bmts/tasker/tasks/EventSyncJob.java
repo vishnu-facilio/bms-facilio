@@ -1,6 +1,8 @@
 package com.facilio.bmts.tasker.tasks;
 
+import java.sql.Connection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,8 +25,10 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmts.bmsconsole.context.EventContext;
 import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class EventSyncJob extends FacilioJob{
 
@@ -102,6 +106,23 @@ public class EventSyncJob extends FacilioJob{
 	    
 	    FacilioContext context = new FacilioContext();
 	    context.put(BmtsConstants.EVENT, event);
+	    
+	    try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+		{
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.connection(conn)
+													.select(BmtsConstants.getEventPropertyFields())
+													.table("Event_Property")
+													.andCustomWhere("ORGID = ?", 1);	//Org Id
+			
+			List<Map<String, Object>> props = builder.get();
+			context.put(BmtsConstants.EVENT_PROPERTY, props.get(0));
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			throw e;
+		}
 	    
 	    Command addEvent = BmtsConstants.getAddEventChain();
 	    addEvent.execute(context);

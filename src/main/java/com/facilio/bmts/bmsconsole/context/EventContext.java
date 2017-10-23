@@ -42,6 +42,14 @@ public class EventContext {
 		this.node = node;
 	}
 
+	public String messageKey;
+	public String getMessageKey() {
+		return messageKey;
+	}
+	public void setMessageKey(String messageKey) {
+		this.messageKey = messageKey;
+	}
+
 	public String severity;
 	public String getSeverity() {
 		return severity;

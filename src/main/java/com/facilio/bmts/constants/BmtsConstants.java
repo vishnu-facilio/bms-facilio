@@ -11,19 +11,22 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmts.bmsconsole.commands.AddEventCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRulesCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventTransformRulesCommand;
+import com.facilio.bmts.bmsconsole.commands.AddOrUpdateAlarmCommand;
+import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRuleCommand;
+import com.facilio.bmts.bmsconsole.commands.ExecuteEventRuleCommand;
 
 public class BmtsConstants {
 	
 	public static final String EVENT = "event";
-	public static final String EVENT_LIST = "events";
+	public static final String EVENT_PROPERTY = "eventProperty";
+	public static final String IGNORE_EVENT = "ignoreEvent";
 	
 	public static Chain getAddEventChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new ExecuteEventTransformRulesCommand());
-		c.addCommand(new ExecuteEventMappingRulesCommand());
+		c.addCommand(new ExecuteEventRuleCommand());
+		c.addCommand(new ExecuteEventMappingRuleCommand());
 		c.addCommand(new AddEventCommand());
+		c.addCommand(new AddOrUpdateAlarmCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -41,22 +44,19 @@ public class BmtsConstants {
 		return alarmModule;
 	}
 	
+	public static FacilioModule getEventPropertyModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName("eventproperty");
+		alarmModule.setDisplayName("Event Property");
+		alarmModule.setTableName("Event_Property");
+		return alarmModule;
+	}
+	
 	public static FacilioField getOrgIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("ORGID");
-		if(module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-	
-	public static FacilioField getModuleIdField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName("moduleId");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("MODULEID");
 		if(module != null) {
 			field.setModule(module);
 		}
@@ -75,7 +75,6 @@ public class BmtsConstants {
 		id.setModule(module);
 		fields.add(id);
 		
-		fields.add(getModuleIdField(module));
 		fields.add(getOrgIdField(module));
 		
 		FacilioField source = new FacilioField();
@@ -99,6 +98,13 @@ public class BmtsConstants {
 		eventType.setModule(module);
 		fields.add(eventType);
 		
+		FacilioField messageKey = new FacilioField();
+		messageKey.setName("messageKey");
+		messageKey.setDataType(FieldType.STRING);
+		messageKey.setColumnName("MESSAGE_KEY");
+		messageKey.setModule(module);
+		fields.add(messageKey);
+		
 		FacilioField severity = new FacilioField();
 		severity.setName("severity");
 		severity.setDataType(FieldType.STRING);
@@ -119,6 +125,37 @@ public class BmtsConstants {
 		additionalInfo.setColumnName("ADDITIONAL_INFO");
 		additionalInfo.setModule(module);
 		fields.add(additionalInfo);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getEventPropertyFields() {
+		FacilioModule module = getEventPropertyModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("eventPropertyId");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("EVENT_PROPERTY_ID");
+		id.setModule(module);
+		fields.add(id);
+		
+		fields.add(getOrgIdField(module));
+		
+		FacilioField hasEventRule = new FacilioField();
+		hasEventRule.setName("hasEventRule");
+		hasEventRule.setDataType(FieldType.BOOLEAN);
+		hasEventRule.setColumnName("HASEVENTRULE");
+		hasEventRule.setModule(module);
+		fields.add(hasEventRule);
+		
+		FacilioField hasMappingRule = new FacilioField();
+		hasMappingRule.setName("node");
+		hasMappingRule.setDataType(FieldType.BOOLEAN);
+		hasMappingRule.setColumnName("HASMAPPINGRULE");
+		hasMappingRule.setModule(module);
+		fields.add(hasMappingRule);
 		
 		return fields;
 	}
