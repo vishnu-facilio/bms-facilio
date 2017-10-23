@@ -37,10 +37,7 @@ public class ExecuteEventRuleCommand implements Command {
 					ignoreEvent = criteria.computePredicate().evaluate(event);
 				}
 			}
-			if(ignoreEvent)
-			{
-				context.put(BmtsConstants.IGNORE_EVENT, true);
-			}
+			context.put(BmtsConstants.IGNORE_EVENT, ignoreEvent);
 		}
 		return false;
 	}

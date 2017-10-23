@@ -150,8 +150,29 @@ public class BmtsConstants {
 		hasEventRule.setModule(module);
 		fields.add(hasEventRule);
 		
+		FacilioField hasEventFilter = new FacilioField();
+		hasEventFilter.setName("hasEventFilter");
+		hasEventFilter.setDataType(FieldType.BOOLEAN);
+		hasEventFilter.setColumnName("HASEVENTFILTER");
+		hasEventFilter.setModule(module);
+		fields.add(hasEventFilter);
+		
+		FacilioField hasTransformRule = new FacilioField();
+		hasTransformRule.setName("hasTransformRule");
+		hasTransformRule.setDataType(FieldType.BOOLEAN);
+		hasTransformRule.setColumnName("HASTRANSFORMRULE");
+		hasTransformRule.setModule(module);
+		fields.add(hasTransformRule);
+		
+		FacilioField hasThresholdRule = new FacilioField();
+		hasThresholdRule.setName("hasThresholdRule");
+		hasThresholdRule.setDataType(FieldType.BOOLEAN);
+		hasThresholdRule.setColumnName("HASTHRESHOLDRULE");
+		hasThresholdRule.setModule(module);
+		fields.add(hasThresholdRule);
+		
 		FacilioField hasMappingRule = new FacilioField();
-		hasMappingRule.setName("node");
+		hasMappingRule.setName("hasMappingRule");
 		hasMappingRule.setDataType(FieldType.BOOLEAN);
 		hasMappingRule.setColumnName("HASMAPPINGRULE");
 		hasMappingRule.setModule(module);
