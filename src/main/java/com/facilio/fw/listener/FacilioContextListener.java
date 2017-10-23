@@ -18,6 +18,7 @@ import com.cronutils.builder.CronBuilder;
 import com.cronutils.model.Cron;
 import com.cronutils.model.field.expression.FieldExpression;
 import com.cronutils.model.field.expression.FieldExpressionFactory;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -48,7 +49,10 @@ public class FacilioContextListener implements ServletContextListener {
 				e.printStackTrace();
 			}
 			BeanFactory.initBeans();
-			FacilioScheduler.initScheduler();
+			
+			if(Boolean.parseBoolean(AwsUtil.getConfig("schedulerServer"))) {
+				FacilioScheduler.initScheduler();
+			}
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool
@@ -69,18 +73,18 @@ public class FacilioContextListener implements ServletContextListener {
 				c.close();
 			}
 			
-			List<FieldExpression> expressions = new ArrayList<>();
-			expressions.add(FieldExpressionFactory.on(7));
-			expressions.add(FieldExpressionFactory.on(8));
-			Cron cron = CronBuilder.cron(CronUtil.DEFAULT_CRON_DEFN)
-					.withYear(FieldExpressionFactory.always())
-					.withMinute(FieldExpressionFactory.every(2))
-					.withHour(FieldExpressionFactory.on(15))
-					.withDoM(FieldExpressionFactory.and(expressions))
-					.withMonth(FieldExpressionFactory.always())
-					.withDoW(FieldExpressionFactory.always())
-					.instance();
-			FacilioTimer.scheduleCalendarJob(1, "test", 30, cron, "priority", 1507638900l);
+//			List<FieldExpression> expressions = new ArrayList<>();
+//			expressions.add(FieldExpressionFactory.on(7));
+//			expressions.add(FieldExpressionFactory.on(8));
+//			Cron cron = CronBuilder.cron(CronUtil.DEFAULT_CRON_DEFN)
+//					.withYear(FieldExpressionFactory.always())
+//					.withMinute(FieldExpressionFactory.every(2))
+//					.withHour(FieldExpressionFactory.on(15))
+//					.withDoM(FieldExpressionFactory.and(expressions))
+//					.withMonth(FieldExpressionFactory.always())
+//					.withDoW(FieldExpressionFactory.always())
+//					.instance();
+//			FacilioTimer.scheduleCalendarJob(1, "test", 30, cron, "priority", 1507638900l);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
