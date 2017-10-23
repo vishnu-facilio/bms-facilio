@@ -1,4 +1,14 @@
-echo "this will the script start the server"
+echo "starting the server..."
+
+export APP_HOME="/home/ubuntu/apache-tomcat-9.0.0.M21"
+export CONF_DIR="$APP_HOME/webapps/bms/WEB-INF/classes/conf"
+
+cd /home/ubuntu
+
 sudo killall -9 java
-sudo unzip /home/ubuntu/apache-tomcat-9.0.0.M21/webapps/bms.war -d /home/ubuntu/apache-tomcat-9.0.0.M21/webapps/bms
-sudo sh /home/ubuntu/apache-tomcat-9.0.0.M21/bin/catalina.sh start
+
+sudo unzip $APP_HOME/webapps/bms.war -d $APP_HOME/webapps/bms
+sudo ./replace_conf.sh
+sudo sh $APP_HOME/bin/catalina.sh start
+
+echo "server started..."
