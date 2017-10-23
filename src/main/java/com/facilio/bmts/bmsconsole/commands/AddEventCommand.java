@@ -25,7 +25,7 @@ public class AddEventCommand implements Command {
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 																.connection(conn)
 																.table("Event")
-																.fields(FieldFactory.getEventFields())
+																.fields(BmtsConstants.getEventFields())
 																.addRecord(props);
 			
 			builder.save();
