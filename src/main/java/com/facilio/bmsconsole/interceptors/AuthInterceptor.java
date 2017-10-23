@@ -99,6 +99,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 			// Step 4: Setting threadlocal variables
 			UserInfo.setCurrentUser(userInfo);
 			OrgInfo.setCurrentOrgInfo(OrgApi.getOrgInfo(userInfo.getOrgId()));
+			// Setting ORGID & USERID in attributes for using in access log
+			request.setAttribute("ORGID", OrgInfo.getCurrentOrgInfo().getOrgid());
+			request.setAttribute("USERID", UserInfo.getCurrentUser().getOrgUserId());
 
 			// Step 5: Checking permission for current resource
 			Parameter permission = ActionContext.getContext().getParameters().get("permission");
