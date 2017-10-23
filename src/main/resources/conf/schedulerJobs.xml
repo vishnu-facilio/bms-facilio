@@ -5,6 +5,5 @@
 	<job classname='test.Test2' /> -->
 	 <job name='DeviceDataExtractor' classname='com.facilio.tasker.tasks.DeviceDataExtractorJob' />
 	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' />
-	 <job name='EventSync' classname='com.facilio.tasker.tasks.EventSyncJob' />
 	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' />
 </scheduler>
