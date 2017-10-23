@@ -30,10 +30,11 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ? & ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
 			
 			pstmt.setLong(1, orgId);
 			pstmt.setInt(2, type);
+			pstmt.setInt(3, type);
 			
 			rs = pstmt.executeQuery();
 			
@@ -220,7 +221,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE Users.USERID = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.USER_TYPE, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE Users.USERID = ?");
 			pstmt.setLong(1, userId);
 			
 			rs = pstmt.executeQuery();
@@ -245,7 +246,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID INNER JOIN Role ON ORG_Users.ROLE_ID = Role.ROLE_ID WHERE ORG_Users.ORGID = ? AND Role.NAME = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.USER_TYPE, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID INNER JOIN Role ON ORG_Users.ROLE_ID = Role.ROLE_ID WHERE ORG_Users.ORGID = ? AND Role.NAME = ?");
 			pstmt.setLong(1, orgId);
 			pstmt.setString(2, FacilioConstants.Role.SUPER_ADMIN);
 			rs = pstmt.executeQuery();
@@ -288,16 +289,17 @@ public class UserAPI {
 		return null;
 	}
 	
-	public static UserContext getRequester(String email) throws SQLException {
+	public static UserContext getRequester(String email, long orgId) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.USER_TYPE = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? AND ORG_Users.ORGID = ?");
 			pstmt.setString(1, email);
-			pstmt.setInt(2, UserType.REQUESTER.getValue());
+			pstmt.setLong(2,  orgId);
+//			pstmt.setInt(2, UserType.REQUESTER.getValue());
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -321,9 +323,10 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID and ORG_Users.USER_TYPE = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID and ? & ORG_Users.USER_TYPE = ?");
 			pstmt.setString(1, email);
 			pstmt.setInt(2, UserType.USER.getValue());
+			pstmt.setInt(3, UserType.USER.getValue());
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -516,6 +519,30 @@ public class UserAPI {
 		}
 	}
 	
+	public static int updateUserType(UserContext uc, UserType type) throws SQLException {
+		
+		if(uc == null || uc.getOrgUserId() == -1) {
+			throw new IllegalArgumentException("Invalid UserContext during updation of user type");
+		}
+		
+		if(type == null) {
+			throw new IllegalArgumentException("Invalid UserType during updation of user type");
+		}
+		
+		int newUserType = type.setUser(uc.getUserType());
+		String sql = "UPDATE ORG_Users SET USER_TYPE = ? WHERE ORG_USERID = ?";
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, newUserType);
+			pstmt.setLong(2, uc.getOrgUserId());
+			
+			return pstmt.executeUpdate();
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	public static boolean updateUserPhoto(long userId, long photoId, Connection conn) throws Exception {
 
 		boolean isLocalConn = false;
@@ -560,7 +587,7 @@ public class UserAPI {
 			uc.setRoleId(rs.getLong("ROLE_ID"));
 		}
 		uc.setPhotoId(rs.getLong("PHOTO_ID"));
-		
+		uc.setUserType(rs.getInt("USER_TYPE"));
 		return uc;
 	}
 	
@@ -577,6 +604,7 @@ public class UserAPI {
 		uc.setInviteAcceptStatus(rs.getBoolean("INVITATION_ACCEPT_STATUS"));
 		uc.setRoleId(rs.getLong("ROLE_ID"));
 		uc.setPhotoId(rs.getLong("PHOTO_ID"));
+		uc.setUserType(rs.getInt("USER_TYPE"));
 		
 		RoleContext rc = new RoleContext();
 		rc.setRoleId(rs.getLong("ROLE_ID"));

@@ -80,10 +80,11 @@ public class CommonCommandUtil {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
+			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ? & ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
 			
 			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
 			pstmt.setInt(2, UserType.REQUESTER.getValue());
+			pstmt.setInt(3, UserType.REQUESTER.getValue());
 			
 			rs = pstmt.executeQuery();
 			

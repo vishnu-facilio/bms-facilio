@@ -834,6 +834,18 @@ public class FacilioConstants {
 	        return userType;
 	    }
 	    
+	    public boolean isUser(int userType) {
+	    	return (userType & this.userType) == this.userType;
+	    }
+	    
+	    public int setUser(int userType) {
+			return userType | this.userType;
+		}
+		
+		public int unSetUser(int userType) {
+			return userType & ~this.userType;
+		}
+	    
 	    public static UserType valueOf(int eventTypeVal) {
 	    	return typeMap.get(eventTypeVal);
 	    }
