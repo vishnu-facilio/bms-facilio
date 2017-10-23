@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class GetAllAreaCommand implements Command{
 

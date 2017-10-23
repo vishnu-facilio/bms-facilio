@@ -7,8 +7,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.EnergyDataContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;

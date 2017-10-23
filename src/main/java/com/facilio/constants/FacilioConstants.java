@@ -11,9 +11,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;

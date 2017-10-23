@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-
 import com.facilio.bmsconsole.commands.data.EventInfo;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;

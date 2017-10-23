@@ -1,7 +1,5 @@
 package com.facilio.leed.context;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.device.Device;
 
 public class LeedEnergyMeterContext extends Device {

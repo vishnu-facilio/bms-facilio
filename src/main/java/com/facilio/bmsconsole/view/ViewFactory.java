@@ -4,11 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.poi.xdgf.usermodel.section.geometry.GeometryRowFactory;
-
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -134,7 +131,8 @@ public class ViewFactory {
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(ModuleFactory.getTicketsModule());
+		userField.setModule(ModuleFactory.getWorkOrdersModule());
+		userField.setExtendedModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 		
 		Condition userFieldCondition = new Condition();

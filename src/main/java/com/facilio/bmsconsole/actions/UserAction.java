@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
