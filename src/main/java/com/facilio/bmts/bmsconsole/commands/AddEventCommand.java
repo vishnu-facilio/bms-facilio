@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.bmts.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class AddEventCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		EventContext event = (EventContext) context.get(FacilioConstants.ContextNames.EVENT);
+		EventContext event = (EventContext) context.get("event");
 		
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String, Object> props = FieldUtil.getAsProperties(event);
