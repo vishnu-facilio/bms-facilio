@@ -44,6 +44,10 @@ public class EventContext {
 
 	public String messageKey;
 	public String getMessageKey() {
+		if(messageKey == null)
+		{
+			this.messageKey = this.source + "_" + this.node + "_" + this.eventType;
+		}
 		return messageKey;
 	}
 	public void setMessageKey(String messageKey) {

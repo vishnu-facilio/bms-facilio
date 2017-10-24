@@ -63,7 +63,7 @@ public class EventSyncJob extends FacilioJob{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void processPayload(Long timestamp, Map<String, String> payload) throws Exception 
 	{
 	    System.out.println("EventSyncJob Payload:::" + payload);
