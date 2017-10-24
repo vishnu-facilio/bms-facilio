@@ -60,6 +60,14 @@ public class BmtsConstants {
 		return eventrule;
 	}
 	
+	public static FacilioModule getEventMappingRuleModule() {
+		FacilioModule eventmappingrule = new FacilioModule();
+		eventmappingrule.setName("eventmappingrule");
+		eventmappingrule.setDisplayName("Event Mapping Rule");
+		eventmappingrule.setTableName("Event_Mapping_Rule");
+		return eventmappingrule;
+	}
+	
 	public static FacilioField getOrgIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");
@@ -223,6 +231,58 @@ public class BmtsConstants {
 		hasThresholdRule.setColumnName("HASTHRESHOLDRULE");
 		hasThresholdRule.setModule(module);
 		fields.add(hasThresholdRule);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getEventMappingRuleFields() {
+		FacilioModule module = getEventMappingRuleModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("eventMappingRuleId");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("EVENT_MAPPING_RULE_ID");
+		id.setModule(module);
+		fields.add(id);
+		
+		fields.add(getOrgIdField(module));
+		
+		FacilioField mappingType = new FacilioField();
+		mappingType.setName("mappingType");
+		mappingType.setDataType(FieldType.NUMBER);
+		mappingType.setColumnName("MAPPING_TYPE");
+		mappingType.setModule(module);
+		fields.add(mappingType);
+		
+		FacilioField fromField = new FacilioField();
+		fromField.setName("fromField");
+		fromField.setDataType(FieldType.STRING);
+		fromField.setColumnName("FROM_FIELD");
+		fromField.setModule(module);
+		fields.add(fromField);
+		
+		FacilioField toField = new FacilioField();
+		toField.setName("toField");
+		toField.setDataType(FieldType.STRING);
+		toField.setColumnName("TO_FIELD");
+		toField.setModule(module);
+		fields.add(toField);
+		
+		FacilioField constantValue = new FacilioField();
+		constantValue.setName("constantValue");
+		constantValue.setDataType(FieldType.STRING);
+		constantValue.setColumnName("CONSTANT_VALUE");
+		constantValue.setModule(module);
+		fields.add(constantValue);
+		
+		FacilioField mappingPairs = new FacilioField();
+		mappingPairs.setName("mappingPairs");
+		mappingPairs.setDataType(FieldType.STRING);
+		mappingPairs.setColumnName("MAPPING_PAIRS");
+		mappingPairs.setModule(module);
+		fields.add(mappingPairs);
 		
 		return fields;
 	}
