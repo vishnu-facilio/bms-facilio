@@ -624,6 +624,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LeedBuildingDetailsCommand());
 		return c;
 	}
+	
+	
 	public static Chain addConsumptionDataChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddConsumptionForLeed());

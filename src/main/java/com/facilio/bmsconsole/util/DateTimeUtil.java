@@ -371,7 +371,7 @@ public class DateTimeUtil
 		return Period.between(startDate, endDate).getDays();
 	}
 	
-	public long getTime(String timeStamp, Boolean... seconds)
+	public static long getTime(String timeStamp, Boolean... seconds)
 	{
 		//eg: timeStamp="2017-08-09T10:06:10.894752+04:00"; 
 		//    timeStamp="2017-08-09T10:06:10.894752Z";

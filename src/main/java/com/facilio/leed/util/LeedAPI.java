@@ -351,10 +351,10 @@ public class LeedAPI {
 		
 	}
 	
-	public static JSONObject getConsumptionData(long deviceId) throws SQLException , RuntimeException 
+	public static JSONArray getConsumptionData(long deviceId) throws SQLException , RuntimeException 
 	{
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("DeviceId", deviceId);
+		JSONArray arr = new JSONArray();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -365,14 +365,15 @@ public class LeedAPI {
 			pstmt = conn.prepareStatement("select ADDED_MONTH,SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where DEVICE_ID = ? GROUP BY ADDED_MONTH;");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
-			JSONArray arr = new JSONArray();
+			
 			while(rs.next())
 			{
 				JSONObject obj = new JSONObject();
-				obj.put(rs.getInt("ADDED_MONTH"), rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
+				obj.put("Month", rs.getInt("ADDED_MONTH") );
+				obj.put("Consumption",  rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
 				arr.add(obj);;
 			}
-			jsonObj.put("values", arr);			
+		
 		}
 		catch(SQLException | RuntimeException e)
 		{
@@ -382,7 +383,7 @@ public class LeedAPI {
 		{
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
-		return jsonObj;
+		return arr;
 	}
 	
 }
