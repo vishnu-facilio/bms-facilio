@@ -11,9 +11,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -833,6 +833,18 @@ public class FacilioConstants {
 	    public int getValue() {
 	        return userType;
 	    }
+	    
+	    public boolean isUser(int userType) {
+	    	return (userType & this.userType) == this.userType;
+	    }
+	    
+	    public int setUser(int userType) {
+			return userType | this.userType;
+		}
+		
+		public int unSetUser(int userType) {
+			return userType & ~this.userType;
+		}
 	    
 	    public static UserType valueOf(int eventTypeVal) {
 	    	return typeMap.get(eventTypeVal);

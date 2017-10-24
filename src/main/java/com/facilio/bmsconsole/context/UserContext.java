@@ -132,6 +132,14 @@ public class UserContext {
 		this.photoId = photoId;
 	}
 	
+	private int userType;
+	public int getUserType() {
+		return userType;
+	}
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
+	
 	public String getAvatarUrl() throws Exception {
 		if (this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();

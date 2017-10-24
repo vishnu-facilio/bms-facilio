@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.workflow;
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class WorkorderTemplate extends UserTemplate {

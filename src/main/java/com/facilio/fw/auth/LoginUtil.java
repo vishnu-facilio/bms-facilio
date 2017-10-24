@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 
