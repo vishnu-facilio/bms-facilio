@@ -34,7 +34,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()
 																.moduleName(moduleName)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.fields(fields)
 																.connection(conn);
 			long workOrderId = builder.insert(workOrderRequest);

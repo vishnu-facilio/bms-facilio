@@ -30,7 +30,7 @@ public class AddWorkOrderCommand implements Command {
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.fields(fields)
 																.connection(conn);
 			

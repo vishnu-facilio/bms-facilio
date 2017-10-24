@@ -30,7 +30,7 @@ public class AddZoneCommand implements Command {
 			
 			InsertRecordBuilder<ZoneContext> builder = new InsertRecordBuilder<ZoneContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long zoneId = builder.insert(zone);

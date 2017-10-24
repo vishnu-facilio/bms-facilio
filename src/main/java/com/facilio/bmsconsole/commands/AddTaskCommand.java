@@ -25,7 +25,7 @@ public class AddTaskCommand implements Command {
 			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long taskId = builder.insert(task);

@@ -28,7 +28,7 @@ public class AddSkillCommand implements Command {
 			
 			InsertRecordBuilder<SkillContext> builder = new InsertRecordBuilder<SkillContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long id = builder.insert(skill);

@@ -31,7 +31,7 @@ public class AddCampusCommand implements Command {
 			
 			InsertRecordBuilder<SiteContext> builder = new InsertRecordBuilder<SiteContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long id = builder.insert(site);

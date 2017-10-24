@@ -31,7 +31,7 @@ public class AddBuildingCommand implements Command {
 			
 			InsertRecordBuilder<BuildingContext> builder = new InsertRecordBuilder<BuildingContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long id = builder.insert(building);

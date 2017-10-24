@@ -48,17 +48,13 @@ public class LeedAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("leedconfiguration");
 		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
-		Iterator itr = leedConfigList.iterator();
-		while(itr.hasNext())
-		{
-			LeedConfigurationContext leedConfig = (LeedConfigurationContext)itr.next();
-			InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
-																			.fields(fields)
-																			.dataTableName(module.getTableName())
-																			.moduleName(module.getName());
 		
-			insertBuilder.insert(leedConfig);
-		}
+		InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
+																			.fields(fields)
+																			.table(module.getTableName())
+																			.moduleName(module.getName());
+		insertBuilder.addRecords(leedConfigList);
+		insertBuilder.save();
 	}
 	
 	public static long addLeedConfiguration(LeedConfigurationContext leedConfig) throws Exception {
@@ -68,7 +64,7 @@ public class LeedAPI {
 		
 		InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
 																			.fields(fields)
-																			.dataTableName(module.getTableName())
+																			.table(module.getTableName())
 																			.moduleName(module.getName())
 																			.level(3);
 		

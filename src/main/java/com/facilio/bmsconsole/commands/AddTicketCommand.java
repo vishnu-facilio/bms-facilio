@@ -38,7 +38,7 @@ public class AddTicketCommand implements Command {
 			
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()
 																.moduleName(moduleName)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.fields(fields)
 																.connection(conn);
 			long ticketId = builder.insert(ticket);

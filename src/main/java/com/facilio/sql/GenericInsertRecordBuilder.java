@@ -50,7 +50,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	@Override
 	public void save() throws SQLException, RuntimeException {
 		
-		if(values == null || values.isEmpty()) {
+		if(values.isEmpty()) {
 			return;
 		}
 		

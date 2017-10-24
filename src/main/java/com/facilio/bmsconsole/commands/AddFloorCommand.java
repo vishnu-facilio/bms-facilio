@@ -33,7 +33,7 @@ public class AddFloorCommand implements Command {
 			
 			InsertRecordBuilder<FloorContext> builder = new InsertRecordBuilder<FloorContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long id = builder.insert(floor);
