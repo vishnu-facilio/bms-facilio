@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
@@ -71,6 +72,19 @@ public class TemplateAPI {
 					if(templates != null && !templates.isEmpty()) {
 						templateMap.putAll(templates.get(0));
 						return getWorkorderTemplateFromMap(templateMap);
+					}
+				}
+				else if(type == UserTemplate.Type.ALARM.getIntVal()) {
+					selectBuider = new GenericSelectRecordBuilder()
+							.connection(conn)
+							.select(FieldFactory.getAlarmTemplateFields())
+							.table("Alarm_Template")
+							.andCustomWhere("Alarm_Template.ID = ?", id);
+					
+					templates = selectBuider.get();
+					if(templates != null && !templates.isEmpty()) {
+						templateMap.putAll(templates.get(0));
+						return getAlarmTemplateFromMap(templateMap);
 					}
 				}
 			}
@@ -254,6 +268,20 @@ public class TemplateAPI {
 	
 	private static WorkorderTemplate getWorkorderTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		WorkorderTemplate template = new WorkorderTemplate();
+		BeanUtils.populate(template, templateMap);
+		
+		try(InputStream body = FileStoreFactory.getInstance().getFileStore().readFile(template.getContentId())) {
+			template.setContent(IOUtils.toString(body));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return template;
+	}
+	
+	private static AlarmTemplate getAlarmTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		AlarmTemplate template = new AlarmTemplate();
 		BeanUtils.populate(template, templateMap);
 		
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore().readFile(template.getContentId())) {

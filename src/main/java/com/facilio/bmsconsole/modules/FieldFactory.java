@@ -534,6 +534,23 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getAlarmTemplateFields() {
+		FacilioModule module = ModuleFactory.getAlarmTemplateModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField content = new FacilioField();
+		content.setName("contentId");
+		content.setDataType(FieldType.STRING);
+		content.setColumnName("CONTENT_ID");
+		content.setModule(module);
+		fields.add(content);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getPreventiveMaintenanceFields() {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		
