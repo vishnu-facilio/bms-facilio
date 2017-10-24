@@ -1,7 +1,6 @@
 package com.facilio.bmts.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,15 +9,13 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.WorkorderTemplate;
+import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.bmts.bmsconsole.context.EventContext;
 import com.facilio.bmts.constants.BmtsConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -73,7 +70,7 @@ public class ExecuteEventRuleCommand implements Command {
 						Criteria criteria = CriteriaAPI.getCriteria(event.getOrgId(), (long) ruleprops.get("customizeCriteriaId") ,conn);
 						if(criteria.computePredicate().evaluate(event))
 						{
-							WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(event.getOrgId(), (Long) ruleprops.get("alarmTemplateId"));
+							AlarmTemplate template = (AlarmTemplate) TemplateAPI.getTemplate(event.getOrgId(), (Long) ruleprops.get("alarmTemplateId"));
 							JSONParser parser = new JSONParser();
 							
 							Map<String, Object> props = FieldUtil.getAsProperties(event);
