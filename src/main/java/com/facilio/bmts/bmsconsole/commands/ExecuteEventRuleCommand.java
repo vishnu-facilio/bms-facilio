@@ -1,16 +1,24 @@
 package com.facilio.bmts.bmsconsole.commands;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.bmts.bmsconsole.context.EventContext;
 import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -20,8 +28,8 @@ public class ExecuteEventRuleCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		Map<String, Object> props = (Map<String, Object>) context.get(BmtsConstants.EVENT_PROPERTY);
-		if((Boolean) props.get("hasEventRule"))
+		Map<String, Object> propsMap = (Map<String, Object>) context.get(BmtsConstants.EVENT_PROPERTY);
+		if((Boolean) propsMap.get("hasEventRule"))
 		{
 			EventContext event = (EventContext) context.get(BmtsConstants.EVENT);
 			Map<String, Object> ruleprops = null;
@@ -60,7 +68,26 @@ public class ExecuteEventRuleCommand implements Command {
 			{
 				if((Boolean) ruleprops.get("hasCustomizeRule"))
 				{
-					//TODO apply transform
+					try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+					{
+						Criteria criteria = CriteriaAPI.getCriteria(event.getOrgId(), (long) ruleprops.get("customizeCriteriaId") ,conn);
+						if(criteria.computePredicate().evaluate(event))
+						{
+							WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(event.getOrgId(), (Long) ruleprops.get("alarmTemplateId"));
+							JSONParser parser = new JSONParser();
+							
+							Map<String, Object> props = FieldUtil.getAsProperties(event);
+							JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(props).get("content"));
+							
+							event = FieldUtil.getAsBean(content, EventContext.class);
+							context.put(BmtsConstants.EVENT, event);
+						}
+					}
+					catch (Exception e) 
+					{
+						e.printStackTrace();
+						throw e;
+					}
 				}
 				if((Boolean) ruleprops.get("hasThresholdRule"))
 				{

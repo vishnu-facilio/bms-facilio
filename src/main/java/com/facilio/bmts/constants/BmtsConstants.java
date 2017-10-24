@@ -203,6 +203,20 @@ public class BmtsConstants {
 		hasCustomizeRule.setModule(module);
 		fields.add(hasCustomizeRule);
 		
+		FacilioField customizeCriteriaId = new FacilioField();
+		customizeCriteriaId.setName("customizeCriteriaId");
+		customizeCriteriaId.setDataType(FieldType.NUMBER);
+		customizeCriteriaId.setColumnName("CUSTOMIZE_CRITERIAID");
+		customizeCriteriaId.setModule(module);
+		fields.add(customizeCriteriaId);
+		
+		FacilioField alarmTemplateId = new FacilioField();
+		alarmTemplateId.setName("alarmTemplateId");
+		alarmTemplateId.setDataType(FieldType.NUMBER);
+		alarmTemplateId.setColumnName("ALARM_TEMPLATE_ID");
+		alarmTemplateId.setModule(module);
+		fields.add(alarmTemplateId);
+		
 		FacilioField hasThresholdRule = new FacilioField();
 		hasThresholdRule.setName("hasThresholdRule");
 		hasThresholdRule.setDataType(FieldType.BOOLEAN);
