@@ -8,12 +8,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
@@ -22,118 +29,73 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class LeedAPI {
 
-	public static List<LeedConfigurationContext> getLeedConfigurationList(long orgId) throws SQLException, RuntimeException
+	public static List<LeedConfigurationContext> getLeedConfigurationList(long orgId) throws Exception
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		List<LeedConfigurationContext> leedList = new ArrayList();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("leedconfiguration");
+		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
 		
-		try{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select * from LeedConfiguration ,Building where LeedConfiguration.BUILDINGID = Building.ID and Building.ORGID = ?");
-			pstmt.setLong(1,orgId);
-			rs = pstmt.executeQuery();
-			while(rs.next())
-			{
-				LeedConfigurationContext context = new LeedConfigurationContext();
-				context.setId(rs.getLong("ID"));
-				context.setName(rs.getString("NAME"));
-				context.setLeedId(rs.getLong("LEEDID"));
-				context.setBuildingStatus(rs.getString("BUILDINGSTATUS"));
-				context.setPhotoId(rs.getLong("PHOTO_ID"));
-				context.setArea(rs.getInt("AREA"));
-				context.setArea(rs.getInt("CURRENT_OCCUPANCY"));
-				context.setArea(rs.getInt("MAX_OCCUPANCY"));
-				Long leedScore = rs.getLong("LEEDSCORE");
-				if(leedScore == null)
-				{
-					leedScore = 0L;
-				}
-				context.setLeedScore(leedScore);
-				Long energyScore = rs.getLong("ENERGYSCORE");
-				if(energyScore == null)
-				{
-					energyScore = 0L;
-				}
-				context.setEnergyScore(energyScore);
-				Long waterScore = rs.getLong("WATERSCORE");
-				if(waterScore == null)
-				{
-					waterScore = 0L;
-				}
-				context.setWaterScore(waterScore);
-				Long wasteScore = rs.getLong("WASTESCORE");
-				if(wasteScore == null)
-				{
-					wasteScore = 0L;
-				}
-				context.setWasteScore(wasteScore);
-				Long humanExperienceScore = rs.getLong("HUMANEXPERIENCESCORE");
-				if(humanExperienceScore == null)
-				{
-					humanExperienceScore = 0L;
-				}
-				context.setHumanExperienceScore(humanExperienceScore);
-				Long transportScore = rs.getLong("TRANSPORTSCORE");
-				if(transportScore == null)
-				{
-					transportScore = 0L;
-				}
-				context.setTransportScore(transportScore);
-				leedList.add(context);				
-			}
-			
-		}catch(SQLException | RuntimeException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return leedList;
+		SelectRecordsBuilder<LeedConfigurationContext> leedBuilder = new SelectRecordsBuilder<LeedConfigurationContext>()
+																			.select(fields)
+																			.table(module.getTableName())
+																			.beanClass(LeedConfigurationContext.class)
+																			.moduleName(module.getName());
+		
+		return leedBuilder.get();
 	}
-	public static LeedConfigurationContext fetchLeedConfigurationContext(long buildingId) throws SQLException, RuntimeException
+	
+	public static void addLeedConfigurations(List<LeedConfigurationContext> leedConfigList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("leedconfiguration");
+		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
+		Iterator itr = leedConfigList.iterator();
+		while(itr.hasNext())
+		{
+			LeedConfigurationContext leedConfig = (LeedConfigurationContext)itr.next();
+			InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
+																			.fields(fields)
+																			.dataTableName(module.getTableName())
+																			.moduleName(module.getName());
+		
+			insertBuilder.insert(leedConfig);
+		}
+	}
+	
+	public static long addLeedConfiguration(LeedConfigurationContext leedConfig) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("leedconfiguration");
+		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
+		
+		InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
+																			.fields(fields)
+																			.dataTableName(module.getTableName())
+																			.moduleName(module.getName())
+																			.level(3);
+		
+		return insertBuilder.insert(leedConfig);
+		
+	}
+	
+	public static LeedConfigurationContext fetchLeedConfigurationContext(long buildingId) throws Exception
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		LeedConfigurationContext context = null;
-		try
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select * from Building,LeedConfiguration where BUILDING.ID = LeedConfiguration.BUILDINGID and LeedConfiguration.BUILDINGID = ?");
-			pstmt.setLong(1,buildingId);
-			rs = pstmt.executeQuery();
-			while(rs.next())
-			{
-				context = new LeedConfigurationContext();
-				context.setId(rs.getLong("BUILDINGID"));
-				context.setLeedId(rs.getLong("LEEDID"));
-				context.setBuildingStatus(rs.getString("BUILDINGSTATUS"));
-				context.setEnergyScore(rs.getLong("ENERGYSCORE"));
-				context.setEnergyScore(rs.getLong("WATERSCORE"));
-				context.setEnergyScore(rs.getLong("WASTESCORE"));
-				context.setEnergyScore(rs.getLong("HUMANEXPERIENCESCORE"));
-				context.setEnergyScore(rs.getLong("TRANSPORTSCORE"));
-				context.setEnergyScore(rs.getLong("LEEDSCORE"));
-				context.setArea(rs.getInt("AREA"));
-				context.setName(rs.getString("NAME"));
-				context.setPhotoId(rs.getLong("PHOTO_ID"));
-			}
-			
-		}catch(SQLException | RuntimeException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("leedconfiguration");
+		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
 		
-		return context;
+		SelectRecordsBuilder<LeedConfigurationContext> leedBuilder = new SelectRecordsBuilder<LeedConfigurationContext>()
+																			.select(fields)
+																			.table(module.getTableName())
+																			.beanClass(LeedConfigurationContext.class)
+																			.moduleName(module.getName())
+																			.andCustomWhere(module.getTableName()+".ID = ?", buildingId);
+		
+		List<LeedConfigurationContext> leeds = leedBuilder.get();
+		if(leeds != null && !leeds.isEmpty()) {
+			return leeds.get(0);
+		}
+		return null;
 	}
+	
 	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
@@ -147,8 +109,7 @@ public class LeedAPI {
 			StringBuilder sql = new StringBuilder();
 			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICE_ID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICE_ID = Device.DEVICE_ID")
 				.append(" LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
-				.append(" LEFT JOIN Building ON Device.SPACE_ID = Building.BASE_SPACE_ID")
-				.append(" WHERE Building.ID = ?");		
+				.append(" WHERE Device.SPACE_ID = ?");		
 			pstmt =  conn.prepareStatement(sql.toString());
 			pstmt.setLong(1,buildingId);
 			rs = pstmt.executeQuery();
@@ -177,42 +138,42 @@ public class LeedAPI {
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
 		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
-		long spaceId = getSpaceId(buildingId);
+		//long spaceId = getSpaceId(buildingId);
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		String metername = (String)context.get(FacilioConstants.ContextNames.METERNAME);
 		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
 		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
 		long assetId = addAsset(metername,orgId);
-		addDevice(assetId, spaceId);
+		addDevice(assetId, buildingId);
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
 	}
 	
-	public static long getSpaceId(long buildingId) throws  SQLException, RuntimeException
-	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		long spaceId = 0L;
-		try{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT BASE_SPACE_ID FROM Building where ID = ?");
-			pstmt.setLong(1, buildingId);
-			rs = pstmt.executeQuery();
-			while(rs.next())
-			{
-				spaceId = rs.getLong("BASE_SPACE_ID");
-			}
-		}catch(SQLException | RuntimeException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return spaceId;
-	}
+//	public static long getSpaceId(long buildingId) throws  SQLException, RuntimeException
+//	{
+//		Connection conn = null;
+//		PreparedStatement pstmt = null;
+//		ResultSet rs = null;
+//		long spaceId = 0L;
+//		try{
+//			conn = FacilioConnectionPool.INSTANCE.getConnection();
+//			pstmt = conn.prepareStatement("SELECT BASE_SPACE_ID FROM Building where ID = ?");
+//			pstmt.setLong(1, buildingId);
+//			rs = pstmt.executeQuery();
+//			while(rs.next())
+//			{
+//				spaceId = rs.getLong("BASE_SPACE_ID");
+//			}
+//		}catch(SQLException | RuntimeException e)
+//		{
+//			throw e;
+//		}
+//		finally
+//		{
+//			DBUtil.closeAll(conn, pstmt, rs);
+//		}
+//		return spaceId;
+//	}
 	
 	public static long addAsset(String name, long orgId) throws SQLException,RuntimeException
 	{
@@ -247,7 +208,7 @@ public class LeedAPI {
 		return assetId;
 	}
 	
-	public static void addDevice(long deviceId, long spaceId) throws SQLException,RuntimeException
+	public static void addDevice(long deviceId, long buildingId) throws SQLException,RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -256,7 +217,7 @@ public class LeedAPI {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,STATUS) values(?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
-			pstmt.setLong(2, spaceId);
+			pstmt.setLong(2, buildingId);
 			pstmt.setInt(3, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
@@ -388,6 +349,40 @@ public class LeedAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		
+	}
+	
+	public static JSONObject getConsumptionData(long deviceId) throws SQLException , RuntimeException 
+	{
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("DeviceId", deviceId);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select ADDED_MONTH,SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where DEVICE_ID = ? GROUP BY ADDED_MONTH;");
+			pstmt.setLong(1,deviceId);
+			rs = pstmt.executeQuery();
+			JSONArray arr = new JSONArray();
+			while(rs.next())
+			{
+				JSONObject obj = new JSONObject();
+				obj.put(rs.getInt("ADDED_MONTH"), rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
+				arr.add(obj);;
+			}
+			jsonObj.put("values", arr);			
+		}
+		catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return jsonObj;
 	}
 	
 }

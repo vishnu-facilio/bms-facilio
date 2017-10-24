@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.commands.data;
 
+import java.sql.PreparedStatement;
+
 import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
-import java.sql.PreparedStatement;
 
 public class EventInfo {
 

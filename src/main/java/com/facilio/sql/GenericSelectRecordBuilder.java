@@ -22,7 +22,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private String groupBy;
 	private String having;
 	private String orderBy;
-	private int limit;
+	private int limit = -1;
+	private int offset = -1;
 	
 	@Override
 	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
@@ -130,6 +131,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	@Override
 	public GenericSelectRecordBuilder limit(int limit) {
 		this.limit = limit;
+		return this;
+	}
+	
+	@Override
+	public GenericSelectRecordBuilder offset(int offset) {
+		this.offset = offset;
 		return this;
 	}
 	
@@ -243,9 +250,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				.append(orderBy);
 		}
 		
-		if(limit != 0) {
+		if(limit != -1) {
 			sql.append(" LIMIT ")
 				.append(limit);
+			
+			if(offset != -1) {
+				sql.append(" OFFSET ")
+					.append(offset);
+			}
 		}
 		
 		return sql.toString();

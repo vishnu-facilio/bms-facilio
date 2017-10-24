@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {

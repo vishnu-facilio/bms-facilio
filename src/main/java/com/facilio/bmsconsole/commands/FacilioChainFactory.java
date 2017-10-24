@@ -9,6 +9,7 @@ import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
+import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.transaction.FacilioTransactionManager;
 
@@ -615,6 +616,8 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}*/
+	
+
 	public static Chain LeedDetailsPageChain()
 	{
 		Chain c = new ChainBase();
@@ -624,9 +627,17 @@ public class FacilioChainFactory {
 	public static Chain addConsumptionDataChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddConsumptionForLeed());
-		c.addCommand(new AddConsumptionData());
+		//c.addCommand(new AddConsumptionData());
 		return c;
 	}
+	
+	public static Chain FetchAssetsFromArcChain()
+	{
+		Chain c = new ChainBase();
+		c.addCommand(new FetchArcAssetsCommand());
+		return c;
+	}
+	
 	public static Chain getAllFloorChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForFloor());

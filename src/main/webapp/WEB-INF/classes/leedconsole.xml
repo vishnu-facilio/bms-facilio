@@ -55,16 +55,38 @@
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="importleeds" class="com.facilio.leed.actions.LeedAction" method="importLeedList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="addLeed" class="com.facilio.leed.actions.LeedAction" method="addLeedConfiguration">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<!-- param name="buildingId">{1}</param-->
+			<result name="success" type="json">
+				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+		
 	</package>
 	
 	<package name="leedSummaryApi" namespace="/api/leed/energy" extends="leedApi">
+	
+
+		
 		<action name="*" class="com.facilio.leed.actions.LeedAction" method="meterList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*</param>
 			</result>
-		</action>				
+		</action>
+		
+
+						
 	</package>
 
 <!-- Suresh : API Page Ends here -->

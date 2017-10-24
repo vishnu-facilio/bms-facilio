@@ -13,7 +13,6 @@ import org.apache.commons.beanutils.BeanPredicate;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public enum BuildingOperator implements Operator<String> {
