@@ -55,7 +55,8 @@ public abstract class UserTemplate implements ActionTemplate {
 	public static enum Type {
 		EMAIL(1),
 		SMS(2),
-		WORKORDER(3);
+		WORKORDER(3),
+		ALARM(4);
 		
 		private int intVal;
 		

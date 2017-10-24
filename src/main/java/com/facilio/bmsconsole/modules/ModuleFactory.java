@@ -252,6 +252,14 @@ public class ModuleFactory {
 		return workorderTemplateModule;
 	}
 	
+	public static FacilioModule getAlarmTemplateModule() {
+		FacilioModule alarmTemplateModule = new FacilioModule();
+		alarmTemplateModule.setName("alarmtemplate");
+		alarmTemplateModule.setDisplayName("Alarm Template");
+		alarmTemplateModule.setTableName("Alarm_Template");
+		return alarmTemplateModule;
+	}
+	
 	public static FacilioModule getPreventiveMaintenancetModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("preventivemaintenance");
