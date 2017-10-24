@@ -15,6 +15,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddEventCommand implements Command {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		EventContext event = (EventContext) context.get(BmtsConstants.EVENT);

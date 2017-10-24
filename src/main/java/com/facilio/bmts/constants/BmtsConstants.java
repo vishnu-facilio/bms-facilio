@@ -37,19 +37,27 @@ public class BmtsConstants {
 	}
 	
 	public static FacilioModule getEventModule() {
-		FacilioModule alarmModule = new FacilioModule();
-		alarmModule.setName("event");
-		alarmModule.setDisplayName("Event");
-		alarmModule.setTableName("Event");
-		return alarmModule;
+		FacilioModule event = new FacilioModule();
+		event.setName("event");
+		event.setDisplayName("Event");
+		event.setTableName("Event");
+		return event;
 	}
 	
 	public static FacilioModule getEventPropertyModule() {
-		FacilioModule alarmModule = new FacilioModule();
-		alarmModule.setName("eventproperty");
-		alarmModule.setDisplayName("Event Property");
-		alarmModule.setTableName("Event_Property");
-		return alarmModule;
+		FacilioModule eventproperty = new FacilioModule();
+		eventproperty.setName("eventproperty");
+		eventproperty.setDisplayName("Event Property");
+		eventproperty.setTableName("Event_Property");
+		return eventproperty;
+	}
+	
+	public static FacilioModule getEventRuleModule() {
+		FacilioModule eventrule = new FacilioModule();
+		eventrule.setName("eventrule");
+		eventrule.setDisplayName("Event Rule");
+		eventrule.setTableName("Event_Rule");
+		return eventrule;
 	}
 	
 	public static FacilioField getOrgIdField(FacilioModule module) {
@@ -150,6 +158,30 @@ public class BmtsConstants {
 		hasEventRule.setModule(module);
 		fields.add(hasEventRule);
 		
+		FacilioField hasMappingRule = new FacilioField();
+		hasMappingRule.setName("hasMappingRule");
+		hasMappingRule.setDataType(FieldType.BOOLEAN);
+		hasMappingRule.setColumnName("HASMAPPINGRULE");
+		hasMappingRule.setModule(module);
+		fields.add(hasMappingRule);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getEventRuleFields() {
+		FacilioModule module = getEventRuleModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField id = new FacilioField();
+		id.setName("eventRuleId");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("EVENT_RULE_ID");
+		id.setModule(module);
+		fields.add(id);
+		
+		fields.add(getOrgIdField(module));
+		
 		FacilioField hasEventFilter = new FacilioField();
 		hasEventFilter.setName("hasEventFilter");
 		hasEventFilter.setDataType(FieldType.BOOLEAN);
@@ -157,12 +189,19 @@ public class BmtsConstants {
 		hasEventFilter.setModule(module);
 		fields.add(hasEventFilter);
 		
-		FacilioField hasTransformRule = new FacilioField();
-		hasTransformRule.setName("hasTransformRule");
-		hasTransformRule.setDataType(FieldType.BOOLEAN);
-		hasTransformRule.setColumnName("HASTRANSFORMRULE");
-		hasTransformRule.setModule(module);
-		fields.add(hasTransformRule);
+		FacilioField filterCriteriaId = new FacilioField();
+		filterCriteriaId.setName("filterCriteriaId");
+		filterCriteriaId.setDataType(FieldType.NUMBER);
+		filterCriteriaId.setColumnName("FILTER_CRITERIAID");
+		filterCriteriaId.setModule(module);
+		fields.add(filterCriteriaId);
+		
+		FacilioField hasCustomizeRule = new FacilioField();
+		hasCustomizeRule.setName("hasCustomizeRule");
+		hasCustomizeRule.setDataType(FieldType.BOOLEAN);
+		hasCustomizeRule.setColumnName("HASCUSTOMIZERULE");
+		hasCustomizeRule.setModule(module);
+		fields.add(hasCustomizeRule);
 		
 		FacilioField hasThresholdRule = new FacilioField();
 		hasThresholdRule.setName("hasThresholdRule");
@@ -170,13 +209,6 @@ public class BmtsConstants {
 		hasThresholdRule.setColumnName("HASTHRESHOLDRULE");
 		hasThresholdRule.setModule(module);
 		fields.add(hasThresholdRule);
-		
-		FacilioField hasMappingRule = new FacilioField();
-		hasMappingRule.setName("hasMappingRule");
-		hasMappingRule.setDataType(FieldType.BOOLEAN);
-		hasMappingRule.setColumnName("HASMAPPINGRULE");
-		hasMappingRule.setModule(module);
-		fields.add(hasMappingRule);
 		
 		return fields;
 	}
