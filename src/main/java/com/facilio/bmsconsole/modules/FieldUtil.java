@@ -96,6 +96,9 @@ public class FieldUtil {
 				else {
 					pstmt.setNull(paramIndex, Types.BIGINT);
 				}
+				break;
+			default:
+					pstmt.setObject(paramIndex, value);
 		}
 	}
 	
@@ -131,6 +134,12 @@ public class FieldUtil {
 	{
 		ObjectMapper mapper = getMapper();
 		return mapper.readValue(content.toJSONString(), classObj);
+	}
+	
+	public static <E> E getAsBean(Map<String, Object> props, Class<E> classObj)
+	{
+		ObjectMapper mapper = getMapper();
+		return mapper.convertValue(props, classObj);
 	}
 	
 	@SuppressWarnings("unchecked")

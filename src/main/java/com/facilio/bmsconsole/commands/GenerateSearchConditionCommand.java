@@ -37,7 +37,7 @@ public class GenerateSearchConditionCommand implements Command {
 				
 				Condition condition = new Condition();
 				condition.setField(field);
-				condition.setOperator(field.getDataType().getOperator("contains"));
+				condition.setOperator(field.getDataTypeEnum().getOperator("contains"));
 				condition.setValue(searchQuery);
 				
 				criteria.addOrCondition(condition);

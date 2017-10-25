@@ -176,16 +176,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	public static Chain getAddFieldsChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new SetModuleIdCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new SetColumnNameForNewCFsCommand());
-		c.addCommand(new AddFieldsCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	private static void addCleanUpCommand(Chain c)
 	{
 		c.addCommand(new TransactionExceptionHandler());
@@ -897,6 +887,43 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new AddCVCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddModuleChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new CreateCustomModuleCommand());
+		c.addCommand(new AddModuleCommand());
+		c.addCommand(new SetColumnNameForNewCFsCommand());
+		c.addCommand(new AddFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddFieldsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new SetColumnNameForNewCFsCommand());
+		c.addCommand(new AddFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddReadingChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new CreateReadingModuleCommand());
+		c.addCommand(new AddModuleCommand());
+		c.addCommand(new SetColumnNameForNewCFsCommand());
+		c.addCommand(new AddFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddReadingValuesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

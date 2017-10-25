@@ -33,7 +33,7 @@ public class AddCFAction extends ActionSupport {
 				JSONObject cf = (JSONObject) cfData.get(i);
 				FacilioField field = new FacilioField();
 				field.setName((String) cf.get("fieldName"));
-				field.setDataTypeCode(Integer.parseInt((String) cf.get("dataType")));
+				field.setDataType(Integer.parseInt((String) cf.get("dataType")));
 				fields.add(field);
 			}
 			

@@ -188,7 +188,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	private void updateLookupFields(Map<String, Object> moduleProps) throws Exception {
 		for(FacilioField field : fields) {
-			if(field.getDataType() == FieldType.LOOKUP) {
+			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
 				if(lookupProps != null) {
 					if(lookupProps.get("id") != null) {

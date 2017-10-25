@@ -745,4 +745,28 @@ public class FieldFactory {
 		return fields;
 		
 	}
+	
+	public static List<FacilioField> getDefaultReadingFields(FacilioModule module) {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField ttime = new FacilioField();
+		ttime.setName("ttime");
+		ttime.setDisplayName("Timestamp");
+		ttime.setDataType(FieldType.DATE_TIME);
+		ttime.setColumnName("TTIME");
+		ttime.setModule(module);
+		fields.add(ttime);
+		
+		FacilioField parent = new FacilioField();
+		parent.setName("parentId");
+		parent.setDisplayName("Parent");
+		parent.setDataType(FieldType.NUMBER);
+		parent.setColumnName("PARENT_ID");
+		parent.setModule(module);
+		
+		fields.add(parent);
+		
+		return fields;
+	}
 }	

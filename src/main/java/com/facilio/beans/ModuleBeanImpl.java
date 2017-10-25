@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -112,6 +113,67 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
+	
+	@Override
+	public List<FacilioModule> getSubModules(long moduleId) throws Exception {
+		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID";
+		ResultSet rs = null;
+		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, moduleId);
+			rs = pstmt.executeQuery();
+			List<FacilioModule> subModules = new ArrayList<>();
+			while(rs.next()) {
+				subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
+			}
+			return subModules;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				}
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	@Override
+	public List<FacilioModule> getSubModules(String moduleName) throws Exception {
+		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID";
+		ResultSet rs = null;
+		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setString(2, moduleName);
+			rs = pstmt.executeQuery();
+			List<FacilioModule> subModules = new ArrayList<>();
+			while(rs.next()) {
+				subModules.add(getMod(rs.getLong("CHILD_MODULE_ID")));
+			}
+			return subModules;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				}
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
@@ -149,8 +211,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		field.setDisplayType(rs.getInt("Fields.DISPLAY_TYPE"));
 		field.setColumnName(rs.getString("Fields.COLUMN_NAME"));
 		field.setSequenceNumber(rs.getInt("Fields.SEQUENCE_NUMBER"));
-		field.setDataType(FieldType.getCFType(rs.getInt("Fields.DATA_TYPE")));
-		field.setDataTypeCode(rs.getInt("Fields.DATA_TYPE"));
+		field.setDataType(rs.getInt("Fields.DATA_TYPE"));
 		field.setDefault(rs.getBoolean("Fields.IS_DEFAULT"));
 		field.setMainField(rs.getBoolean("Fields.IS_MAIN_FIELD"));
 		field.setRequired(rs.getBoolean("Fields.REQUIRED"));
@@ -224,7 +285,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				
 				while(rs.next()) {
 					FacilioField field = getFieldFromRS(rs, moduleMap);
-					if(field.getDataType() == FieldType.LOOKUP) {
+					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 						field = getLookupField(field);
 					}
 					fields.add(field);
@@ -263,7 +324,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				Map<Long, FacilioModule> moduleMap = splitModules(module);		
 				
 				FacilioField field = getFieldFromRS(rs, moduleMap);
-				if(field.getDataType() == FieldType.LOOKUP) {
+				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 					field = getLookupField(field);
 				}
 				return field;
@@ -303,7 +364,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				rs = pstmt.executeQuery();
 				if(rs.next()) {
 					FacilioField field = getFieldFromRS(rs, moduleMap);
-					if(field.getDataType() == FieldType.LOOKUP) {
+					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 						field = getLookupField(field);
 					}
 					return field;
@@ -359,7 +420,6 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public long addField(FacilioField field) throws Exception {
 		Connection conn  =null;
-
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
@@ -372,32 +432,32 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, field.getModule().getModuleId());
 			
-			if(field.getExtendedModule() != null) {
+			if(field.getExtendedModule() != null && field.getExtendedModule().getModuleId() != field.getModule().getModuleId()) {
 				pstmt.setLong(3, field.getExtendedModule().getModuleId());
 			}
 			else {
 				pstmt.setNull(3, Types.BIGINT);
 			}
 			
-			pstmt.setString(3, field.getName());
+			pstmt.setString(4, field.getName());
 
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
-				pstmt.setString(4, field.getDisplayName());
+				pstmt.setString(5, field.getDisplayName());
 			}
 			else {
-				pstmt.setString(4, field.getName());
+				pstmt.setString(5, field.getName());
 			}
 
-			pstmt.setString(5, field.getColumnName());
+			pstmt.setString(6, field.getColumnName());
 
 			if(field.getSequenceNumber() > 0) {
-				pstmt.setInt(6, field.getSequenceNumber());
+				pstmt.setInt(7, field.getSequenceNumber());
 			}
 			else {
-				pstmt.setNull(6, Types.TINYINT);
+				pstmt.setNull(7, Types.TINYINT);
 			}
 
-			pstmt.setInt(7, field.getDataType().getTypeAsInt());
+			pstmt.setInt(8, field.getDataTypeEnum().getTypeAsInt());
 
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add field");
@@ -415,6 +475,83 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		finally {
 			DBUtil.closeAll(conn,pstmt, rs);
+		}
+	}
+	
+	@Override
+	public long addModule(FacilioModule module) throws Exception {
+		
+		if(module == null) {
+			throw new IllegalArgumentException("Invalid Module for insertion");
+		}
+		
+		if(module.getName() == null || module.getName().isEmpty() || module.getTableName() == null || module.getTableName().isEmpty()) {
+			throw new IllegalArgumentException("Invalid Module Name/ Module table Name");
+		}
+		
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID) VALUES (?,?,?,?,?)";
+		ResultSet rs = null;
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setString(2, module.getName());
+			
+			if(module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
+				pstmt.setString(3, module.getDisplayName());
+			}
+			else {
+				pstmt.setNull(3, Types.VARCHAR);
+			}
+			
+			pstmt.setString(4, module.getTableName());
+			
+			if(module.getExtendModule() != null) {
+				pstmt.setLong(5, module.getExtendModule().getModuleId());
+			}
+			else {
+				pstmt.setNull(5, Types.BIGINT);
+			}
+			
+			if (pstmt.executeUpdate() < 1) {
+				throw new Exception("Unable to add Module");
+			}
+			else {
+				rs = pstmt.getGeneratedKeys();
+				rs.next();
+				long moduleId = rs.getLong(1);
+				System.out.println("Added Custom Module with ID : "+moduleId);
+				return moduleId;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				}
+				catch(SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void addSubModule(long parentModuleId, long childModuleId) throws Exception {
+		String sql = "INSERT INTO SubModulesRel (PARENT_MODULE_ID, CHILD_MODULE_ID) VALUES (?,?)";
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, parentModuleId);
+			pstmt.setLong(2, childModuleId);
+			
+			if (pstmt.executeUpdate() < 1) {
+				throw new Exception("Unable to add Sub Module");
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 	

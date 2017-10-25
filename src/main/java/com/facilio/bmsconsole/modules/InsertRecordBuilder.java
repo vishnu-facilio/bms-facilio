@@ -31,6 +31,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	public InsertRecordBuilder<E> module(FacilioModule module) {
+		this.module = module;
 		return this;
 	}
 	
@@ -73,12 +74,13 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			return;
 		}
 		
-		if(moduleName == null || moduleName.isEmpty()) {
-			throw new IllegalArgumentException("Module Name cannot be empty");
+		if(module == null) {
+			if(moduleName == null || moduleName.isEmpty()) {
+				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			module = modBean.getModule(moduleName);
 		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		module = modBean.getModule(moduleName);
 		
 		List<FacilioModule> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
@@ -153,7 +155,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		moduleProps.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
 		
 		for(FacilioField field : fields) {
-			if(field.getDataType() == FieldType.LOOKUP) {
+			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
 				if(lookupProps != null) {
 					moduleProps.put(field.getName(), lookupProps.get("id"));

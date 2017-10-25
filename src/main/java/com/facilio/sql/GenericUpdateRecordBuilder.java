@@ -126,7 +126,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					for(Map.Entry<String, Object> entry : value.entrySet()) {
 						FacilioField field = fieldMap.get(entry.getKey());
 						if(field != null) {
-							FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
+							FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataTypeEnum(), value.get(field.getName()));
 						}
 					}
 					
