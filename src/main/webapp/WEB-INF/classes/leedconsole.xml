@@ -89,6 +89,13 @@
 			</result>
 		</action>
 		
+		<action name="addmeterconsumptiondata" class="com.facilio.leed.actions.LeedAction" method="AddMeterNConsumptionData">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">meterList,meterList*,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
+			</result>
+		</action>
+		
 		
 		<action name="*" class="com.facilio.leed.actions.LeedAction" method="meterList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

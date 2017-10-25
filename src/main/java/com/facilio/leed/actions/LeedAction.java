@@ -221,16 +221,16 @@ public class LeedAction extends ActionSupport {
 		this.meterID = meterID;
 	}
 	
-	private List<ConsumptionInfoContext> energyData;
+	private List<ConsumptionInfoContext> consumptionJSONArray;
 	
-	public List<ConsumptionInfoContext> getEnergyData() 
+	public List<ConsumptionInfoContext> getConsumptionJSONArray() 
 	{
-		return energyData;
+		return consumptionJSONArray;
 	}
 	
-	public void setEnergyData(List<ConsumptionInfoContext> energyData) 
+	public void setConsumptionJSONArray(List<ConsumptionInfoContext> consumptionJSONArray) 
 	{
-		this.energyData = energyData;
+		this.consumptionJSONArray = consumptionJSONArray;
 	}
 	
 	public String addSample() throws Exception
@@ -280,25 +280,46 @@ public class LeedAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String addMeter() throws Exception
-	{
+	private FacilioContext addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.METERNAME,getMeterName());
 		Chain addEnergyMeterChain = FacilioChainFactory.AddEnergyMeterChain();
 		addEnergyMeterChain.execute(context);
+		
+		return context;
+	}
+	
+	public String addMeter() throws Exception
+	{
+		addEnergyMeter();
 		return SUCCESS;
 	}
 	
-	public String addConsumptionData() throws Exception
+	public String AddMeterNConsumptionData() throws Exception
+	{
+		FacilioContext context = addEnergyMeter();
+		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
+		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
+		addConsumptionDataChain.execute(context);
+		meterList();
+		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
+		setConsumptionArray(consumptionArray);	
+		return SUCCESS;	
+	}
+	
+	
+	
+	public String AddConsumptionData() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.DEVICEID, getDeviceId());
-		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getEnergyData());
+		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
 		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
+		fetchConsumptionData();
 		return SUCCESS;	
 	}
 	

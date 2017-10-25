@@ -31,7 +31,7 @@ public class LeedIntegrator {
 	public static String password = "Chennai1#";
 	public static String subscriptionKey = "ffa4212a87b748bb8b3623f3d97ae285"; // This key is available developer profile page @ https://developer.usgbc.org/developer
 	public static String authheadervalue= Base64.getEncoder().encodeToString((username+":"+password).getBytes());
-	public static String authKey = "Bearer MfQHRRIyqx6TkDrTkmqmHXMmc8tSxs"; // This is generated with doAuth() method in this same class. 
+	public static String authKey = "Bearer Qq2NJpDM7IieThJiU3iFIoqT19YJGW"; // This is generated with doAuth() method in this same class. 
 	public static String serverURL = "https://api.usgbc.org:443";
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, ParseException {

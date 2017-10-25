@@ -140,6 +140,7 @@ public class LeedAPI {
 		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
 		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
 		long assetId = addAsset(metername,orgId);
+		context.put(FacilioConstants.ContextNames.DEVICEID, assetId);
 		addDevice(assetId, buildingId);
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
@@ -211,10 +212,11 @@ public class LeedAPI {
 		ResultSet rs = null;
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,STATUS) values(?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,DEVICE_TYPE,STATUS) values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, buildingId);
-			pstmt.setInt(3, 1);
+			pstmt.setString(3,"EnergyMeter");
+			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add controller");
@@ -240,7 +242,7 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(DEVICEID,FUELTYPE,METERID) VALUES(?,?,?))", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(DEVICE_ID,FUELTYPE,METERID) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, fuelType);
 			pstmt.setLong(3, meterId);
@@ -269,7 +271,7 @@ public class LeedAPI {
 		long meterId = 0;
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICEID = ?");
+			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICE_ID = ?");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
 			while(rs.next())

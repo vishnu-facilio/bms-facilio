@@ -24,9 +24,11 @@ public class AddEnergyMeterCommand implements Command {
 		meterInfo.put("native_unit", "kWh");
 		meterInfo.put("type", "16"); //fuel_type 16 for { "id": 16, "type": "AZNM", "subtype": "WECC Southwest", "kind": "electricity", "resource": "Non-Renewable"}
 		JSONObject meter_Id_Info = LeedIntegrator.createMeter(leedId, meterInfo);
-		long meter_Id = (long)meter_Id_Info.get("id");
+		System.out.println(">>>>>>>>> meter_Id_Info : "+meter_Id_Info);
+		JSONObject meterMessages = (JSONObject)meter_Id_Info.get("message");
+		long meter_Id = (long)meterMessages.get("id");
 		context.put(FacilioConstants.ContextNames.METERID, meter_Id);
-		long fuel_type = (long)meter_Id_Info.get("type");
+		long fuel_type = (long)meterMessages.get("type");
 		context.put(FacilioConstants.ContextNames.FUELTYPE, fuel_type);
 		
 		LeedAPI.addLeedEnergyMeter((FacilioContext)context);
