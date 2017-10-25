@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -94,8 +95,8 @@ public class AttachmentAction  extends ActionSupport {
 			Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 			addAttachmentChain.execute(context);
 			
-			List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
-			setAttachmentId(attachmentIdList);
+			List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+			setAttachments(attachmentList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

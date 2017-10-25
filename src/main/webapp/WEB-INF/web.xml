@@ -30,7 +30,7 @@
   <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
   <init-param>
     <param-name>cors.allowed.origins</param-name>
-    <param-value>http://localhost:9090</param-value>
+    <param-value>http://localhost:9090,http://fazilio.com,https://fazilio.com,http://facilio.com,https://facilio.com</param-value>
   </init-param>
   <init-param>
     <param-name>cors.allowed.methods</param-name>

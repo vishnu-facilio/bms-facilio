@@ -913,7 +913,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^attachmentId\[\d+\]</param>
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
  			</result>
  		</action>
  		
