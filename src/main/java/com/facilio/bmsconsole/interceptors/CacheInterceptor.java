@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.interceptors;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,10 +41,22 @@ public class CacheInterceptor extends AbstractInterceptor {
 	           /*     GenericResponseWrapper responseWrapper =   new GenericResponseWrapper(response);	
 	            *  ServletActionContext.setResponse(responseWrapper); 
 	            */
+				 
+				 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			        CacheResponseWrapper wrappedResponse =
+			          new CacheResponseWrapper(response, baos);
+			        ServletActionContext.setResponse(wrappedResponse); 
 				 String result = arg0.invoke();
-					
-				 //TODO 
-				 // get the response from the wrapped response, store in redis cache with key as url+ orgid
+				 File tempDir = (File)ServletActionContext.getServletContext().getAttribute(
+					      "javax.servlet.context.tempdir");
+
+					    // get possible cache
+					    String temp = tempDir.getAbsolutePath();
+					    File file = new File(temp+id);
+				 FileOutputStream fos = new FileOutputStream(file);
+			        fos.write(baos.toByteArray());
+			        fos.flush();
+			        fos.close();
 				 return result;
 			 }
 		 }
