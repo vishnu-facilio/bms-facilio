@@ -1,0 +1,9 @@
+<cache>
+	<segment id="workorderfields" pattern="/api/workorder" scope="role"  ></segment>
+	<segment id="orgsettings" pattern="/api/setup/.*" scope="org"  >
+	    <url path="/api/setup/userlist"></url>
+	    <url path="/api/setup/groups"></url>
+	    <url path="/api/setup/roles"></url>
+	</segment>
+	<segment id="usersettings" pattern="/api/setup/.*" scope="user"  ></segment>
+</cache>
