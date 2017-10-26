@@ -150,12 +150,6 @@ public class FieldUtil {
 		{
 			ObjectMapper mapper = getMapper();
 			properties = mapper.convertValue(bean, Map.class);
-			
-//			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-//			if(customProps != null)
-//			{
-//				properties.putAll(customProps);
-//			}
 		}
 		return properties;
 	}

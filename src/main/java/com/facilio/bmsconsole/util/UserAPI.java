@@ -271,7 +271,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE ORG_Users.ORG_USERID  = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.USER_TYPE, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE ORG_Users.ORG_USERID  = ?");
 			pstmt.setLong(1, orgUserId);
 			
 			rs = pstmt.executeQuery();
