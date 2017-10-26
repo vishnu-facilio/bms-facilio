@@ -4,13 +4,13 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-<package name="setupPackage" namespace="/api/setup" extends="home">
+<package name="setupPackage" namespace="/api/setup" extends="homeApi">
 <interceptors>
-			<interceptor name="authinterceptor"
-				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
@@ -102,6 +102,7 @@
 	<!-- Work Order Actions -->		
 	 <action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="cache">org</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailSetting.*,supportEmails.*</param>
 			</result>

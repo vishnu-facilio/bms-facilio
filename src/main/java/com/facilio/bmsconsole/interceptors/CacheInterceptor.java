@@ -3,12 +3,15 @@ package com.facilio.bmsconsole.interceptors;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
@@ -21,13 +24,17 @@ public class CacheInterceptor extends AbstractInterceptor {
 		  HttpServletResponse response = ServletActionContext.getResponse(); 
 		 String id = request.getRequestURI() + 
 			        request.getQueryString();
-		 boolean cached_url ="GET".equals(request.getMethod())  && false;
+		 
+		 Parameter cache = ActionContext.getContext().getParameters().get("cache");
+		 boolean cached_url ="GET".equals(request.getMethod())  && (cache !=null && cache.getValue()!=null && cache.getValue().equals("org"));
 		
-		 boolean cache_available = false; // TODO write logic to find if the cache available
+		//System.out.println("cache interceptor "+request.getMethod() +"-"+cache.getValue() +" chache object "+cache);
 		 
 		 if(cached_url)
 		 {
 			 String cachekey = null;
+			 System.out.println("validating cache..for "+id);
+			 boolean cache_available = false; // TODO write logic to find if the cache available
 			 if(cache_available)
 			 {
 				 // render from cache
@@ -36,27 +43,15 @@ public class CacheInterceptor extends AbstractInterceptor {
 			 else
 			 {
 				 // TODO
-				 // wrap the response object
-
-	           /*     GenericResponseWrapper responseWrapper =   new GenericResponseWrapper(response);	
-	            *  ServletActionContext.setResponse(responseWrapper); 
-	            */
+				
 				 
 				 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			        CacheResponseWrapper wrappedResponse =
 			          new CacheResponseWrapper(response, baos);
 			        ServletActionContext.setResponse(wrappedResponse); 
 				 String result = arg0.invoke();
-				 File tempDir = (File)ServletActionContext.getServletContext().getAttribute(
-					      "javax.servlet.context.tempdir");
-
-					    // get possible cache
-					    String temp = tempDir.getAbsolutePath();
-					    File file = new File(temp+id);
-				 FileOutputStream fos = new FileOutputStream(file);
-			        fos.write(baos.toByteArray());
-			        fos.flush();
-			        fos.close();
+				 String s =baos.toString();		 
+				 System.out.println("The response to be stored "+ s);
 				 return result;
 			 }
 		 }
