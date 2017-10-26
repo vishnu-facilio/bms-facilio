@@ -769,4 +769,106 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getConnectedAppFields() {
+		FacilioModule module = ModuleFactory.getConnectedAppModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getOrgIdField(module));
+
+		FacilioField connectedAppId = new FacilioField();
+		connectedAppId.setName("connectedAppId");
+		connectedAppId.setDataType(FieldType.NUMBER);
+		connectedAppId.setColumnName("CONNECTED_APP_ID");
+		connectedAppId.setModule(module);
+		fields.add(connectedAppId);
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField linkName = new FacilioField();
+		linkName.setName("linkName");
+		linkName.setDataType(FieldType.STRING);
+		linkName.setColumnName("LINK_NAME");
+		linkName.setModule(module);
+		fields.add(linkName);
+		
+		FacilioField description = new FacilioField();
+		description.setName("description");
+		description.setDataType(FieldType.STRING);
+		description.setColumnName("DESCRIPTION");
+		description.setModule(module);
+		fields.add(description);
+		
+		FacilioField baseurl = new FacilioField();
+		baseurl.setName("baseurl");
+		baseurl.setDataType(FieldType.STRING);
+		baseurl.setColumnName("BASEURL");
+		baseurl.setModule(module);
+		fields.add(baseurl);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTabWidgetFields() {
+		FacilioModule module = ModuleFactory.getTabWidgetModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getOrgIdField(module));
+		
+		FacilioField tabWidgetId = new FacilioField();
+		tabWidgetId.setName("tabWidgetId");
+		tabWidgetId.setDataType(FieldType.NUMBER);
+		tabWidgetId.setColumnName("TAB_WIDGET_ID");
+		tabWidgetId.setModule(module);
+		fields.add(tabWidgetId);
+		
+		FacilioField moduleLinkName = new FacilioField();
+		moduleLinkName.setName("moduleLinkName");
+		moduleLinkName.setDataType(FieldType.STRING);
+		moduleLinkName.setColumnName("MODULE_LINK_NAME");
+		moduleLinkName.setModule(module);
+		fields.add(moduleLinkName);
+		
+		FacilioField tabName = new FacilioField();
+		tabName.setName("tabName");
+		tabName.setDataType(FieldType.STRING);
+		tabName.setColumnName("TAB_NAME");
+		tabName.setModule(module);
+		fields.add(tabName);
+		
+		FacilioField tabLinkName = new FacilioField();
+		tabLinkName.setName("tabLinkName");
+		tabLinkName.setDataType(FieldType.STRING);
+		tabLinkName.setColumnName("TAB_LINK_NAME");
+		tabLinkName.setModule(module);
+		fields.add(tabLinkName);
+		
+		FacilioField widgetName = new FacilioField();
+		widgetName.setName("widgetName");
+		widgetName.setDataType(FieldType.STRING);
+		widgetName.setColumnName("WIDGET_NAME");
+		widgetName.setModule(module);
+		fields.add(widgetName);
+		
+		FacilioField connectedAppId = new FacilioField();
+		connectedAppId.setName("connectedAppId");
+		connectedAppId.setDataType(FieldType.NUMBER);
+		connectedAppId.setColumnName("CONNECTED_APP_ID");
+		connectedAppId.setModule(module);
+		fields.add(connectedAppId);
+		
+		FacilioField resourcePath = new FacilioField();
+		resourcePath.setName("resourcePath");
+		resourcePath.setDataType(FieldType.STRING);
+		resourcePath.setColumnName("RESOURCE_PATH");
+		resourcePath.setModule(module);
+		fields.add(resourcePath);
+		
+		return fields;
+	}
 }	
