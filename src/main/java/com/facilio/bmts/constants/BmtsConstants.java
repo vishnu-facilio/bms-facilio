@@ -6,6 +6,10 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.bmsconsole.commands.LoadAllFieldsCommand;
+import com.facilio.bmsconsole.commands.LoadModuleNameCommand;
+import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.TransactionExceptionHandler;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -14,10 +18,12 @@ import com.facilio.bmts.bmsconsole.commands.AddEventCommand;
 import com.facilio.bmts.bmsconsole.commands.AddOrUpdateAlarmCommand;
 import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRuleCommand;
 import com.facilio.bmts.bmsconsole.commands.ExecuteEventRuleCommand;
+import com.facilio.bmts.bmsconsole.commands.GetEventListCommand;
 
 public class BmtsConstants {
 	
 	public static final String EVENT = "event";
+	public static final String EVENT_LIST = "events";
 	public static final String EVENT_PROPERTY = "eventProperty";
 	public static final String IGNORE_EVENT = "ignoreEvent";
 	
@@ -27,6 +33,13 @@ public class BmtsConstants {
 		c.addCommand(new ExecuteEventMappingRuleCommand());
 		c.addCommand(new AddEventCommand());
 		c.addCommand(new AddOrUpdateAlarmCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getEventListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetEventListCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
