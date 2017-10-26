@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
 import com.facilio.sql.DBUtil;
@@ -130,6 +131,8 @@ public class LeedAPI {
 		}
 		return meterList;
 	}
+	
+	
 	
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
@@ -382,6 +385,125 @@ public class LeedAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return arr;
+	}
+	
+	public static void UpdateArcCredential(ArcContext context) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		try{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE ArcCredential SET AUTHKEY = ? , AUTHUPDATETIME = ? WHERE ORGID= ?)");
+			pstmt.setString(1, context.getAuthKey());
+			pstmt.setLong(2, System.currentTimeMillis());			
+			pstmt.setLong(3, orgId);
+
+			pstmt.executeQuery();
+		
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}		
+	}
+	
+	public static void AddArcCredential(ArcContext context) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		try{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO ArcCredential VALUES(?,?,?,?,?,?,?,?,?)");
+			pstmt.setLong(1, orgId);
+			pstmt.setString(2,context.getUserName());
+			pstmt.setString(3, context.getPassword());
+			pstmt.setString(4, context.getSubscriptionKey());
+			pstmt.setString(5, context.getAuthKey());
+			pstmt.setLong(6, System.currentTimeMillis());
+			pstmt.setString(7, context.getArcProtocol());
+			pstmt.setString(8, context.getArcHost());
+			pstmt.setString(9, context.getArcPort());
+			pstmt.executeUpdate();
+		
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}		
+	}
+	
+	public static ArcContext getArcContext() throws SQLException, RuntimeException
+	{
+		ArcContext context = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select * from ArcCredential where ORGID = ?");
+			pstmt.setLong(1, orgId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				context = new ArcContext();
+				context.setArcProtocol(rs.getString("ARCPROTOCOL"));
+				context.setArcHost(rs.getString("ARCHOST"));
+				context.setArcPort(rs.getString("ARCPORT"));
+				context.setAuthKey(rs.getString("AUTHKEY"));
+				context.setSubscriptionKey(rs.getString("SUBSCRIPTIONKEY"));
+				context.setAuthUpdateTime(rs.getLong("AUTHUPDATETIME"));
+				context.setUserName(rs.getString("USERNAME"));
+				context.setPassword(rs.getString("PASSWORD"));
+				context.setOrgId(rs.getLong("ORGID"));
+			}
+		}
+		catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return context;
+	}
+	
+	public static boolean checkIfLoginPresent(long orgId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boolean loginRequired = false;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ARCCREDENTIAL AS AC ,ORGANIZATIONS AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
+			pstmt.setLong(1,orgId);
+			rs = pstmt.executeQuery();			
+			if(!rs.next())
+			{
+				loginRequired = true;
+			}
+		
+		}catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return loginRequired;
 	}
 	
 }

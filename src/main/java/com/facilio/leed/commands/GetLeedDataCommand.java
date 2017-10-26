@@ -9,6 +9,8 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.leed.context.ArcContext;
+import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
 
 public class GetLeedDataCommand {
@@ -27,8 +29,9 @@ public class GetLeedDataCommand {
 		List<Map<String, String>> meters = new ArrayList<>();
 		
 		try {
-		
-			JSONObject jsonObj = LeedIntegrator.getMeters(leedId);
+			ArcContext arccontext = LeedAPI.getArcContext();
+			LeedIntegrator integ = new LeedIntegrator(arccontext);
+			JSONObject jsonObj = integ.getMeters(leedId);
 			//System.out.println(">>>>>>>>> "+jsonObj);
 			JSONArray meterarray = (JSONArray)((JSONObject)jsonObj.get("message")).get("results");
 
@@ -64,7 +67,9 @@ public class GetLeedDataCommand {
 	{
 		Map<String, Double> meterMap = new HashMap<>();
 		try {
-			JSONObject jsonObj = LeedIntegrator.getConsumptionList(leedId, meterId);
+			ArcContext arccontext = LeedAPI.getArcContext();
+			LeedIntegrator integ = new LeedIntegrator(arccontext);
+			JSONObject jsonObj = integ.getConsumptionList(leedId, meterId);
 			System.out.println(">>>> jsonObj : "+jsonObj);
 			String nextURL = (String)((JSONObject)jsonObj.get("message")).get("next");
 			String pageNo;

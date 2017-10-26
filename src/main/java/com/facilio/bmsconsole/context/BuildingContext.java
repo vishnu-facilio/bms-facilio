@@ -26,11 +26,11 @@ public class BuildingContext extends BaseSpaceContext {
 		this.noOfFloors = noOfFloors;
 	}
 	
-	private int grossFloorArea = -1;
-	public int getGrossFloorArea() {
+	private double grossFloorArea = -1;
+	public double getGrossFloorArea() {
 		return grossFloorArea;
 	}
-	public void setGrossFloorArea(int grossFloorArea) {
+	public void setGrossFloorArea(double grossFloorArea) {
 		this.grossFloorArea = grossFloorArea;
 	}
 	

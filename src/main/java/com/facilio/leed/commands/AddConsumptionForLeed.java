@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.ConsumptionInfoContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
@@ -40,7 +41,9 @@ public class AddConsumptionForLeed implements Command {
 			consumptionJSON.put("start_date", stdate_str);
 			consumptionJSON.put("end_date", endate_Str);
 			consumptionJSON.put("reading", consumption);
-			JSONObject response = LeedIntegrator.createConsumption(leedId, meterId, consumptionJSON);
+			ArcContext arccontext = LeedAPI.getArcContext();
+			LeedIntegrator integ = new LeedIntegrator(arccontext);
+			JSONObject response = integ.createConsumption(leedId, meterId, consumptionJSON);
 			System.out.println("$$$$$$$$$$$ : "+response);
 			long consumptionId = -1;
 			if(response != null)
