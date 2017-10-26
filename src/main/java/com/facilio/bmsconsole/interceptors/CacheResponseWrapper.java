@@ -28,6 +28,7 @@ public class CacheResponseWrapper
 
   public ServletOutputStream createOutputStream()
       throws IOException {
+	  System.out.println("outstreent called");
     return (new CacheResponseStream(origResponse, cache));
   }
 
