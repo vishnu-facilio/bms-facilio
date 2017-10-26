@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
@@ -67,10 +65,10 @@ public enum LookupOperator implements Operator<Criteria> {
 	}
 
 	@Override
-	public BeanPredicate getPredicate(FacilioField field, Criteria value) {
+	public FacilioModulePredicate getPredicate(FacilioField field, Criteria value) {
 		// TODO Auto-generated method stub
 		if(field != null && value != null) {
-			return new BeanPredicate(field.getName(), value.computePredicate());
+			return new FacilioModulePredicate(field.getName(), value.computePredicate());
 		}
 		return null;
 	}

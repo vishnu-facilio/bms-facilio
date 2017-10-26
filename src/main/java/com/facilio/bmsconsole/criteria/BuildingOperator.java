@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
-
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -19,7 +17,7 @@ public enum BuildingOperator implements Operator<String> {
 	
 	BUILDING_IS("building_is") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -73,7 +71,7 @@ public enum BuildingOperator implements Operator<String> {
 	public abstract String getWhereClause(FacilioField field, String value);
 	
 	@Override
-	public abstract BeanPredicate getPredicate(FacilioField field, String value);
+	public abstract FacilioModulePredicate getPredicate(FacilioField field, String value);
 	
 	@Override
 	public String getDynamicParameter() {

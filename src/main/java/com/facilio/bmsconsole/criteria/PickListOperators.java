@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
@@ -44,10 +43,10 @@ public enum PickListOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), computeUserPredicate(value));
+				return new FacilioModulePredicate(field.getName(), computeUserPredicate(value));
 			}
 			return null;
 		}
@@ -85,10 +84,10 @@ public enum PickListOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeUserPredicate(value)));
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeUserPredicate(value)));
 			}
 			return null;
 		}

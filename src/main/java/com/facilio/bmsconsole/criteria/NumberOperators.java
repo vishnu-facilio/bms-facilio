@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
@@ -30,10 +29,10 @@ public enum NumberOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), computeEqualPredicate(value));
+				return new FacilioModulePredicate(field.getName(), computeEqualPredicate(value));
 			}
 			return null;
 		}
@@ -68,19 +67,19 @@ public enum NumberOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
 			}
 			return null;
 		}
 	},
 	LESS_THAN("<") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -109,9 +108,9 @@ public enum NumberOperators implements Operator<String> {
 	},
 	LESS_THAN_EQUAL("<=") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -140,9 +139,9 @@ public enum NumberOperators implements Operator<String> {
 	},
 	GREATER_THAN(">") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -171,9 +170,9 @@ public enum NumberOperators implements Operator<String> {
 	},
 	GREATER_THAN_EQUAL(">=") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.collections.PredicateUtils;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -23,10 +22,10 @@ public enum CommonOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return new BeanPredicate(field.getName(), PredicateUtils.nullPredicate());
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.nullPredicate());
 			}
 			return null;
 		}
@@ -42,10 +41,10 @@ public enum CommonOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notNullPredicate());
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.notNullPredicate());
 			}
 			return null;
 		}

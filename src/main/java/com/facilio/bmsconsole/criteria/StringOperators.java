@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
@@ -42,10 +41,10 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), computeEqualPredicate(value));
+				return new FacilioModulePredicate(field.getName(), computeEqualPredicate(value));
 			}
 			return null;
 		}
@@ -86,10 +85,10 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
 			}
 			return null;
 		}
@@ -108,10 +107,10 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), computeContainsPredicate(value));
+				return new FacilioModulePredicate(field.getName(), computeContainsPredicate(value));
 			}
 			return null;
 		}
@@ -141,10 +140,10 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeContainsPredicate(value)));
+				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeContainsPredicate(value)));
 			}
 			return null;
 		}
@@ -163,7 +162,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate startsWithPredicate = null;
@@ -178,7 +177,7 @@ public enum StringOperators implements Operator<String> {
 				else {
 					startsWithPredicate = getStartsWithPredicate(value);
 				}
-				return new BeanPredicate(field.getName(), startsWithPredicate);
+				return new FacilioModulePredicate(field.getName(), startsWithPredicate);
 			}
 			return null;
 		}
@@ -209,7 +208,7 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate endsWithPredicate = null;
@@ -224,7 +223,7 @@ public enum StringOperators implements Operator<String> {
 				else {
 					endsWithPredicate = getEndsWithPredicate(value);
 				}
-				return new BeanPredicate(field.getName(), endsWithPredicate);
+				return new FacilioModulePredicate(field.getName(), endsWithPredicate);
 			}
 			return null;
 		}
