@@ -264,7 +264,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private List<FacilioField> getLookupFields() {
 		List<FacilioField> lookupFields = new ArrayList<>();
 		for(FacilioField field : selectFields) {
-			if(field.getDataType() == FieldType.LOOKUP) {
+			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				lookupFields.add(field);
 			}
 		}

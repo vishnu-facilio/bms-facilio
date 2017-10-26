@@ -45,7 +45,7 @@ public class GenerateCondtionsFromFiltersCommand implements Command {
 						FacilioField childField = modBean.getField(fieldName, module[1]);
 						Condition childCondition = new Condition();
 						childCondition.setField(childField);
-						childCondition.setOperator(childField.getDataType().getOperator((String) fieldJson.get("operator")));
+						childCondition.setOperator(childField.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
 						
 						if(value.size() > 0)
 						{
@@ -90,7 +90,7 @@ public class GenerateCondtionsFromFiltersCommand implements Command {
 						FacilioField field = modBean.getField(fieldName, module[0]);
 						Condition condition = new Condition();
 						condition.setField(field);
-						condition.setOperator(field.getDataType().getOperator((String) fieldJson.get("operator")));
+						condition.setOperator(field.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
 						
 						StringBuilder values = new StringBuilder();
 						boolean isFirst = true;

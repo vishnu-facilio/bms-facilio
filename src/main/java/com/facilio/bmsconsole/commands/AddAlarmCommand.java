@@ -29,7 +29,7 @@ public class AddAlarmCommand implements Command {
 			alarm.setCreatedTime(System.currentTimeMillis());
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
-																.dataTableName(dataTableName)
+																.table(dataTableName)
 																.fields(fields)
 																.connection(conn);
 			

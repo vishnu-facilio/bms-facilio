@@ -267,4 +267,20 @@ public class ModuleFactory {
 		alarmModule.setTableName("Preventive_Maintenance");
 		return alarmModule;
 	}
+
+	public static FacilioModule getConnectedAppModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connectedApp");
+		connectedApp.setDisplayName("Connected App");
+		connectedApp.setTableName("Connected_App");
+		return connectedApp;
+	}
+	
+	public static FacilioModule getTabWidgetModule() {
+		FacilioModule tabWidget = new FacilioModule();
+		tabWidget.setName("tabWidget");
+		tabWidget.setDisplayName("Tab Widget");
+		tabWidget.setTableName("Tab_Widget");
+		return tabWidget;
+	}
 }

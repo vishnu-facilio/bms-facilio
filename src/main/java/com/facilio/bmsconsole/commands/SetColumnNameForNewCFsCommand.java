@@ -21,24 +21,37 @@ public class SetColumnNameForNewCFsCommand implements Command {
 		List<FacilioField> newFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		List<FacilioField> existingFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		
-		Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
-		
-		//Have to be changed to get in minimum number of queries
-		for (FacilioField field : newFields) {
-			FieldType dataType = FieldType.getCFType(field.getDataTypeCode());
+		if(newFields != null) {
+			Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
 			
-			if(dataType != null) {
-				field.setDataType(dataType);
-				String newColumnName = getColumnNameForNewField(dataType, existingColumns.get(dataType));
-				if(newColumnName == null) {
-					throw new Exception("No more columns available.");
+			//Have to be changed to get in minimum number of queries
+			for (FacilioField field : newFields) {
+				FieldType dataType = field.getDataTypeEnum();
+				
+				if(dataType != null) {
+					List<String> existingColumnNames = existingColumns.get(dataType);
+					if(existingColumnNames == null) {
+						existingColumnNames = new ArrayList<>();
+						existingColumns.put(dataType, existingColumnNames);
+					}
+					if(field.getColumnName() == null || field.getColumnName().isEmpty()) {
+						String newColumnName = getColumnNameForNewField(dataType, existingColumnNames);
+						if(newColumnName == null) {
+							throw new Exception("No more columns available.");
+						}
+						field.setColumnName(newColumnName);
+					}
+					existingColumnNames.add(field.getColumnName());
 				}
-				field.setColumnName(newColumnName);
-			}
-			else {
-				throw new IllegalArgumentException("Invalid Data Type Value");
+				else {
+					throw new IllegalArgumentException("Invalid Data Type Value");
+				}
 			}
 		}
+		else {
+			throw new IllegalArgumentException("No Fields to Add");
+		}
+		
 		
 		return false;
 	}
@@ -47,10 +60,10 @@ public class SetColumnNameForNewCFsCommand implements Command {
 		Map<FieldType, List<String>> existingColumns = new HashMap<>();
 		if(fields != null) {
 			for(FacilioField field : fields) {
-				List<String> columns = existingColumns.get(field.getDataType());
+				List<String> columns = existingColumns.get(field.getDataTypeEnum());
 				if(columns == null) {
 					columns = new ArrayList<>();
-					existingColumns.put(field.getDataType(), columns);
+					existingColumns.put(field.getDataTypeEnum(), columns);
 				}
 				columns.add(field.getColumnName());
 			}

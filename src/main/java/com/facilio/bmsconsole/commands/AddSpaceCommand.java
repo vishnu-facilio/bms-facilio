@@ -34,7 +34,7 @@ public class AddSpaceCommand implements Command {
 			
 			InsertRecordBuilder<SpaceContext> builder = new InsertRecordBuilder<SpaceContext>()
 															.moduleName(moduleName)
-															.dataTableName(dataTableName)
+															.table(dataTableName)
 															.fields(fields)
 															.connection(conn);
 			long id = builder.insert(space);

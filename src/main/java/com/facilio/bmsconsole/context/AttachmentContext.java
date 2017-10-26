@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+
 public class AttachmentContext {
 	
 	private long attachmentId;
@@ -80,5 +83,13 @@ public class AttachmentContext {
 	}
 	public void setParentModuleLinkName(String parentModuleLinkName) {
 		this.parentModuleLinkName = parentModuleLinkName;
+	}
+	
+	public String getPreviewUrl() throws Exception {
+		if (this.fileId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.fileId);
+		}
+		return null;
 	}
 }

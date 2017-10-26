@@ -68,20 +68,21 @@ public class FacilioField implements Serializable {
 		this.sequenceNumber = sequenceNumber;
 	}
 	
-	private int dataTypeCode;
-	public int getDataTypeCode() {
-		return dataTypeCode;
-	}
-	public void setDataTypeCode(int dataTypeCode) {
-		this.dataTypeCode = dataTypeCode;
-	}
-	
 	private FieldType dataType;
-	public FieldType getDataType() {
+	public FieldType getDataTypeEnum() {
 		return dataType;
 	}
 	public void setDataType(FieldType dataType) {
 		this.dataType = dataType;
+	}
+	public int getDataType() {
+		if(dataType != null) {
+			return dataType.getTypeAsInt();
+		}
+		return -1;
+	}
+	public void setDataType(int dataType) {
+		this.dataType = FieldType.getCFType(dataType);
 	}
 	
 	private boolean isDefault = false;

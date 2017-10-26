@@ -9,6 +9,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 
@@ -152,6 +153,11 @@ public class S3FileStore extends FileStore {
 		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
 		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
 		generatePresignedUrlRequest.setExpiration(expiration);
+		if (fileInfo.getContentType() != null) {
+			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
+			resHeaders.setContentType(fileInfo.getContentType());
+			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
+		}
 		             
 		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
 		return url.toString();

@@ -386,15 +386,20 @@ public class FacilioConstants {
 		public static final String ACTION_FORM = "actionForm";
 		
 		public static final String MODULE_NAME = "moduleName";
-		public static final String MODULE_ID = "moduleId";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
+		public static final String PARENT_MODULE = "parentModule";
+		public static final String READING_NAME = "readingName";
+		public static final String MODULE = "module";
+		
+		public static final String READINGS = "readings";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String DEFAULT_FIELD = "defaultField";
+		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
@@ -418,6 +423,9 @@ public class FacilioConstants {
 		
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
+		
+		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
+		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
 		
 		public static final String PICKLIST = "pickList";
 		

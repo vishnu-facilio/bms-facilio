@@ -48,17 +48,13 @@ public class LeedAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("leedconfiguration");
 		List<FacilioField> fields = modBean.getAllFields("leedconfiguration");
-		Iterator itr = leedConfigList.iterator();
-		while(itr.hasNext())
-		{
-			LeedConfigurationContext leedConfig = (LeedConfigurationContext)itr.next();
-			InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
-																			.fields(fields)
-																			.dataTableName(module.getTableName())
-																			.moduleName(module.getName());
 		
-			insertBuilder.insert(leedConfig);
-		}
+		InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
+																			.fields(fields)
+																			.table(module.getTableName())
+																			.moduleName(module.getName());
+		insertBuilder.addRecords(leedConfigList);
+		insertBuilder.save();
 	}
 	
 	public static long addLeedConfiguration(LeedConfigurationContext leedConfig) throws Exception {
@@ -68,7 +64,7 @@ public class LeedAPI {
 		
 		InsertRecordBuilder<LeedConfigurationContext> insertBuilder = new InsertRecordBuilder<LeedConfigurationContext>()
 																			.fields(fields)
-																			.dataTableName(module.getTableName())
+																			.table(module.getTableName())
 																			.moduleName(module.getName())
 																			.level(3);
 		
@@ -144,6 +140,7 @@ public class LeedAPI {
 		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
 		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
 		long assetId = addAsset(metername,orgId);
+		context.put(FacilioConstants.ContextNames.DEVICEID, assetId);
 		addDevice(assetId, buildingId);
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
@@ -215,10 +212,11 @@ public class LeedAPI {
 		ResultSet rs = null;
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,STATUS) values(?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,DEVICE_TYPE,STATUS) values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, buildingId);
-			pstmt.setInt(3, 1);
+			pstmt.setString(3,"EnergyMeter");
+			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add controller");
@@ -244,7 +242,7 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(DEVICEID,FUELTYPE,METERID) VALUES(?,?,?))", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(DEVICE_ID,FUELTYPE,METERID) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, fuelType);
 			pstmt.setLong(3, meterId);
@@ -273,7 +271,7 @@ public class LeedAPI {
 		long meterId = 0;
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICEID = ?");
+			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICE_ID = ?");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
 			while(rs.next())
@@ -351,10 +349,10 @@ public class LeedAPI {
 		
 	}
 	
-	public static JSONObject getConsumptionData(long deviceId) throws SQLException , RuntimeException 
+	public static JSONArray getConsumptionData(long deviceId) throws SQLException , RuntimeException 
 	{
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("DeviceId", deviceId);
+		JSONArray arr = new JSONArray();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -365,14 +363,15 @@ public class LeedAPI {
 			pstmt = conn.prepareStatement("select ADDED_MONTH,SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where DEVICE_ID = ? GROUP BY ADDED_MONTH;");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
-			JSONArray arr = new JSONArray();
+			
 			while(rs.next())
 			{
 				JSONObject obj = new JSONObject();
-				obj.put(rs.getInt("ADDED_MONTH"), rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
+				obj.put("Month", rs.getInt("ADDED_MONTH") );
+				obj.put("Consumption",  rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
 				arr.add(obj);;
 			}
-			jsonObj.put("values", arr);			
+		
 		}
 		catch(SQLException | RuntimeException e)
 		{
@@ -382,7 +381,7 @@ public class LeedAPI {
 		{
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
-		return jsonObj;
+		return arr;
 	}
 	
 }

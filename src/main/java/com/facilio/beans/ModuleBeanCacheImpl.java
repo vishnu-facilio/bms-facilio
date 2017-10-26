@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +57,44 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
 		}
 		return moduleObj;
+	}
+	
+	@Override
+	public List<FacilioModule> getSubModules(String moduleName) throws Exception {
+		
+		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName));
+		
+		if (modules == null) {
+			
+			modules = (ArrayList<FacilioModule>) super.getSubModules(moduleName);
+			
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), modules);
+			
+			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
+		}
+		else {
+			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
+		}
+		return modules;
+	}
+	
+	@Override
+	public List<FacilioModule> getSubModules(long moduleId) throws Exception {
+		
+		ArrayList<FacilioModule> modules = (ArrayList<FacilioModule>) CacheUtil.get(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId));
+		
+		if (modules == null) {
+			
+			modules = (ArrayList<FacilioModule>) super.getSubModules(moduleId);
+			
+			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), modules);
+			
+			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
+		}
+		else {
+			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
+		}
+		return modules;
 	}
 	
 	@Override

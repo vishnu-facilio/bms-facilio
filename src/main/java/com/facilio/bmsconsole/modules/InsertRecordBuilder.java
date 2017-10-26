@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,13 +11,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.InsertBuilderIfc;
 
-public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
+public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
 	private String moduleName;
 	private FacilioModule module;
 	private List<FacilioField> fields;
 	private int level = 1;
+	private List<E> records = new ArrayList<>();
 	
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -28,13 +31,16 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	}
 	
 	public InsertRecordBuilder<E> module(FacilioModule module) {
+		this.module = module;
 		return this;
 	}
 	
-	public InsertRecordBuilder<E> dataTableName(String dataTableName) {
+	@Override
+	public InsertRecordBuilder<E> table(String tableName) {
 		return this;
 	}
 	
+	@Override
 	public InsertRecordBuilder<E> fields(List<FacilioField> fields) {
 		this.fields = fields;
 		return this;
@@ -48,6 +54,74 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 	@Deprecated
 	public InsertRecordBuilder<E> connection(Connection conn) {
 		return this;
+	}
+	
+	@Override
+	public InsertRecordBuilder<E> addRecord(E bean) {
+		this.records.add(bean);
+		return this;
+	}
+	
+	@Override
+	public InsertRecordBuilder<E> addRecords(List<E> beans) {
+		this.records.addAll(beans);
+		return this;
+	}
+	
+	@Override
+	public void save() throws Exception {
+		if(records.isEmpty()) {
+			return;
+		}
+		
+		if(module == null) {
+			if(moduleName == null || moduleName.isEmpty()) {
+				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			module = modBean.getModule(moduleName);
+		}
+		
+		List<FacilioModule> modules = splitModules();
+		Map<Long, List<FacilioField>> fieldMap = splitFields();
+		
+		List<Map<String, Object>> beanProps = new ArrayList<>();
+		for(E bean : records) {
+			beanProps.add(getAsProps(bean));
+		}
+		
+		int currentLevel = 1;
+		for(FacilioModule currentModule : modules) {
+			if(currentLevel >= level) {
+				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
+				if(currentFields == null) {
+					currentFields = new ArrayList<>();
+				}
+				currentFields.add(FieldFactory.getIdField(currentModule));
+				currentFields.add(FieldFactory.getOrgIdField(currentModule));
+				currentFields.add(FieldFactory.getModuleIdField(currentModule));
+				
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+																.table(currentModule.getTableName())
+																.fields(currentFields);
+				
+				for(Map<String, Object> beanProp : beanProps) {
+					beanProp.put("moduleId", currentModule.getModuleId());
+					insertBuilder.addRecord(beanProp);
+				}
+				
+				insertBuilder.save();
+			}
+			currentLevel++;
+		}
+		
+		for(int itr = 0; itr < records.size(); itr++) {
+			Map<String, Object> beanProp = beanProps.get(itr);
+			if(beanProp.get("id") != null) {
+				records.get(itr).setId((long) beanProp.get("id"));
+			}
+		}
+		
 	}
 	
 	private List<FacilioModule> splitModules() {
@@ -76,52 +150,24 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> {
 		return fieldMap;
 	}
 	
-	public long insert(E bean) throws Exception {
-		if(moduleName == null || moduleName.isEmpty()) {
-			throw new IllegalArgumentException("Module Name cannot be empty");
-		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		module = modBean.getModule(moduleName);
-		
-		List<FacilioModule> modules = splitModules();
-		Map<Long, List<FacilioField>> fieldMap = splitFields();
-		
-		Map<String, Object> moduleProps = FieldUtil.<E>getAsProperties(bean);
+	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		moduleProps.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
-		moduleProps.put("moduleId", module.getModuleId());
 		
 		for(FacilioField field : fields) {
-			if(field.getDataType() == FieldType.LOOKUP) {
+			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
 				if(lookupProps != null) {
 					moduleProps.put(field.getName(), lookupProps.get("id"));
 				}
 			}
 		}
-		
-		int currentLevel = 1;
-		for(FacilioModule currentModule : modules) {
-			if(currentLevel >= level) {
-				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
-				if(currentFields == null) {
-					currentFields = new ArrayList<>();
-				}
-				currentFields.add(FieldFactory.getIdField(currentModule));
-				currentFields.add(FieldFactory.getOrgIdField(currentModule));
-				currentFields.add(FieldFactory.getModuleIdField(currentModule));
-				
-				moduleProps.put("moduleId", currentModule.getModuleId());
-				
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-																.table(currentModule.getTableName())
-																.fields(currentFields)
-																.addRecord(moduleProps);
-				
-				insertBuilder.save();
-			}
-			currentLevel++;
-		}
-		return (long) moduleProps.get("id");
+		return moduleProps;
+	}
+	
+	public long insert(E bean) throws Exception {
+		addRecord(bean);
+		save();
+		return bean.getId();
 	}
 }

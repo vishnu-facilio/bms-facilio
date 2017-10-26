@@ -151,6 +151,15 @@
 			</result>
 		</action>
 	</package>
+	<package name="tabwidgetApi" namespace="/api/tabwidget" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction" method="viewTabWidget">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="tabLinkName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^tabWidget.*</param>
+			</result>
+		</action>
+	</package>
 	<package name="skillApi" namespace="/api/skill" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
@@ -713,6 +722,51 @@
 		</action>
 	</package>
 	
+	<package name="readingApi" namespace="/api/reading" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReading">
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addCurrentOccupancyReading">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
+		
+		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssignedOccupancyReading">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
+		
+		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="moduleApi" namespace="/api/module" extends="home">
+		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction" method="addNewModule">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">moduleId</param>
+			</result>
+		</action>
+		
+		<action name="addfields" class="com.facilio.bmsconsole.actions.ModuleAction" method="addCustomFields">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">fieldIds</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="workOrderApi" namespace="/api/workorder" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
@@ -913,7 +967,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^attachmentId\[\d+\]</param>
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
  			</result>
  		</action>
  		

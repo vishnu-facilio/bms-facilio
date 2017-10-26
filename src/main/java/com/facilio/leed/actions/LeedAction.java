@@ -1,13 +1,18 @@
 package com.facilio.leed.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.leed.context.ConsumptionInfoContext;
@@ -161,6 +166,18 @@ public class LeedAction extends ActionSupport {
 		this.consumptionData = consumptionData;
 	}
 	
+	private JSONArray consumptionArray;
+	
+	public JSONArray getConsumptionArray()
+	{
+		return this.consumptionArray;
+	}
+	
+	public void setConsumptionArray(JSONArray consumptionArray)
+	{
+		this.consumptionArray = consumptionArray;
+	}
+	
 /*	public String detailspage() throws Exception
 	{
 		setBuildingId(1);
@@ -204,45 +221,112 @@ public class LeedAction extends ActionSupport {
 		this.meterID = meterID;
 	}
 	
-	private List<ConsumptionInfoContext> energyData;
+	private List<ConsumptionInfoContext> consumptionJSONArray;
 	
-	public List<ConsumptionInfoContext> getEnergyData() 
+	public List<ConsumptionInfoContext> getConsumptionJSONArray() 
 	{
-		return energyData;
+		return consumptionJSONArray;
 	}
 	
-	public void setEnergyData(List<ConsumptionInfoContext> energyData) 
+	public void setConsumptionJSONArray(List<ConsumptionInfoContext> consumptionJSONArray) 
 	{
-		this.energyData = energyData;
+		this.consumptionJSONArray = consumptionJSONArray;
 	}
 	
-	
-	public String addMeter() throws Exception
+	public String addSample() throws Exception
 	{
+		long deviceId = 1;
+		List<HashMap> dataMapList = new ArrayList();
+		
+		List<JSONObject> list = new ArrayList();
+		
+		JSONObject obj1 = new JSONObject();
+		obj1.put("st", "2017-07-11T00:00:00Z");
+		obj1.put("en", "2017-08-12T00:00:00Z");
+		obj1.put("data", 12567.0);
+		obj1.put("consumpId", 621049L);
+		
+		
+		
+		list.add(obj1);
+				
+		Iterator data = list.iterator();
+		while(data.hasNext())
+		{
+			JSONObject obj = (JSONObject)data.next();
+			String stDate = (String)obj.get("st");
+			String enDate = (String)obj.get("en");
+			double consumption = (double)obj.get("data");
+			long consumptionId = (long)obj.get("consumpId");
+			long stDateLong = DateTimeUtil.getTime(stDate,true);
+			long enDateLong = DateTimeUtil.getTime(enDate,true);
+			HashMap<String, Object> endTimeData = DateTimeUtil.getTimeData(enDateLong);
+			
+			HashMap dataMap = new HashMap();
+			dataMap.put("deviceId", deviceId);
+			dataMap.put("endTime", enDateLong);
+			dataMap.put("consumption", consumption);
+			dataMap.put("timeData", endTimeData);
+			dataMap.put("consumptionId", consumptionId);
+			dataMap.put("startTime", stDateLong);
+			dataMapList.add(dataMap);
+		}
+		try{
+		LeedAPI.addConsumptionData(dataMapList);
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return SUCCESS;
+	}
+	
+	private FacilioContext addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.METERNAME,getMeterName());
 		Chain addEnergyMeterChain = FacilioChainFactory.AddEnergyMeterChain();
 		addEnergyMeterChain.execute(context);
+		
+		return context;
+	}
+	
+	public String addMeter() throws Exception
+	{
+		addEnergyMeter();
 		return SUCCESS;
 	}
 	
-	public String addConsumptionData() throws Exception
+	public String AddMeterNConsumptionData() throws Exception
+	{
+		FacilioContext context = addEnergyMeter();
+		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
+		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
+		addConsumptionDataChain.execute(context);
+		meterList();
+		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
+		setConsumptionArray(consumptionArray);	
+		return SUCCESS;	
+	}
+	
+	
+	
+	public String AddConsumptionData() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.DEVICEID, getDeviceId());
-		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getEnergyData());
+		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
 		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
+		fetchConsumptionData();
 		return SUCCESS;	
 	}
 	
 	public String fetchConsumptionData() throws Exception
 	{
-		JSONObject consumptionData =  LeedAPI.getConsumptionData(getDeviceId());
-		setConsumptionData(consumptionData);		
+		JSONArray consumptionArray =  LeedAPI.getConsumptionData(getDeviceId());
+		setConsumptionArray(consumptionArray);		
 		return SUCCESS;
 	}
 	

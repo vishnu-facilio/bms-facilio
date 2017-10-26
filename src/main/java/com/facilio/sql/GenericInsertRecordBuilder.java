@@ -50,7 +50,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	@Override
 	public void save() throws SQLException, RuntimeException {
 		
-		if(values == null || values.isEmpty()) {
+		if(values.isEmpty()) {
 			return;
 		}
 		
@@ -67,7 +67,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				pstmt.clearParameters();
 				int paramIndex = 1;
 				for(FacilioField field : fields) {
-					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataType(), value.get(field.getName()));
+					FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field.getDataTypeEnum(), value.get(field.getName()));
 				}
 				pstmt.addBatch();
 			}
