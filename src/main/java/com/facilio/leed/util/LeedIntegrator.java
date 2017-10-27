@@ -20,6 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -47,13 +48,21 @@ public class LeedIntegrator {
 	public ArcContext context;
 	public String serverURL;
 	
-	public LeedIntegrator(ArcContext context)
+	public LeedIntegrator(ArcContext context) throws ClientProtocolException, IOException, SQLException, RuntimeException
 	{
 		this.context = context; 
 		String protocol = context.getArcProtocol();
 		String host = context.getArcHost();
 		String port = context.getArcPort();
 		this.serverURL = protocol+"://"+host+":"+port;
+		
+		long curretTime = System.currentTimeMillis();
+		long authTime = context.getAuthUpdateTime();
+		if(authTime != -1 && (curretTime - authTime) > 3600000)
+		{
+			this.context.setAuthKey(getAuthKey( context));
+			LeedAPI.UpdateArcCredential(this.context);
+		}
 	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, ParseException {
@@ -185,6 +194,23 @@ public class LeedIntegrator {
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/consumption/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
+	}
+	
+	public JSONArray getConsumptionListAsArray(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException
+	{
+		JSONArray consumptionArray = new JSONArray();
+		JSONObject message = getConsumptionList(leedId,meterId);
+		JSONObject json = (JSONObject) message.get("message");
+		String nextStr = (String)json.get("next");
+		consumptionArray.add(message);
+		while(nextStr != null)
+		{
+			System.out.println(">>>> nextStr : "+nextStr);
+			JSONObject response = getURLResponse(nextStr);
+			consumptionArray.add(response);
+		}
+		
+		return consumptionArray;
 	}
 	
 	public  JSONObject getConsumptionDetail(String leedId, String meterId, String consumptionId) throws ClientProtocolException, IOException, ParseException

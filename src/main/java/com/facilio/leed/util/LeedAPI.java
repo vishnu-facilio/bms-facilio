@@ -132,6 +132,25 @@ public class LeedAPI {
 		return meterList;
 	}
 	
+	public static void addLeedEnergyMeters(List<LeedEnergyMeterContext> meterList,long buildingId) throws SQLException, RuntimeException 
+	{
+		//long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
+		//long spaceId = getSpaceId(buildingId);
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		Iterator itr = meterList.iterator();
+		while(itr.hasNext())
+		{
+			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
+			String metername = meter.getName();
+			long fuelType = meter.getFuelType();
+			long meterId = meter.getMeterId();
+			long assetId = addAsset(metername,orgId);
+			meter.setDeviceId(assetId);
+			addDevice(assetId, buildingId);
+			addLeedEnergyMeter(assetId,fuelType,meterId);
+		}	
+	}
+	
 	
 	
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
@@ -148,6 +167,34 @@ public class LeedAPI {
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
 	}
+	
+	public static long getLeedId(long buildingId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long leedId = -1;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT LEEDID FROM LeedConfiguration where ID = ?");
+			pstmt.setLong(1, buildingId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				leedId = rs.getLong("LEEDID");
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return leedId;
+	}
+	
 	
 //	public static long getSpaceId(long buildingId) throws  SQLException, RuntimeException
 //	{

@@ -1,5 +1,6 @@
 package com.facilio.leed.actions;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.http.client.ClientProtocolException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -155,8 +158,102 @@ public class LeedAction extends ActionSupport {
 	
 	public String meterList() throws Exception
 	{
-		setMeterList(LeedAPI.fetchMeterListForBuilding(getBuildingId()));
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
+		
+		
+		List<LeedEnergyMeterContext> meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId());
+		if(meterList.isEmpty())
+		{
+			long leedId = LeedAPI.getLeedId(getBuildingId());
+			ArcContext arccontext = LeedAPI.getArcContext();
+			LeedIntegrator integ = new LeedIntegrator(arccontext);
+			JSONObject meterJSON = integ.getMeters(leedId+"");
+			JSONObject meterMsgJSON = (JSONObject)meterJSON.get("message");
+			meterList = getLeedEnergyMeterList(meterMsgJSON);
+			LeedAPI.addLeedEnergyMeters(meterList,getBuildingId());
+			syncConsumptionDataWithArc(integ,leedId,meterList);
+			meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId());
+		}
+		
+		setMeterList(meterList);
+	
+		fetchConsumptionData();
+		
 		return SUCCESS;
+	}
+	
+	public void syncConsumptionDataWithArc(LeedIntegrator integ, long leedId, List<LeedEnergyMeterContext> meterList) throws ClientProtocolException, IOException, ParseException, SQLException, RuntimeException
+	{
+		List<HashMap> dataMapList = new ArrayList();
+		Iterator itr = meterList.iterator();
+		while(itr.hasNext())
+		{
+			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
+			long meterId = meter.getMeterId();
+			long deviceId = meter.getDeviceId();
+			JSONArray arr = integ.getConsumptionListAsArray(leedId+"", meterId+"");
+			Iterator jitr = arr.iterator();
+			while(jitr.hasNext())
+			{
+				JSONObject msgobj = (JSONObject)jitr.next();
+				JSONObject obj = (JSONObject)msgobj.get("message");
+				JSONArray resArr = (JSONArray)obj.get("results");
+				for(int i = 0; i < resArr.size(); i++)
+				{
+					JSONObject conObj = (JSONObject)resArr.get(i);
+					long consumptionId = (long)conObj.get("id");
+					String stDate = (String)conObj.get("start_date");
+					String enDate = (String)conObj.get("end_date");
+					double consumption = (double)conObj.get("reading");
+
+					long stDateLong = DateTimeUtil.getTime(stDate,true);
+					long enDateLong = DateTimeUtil.getTime(enDate,true);
+					HashMap<String, Object> endTimeData = DateTimeUtil.getTimeData(enDateLong);
+					
+					HashMap dataMap = new HashMap();
+					dataMap.put("deviceId", deviceId);
+					dataMap.put("endTime", enDateLong);
+					dataMap.put("consumption", consumption);
+					dataMap.put("timeData", endTimeData);
+					dataMap.put("consumptionId", consumptionId);
+					dataMap.put("startTime", stDateLong);
+					dataMapList.add(dataMap);
+					
+				}
+			}
+		}
+		LeedAPI.addConsumptionData(dataMapList);
+	}
+	
+	public List<LeedEnergyMeterContext> getLeedEnergyMeterList(JSONObject meterJSON)
+	{
+		List<LeedEnergyMeterContext> meterList = new ArrayList();
+		List<String> reqArray = new ArrayList();
+		reqArray.add("electricity");
+		//reqArray.add("water");
+		JSONArray meterArr = (JSONArray)meterJSON.get("results");
+		Iterator itr = meterArr.iterator();
+		while(itr.hasNext())
+		{
+			JSONObject mJSON = (JSONObject)itr.next();
+			JSONObject fuel_type = (JSONObject)mJSON.get("fuel_type");
+			String fuelKind = (String)fuel_type.get("kind");
+			if(!reqArray.contains(fuelKind))
+			{
+				continue;
+			}
+			long meterId = (long)mJSON.get("id");
+			String meterName = (String)mJSON.get("name");
+			long fuelType = (long)mJSON.get("type");
+			LeedEnergyMeterContext context = new LeedEnergyMeterContext();
+			context.setName(meterName);
+			context.setMeterId(meterId);
+			context.setFuelType(fuelType);
+			meterList.add(context);
+		}
+		return meterList;
 	}
 	
 	private List<LeedEnergyMeterContext> meterList;

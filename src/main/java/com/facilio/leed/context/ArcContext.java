@@ -8,7 +8,7 @@ public class ArcContext extends OrgContext{
 	private String password;
 	private String subscriptionKey;
 	private String authKey;
-	private long authUpdateTime;
+	private long authUpdateTime = -1;
 	private String arcProtocol;
 	private String arcHost;
 	private String arcPort;
