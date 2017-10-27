@@ -43,17 +43,17 @@ public class EventSyncJob extends FacilioJob{
 			AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
 			
 			DynamoDB dd = new DynamoDB(client);
-			Table table = dd.getTable("ClientTest"); // Client Table
-			RangeKeyCondition rkc = new RangeKeyCondition("TimeLog");
+			Table table = dd.getTable("BMTSEvents"); // Client Table
+			RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 			rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
 			
-			QuerySpec spec = new QuerySpec().withHashKey("ClientId", "123").withRangeKeyCondition(rkc);	// Device Mac ID
+			QuerySpec spec = new QuerySpec().withHashKey("DeviceId", "123").withRangeKeyCondition(rkc);	// Device Mac ID
 			ItemCollection<QueryOutcome> items = table.query(spec);
 			Iterator<Item> iterator = items.iterator();
-			while (iterator.hasNext()) 
+			while (iterator.hasNext())
 			{
 				Item item = iterator.next();
-			    Long timestamp = item.getLong("TimeLog");
+			    Long timestamp = item.getLong("LogTime");
 			    processPayload(timestamp, item.getMap("payload"));
 			}
 		}
@@ -123,7 +123,6 @@ public class EventSyncJob extends FacilioJob{
 			e.printStackTrace();
 			throw e;
 		}
-	    
 	    Command addEvent = BmtsConstants.getAddEventChain();
 	    addEvent.execute(context);
 	}

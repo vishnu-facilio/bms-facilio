@@ -26,6 +26,7 @@ public class ExecuteEventRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		Map<String, Object> propsMap = (Map<String, Object>) context.get(BmtsConstants.EVENT_PROPERTY);
+		boolean ignoreEvent = false;
 		if((Boolean) propsMap.get("hasEventRule"))
 		{
 			EventContext event = (EventContext) context.get(BmtsConstants.EVENT);
@@ -47,7 +48,6 @@ public class ExecuteEventRuleCommand implements Command {
 				throw e;
 			}
 			
-			boolean ignoreEvent = false;
 			if((Boolean) ruleprops.get("hasEventFilter"))
 			{
 				try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
@@ -92,8 +92,8 @@ public class ExecuteEventRuleCommand implements Command {
 					ignoreEvent = criteria.computePredicate().evaluate(event);
 				}
 			}
-			context.put(BmtsConstants.IGNORE_EVENT, ignoreEvent);
 		}
+		context.put(BmtsConstants.IGNORE_EVENT, ignoreEvent);
 		return false;
 	}
 }
