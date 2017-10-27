@@ -93,7 +93,7 @@ public class LeedAPI {
 		return null;
 	}
 	
-	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId) throws SQLException, RuntimeException
+	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId,String meterType) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -106,9 +106,10 @@ public class LeedAPI {
 			StringBuilder sql = new StringBuilder();
 			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICE_ID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICE_ID = Device.DEVICE_ID")
 				.append(" LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
-				.append(" WHERE Device.SPACE_ID = ?");		
+				.append(" WHERE Device.SPACE_ID = ? AND Device.DEVICE_TYPE = ?");		
 			pstmt =  conn.prepareStatement(sql.toString());
 			pstmt.setLong(1,buildingId);
+			pstmt.setString(2, meterType);
 			rs = pstmt.executeQuery();
 			while(rs.next())
 			{
@@ -116,6 +117,7 @@ public class LeedAPI {
 				context.setName(rs.getString("NAME"));
 				context.setMeterId(rs.getLong("METERID"));
 				context.setDeviceId(rs.getLong("DEVICE_ID"));
+				context.setType(meterType);
 				meterList.add(context);
 			}
 			
@@ -142,17 +144,17 @@ public class LeedAPI {
 		{
 			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
 			String metername = meter.getName();
+			String meterType = meter.getType();
 			long fuelType = meter.getFuelType();
 			long meterId = meter.getMeterId();
 			long assetId = addAsset(metername,orgId);
 			meter.setDeviceId(assetId);
-			addDevice(assetId, buildingId);
+			addDevice(assetId, buildingId,meterType);
 			addLeedEnergyMeter(assetId,fuelType,meterId);
 		}	
 	}
 	
-	
-	
+		
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
 		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
@@ -161,9 +163,10 @@ public class LeedAPI {
 		String metername = (String)context.get(FacilioConstants.ContextNames.METERNAME);
 		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
 		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
+		String meterType = (String)context.get(FacilioConstants.ContextNames.METERTYPE);
 		long assetId = addAsset(metername,orgId);
 		context.put(FacilioConstants.ContextNames.DEVICEID, assetId);
-		addDevice(assetId, buildingId);
+		addDevice(assetId, buildingId,meterType);
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
 	}
@@ -255,7 +258,7 @@ public class LeedAPI {
 		return assetId;
 	}
 	
-	public static void addDevice(long deviceId, long buildingId) throws SQLException,RuntimeException
+	public static void addDevice(long deviceId, long buildingId,String meterType) throws SQLException,RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -265,7 +268,7 @@ public class LeedAPI {
 			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,DEVICE_TYPE,STATUS) values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, buildingId);
-			pstmt.setString(3,"EnergyMeter");
+			pstmt.setString(3,meterType);
 			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{

@@ -456,6 +456,7 @@ public class FacilioConstants {
 		public static final String UTILITYPROVIDER = "UtilityProvider";
 		public static final String DEVICEID = "DEVICEID";
 		public static final String METERLIST = "METERLIST";
+		public static final String METERTYPE = "METERTYPE";
 		
 		public static final String PREVENTIVE_MAINTENANCE = "preventiveMaintenance";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventiveMaintenances";

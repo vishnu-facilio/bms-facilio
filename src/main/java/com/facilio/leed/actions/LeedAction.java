@@ -155,15 +155,22 @@ public class LeedAction extends ActionSupport {
 		this.buildingId = buildingId;
 	}
 	
+	private String meterType;
+	
+	public void setMeterType(String meterType)
+	{
+		this.meterType =  meterType;
+	}
+	
+	public String getMeterType()
+	{
+		return this.meterType;
+	}
 	
 	public String meterList() throws Exception
 	{
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
-		
-		
-		List<LeedEnergyMeterContext> meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId());
+		List<LeedEnergyMeterContext> meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId(),getMeterType());
 		if(meterList.isEmpty())
 		{
 			long leedId = LeedAPI.getLeedId(getBuildingId());
@@ -174,7 +181,7 @@ public class LeedAction extends ActionSupport {
 			meterList = getLeedEnergyMeterList(meterMsgJSON);
 			LeedAPI.addLeedEnergyMeters(meterList,getBuildingId());
 			syncConsumptionDataWithArc(integ,leedId,meterList);
-			meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId());
+			meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId(),getMeterType());
 		}
 		
 		setMeterList(meterList);
@@ -231,8 +238,9 @@ public class LeedAction extends ActionSupport {
 	{
 		List<LeedEnergyMeterContext> meterList = new ArrayList();
 		List<String> reqArray = new ArrayList();
-		reqArray.add("electricity");
-		//reqArray.add("water");
+		reqArray.add("operating_hours");
+		reqArray.add("gross_area");
+		reqArray.add("occupancy");
 		JSONArray meterArr = (JSONArray)meterJSON.get("results");
 		Iterator itr = meterArr.iterator();
 		while(itr.hasNext())
@@ -240,7 +248,7 @@ public class LeedAction extends ActionSupport {
 			JSONObject mJSON = (JSONObject)itr.next();
 			JSONObject fuel_type = (JSONObject)mJSON.get("fuel_type");
 			String fuelKind = (String)fuel_type.get("kind");
-			if(!reqArray.contains(fuelKind))
+			if(reqArray.contains(fuelKind))
 			{
 				continue;
 			}
@@ -251,6 +259,7 @@ public class LeedAction extends ActionSupport {
 			context.setName(meterName);
 			context.setMeterId(meterId);
 			context.setFuelType(fuelType);
+			context.setType(fuelKind);
 			meterList.add(context);
 		}
 		return meterList;
