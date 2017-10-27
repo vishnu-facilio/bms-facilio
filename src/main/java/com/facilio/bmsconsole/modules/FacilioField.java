@@ -200,7 +200,8 @@ public class FacilioField implements Serializable {
 		NUMBER(9, "number"), 
 		LOOKUP_SIMPLE(10, null), 
 		LOOKUP_POPUP(11, null),
-		LOOKUP_SECTION(12, null)
+		LOOKUP_SECTION(12, null),
+		DECIMAL(13, "number")
 		;
 		
 		private int intVal;

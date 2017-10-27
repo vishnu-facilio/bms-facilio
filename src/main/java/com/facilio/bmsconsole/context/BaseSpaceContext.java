@@ -50,11 +50,11 @@ public class BaseSpaceContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	
-	private int area = -1;
-	public int getArea() {
+	private double area = -1;
+	public double getArea() {
 		return area;
 	}
-	public void setArea(int area) {
+	public void setArea(double area) {
 		this.area = area;
 	}
 	
