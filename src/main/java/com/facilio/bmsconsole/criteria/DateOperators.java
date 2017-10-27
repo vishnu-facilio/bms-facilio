@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
@@ -27,11 +26,11 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -71,11 +70,11 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -100,11 +99,11 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -129,11 +128,11 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -158,12 +157,12 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
 				if(betweenPredicate != null) {
-					return new BeanPredicate(field.getName(), betweenPredicate);
+					return new FacilioModulePredicate(field.getName(), betweenPredicate);
 				}
 			}
 			return null;
@@ -178,12 +177,12 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			// TODO Auto-generated method stub
 			if(field != null && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
 				if(betweenPredicate != null) {
-					return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(betweenPredicate));
+					return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(betweenPredicate));
 				}
 			}
 			return null;
@@ -216,9 +215,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -262,9 +261,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -305,9 +304,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -352,9 +351,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -394,9 +393,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -440,9 +439,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -486,9 +485,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -532,9 +531,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -578,9 +577,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -625,9 +624,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -671,9 +670,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -709,10 +708,10 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				int age = Integer.parseInt(value);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -748,10 +747,10 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
 			if(field != null && value != null && !value.isEmpty()) {
 				int due = Integer.parseInt(value);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(field.getName(), new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {

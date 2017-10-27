@@ -10,6 +10,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
@@ -19,7 +21,9 @@ public class FetchArcAssetsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		JSONObject responseJSON = LeedIntegrator.getAssetList();
+		ArcContext arccontext = LeedAPI.getArcContext();
+		LeedIntegrator integ = new LeedIntegrator(arccontext);
+		JSONObject responseJSON = integ.getAssetList();
 		JSONObject response = (JSONObject)responseJSON.get("message");
 		System.out.println("FetchArcAssetsCommand.getAssetList().response :"+response);
 		
@@ -72,9 +76,10 @@ public class FetchArcAssetsCommand implements Command {
 			
 			LeedConfigurationContext leedcontext = new LeedConfigurationContext();
 			leedcontext.setName(name);
+			leedcontext.setSpaceType(SpaceType.BUILDING);
 			leedcontext.setLeedId(leedId);
 			leedcontext.setBuildingStatus(buildingStatus);
-			leedcontext.setGrossFloorArea(Integer.parseInt(area.toString()));
+			leedcontext.setGrossFloorArea(Double.parseDouble(area.toString()));
 			leedcontext.setLastCurrentOccupancy(((Long)occupancy).intValue());
 			leedcontext.setLocation(location);
 			leedcontext.setLeedScore(leedScore);
@@ -94,41 +99,61 @@ public class FetchArcAssetsCommand implements Command {
 	
 	public HashMap getLeedScore(long leedId) throws Exception
 	{
-		HashMap scoreMap = new HashMap();
-		JSONObject response = (JSONObject)LeedIntegrator.getPerformanceScores(leedId+"");
-		JSONObject scores = (JSONObject)response.get("scores");
-		System.out.println("FetchArcAssetsCommand.getLeedScore().scores :"+scores);
 		long energyScore = 0;
+		long waterScore = 0;
+		long wasteScore = 0;
+		long humanExperienceScore = 0;
+		long transportScore = 0;
+		long baseScore = 0;
+		long totalScore = 0;
+		
+		HashMap scoreMap = new HashMap();
+		ArcContext arccontext = LeedAPI.getArcContext();
+		LeedIntegrator integ = new LeedIntegrator(arccontext);
+		JSONObject response = (JSONObject)integ.getPerformanceScores(leedId+"");
+		JSONObject scoMsg = (JSONObject)response.get("message");
+		String errResult = (String)scoMsg.get("result");
+		boolean noScore = false;
+		if(errResult != null && errResult.equalsIgnoreCase("No result found."))
+		{
+			noScore = true;
+		}
+		else
+		{
+		JSONObject scores = (JSONObject)scoMsg.get("scores");
+		System.out.println("FetchArcAssetsCommand.getLeedScore().scores :"+scores);
+		
 		if(scores.get("energy") != null)
 		{
 			energyScore = (long)scores.get("energy");
 		}
-		long waterScore = 0;
+		
 		if(scores.get("water") != null)
 		{
 			waterScore = (long)scores.get("water");
 		}
-		long wasteScore = 0;
+		
 		if(scores.get("waste") != null)
 		{
 			wasteScore = (long)scores.get("waste");
 		}
-		long humanExperienceScore = 0;
+		
 		if(scores.get("human_experience") != null)
 		{
 			humanExperienceScore = (long)scores.get("human_experience");
 		}
-		long transportScore = 0;
+		
 		if(scores.get("transport") != null)
 		{
 			transportScore = (long)scores.get("transport");
 		}
-		long baseScore = 0;
+		
 		if(scores.get("base") != null)
 		{
 			baseScore = (long)scores.get("base");
 		}
-		long totalScore = energyScore+waterScore+wasteScore+humanExperienceScore+transportScore+baseScore;
+		totalScore = energyScore+waterScore+wasteScore+humanExperienceScore+transportScore+baseScore;
+		}
 		scoreMap.put("totalScore", totalScore);
 		scoreMap.put("energyScore", energyScore);
 		scoreMap.put("waterScore", waterScore);

@@ -11,7 +11,7 @@ public interface Operator<E> {
 	
 	public String getWhereClause(FacilioField field, E value);
 	
-	public BeanPredicate getPredicate(FacilioField field, E value);
+	public FacilioModulePredicate getPredicate(FacilioField field, E value);
 	
 	public String getDynamicParameter();
 	

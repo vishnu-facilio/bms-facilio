@@ -11,6 +11,8 @@
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
 		<interceptors>
+		<interceptor name="cacheinterceptor"
+				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">

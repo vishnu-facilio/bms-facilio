@@ -119,7 +119,12 @@ public class FacilioField implements Serializable {
 	
 	private String displayName;
 	public String getDisplayName() {
-		return displayName;
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return name;
+		}
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
