@@ -767,6 +767,13 @@
 				<param name="root">fieldIds</param>
 			</result>
 		</action>
+		
+		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" method="fieldList">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="workOrderApi" namespace="/api/workorder" extends="home">

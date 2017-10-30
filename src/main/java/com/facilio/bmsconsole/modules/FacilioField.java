@@ -181,7 +181,15 @@ public class FacilioField implements Serializable {
 	public void setDisplayType(int displayType) {
 		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
 	}
-	
+	public void setDisplayTypeInt(int displayType) {
+		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
+	}
+	public int getDisplayTypeInt() {
+		if (displayType != null) {
+			return displayType.getIntValForDB();
+		}
+		return -1;
+	}
 	
 	public String toString()
 	{
