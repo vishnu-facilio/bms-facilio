@@ -911,6 +911,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetFieldsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddReadingChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new CreateReadingModuleCommand());

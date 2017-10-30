@@ -401,7 +401,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			if(rs.next()) {
 				lookupField.setSpecialType(rs.getString("SPECIAL_TYPE"));
 				if(rs.getObject("LOOKUP_MODULE_ID") != null) {
-					lookupField.setLookupModule(getModule(rs.getLong("LOOKUP_MODULE_ID")));
+					lookupField.setLookupModule(getMod(rs.getLong("LOOKUP_MODULE_ID")));
 				}
 				return lookupField;
 			}
@@ -425,7 +425,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 
-			String sql = "INSERT INTO Fields (ORGID, MODULEID, EXTENDED_MODULEID, NAME, DISPLAY_NAME, COLUMN_NAME, SEQUENCE_NUMBER, DATA_TYPE) VALUES (?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO Fields (ORGID, MODULEID, EXTENDED_MODULEID, NAME, DISPLAY_NAME, COLUMN_NAME, SEQUENCE_NUMBER, DATA_TYPE, DISPLAY_TYPE, REQUIRED) VALUES (?,?,?,?,?,?,?,?,?,?)";
 
 			pstmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 
@@ -458,6 +458,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 
 			pstmt.setInt(8, field.getDataTypeEnum().getTypeAsInt());
+			pstmt.setInt(9, field.getDisplayType().getIntValForDB());
+			pstmt.setBoolean(10, field.isRequired());
 
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add field");

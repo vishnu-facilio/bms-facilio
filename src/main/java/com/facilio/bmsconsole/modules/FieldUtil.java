@@ -18,6 +18,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -126,6 +127,7 @@ public class FieldUtil {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);
 		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		
 		return mapper;
 	}

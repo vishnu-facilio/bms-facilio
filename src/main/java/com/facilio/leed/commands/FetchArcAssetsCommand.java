@@ -52,11 +52,13 @@ public class FetchArcAssetsCommand implements Command {
 			String street = (String)asset.get("street");
 			double lat =0.0;
 			if(asset.get("geoLat") != null) {
-				lat = (double)asset.get("geoLat");
+				//lat = (double)asset.get("geoLat");
+				lat = Double.parseDouble((String)asset.get("geoLat"));
 			}
 			double lng =0.0;
 			if(asset.get("geoLang") != null) {
-				lng = (double)asset.get("geoLang");
+				//lng = (double)asset.get("geoLang");
+				lng = Double.parseDouble((String)asset.get("geoLang"));
 			}
 			
 			JSONObject scores = (JSONObject)asset.get("scores");

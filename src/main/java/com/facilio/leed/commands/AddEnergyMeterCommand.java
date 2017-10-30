@@ -33,7 +33,9 @@ public class AddEnergyMeterCommand implements Command {
 		context.put(FacilioConstants.ContextNames.METERID, meter_Id);
 		long fuel_type = (long)meterMessages.get("type");
 		context.put(FacilioConstants.ContextNames.FUELTYPE, fuel_type);
-		
+		JSONObject fuelJSON = (JSONObject)meterMessages.get("fuel_type");
+		String meterType = (String)fuelJSON.get("kind");
+		context.put(FacilioConstants.ContextNames.METERTYPE, meterType);
 		LeedAPI.addLeedEnergyMeter((FacilioContext)context);
 		
 		return false;

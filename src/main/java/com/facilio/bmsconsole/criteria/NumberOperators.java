@@ -9,48 +9,42 @@ import java.util.Map;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-
 public enum NumberOperators implements Operator<String> {
 	
-	EQUALS("=") {
+	EQUALS(9, "=") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
-					return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" IN ("+value+")";
+					return columnName+" IN ("+value+")";
 				}
 				else {
-					return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = "+value;
+					return columnName+" = "+value;
 				}
 			}
 			return null;
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), computeEqualPredicate(value));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, computeEqualPredicate(value));
 			}
 			return null;
 		}
 	},
-	NOT_EQUALS("!=") {
+	NOT_EQUALS(10, "!=") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" IS NULL OR ")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName());
+						.append(columnName);
 				if(value.contains(",")) {
 					builder.append(" NOT IN (")
 							.append(value)
@@ -67,19 +61,19 @@ public enum NumberOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeEqualPredicate(value)));
 			}
 			return null;
 		}
 	},
-	LESS_THAN("<") {
+	LESS_THAN(11, "<") {
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -106,11 +100,11 @@ public enum NumberOperators implements Operator<String> {
 			return null;
 		}
 	},
-	LESS_THAN_EQUAL("<=") {
+	LESS_THAN_EQUAL(12, "<=") {
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -137,11 +131,11 @@ public enum NumberOperators implements Operator<String> {
 			return null;
 		}
 	},
-	GREATER_THAN(">") {
+	GREATER_THAN(13, ">") {
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -168,11 +162,11 @@ public enum NumberOperators implements Operator<String> {
 			return null;
 		}
 	},
-	GREATER_THAN_EQUAL(">=") {
+	GREATER_THAN_EQUAL(14, ">=") {
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -202,13 +196,16 @@ public enum NumberOperators implements Operator<String> {
 	;
 	
 	@Override
-	public String getWhereClause(FacilioField field, String value) {
+	public String getWhereClause(String columnName, String value) {
 		// TODO Auto-generated method stub
-		if(field != null && value != null && !value.isEmpty()) {
-			return field.getExtendedModule().getTableName()+"."+field.getColumnName()+operator+value;
+		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+			return columnName+operator+value;
 		}
 		return null;
 	};
+	
+	@Override
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
 	public String getDynamicParameter() {
@@ -220,8 +217,15 @@ public enum NumberOperators implements Operator<String> {
 		return null;
 	}
 	
-	private NumberOperators(String operator) {
-		 this.operator = operator;
+	private NumberOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;

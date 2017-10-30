@@ -32,38 +32,40 @@ public class Condition {
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
 	}
- 	
-	private long fieldId = -1;
-	public long getFieldId() {
-		if(fieldId != -1) {
-			return fieldId;
-		}
-		else if(field != null) {
-			return field.getFieldId();
-		}
-		return fieldId;
-	}
-	public void setFieldId(long fieldId) {
-		this.fieldId = fieldId;
-	}
 	
 	private FacilioField field;
-	public FacilioField getField() {
-		return field;
-	}
 	public void setField(FacilioField field) {
 		this.field = field;
+		this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
+		this.fieldName = field.getName();
 	}
 	
-	private String operatorStr;
-	public String getOperatorStr() {
-		if(operator != null) {
-			return operator.getOperator();
-		}
-		return operatorStr;
+	private String columnName;
+	public String getColumnName() {
+		return columnName;
 	}
-	public void setOperatorStr(String operatorStr) {
-		this.operatorStr = operatorStr;
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
+
+	private String fieldName;
+	public String getFieldName() {
+		return fieldName;
+	}
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+	
+	private int operatorId;
+	public int getOperatorId() {
+		if(operator != null) {
+			return operator.getOperatorId();
+		}
+		return operatorId;
+	}
+	public void setOperatorId(int operatorId) {
+		this.operatorId = operatorId;
+		this.setOperator(Operator.OPERATOR_MAP.get(operatorId));
 	}
 	
 	
@@ -103,10 +105,11 @@ public class Condition {
 	public String getComputedWhereClause() {
 		if(computedWhereClause == null && operator != null) {
 			if(operator == LookupOperator.LOOKUP) {
-				computedWhereClause = operator.getWhereClause(field, criteriaValue);
+				updateFieldNameWithModule();
+				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
 			}
 			else {
-				computedWhereClause = operator.getWhereClause(field, value);
+				computedWhereClause = operator.getWhereClause(columnName, value);
 			}
 		}
 		return computedWhereClause;
@@ -130,12 +133,20 @@ public class Condition {
 	public Predicate getPredicate() {
 		if(operator != null) {
 			if(operator == LookupOperator.LOOKUP) {
-				return operator.getPredicate(field, criteriaValue);
+				updateFieldNameWithModule();
+				return operator.getPredicate(fieldName, criteriaValue);
 			}
 			else {
-				return operator.getPredicate(field, value);
+				return operator.getPredicate(fieldName, value);
 			}
 		}
 		return null;
+	}
+	
+	private void updateFieldNameWithModule() {
+		if(field != null) {
+			fieldName = field.getModule().getName()+"."+fieldName;
+			field = null;
+		}
 	}
 }

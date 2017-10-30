@@ -93,7 +93,7 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*</param>
+				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
 		</action>
 		
