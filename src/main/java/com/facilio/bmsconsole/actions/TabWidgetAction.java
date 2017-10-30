@@ -24,14 +24,6 @@ public class TabWidgetAction extends ActionSupport {
 	
 	public String viewTabWidget() throws Exception {
 		
-//		ConnectedAppContext connectedApp = new ConnectedAppContext();
-//		connectedApp.setLinkName("bmts");
-//		
-//		TabWidgetContext tabWidget = new TabWidgetContext();
-//		tabWidget.setConnectedApp(connectedApp);
-//		tabWidget.setModuleLinkName("firealarm");
-//		tabWidget.setWidgetName("Events");
-		
 		setTabWidget(TabWidgetAPI.getTabWidget(tabLinkName));
 		return SUCCESS;
 	}

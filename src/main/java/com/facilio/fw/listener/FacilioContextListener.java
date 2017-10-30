@@ -65,7 +65,7 @@ public class FacilioContextListener implements ServletContextListener {
 				c.close();
 			}
 			
-			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/bmtsconsole.sql").getFile());
+			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
 			scriptRunner = new SQLScriptRunner(file, true, null);
 			c = FacilioConnectionPool.getInstance().getConnection();
 			try

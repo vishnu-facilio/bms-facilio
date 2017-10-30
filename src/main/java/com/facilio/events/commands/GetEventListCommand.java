@@ -1,4 +1,4 @@
-package com.facilio.bmts.bmsconsole.commands;
+package com.facilio.events.commands;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmts.bmsconsole.context.EventContext;
-import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -26,7 +26,7 @@ public class GetEventListCommand implements Command {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 					.connection(conn)
-					.select(BmtsConstants.getEventFields())
+					.select(EventConstants.getEventFields())
 					.table("Event")
 					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 	
@@ -42,7 +42,7 @@ public class GetEventListCommand implements Command {
 			e.printStackTrace();
 			throw e;
 		}
-		context.put(BmtsConstants.EVENT_LIST, events);
+		context.put(EventConstants.EVENT_LIST, events);
 		return false;
 	}
 }

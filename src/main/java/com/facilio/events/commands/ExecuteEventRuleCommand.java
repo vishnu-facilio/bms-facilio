@@ -1,4 +1,4 @@
-package com.facilio.bmts.bmsconsole.commands;
+package com.facilio.events.commands;
 
 import java.sql.Connection;
 import java.util.List;
@@ -14,8 +14,8 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.AlarmTemplate;
-import com.facilio.bmts.bmsconsole.context.EventContext;
-import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -25,17 +25,17 @@ public class ExecuteEventRuleCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		Map<String, Object> propsMap = (Map<String, Object>) context.get(BmtsConstants.EVENT_PROPERTY);
+		Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EVENT_PROPERTY);
 		boolean ignoreEvent = false;
 		if((Boolean) propsMap.get("hasEventRule"))
 		{
-			EventContext event = (EventContext) context.get(BmtsConstants.EVENT);
+			EventContext event = (EventContext) context.get(EventConstants.EVENT);
 			Map<String, Object> ruleprops = null;
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 			{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)
-														.select(BmtsConstants.getEventRuleFields())
+														.select(EventConstants.getEventRuleFields())
 														.table("Event_Rule")
 														.andCustomWhere("ORGID = ?", event.getOrgId());	//Org Id
 				
@@ -77,7 +77,7 @@ public class ExecuteEventRuleCommand implements Command {
 							JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(props).get("content"));
 							
 							event = FieldUtil.getAsBean(content, EventContext.class);
-							context.put(BmtsConstants.EVENT, event);
+							context.put(EventConstants.EVENT, event);
 						}
 					}
 					catch (Exception e) 
@@ -93,7 +93,7 @@ public class ExecuteEventRuleCommand implements Command {
 				}
 			}
 		}
-		context.put(BmtsConstants.IGNORE_EVENT, ignoreEvent);
+		context.put(EventConstants.IGNORE_EVENT, ignoreEvent);
 		return false;
 	}
 }

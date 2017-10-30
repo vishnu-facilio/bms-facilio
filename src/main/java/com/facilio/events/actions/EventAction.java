@@ -1,12 +1,12 @@
-package com.facilio.bmts.bmsconsole.actions;
+package com.facilio.events.actions;
 
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmts.bmsconsole.context.EventContext;
-import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.constants.EventConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
@@ -24,10 +24,10 @@ public class EventAction extends ActionSupport {
 	public String eventList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain alarmListChain = BmtsConstants.getEventListChain();
+		Chain alarmListChain = EventConstants.getEventListChain();
 		alarmListChain.execute(context);
 		
-		setEvents((List<EventContext>) context.get(BmtsConstants.EVENT_LIST));
+		setEvents((List<EventContext>) context.get(EventConstants.EVENT_LIST));
 		return SUCCESS;
 	}
 }

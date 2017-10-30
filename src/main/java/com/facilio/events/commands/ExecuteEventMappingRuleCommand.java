@@ -1,4 +1,4 @@
-package com.facilio.bmts.bmsconsole.commands;
+package com.facilio.events.commands;
 
 import java.sql.Connection;
 import java.util.List;
@@ -10,8 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmts.bmsconsole.context.EventContext;
-import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -23,19 +23,19 @@ public class ExecuteEventMappingRuleCommand implements Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
-		boolean ignoreEvent = (Boolean) context.get(BmtsConstants.IGNORE_EVENT);
+		boolean ignoreEvent = (Boolean) context.get(EventConstants.IGNORE_EVENT);
 		if(!ignoreEvent)
 		{
-			Map<String, Object> propsMap = (Map<String, Object>) context.get(BmtsConstants.EVENT_PROPERTY);
+			Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EVENT_PROPERTY);
 			if((Boolean) propsMap.get("hasMappingRule"))
 			{
-				EventContext event = (EventContext) context.get(BmtsConstants.EVENT);
+				EventContext event = (EventContext) context.get(EventConstants.EVENT);
 				Map<String, Object> ruleprops = null;
 				try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 				{
 					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 															.connection(conn)
-															.select(BmtsConstants.getEventMappingRuleFields())
+															.select(EventConstants.getEventMappingRuleFields())
 															.table("Event_Mapping_Rule")
 															.andCustomWhere("ORGID = ?", event.getOrgId());	//Org Id
 					

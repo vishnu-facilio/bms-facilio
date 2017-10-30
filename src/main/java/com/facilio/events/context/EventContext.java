@@ -1,4 +1,9 @@
-package com.facilio.bmts.bmsconsole.context;
+package com.facilio.events.context;
+
+import java.text.ParseException;
+
+import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class EventContext {
 	
@@ -77,5 +82,21 @@ public class EventContext {
 
 	public void setAdditionInfo(String additionInfo) {
 		this.additionInfo = additionInfo;
+	}
+	
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public String state;
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 }

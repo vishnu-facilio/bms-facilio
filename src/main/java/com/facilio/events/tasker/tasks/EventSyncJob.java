@@ -1,4 +1,4 @@
-package com.facilio.bmts.tasker.tasks;
+package com.facilio.events.tasker.tasks;
 
 import java.sql.Connection;
 import java.util.Iterator;
@@ -23,8 +23,8 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmts.bmsconsole.context.EventContext;
-import com.facilio.bmts.constants.BmtsConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -103,27 +103,30 @@ public class EventSyncJob extends FacilioJob{
 	    {
 	    	event.setAdditionInfo(additionalInfo.toString());
 	    }
+	    event.setOrgId(1);
+	    event.setCreatedTime(timestamp);
+	    event.setState("Processed");
 	    
 	    FacilioContext context = new FacilioContext();
-	    context.put(BmtsConstants.EVENT, event);
+	    context.put(EventConstants.EVENT, event);
 	    
 	    try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 		{
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.connection(conn)
-													.select(BmtsConstants.getEventPropertyFields())
+													.select(EventConstants.getEventPropertyFields())
 													.table("Event_Property")
 													.andCustomWhere("ORGID = ?", 1);	//Org Id
 			
 			List<Map<String, Object>> props = builder.get();
-			context.put(BmtsConstants.EVENT_PROPERTY, props.get(0));
+			context.put(EventConstants.EVENT_PROPERTY, props.get(0));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			throw e;
 		}
-	    Command addEvent = BmtsConstants.getAddEventChain();
+	    Command addEvent = EventConstants.getAddEventChain();
 	    addEvent.execute(context);
 	}
 }

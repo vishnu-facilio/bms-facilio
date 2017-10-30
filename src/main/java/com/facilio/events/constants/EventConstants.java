@@ -1,4 +1,4 @@
-package com.facilio.bmts.constants;
+package com.facilio.events.constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,21 +6,17 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
-import com.facilio.bmsconsole.commands.LoadAllFieldsCommand;
-import com.facilio.bmsconsole.commands.LoadModuleNameCommand;
-import com.facilio.bmsconsole.commands.LoadViewCommand;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.TransactionExceptionHandler;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmts.bmsconsole.commands.AddEventCommand;
-import com.facilio.bmts.bmsconsole.commands.AddOrUpdateAlarmCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventMappingRuleCommand;
-import com.facilio.bmts.bmsconsole.commands.ExecuteEventRuleCommand;
-import com.facilio.bmts.bmsconsole.commands.GetEventListCommand;
+import com.facilio.events.commands.AddEventCommand;
+import com.facilio.events.commands.AddOrUpdateAlarmCommand;
+import com.facilio.events.commands.ExecuteEventMappingRuleCommand;
+import com.facilio.events.commands.ExecuteEventRuleCommand;
+import com.facilio.events.commands.GetEventListCommand;
 
-public class BmtsConstants {
+public class EventConstants {
 	
 	public static final String EVENT = "event";
 	public static final String EVENT_LIST = "events";
