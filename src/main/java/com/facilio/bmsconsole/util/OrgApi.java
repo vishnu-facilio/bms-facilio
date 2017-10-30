@@ -96,6 +96,10 @@ public class OrgApi {
 				paramValues.put("orgId", String.valueOf(orgId));
 				SQLScriptRunner scriptRunner = new SQLScriptRunner(insertModulesSQL, true, paramValues);
 				scriptRunner.runScript(conn);
+				
+				File eventModuleSQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventModule.sql").getFile());
+				SQLScriptRunner scriptRunner2 = new SQLScriptRunner(eventModuleSQL, true, paramValues);
+				scriptRunner2.runScript(conn);
 			}
 			
 			OrgInfo orgInfo = new OrgInfo(orgId, orgName, orgSubdomain, UserAPI.getOrgSuperAdmin(orgId));

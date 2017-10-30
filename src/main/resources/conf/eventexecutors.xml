@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executors>
+	<executor name="event" period="60" threads="25" />
+</executors>

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.tasker.config.ExecutorsConf;
 import com.facilio.tasker.config.SchedulerJobConf;
 import com.facilio.tasker.executor.Executor;
@@ -62,7 +63,7 @@ public class FacilioScheduler {
 	
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
-		File executorsXml = new File(classLoader.getResource("conf/executors.xml").getFile());
+		File executorsXml = new File(classLoader.getResource("conf/" + AwsUtil.getConfig("scheduleexecutorsfile") + ".xml").getFile());
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(ExecutorsConf.class);
 		ExecutorsConf executorsConf = (ExecutorsConf) jaxbContext.createUnmarshaller().unmarshal(executorsXml);
