@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public enum DateOperators implements Operator<String> {

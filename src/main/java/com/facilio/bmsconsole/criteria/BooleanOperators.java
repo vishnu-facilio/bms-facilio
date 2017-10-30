@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-
 public enum BooleanOperators implements Operator<String> {
 	
 	IS(15, "is");

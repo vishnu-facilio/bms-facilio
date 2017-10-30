@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-
 public interface Operator<E> {
 	public int getOperatorId();
 	
