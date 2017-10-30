@@ -11,25 +11,21 @@ import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum BooleanOperators implements Operator<String> {
 	
-	IS("is");
+	IS(15, "is");
 	
 	@Override
-	public String getWhereClause(FacilioField field, String value) {
+	public String getWhereClause(String columnName, String value) {
 		// TODO Auto-generated method stub
-		if(field != null && value != null) {
+		if(columnName != null && !columnName.isEmpty() && value != null) {
 			if("true".equalsIgnoreCase(value)) {
-				return field.getColumnName()+" = true";
+				return columnName+" = true";
 			}
 			else {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" IS NULL OR ")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" = false)");
 				return builder.toString();
 			}
@@ -38,23 +34,29 @@ public enum BooleanOperators implements Operator<String> {
 	}
 	
 	@Override
-	public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+	public FacilioModulePredicate getPredicate(String fieldName, String value) {
 		// TODO Auto-generated method stub
-		if(field != null && value != null) {
+		if(fieldName != null && !fieldName.isEmpty() && value != null) {
 			if("true".equalsIgnoreCase(value)) {
-				return new FacilioModulePredicate(field.getName(), new BooleanPredicate(true));
+				return new FacilioModulePredicate(fieldName, new BooleanPredicate(true));
 			}
 			else {
-				return new FacilioModulePredicate(field.getColumnName(), new BooleanPredicate(false));
+				return new FacilioModulePredicate(fieldName, new BooleanPredicate(false));
 			}
 		}
 		return null;
 	}
 	
-	private BooleanOperators(String operator) {
-		 this.operator = operator;
+	private BooleanOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
 	}
 	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
+	}
 	
 	private String operator;
 	@Override

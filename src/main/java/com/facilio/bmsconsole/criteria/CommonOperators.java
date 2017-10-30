@@ -11,47 +11,52 @@ import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum CommonOperators implements Operator<String> {
 	
-	IS_EMPTY("is empty") {
+	//Make sure to check the operator number is unqiue across operators
+	
+	IS_EMPTY(1, "is empty") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
-				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" IS NULL";
+			if(columnName != null && !columnName.isEmpty()) {
+				return columnName+" IS NULL";
 			}
 			return null;
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
-				return new FacilioModulePredicate(field.getName(), PredicateUtils.nullPredicate());
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.nullPredicate());
 			}
 			return null;
 		}
 	},	
-	IS_NOT_EMPTY("is not empty") {
+	IS_NOT_EMPTY(2, "is not empty") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
-				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" IS NOT NULL";
+			if(columnName != null && !columnName.isEmpty()) {
+				return columnName+" IS NOT NULL";
 			}
 			return null;
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
-				return new FacilioModulePredicate(field.getName(), PredicateUtils.notNullPredicate());
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notNullPredicate());
 			}
 			return null;
 		}
 	};
 	
 	@Override
-	public abstract String getWhereClause(FacilioField field, String value);
+	public abstract String getWhereClause(String columnName, String value);
+	
+	@Override
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
 	public String getDynamicParameter() {
@@ -63,8 +68,15 @@ public enum CommonOperators implements Operator<String> {
 		return null;
 	}
 	
-	private CommonOperators(String operator) {
-		 this.operator = operator;
+	private CommonOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;

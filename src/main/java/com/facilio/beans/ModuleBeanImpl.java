@@ -401,7 +401,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			if(rs.next()) {
 				lookupField.setSpecialType(rs.getString("SPECIAL_TYPE"));
 				if(rs.getObject("LOOKUP_MODULE_ID") != null) {
-					lookupField.setLookupModule(getModule(rs.getLong("LOOKUP_MODULE_ID")));
+					lookupField.setLookupModule(getMod(rs.getLong("LOOKUP_MODULE_ID")));
 				}
 				return lookupField;
 			}

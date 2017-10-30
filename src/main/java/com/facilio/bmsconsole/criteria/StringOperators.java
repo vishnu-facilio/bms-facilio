@@ -12,23 +12,21 @@ import org.apache.commons.collections.PredicateUtils;
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public enum StringOperators implements Operator<String> {
-	IS("is") {
+	IS(3, "is") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getExtendedModule().getTableName())
-							.append(".")
-							.append(field.getColumnName())
+					builder.append(columnName)
 							.append(" IN (");
 					splitAndAddQuestionMark(value, builder);
 					builder.append(")");
 					return builder.toString();
 				}
 				else {
-					return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = ?";
+					return columnName+" = ?";
 				}
 			}
 			return null;
@@ -41,28 +39,24 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), computeEqualPredicate(value));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, computeEqualPredicate(value));
 			}
 			return null;
 		}
 	},
-	ISN_T("isn't") {
+	ISN_T(4, "isn't") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" IS NULL OR ")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName());
+						.append(columnName);
 				if(value.contains(",")) {
 					builder.append(" NOT IN (");
 					splitAndAddQuestionMark(value, builder);
@@ -85,19 +79,19 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeEqualPredicate(value)));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeEqualPredicate(value)));
 			}
 			return null;
 		}
 	},
-	CONTAINS("contains") {
+	CONTAINS(5, "contains") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return contains(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, false);
+			return contains(columnName, value, false);
 		}
 
 		@Override
@@ -107,26 +101,24 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), computeContainsPredicate(value));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, computeContainsPredicate(value));
 			}
 			return null;
 		}
 	},
-	DOESNT_CONTAIN("doesn't contain") {
+	DOESNT_CONTAIN(6, "doesn't contain") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" IS NULL OR ")
-						.append(contains(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, true))
+						.append(contains(columnName, value, true))
 						.append(")");
 				return builder.toString();
 			}
@@ -140,19 +132,19 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return new FacilioModulePredicate(field.getName(), PredicateUtils.notPredicate(computeContainsPredicate(value)));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeContainsPredicate(value)));
 			}
 			return null;
 		}
 	},
-	STARTS_WITH("starts with") {
+	STARTS_WITH(7, "starts with") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return contains(field.getColumnName(), value, false);
+			return contains(columnName, value, false);
 		}
 		
 		@Override
@@ -162,9 +154,9 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate startsWithPredicate = null;
 				if(value.contains(",")) {
 					List<Predicate> startsWithPredicates = new ArrayList<>();
@@ -177,7 +169,7 @@ public enum StringOperators implements Operator<String> {
 				else {
 					startsWithPredicate = getStartsWithPredicate(value);
 				}
-				return new FacilioModulePredicate(field.getName(), startsWithPredicate);
+				return new FacilioModulePredicate(fieldName, startsWithPredicate);
 			}
 			return null;
 		}
@@ -194,11 +186,11 @@ public enum StringOperators implements Operator<String> {
 			};
 		}
 	},
-	ENDS_WITH("ends with") {
+	ENDS_WITH(8, "ends with") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return contains(field.getColumnName(), value, false);
+			return contains(columnName, value, false);
 		}
 
 		@Override
@@ -208,9 +200,9 @@ public enum StringOperators implements Operator<String> {
 		}
 
 		@Override
-		public FacilioModulePredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate endsWithPredicate = null;
 				if(value.contains(",")) {
 					List<Predicate> endsWithPredicates = new ArrayList<>();
@@ -223,7 +215,7 @@ public enum StringOperators implements Operator<String> {
 				else {
 					endsWithPredicate = getEndsWithPredicate(value);
 				}
-				return new FacilioModulePredicate(field.getName(), endsWithPredicate);
+				return new FacilioModulePredicate(fieldName, endsWithPredicate);
 			}
 			return null;
 		}
@@ -243,8 +235,11 @@ public enum StringOperators implements Operator<String> {
 	;
 	
 	@Override
-	public abstract String getWhereClause(FacilioField field, String value);
-
+	public abstract String getWhereClause(String columnName, String value);
+	
+	@Override
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
+	
 	@Override
 	public String getDynamicParameter() {
 		return null;
@@ -253,8 +248,15 @@ public enum StringOperators implements Operator<String> {
 	@Override
 	public abstract List<Object> computeValues(String value);
 	
-	private StringOperators(String operator) {
-		 this.operator = operator;
+	private StringOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;
