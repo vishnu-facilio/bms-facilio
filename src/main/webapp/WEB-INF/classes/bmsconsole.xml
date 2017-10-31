@@ -774,6 +774,20 @@
 				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction" method="updateField">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction" method="deleteFields">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsDeleted</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="workOrderApi" namespace="/api/workorder" extends="home">

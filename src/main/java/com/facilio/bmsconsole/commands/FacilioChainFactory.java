@@ -911,6 +911,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateFieldChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateFieldCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getdeleteFieldsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getGetFieldsChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

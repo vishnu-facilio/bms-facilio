@@ -30,7 +30,7 @@ public class DeleteWorkOrderCommand implements Command {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.connection(((FacilioContext)context).getConnectionWithTransaction())
 					.table(dataTableName)
-					.where(condition, recordIds.toArray());
+					.andCustomWhere(condition, recordIds.toArray());
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 		}

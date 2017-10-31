@@ -15,6 +15,13 @@ public class FacilioField implements Serializable {
 		this.fieldId = fieldId;
 	}
 	
+	public long getId() {
+		return fieldId;
+	}
+	public void setId(long id) {
+		this.fieldId = id;
+	}
+	
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
@@ -31,6 +38,13 @@ public class FacilioField implements Serializable {
 		this.module = module;
 	}
 	
+	public long getModuleId() {
+		if(module != null) {
+			return module.getModuleId();
+		}
+		return -1;
+	}
+	
 	private FacilioModule extendedModule;
 	public FacilioModule getExtendedModule() {
 		if(extendedModule != null) {
@@ -42,6 +56,13 @@ public class FacilioField implements Serializable {
 	}
 	public void setExtendedModule(FacilioModule extendedModule) {
 		this.extendedModule = extendedModule;
+	}
+	
+	public long getExtendedModuleId() {
+		if(extendedModule != null) {
+			return extendedModule.getModuleId();
+		}
+		return -1;
 	}
 
 	private String name;
@@ -101,16 +122,28 @@ public class FacilioField implements Serializable {
 		this.isMainField = isMainField;
 	}
 	
-	private boolean required;
+	private Boolean required;
 	public boolean isRequired() {
+		if(required != null) {
+			return required.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getRequired() {
 		return required;
 	}
 	public void setRequired(boolean isRequired) {
 		this.required = isRequired;
 	}
 	
-	private boolean disabled;
+	private Boolean disabled;
 	public boolean isDisabled() {
+		if(disabled != null) {
+			return disabled.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getDisabled() {
 		return disabled;
 	}
 	public void setDisabled(boolean isDisabled) {
@@ -130,7 +163,7 @@ public class FacilioField implements Serializable {
 		this.displayName = displayName;
 	}
 	
-	private String styleClass = "form-control";
+	private String styleClass;
 	public String getStyleClass() {
 		return styleClass;
 	}

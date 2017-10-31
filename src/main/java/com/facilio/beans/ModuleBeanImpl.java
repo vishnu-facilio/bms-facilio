@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,18 +13,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ModuleBeanImpl implements ModuleBean {
@@ -419,64 +429,78 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public long addField(FacilioField field) throws Exception {
-		Connection conn  =null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			 conn = getConnection();
-
-			String sql = "INSERT INTO Fields (ORGID, MODULEID, EXTENDED_MODULEID, NAME, DISPLAY_NAME, COLUMN_NAME, SEQUENCE_NUMBER, DATA_TYPE, DISPLAY_TYPE, REQUIRED) VALUES (?,?,?,?,?,?,?,?,?,?)";
-
-			pstmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-
-			pstmt.setLong(1, getOrgId());
-			pstmt.setLong(2, field.getModule().getModuleId());
+		if(field != null) {
+			field.setOrgId(getOrgId());
+			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table("Fields")
+															.fields(FieldFactory.getAddFieldFields())
+															.addRecord(fieldProps);
 			
-			if(field.getExtendedModule() != null && field.getExtendedModule().getModuleId() != field.getModule().getModuleId()) {
-				pstmt.setLong(3, field.getExtendedModule().getModuleId());
-			}
-			else {
-				pstmt.setNull(3, Types.BIGINT);
-			}
+			insertBuilder.save();
+			return (long) fieldProps.get("id");
+		}
+		else {
+			throw new IllegalArgumentException("Invalid field object for addition");
+		}
+	}
+	
+	@Override
+	public int updateField(FacilioField field) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(field != null && field.getFieldId() != -1) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+															.table("Fields")
+															.fields(FieldFactory.getUpdateFieldFields())
+															.andCustomWhere("ORGID = ? AND FIELDID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), field.getFieldId());
 			
-			pstmt.setString(4, field.getName());
-
-			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
-				pstmt.setString(5, field.getDisplayName());
-			}
-			else {
-				pstmt.setString(5, field.getName());
-			}
-
-			pstmt.setString(6, field.getColumnName());
-
-			if(field.getSequenceNumber() > 0) {
-				pstmt.setInt(7, field.getSequenceNumber());
-			}
-			else {
-				pstmt.setNull(7, Types.TINYINT);
-			}
-
-			pstmt.setInt(8, field.getDataTypeEnum().getTypeAsInt());
-			pstmt.setInt(9, field.getDisplayType().getIntValForDB());
-			pstmt.setBoolean(10, field.isRequired());
-
-			if (pstmt.executeUpdate() < 1) {
-				throw new Exception("Unable to add field");
-			}
-			else {
-				rs = pstmt.getGeneratedKeys();
-				rs.next();
-				long fieldId = rs.getLong(1);
-				System.out.println("Added Custom Field with ID : "+fieldId);
-				return fieldId;
-			}
+			return updateBuilder.update(FieldUtil.getAsProperties(field));
 		}
-		catch (Exception e) {
-			throw e;
+		else {
+			throw new IllegalArgumentException("Invalid field object for Updation");
 		}
-		finally {
-			DBUtil.closeAll(conn,pstmt, rs);
+	}
+	
+	@Override
+	public int deleteField(long fieldId) throws Exception {
+		// TODO Auto-generated method stub
+		if(fieldId != -1) {
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+															.table("Fields")
+															.andCustomWhere("ORGID = ? AND FIELDID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), fieldId);
+			
+			return deleteBuilder.delete();
+		}
+		else {
+			throw new IllegalArgumentException("Invalid fieldId for Deletion");
+		}
+	}
+	
+	@Override
+	public int deleteFields(List<Long> fieldIds) throws Exception {
+		// TODO Auto-generated method stub
+		if(fieldIds != null && !fieldIds.isEmpty()) {
+			FacilioField field = new FacilioField();
+			field.setName("fieldId");
+			field.setDataType(FieldType.NUMBER);
+			field.setColumnName("FIELDID");
+			field.setModule(ModuleFactory.getFieldsModule());
+			
+			String ids = StringUtils.join(fieldIds, ",");
+			Condition idCondition = new Condition();
+			idCondition.setField(field);
+			idCondition.setOperator(NumberOperators.EQUALS);
+			idCondition.setValue(ids);
+			
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table("Fields")
+					.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.andCondition(idCondition);
+			
+
+			return deleteBuilder.delete();
+		}
+		else {
+			throw new IllegalArgumentException("Invalid fieldIds for Deletion");
 		}
 	}
 	
