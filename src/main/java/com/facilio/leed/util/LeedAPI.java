@@ -93,6 +93,8 @@ public class LeedAPI {
 		return null;
 	}
 	
+	
+	
 //	public static String DeleteMetersForArcSync(long buildingId) throws SQLException, RuntimeException
 //	{
 //		List<Long> deviceIds = getDeviceIdsToDelete(buildingId);
@@ -249,6 +251,33 @@ public class LeedAPI {
 		return leedId;
 	}
 	
+	public static void updateLeedScores(long leedId, long totalScore, long energyScore, long waterScore, long wasteScore, long transportScore, long humanExperienceScore) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE LeedConfiguration set LEEDSCORE  = ? , ENERGYSCORE = ?, WATERSCORE = ?, WASTESCORE = ?, TRANSPORTSCORE = ?, HUMANEXPERIENCESCORE = ?  WHERE LEEDID = ?;");
+			pstmt.setLong(1, totalScore);
+			pstmt.setLong(2, energyScore);
+			pstmt.setLong(3, waterScore);
+			pstmt.setLong(4, wasteScore);
+			pstmt.setLong(5, transportScore);
+			pstmt.setLong(6, humanExperienceScore);
+			pstmt.setLong(7, leedId);
+			pstmt.executeUpdate();
+					
+		}catch(SQLException | RuntimeException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
 	
 //	public static long getSpaceId(long buildingId) throws  SQLException, RuntimeException
 //	{
@@ -495,12 +524,12 @@ public class LeedAPI {
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE ArcCredential SET AUTHKEY = ? , AUTHUPDATETIME = ? WHERE ORGID= ?)");
+			pstmt = conn.prepareStatement("UPDATE ArcCredential SET AUTHKEY = ? , AUTHUPDATETIME = ? WHERE ORGID= ?;");
 			pstmt.setString(1, context.getAuthKey());
 			pstmt.setLong(2, System.currentTimeMillis());			
 			pstmt.setLong(3, orgId);
 
-			pstmt.executeQuery();
+			pstmt.executeUpdate();
 		
 		}catch(SQLException | RuntimeException e)
 		{
