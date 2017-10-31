@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class FacilioModule implements Serializable {
 	
-	private long moduleId;
+	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
 	}
@@ -12,7 +12,7 @@ public class FacilioModule implements Serializable {
 		this.moduleId = moduleId;
 	}
 	
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}

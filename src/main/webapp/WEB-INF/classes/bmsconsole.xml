@@ -9,6 +9,8 @@
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
+			<result-type name="jsoncache"
+				class="com.facilio.bmsconsole.interceptors.CacheResult" />	
 		</result-types>
 		<interceptors>
 		<interceptor name="cacheinterceptor"
@@ -772,6 +774,20 @@
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction" method="updateField">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction" method="deleteFields">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsDeleted</param>
 			</result>
 		</action>
 	</package>

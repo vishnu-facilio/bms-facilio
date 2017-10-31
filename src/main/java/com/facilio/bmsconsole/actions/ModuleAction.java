@@ -51,6 +51,27 @@ public class ModuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateField() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
+		
+		Chain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
+		updateFieldChain.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteFields() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
+		
+		Chain deleteFieldsChain = FacilioChainFactory.getdeleteFieldsChain();
+		deleteFieldsChain.execute(context);
+		rowsDeleted = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		return SUCCESS;
+	}
+	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -59,6 +80,14 @@ public class ModuleAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 	
+	private FacilioField field;
+	public FacilioField getField() {
+		return field;
+	}
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+
 	private List<FacilioField> fields;
 	public List<FacilioField> getFields() {
 		return fields;
@@ -81,5 +110,22 @@ public class ModuleAction extends ActionSupport {
 	}
 	public void setFieldIds(List<Long> fieldIds) {
 		this.fieldIds = fieldIds;
+	}
+	
+	private int rowsUpdated;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
+	}
+	
+	private int rowsDeleted;
+	public int getRowsDeleted() {
+		return rowsDeleted;
+	}
+
+	public void setRowsDeleted(int rowsDeleted) {
+		this.rowsDeleted = rowsDeleted;
 	}
 }

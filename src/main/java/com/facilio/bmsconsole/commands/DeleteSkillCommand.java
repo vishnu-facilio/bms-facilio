@@ -18,7 +18,7 @@ public class DeleteSkillCommand implements Command {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.connection(((FacilioContext)context).getConnectionWithTransaction())
 					.table("Skills")
-					.where("ID = ?", skillId);
+					.andCustomWhere("ID = ?", skillId);
 			builder.delete();
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}

@@ -16,6 +16,8 @@ public class ModuleFactory {
 	
 	private static Map<String, FacilioModule> initMap() {
 		Map<String, FacilioModule> moduleMap = new HashMap<>();
+		moduleMap.put("field", getFieldsModule());
+		moduleMap.put("lookupField", getLookupFieldsModule());
 		moduleMap.put("requester", getRequesterModule());
 		moduleMap.put("emailsettings", getEmailSettingModule());
 		moduleMap.put("workflowevent", getWorkflowEventModule());
@@ -45,6 +47,24 @@ public class ModuleFactory {
 		return moduleMap;
 	}
 			
+	public static FacilioModule getFieldsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("field");
+		fieldModule.setDisplayName("Fields");
+		fieldModule.setTableName("Fields");
+		
+		return fieldModule;
+	}
+	
+	public static FacilioModule getLookupFieldsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("lookupField");
+		fieldModule.setDisplayName("Lookup Fields");
+		fieldModule.setTableName("LookupFields");
+		
+		return fieldModule;
+	}
+	
 	public static FacilioModule getRequesterModule() {
 		FacilioModule requesterModule = new FacilioModule();
 		requesterModule.setName("requester");

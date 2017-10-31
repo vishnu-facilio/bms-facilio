@@ -5,22 +5,56 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.transaction.FacilioConnectionPool;
+
 public class GenericDeleteRecordBuilder {
 	private String tableName;
 	private WhereBuilder where = new WhereBuilder();
-	private Connection conn = null;
 
 	public GenericDeleteRecordBuilder table(String tableName) {
 		this.tableName = tableName;
 		return this;
 	}
+	
+	@Deprecated
 	public GenericDeleteRecordBuilder connection(Connection conn) {
-		this.conn = conn;
 		return this;
 	}
 	
-	public GenericDeleteRecordBuilder where(String whereCondition, Object... values) {
+	public GenericDeleteRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
+		return this;
+	}
+	
+	public GenericDeleteRecordBuilder orCustomWhere(String whereCondition, Object... values) {
+		// TODO Auto-generated method stub
+		this.where.orCustomWhere(whereCondition, values);
+		return this;
+	}
+
+	public GenericDeleteRecordBuilder andCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.andCondition(condition);
+		return this;
+	}
+
+	public GenericDeleteRecordBuilder orCondition(Condition condition) {
+		// TODO Auto-generated method stub
+		where.orCondition(condition);
+		return this;
+	}
+
+	public GenericDeleteRecordBuilder andCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.andCriteria(criteria);
+		return this;
+	}
+
+	public GenericDeleteRecordBuilder orCriteria(Criteria criteria) {
+		// TODO Auto-generated method stub
+		where.orCriteria(criteria);
 		return this;
 	}
 	
@@ -28,7 +62,7 @@ public class GenericDeleteRecordBuilder {
 		checkForNull();
 		PreparedStatement pstmt = null;
 		
-		try {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			String sql = constructDeleteStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
@@ -74,10 +108,6 @@ public class GenericDeleteRecordBuilder {
 		
 		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Table Name cannot be empty");
-		}
-		
-		if(conn == null) {
-			throw new IllegalArgumentException("Connection cannot be null");
 		}
 		
 		where.checkForNull();
