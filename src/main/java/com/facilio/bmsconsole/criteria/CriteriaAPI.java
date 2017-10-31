@@ -85,10 +85,10 @@ public class CriteriaAPI {
 		if(criteriaProps != null && !criteriaProps.isEmpty()) {
 			for(Map<String, Object> props : criteriaProps) {
 				if(criteria == null) {
-					criteria = FieldUtil.getAsBean(props, Criteria.class);
+					criteria = FieldUtil.getAsBean1(props, Criteria.class);
 					criteria.setConditions(conditions);
 				}
-				Condition condition = FieldUtil.getAsBean(props, Condition.class);
+				Condition condition = FieldUtil.getAsBean1(props, Condition.class);
 				conditions.put(condition.getSequence(), condition);
 			}
 		}

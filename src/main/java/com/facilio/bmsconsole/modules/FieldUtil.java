@@ -138,7 +138,7 @@ public class FieldUtil {
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
-	public static <E> E getAsBean(Map<String, Object> props, Class<E> classObj)
+	public static <E> E getAsBean1(Map<String, Object> props, Class<E> classObj)
 	{
 		ObjectMapper mapper = getMapper();
 		return mapper.convertValue(props, classObj);
