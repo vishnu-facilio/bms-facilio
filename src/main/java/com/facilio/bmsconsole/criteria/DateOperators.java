@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public enum DateOperators implements Operator<String> {
@@ -191,11 +190,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getDayStartTime())
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -233,11 +234,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getDayStartTime(1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(2));
 				return builder.toString();
 			}
 			return null;	
@@ -276,9 +279,9 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("CEIL(")
-						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))");
+				builder.append(columnName)
+						.append(">=")
+						.append(DateTimeUtil.getDayStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -317,11 +320,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getDayStartTime(-1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(CURDATE()))");
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -359,9 +364,9 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("CEIL(")
-						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(CURDATE())");
+				builder.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -399,11 +404,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getMonthStartTime(-1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -441,11 +448,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getMonthStartTime())
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -483,11 +492,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getMonthStartTime(1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(2));
 				return builder.toString();
 			}
 			return null;
@@ -525,11 +536,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getWeekStartTime(-1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -567,13 +580,14 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				//Condition is >= first day of this week and < first day of next week
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getWeekStartTime())
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))");
-				return builder.toString(); 
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(1));
+				return builder.toString();
 			}
 			return null;
 		}
@@ -610,11 +624,13 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
+				builder.append(DateTimeUtil.getWeekStartTime(1))
+						.append("<=")
 						.append(columnName)
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL(")
+						.append(" AND ")
 						.append(columnName)
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))");
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(2));
 				return builder.toString();
 			}
 			return null;

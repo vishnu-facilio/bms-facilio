@@ -11,7 +11,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.UserInfo;
 

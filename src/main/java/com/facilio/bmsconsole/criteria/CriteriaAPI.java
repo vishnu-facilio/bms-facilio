@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -87,10 +85,10 @@ public class CriteriaAPI {
 		if(criteriaProps != null && !criteriaProps.isEmpty()) {
 			for(Map<String, Object> props : criteriaProps) {
 				if(criteria == null) {
-					criteria = FieldUtil.getAsBean(props, Criteria.class);
+					criteria = FieldUtil.getAsBeanFromMap(props, Criteria.class);
 					criteria.setConditions(conditions);
 				}
-				Condition condition = FieldUtil.getAsBean(props, Condition.class);
+				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
 				conditions.put(condition.getSequence(), condition);
 			}
 		}

@@ -25,9 +25,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.fw.OrgInfo;
 import com.facilio.leed.context.ArcContext;
-import com.google.gson.JsonObject;
 
 public class LeedIntegrator {
 	

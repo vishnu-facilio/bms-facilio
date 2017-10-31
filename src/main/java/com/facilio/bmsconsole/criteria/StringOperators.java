@@ -9,8 +9,6 @@ import java.util.Map;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-
 public enum StringOperators implements Operator<String> {
 	IS(3, "is") {
 		@Override

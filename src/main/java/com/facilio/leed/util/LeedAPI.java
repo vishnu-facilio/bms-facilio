@@ -93,6 +93,57 @@ public class LeedAPI {
 		return null;
 	}
 	
+//	public static String DeleteMetersForArcSync(long buildingId) throws SQLException, RuntimeException
+//	{
+//		List<Long> deviceIds = getDeviceIdsToDelete(buildingId);
+//		
+//		
+//	}
+//	
+//	public JSONArray getConsumptionIdForDevices(List<Long> deviceIds) throws SQLException, RuntimeException
+//	{
+//		JSONArray arr = new JSONArray();
+//		
+//		Iterator itr = deviceIds.iterator(); 
+//		while(itr.hasNext())
+//		{
+//			Long deviceId = (Long)itr.next();
+//			
+//		}
+//		
+//	}
+	
+	public static List<Long> getDeviceIdsToDelete(long buildingId) throws SQLException, RuntimeException
+	{
+		List<Long> deviceIds = new ArrayList();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT DEVICE_ID FROM Device where SPACE_ID = ?");
+			pstmt.setLong(1, buildingId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				deviceIds.add(rs.getLong("DEVICE_ID"));
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return deviceIds;
+	}
+	
+
+
+	
 	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId,String meterType) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
@@ -537,7 +588,7 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ARCCREDENTIAL AS AC ,ORGANIZATIONS AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
+			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ArcCredential AS AC ,Organizations AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
 			pstmt.setLong(1,orgId);
 			rs = pstmt.executeQuery();			
 			if(!rs.next())

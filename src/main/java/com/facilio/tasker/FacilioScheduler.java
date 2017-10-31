@@ -33,7 +33,7 @@ public class FacilioScheduler {
 	private static void getJobObjectsFromConf() throws JAXBException {
 		//Get file from resources folder
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
-		File schedulerXml = new File(classLoader.getResource("conf/schedulerJobs.xml").getFile());
+		File schedulerXml = new File(classLoader.getResource("conf/" + AwsUtil.getConfig("schedulejobfile") + ".xml").getFile());
 		
 		JAXBContext jaxbContext = JAXBContext.newInstance(SchedulerJobConf.class);
 		SchedulerJobConf schedulerConf = (SchedulerJobConf) jaxbContext.createUnmarshaller().unmarshal(schedulerXml);

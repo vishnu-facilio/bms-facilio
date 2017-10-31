@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 
