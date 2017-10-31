@@ -588,7 +588,7 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ARCCREDENTIAL AS AC ,ORGANIZATIONS AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
+			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ArcCredential AS AC ,Organizations AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
 			pstmt.setLong(1,orgId);
 			rs = pstmt.executeQuery();			
 			if(!rs.next())
