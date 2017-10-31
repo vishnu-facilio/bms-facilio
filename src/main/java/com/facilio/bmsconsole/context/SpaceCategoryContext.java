@@ -19,4 +19,19 @@ public class SpaceCategoryContext extends ModuleBaseWithCustomFields {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	private Boolean commonArea;
+	public Boolean getCommonArea() {
+		return commonArea;
+	}
+	public void setCommonArea(boolean commonArea) {
+		this.commonArea = commonArea;
+	}
+	public boolean isCommonArea() {
+		if(commonArea != null) {
+			return commonArea.booleanValue();
+		}
+		return false;
+	}
+	
 }
