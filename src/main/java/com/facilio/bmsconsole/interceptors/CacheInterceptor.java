@@ -19,8 +19,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 		  HttpServletRequest request =
 				  ServletActionContext.getRequest();
 		  HttpServletResponse response = ServletActionContext.getResponse(); 
-		 String id = request.getRequestURI() + 
-			        request.getQueryString();
+		 String id = request.getRequestURI() + ( request.getQueryString()!=null ? "?"+request.getQueryString():"");
 		 
 		 Parameter cache = ActionContext.getContext().getParameters().get("cache");
 		 boolean cached_url ="GET".equals(request.getMethod())  && (cache !=null && cache.getValue()!=null && cache.getValue().equals("org"));
@@ -42,13 +41,15 @@ public class CacheInterceptor extends AbstractInterceptor {
 				 // TODO
 				
 				 
-				 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			/*	 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			        CacheResponseWrapper wrappedResponse =
 			          new CacheResponseWrapper(response, baos);
-			        ServletActionContext.setResponse(wrappedResponse); 
+			        ServletActionContext.setResponse(wrappedResponse); */
+			        
+			        request.setAttribute("cacheurl",id);
 				 String result = arg0.invoke();
-				 String s =baos.toString();		 
-				 System.out.println("The response to be stored "+ s);
+				/* String s =baos.toString();		 
+				 System.out.println("The response to be stored "+ s);*/
 				 return result;
 			 }
 		 }
