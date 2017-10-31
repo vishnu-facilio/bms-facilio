@@ -76,7 +76,7 @@ public class ExecuteEventRuleCommand implements Command {
 							Map<String, Object> props = FieldUtil.getAsProperties(event);
 							JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(props).get("content"));
 							
-							event = FieldUtil.getAsBean(content, EventContext.class);
+							event = FieldUtil.getAsBeanFromJson(content, EventContext.class);
 							context.put(EventConstants.EVENT, event);
 						}
 					}
