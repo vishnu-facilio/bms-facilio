@@ -132,13 +132,13 @@ public class FieldUtil {
 		return mapper;
 	}
 	
-	public static <E> E getAsBean(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
+	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
 		ObjectMapper mapper = getMapper();
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
-	public static <E> E getAsBean1(Map<String, Object> props, Class<E> classObj)
+	public static <E> E getAsBeanFromMap(Map<String, Object> props, Class<E> classObj)
 	{
 		ObjectMapper mapper = getMapper();
 		return mapper.convertValue(props, classObj);

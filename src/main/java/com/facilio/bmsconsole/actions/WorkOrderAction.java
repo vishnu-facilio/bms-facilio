@@ -108,7 +108,7 @@ public class WorkOrderAction extends ActionSupport {
 		JSONParser parser = new JSONParser();
 		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
 		
-		WorkOrderContext workorder = FieldUtil.getAsBean(content, WorkOrderContext.class);
+		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
 		
 		return addWorkOrder(workorder);
 	}
