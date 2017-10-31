@@ -20,6 +20,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new CreateUserCommand());
 		c.addCommand(new AddDefaultModulesCommand());
+		c.addCommand(new AddEventModuleCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

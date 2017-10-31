@@ -64,6 +64,21 @@ public class FacilioContextListener implements ServletContextListener {
 			{
 				c.close();
 			}
+			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
+			scriptRunner = new SQLScriptRunner(file, true, null);
+			c = FacilioConnectionPool.getInstance().getConnection();
+			try
+			{
+			scriptRunner.runScript(c);
+			}
+			catch(Exception e)
+			{
+				
+			}
+			finally
+			{
+				c.close();
+			}
 			
 //			List<FieldExpression> expressions = new ArrayList<>();
 //			expressions.add(FieldExpressionFactory.on(7));
