@@ -106,16 +106,28 @@ public class FacilioField implements Serializable {
 		this.dataType = FieldType.getCFType(dataType);
 	}
 	
-	private boolean isDefault = false;
+	private Boolean isDefault;
 	public boolean isDefault() {
+		if(isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getDefault() {
 		return isDefault;
 	}
 	public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
 	}
 	
-	private boolean isMainField = false;
+	private Boolean isMainField;
 	public boolean isMainField() {
+		if(isMainField != null) {
+			return isMainField.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getMainField() {
 		return isMainField;
 	}
 	public void setMainField(boolean isMainField) {

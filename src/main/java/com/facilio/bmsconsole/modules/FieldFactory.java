@@ -7,6 +7,27 @@ import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
 	
+	public static List<FacilioField> getLookupFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getLookupFieldsModule();
+		
+		FacilioField specialType = new FacilioField();
+		specialType.setName("specialType");
+		specialType.setDataType(FieldType.STRING);
+		specialType.setColumnName("SPECIAL_TYPE");
+		specialType.setModule(module);
+		fields.add(specialType);
+		
+		FacilioField lookupModuleId = new FacilioField();
+		lookupModuleId.setName("lookupModuleId");
+		lookupModuleId.setDataType(FieldType.NUMBER);
+		lookupModuleId.setColumnName("LOOKUP_MODULE_ID");
+		lookupModuleId.setModule(module);
+		fields.add(lookupModuleId);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFieldsModule();
@@ -64,6 +85,63 @@ public class FieldFactory {
 		required.setColumnName("REQUIRED");
 		required.setModule(module);
 		fields.add(required);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getSelectFieldFields() {
+		List<FacilioField> fields = getAddFieldFields();
+		
+		FacilioModule module = ModuleFactory.getFieldsModule();
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELDID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+		
+		FacilioField defaultField = new FacilioField();
+		defaultField.setName("default");
+		defaultField.setDataType(FieldType.BOOLEAN);
+		defaultField.setColumnName("IS_DEFAULT");
+		defaultField.setModule(module);
+		fields.add(defaultField);
+		
+		FacilioField mainField = new FacilioField();
+		mainField.setName("mainField");
+		mainField.setDataType(FieldType.BOOLEAN);
+		mainField.setColumnName("IS_MAIN_FIELD");
+		mainField.setModule(module);
+		fields.add(mainField);
+		
+		FacilioField disabled = new FacilioField();
+		disabled.setName("disabled");
+		disabled.setDataType(FieldType.BOOLEAN);
+		disabled.setColumnName("DISABLED");
+		disabled.setModule(module);
+		fields.add(disabled);
+		
+		FacilioField styleClass = new FacilioField();
+		styleClass.setName("styleClass");
+		styleClass.setDataType(FieldType.STRING);
+		styleClass.setColumnName("STYLE_CLASS");
+		styleClass.setModule(module);
+		fields.add(styleClass);
+		
+		FacilioField icon = new FacilioField();
+		icon.setName("icon");
+		icon.setDataType(FieldType.STRING);
+		icon.setColumnName("ICON");
+		icon.setModule(module);
+		fields.add(icon);
+		
+		FacilioField placeHolder = new FacilioField();
+		placeHolder.setName("placeHolder");
+		placeHolder.setDataType(FieldType.STRING);
+		placeHolder.setColumnName("PLACE_HOLDER");
+		placeHolder.setModule(module);
+		fields.add(placeHolder);
 		
 		return fields;
 	}
