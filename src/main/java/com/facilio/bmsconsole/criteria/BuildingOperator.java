@@ -8,31 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
-
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public enum BuildingOperator implements Operator<String> {
 	
-	BUILDING_IS("building_is") {
+	BUILDING_IS(38, "building_is") {
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
 			try {
-				if(field.getColumnName() != null && value != null && !value.isEmpty()) {
+				if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getExtendedModule().getTableName())
-							.append(".")
-							.append(field.getColumnName())
+					builder.append(columnName)
 							.append(" IN (");
 					List<BaseSpaceContext> allSpaces = getAllBuildingIds(value);
 					
@@ -70,10 +65,10 @@ public enum BuildingOperator implements Operator<String> {
 	};
 	
 	@Override
-	public abstract String getWhereClause(FacilioField field, String value);
+	public abstract String getWhereClause(String columnName, String value);
 	
 	@Override
-	public abstract BeanPredicate getPredicate(FacilioField field, String value);
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
 	public String getDynamicParameter() {
@@ -85,8 +80,15 @@ public enum BuildingOperator implements Operator<String> {
 		return null;
 	}
 	
-	private BuildingOperator(String operator) {
-		 this.operator = operator;
+	private BuildingOperator(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;

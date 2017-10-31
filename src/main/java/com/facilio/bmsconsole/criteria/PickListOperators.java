@@ -7,27 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.UserInfo;
 
 public enum PickListOperators implements Operator<String> {
 	
-	IS("is") {
+	IS(36, "is") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				if(value.contains(",")) {
 					StringBuilder builder = new StringBuilder();
-					builder.append(field.getExtendedModule().getTableName())
-							.append(".")
-							.append(field.getColumnName())
+					builder.append(columnName)
 							.append(" IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
 					builder.append(")");
@@ -37,35 +33,31 @@ public enum PickListOperators implements Operator<String> {
 					if(value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 						value = "?";
 					}
-					return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = "+value;
+					return columnName+" = "+value;
 				}
 			}
 			return null;
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), computeUserPredicate(value));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, computeUserPredicate(value));
 			}
 			return null;
 		}
 	},
-	ISN_T("isn't") {
+	ISN_T(37, "isn't") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(fieldName)
 						.append(" IS NULL OR ")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName());
+						.append(fieldName);
 				if(value.contains(",")) {
 					builder.append(" NOT IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
@@ -85,10 +77,10 @@ public enum PickListOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field.getColumnName() != null && value != null && !value.isEmpty()) {
-				return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(computeUserPredicate(value)));
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeUserPredicate(value)));
 			}
 			return null;
 		}
@@ -139,7 +131,10 @@ public enum PickListOperators implements Operator<String> {
 	
 	
 	@Override
-	public abstract String getWhereClause(FacilioField field, String value);
+	public abstract String getWhereClause(String fieldName, String value);
+	
+	@Override
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
 	public String getDynamicParameter() {
@@ -158,8 +153,15 @@ public enum PickListOperators implements Operator<String> {
 		}
 	}
 	
-	private PickListOperators(String operator) {
-		 this.operator = operator;
+	private PickListOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;

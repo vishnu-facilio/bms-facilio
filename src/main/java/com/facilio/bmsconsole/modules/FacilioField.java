@@ -119,7 +119,12 @@ public class FacilioField implements Serializable {
 	
 	private String displayName;
 	public String getDisplayName() {
-		return displayName;
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return name;
+		}
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
@@ -176,7 +181,15 @@ public class FacilioField implements Serializable {
 	public void setDisplayType(int displayType) {
 		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
 	}
-	
+	public void setDisplayTypeInt(int displayType) {
+		this.displayType = FieldDisplayType.TYPE_MAP.get(displayType);
+	}
+	public int getDisplayTypeInt() {
+		if (displayType != null) {
+			return displayType.getIntValForDB();
+		}
+		return -1;
+	}
 	
 	public String toString()
 	{
@@ -195,7 +208,8 @@ public class FacilioField implements Serializable {
 		NUMBER(9, "number"), 
 		LOOKUP_SIMPLE(10, null), 
 		LOOKUP_POPUP(11, null),
-		LOOKUP_SECTION(12, null)
+		LOOKUP_SECTION(12, null),
+		DECIMAL(13, "number")
 		;
 		
 		private int intVal;

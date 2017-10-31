@@ -3,6 +3,7 @@ package com.facilio.leed.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.Base64;
 
 import org.apache.http.Header;
@@ -19,9 +20,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.facilio.leed.context.ArcContext;
 
 public class LeedIntegrator {
 	
@@ -32,51 +36,137 @@ public class LeedIntegrator {
 	public static String subscriptionKey = "ffa4212a87b748bb8b3623f3d97ae285"; // This key is available developer profile page @ https://developer.usgbc.org/developer
 	public static String authheadervalue= Base64.getEncoder().encodeToString((username+":"+password).getBytes());
 	public static String authKey = "Bearer Qq2NJpDM7IieThJiU3iFIoqT19YJGW"; // This is generated with doAuth() method in this same class. 
-	public static String serverURL = "https://api.usgbc.org:443";
+	//public static String serverURL = "https://api.usgbc.org:443";
+	
+	public LeedIntegrator()
+	{
+		
+	}
+	
+	public ArcContext context;
+	public String serverURL;
+	
+	public LeedIntegrator(ArcContext context) throws ClientProtocolException, IOException, SQLException, RuntimeException
+	{
+		this.context = context; 
+		String protocol = context.getArcProtocol();
+		String host = context.getArcHost();
+		String port = context.getArcPort();
+		this.serverURL = protocol+"://"+host+":"+port;
+		
+		long curretTime = System.currentTimeMillis();
+		long authTime = context.getAuthUpdateTime();
+		if(authTime != -1 && (curretTime - authTime) > 3600000)
+		{
+			this.context.setAuthKey(getAuthKey( context));
+			LeedAPI.UpdateArcCredential(this.context);
+		}
+	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, ParseException {
 		//doAuth();
+//		LeedIntegrator api = new LeedIntegrator();
+//		JSONObject response = api.getAssetList();
+//		System.out.println(response);
 		LeedIntegrator api = new LeedIntegrator();
-		JSONObject response = api.getAssetList();
-		System.out.println(response);
+		ArcContext credentials = new ArcContext();
+		credentials.setUserName("yoge@facilio.com");
+		credentials.setPassword("Chennai1#");
+		credentials.setArcProtocol("https");
+		credentials.setArcHost("api.usgbc.org");
+		credentials.setArcPort("443");
+		credentials.setSubscriptionKey("ffa4212a87b748bb8b3623f3d97ae285");
+		api.getAuthKey(credentials);
 	}
 	
-	public static JSONObject getAssetDetail(String leedId) throws ClientProtocolException, IOException, ParseException
+	public ArcContext LoginArcServer(ArcContext context) throws SQLException, RuntimeException, ClientProtocolException, IOException
 	{
+		String authkey = getAuthKey(context);
+		context.setAuthKey("Bearer "+authkey);
+		return context;
+	}
+	
+	public String getAuthKey(ArcContext context) throws ClientProtocolException, IOException
+    {
+		HttpHost target = new HttpHost(context.getArcHost(), Integer.parseInt(context.getArcPort()), context.getArcProtocol());
+        CloseableHttpClient httpclient =org.apache.http.impl.client.HttpClients.createDefault();
+        String authToken = null;
+        String serverURL1 = target.toURI();
+        try {
+        		HttpGet httpget = new HttpGet(serverURL1);
+        		String loginURL = serverURL1+"/arc/data/dev/auth/login/";
+        		HttpPost httppost = new HttpPost(loginURL);
+        		httppost.addHeader("Ocp-Apim-Subscription-Key",context.getSubscriptionKey());
+        		httppost.addHeader("Content-Type","application/json");
+        		System.out.println("Executing request \n" + httppost.getRequestLine() + " to target \n" + target );
+        		Header [] headerNames = httppost.getAllHeaders();	            
+        		for(int i=0;i<headerNames.length;i++) 
+        		{
+        			String headerName = (String)headerNames[i].getName();
+        			System.out.println(headerName + " = " + (String)headerNames[i].getValue());
+        		}
+        		String userName = context.getUserName();
+        		String password = context.getPassword();
+        		JSONObject cred = new JSONObject();
+        		cred.put("username", userName);
+        		cred.put("password", password);
+        		//StringEntity entity = new StringEntity("{\"username\":\"yoge@facilio.com\",\"password\":\"Chennai1#\"}");
+        		StringEntity entity = new StringEntity(cred.toString());
+        		httppost.setEntity(entity);
+        		CloseableHttpResponse response = httpclient.execute(target, httppost);
+        		String respStr = EntityUtils.toString(response.getEntity());
+        		System.out.println("@@@ response : "+respStr);
+        		JSONParser parser = new JSONParser(); 
+        		JSONObject json =  (JSONObject) parser.parse(respStr);
+        		authToken = (String)json.get("authorization_token");
+        		System.out.println("#### authToken : "+authToken);
+        	}catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+        	finally {
+            httpclient.close();
+        }
+        return authToken;
+    }
+	
+	public JSONObject getAssetDetail(String leedId) throws ClientProtocolException, IOException, ParseException
+	{
+		
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getAssetList() throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getAssetList() throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getMeters(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getMeters(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getAssetMeterDetail(String leedId, String meterId) throws ClientProtocolException,IOException,ParseException
+	public  JSONObject getAssetMeterDetail(String leedId, String meterId) throws ClientProtocolException,IOException,ParseException
 	{
 		String urlString = serverURL+"arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getPerformanceScores(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getPerformanceScores(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/scores/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject searchAsset(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject searchAsset(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString;
 		if(leedId != null)
@@ -92,47 +182,64 @@ public class LeedIntegrator {
 		
 	}
 	
-	public static JSONObject searchAsset() throws ClientProtocolException, IOException, ParseException
+	public  JSONObject searchAsset() throws ClientProtocolException, IOException, ParseException
 	{
 		return searchAsset(null);
 	}
 	
-	public static JSONObject getConsumptionList(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException 
+	public  JSONObject getConsumptionList(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException 
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/consumption/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getConsumptionDetail(String leedId, String meterId, String consumptionId) throws ClientProtocolException, IOException, ParseException
+	public JSONArray getConsumptionListAsArray(String leedId, String meterId) throws ClientProtocolException, IOException, ParseException
+	{
+		JSONArray consumptionArray = new JSONArray();
+		JSONObject message = getConsumptionList(leedId,meterId);
+		JSONObject json = (JSONObject) message.get("message");
+		String nextStr = (String)json.get("next");
+		consumptionArray.add(message);
+		while(nextStr != null)
+		{
+			System.out.println(">>>> nextStr : "+nextStr);
+			JSONObject response = getURLResponse(nextStr);
+			consumptionArray.add(response);
+		}
+		
+		return consumptionArray;
+	}
+	
+	public  JSONObject getConsumptionDetail(String leedId, String meterId, String consumptionId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/ID:"+meterId+"/consumption/ID:"+consumptionId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getEnvironmentSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getEnvironmentSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/environment/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getEnvironmentSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
+	public JSONObject getEnvironmentSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/environment/summarize/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getFuelCategory() throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getFuelCategory() throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/fuel/category/";
 		JSONObject response =  getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getTransitSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getTransitSurvey(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/transit/";
 		JSONObject response = getURLResponse(urlString);
@@ -140,28 +247,28 @@ public class LeedIntegrator {
 		
 	}
 	
-	public static JSONObject getTransitSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getTransitSurveySummarize(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/survey/transit/summarize/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getWaste(String leedId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getWaste(String leedId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/waste/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject getWasteDetails(String leedId, String wasteId) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject getWasteDetails(String leedId, String wasteId) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/waste/ID:"+wasteId+"/";
 		JSONObject response = getURLResponse(urlString);
 		return response;
 	}
 	
-	public static JSONObject createMeter(long leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject createMeter(long leedId, JSONObject meterInfo) throws ClientProtocolException, IOException, ParseException
 	{
 		String urlString = serverURL+"/arc/data/dev/assets/LEED:"+leedId+"/meters/";
 		/*
@@ -174,7 +281,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public static JSONObject updateMeter(String leedId,String meterId,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject updateMeter(String leedId,String meterId,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 	/*
 	 * Note that in updateInfo json, name and type attributes are required attributes
@@ -184,7 +291,7 @@ public class LeedIntegrator {
 		return response; 
 	}
 	
-	public static JSONObject createConsumption(long leedId,long meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject createConsumption(long leedId,long meterId,JSONObject consumptionData) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample consumptionData json 
 //		{
@@ -198,7 +305,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public static JSONObject updateConsumption(String leedId, String meterId, String consumptionId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public  JSONObject updateConsumption(String leedId, String meterId, String consumptionId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample updateInfo. Note that same interval cannot be given for update. 
 //		{
@@ -211,7 +318,7 @@ public class LeedIntegrator {
 		return response;
 	}
 	
-	public static JSONObject updateAsset(String leedId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	public JSONObject updateAsset(String leedId, JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
 //		Sample updateInfo JSON 
 //		{
@@ -254,8 +361,10 @@ public class LeedIntegrator {
 		String urlString = serverURL+"";
 	}
 	*/
-	private static JSONObject getUpdateResponse(String urlString,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
+	private  JSONObject getUpdateResponse(String urlString,JSONObject updateInfo) throws ClientProtocolException, IOException, ParseException
 	{
+		String authKey = context.getAuthKey();
+		String subscriptionKey = context.getSubscriptionKey();
 		
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPut httpPut = new HttpPut(urlString);
@@ -287,8 +396,11 @@ public class LeedIntegrator {
         return resp;
 	}
 	
-	private static JSONObject getURLResponse(String urlString) throws ClientProtocolException, IOException, ParseException 
+	private JSONObject getURLResponse(String urlString) throws ClientProtocolException, IOException, ParseException 
     {
+		String authKey = context.getAuthKey();
+		String subscriptionKey = context.getSubscriptionKey();
+		
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(urlString);
 		httpGet.setHeader("Authorization", authKey);
@@ -319,8 +431,11 @@ public class LeedIntegrator {
     }
 	
 	
-	public static JSONObject getPostResponse(String URL, JSONObject data) throws ClientProtocolException, IOException, ParseException
+	public JSONObject getPostResponse(String URL, JSONObject data) throws ClientProtocolException, IOException, ParseException
 	{
+		String authKey = context.getAuthKey();
+		String subscriptionKey = context.getSubscriptionKey();
+		
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(URL);
 		httpPost.setHeader("Authorization", authKey);
@@ -351,7 +466,7 @@ public class LeedIntegrator {
         return resp;
 	}
 	
-		public static void doAuth() throws ClientProtocolException, IOException
+/*		public static void doAuth() throws ClientProtocolException, IOException
 	    {
 			HttpHost target = new HttpHost(hostname, port, "https");
 	        CloseableHttpClient httpclient =org.apache.http.impl.client.HttpClients.createDefault();
@@ -385,5 +500,5 @@ public class LeedIntegrator {
 	        	} finally {
 	            httpclient.close();
 	        }
-	    }
+	    }*/
 }

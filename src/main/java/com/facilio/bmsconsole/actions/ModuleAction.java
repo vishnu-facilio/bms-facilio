@@ -39,6 +39,18 @@ public class ModuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String fieldList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		
+		Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
+		getFieldsChain.execute(context);
+		
+		setFields((List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST));
+		
+		return SUCCESS;
+	}
+	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;

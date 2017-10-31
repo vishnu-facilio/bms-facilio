@@ -33,26 +33,18 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
-		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogin">
-			<result name="success" type="json">
-				<param name="includeProperties">^account.*</param>
-			</result>
-		</action>
-		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
-			<result name="success" type="json">
-				<param name="includeProperties">^account.*</param>
-			</result>
-		</action>
-		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
-			<result name="success" type="json">
-				<param name="includeProperties">^account.*</param>
-			</result>
-		</action>
 		
+		<action name="arcloginaction" class="com.facilio.leed.actions.LeedAction" method="arcLoginAction">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
+			</result>
+		</action>
+				
 		<action name="leedlist" class="com.facilio.leed.actions.LeedAction" method="leedList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
+				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
 		
@@ -101,7 +93,7 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*</param>
+				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
 		</action>
 		

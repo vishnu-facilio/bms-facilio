@@ -8,9 +8,12 @@
  */
 package com.facilio.bmsconsole.interceptors;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
+import javax.servlet.http.HttpServletResponse;
 
 public class CacheResponseStream extends ServletOutputStream {
   protected boolean closed = false;
@@ -24,6 +27,7 @@ public class CacheResponseStream extends ServletOutputStream {
     closed = false;
     this.response = response;
     this.cache = cache;
+    System.out.println("##CacheResponseStream loaded"+cache);
   }
 
   public void close() throws IOException {
@@ -32,7 +36,10 @@ public class CacheResponseStream extends ServletOutputStream {
         "This output stream has already been closed");
     }
     cache.close();
+    close();
     closed = true;
+    System.out.println("##cache closed");
+
   }
 
   public void flush() throws IOException {
@@ -41,6 +48,9 @@ public class CacheResponseStream extends ServletOutputStream {
         "Cannot flush a closed output stream");
     }
     cache.flush();
+    flush();
+    System.out.println("##cache flushed");
+
   }
 
   public void write(int b) throws IOException {
@@ -49,10 +59,16 @@ public class CacheResponseStream extends ServletOutputStream {
         "Cannot write to a closed output stream");
     }
     cache.write((byte)b);
+    write((byte)b);
+    System.out.println("##byte write");
+
   }
 
   public void write(byte b[]) throws IOException {
     write(b, 0, b.length);
+    cache.write(b, 0, b.length);
+    System.out.println("##byte array write");
+
   }
 
   public void write(byte b[], int off, int len)
@@ -62,6 +78,9 @@ public class CacheResponseStream extends ServletOutputStream {
        "Cannot write to a closed output stream");
     }
     cache.write(b, off, len);
+    write(b, off, len);
+    System.out.println("##byte array with offset write");
+
   }
 
   public boolean closed() {

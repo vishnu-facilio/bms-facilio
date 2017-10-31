@@ -11,7 +11,7 @@ public class LeedEnergyMeterContext extends Device {
 	{
 		return fuelType;
 	}
-	public void setDisplayName(long fuelType)
+	public void setFuelType(long fuelType)
 	{
 		this.fuelType = fuelType;
 	}

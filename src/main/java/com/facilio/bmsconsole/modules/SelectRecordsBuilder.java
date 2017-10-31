@@ -275,21 +275,24 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
-		selectFields.add(FieldFactory.getOrgIdField(module));
-		selectFields.add(FieldFactory.getModuleIdField(module));
+		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
+		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+		
+		selectFields.add(orgIdField);
+		selectFields.add(moduleIdField);
 		selectFields.add(FieldFactory.getIdField(module));
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
 		
 		Condition orgCondition = new Condition();
-		orgCondition.setField(FieldFactory.getOrgIdField(module));
+		orgCondition.setField(orgIdField);
 		orgCondition.setOperator(NumberOperators.EQUALS);
 		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		whereCondition.andCondition(orgCondition);
 		
 		Condition moduleCondition = new Condition();
-		moduleCondition.setField(FieldFactory.getModuleIdField(module));
+		moduleCondition.setField(moduleIdField);
 		moduleCondition.setOperator(NumberOperators.EQUALS);
 		moduleCondition.setValue(String.valueOf(getModuleId()));
 		whereCondition.andCondition(moduleCondition);

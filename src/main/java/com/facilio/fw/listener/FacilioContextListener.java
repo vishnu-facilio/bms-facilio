@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -32,7 +33,7 @@ public class FacilioContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent event) {
 		// TODO Auto-generated method stub
 		initDBConnectionPool();
-		
+		Operator test = Operator.OPERATOR_MAP.get(1);
 		try {
 			try {
 			migrateSchemaChanges();

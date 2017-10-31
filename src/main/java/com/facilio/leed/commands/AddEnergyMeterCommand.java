@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
 
@@ -23,14 +24,18 @@ public class AddEnergyMeterCommand implements Command {
 		meterInfo.put("included", "true");
 		meterInfo.put("native_unit", "kWh");
 		meterInfo.put("type", "16"); //fuel_type 16 for { "id": 16, "type": "AZNM", "subtype": "WECC Southwest", "kind": "electricity", "resource": "Non-Renewable"}
-		JSONObject meter_Id_Info = LeedIntegrator.createMeter(leedId, meterInfo);
+		ArcContext arccontext = LeedAPI.getArcContext();
+		LeedIntegrator integ = new LeedIntegrator(arccontext);
+		JSONObject meter_Id_Info = integ.createMeter(leedId, meterInfo);
 		System.out.println(">>>>>>>>> meter_Id_Info : "+meter_Id_Info);
 		JSONObject meterMessages = (JSONObject)meter_Id_Info.get("message");
 		long meter_Id = (long)meterMessages.get("id");
 		context.put(FacilioConstants.ContextNames.METERID, meter_Id);
 		long fuel_type = (long)meterMessages.get("type");
 		context.put(FacilioConstants.ContextNames.FUELTYPE, fuel_type);
-		
+		JSONObject fuelJSON = (JSONObject)meterMessages.get("fuel_type");
+		String meterType = (String)fuelJSON.get("kind");
+		context.put(FacilioConstants.ContextNames.METERTYPE, meterType);
 		LeedAPI.addLeedEnergyMeter((FacilioContext)context);
 		
 		return false;

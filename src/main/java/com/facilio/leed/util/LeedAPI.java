@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
 import com.facilio.sql.DBUtil;
@@ -92,7 +93,58 @@ public class LeedAPI {
 		return null;
 	}
 	
-	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId) throws SQLException, RuntimeException
+//	public static String DeleteMetersForArcSync(long buildingId) throws SQLException, RuntimeException
+//	{
+//		List<Long> deviceIds = getDeviceIdsToDelete(buildingId);
+//		
+//		
+//	}
+//	
+//	public JSONArray getConsumptionIdForDevices(List<Long> deviceIds) throws SQLException, RuntimeException
+//	{
+//		JSONArray arr = new JSONArray();
+//		
+//		Iterator itr = deviceIds.iterator(); 
+//		while(itr.hasNext())
+//		{
+//			Long deviceId = (Long)itr.next();
+//			
+//		}
+//		
+//	}
+	
+	public static List<Long> getDeviceIdsToDelete(long buildingId) throws SQLException, RuntimeException
+	{
+		List<Long> deviceIds = new ArrayList();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT DEVICE_ID FROM Device where SPACE_ID = ?");
+			pstmt.setLong(1, buildingId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				deviceIds.add(rs.getLong("DEVICE_ID"));
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return deviceIds;
+	}
+	
+
+
+	
+	public static List<LeedEnergyMeterContext> fetchMeterListForBuilding(long buildingId,String meterType) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -105,9 +157,10 @@ public class LeedAPI {
 			StringBuilder sql = new StringBuilder();
 			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICE_ID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICE_ID = Device.DEVICE_ID")
 				.append(" LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
-				.append(" WHERE Device.SPACE_ID = ?");		
+				.append(" WHERE Device.SPACE_ID = ? AND Device.DEVICE_TYPE = ?");		
 			pstmt =  conn.prepareStatement(sql.toString());
 			pstmt.setLong(1,buildingId);
+			pstmt.setString(2, meterType);
 			rs = pstmt.executeQuery();
 			while(rs.next())
 			{
@@ -115,6 +168,7 @@ public class LeedAPI {
 				context.setName(rs.getString("NAME"));
 				context.setMeterId(rs.getLong("METERID"));
 				context.setDeviceId(rs.getLong("DEVICE_ID"));
+				context.setType(meterType);
 				meterList.add(context);
 			}
 			
@@ -131,6 +185,27 @@ public class LeedAPI {
 		return meterList;
 	}
 	
+	public static void addLeedEnergyMeters(List<LeedEnergyMeterContext> meterList,long buildingId) throws SQLException, RuntimeException 
+	{
+		//long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
+		//long spaceId = getSpaceId(buildingId);
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		Iterator itr = meterList.iterator();
+		while(itr.hasNext())
+		{
+			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
+			String metername = meter.getName();
+			String meterType = meter.getType();
+			long fuelType = meter.getFuelType();
+			long meterId = meter.getMeterId();
+			long assetId = addAsset(metername,orgId);
+			meter.setDeviceId(assetId);
+			addDevice(assetId, buildingId,meterType);
+			addLeedEnergyMeter(assetId,fuelType,meterId);
+		}	
+	}
+	
+		
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
 		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
@@ -139,12 +214,41 @@ public class LeedAPI {
 		String metername = (String)context.get(FacilioConstants.ContextNames.METERNAME);
 		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
 		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
+		String meterType = (String)context.get(FacilioConstants.ContextNames.METERTYPE);
 		long assetId = addAsset(metername,orgId);
 		context.put(FacilioConstants.ContextNames.DEVICEID, assetId);
-		addDevice(assetId, buildingId);
+		addDevice(assetId, buildingId,meterType);
 		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
 	}
+	
+	public static long getLeedId(long buildingId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long leedId = -1;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT LEEDID FROM LeedConfiguration where ID = ?");
+			pstmt.setLong(1, buildingId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				leedId = rs.getLong("LEEDID");
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return leedId;
+	}
+	
 	
 //	public static long getSpaceId(long buildingId) throws  SQLException, RuntimeException
 //	{
@@ -205,7 +309,7 @@ public class LeedAPI {
 		return assetId;
 	}
 	
-	public static void addDevice(long deviceId, long buildingId) throws SQLException,RuntimeException
+	public static void addDevice(long deviceId, long buildingId,String meterType) throws SQLException,RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -215,7 +319,7 @@ public class LeedAPI {
 			pstmt = conn.prepareStatement("INSERT INTO Device(DEVICE_ID,SPACE_ID,DEVICE_TYPE,STATUS) values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
 			pstmt.setLong(1,deviceId);
 			pstmt.setLong(2, buildingId);
-			pstmt.setString(3,"EnergyMeter");
+			pstmt.setString(3,meterType);
 			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
@@ -382,6 +486,125 @@ public class LeedAPI {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return arr;
+	}
+	
+	public static void UpdateArcCredential(ArcContext context) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		try{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE ArcCredential SET AUTHKEY = ? , AUTHUPDATETIME = ? WHERE ORGID= ?)");
+			pstmt.setString(1, context.getAuthKey());
+			pstmt.setLong(2, System.currentTimeMillis());			
+			pstmt.setLong(3, orgId);
+
+			pstmt.executeQuery();
+		
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}		
+	}
+	
+	public static void AddArcCredential(ArcContext context) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		try{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO ArcCredential VALUES(?,?,?,?,?,?,?,?,?)");
+			pstmt.setLong(1, orgId);
+			pstmt.setString(2,context.getUserName());
+			pstmt.setString(3, context.getPassword());
+			pstmt.setString(4, context.getSubscriptionKey());
+			pstmt.setString(5, context.getAuthKey());
+			pstmt.setLong(6, System.currentTimeMillis());
+			pstmt.setString(7, context.getArcProtocol());
+			pstmt.setString(8, context.getArcHost());
+			pstmt.setString(9, context.getArcPort());
+			pstmt.executeUpdate();
+		
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}		
+	}
+	
+	public static ArcContext getArcContext() throws SQLException, RuntimeException
+	{
+		ArcContext context = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select * from ArcCredential where ORGID = ?");
+			pstmt.setLong(1, orgId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				context = new ArcContext();
+				context.setArcProtocol(rs.getString("ARCPROTOCOL"));
+				context.setArcHost(rs.getString("ARCHOST"));
+				context.setArcPort(rs.getString("ARCPORT"));
+				context.setAuthKey(rs.getString("AUTHKEY"));
+				context.setSubscriptionKey(rs.getString("SUBSCRIPTIONKEY"));
+				context.setAuthUpdateTime(rs.getLong("AUTHUPDATETIME"));
+				context.setUserName(rs.getString("USERNAME"));
+				context.setPassword(rs.getString("PASSWORD"));
+				context.setOrgId(rs.getLong("ORGID"));
+			}
+		}
+		catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return context;
+	}
+	
+	public static boolean checkIfLoginPresent(long orgId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		boolean loginRequired = false;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT ORG.ORGID, AC.USERNAME, AC.AUTHKEY FROM ArcCredential AS AC ,Organizations AS ORG WHERE ORG.ORGID = AC.ORGID AND ORG.ORGID = ?;");
+			pstmt.setLong(1,orgId);
+			rs = pstmt.executeQuery();			
+			if(!rs.next())
+			{
+				loginRequired = true;
+			}
+		
+		}catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return loginRequired;
 	}
 	
 }

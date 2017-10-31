@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderReportAction extends ActionSupport {
@@ -110,25 +108,18 @@ public class WorkOrderReportAction extends ActionSupport {
 		fields.add(countFld);
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrders")
-					.innerJoin("Tickets")
-					.on("WorkOrders.ID = Tickets.ID")
-					.innerJoin("TicketStatus")
-					.on("Tickets.STATUS_ID = TicketStatus.ID")
-					.groupBy("TicketStatus.ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.groupBy("TicketStatus.ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
 
-			List<Map<String, Object>> rs = builder.get();
-			return rs;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		List<Map<String, Object>> rs = builder.get();
+		return rs;
 	}
 	
 	private List<Map<String, Object>> getClosedWorkOrderSummary(String period) throws Exception {
@@ -161,61 +152,54 @@ public class WorkOrderReportAction extends ActionSupport {
 		closedTime.setOperator(DateOperators.valueOf(period));
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrders")
-					.innerJoin("Tickets")
-					.on("WorkOrders.ID = Tickets.ID")
-					.innerJoin("TicketStatus")
-					.on("Tickets.STATUS_ID = TicketStatus.ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.CLOSED.getIntVal())
-					.andCondition(closedTime);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.CLOSED.getIntVal())
+				.andCondition(closedTime);
 
-			List<Map<String, Object>> rs = builder.get();
+		List<Map<String, Object>> rs = builder.get();
+		
+		int total = 0;
+		int ontime= 0;
+		int overdue = 0;
+		
+		if (rs != null && !rs.isEmpty()) {
+			total = rs.size();
 			
-			int total = 0;
-			int ontime= 0;
-			int overdue = 0;
-			
-			if (rs != null && !rs.isEmpty()) {
-				total = rs.size();
+			for (Map<String, Object> row : rs) {
+				Long dueDate = (Long) row.get("dueDate");
+				Long actualWorkEnd = (Long) row.get("actualWorkEnd");
 				
-				for (Map<String, Object> row : rs) {
-					Long dueDate = (Long) row.get("dueDate");
-					Long actualWorkEnd = (Long) row.get("actualWorkEnd");
-					
-					if (actualWorkEnd != null) {
-						if (dueDate == null || dueDate <= 0) {
+				if (actualWorkEnd != null) {
+					if (dueDate == null || dueDate <= 0) {
+						ontime++;
+					}
+					else {
+						int daysBtwn = DateTimeUtil.getDaysBetween(dueDate, actualWorkEnd);
+						if (daysBtwn <= 0) {
 							ontime++;
 						}
 						else {
-							int daysBtwn = DateTimeUtil.getDaysBetween(dueDate, actualWorkEnd);
-							if (daysBtwn <= 0) {
-								ontime++;
-							}
-							else {
-								overdue++;
-							}
+							overdue++;
 						}
 					}
 				}
 			}
-			
-			Map<String, Object> report = new HashMap<String, Object>();
-			report.put("closed", total);
-			report.put("ontime", ontime);
-			report.put("overdue", overdue);
-			
-			List<Map<String, Object>> reportData = new ArrayList<>();
-			reportData.add(report);
-			return reportData;
 		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		
+		Map<String, Object> report = new HashMap<String, Object>();
+		report.put("closed", total);
+		report.put("ontime", ontime);
+		report.put("overdue", overdue);
+		
+		List<Map<String, Object>> reportData = new ArrayList<>();
+		reportData.add(report);
+		return reportData;
 	}
 	
 	private List<Map<String, Object>> getWorkOrderCategorySummary() throws Exception {
@@ -250,27 +234,20 @@ public class WorkOrderReportAction extends ActionSupport {
 		fields.add(countFld);
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrders")
-					.innerJoin("Tickets")
-					.on("WorkOrders.ID = Tickets.ID")
-					.innerJoin("TicketStatus")
-					.on("Tickets.STATUS_ID = TicketStatus.ID")
-					.leftJoin("TicketCategory")
-					.on("Tickets.CATEGORY_ID = TicketCategory.ID")
-					.groupBy("TicketCategory.ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.leftJoin("TicketCategory")
+				.on("Tickets.CATEGORY_ID = TicketCategory.ID")
+				.groupBy("TicketCategory.ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
 
-			List<Map<String, Object>> rs = builder.get();
-			return rs;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		List<Map<String, Object>> rs = builder.get();
+		return rs;
 	}
 	
 	private List<Map<String, Object>> getWorkOrderRequestSummary() throws Exception {
@@ -285,10 +262,6 @@ public class WorkOrderReportAction extends ActionSupport {
 		countFld.setName("count");
 		countFld.setColumnName("COUNT(*)");
 		countFld.setDataType(FieldType.NUMBER);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(sourceTypeFld);
-		fields.add(countFld);
 		
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
@@ -296,29 +269,26 @@ public class WorkOrderReportAction extends ActionSupport {
 		createdTimeFld.setModule(ModuleFactory.getWorkOrderRequestsModule());
 		createdTimeFld.setDataType(FieldType.DATE_TIME);
 		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(sourceTypeFld);
+		fields.add(countFld);
+		
 		Condition createdTime = new Condition();
 		createdTime.setField(createdTimeFld);
 		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrderRequests")
-					.innerJoin("Tickets")
-					.on("WorkOrderRequests.ID = Tickets.ID")
-					.groupBy("Tickets.SOURCE_TYPE")
-					.andCustomWhere("WorkOrderRequests.ORGID = ? AND Tickets.ORGID = ? AND WorkOrderRequests.STATUS = ?", orgId, orgId, WorkOrderRequestContext.RequestStatus.OPEN.getIntVal())
-					.andCondition(createdTime);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrderRequests")
+				.innerJoin("Tickets")
+				.on("WorkOrderRequests.ID = Tickets.ID")
+				.groupBy("Tickets.SOURCE_TYPE")
+				.andCustomWhere("WorkOrderRequests.ORGID = ? AND Tickets.ORGID = ? AND WorkOrderRequests.STATUS = ?", orgId, orgId, WorkOrderRequestContext.RequestStatus.OPEN.getIntVal())
+				.andCondition(createdTime);
 
-			List<Map<String, Object>> rs = builder.get();
-			return rs;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		List<Map<String, Object>> rs = builder.get();
+		return rs;
 	}
 	
 	private List<Map<String, Object>> getTechnicianWorkSummary() throws Exception {
@@ -353,29 +323,22 @@ public class WorkOrderReportAction extends ActionSupport {
 		fields.add(countFld);
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrders")
-					.innerJoin("Tickets")
-					.on("WorkOrders.ID = Tickets.ID")
-					.innerJoin("TicketStatus")
-					.on("Tickets.STATUS_ID = TicketStatus.ID")
-					.innerJoin("ORG_Users")
-					.on("Tickets.ASSIGNED_TO_ID = ORG_Users.ORG_USERID")
-					.innerJoin("Users")
-					.on("ORG_Users.USERID = Users.USERID")
-					.groupBy("Tickets.ASSIGNED_TO_ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND ORG_Users.ORGID=? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.innerJoin("ORG_Users")
+				.on("Tickets.ASSIGNED_TO_ID = ORG_Users.ORG_USERID")
+				.innerJoin("Users")
+				.on("ORG_Users.USERID = Users.USERID")
+				.groupBy("Tickets.ASSIGNED_TO_ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND ORG_Users.ORGID=? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal());
 
-			List<Map<String, Object>> rs = builder.get();
-			return rs;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		List<Map<String, Object>> rs = builder.get();
+		return rs;
 	}
 	
 	private List<Map<String, Object>> getWorkOrderLocationSummary() throws Exception {
@@ -396,44 +359,37 @@ public class WorkOrderReportAction extends ActionSupport {
 		fields.add(countFld);
 		
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(fields)
-					.table("WorkOrders")
-					.innerJoin("Tickets")
-					.on("WorkOrders.ID = Tickets.ID")
-					.innerJoin("TicketStatus")
-					.on("Tickets.STATUS_ID = TicketStatus.ID")
-					.groupBy("Tickets.SPACE_ID")
-					.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ? AND Tickets.SPACE_ID IS NOT NULL AND Tickets.SPACE_ID > 0", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal())
-					.limit(10);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.groupBy("Tickets.SPACE_ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.STATUS_TYPE = ? AND Tickets.SPACE_ID IS NOT NULL AND Tickets.SPACE_ID > 0", orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal())
+				.limit(10);
 
-			List<Map<String, Object>> rs = builder.get();
-			if (rs != null && !rs.isEmpty()) {
-				for (Map<String, Object> row : rs) {
-					long spaceId = (Long) row.get("space_id");
-					
-					String primaryLocation = "--";
-					String secondaryLocation = "--";
-					
-					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(spaceId);
-					
-					primaryLocation = baseSpace.getName();
-					if(baseSpace.getSpaceTypeEnum() == BaseSpaceContext.SpaceType.SPACE && baseSpace.getBuildingId() != -1)
-					{
-						secondaryLocation = SpaceAPI.getBuildingSpace(baseSpace.getBuildingId()).getName();
-					}
-					
-					row.put("primary_location", primaryLocation);
-					row.put("secondary_location", secondaryLocation);
+		List<Map<String, Object>> rs = builder.get();
+		if (rs != null && !rs.isEmpty()) {
+			for (Map<String, Object> row : rs) {
+				long spaceId = (Long) row.get("space_id");
+				
+				String primaryLocation = "--";
+				String secondaryLocation = "--";
+				
+				BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(spaceId);
+				
+				primaryLocation = baseSpace.getName();
+				if(baseSpace.getSpaceTypeEnum() == BaseSpaceContext.SpaceType.SPACE && baseSpace.getBuildingId() != -1)
+				{
+					secondaryLocation = SpaceAPI.getBuildingSpace(baseSpace.getBuildingId()).getName();
 				}
+				
+				row.put("primary_location", primaryLocation);
+				row.put("secondary_location", secondaryLocation);
 			}
-			return rs;
 		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		return rs;
 	}
 }

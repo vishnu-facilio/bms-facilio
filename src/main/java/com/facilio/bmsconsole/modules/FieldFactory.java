@@ -672,19 +672,26 @@ public class FieldFactory {
 		sequence.setModule(module);
 		fields.add(sequence);
 		
-		FacilioField fieldId = new FacilioField();
-		fieldId.setName("fieldId");
-		fieldId.setDataType(FieldType.NUMBER);
-		fieldId.setColumnName("FIELDID");
-		fieldId.setModule(module);
-		fields.add(fieldId);
+		FacilioField fieldName = new FacilioField();
+		fieldName.setName("fieldName");
+		fieldName.setDataType(FieldType.STRING);
+		fieldName.setColumnName("FIELD_NAME");
+		fieldName.setModule(module);
+		fields.add(fieldName);
 		
-		FacilioField operatorStr = new FacilioField();
-		operatorStr.setName("operatorStr");
-		operatorStr.setDataType(FieldType.STRING);
-		operatorStr.setColumnName("OPERATOR");
-		operatorStr.setModule(module);
-		fields.add(operatorStr);
+		FacilioField columnName = new FacilioField();
+		columnName.setName("columnName");
+		columnName.setDataType(FieldType.STRING);
+		columnName.setColumnName("COLUMN_NAME");
+		columnName.setModule(module);
+		fields.add(columnName);
+		
+		FacilioField operatorId = new FacilioField();
+		operatorId.setName("operatorId");
+		operatorId.setDataType(FieldType.NUMBER);
+		operatorId.setColumnName("OPERATOR");
+		operatorId.setModule(module);
+		fields.add(operatorId);
 		
 		FacilioField value = new FacilioField();
 		value.setName("value");

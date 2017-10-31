@@ -5,19 +5,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
-
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 
 public enum LookupOperator implements Operator<Criteria> {
 
-	LOOKUP("lookup");
+	LOOKUP(35, "lookup");
 
-	private LookupOperator(String operator) {
-		// TODO Auto-generated constructor stub
+	private LookupOperator(int operatorId, String operator) {
+		this.operatorId = operatorId;
 		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;
@@ -28,25 +34,34 @@ public enum LookupOperator implements Operator<Criteria> {
 	}
 
 	@Override
-	public String getWhereClause(FacilioField field, Criteria value) {
+	public String getWhereClause(String fieldName, Criteria value) {
 		// TODO Auto-generated method stub
-		if(field != null && value != null) {
-			LookupField lookupField = (LookupField) field;
-			
-			FacilioModule module = lookupField.getLookupModule();
-			if(module != null) {
-				StringBuilder builder = new StringBuilder();
-				builder.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append(" IN (SELECT ID FROM ")
-						.append(module.getTableName())
-						.append(" WHERE ")
-						.append(value.computeWhereClause())
-						.append(")");
-				
-				return builder.toString();
+		try {
+			if(fieldName != null && !fieldName.isEmpty() && value != null) {
+				String[] module = fieldName.split("\\.");
+				if(module.length > 1) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+					LookupField lookupField = (LookupField) modBean.getField(module[1], module[0]);
+					
+					FacilioModule lookupModule = lookupField.getLookupModule();
+					if(module != null) {
+						StringBuilder builder = new StringBuilder();
+						builder.append(lookupField.getExtendedModule().getTableName())
+								.append(".")
+								.append(lookupField.getColumnName())
+								.append(" IN (SELECT ID FROM ")
+								.append(lookupModule.getTableName())
+								.append(" WHERE ")
+								.append(value.computeWhereClause())
+								.append(")");
+						
+						return builder.toString();
+					}
+				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -67,10 +82,13 @@ public enum LookupOperator implements Operator<Criteria> {
 	}
 
 	@Override
-	public BeanPredicate getPredicate(FacilioField field, Criteria value) {
+	public FacilioModulePredicate getPredicate(String fieldName, Criteria value) {
 		// TODO Auto-generated method stub
-		if(field != null && value != null) {
-			return new BeanPredicate(field.getName(), value.computePredicate());
+		if(fieldName != null && !fieldName.isEmpty() && value != null) {
+			String[] module = fieldName.split(".");
+			if(module.length > 1) {
+				return new FacilioModulePredicate(module[1], value.computePredicate());
+			}
 		}
 		return null;
 	}

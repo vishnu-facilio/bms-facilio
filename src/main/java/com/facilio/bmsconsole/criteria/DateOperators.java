@@ -7,31 +7,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanPredicate;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public enum DateOperators implements Operator<String> {
 	
-	IS("is") {
+	IS(16, "is") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
-				return field.getExtendedModule().getTableName()+"."+field.getColumnName()+" = "+value;
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				return columnName+" = "+value;
 			}
 			return null;
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -48,20 +46,16 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	ISN_T("isn't") {
+	ISN_T(17, "isn't") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" IS NULL OR ")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append(" != ")
 						.append(value.trim())
 						.append(")");
@@ -71,11 +65,11 @@ public enum DateOperators implements Operator<String> {
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -92,19 +86,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	IS_BEFORE("is before") {
+	IS_BEFORE(18, "is before") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getExtendedModule().getTableName()+"."+field.getColumnName(), "<", value);
+			return greaterOrLessThan(columnName, "<", value);
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -121,19 +115,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	IS_AFTER("is after") {
+	IS_AFTER(19, "is after") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return greaterOrLessThan(field.getExtendedModule().getTableName()+"."+field.getColumnName(), ">", value);
+			return greaterOrLessThan(columnName, ">", value);
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				ZonedDateTime val = DateTimeUtil.getDateTime(Long.parseLong(value)).truncatedTo(ChronoUnit.MINUTES);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -150,61 +144,59 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	BETWEEN("between") {
+	BETWEEN(20, "between") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, false);
+			return betweenWhereClause(columnName, value, false);
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
 				if(betweenPredicate != null) {
-					return new BeanPredicate(field.getName(), betweenPredicate);
+					return new FacilioModulePredicate(fieldName, betweenPredicate);
 				}
 			}
 			return null;
 		}
 	},
 	
-	NOT_BETWEEN("not between") {
+	NOT_BETWEEN(21, "not between") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			return betweenWhereClause(field.getExtendedModule().getTableName()+"."+field.getColumnName(), value, true);
+			return betweenWhereClause(columnName, value, true);
 		}
 
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate betweenPredicate = getBetweenPredicate(value);
 				if(betweenPredicate != null) {
-					return new BeanPredicate(field.getName(), PredicateUtils.notPredicate(betweenPredicate));
+					return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(betweenPredicate));
 				}
 			}
 			return null;
 		}
 	},
 	
-	TODAY("Today") {
+	TODAY(22, "Today") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(CURDATE()) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)))");
+				builder.append(DateTimeUtil.getDayStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -216,9 +208,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -236,21 +228,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	TOMORROW("Tomorrow") {
+	TOMORROW(23, "Tomorrow") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 2 DAY)))");
+				builder.append(DateTimeUtil.getDayStartTime(1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(2));
 				return builder.toString();
 			}
 			return null;	
@@ -262,9 +252,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -283,17 +273,15 @@ public enum DateOperators implements Operator<String> {
 	 	
 	},
 	
-	STARTING_TOMORROW("Starting Tomorrow") {
+	STARTING_TOMORROW(24, "Starting Tomorrow") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL 1 DAY))");
+				builder.append(columnName)
+						.append(">=")
+						.append(DateTimeUtil.getDayStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -305,9 +293,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -326,21 +314,19 @@ public enum DateOperators implements Operator<String> {
 	 	
 	},
 	
-	YESTERDAY("Yesterday") {
+	YESTERDAY(25, "Yesterday") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(CURDATE()))");
+				builder.append(DateTimeUtil.getDayStartTime(-1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -352,9 +338,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -372,17 +358,15 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	TILL_YESTERDAY("Till Yesterday") {
+	TILL_YESTERDAY(26, "Till Yesterday") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(CURDATE())");
+				builder.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -394,9 +378,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -414,21 +398,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	LAST_MONTH("Last Month") {
+	LAST_MONTH(27, "Last Month") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+				builder.append(DateTimeUtil.getMonthStartTime(-1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -440,9 +422,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -460,21 +442,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	CURRENT_MONTH("Current Month") {
+	CURRENT_MONTH(28, "Current Month") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)))");
+				builder.append(DateTimeUtil.getMonthStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(1));
 				return builder.toString();
 			}
 			return null;
@@ -486,9 +466,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -506,21 +486,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	NEXT_MONTH("Next Month") {
+	NEXT_MONTH(29, "Next Month") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(CURDATE()), INTERVAL 1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)))");
+				builder.append(DateTimeUtil.getMonthStartTime(1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(2));
 				return builder.toString();
 			}
 			return null;
@@ -532,9 +510,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -552,21 +530,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	LAST_WEEK("Last Week") {
+	LAST_WEEK(30, "Last Week") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1)+7 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)))");
+				builder.append(DateTimeUtil.getWeekStartTime(-1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime());
 				return builder.toString();
 			}
 			return null;
@@ -578,9 +554,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -598,23 +574,20 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	CURRENT_WEEK("Current Week") {
+	CURRENT_WEEK(31, "Current Week") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				//Condition is >= first day of this week and < first day of next week
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 1) DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)))");
-				return builder.toString(); 
+				builder.append(DateTimeUtil.getWeekStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(1));
+				return builder.toString();
 			}
 			return null;
 		}
@@ -625,9 +598,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -645,21 +618,19 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	NEXT_WEEK("Next Week") {
+	NEXT_WEEK(32, "Next Week") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null) {
+			if(columnName != null && !columnName.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("(CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) >= UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+1 DAY)) AND CEIL(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
-						.append("/1000) < UNIX_TIMESTAMP(DATE_ADD(CURDATE(), INTERVAL (7 - DAYOFWEEK(CURDATE()))+8 DAY)))");
+				builder.append(DateTimeUtil.getWeekStartTime(1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(2));
 				return builder.toString();
 			}
 			return null;
@@ -671,9 +642,9 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null) {
-				return new BeanPredicate(field.getName(), new Predicate() {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -691,16 +662,14 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	AGE_IN_DAYS("Age in Days") {
+	AGE_IN_DAYS(33, "Age in Days") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("CEIL((UNIX_TIMESTAMP(CURDATE())-(")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append("/1000))/(24*3600)) = ")
 						.append(value);
 				return builder.toString();
@@ -709,10 +678,10 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				int age = Integer.parseInt(value);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -730,16 +699,14 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
-	DUE_IN_DAYS("Due in Days") {
+	DUE_IN_DAYS(34, "Due in Days") {
 		@Override
-		public String getWhereClause(FacilioField field, String value) {
+		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if(field != null && value != null && !value.isEmpty()) {
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("FLOOR(((")
-						.append(field.getExtendedModule().getTableName())
-						.append(".")
-						.append(field.getColumnName())
+						.append(columnName)
 						.append("/1000)-UNIX_TIMESTAMP(CURDATE()))/(24*3600)) = ")
 						.append(value);
 				return builder.toString();
@@ -748,10 +715,10 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public BeanPredicate getPredicate(FacilioField field, String value) {
-			if(field != null && value != null && !value.isEmpty()) {
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				int due = Integer.parseInt(value);
-				return new BeanPredicate(field.getName(), new Predicate() {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
@@ -814,8 +781,11 @@ public enum DateOperators implements Operator<String> {
 	}
 	
 	@Override
-	public abstract String getWhereClause(FacilioField field, String value);
+	public abstract String getWhereClause(String columnName, String value);
 
+	@Override
+	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
+	
 	@Override
 	public String getDynamicParameter() {
 		return null;
@@ -826,8 +796,15 @@ public enum DateOperators implements Operator<String> {
 		return null;
 	}
 	
-	private DateOperators(String operator) {
-		 this.operator = operator;
+	private DateOperators(int operatorId, String operator) {
+		this.operatorId = operatorId;
+		this.operator = operator;
+	}
+	
+	private int operatorId;
+	@Override
+	public int getOperatorId() {
+		return operatorId;
 	}
 	
 	private String operator;

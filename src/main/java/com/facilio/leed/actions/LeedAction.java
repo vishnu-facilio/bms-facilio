@@ -1,13 +1,17 @@
 package com.facilio.leed.actions;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.http.client.ClientProtocolException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -15,10 +19,12 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.ConsumptionInfoContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
 import com.facilio.leed.util.LeedAPI;
+import com.facilio.leed.util.LeedIntegrator;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class LeedAction extends ActionSupport {
@@ -50,11 +56,78 @@ public class LeedAction extends ActionSupport {
 		return null;
 	}
 	
+	private boolean isLoginRequired;
+	
+	public boolean getIsLoginRequired()
+	{
+		return this.isLoginRequired;
+	}
+	
+	public void setIsLoginRequired(boolean isLoginRequired)
+	{
+		this.isLoginRequired = isLoginRequired;
+	}
+	
 	private List<LeedConfigurationContext> leedList;
 	
 	public String leedList() throws Exception
 	{
-		setLeedList(LeedAPI.getLeedConfigurationList(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		if(LeedAPI.checkIfLoginPresent(OrgInfo.getCurrentOrgInfo().getOrgid()))
+		{
+			setIsLoginRequired(true);
+		}
+		else
+		{
+			setIsLoginRequired(false);
+			setLeedList(LeedAPI.getLeedConfigurationList(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		}
+		return SUCCESS;
+	}
+	private String arcUserName;
+	private String arcPassword;
+	
+	public void setArcUserName(String arcUserName)
+	{
+		this.arcUserName =  arcUserName;
+	}
+	
+	public String getArcUserName()
+	{
+		return this.arcUserName;
+	}
+	
+	public void setArcPassword(String arcPassword)
+	{
+		this.arcPassword =  arcPassword;
+	}
+	
+	public String getArcPassword()
+	{
+		return this.arcPassword;
+	}
+	
+	public String arcLoginAction() throws Exception
+	{
+		ArcContext credentials = new ArcContext();
+		credentials.setUserName(getArcUserName());
+		credentials.setPassword(getArcPassword());
+		credentials.setArcProtocol("https");
+		credentials.setArcHost("api.usgbc.org");
+		credentials.setArcPort("443");
+		credentials.setSubscriptionKey("ffa4212a87b748bb8b3623f3d97ae285");
+		LeedIntegrator leedInt = new LeedIntegrator();
+		credentials = leedInt.LoginArcServer(credentials);
+		LeedAPI.AddArcCredential(credentials);
+		importLeedList();
+		return SUCCESS;
+	}
+	
+	public String importLeedList() throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		Chain FetchAssetsFromArcChain = FacilioChainFactory.FetchAssetsFromArcChain();
+		FetchAssetsFromArcChain.execute(context);
+		leedList();
 		return SUCCESS;
 	}
 	
@@ -82,11 +155,114 @@ public class LeedAction extends ActionSupport {
 		this.buildingId = buildingId;
 	}
 	
+	private String meterType;
+	
+	public void setMeterType(String meterType)
+	{
+		this.meterType =  meterType;
+	}
+	
+	public String getMeterType()
+	{
+		return this.meterType;
+	}
 	
 	public String meterList() throws Exception
 	{
-		setMeterList(LeedAPI.fetchMeterListForBuilding(getBuildingId()));
+		
+		List<LeedEnergyMeterContext> meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId(),getMeterType());
+		if(meterList.isEmpty())
+		{
+			long leedId = LeedAPI.getLeedId(getBuildingId());
+			ArcContext arccontext = LeedAPI.getArcContext();
+			LeedIntegrator integ = new LeedIntegrator(arccontext);
+			JSONObject meterJSON = integ.getMeters(leedId+"");
+			JSONObject meterMsgJSON = (JSONObject)meterJSON.get("message");
+			meterList = getLeedEnergyMeterList(meterMsgJSON);
+			LeedAPI.addLeedEnergyMeters(meterList,getBuildingId());
+			syncConsumptionDataWithArc(integ,leedId,meterList);
+			meterList = LeedAPI.fetchMeterListForBuilding(getBuildingId(),getMeterType());
+		}
+		
+		setMeterList(meterList);
+	
+		fetchConsumptionData();
+		
 		return SUCCESS;
+	}
+	
+	public void syncConsumptionDataWithArc(LeedIntegrator integ, long leedId, List<LeedEnergyMeterContext> meterList) throws ClientProtocolException, IOException, ParseException, SQLException, RuntimeException
+	{
+		List<HashMap> dataMapList = new ArrayList();
+		Iterator itr = meterList.iterator();
+		while(itr.hasNext())
+		{
+			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
+			long meterId = meter.getMeterId();
+			long deviceId = meter.getDeviceId();
+			JSONArray arr = integ.getConsumptionListAsArray(leedId+"", meterId+"");
+			Iterator jitr = arr.iterator();
+			while(jitr.hasNext())
+			{
+				JSONObject msgobj = (JSONObject)jitr.next();
+				JSONObject obj = (JSONObject)msgobj.get("message");
+				JSONArray resArr = (JSONArray)obj.get("results");
+				for(int i = 0; i < resArr.size(); i++)
+				{
+					JSONObject conObj = (JSONObject)resArr.get(i);
+					long consumptionId = (long)conObj.get("id");
+					String stDate = (String)conObj.get("start_date");
+					String enDate = (String)conObj.get("end_date");
+					double consumption = (double)conObj.get("reading");
+
+					long stDateLong = DateTimeUtil.getTime(stDate,true);
+					long enDateLong = DateTimeUtil.getTime(enDate,true);
+					HashMap<String, Object> endTimeData = DateTimeUtil.getTimeData(enDateLong);
+					
+					HashMap dataMap = new HashMap();
+					dataMap.put("deviceId", deviceId);
+					dataMap.put("endTime", enDateLong);
+					dataMap.put("consumption", consumption);
+					dataMap.put("timeData", endTimeData);
+					dataMap.put("consumptionId", consumptionId);
+					dataMap.put("startTime", stDateLong);
+					dataMapList.add(dataMap);
+					
+				}
+			}
+		}
+		LeedAPI.addConsumptionData(dataMapList);
+	}
+	
+	public List<LeedEnergyMeterContext> getLeedEnergyMeterList(JSONObject meterJSON)
+	{
+		List<LeedEnergyMeterContext> meterList = new ArrayList();
+		List<String> reqArray = new ArrayList();
+		reqArray.add("operating_hours");
+		reqArray.add("gross_area");
+		reqArray.add("occupancy");
+		JSONArray meterArr = (JSONArray)meterJSON.get("results");
+		Iterator itr = meterArr.iterator();
+		while(itr.hasNext())
+		{
+			JSONObject mJSON = (JSONObject)itr.next();
+			JSONObject fuel_type = (JSONObject)mJSON.get("fuel_type");
+			String fuelKind = (String)fuel_type.get("kind");
+			if(reqArray.contains(fuelKind))
+			{
+				continue;
+			}
+			long meterId = (long)mJSON.get("id");
+			String meterName = (String)mJSON.get("name");
+			long fuelType = (long)mJSON.get("type");
+			LeedEnergyMeterContext context = new LeedEnergyMeterContext();
+			context.setName(meterName);
+			context.setMeterId(meterId);
+			context.setFuelType(fuelType);
+			context.setType(fuelKind);
+			meterList.add(context);
+		}
+		return meterList;
 	}
 	
 	private List<LeedEnergyMeterContext> meterList;
@@ -101,14 +277,7 @@ public class LeedAction extends ActionSupport {
 		return this.meterList;
 	}
 	
-	public String importLeedList() throws Exception
-	{
-		FacilioContext context = new FacilioContext();
-		Chain FetchAssetsFromArcChain = FacilioChainFactory.FetchAssetsFromArcChain();
-		FetchAssetsFromArcChain.execute(context);
-		leedList();
-		return SUCCESS;
-	}
+
 	
 	public String addLeedConfiguration() throws Exception
 	{

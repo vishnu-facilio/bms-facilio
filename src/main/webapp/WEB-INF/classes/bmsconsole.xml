@@ -11,6 +11,8 @@
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
 		<interceptors>
+		<interceptor name="cacheinterceptor"
+				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
@@ -763,6 +765,13 @@
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">fieldIds</param>
+			</result>
+		</action>
+		
+		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" method="fieldList">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
