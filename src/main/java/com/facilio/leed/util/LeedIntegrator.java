@@ -58,7 +58,7 @@ public class LeedIntegrator {
 		long authTime = context.getAuthUpdateTime();
 		if(authTime != -1 && (curretTime - authTime) > 3600000)
 		{
-			this.context.setAuthKey(getAuthKey( context));
+			this.context.setAuthKey("Bearer "+getAuthKey( context));
 			LeedAPI.UpdateArcCredential(this.context);
 		}
 	}

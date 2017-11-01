@@ -18,12 +18,20 @@ public class AddEnergyMeterCommand implements Command {
 		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
 		long leedId = (long) context.get(FacilioConstants.ContextNames.LEEDID);
 		String meterName = (String)context.get(FacilioConstants.ContextNames.METERNAME);
-
+		String meterTypeAdded = (String)context.get(FacilioConstants.ContextNames.METERTYPE);
 		JSONObject meterInfo = new JSONObject();
 		meterInfo.put("name", meterName);
 		meterInfo.put("included", "true");
+		if(meterTypeAdded.equalsIgnoreCase("water"))
+		{	
+			meterInfo.put("native_unit", "gal");
+			meterInfo.put("type", "47");
+		}
+		else
+		{
 		meterInfo.put("native_unit", "kWh");
 		meterInfo.put("type", "16"); //fuel_type 16 for { "id": 16, "type": "AZNM", "subtype": "WECC Southwest", "kind": "electricity", "resource": "Non-Renewable"}
+		}
 		ArcContext arccontext = LeedAPI.getArcContext();
 		LeedIntegrator integ = new LeedIntegrator(arccontext);
 		JSONObject meter_Id_Info = integ.createMeter(leedId, meterInfo);

@@ -454,6 +454,7 @@ public class LeedAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.METERNAME,getMeterName());
+		context.put(FacilioConstants.ContextNames.METERTYPE,getMeterType());
 		Chain addEnergyMeterChain = FacilioChainFactory.AddEnergyMeterChain();
 		addEnergyMeterChain.execute(context);
 		
@@ -470,14 +471,80 @@ public class LeedAction extends ActionSupport {
 	{
 		FacilioContext context = addEnergyMeter();
 		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
+		context.put(FacilioConstants.ContextNames.METERTYPE, getMeterType());
 		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
 		meterList();
 		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
 		setConsumptionArray(consumptionArray);	
+		//updateLeedConfiguration();
+		//leedDetails();
+		
 		return SUCCESS;	
 	}
 	
+	public String updateLeedConfiguration() throws Exception
+	{
+		long buildingId = getBuildingId();
+		long leedId = LeedAPI.getLeedId(buildingId);
+		long energyScore = 0;
+		long waterScore = 0;
+		long wasteScore = 0;
+		long humanExperienceScore = 0;
+		long transportScore = 0;
+		long baseScore = 0;
+		long totalScore = 0;		
+		HashMap scoreMap = new HashMap();
+		ArcContext arccontext = LeedAPI.getArcContext();
+		LeedIntegrator integ = new LeedIntegrator(arccontext);
+		JSONObject response = (JSONObject)integ.getPerformanceScores(leedId+"");
+		JSONObject scoMsg = (JSONObject)response.get("message");
+		String errResult = (String)scoMsg.get("result");
+		boolean noScore = false;
+		if(errResult != null && errResult.equalsIgnoreCase("No result found."))
+		{
+			noScore = true;
+		}
+		else
+		{
+		JSONObject scores = (JSONObject)scoMsg.get("scores");
+		System.out.println("LeedAction.updateLeedConfiguration().scores :"+scores);
+		
+		if(scores.get("energy") != null)
+		{
+			energyScore = (long)scores.get("energy");
+		}
+		
+		if(scores.get("water") != null)
+		{
+			waterScore = (long)scores.get("water");
+		}
+		
+		if(scores.get("waste") != null)
+		{
+			wasteScore = (long)scores.get("waste");
+		}
+		
+		if(scores.get("human_experience") != null)
+		{
+			humanExperienceScore = (long)scores.get("human_experience");
+		}
+		
+		if(scores.get("transport") != null)
+		{
+			transportScore = (long)scores.get("transport");
+		}
+		
+		if(scores.get("base") != null)
+		{
+			baseScore = (long)scores.get("base");
+		}
+		totalScore = energyScore+waterScore+wasteScore+humanExperienceScore+transportScore+baseScore;
+		LeedAPI.updateLeedScores(leedId, totalScore, energyScore, waterScore, wasteScore, transportScore, humanExperienceScore);
+		}		
+		return SUCCESS;	
+		
+	}
 	
 	
 	public String AddConsumptionData() throws Exception
