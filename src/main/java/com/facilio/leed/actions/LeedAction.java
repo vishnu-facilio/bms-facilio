@@ -477,7 +477,7 @@ public class LeedAction extends ActionSupport {
 		meterList();
 		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
 		setConsumptionArray(consumptionArray);	
-		//updateLeedConfiguration();
+		updateLeedConfiguration();
 		//leedDetails();
 		
 		return SUCCESS;	
