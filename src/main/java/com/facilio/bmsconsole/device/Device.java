@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.context.Assets;
+import com.facilio.bmsconsole.context.AssetContext;
 
-public class Device extends Assets
+public class Device extends AssetContext
 {
 	private static Logger logger = Logger.getLogger(Device.class.getName());
 	
@@ -102,11 +102,11 @@ public class Device extends Assets
 	}
 	
 	private String type;
-	public void setType(String type) {
+	public void setTypeVal(String type) {
 		this.type = type;
 	}
 	
-	public String getType() {
+	public String getTypeVal() {
 		return this.type;
 	}
 }
