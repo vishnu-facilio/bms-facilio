@@ -319,8 +319,8 @@ public class DeviceAPI
 				Map<String, Long> deviceMap = new HashMap<>();
 				for(String deviceName : deviceNames)
 				{
-					Long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
-					if(deviceId == null)
+					long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
+					if(deviceId == -1)
 					{
 						deviceId = AssetsAPI.addAsset(deviceName, orgId);
 						DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);

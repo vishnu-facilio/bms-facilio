@@ -755,6 +755,36 @@
 		</action>
 	</package>
 	
+	<package name="photosApi" namespace="/api/photos" extends="home">
+		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addBaseSpacePhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="getspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getBaseSpacePhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="addassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addAssetPhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="getassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getAssetPhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="moduleApi" namespace="/api/module" extends="home">
 		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction" method="addNewModule">
 			<param name="permission">WORKORDER_CREATE</param>

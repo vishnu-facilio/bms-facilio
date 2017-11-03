@@ -36,7 +36,6 @@ public class FacilioChainFactory {
 	private static Chain getNewTicketChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 //		addCleanUpCommand(c);
@@ -66,7 +65,6 @@ public class FacilioChainFactory {
 	public static Chain getTicketDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTicketCommand());
@@ -185,7 +183,6 @@ public class FacilioChainFactory {
 	public static Chain getNewWorkOrderChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new LoadTicketFieldsCommand());
@@ -238,7 +235,6 @@ public class FacilioChainFactory {
 	public static Chain getWorkOrderDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetWorkOrderCommand());
@@ -263,7 +259,6 @@ public class FacilioChainFactory {
 	public static Chain getNewWorkOrderRequestChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new LoadTicketFieldsCommand());
@@ -286,7 +281,6 @@ public class FacilioChainFactory {
 	public static Chain getWorkOrderRequestDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetWorkOrderRequestCommand());
@@ -357,7 +351,6 @@ public class FacilioChainFactory {
 	public static Chain getNewTaskChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new LoadTicketFieldsCommand());
@@ -433,7 +426,6 @@ public class FacilioChainFactory {
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -450,7 +442,6 @@ public class FacilioChainFactory {
 	public static Chain getLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetLocationCommand());
@@ -473,7 +464,6 @@ public class FacilioChainFactory {
 	public static Chain getSkillChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetSkillCommand());
@@ -485,7 +475,6 @@ public class FacilioChainFactory {
 	public static Chain getNewSkillChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -524,7 +513,6 @@ public class FacilioChainFactory {
 	public static Chain getNewCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSite());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -580,7 +568,6 @@ public class FacilioChainFactory {
 	public static Chain getNewBuildingChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForBuilding());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -660,7 +647,6 @@ public class FacilioChainFactory {
 	public static Chain getNewFloorChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForFloor());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -700,7 +686,6 @@ public class FacilioChainFactory {
 	public static Chain getNewSpaceChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpace());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -740,7 +725,6 @@ public class FacilioChainFactory {
 	public static Chain getNewZoneChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForZone());
-		c.addCommand(new LoadActionFormCommand());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
@@ -963,6 +947,22 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddPhotosChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddPhotosCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getPhotosChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetPhotosCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

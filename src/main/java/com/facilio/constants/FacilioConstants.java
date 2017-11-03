@@ -344,8 +344,10 @@ public class FacilioConstants {
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
 		
-		public static final String TICKET_ID = "ticketId";
 		public static final String ID = "Id";
+		public static final String PARENT_ID = "parentId";
+		
+		public static final String TICKET_ID = "ticketId";
 		
 		public static final String TICKET_STATUS = "ticketstatus";
 		public static final String TICKET_STATUS_LIST = "ticketstatuses";
@@ -394,6 +396,7 @@ public class FacilioConstants {
 		public static final String MODULE = "module";
 		
 		public static final String READINGS = "readings";
+		public static final String PHOTOS = "photos";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
@@ -431,8 +434,14 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
 		
+		public static final String ASSET = "asset";
+		public static final String ASSET_LIST = "assets";
+		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
+		
+		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
+		public static final String ASSET_PHOTOS = "assetphotos";
 		
 		public static final String PICKLIST = "pickList";
 		

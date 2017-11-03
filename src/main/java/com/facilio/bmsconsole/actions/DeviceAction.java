@@ -344,7 +344,7 @@ public class DeviceAction extends ActionSupport
 		{
 			JSONObject result = new JSONObject();
 			JSONArray childArray = new JSONArray();
-			result.put("name", AssetsAPI.getAssetInfo(controllerId).get("name"));
+			result.put("name", AssetsAPI.getAssetInfo(controllerId).getName());
 			Map<Long, Device> devices = DeviceAPI.getDevices(controllerId);
 			System.out.println(devices);
 			List<Device> deviceTree = new ArrayList<>();
