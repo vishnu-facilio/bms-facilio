@@ -51,4 +51,23 @@ public class FacilioModule implements Serializable {
 	public void setExtendModule(FacilioModule extendModule) {
 		this.extendModule = extendModule;
 	}
+	
+	public static enum SubModuleType {
+		MISC(1),
+		READING(2),
+		PHOTOS(3),
+		NOTES(4)
+		;
+		
+		private int intVal;
+		
+		private SubModuleType(int type) {
+			// TODO Auto-generated constructor stub
+			this.intVal = type;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+	}
 }

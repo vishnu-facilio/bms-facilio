@@ -15,9 +15,13 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioModule getModule(String moduleName) throws Exception;
 	
-	public List<FacilioModule> getSubModules(long moduleId) throws Exception;
+	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception;
 	
-	public List<FacilioModule> getSubModules(String moduleName) throws Exception;
+	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception;
+	
+	public List<FacilioModule> getSubModules(long moduleId, FacilioModule.SubModuleType type) throws Exception;
+	
+	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.SubModuleType type) throws Exception;
 	
 	public FacilioField getPrimaryField(String moduleName) throws Exception;
 	
@@ -38,6 +42,8 @@ public interface ModuleBean extends RootBean {
 	public long addModule(FacilioModule module) throws Exception;
 	
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception;
+	
+	public void addSubModule(long parentModuleId, long childModuleId, FacilioModule.SubModuleType type) throws Exception;
 	
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
 	
