@@ -87,4 +87,8 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForSkill(){
 		return new SetTableNamesCommand("skill","Skills");
 	}
+	
+	public static SetTableNamesCommand getForAsset(){
+		return new SetTableNamesCommand("asset","Assets");
+	}
 }

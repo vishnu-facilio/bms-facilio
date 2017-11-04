@@ -26,14 +26,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	private static final int LEVEL = 2;
 	
-	private String tableName;
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private List<FacilioField> selectFields;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
-	private long moduleId = -1;
+	private FacilioModule module;
 	private WhereBuilder where = new WhereBuilder();
 	//Need where condition builder for custom field
 	
@@ -58,8 +57,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	@Override
 	public SelectRecordsBuilder<E> table(String tableName) {
-		this.tableName = tableName;
-		builder.table(tableName);
 		return this;
 	}
 
@@ -160,6 +157,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	public SelectRecordsBuilder<E> moduleName(String moduleName) {
 		this.moduleName = moduleName;
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> module(FacilioModule module) {
+		this.module = module;
 		return this;
 	}
 	
@@ -272,9 +274,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	private List<Map<String, Object>> getAsJustProps() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
 		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		
@@ -294,10 +293,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Condition moduleCondition = new Condition();
 		moduleCondition.setField(moduleIdField);
 		moduleCondition.setOperator(NumberOperators.EQUALS);
-		moduleCondition.setValue(String.valueOf(getModuleId()));
+		moduleCondition.setValue(String.valueOf(module.getModuleId()));
 		whereCondition.andCondition(moduleCondition);
 		
 		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		
+		builder.table(module.getTableName());
 		
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
@@ -334,15 +335,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 	
-	private void checkForNull(boolean checkBean) {
-		if(moduleName == null || moduleName.isEmpty()) {
-			throw new IllegalArgumentException("Module Name cannot be empty");
-		}
-		
-		if(tableName == null || tableName.isEmpty()) {
-			throw new IllegalArgumentException("Data Table Name cannot be empty");
-		}
-		
+	private void checkForNull(boolean checkBean) throws Exception {
 		if(checkBean) {
 			if(beanClass == null) {
 				throw new IllegalArgumentException("Bean class object cannot be null");
@@ -352,19 +345,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if(selectFields == null || selectFields.size() <= 0) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
-	}
-	
-	private long getModuleId() {
-		if (this.moduleId <= 0) {
-			try {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				this.moduleId = modBean.getModule(moduleName).getModuleId();
+		
+		if(module == null) {
+			if(moduleName == null || moduleName.isEmpty()) {
+				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			module = modBean.getModule(moduleName);
 		}
-		return this.moduleId;
 	}
 	
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements SelectJoinBuilderIfc<E> {

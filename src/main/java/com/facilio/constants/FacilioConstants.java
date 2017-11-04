@@ -10,9 +10,16 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -328,6 +335,7 @@ public class FacilioConstants {
 	public static class ContextNames {
 		
 		public static final String RECORD = "record";
+		public static final String RECORD_LIST = "records";
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String ROWS_UPDATED = "rowsUpdated";
@@ -436,6 +444,9 @@ public class FacilioConstants {
 		
 		public static final String ASSET = "asset";
 		public static final String ASSET_LIST = "assets";
+		public static final String ASSET_TYPE = "assettype";
+		public static final String ASSET_CATEGORY = "assetcategory";
+		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
@@ -513,6 +524,10 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM, AlarmContext.class);
+			classMap.put(BASE_SPACE, BaseSpaceContext.class);
+			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);
+			classMap.put(CURRENT_OCCUPANCY_READING, ReadingContext.class);
+			classMap.put(BASE_SPACE_PHOTOS, PhotosContext.class);
 			classMap.put(SITE, SiteContext.class);
 			classMap.put(BUILDING, BuildingContext.class);
 			classMap.put(FLOOR, FloorContext.class);
@@ -521,6 +536,11 @@ public class FacilioConstants {
 			classMap.put(SPACE_CATEGORY, SpaceCategoryContext.class);
 			classMap.put(LOCATION, LocationContext.class);
 			classMap.put(SKILL, SkillContext.class);
+			classMap.put(ASSET, AssetContext.class);
+			classMap.put(ASSET_CATEGORY, AssetCategoryContext.class);
+			classMap.put(ASSET_TYPE, AssetTypeContext.class);
+			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
+			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			
 			return classMap;
 		}

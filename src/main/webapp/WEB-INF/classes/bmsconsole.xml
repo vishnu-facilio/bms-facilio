@@ -275,6 +275,48 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="assetApi" namespace="/api/asset" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction" method="addAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assetId</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction" method="updateAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction" method="deleteAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="assetSummaryApi" namespace="/api/asset/summary" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="assetId">{1}</param>
+			<result name="success" type="json">
+				<param name="root">asset</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
