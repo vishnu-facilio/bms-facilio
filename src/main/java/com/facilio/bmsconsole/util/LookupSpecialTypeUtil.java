@@ -17,7 +17,6 @@ public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
 		return FacilioConstants.ContextNames.USERS.equals(specialType)
 				|| FacilioConstants.ContextNames.GROUPS.equals(specialType)
-				|| FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)
 				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
 				;
 	}
@@ -37,17 +36,6 @@ public class LookupSpecialTypeUtil {
 			}
 			return groupList;
 		}
-		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces();
-			Map<Long, String> spaceList = new HashMap<>();
-			
-			if(spaces != null) {
-				for(BaseSpaceContext space : spaces) {
-					spaceList.put(space.getId(), space.getName()+" ("+space.getSpaceTypeVal()+")");
-				}
-			}
-			return spaceList;
-		}
 		return null;
 	}
 	
@@ -57,9 +45,6 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (FacilioConstants.ContextNames.GROUPS.equalsIgnoreCase(specialType)) {
 			return "fa fa-users";
-		}
-		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			return "fa fa-building";
 		}
 		else {
 			return "fa fa-search";
@@ -75,9 +60,6 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return GroupAPI.getGroup(id);
-		}
-		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			return SpaceAPI.getBaseSpace(id);
 		}
 		return null;
 	}
@@ -97,11 +79,6 @@ public class LookupSpecialTypeUtil {
 			GroupContext group = new GroupContext();
 			group.setGroupId(id);
 			return group;
-		}
-		else if(FacilioConstants.ContextNames.BASE_SPACE.equals(specialType)) {
-			BaseSpaceContext baseSpace = new BaseSpaceContext();
-			baseSpace.setId(id);
-			return baseSpace;
 		}
 		return null;
 	}
