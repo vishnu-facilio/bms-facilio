@@ -18,6 +18,8 @@ public class ModuleFactory {
 		Map<String, FacilioModule> moduleMap = new HashMap<>();
 		moduleMap.put("field", getFieldsModule());
 		moduleMap.put("lookupField", getLookupFieldsModule());
+		moduleMap.put("spacecategoryreading", getSpaceCategoryReadingRelModule());
+		moduleMap.put("assetcategoryreading", getAssetCategoryReadingRelModule());
 		moduleMap.put("requester", getRequesterModule());
 		moduleMap.put("emailsettings", getEmailSettingModule());
 		moduleMap.put("workflowevent", getWorkflowEventModule());
@@ -61,6 +63,24 @@ public class ModuleFactory {
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
+		
+		return fieldModule;
+	}
+	
+	public static FacilioModule getSpaceCategoryReadingRelModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("spacecategoryreading");
+		fieldModule.setDisplayName("Space Readings");
+		fieldModule.setTableName("Space_Category_Readings");
+		
+		return fieldModule;
+	}
+	
+	public static FacilioModule getAssetCategoryReadingRelModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("assetcategoryreading");
+		fieldModule.setDisplayName("Asset Readings");
+		fieldModule.setTableName("Asset_Category_Readings");
 		
 		return fieldModule;
 	}

@@ -775,6 +775,30 @@
 			</result>
 		</action>
 		
+		<action name="addspacereading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addSpaceReading">
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="addassetreading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssetReading">
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="getspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceReadings">
+			<result name="success" type="json">
+				<param name="root">readings</param>
+			</result>
+		</action>
+		
+		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getAssetReadings">
+			<result name="success" type="json">
+				<param name="root">readings</param>
+			</result>
+		</action>
+		
 		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addCurrentOccupancyReading">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>

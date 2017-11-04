@@ -990,6 +990,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddCategoryReadingChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(getAddReadingChain());
+		c.addCommand(new AddCategoryReadingRelCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getCategoryReadingsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetCategoryReadingsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddReadingValuesChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

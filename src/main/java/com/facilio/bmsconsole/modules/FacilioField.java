@@ -206,7 +206,7 @@ public class FacilioField implements Serializable {
 				//return moduleName+".customProps['"+name+FacilioConstants.ContextNames.ID+"']";
 				return moduleName+"."+name+".id";
 			}
-			else if (isDefault){
+			else if (isDefault()){
 				return moduleName+"."+name;
 			}
 			else {

@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -28,6 +29,67 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String addSpaceReading() throws Exception {
+		return addCategoryReading(FacilioConstants.ContextNames.SPACE, ModuleFactory.getSpaceCategoryReadingRelModule());
+	}
+	
+	public String addAssetReading() throws Exception {
+		return addCategoryReading(FacilioConstants.ContextNames.ASSET, ModuleFactory.getAssetCategoryReadingRelModule());
+	}
+	
+	private String addCategoryReading(String parentModule, FacilioModule categoryReadingModule) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
+		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		
+		Chain addReadingChain = FacilioChainFactory.getAddCategoryReadingChain();
+		addReadingChain.execute(context);
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setReadingId(module.getModuleId());
+		
+		return SUCCESS;
+	}
+	
+	public String getSpaceReadings() throws Exception {
+		return getCategoryReadings(ModuleFactory.getSpaceCategoryReadingRelModule());
+	}
+	
+	public String getAssetReadings() throws Exception {
+		return getCategoryReadings(ModuleFactory.getAssetCategoryReadingRelModule());
+	}
+	
+	private String getCategoryReadings(FacilioModule module) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		
+		Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+		getCategoryReadingChain.execute(context);
+		
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		
+		return SUCCESS;
+	}
+	
+	private List<FacilioModule> readings;
+	public List<FacilioModule> getReadings() {
+		return readings;
+	}
+	public void setReadings(List<FacilioModule> readings) {
+		this.readings = readings;
+	}
+
+	private long parentCategoryId = -1;
+	public long getParentCategoryId() {
+		return parentCategoryId;
+	}
+	public void setParentCategoryId(long parentCategoryId) {
+		this.parentCategoryId = parentCategoryId;
+	}
+
 	private String parentModule;
 	public String getParentModule() {
 		return parentModule;
@@ -52,7 +114,7 @@ public class ReadingAction extends ActionSupport {
 		this.fields = fields;
 	}
 	
-	private long readingId;
+	private long readingId = -1;
 	public long getReadingId() {
 		return readingId;
 	}

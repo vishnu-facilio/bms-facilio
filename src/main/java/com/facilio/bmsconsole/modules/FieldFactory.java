@@ -264,6 +264,26 @@ public class FieldFactory {
 		return name;
 	}
 	
+	public static List<FacilioField> getCategoryReadingsFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField parentCategoryId = new FacilioField();
+		parentCategoryId.setName("parentCategoryId");
+		parentCategoryId.setDataType(FieldType.NUMBER);
+		parentCategoryId.setColumnName("PARENT_CATEGORY_ID");
+		parentCategoryId.setModule(module);
+		fields.add(parentCategoryId);
+		
+		FacilioField readingModuleId = new FacilioField();
+		readingModuleId.setName("readingModuleId");
+		readingModuleId.setDataType(FieldType.NUMBER);
+		readingModuleId.setColumnName("READING_MODULE_ID");
+		readingModuleId.setModule(module);
+		fields.add(readingModuleId);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getEmailSettingFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getEmailSettingModule();

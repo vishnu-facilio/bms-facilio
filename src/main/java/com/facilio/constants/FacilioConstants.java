@@ -403,6 +403,8 @@ public class FacilioConstants {
 		public static final String SUB_MODULE_TYPE = "subModuleType";
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
+		public static final String MODULE_LIST = "modules";
+		public static final String CATEGORY_READING_PARENT_MODULE = "categoryReadingParentModule";
 		
 		public static final String READINGS = "readings";
 		public static final String PHOTOS = "photos";
