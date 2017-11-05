@@ -20,6 +20,8 @@ public class GetAllFloorCommand implements Command{
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		Long buildingId = (Long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
+		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		SelectRecordsBuilder<FloorContext> builder = new SelectRecordsBuilder<FloorContext>()
@@ -29,6 +31,10 @@ public class GetAllFloorCommand implements Command{
 				.beanClass(FloorContext.class)
 				.select(fields)
 				.orderBy("ID");
+		
+		if (buildingId != null && buildingId > 0) {
+			builder.andCustomWhere("BaseSpace.BUILDING_ID = ?", buildingId);
+		}
 
 		List<FloorContext> floors = builder.get();
 		context.put(FacilioConstants.ContextNames.FLOOR_LIST, floors);

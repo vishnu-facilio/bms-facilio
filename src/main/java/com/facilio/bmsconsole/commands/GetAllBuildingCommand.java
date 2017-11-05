@@ -21,6 +21,8 @@ public class GetAllBuildingCommand implements Command{
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
+		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -34,6 +36,10 @@ public class GetAllBuildingCommand implements Command{
 				.select(fields)
 				.orderBy(module.getTableName()+".ID");
 
+		if (siteId != null && siteId > 0) {
+			builder.andCustomWhere("BaseSpace.SITE_ID = ?", siteId);
+		}
+		
 		List<BuildingContext> buildings = builder.get();
 		context.put(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
 		

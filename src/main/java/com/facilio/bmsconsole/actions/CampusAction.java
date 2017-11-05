@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -82,6 +84,20 @@ public class CampusAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String reportCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getCampusId());
+		
+		Chain getReportCardsChain = FacilioChainFactory.getSiteReportCardsChain();
+		getReportCardsChain.execute(context);
+		
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
+		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		
+		return SUCCESS;
+	}
+	
 	public List getFormlayout()
 	{
 		return FormLayout.getNewCampusLayout(fields);
@@ -113,6 +129,22 @@ public class CampusAction extends ActionSupport {
 	}
 	public void setSite(SiteContext site) {
 		this.site = site;
+	}
+	
+	private JSONObject reports;
+	public JSONObject getReports() {
+		return reports;
+	}
+	public void setReports(JSONObject reports) {
+		this.reports = reports;
+	}
+	
+	private JSONArray reportcards;
+	public JSONArray getReportcards() {
+		return reportcards;
+	}
+	public void setReportcards(JSONArray reportcards) {
+		this.reportcards = reportcards;
 	}
 
 	private long campusId;

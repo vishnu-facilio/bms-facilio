@@ -403,20 +403,27 @@ public class FacilioConstants {
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
+		public static final String SITE_ID = "siteId";
+		public static final String REPORT_CARDS = "reportCards";
+		public static final String REPORTS = "reports";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
+		public static final String BUILDING_ID = "buildingId";
 		
 		public static final String FLOOR = "floor";
 		public static final String FLOOR_LIST = "floors";
+		public static final String FLOOR_ID = "floorId";
 		
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
+		public static final String SPACE_ID = "spaceId";
 		
 		public static final String SPACE_CATEGORY = "spacecategory";
 		
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
+		public static final String ZONE_ID = "zoneId";
 		
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";

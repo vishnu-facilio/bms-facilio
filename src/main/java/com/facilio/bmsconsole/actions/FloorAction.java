@@ -24,6 +24,8 @@ public class FloorAction extends ActionSupport {
 	public String floorList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.BUILDING_ID, getBuildingId());
+		
 		Chain getAllFloor = FacilioChainFactory.getAllFloorChain();
 		getAllFloor.execute(context);
 		
@@ -134,6 +136,16 @@ public class FloorAction extends ActionSupport {
 	public void setFloorId(long floorId) 
 	{
 		this.floorId = floorId;
+	}
+	
+	private long buildingId;
+	public long getBuildingId() 
+	{
+		return buildingId;
+	}
+	public void setBuildingId(long buildingId) 
+	{
+		this.buildingId = buildingId;
 	}
 	
 	private List<FloorContext> floors;

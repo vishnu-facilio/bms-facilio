@@ -551,12 +551,28 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getSiteReportCardsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSite());
+		c.addCommand(new GetSiteReportCards());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAllBuildingChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForBuilding());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getBuildingReportCardsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSite());
+		c.addCommand(new GetBuildingReportCards());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -927,6 +943,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetFieldsChain() {
 		Chain c = new TransactionChain();
+		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		addCleanUpCommand(c);
 		return c;

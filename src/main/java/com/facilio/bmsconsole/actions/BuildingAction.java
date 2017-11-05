@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -13,7 +16,11 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -24,6 +31,8 @@ public class BuildingAction extends ActionSupport {
 	public String buildingList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
+		
 		Chain getAllBuilding = FacilioChainFactory.getAllBuildingChain();
 		getAllBuilding.execute(context);
 		
@@ -81,6 +90,85 @@ public class BuildingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private JSONObject reports;
+	public JSONObject getReports() {
+		return reports;
+	}
+	public void setReports(JSONObject reports) {
+		this.reports = reports;
+	}
+	
+	private JSONArray reportcards;
+	public JSONArray getReportcards() {
+		return reportcards;
+	}
+	public void setReportcards(JSONArray reportcards) {
+		this.reportcards = reportcards;
+	}
+	
+	public String reportCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		
+		Chain getReportCardsChain = FacilioChainFactory.getBuildingReportCardsChain();
+		getReportCardsChain.execute(context);
+		
+		JSONObject reports = (JSONObject) context.get(FacilioConstants.ContextNames.REPORTS);
+		reports.put("categoryreport", getSpaceCategorySummary());
+		
+		setReports(reports);
+		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		
+		return SUCCESS;
+	}
+	
+	private List<Map<String, Object>> getSpaceCategorySummary() throws Exception {
+
+		FacilioField categoryIdFld = new FacilioField();
+		categoryIdFld.setName("category_id");
+		categoryIdFld.setColumnName("ID");
+		categoryIdFld.setModule(ModuleFactory.getSpaceCategoryModule());
+		categoryIdFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField categoryFld = new FacilioField();
+		categoryFld.setName("category");
+		categoryFld.setColumnName("NAME");
+		categoryFld.setModule(ModuleFactory.getSpaceCategoryModule());
+		categoryFld.setDataType(FieldType.STRING);
+		
+		FacilioField categoryDescFld = new FacilioField();
+		categoryDescFld.setName("category_desc");
+		categoryDescFld.setColumnName("DESCRIPTION");
+		categoryDescFld.setModule(ModuleFactory.getSpaceCategoryModule());
+		categoryDescFld.setDataType(FieldType.STRING);
+
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(categoryIdFld);
+		fields.add(categoryFld);
+		fields.add(categoryDescFld);
+		fields.add(countFld);
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("BaseSpace")
+				.innerJoin("Space")
+				.on("BaseSpace.ID = Space.ID")
+				.leftJoin("Space_Category")
+				.on("Space.SPACE_CATEGORY_ID = Space_Category.ID")
+				.groupBy("Space_Category.ID")
+				.andCustomWhere("BaseSpace.ORGID=? AND Space.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, orgId, getBuildingId());
+
+		List<Map<String, Object>> rs = builder.get();
+		return rs;
+	}
+	
 	public List getFormlayout()
 	{
 		return FormLayout.getNewBuildingLayout(fields);
@@ -134,6 +222,16 @@ public class BuildingAction extends ActionSupport {
 	public void setBuildingId(long buildingId) 
 	{
 		this.buildingId = buildingId;
+	}
+	
+	private long siteId;
+	public long getSiteId() 
+	{
+		return siteId;
+	}
+	public void setSiteId(long siteId) 
+	{
+		this.siteId = siteId;
 	}
 	
 	private List<BuildingContext> buildings;

@@ -303,4 +303,12 @@ public class ModuleFactory {
 		tabWidget.setTableName("Tab_Widget");
 		return tabWidget;
 	}
+	
+	public static FacilioModule getSpaceCategoryModule() {
+		FacilioModule ticketCategoryModule = new FacilioModule();
+		ticketCategoryModule.setName(FacilioConstants.ContextNames.SPACE_CATEGORY);
+		ticketCategoryModule.setDisplayName("Space Category");
+		ticketCategoryModule.setTableName("Space_Category");
+		return ticketCategoryModule;
+	}
 }
