@@ -31,9 +31,9 @@ public class AddConsumptionForLeed implements Command {
 		{
 			HashMap dataMap = new HashMap();
 			ConsumptionInfoContext energyData = (ConsumptionInfoContext)data.next();
-			long endTime = energyData.getAddedTime();
+			long endTime = energyData.getTtime();
 			HashMap<String, Object> timeData = DateTimeUtil.getTimeData(endTime); 	
-			double consumption = energyData.getTotalEnergyConsumptionDelta();
+			double consumption = (double) energyData.getReading("totalEnergyConsumptionDelta");
 			long startTime  = energyData.getStartTime();
 			JSONObject consumptionJSON = new JSONObject();
 			String stdate_str = DateTimeUtil.getDateTime(startTime).toString();

@@ -813,6 +813,13 @@
 			</result>
 		</action>
 		
+		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addEnergyData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
+		
 		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>

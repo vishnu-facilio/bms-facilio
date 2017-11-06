@@ -43,6 +43,15 @@ public class ModuleBaseWithCustomFields {
 	public void setCustomProps(Map<String, Object> customProps) {
 		this.customProps = customProps;
 	}
+	public void addCustomProps(Map<String, Object> customProps) {
+		if(this.customProps != null) {
+			this.customProps.putAll(customProps);
+		}
+		else {
+			this.customProps = customProps;
+		}
+	}
+	
 	
 	@JsonAnySetter
 	public void setCustomProp(String key, Object value) {

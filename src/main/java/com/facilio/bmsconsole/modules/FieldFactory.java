@@ -987,6 +987,46 @@ public class FieldFactory {
 		ttime.setModule(module);
 		fields.add(ttime);
 		
+		FacilioField ttimeDate = new FacilioField();
+		ttimeDate.setName("date");
+		ttimeDate.setDisplayName("Date");
+		ttimeDate.setDataType(FieldType.STRING);
+		ttimeDate.setColumnName("TTIME_DATE");
+		ttimeDate.setModule(module);
+		fields.add(ttimeDate);
+		
+		FacilioField ttimeMonth = new FacilioField();
+		ttimeMonth.setName("month");
+		ttimeMonth.setDisplayName("Month");
+		ttimeMonth.setDataType(FieldType.NUMBER);
+		ttimeMonth.setColumnName("TTIME_MONTH");
+		ttimeMonth.setModule(module);
+		fields.add(ttimeMonth);
+		
+		FacilioField ttimeWeek = new FacilioField();
+		ttimeWeek.setName("week");
+		ttimeWeek.setDisplayName("Week");
+		ttimeWeek.setDataType(FieldType.NUMBER);
+		ttimeWeek.setColumnName("TTIME_WEEK");
+		ttimeWeek.setModule(module);
+		fields.add(ttimeWeek);
+		
+		FacilioField ttimeDay = new FacilioField();
+		ttimeDay.setName("day");
+		ttimeDay.setDisplayName("Day");
+		ttimeDay.setDataType(FieldType.NUMBER);
+		ttimeDay.setColumnName("TTIME_DAY");
+		ttimeDay.setModule(module);
+		fields.add(ttimeDay);
+		
+		FacilioField ttimeHour = new FacilioField();
+		ttimeHour.setName("hour");
+		ttimeHour.setDisplayName("Hour");
+		ttimeHour.setDataType(FieldType.NUMBER);
+		ttimeHour.setColumnName("TTIME_HOUR");
+		ttimeHour.setModule(module);
+		fields.add(ttimeHour);
+		
 		FacilioField parent = new FacilioField();
 		parent.setName("parentId");
 		parent.setDisplayName("Parent");

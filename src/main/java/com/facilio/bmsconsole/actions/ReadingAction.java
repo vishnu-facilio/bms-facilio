@@ -130,6 +130,10 @@ public class ReadingAction extends ActionSupport {
 		return addReadingData(FacilioConstants.ContextNames.ASSIGNED_OCCUPANCY_READING);
 	}
 	
+	public String addEnergyData() throws Exception {
+		return addReadingData(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+	}
+	
 	public String addReadingData() throws Exception {
 		return addReadingData(getReadingName());
 	}

@@ -26,8 +26,8 @@ public class SingleDayBusinessHourContext {
 	public void setDayOfWeek(int dayOfWeek) {
 		this.dayOfWeek = DayOfWeek.of(dayOfWeek);
 	}
-	public DayOfWeek getDayOfWeekEnum() {
-		return dayOfWeek;
+	public String getDayOfWeekVal() {
+		return dayOfWeek.toString();
 	}
 	
 	private LocalTime startTime;
