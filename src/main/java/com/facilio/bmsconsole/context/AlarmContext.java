@@ -25,7 +25,7 @@ public class AlarmContext extends TicketContext {
 		return -1;
 	}
 	public void setAlarmStatus(int alarmStatus) {
-		this.alarmStatus = AlarmStatus.statusMap.get(alarmStatus);
+		this.alarmStatus = AlarmStatus.STATUS_MAP.get(alarmStatus);
 	}
 	public void setAlarmStatus(AlarmStatus alarmStatus) {
 		this.alarmStatus = alarmStatus;
@@ -69,7 +69,7 @@ public class AlarmContext extends TicketContext {
 		return -1;
 	}
 	public void setType(int type) {
-		this.type = AlarmType.typeMap.get(type);
+		this.type = AlarmType.TYPE_MAP.get(type);
 	}
 	public void setType(AlarmType type) {
 		this.type = type;
@@ -141,7 +141,7 @@ public class AlarmContext extends TicketContext {
 			return strVal;
 		}
 		
-		private static final Map<Integer, AlarmStatus> statusMap = Collections.unmodifiableMap(initTypeMap());
+		private static final Map<Integer, AlarmStatus> STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, AlarmStatus> initTypeMap() {
 			Map<Integer, AlarmStatus> typeMap = new HashMap<>();
 			
@@ -151,7 +151,7 @@ public class AlarmContext extends TicketContext {
 			return typeMap;
 		}
 		public Map<Integer, AlarmStatus> getAllTypes() {
-			return statusMap;
+			return STATUS_MAP;
 		}
 	}
 	
@@ -177,10 +177,10 @@ public class AlarmContext extends TicketContext {
 		}
 		
 		public static AlarmType getType(int val) {
-			return typeMap.get(val);
+			return TYPE_MAP.get(val);
 		}
 		
-		private static final Map<Integer, AlarmType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static final Map<Integer, AlarmType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, AlarmType> initTypeMap() {
 			Map<Integer, AlarmType> typeMap = new HashMap<>();
 			
@@ -190,7 +190,7 @@ public class AlarmContext extends TicketContext {
 			return typeMap;
 		}
 		public Map<Integer, AlarmType> getAllTypes() {
-			return typeMap;
+			return TYPE_MAP;
 		}
 	}
 	

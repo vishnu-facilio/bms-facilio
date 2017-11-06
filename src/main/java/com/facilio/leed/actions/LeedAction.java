@@ -259,7 +259,7 @@ public class LeedAction extends ActionSupport {
 			context.setName(meterName);
 			context.setMeterId(meterId);
 			context.setFuelType(fuelType);
-			context.setType(fuelKind);
+			context.setTypeVal(fuelKind);
 			meterList.add(context);
 		}
 		return meterList;
@@ -477,7 +477,7 @@ public class LeedAction extends ActionSupport {
 		meterList();
 		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
 		setConsumptionArray(consumptionArray);	
-		//updateLeedConfiguration();
+		updateLeedConfiguration();
 		//leedDetails();
 		
 		return SUCCESS;	

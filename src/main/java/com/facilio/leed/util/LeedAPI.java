@@ -170,7 +170,7 @@ public class LeedAPI {
 				context.setName(rs.getString("NAME"));
 				context.setMeterId(rs.getLong("METERID"));
 				context.setDeviceId(rs.getLong("DEVICE_ID"));
-				context.setType(meterType);
+				context.setTypeVal(meterType);
 				meterList.add(context);
 			}
 			
@@ -197,7 +197,7 @@ public class LeedAPI {
 		{
 			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
 			String metername = meter.getName();
-			String meterType = meter.getType();
+			String meterType = meter.getTypeVal();
 			long fuelType = meter.getFuelType();
 			long meterId = meter.getMeterId();
 			long assetId = addAsset(metername,orgId);

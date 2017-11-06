@@ -275,6 +275,48 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="assetApi" namespace="/api/asset" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction" method="addAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assetId</param>
+			</result>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction" method="updateAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction" method="deleteAsset">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="assetSummaryApi" namespace="/api/asset/summary" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="assetId">{1}</param>
+			<result name="success" type="json">
+				<param name="root">asset</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
@@ -733,6 +775,30 @@
 			</result>
 		</action>
 		
+		<action name="addspacereading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addSpaceReading">
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="addassetreading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssetReading">
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
+		<action name="getspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceReadings">
+			<result name="success" type="json">
+				<param name="root">readings</param>
+			</result>
+		</action>
+		
+		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getAssetReadings">
+			<result name="success" type="json">
+				<param name="root">readings</param>
+			</result>
+		</action>
+		
 		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addCurrentOccupancyReading">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
@@ -755,6 +821,36 @@
 		</action>
 	</package>
 	
+	<package name="photosApi" namespace="/api/photos" extends="home">
+		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addBaseSpacePhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="getspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getBaseSpacePhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="addassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addAssetPhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="getassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getAssetPhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="moduleApi" namespace="/api/module" extends="home">
 		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction" method="addNewModule">
 			<param name="permission">WORKORDER_CREATE</param>
@@ -770,10 +866,10 @@
 			</result>
 		</action>
 		
-		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" method="fieldList">
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction" method="metadata">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
 		
@@ -902,6 +998,13 @@
 	
 	<package name="workOrderRequestApi" namespace="/api/workorderrequest" extends="home">
 	
+		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
@@ -1072,6 +1175,21 @@
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
+		
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction" method="reportCards">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="campusId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^record.*</param>
+			</result>
+		</action>
 	</package>
 	
 	
@@ -1087,6 +1205,21 @@
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+		
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.BuildingAction" method="reportCards">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="buildingId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^record.*</param>
 			</result>
 		</action>
 	</package>
@@ -1105,6 +1238,14 @@
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="floorId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^record.*</param>
+			</result>
+		</action>
 	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
@@ -1118,6 +1259,14 @@
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="spaceId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^record.*</param>
 			</result>
 		</action>
 	</package>
@@ -1827,4 +1976,9 @@
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>	
+	<package name="sample" namespace="/api/sample" extends="homeApi">
+		<action name="*" >
+        <result>/jsps/samples/{1}.jsp</result>
+    </action>
+		</package>
 </struts>

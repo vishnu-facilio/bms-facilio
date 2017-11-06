@@ -22,8 +22,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	private GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
 	private String moduleName;
-	private long moduleId = -1;
-	private String tableName;
+	private FacilioModule module;
 	private List<FacilioField> fields = new ArrayList<>();
 	private WhereBuilder where = new WhereBuilder();
 	
@@ -36,10 +35,13 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
+	public UpdateRecordBuilder<E> module(FacilioModule module) {
+		this.module = module;
+		return this;
+	}
+	
 	@Override
 	public UpdateRecordBuilder<E> table(String tableName) {
-		this.tableName = tableName;
-		builder.table(tableName);
 		return this;
 	}
 	
@@ -116,19 +118,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
-	private long getModuleId() {
-		if (this.moduleId <= 0) {
-			try {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				this.moduleId = modBean.getModule(moduleName).getModuleId();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return this.moduleId;
-	}
-
 	@Override
 	public int update(E bean) throws Exception {
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
@@ -145,9 +134,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			WhereBuilder whereCondition = new WhereBuilder();
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
-			
 			Condition orgCondition = new Condition();
 			orgCondition.setField(FieldFactory.getOrgIdField(module));
 			orgCondition.setOperator(NumberOperators.EQUALS);
@@ -157,7 +143,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			Condition moduleCondition = new Condition();
 			moduleCondition.setField(FieldFactory.getModuleIdField(module));
 			moduleCondition.setOperator(NumberOperators.EQUALS);
-			moduleCondition.setValue(String.valueOf(getModuleId()));
+			moduleCondition.setValue(String.valueOf(module.getModuleId()));
 			whereCondition.andCondition(moduleCondition);
 			
 			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
@@ -169,6 +155,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			fields.add(FieldFactory.getModuleIdField(module));
 			fields.add(FieldFactory.getIdField(module));
 			builder.fields(fields);
+			
+			builder.table(module.getTableName());
 			
 			FacilioModule prevModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
@@ -222,7 +210,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		builder.append(" ID in (SELECT ")
 				.append(columnName)
 				.append(" FROM ")
-				.append(tableName)
+				.append(module.getTableName())
 				.append(" WHERE ")
 				.append(where.getWhereClause())
 				.append(")");
@@ -230,18 +218,17 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return builder.toString();
 	}
 	
-	private void checkForNull() {
-		
-		if(moduleName == null || moduleName.isEmpty()) {
-			throw new IllegalArgumentException("Module Name cannot be empty");
-		}
-		
-		if(tableName == null || tableName.isEmpty()) {
-			throw new IllegalArgumentException("Data Table Name cannot be empty");
-		}
-		
+	private void checkForNull() throws Exception {
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
+		}
+		
+		if(module == null) {
+			if(moduleName == null || moduleName.isEmpty()) {
+				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			module = modBean.getModule(moduleName);
 		}
 	}
 	

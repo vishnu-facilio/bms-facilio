@@ -10,9 +10,16 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -328,6 +335,7 @@ public class FacilioConstants {
 	public static class ContextNames {
 		
 		public static final String RECORD = "record";
+		public static final String RECORD_LIST = "records";
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String ROWS_UPDATED = "rowsUpdated";
@@ -344,8 +352,12 @@ public class FacilioConstants {
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
 		
-		public static final String TICKET_ID = "ticketId";
+		public static final String BUSINESS_HOUR = "businesshour";
+		
 		public static final String ID = "Id";
+		public static final String PARENT_ID = "parentId";
+		
+		public static final String TICKET_ID = "ticketId";
 		
 		public static final String TICKET_STATUS = "ticketstatus";
 		public static final String TICKET_STATUS_LIST = "ticketstatuses";
@@ -390,10 +402,14 @@ public class FacilioConstants {
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String PARENT_MODULE = "parentModule";
+		public static final String SUB_MODULE_TYPE = "subModuleType";
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
+		public static final String MODULE_LIST = "modules";
+		public static final String CATEGORY_READING_PARENT_MODULE = "categoryReadingParentModule";
 		
 		public static final String READINGS = "readings";
+		public static final String PHOTOS = "photos";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
@@ -403,20 +419,27 @@ public class FacilioConstants {
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
+		public static final String SITE_ID = "siteId";
+		public static final String REPORT_CARDS = "reportCards";
+		public static final String REPORTS = "reports";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
+		public static final String BUILDING_ID = "buildingId";
 		
 		public static final String FLOOR = "floor";
 		public static final String FLOOR_LIST = "floors";
+		public static final String FLOOR_ID = "floorId";
 		
 		public static final String SPACE = "space";
 		public static final String SPACE_LIST = "spaces";
+		public static final String SPACE_ID = "spaceId";
 		
 		public static final String SPACE_CATEGORY = "spacecategory";
 		
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
+		public static final String ZONE_ID = "zoneId";
 		
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";
@@ -424,8 +447,17 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
 		
+		public static final String ASSET = "asset";
+		public static final String ASSET_LIST = "assets";
+		public static final String ASSET_TYPE = "assettype";
+		public static final String ASSET_CATEGORY = "assetcategory";
+		public static final String ASSET_DEPARTMENT = "assetdepartment";
+		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
+		
+		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
+		public static final String ASSET_PHOTOS = "assetphotos";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -497,6 +529,10 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM, AlarmContext.class);
+			classMap.put(BASE_SPACE, BaseSpaceContext.class);
+			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);
+			classMap.put(CURRENT_OCCUPANCY_READING, ReadingContext.class);
+			classMap.put(BASE_SPACE_PHOTOS, PhotosContext.class);
 			classMap.put(SITE, SiteContext.class);
 			classMap.put(BUILDING, BuildingContext.class);
 			classMap.put(FLOOR, FloorContext.class);
@@ -505,6 +541,11 @@ public class FacilioConstants {
 			classMap.put(SPACE_CATEGORY, SpaceCategoryContext.class);
 			classMap.put(LOCATION, LocationContext.class);
 			classMap.put(SKILL, SkillContext.class);
+			classMap.put(ASSET, AssetContext.class);
+			classMap.put(ASSET_CATEGORY, AssetCategoryContext.class);
+			classMap.put(ASSET_TYPE, AssetTypeContext.class);
+			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
+			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			
 			return classMap;
 		}

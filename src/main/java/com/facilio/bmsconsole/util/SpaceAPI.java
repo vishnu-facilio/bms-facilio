@@ -2,20 +2,29 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class SpaceAPI {
 	
@@ -368,4 +377,164 @@ public class SpaceAPI {
 		return spaces;
 	}
 	
+	public static long getIndependentSpacesCount(long siteId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Site")
+				.innerJoin("BaseSpace")
+				.on("Site.ID = BaseSpace.ID")
+				.andCustomWhere("Site.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.SITE_ID = ? AND BaseSpace.BUILDING_ID = -1 AND BaseSpace.FLOOR_ID = -1", orgId, orgId, siteId);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
+	
+	public static long getSpacesCountForBuilding(long buildingId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Building")
+				.innerJoin("BaseSpace")
+				.on("Building.ID = BaseSpace.ID")
+				.andCustomWhere("Building.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, orgId, buildingId, BaseSpaceContext.SpaceType.SPACE);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
+	
+	public static long getSpacesCountForFloor(long floorId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Floor")
+				.innerJoin("BaseSpace")
+				.on("Floor.ID = BaseSpace.ID")
+				.andCustomWhere("Building.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.FLOOR_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, orgId, floorId, BaseSpaceContext.SpaceType.SPACE);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
+
+	public static long getWorkOrdersCount(long siteId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		
+		FacilioField spaceIdFld = new FacilioField();
+		spaceIdFld.setName("space_id");
+		spaceIdFld.setColumnName("SPACE_ID");
+		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
+		spaceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(spaceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(siteId+"");
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("WorkOrders")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("Tickets.STATUS_ID = TicketStatus.ID")
+				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal())
+				.andCondition(spaceCond);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
+	
+	public static long getFireAlarmsCount(long siteId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		
+		FacilioField spaceIdFld = new FacilioField();
+		spaceIdFld.setName("space_id");
+		spaceIdFld.setColumnName("SPACE_ID");
+		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
+		spaceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(spaceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(siteId+"");
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Alarms")
+				.innerJoin("Tickets")
+				.on("Alarms.ID = Tickets.ID")
+				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.STATUS=?", orgId, orgId, AlarmStatus.ACTIVE.getIntVal())
+				.andCondition(spaceCond);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
 }

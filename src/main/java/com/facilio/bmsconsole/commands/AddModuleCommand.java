@@ -5,6 +5,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.SubModuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -22,7 +23,14 @@ public class AddModuleCommand implements Command {
 			String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 			if(parentModuleName != null && !parentModuleName.isEmpty()) {
 				FacilioModule parentModule = modBean.getModule(parentModuleName);
-				modBean.addSubModule(parentModule.getModuleId(), moduleId);
+				FacilioModule.SubModuleType type = (SubModuleType) context.get(FacilioConstants.ContextNames.SUB_MODULE_TYPE);
+				
+				if(type != null) {
+					modBean.addSubModule(parentModule.getModuleId(), moduleId, type);
+				}
+				else {
+					modBean.addSubModule(parentModule.getModuleId(), moduleId);
+				}
 			}
 		}
 		else {

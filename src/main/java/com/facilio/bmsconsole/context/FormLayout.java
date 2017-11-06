@@ -40,7 +40,7 @@ public class FormLayout {
 		panels.add(fifth);
 		
 		for(FacilioField field : fields) {
-			if(field.getName().equals("noOfClosedTasks") || field.getName().equals("noOfTasks") || field.getName().equals("noOfAttachments") || field.getName().equals("noOfNotes") || field.getName().equals("serialNumber") || field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester") || field.getName().equals("createdTime")) {
+			if(field.getName().equals("noOfClosedTasks") || field.getName().equals("noOfTasks") || field.getName().equals("noOfAttachments") || field.getName().equals("noOfNotes") || field.getName().equals("serialNumber") || field.getName().equals("parentWorkOrder") || field.getName().equals("assetId") || field.getName().equals("ticket") || field.getName().equals("sourceType") || field.getName().equals("requester") || field.getName().equals("createdTime") || field.getName().equals("urgency") || field.getName().equals("requestStatus")) {
 				continue;
 			}
 			if(field.getName().equals("subject") || field.getName().equals("description") || field.getName().equals("assignedTo") || field.getName().equals("location") || field.getName().equals("assetId") || field.getName().equals("space") || field.getName().equals("assignmentGroup") ) {
@@ -56,14 +56,6 @@ public class FormLayout {
 				second.addField(field);
 			}
 		}
-		FacilioField sendForApproval = new FacilioField();
-		sendForApproval.setName("sendForApproval");
-		sendForApproval.setDisplayName("Send For Approval");
-		sendForApproval.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
-		sendForApproval.setDataType(com.facilio.bmsconsole.modules.FieldType.BOOLEAN);
-		sendForApproval.setModule(ModuleFactory.getWorkOrdersModule());
-		sendForApproval.setDefault(true);
-		first.addField(sendForApproval);
 		
 		return panels;
 		

@@ -68,10 +68,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
-	@Override
-	public void save() throws Exception {
-		if(records.isEmpty()) {
-			return;
+	private void checkForNull() throws Exception {
+		
+		if(fields == null || fields.size() < 1) {
+			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
 		
 		if(module == null) {
@@ -81,6 +81,15 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
 		}
+	}
+	
+	@Override
+	public void save() throws Exception {
+		if(records.isEmpty()) {
+			return;
+		}
+		
+		checkForNull();
 		
 		List<FacilioModule> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();

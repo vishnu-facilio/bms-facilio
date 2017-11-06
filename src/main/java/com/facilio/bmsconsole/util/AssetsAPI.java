@@ -5,138 +5,86 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class AssetsAPI {
 	
 	private static Logger logger = Logger.getLogger(AssetsAPI.class.getName());
 	
-	public static Map<Long, String> getOrgAssets(long orgId) throws SQLException 
+	public static long getOrgId(Long assetId) throws Exception
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		List<FacilioField> fields = new ArrayList<>();
 		
-		Map<Long, String> orgAssets = new LinkedHashMap<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioField orgField = FieldFactory.getOrgIdField(module);
+		fields.add(orgField);
 		
-		try 
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ASSETID, NAME FROM Assets where ORGID = ? ORDER BY NAME");
-			
-			pstmt.setLong(1, orgId);
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				orgAssets.put(rs.getLong("ASSETID"), rs.getString("NAME"));
-			}
-			
-			return orgAssets;
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCustomWhere("ID = ?", assetId);
+		
+		List<Map<String, Object>> assets = selectBuilder.get();
+		
+		if(assets != null && !assets.isEmpty()) {
+			return (long) assets.get(0).get(orgField.getName());
 		}
-		catch (SQLException e) 
-		{
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
+		return -1;
 	}
 	
-	public static Long getOrgId(Long assetId) throws Exception
+	public static AssetContext getAssetInfo(long assetId) throws Exception
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Long orgId = null;
-		try
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORGID, ASSETID FROM Assets where ASSETID = ?");
-			pstmt.setLong(1, assetId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				orgId = rs.getLong("ORGID");
-			}
-		}
-		catch(SQLException | RuntimeException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting asset type id" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return orgId;
-	}
-	
-	public static Map<String, Object> getAssetInfo(Long assetId) throws SQLException
-	{
-		Map<String, Object> assetInfo = new HashMap<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Assets WHERE ASSETID = ?");
-			pstmt.setLong(1, assetId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				assetInfo.put("assetId", rs.getString("ASSETID"));
-				assetInfo.put("name", rs.getString("NAME"));
-			}
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+																.moduleName(module.getName())
+																.beanClass(AssetContext.class)
+																.select(modBean.getAllFields(module.getName()))
+																.table(module.getTableName())
+																.andCustomWhere("ID = ?", assetId);
+		
+		List<AssetContext> assets = selectBuilder.get();
+		if(assets != null && !assets.isEmpty()) {
+			return assets.get(0);
 		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting devices" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return assetInfo;
+		return null;
 	}
 	
-	public static Long getAssetId(String name, Long orgId) throws Exception
+	public static long getAssetId(String name, Long orgId) throws Exception
 	{
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Long assetId = null;
-		try
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ASSETID, NAME FROM Assets where NAME = ? and ORGID = ?");
-			pstmt.setString(1, name);
-			pstmt.setLong(2, orgId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				assetId = rs.getLong("ASSETID");
-			}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.moduleName(module.getName())
+				.beanClass(AssetContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.table(module.getTableName())
+				.andCustomWhere("NAME = ?", name);
+		List<AssetContext> assets = selectBuilder.get();
+		if(assets != null && !assets.isEmpty()) {
+			return assets.get(0).getId();
 		}
-		catch(SQLException | RuntimeException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting asset type id" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-		return assetId;
+		return -1;
 	}
 	
 	public static Long addAsset(String name, Long orgId) throws Exception

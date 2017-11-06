@@ -319,8 +319,8 @@ public class DeviceAPI
 				Map<String, Long> deviceMap = new HashMap<>();
 				for(String deviceName : deviceNames)
 				{
-					Long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
-					if(deviceId == null)
+					long deviceId = AssetsAPI.getAssetId(deviceName, orgId);
+					if(deviceId == -1)
 					{
 						deviceId = AssetsAPI.addAsset(deviceName, orgId);
 						DeviceAPI.addDevice(deviceId, null, null, null, controllerId, null, 1, 1);
@@ -366,7 +366,7 @@ public class DeviceAPI
 			pstmt = conn.prepareStatement("INSERT INTO Device (DEVICE_ID, SPACE_ID, DEVICE_TYPE, STATUS) VALUES (?, ?, ?, ?)");
 			pstmt.setLong(1, deviceId);
 			pstmt.setLong(2, device.getSpaceId());
-			pstmt.setString(3, device.getType());
+			pstmt.setString(3, device.getTypeVal());
 			pstmt.setInt(4, 1);
 			if(pstmt.executeUpdate() < 1) 
 			{
@@ -946,7 +946,7 @@ public class DeviceAPI
 					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
 					device.setStatus(rs.getInt("STATUS"));
 					device.setSpaceId(rs.getLong("SPACE_ID"));
-					device.setType(rs.getString("DEVICE_TYPE"));
+					device.setTypeVal(rs.getString("DEVICE_TYPE"));
 					return device;
 				}
 			}
@@ -984,7 +984,7 @@ public class DeviceAPI
 					device.setDeviceId(rs.getLong("DEVICE_ID"));
 					device.setName(rs.getString("NAME"));
 					device.setParentId(rs.getLong("PARENT_DEVICE_ID"));
-					device.setType(rs.getString("DEVICE_TYPE"));
+					device.setTypeVal(rs.getString("DEVICE_TYPE"));
 					device.setSpaceId(rs.getLong("SPACE_ID"));
 					deviceList.add(device);
 				}

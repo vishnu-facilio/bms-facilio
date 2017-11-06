@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.SubModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 
@@ -23,6 +24,7 @@ public class CreateReadingModuleCommand implements Command {
 			module.setDisplayName(readingName);
 			module.setTableName("Readings");
 			context.put(FacilioConstants.ContextNames.MODULE, module);
+			context.put(FacilioConstants.ContextNames.SUB_MODULE_TYPE, SubModuleType.READING);
 			
 			fields.addAll(FieldFactory.getDefaultReadingFields(module));
 		}

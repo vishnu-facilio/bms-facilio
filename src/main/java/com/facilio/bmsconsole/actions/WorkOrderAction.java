@@ -339,7 +339,7 @@ public class WorkOrderAction extends ActionSupport {
 		return workorder;
 	}
 	
-	String filters;
+	private String filters;
 	public void setFilters(String filters)
 	{
 		this.filters = filters;

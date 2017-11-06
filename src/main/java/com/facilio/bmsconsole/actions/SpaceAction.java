@@ -24,6 +24,19 @@ public class SpaceAction extends ActionSupport {
 	public String spaceList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		if (getSiteId() > 0) {
+			context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
+		}
+		if (getBuildingId() > 0) {
+			context.put(FacilioConstants.ContextNames.BUILDING_ID, getBuildingId());
+		}
+		if (getFloorId() > 0) {
+			context.put(FacilioConstants.ContextNames.FLOOR_ID, getFloorId());
+		}
+		if (getCategoryId() > 0) {
+			context.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getCategoryId());
+		}
+		
 		Chain getAllSpace = FacilioChainFactory.getAllSpaceChain();
 		getAllSpace.execute(context);
 		
@@ -134,6 +147,46 @@ public class SpaceAction extends ActionSupport {
 	public void setSpaceId(long spaceId) 
 	{
 		this.spaceId = spaceId;
+	}
+	
+	private long siteId = -1;
+	public long getSiteId() 
+	{
+		return siteId;
+	}
+	public void setSiteId(long siteId) 
+	{
+		this.siteId = siteId;
+	}
+	
+	private long buildingId = -1;
+	public long getBuildingId() 
+	{
+		return buildingId;
+	}
+	public void setBuildingId(long buildingId) 
+	{
+		this.buildingId = buildingId;
+	}
+	
+	private long floorId = -1;
+	public long getFloorId() 
+	{
+		return floorId;
+	}
+	public void setFloorId(long floorId) 
+	{
+		this.floorId = floorId;
+	}
+	
+	private long categoryId = -1;
+	public long getCategoryId() 
+	{
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) 
+	{
+		this.categoryId = categoryId;
 	}
 	
 	private List<SpaceContext> spaces;
