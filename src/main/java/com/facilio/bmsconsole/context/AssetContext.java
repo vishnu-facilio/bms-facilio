@@ -67,7 +67,7 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.photoId = photoId;
 	}
 	
-	private long parentAssetId;
+	private long parentAssetId = -1;
 	public long getParentAssetId() {
 		return parentAssetId;
 	}
@@ -131,7 +131,7 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.partNumber = partNumber;
 	}
 	
-	private int unitPrice;
+	private int unitPrice = -1;
 	public int getUnitPrice() {
 		return unitPrice;
 	}
@@ -147,7 +147,7 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.supplier = supplier;
 	}
 	
-	private long purchasedDate;
+	private long purchasedDate = -1;
 	public long getPurchasedDate() {
 		return purchasedDate;
 	}
@@ -163,7 +163,7 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.retireDate = retireDate;
 	}
 	
-	private long warrantyExpiryDate;
+	private long warrantyExpiryDate = -1;
 	public long getWarrantyExpiryDate() {
 		return warrantyExpiryDate;
 	}
