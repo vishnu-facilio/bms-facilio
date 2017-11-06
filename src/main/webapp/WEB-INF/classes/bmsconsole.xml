@@ -1976,4 +1976,9 @@
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>	
+	<package name="sample" namespace="/api/sample" extends="homeApi">
+		<action name="*" >
+        <result>/jsps/samples/{1}.jsp</result>
+    </action>
+		</package>
 </struts>
