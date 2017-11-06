@@ -98,8 +98,10 @@ public class FieldUtil {
 					pstmt.setNull(paramIndex, Types.BIGINT);
 				}
 				break;
+			case MISC:
 			default:
 					pstmt.setObject(paramIndex, value);
+					break;
 		}
 	}
 	

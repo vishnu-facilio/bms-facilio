@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.StringOperators;
 
 public enum FieldType {
+	MISC(0, "Misc", null, null),
 	STRING(1, "String", new String[] {"STRING_CF1", "STRING_CF2", "STRING_CF3", "STRING_CF4", "STRING_CF5"}, StringOperators.getAllOperators()),
 	NUMBER(2, "Number", new String[] {"NUMBER_CF1", "NUMBER_CF2", "NUMBER_CF3", "NUMBER_CF4", "NUMBER_CF5"}, NumberOperators.getAllOperators()),
 	DECIMAL(3, "Decimal", new String[] {"DECIMAL_CF1", "DECIMAL_CF2", "DECIMAL_CF3", "DECIMAL_CF4", "DECIMAL_CF5"}, NumberOperators.getAllOperators()),

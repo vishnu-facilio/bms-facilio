@@ -46,6 +46,11 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put("workordertemplate", getWorkorderTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
+		moduleMap.put("connectedapp", getConnectedAppModule());
+		moduleMap.put("tabwidget", getTabWidgetModule());
+		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
+		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
+		moduleMap.put("businesshours", getBusinessHoursModule());
 		return moduleMap;
 	}
 			
@@ -310,7 +315,7 @@ public class ModuleFactory {
 
 	public static FacilioModule getConnectedAppModule() {
 		FacilioModule connectedApp = new FacilioModule();
-		connectedApp.setName("connectedApp");
+		connectedApp.setName("connectedapp");
 		connectedApp.setDisplayName("Connected App");
 		connectedApp.setTableName("Connected_App");
 		return connectedApp;
@@ -318,7 +323,7 @@ public class ModuleFactory {
 	
 	public static FacilioModule getTabWidgetModule() {
 		FacilioModule tabWidget = new FacilioModule();
-		tabWidget.setName("tabWidget");
+		tabWidget.setName("tabwidget");
 		tabWidget.setDisplayName("Tab Widget");
 		tabWidget.setTableName("Tab_Widget");
 		return tabWidget;
@@ -330,5 +335,23 @@ public class ModuleFactory {
 		ticketCategoryModule.setDisplayName("Space Category");
 		ticketCategoryModule.setTableName("Space_Category");
 		return ticketCategoryModule;
+	}
+
+	public static FacilioModule getSingleDayBusinessHourModule() {
+		FacilioModule singleDayBusinessHour = new FacilioModule();
+		singleDayBusinessHour.setName("singledaybusinesshour");
+		singleDayBusinessHour.setDisplayName("Single Day Business Hour");
+		singleDayBusinessHour.setTableName("SingleDayBusinessHours");
+		
+		return singleDayBusinessHour;
+	}
+	
+	public static FacilioModule getBusinessHoursModule() {
+		FacilioModule businessHours = new FacilioModule();
+		businessHours.setName("businesshours");
+		businessHours.setDisplayName("Business Hours");
+		businessHours.setTableName("BusinessHours");
+		
+		return businessHours;
 	}
 }

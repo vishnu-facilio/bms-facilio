@@ -352,6 +352,8 @@ public class FacilioConstants {
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
 		
+		public static final String BUSINESS_HOUR = "businesshour";
+		
 		public static final String ID = "Id";
 		public static final String PARENT_ID = "parentId";
 		

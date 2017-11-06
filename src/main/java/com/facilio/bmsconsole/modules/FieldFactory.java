@@ -1100,4 +1100,36 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getBusinessHoursFields() {
+		FacilioModule module = ModuleFactory.getBusinessHoursModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getOrgIdField(module));
+		
+		module = ModuleFactory.getSingleDayBusinessHourModule();
+		FacilioField dayOfWeek = new FacilioField();
+		dayOfWeek.setName("dayOfWeek");
+		dayOfWeek.setDataType(FieldType.NUMBER);
+		dayOfWeek.setColumnName("DAY_OF_WEEK");
+		dayOfWeek.setModule(module);
+		fields.add(dayOfWeek);
+		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.MISC);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.MISC);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
+		
+		return fields;
+	}
 }	
