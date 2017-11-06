@@ -4,8 +4,23 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class SingleDayBusinessHourContext {
-	private long parentId;
+	
+	
+	private long id = -1;
+	@JsonGetter("childId")
+	public long getId() {
+		return id;
+	}
+	@JsonSetter("childId")
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
 	}
@@ -27,18 +42,15 @@ public class SingleDayBusinessHourContext {
 		this.dayOfWeek = DayOfWeek.of(dayOfWeek);
 	}
 	public String getDayOfWeekVal() {
-		return dayOfWeek.toString();
+		if(dayOfWeek != null) {
+			return dayOfWeek.toString();
+		}
+		return null;
 	}
 	
 	private LocalTime startTime;
 	public LocalTime getStartTimeAsLocalTime() {
 		return startTime;
-	}
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
-	public void setStartTime(String value) {
-		this.startTime = LocalTime.parse(value);
 	}
 	public String getStartTime() {
 		if(startTime != null) {
@@ -46,13 +58,13 @@ public class SingleDayBusinessHourContext {
 		}
 		return null;
 	}
-	public Time getStartTimeObject() {
-		if(startTime != null) {
-			return Time.valueOf(startTime);
-		}
-		return null;
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
 	}
-	public void setStartTimeObject(Time startTime) {
+	public void setStartTime(String value) {
+		this.startTime = LocalTime.parse(value);
+	}
+	public void setStartTime(Time startTime) {
 		this.startTime = startTime.toLocalTime();	
 	}
 	
@@ -60,25 +72,19 @@ public class SingleDayBusinessHourContext {
 	public LocalTime getEndTimeAsLocalTime() {
 		return endTime;
 	}
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
-	}
-	public void setEndTime(String value) {
-		this.endTime = LocalTime.parse(value);
-	}
 	public String getEndTime() {
 		if(endTime != null) {
 			return endTime.toString();
 		}
 		return null;
 	}
-	public Time getEndTimeObject() {
-		if(endTime != null) {
-			return Time.valueOf(endTime);
-		}
-		return null;
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
 	}
-	public void setEndTimeObject(Time endTime) {
+	public void setEndTime(String value) {
+		this.endTime = LocalTime.parse(value);
+	}
+	public void setEndTime(Time endTime) {
 		this.endTime = endTime.toLocalTime();
 	}
 }

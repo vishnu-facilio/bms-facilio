@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 public class BusinessHoursContext {
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -11,7 +11,7 @@ public class BusinessHoursContext {
 		this.orgId = orgId;
 	}
 	
-	private long id;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}
