@@ -51,7 +51,9 @@ public class AlarmAction extends ActionSupport {
 	}
 	
 	public String addAlarmFromEvent() throws Exception {
+		
 		FacilioContext context = new FacilioContext();
+		context.put("activityType", "alarmFromEvent");
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		
 		Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
