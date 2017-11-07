@@ -1,6 +1,7 @@
 package com.facilio.events.commands;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,9 +50,12 @@ public class AddOrUpdateAlarmCommand implements Command {
 					
 					JSONObject content = new JSONObject();
 					content.put("alarm", json);
+					
+					Map<String, String> headers = new HashMap<>();
+					headers.put("Content-Type","application/json");
 					String server = AwsUtil.getConfig("servername");
 					String url = "http://" + server + "/internal/addAlarm";
-			        AwsUtil.doHttpPost(url, null, null, content.toString());
+			        AwsUtil.doHttpPost(url, headers, null, content.toString());
 				}
 			} 
 			catch (Exception e) 

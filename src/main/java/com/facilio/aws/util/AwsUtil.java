@@ -185,7 +185,6 @@ public class AwsUtil
 					post.setHeader(key, value);
 				}
 			}
-			post.addHeader("Content-Type","application/json");
 			if(bodyContent != null)
 			{
 			    HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes("UTF-8"));
