@@ -208,7 +208,7 @@ public class ProcessXLS implements Command {
 					if(dbColName.equalsIgnoreCase("ADDED_TIME"))
 					{
 						//value=getAddedTime(value);
-						additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue());	
+						additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue(), true);	
 					}
 					pstmt.setObject(idx, value);
 				}

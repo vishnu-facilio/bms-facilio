@@ -4,8 +4,23 @@ import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-public class SingleDayBusinessHourContext {
-	private long parentId;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
+public class BusinessHourContext {
+	
+	
+	private long id = -1;
+	@JsonGetter("childId")
+	public long getId() {
+		return id;
+	}
+	@JsonSetter("childId")
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
 	}
@@ -26,19 +41,16 @@ public class SingleDayBusinessHourContext {
 	public void setDayOfWeek(int dayOfWeek) {
 		this.dayOfWeek = DayOfWeek.of(dayOfWeek);
 	}
-	public DayOfWeek getDayOfWeekEnum() {
-		return dayOfWeek;
+	public String getDayOfWeekVal() {
+		if(dayOfWeek != null) {
+			return dayOfWeek.toString();
+		}
+		return null;
 	}
 	
 	private LocalTime startTime;
 	public LocalTime getStartTimeAsLocalTime() {
 		return startTime;
-	}
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
-	public void setStartTime(String value) {
-		this.startTime = LocalTime.parse(value);
 	}
 	public String getStartTime() {
 		if(startTime != null) {
@@ -46,25 +58,16 @@ public class SingleDayBusinessHourContext {
 		}
 		return null;
 	}
-	public Time getStartTimeObject() {
-		if(startTime != null) {
-			return Time.valueOf(startTime);
-		}
-		return null;
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
 	}
-	public void setStartTimeObject(Time startTime) {
-		this.startTime = startTime.toLocalTime();	
+	public void setStartTime(String value) {
+		this.startTime = LocalTime.parse(value);
 	}
 	
 	private LocalTime endTime;
 	public LocalTime getEndTimeAsLocalTime() {
 		return endTime;
-	}
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
-	}
-	public void setEndTime(String value) {
-		this.endTime = LocalTime.parse(value);
 	}
 	public String getEndTime() {
 		if(endTime != null) {
@@ -72,13 +75,10 @@ public class SingleDayBusinessHourContext {
 		}
 		return null;
 	}
-	public Time getEndTimeObject() {
-		if(endTime != null) {
-			return Time.valueOf(endTime);
-		}
-		return null;
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
 	}
-	public void setEndTimeObject(Time endTime) {
-		this.endTime = endTime.toLocalTime();
+	public void setEndTime(String value) {
+		this.endTime = LocalTime.parse(value);
 	}
 }
