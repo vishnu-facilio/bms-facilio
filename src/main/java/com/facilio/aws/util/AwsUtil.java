@@ -28,6 +28,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -173,7 +174,6 @@ public class AwsUtil
     	CloseableHttpClient client = HttpClients.createDefault();
     	try
     	{
-    		HttpClientContext context = HttpClientContext.create();
 			HttpPost post = new HttpPost(url);
 			if(headers != null)
 			{
@@ -185,6 +185,7 @@ public class AwsUtil
 					post.setHeader(key, value);
 				}
 			}
+			post.addHeader("Content-Type","application/json");
 			if(bodyContent != null)
 			{
 			    HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes("UTF-8"));
@@ -193,7 +194,7 @@ public class AwsUtil
 		    if(params != null)
 		    {
 		    	List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		    	Iterator<String> paramIterator = headers.keySet().iterator();
+		    	Iterator<String> paramIterator = params.keySet().iterator();
 				while(paramIterator.hasNext())
 				{
 					String key = paramIterator.next();
@@ -203,7 +204,7 @@ public class AwsUtil
 		        post.setEntity(new UrlEncodedFormEntity(postParameters));
 		    }
 			
-		    CloseableHttpResponse response = client.execute(post, context);
+		    CloseableHttpResponse response = client.execute(post);
 			System.out.println("\nSending 'POST' request to URL : " + url);
 			System.out.println("Post parameters : " + post.getEntity());
 			System.out.println("Response Code : " +  response.getStatusLine().getStatusCode());

@@ -9,9 +9,8 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.events.context.EventContext;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -39,22 +38,20 @@ public class AddOrUpdateAlarmCommand implements Command {
 				}
 				//else
 				{
-
-					
-					JSONObject ticketjson = new JSONObject();
-					ticketjson.put("subject", event.getEventType());
-					//ticketjson.put("priority", event.getEventType());
-					ticketjson.put("description", event.getDescription());
-					
 					JSONObject json = new JSONObject();
 					json.put("orgId", event.getOrgId());
 					json.put("source", event.getSource());
 					json.put("node", event.getNode());
-					json.put("ticket", ticketjson);
 					//json.put("status", event.getState());
+					json.put("subject", event.getEventType());
+					//json.put("priority", event.getEventType());
+					json.put("description", event.getDescription());
+					
+					JSONObject content = new JSONObject();
+					content.put("alarm", json);
 					String server = AwsUtil.getConfig("servername");
 					String url = "http://" + server + "/internal/addAlarm";
-			        AwsUtil.doHttpPost(url, null, null, json.toJSONString());
+			        AwsUtil.doHttpPost(url, null, null, content.toString());
 				}
 			} 
 			catch (Exception e) 
