@@ -173,7 +173,6 @@ public class AwsUtil
     	CloseableHttpClient client = HttpClients.createDefault();
     	try
     	{
-    		HttpClientContext context = HttpClientContext.create();
 			HttpPost post = new HttpPost(url);
 			if(headers != null)
 			{
@@ -193,7 +192,7 @@ public class AwsUtil
 		    if(params != null)
 		    {
 		    	List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		    	Iterator<String> paramIterator = headers.keySet().iterator();
+		    	Iterator<String> paramIterator = params.keySet().iterator();
 				while(paramIterator.hasNext())
 				{
 					String key = paramIterator.next();
@@ -203,7 +202,7 @@ public class AwsUtil
 		        post.setEntity(new UrlEncodedFormEntity(postParameters));
 		    }
 			
-		    CloseableHttpResponse response = client.execute(post, context);
+		    CloseableHttpResponse response = client.execute(post);
 			System.out.println("\nSending 'POST' request to URL : " + url);
 			System.out.println("Post parameters : " + post.getEntity());
 			System.out.println("Response Code : " +  response.getStatusLine().getStatusCode());
