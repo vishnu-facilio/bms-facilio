@@ -1753,7 +1753,7 @@
 		</action>
 		
 		<action name="addAlarm"
-			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarm">
+			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarmFromEvent">
 			<result name="success" type="json">
 				<param name="includeProperties">alarmId</param>
 			</result>
