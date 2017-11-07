@@ -78,11 +78,10 @@ public class DateTimeUtil
 	public static HashMap<String, Object> getTimeData(ZonedDateTime zdt) {
 		int week=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 		String date=zdt.toLocalDate().toString();
-		String day=zdt.getDayOfWeek().toString();
 		HashMap<String,Object> columnVals = new LinkedHashMap<String, Object>() ;
 		columnVals.put("date",date);
 		columnVals.put("week",week);
-		columnVals.put("day",day);
+		columnVals.put("day",zdt.getDayOfWeek().getValue());
 		columnVals.put("month",zdt.getMonthValue());
 		columnVals.put("hour",zdt.getHour());
 		columnVals.put("year",zdt.getYear());
@@ -99,14 +98,14 @@ public class DateTimeUtil
 		return new Locale(language, country);
 	}
 	
-	public static HashMap<String,Object> getTimeData(long addedTime)
+	public static HashMap<String,Object> getTimeData(long addedTime, Boolean... seconds)
 	{
-		return getTimeData(getZoneId(),addedTime);
+		return getTimeData(getZoneId(),addedTime, seconds);
 	}
 	
-	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime)
+	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime, Boolean... seconds)
 	{
-		ZonedDateTime zdt = getDateTime(zoneId,addedTime,true);
+		ZonedDateTime zdt = getDateTime(zoneId,addedTime,seconds);
 		return getTimeData(zdt);
 	}
 

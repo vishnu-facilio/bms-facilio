@@ -194,6 +194,22 @@
 			</result>
 		</action>
 	</package>
+	<package name="businessHoursApi" namespace="/api/businesshours" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="id">{1}</param>
+			<result name="success" type="json">
+				<param name="root">businessHours</param>
+			</result>
+		</action>
+	</package>
 	<package name="taskApi" namespace="/api/task" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
 			<param name="permission">TASK_CREATE</param>
@@ -807,6 +823,13 @@
 		</action>
 		
 		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssignedOccupancyReading">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
+		
+		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addEnergyData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
 				<param name="includeProperties">readingData.*</param>

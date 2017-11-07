@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -18,6 +21,7 @@ public class LookupSpecialTypeUtil {
 		return FacilioConstants.ContextNames.USERS.equals(specialType)
 				|| FacilioConstants.ContextNames.GROUPS.equals(specialType)
 				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
+				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				;
 	}
 	
@@ -61,6 +65,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return GroupAPI.getGroup(id);
 		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			return BusinessHoursAPI.getBusinessHours(id);
+		}
 		return null;
 	}
 	
@@ -79,6 +86,11 @@ public class LookupSpecialTypeUtil {
 			GroupContext group = new GroupContext();
 			group.setGroupId(id);
 			return group;
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			BusinessHoursList businessHours = new BusinessHoursList();
+			businessHours.setId(id);
+			return businessHours;
 		}
 		return null;
 	}
