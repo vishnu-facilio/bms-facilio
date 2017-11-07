@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.facilio.bmsconsole.context.SingleDayBusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -32,11 +32,11 @@ public class BusinessHoursAction extends ActionSupport {
 		this.id = id;
 	}
 
-	private List<SingleDayBusinessHourContext> businessHours;
-	public List<SingleDayBusinessHourContext> getBusinessHours() {
+	private List<BusinessHourContext> businessHours;
+	public List<BusinessHourContext> getBusinessHours() {
 		return businessHours;
 	}
-	public void setBusinessHours(List<SingleDayBusinessHourContext> businessHours) {
+	public void setBusinessHours(List<BusinessHourContext> businessHours) {
 		this.businessHours = businessHours;
 	}
 }

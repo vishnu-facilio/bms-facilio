@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class SingleDayBusinessHourContext {
+public class BusinessHourContext {
 	
 	
 	private long id = -1;
@@ -64,9 +64,6 @@ public class SingleDayBusinessHourContext {
 	public void setStartTime(String value) {
 		this.startTime = LocalTime.parse(value);
 	}
-	public void setStartTime(Time startTime) {
-		this.startTime = startTime.toLocalTime();	
-	}
 	
 	private LocalTime endTime;
 	public LocalTime getEndTimeAsLocalTime() {
@@ -83,8 +80,5 @@ public class SingleDayBusinessHourContext {
 	}
 	public void setEndTime(String value) {
 		this.endTime = LocalTime.parse(value);
-	}
-	public void setEndTime(Time endTime) {
-		this.endTime = endTime.toLocalTime();
 	}
 }

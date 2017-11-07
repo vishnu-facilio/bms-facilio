@@ -2,13 +2,12 @@ package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.SingleDayBusinessHourContext;
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -18,7 +17,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class BusinessHoursAPI {
 	
-	public static long addBusinessHours(List<SingleDayBusinessHourContext> businessHours) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static long addBusinessHours(List<BusinessHourContext> businessHours) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> props = new HashMap<>();
 		props.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
 		GenericInsertRecordBuilder businessHoursBuilder = new GenericInsertRecordBuilder()
@@ -33,7 +32,7 @@ public class BusinessHoursAPI {
 																.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
 																.fields(FieldFactory.getSingleDayBusinessHoursFields());
 		
-		for(SingleDayBusinessHourContext singleDay : businessHours) {
+		for(BusinessHourContext singleDay : businessHours) {
 			singleDay.setParentId(parentId);
 			singleDayBuilder.addRecord(FieldUtil.getAsProperties(singleDay));
 		}
@@ -42,24 +41,26 @@ public class BusinessHoursAPI {
 		return parentId;
 	}
 	
-	public static List<SingleDayBusinessHourContext> getBusinessHours(long id) throws Exception {
+	public static BusinessHoursList getBusinessHours(long id) throws Exception {
 		
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
-		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSingleDayBusinessHoursFields())
 														.table(businessHoursTable)
 														.innerJoin(singleDayTable)
 														.on(businessHoursTable+".ID = "+singleDayTable+".PARENT_ID")
-														.andCustomWhere(businessHoursTable+".ID = ?", id)
+														.andCustomWhere(businessHoursTable+".ORGID = ? AND "+businessHoursTable+".ID = ?", orgId, id)
 														.orderBy("dayOfWeek");
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			List<SingleDayBusinessHourContext> businessHours = new ArrayList<>();
+			BusinessHoursList businessHours = new BusinessHoursList();
+			businessHours.setOrgId(orgId);
+			businessHours.setId(id);
 			for(Map<String, Object> prop : props) {
-				businessHours.add(FieldUtil.getAsBeanFromMap(prop, SingleDayBusinessHourContext.class));
+				businessHours.add(FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class));
 			}
 			return businessHours;
 		}
