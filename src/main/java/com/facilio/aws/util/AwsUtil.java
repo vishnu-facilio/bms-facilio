@@ -175,9 +175,9 @@ public class AwsUtil
     	{
     		HttpClientContext context = HttpClientContext.create();
 			HttpPost post = new HttpPost(url);
+			Iterator<String> headerIterator = headers.keySet().iterator();
 			if(headers != null)
 			{
-				Iterator<String> headerIterator = headers.keySet().iterator();
 				while(headerIterator.hasNext())
 				{
 					String key = headerIterator.next();

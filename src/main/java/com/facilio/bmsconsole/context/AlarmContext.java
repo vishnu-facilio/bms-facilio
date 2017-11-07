@@ -121,6 +121,24 @@ public class AlarmContext extends TicketContext {
 		this.deviceId = deviceId;
 	}
 
+	private String source;
+	public String getSource() {
+		return source;
+	}
+	
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	private String node;
+	public String getNode() {
+		return node;
+	}
+	
+	public void setNode(String node) {
+		this.node = node;
+	}
+
 	public static enum AlarmStatus {
 		ACTIVE(1, "Active"),
 		SUPPRESS(2, "Suppressed"),
