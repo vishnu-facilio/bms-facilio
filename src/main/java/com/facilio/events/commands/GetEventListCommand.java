@@ -36,6 +36,7 @@ public class GetEventListCommand implements Command {
 			{
 				EventContext event = new EventContext();
 				BeanUtils.populate(event, eventMap);
+				events.add(event);
 			}
 		}
 		catch (Exception e) {

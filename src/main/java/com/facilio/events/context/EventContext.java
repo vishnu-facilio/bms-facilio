@@ -1,10 +1,5 @@
 package com.facilio.events.context;
 
-import java.text.ParseException;
-
-import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-
 public class EventContext {
 	
 	private long orgId = -1;
@@ -21,6 +16,14 @@ public class EventContext {
 	}
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
+	}
+	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 	public String source;

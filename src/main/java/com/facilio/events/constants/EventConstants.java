@@ -137,6 +137,20 @@ public class EventConstants {
 		severity.setModule(module);
 		fields.add(severity);
 		
+		FacilioField state = new FacilioField();
+		state.setName("state");
+		state.setDataType(FieldType.STRING);
+		state.setColumnName("STATE");
+		state.setModule(module);
+		fields.add(state);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(module);
+		fields.add(createdTime);
+		
 		FacilioField description = new FacilioField();
 		description.setName("description");
 		description.setDataType(FieldType.STRING);

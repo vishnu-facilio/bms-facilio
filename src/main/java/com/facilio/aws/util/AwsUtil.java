@@ -175,12 +175,15 @@ public class AwsUtil
     	{
     		HttpClientContext context = HttpClientContext.create();
 			HttpPost post = new HttpPost(url);
-			Iterator<String> headerIterator = headers.keySet().iterator();
-			while(headerIterator.hasNext())
+			if(headers != null)
 			{
-				String key = headerIterator.next();
-				String value = headers.get(key);
-				post.setHeader(key, value);
+				Iterator<String> headerIterator = headers.keySet().iterator();
+				while(headerIterator.hasNext())
+				{
+					String key = headerIterator.next();
+					String value = headers.get(key);
+					post.setHeader(key, value);
+				}
 			}
 			if(bodyContent != null)
 			{

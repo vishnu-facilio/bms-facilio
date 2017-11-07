@@ -24,8 +24,8 @@ public class EventAction extends ActionSupport {
 	public String eventList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain alarmListChain = EventConstants.getEventListChain();
-		alarmListChain.execute(context);
+		Chain eventListChain = EventConstants.getEventListChain();
+		eventListChain.execute(context);
 		
 		setEvents((List<EventContext>) context.get(EventConstants.EVENT_LIST));
 		return SUCCESS;

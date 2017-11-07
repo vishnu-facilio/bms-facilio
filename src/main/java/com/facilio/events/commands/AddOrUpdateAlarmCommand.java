@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -35,12 +36,11 @@ public class AddOrUpdateAlarmCommand implements Command {
 				{
 					//TODO update alarm
 				}
-				else
+				//else
 				{
 					String server = AwsUtil.getConfig("servername");
 					String url = "http://" + server + "/internal/addAlarm";
-					String bodyContent = "{}";
-					
+					String bodyContent = FieldUtil.getPropertiesAsJson(event).toJSONString();
 			        AwsUtil.doHttpPost(url, null, null, bodyContent);
 				}
 			} 

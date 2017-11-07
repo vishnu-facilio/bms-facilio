@@ -49,6 +49,15 @@ public class AlarmAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
+	
+	public String addAlarmFromEvent() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM, alarm);
+		
+		Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
+		addAlarmChain.execute(context);
+		return SUCCESS;
+	}
 
 	private long alarmId = -1;
 	public long getAlarmId() {
