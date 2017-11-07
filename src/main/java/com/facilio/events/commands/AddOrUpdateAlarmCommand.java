@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -16,7 +17,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddOrUpdateAlarmCommand implements Command {
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public boolean execute(Context context) throws Exception {
 		boolean ignoreEvent = (Boolean) context.get(EventConstants.IGNORE_EVENT);
@@ -38,10 +39,22 @@ public class AddOrUpdateAlarmCommand implements Command {
 				}
 				//else
 				{
+
+					
+					JSONObject ticketjson = new JSONObject();
+					ticketjson.put("subject", event.getEventType());
+					//ticketjson.put("priority", event.getEventType());
+					ticketjson.put("description", event.getDescription());
+					
+					JSONObject json = new JSONObject();
+					json.put("orgId", event.getOrgId());
+					json.put("source", event.getSource());
+					json.put("node", event.getNode());
+					json.put("ticket", ticketjson);
+					//json.put("status", event.getState());
 					String server = AwsUtil.getConfig("servername");
 					String url = "http://" + server + "/internal/addAlarm";
-					String bodyContent = FieldUtil.getPropertiesAsJson(event).toJSONString();
-			        AwsUtil.doHttpPost(url, null, null, bodyContent);
+			        AwsUtil.doHttpPost(url, null, null, json.toJSONString());
 				}
 			} 
 			catch (Exception e) 
