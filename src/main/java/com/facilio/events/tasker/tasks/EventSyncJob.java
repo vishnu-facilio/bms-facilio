@@ -45,7 +45,7 @@ public class EventSyncJob extends FacilioJob{
 				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
 				
 				DynamoDB dd = new DynamoDB(client);
-				Table table = dd.getTable("BMTSEvents"); // Client Table
+				Table table = dd.getTable("FacilioEvents"); // Client Table
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
 				

@@ -27,7 +27,7 @@ public class ExecuteEventRuleCommand implements Command {
 		
 		Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EVENT_PROPERTY);
 		boolean ignoreEvent = false;
-		if((Boolean) propsMap.get("hasEventRule"))
+		if(propsMap.get("hasEventRule") != null && (Boolean) propsMap.get("hasEventRule"))
 		{
 			EventContext event = (EventContext) context.get(EventConstants.EVENT);
 			Map<String, Object> ruleprops = null;
@@ -48,7 +48,7 @@ public class ExecuteEventRuleCommand implements Command {
 				throw e;
 			}
 			
-			if((Boolean) ruleprops.get("hasEventFilter"))
+			if(ruleprops.get("hasEventFilter") != null && (Boolean) ruleprops.get("hasEventFilter"))
 			{
 				try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
 				{
@@ -63,7 +63,7 @@ public class ExecuteEventRuleCommand implements Command {
 			}
 			if(!ignoreEvent)
 			{
-				if((Boolean) ruleprops.get("hasCustomizeRule"))
+				if(ruleprops.get("hasCustomizeRule") != null && (Boolean) ruleprops.get("hasCustomizeRule"))
 				{
 					try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
 					{
@@ -86,7 +86,7 @@ public class ExecuteEventRuleCommand implements Command {
 						throw e;
 					}
 				}
-				if((Boolean) ruleprops.get("hasThresholdRule"))
+				if(ruleprops.get("hasThresholdRule") != null && (Boolean) ruleprops.get("hasThresholdRule"))
 				{
 					Criteria criteria = new Criteria();
 					ignoreEvent = criteria.computePredicate().evaluate(event);

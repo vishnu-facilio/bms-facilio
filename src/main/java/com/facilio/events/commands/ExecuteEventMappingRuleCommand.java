@@ -27,7 +27,7 @@ public class ExecuteEventMappingRuleCommand implements Command {
 		if(!ignoreEvent)
 		{
 			Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EVENT_PROPERTY);
-			if((Boolean) propsMap.get("hasMappingRule"))
+			if(propsMap.get("hasMappingRule") != null && (Boolean) propsMap.get("hasMappingRule"))
 			{
 				EventContext event = (EventContext) context.get(EventConstants.EVENT);
 				Map<String, Object> ruleprops = null;
