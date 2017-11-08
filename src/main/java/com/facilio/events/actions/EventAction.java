@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
@@ -80,6 +81,35 @@ public class EventAction extends ActionSupport {
 		
 		Chain updateEventPropertyChain = EventConstants.updateEventPropertyChain();
 		updateEventPropertyChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private Map<Integer, Condition> filterConditions;
+	public Map<Integer, Condition> getFilterConditions() {
+		return filterConditions;
+	}
+	public void setFilterConditions(Map<Integer, Condition> filterConditions) {
+		this.filterConditions = filterConditions;
+	}
+	
+	private String filterPattern;
+	public String getFilterPattern() {
+		return filterPattern;
+	}
+	public void setFilterPattern(String filterPattern) {
+		this.filterPattern = filterPattern;
+	}
+	
+	public String saveEventFilter() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_RULE, eventRule);
+		context.put(EventConstants.FILTER_CRITERIA_PATTERN, filterPattern);
+		context.put(EventConstants.FILTER_CONDITIONS, filterConditions);
+		
+		Chain updateEventFilterChain = EventConstants.updateEventFilterChain();
+		updateEventFilterChain.execute(context);
 		
 		return SUCCESS;
 	}

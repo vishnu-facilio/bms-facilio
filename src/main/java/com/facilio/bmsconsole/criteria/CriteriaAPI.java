@@ -41,7 +41,10 @@ public class CriteriaAPI {
 															.fields(FieldFactory.getConditionFields())
 															;
 			
-			for(Condition condition : conditions.values()) {
+			for(Map.Entry<Integer, Condition> conditionEntry : conditions.entrySet()) {
+				Condition condition = conditionEntry.getValue();
+				
+				condition.setSequence(conditionEntry.getKey());
 				condition.setConditionId(-1);
 				condition.setParentCriteriaId(parentCriteriaId);
 				
