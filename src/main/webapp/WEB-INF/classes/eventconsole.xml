@@ -41,4 +41,20 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="eventApi" namespace="/api/event" extends="home">
+		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^eventProperty.*,^eventRule.*,^eventCriteriaMap.*</param>
+			</result>
+		</action>
+		
+		<action name="updateEventProperty" class="com.facilio.events.actions.EventAction" method="updateEventProperty">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^eventProperty.*</param>
+			</result>
+		</action>
+	</package>
 </struts>

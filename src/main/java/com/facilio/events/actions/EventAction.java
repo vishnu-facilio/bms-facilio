@@ -1,11 +1,15 @@
 package com.facilio.events.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventProperty;
+import com.facilio.events.context.EventRule;
 import com.facilio.events.constants.EventConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -28,6 +32,55 @@ public class EventAction extends ActionSupport {
 		eventListChain.execute(context);
 		
 		setEvents((List<EventContext>) context.get(EventConstants.EVENT_LIST));
+		return SUCCESS;
+	}
+	
+	private EventProperty eventProperty;
+	public EventProperty getEventProperty() {
+		return eventProperty;
+	}
+	public void setEventProperty(EventProperty eventProperty) {
+		this.eventProperty = eventProperty;
+	}
+	
+	private EventRule eventRule;
+	public EventRule getEventRule() {
+		return eventRule;
+	}
+	public void setEventRule(EventRule eventRule) {
+		this.eventRule = eventRule;
+	}
+	
+	private Map<Long, Criteria> eventCriteriaMap;
+	public Map<Long, Criteria> getEventCriteriaMap() {
+		return eventCriteriaMap;
+	}
+	public void setEventCriteriaMap(Map<Long, Criteria> eventCriteriaMap) {
+		this.eventCriteriaMap = eventCriteriaMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String eventRules() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain eventRulesChain = EventConstants.getEventRulesChain();
+		eventRulesChain.execute(context);
+		
+		setEventProperty((EventProperty) context.get(EventConstants.EVENT_PROPERTY));
+		setEventRule((EventRule) context.get(EventConstants.EVENT_RULE));
+		setEventCriteriaMap((Map<Long, Criteria>) context.get(EventConstants.EVENT_CRITERIA_MAP));
+		
+		return SUCCESS;
+	}
+	
+	public String updateEventProperty() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_PROPERTY, eventProperty);
+		
+		Chain updateEventPropertyChain = EventConstants.updateEventPropertyChain();
+		updateEventPropertyChain.execute(context);
+		
 		return SUCCESS;
 	}
 }

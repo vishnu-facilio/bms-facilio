@@ -15,12 +15,17 @@ import com.facilio.events.commands.AddOrUpdateAlarmCommand;
 import com.facilio.events.commands.ExecuteEventMappingRuleCommand;
 import com.facilio.events.commands.ExecuteEventRuleCommand;
 import com.facilio.events.commands.GetEventListCommand;
+import com.facilio.events.commands.GetEventPropertyCommand;
+import com.facilio.events.commands.GetEventRuleCommand;
+import com.facilio.events.commands.UpdateEventPropertyCommand;
 
 public class EventConstants {
 	
 	public static final String EVENT = "event";
 	public static final String EVENT_LIST = "events";
 	public static final String EVENT_PROPERTY = "eventProperty";
+	public static final String EVENT_RULE = "eventRule";
+	public static final String EVENT_CRITERIA_MAP = "eventCriteriaList";
 	public static final String IGNORE_EVENT = "ignoreEvent";
 	
 	public static Chain getAddEventChain() {
@@ -29,6 +34,21 @@ public class EventConstants {
 		c.addCommand(new ExecuteEventMappingRuleCommand());
 		c.addCommand(new AddEventCommand());
 		c.addCommand(new AddOrUpdateAlarmCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getEventRulesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetEventPropertyCommand());
+		c.addCommand(new GetEventRuleCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateEventPropertyChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateEventPropertyCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
