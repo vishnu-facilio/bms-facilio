@@ -26,11 +26,11 @@ public class EventRule {
 		this.hasEventFilter = hasEventFilter;
 	}
 	
-	private long filterCriteriaId = -1;
-	public long getFilterCriteriaId() {
+	private Long filterCriteriaId;
+	public Long getFilterCriteriaId() {
 		return filterCriteriaId;
 	}
-	public void setFilterCriteriaId(long filterCriteriaId) {
+	public void setFilterCriteriaId(Long filterCriteriaId) {
 		this.filterCriteriaId = filterCriteriaId;
 	}
 	
@@ -42,11 +42,11 @@ public class EventRule {
 		this.hasCustomizeRule = hasCustomizeRule;
 	}
 	
-	private long customizeCriteriaId = -1;
-	public long getCustomizeCriteriaId() {
+	private Long customizeCriteriaId;
+	public Long getCustomizeCriteriaId() {
 		return customizeCriteriaId;
 	}
-	public void setCustomizeCriteriaId(long customizeCriteriaId) {
+	public void setCustomizeCriteriaId(Long customizeCriteriaId) {
 		this.customizeCriteriaId = customizeCriteriaId;
 	}
 	

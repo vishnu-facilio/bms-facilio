@@ -113,4 +113,33 @@ public class EventAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	private Map<Integer, Condition> customizeConditions;
+	public Map<Integer, Condition> getCustomizeConditions() {
+		return customizeConditions;
+	}
+	public void setCustomizeConditions(Map<Integer, Condition> customizeConditions) {
+		this.customizeConditions = customizeConditions;
+	}
+	
+	private String customizePattern;
+	public String getCustomizePattern() {
+		return customizePattern;
+	}
+	public void setCustomizePattern(String customizePattern) {
+		this.customizePattern = customizePattern;
+	}
+	
+	public String saveEventTransformRules() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_RULE, eventRule);
+		context.put(EventConstants.CUSTOMIZE_CRITERIA_PATTERN, customizePattern);
+		context.put(EventConstants.CUSTOMIZE_CONDITIONS, customizeConditions);
+		
+		Chain updateEventTransformRuleChain = EventConstants.updateEventTransformRuleChain();
+		updateEventTransformRuleChain.execute(context);
+		
+		return SUCCESS;
+	}
 }

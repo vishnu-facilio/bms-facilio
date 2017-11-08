@@ -21,7 +21,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class UpdateEventFilterCommand implements Command {
+public class UpdateEventTransformRuleCommand implements Command {
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
@@ -31,18 +31,18 @@ public class UpdateEventFilterCommand implements Command {
 		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
 		eventRule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
-		if(eventRule.getHasEventFilter() != null && eventRule.getHasEventFilter())
+		if(eventRule.getHasCustomizeRule() != null && eventRule.getHasCustomizeRule())
 		{
 			Criteria criteria = new Criteria();
-			criteria.setPattern((String) context.get(EventConstants.FILTER_CRITERIA_PATTERN));
-			criteria.setConditions((Map<Integer, Condition>) context.get(EventConstants.FILTER_CONDITIONS));
+			criteria.setPattern((String) context.get(EventConstants.CUSTOMIZE_CRITERIA_PATTERN));
+			criteria.setConditions((Map<Integer, Condition>) context.get(EventConstants.CUSTOMIZE_CONDITIONS));
 			
 			long criteriaId = CriteriaAPI.addCriteria(criteria, OrgInfo.getCurrentOrgInfo().getOrgid());
-			eventRule.setFilterCriteriaId(criteriaId);
+			eventRule.setCustomizeCriteriaId(criteriaId);
 		}
 		else
 		{
-			eventRule.setFilterCriteriaId(null);
+			eventRule.setCustomizeCriteriaId(null);
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();

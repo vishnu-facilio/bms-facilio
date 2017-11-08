@@ -19,6 +19,7 @@ import com.facilio.events.commands.GetEventPropertyCommand;
 import com.facilio.events.commands.GetEventRuleCommand;
 import com.facilio.events.commands.UpdateEventFilterCommand;
 import com.facilio.events.commands.UpdateEventPropertyCommand;
+import com.facilio.events.commands.UpdateEventTransformRuleCommand;
 
 public class EventConstants {
 	
@@ -30,6 +31,8 @@ public class EventConstants {
 	public static final String IGNORE_EVENT = "ignoreEvent";
 	public static final String FILTER_CRITERIA_PATTERN = "filterCriteriaPattern";
 	public static final String FILTER_CONDITIONS = "filterConditions";
+	public static final String CUSTOMIZE_CRITERIA_PATTERN = "customizeCriteriaPattern";
+	public static final String CUSTOMIZE_CONDITIONS = "customizeConditions";
 	
 	public static Chain getAddEventChain() {
 		Chain c = new ChainBase();
@@ -59,6 +62,13 @@ public class EventConstants {
 	public static Chain updateEventFilterChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateEventFilterCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateEventTransformRuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateEventTransformRuleCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
