@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -31,6 +32,19 @@ public class DateTimeUtil
 		//TODO Locale related changes to be done..
 		//like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
 		return Locale.getDefault();
+	}
+	
+	public static ArrayList<Long> getDaysOfTheWeek(long startTime){
+			return getDaysOfTheWeek(getZoneId(),startTime);
+	}
+	public static ArrayList<Long> getDaysOfTheWeek(ZoneId zoneId, long startTime){
+		ZonedDateTime thisDate = getDateTime(startTime);
+		ArrayList<Long> daysOfTheWeek = new ArrayList<Long>();
+		for(int i=1;i<=8;i++) {
+			long thisDay = getMillis(thisDate.plusDays(i),true);
+			daysOfTheWeek.add(thisDay);
+		}
+		return daysOfTheWeek;
 	}
 	
 	private static ZonedDateTime getMidnight(ZoneId zoneId)

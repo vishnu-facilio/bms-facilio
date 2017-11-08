@@ -29,93 +29,108 @@ public class GenerateCondtionsFromFiltersCommand implements Command {
 			while(filterIterator.hasNext())
 			{
 				String fieldName = filterIterator.next();
-				JSONObject fieldJson = (JSONObject) filters.get(fieldName);
-				JSONArray value = (JSONArray) fieldJson.get("value");
-				if(value.size() > 0 || (fieldJson.get("operator") != null && !((String) fieldJson.get("operator")).equals("is")))
-				{
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					String[] module = ((String) fieldJson.get("module")).split("\\.");
-					if(module.length > 1)
-					{
-						FacilioField field = modBean.getField(module[1], module[0]);
-						Condition condition = new Condition();
-						condition.setField(field);
-						condition.setOperator(LookupOperator.LOOKUP);
-						
-						FacilioField childField = modBean.getField(fieldName, module[1]);
-						Condition childCondition = new Condition();
-						childCondition.setField(childField);
-						childCondition.setOperator(childField.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
-						
-						if(value.size() > 0)
-						{
-							StringBuilder values = new StringBuilder();
-							boolean isFirst = true;
-							Iterator<String> iterator = value.iterator();
-							while(iterator.hasNext())
-							{
-								String obj = iterator.next();
-								if(!isFirst)
-								{
-									values.append(",");
-								}
-								else
-								{
-									isFirst = false;
-								}
-								if (obj.indexOf("_") != -1) {
-									try {
-										long id = Long.parseLong(obj.split("_")[0]);
-										values.append(id+"");
-									}
-									catch (Exception e) {
-										values.append(obj);
-									}
-								}
-								else {
-									values.append(obj);
-								}
-							}
-							childCondition.setValue(values.toString());
-						}
-						
-						Criteria criteria = new Criteria();
-						criteria.addAndCondition(childCondition);
-						
-						condition.setCriteriaValue(criteria);
-						conditionList.add(condition);
+				Object fieldJson = filters.get(fieldName);
+				if(fieldJson!=null && fieldJson instanceof JSONArray) {
+					JSONArray fieldJsonArr = (JSONArray) fieldJson;
+					for(int i=0;i<fieldJsonArr.size();i++) {
+						JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
+						setCondition(fieldName, fieldJsonObj, conditionList);
 					}
-					else
-					{
-						FacilioField field = modBean.getField(fieldName, module[0]);
-						Condition condition = new Condition();
-						condition.setField(field);
-						condition.setOperator(field.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
-						
-						StringBuilder values = new StringBuilder();
-						boolean isFirst = true;
-						Iterator<String> iterator = value.iterator();
-						while(iterator.hasNext())
-						{
-							String obj = iterator.next();
-							if(!isFirst)
-							{
-								values.append(",");
-							}
-							else
-							{
-								isFirst = false;
-							}
-							values.append(obj.substring(0, obj.indexOf("_")));
-						}
-						condition.setValue(values.toString());
-						conditionList.add(condition);
-					}
+				}
+				else if(fieldJson!=null && fieldJson instanceof JSONObject) {
+					JSONObject fieldJsonObj = (JSONObject) fieldJson;
+					setCondition(fieldName, fieldJsonObj, conditionList);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.FILTER_CONDITIONS, conditionList);
 		}
 		return false;
+	}
+	private void setCondition(String fieldName, JSONObject fieldJson, List<Condition> conditionList) throws Exception {
+		JSONArray value = (JSONArray) fieldJson.get("value");
+		if((value!=null && value.size() > 0) || (fieldJson.get("operator") != null && !((String) fieldJson.get("operator")).equals("is")))
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String[] module = ((String) fieldJson.get("module")).split("\\.");
+			if(module.length > 1)
+			{
+				FacilioField field = modBean.getField(module[1], module[0]);
+				Condition condition = new Condition();
+				condition.setField(field);
+				condition.setOperator(LookupOperator.LOOKUP);
+				
+				FacilioField childField = modBean.getField(fieldName, module[1]);
+				Condition childCondition = new Condition();
+				childCondition.setField(childField);
+				childCondition.setOperator(childField.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
+				
+				if(value.size() > 0)
+				{
+					StringBuilder values = new StringBuilder();
+					boolean isFirst = true;
+					Iterator<String> iterator = value.iterator();
+					while(iterator.hasNext())
+					{
+						String obj = iterator.next();
+						if(!isFirst)
+						{
+							values.append(",");
+						}
+						else
+						{
+							isFirst = false;
+						}
+						if (obj.indexOf("_") != -1) {
+							try {
+								long id = Long.parseLong(obj.split("_")[0]);
+								values.append(id+"");
+							}
+							catch (Exception e) {
+								values.append(obj);
+							}
+						}
+						else {
+							values.append(obj);
+						}
+					}
+					childCondition.setValue(values.toString());
+				}
+				
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(childCondition);
+				
+				condition.setCriteriaValue(criteria);
+				conditionList.add(condition);
+			}
+			else
+			{
+				FacilioField field = modBean.getField(fieldName, module[0]);
+				Condition condition = new Condition();
+				condition.setField(field);
+				condition.setOperator(field.getDataTypeEnum().getOperator((String) fieldJson.get("operator")));
+				
+				if(value!=null && value.size()>0) {
+					StringBuilder values = new StringBuilder();
+					boolean isFirst = true;
+					Iterator<String> iterator = value.iterator();
+					while(iterator.hasNext())
+					{
+						String obj = iterator.next();
+						if(!isFirst)
+						{
+							values.append(",");
+						}
+						else
+						{
+							isFirst = false;
+						}
+						values.append(obj.substring(0, obj.indexOf("_")));
+					}
+					condition.setValue(values.toString());
+				}
+				conditionList.add(condition);
+			}
+		}
 	}
 
 }

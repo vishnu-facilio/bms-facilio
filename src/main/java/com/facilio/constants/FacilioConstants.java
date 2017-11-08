@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -415,6 +416,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
+		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
 		
@@ -577,14 +579,102 @@ public class FacilioConstants {
 		public static final String WORKFLOW = "workflow";
 		public static final String WORKFLOW_LIST = "workflows";
 	}
-	
+	public static class WorkOrder{
+		public static final String TABLE_NAME = "Workorders";
+	}
+	public static class WorkOrderRquest{
+		public static final String SOURCE_TYPE = "sourceType";
+		public static final String CREATED_TIME = "createdTime";
+	}
+	public static class Ticket{
+		public static final String STATUS_ID = "status_id";
+		public static final String CATEGORY_ID = "category_id";
+		public static final String ASSIGNED_TO_ID = "assignedTo";
+		public static final String STATUS = "status";
+		public static final String SPACE = "space";
+		public static final String ACTUAL_WORK_START = "actualWorkStart";
+		public static final String ACTUAL_WORK_END = "actualWorkEnd";
+		public static final String DUE_DATE = "dueDate";
+		public static final String RESOLUTION_TIME = "resolutionTime";
+		public static final String FIRST_ACTION_TIME = "firstActionTime";
+		public static final String DUE_STATUS = "dueStatus";
+		public static final String ON_TIME = "ontime";
+		public static final String OVERDUE = "overdue";
+		public static final String DUE_COUNT = "dueCount";
+		public static final String CREATED_TIME = "createdTime";
+	}
+	public static class TicketStatus{
+		public static final String STATUS = "status";
+	}
+	public static class TicketCategory{
+		public static final String NAME = "name";
+	}
+	public static class User{
+		public static final String EMAIL = "email";
+	}
+	public static class TableNames{
+		public static final String WORK_ORDER = "Workorders";
+		public static final String TICKET_STATUS = "TicketStatus";
+		public static final String TICKET_PRIORITY = "TicketPriority";
+		public static final String TICKET_CATEGORY = "TicketCategory";
+		public static final String TICKET = "Tickets";
+		public static final String WORK_ORDER_REQUEST = "WorkOrderRequests";
+		public static final String SPACE = "Space";
+	}
 	public static class Reports 
 
 	{
 		public static final String RANGE_FROM = "fromRange";
 		public static final String RANGE_END = "endRange";
+		public static final String GROUPBY="groupBy";
 		public static final String GROUPBY_COLUMN = "groupByCol";
-		public static final String ORDERBY_COLUMN = "orderByCol";
+		public static final String GROUPBY_COLUMNS = "groupByCols";
+  		public static final String ORDERBY_COLUMN = "orderByCol";
+		public static final String ORDERBY_COLUMNS = "orderByCols";
+		public static final String COUNT_COLUMN = "count";
+		public static final String ALL_COLUMN = "*";
+		public static final String UNIQUE_COLUMN = "distinct";
+		public static final String JOIN_TYPE = "joinType";
+		public static final String INNER_JOIN = "innerJoin";
+		public static final String LEFT_JOIN = "leftJoin";
+		public static final String RIGHT_JOIN = "rightJoin";
+		public static final String FULL_JOIN = "fullJoin";
+		
+
+		public static final String X_AXIS = "xAxis";
+		public static final String Y_AXIS = "yAxis";
+		public static final String CATEGORY_COLUMN = "categoryCol";
+		public static final String FIELD_ALIAS = "fieldAlias";
+		public static final String REPORT_TYPE = "reportType";
+		public static final String SUMMARY_REPORT_TYPE = "summaryReport";
+		public static final String TABULAR_REPORT_TYPE = "tabularReport";
+		public static final String TOP_N_SUMMARY_REPORT_TYPE = "topNSummaryReport";
+		public static final String TOP_N_NUMERIC_REPORT_TYPE = "topNNumericReport";
+		public static final String TREND_REPORT_TYPE = "trendReport";
+		public static final String NUMERIC_REPORT_TYPE = "numericReport";	
+		public static final String TOP_N_DATA = "topNData";	
+		public static final String TOP_N = "topN";
+		public static final String BOTTOM_N = "bottomN";
+		public static final String SUM_FUNC = "sum";
+		public static final String MIN_FUNC = "min";
+		public static final String MAX_FUNC = "max";
+		public static final String AVG_FUNC = "avg";
+		public static final String AGG_FUNC = "aggregate";
+		public static final String LABEL = "label";
+		public static final String JOINS = "joins";
+		public static final String JOIN_TABLE = "joinTable";
+		public static final String JOIN_ON = "joinOn";
+		public static final String REPORT_FIELD = "reportField";
+		public static final String FIELD_MODULE = "fieldModule";
+		public static final String ORG_CONDITION = "orgCondition";
+		public static final String CUSTOM_WHERE_CONDITION = "customWhere";
+		public static final String RESULT_SET = "resultSet";
+		
+		public static final String DAILY = "daily";
+		public static final String HOURLY = "hourly";
+		public static final String WEEKLY = "weekly";
+		public static final String MONTHLY = "monthly";
+		
 		
 		public static final StringBuilder ENERGY_TABLE= new StringBuilder(" ENERGY_DATA ");
 		
