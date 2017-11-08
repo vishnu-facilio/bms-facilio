@@ -629,6 +629,7 @@ public class FacilioConstants {
 		public static final String GROUPBY="groupBy";
 		public static final String GROUPBY_COLUMN = "groupByCol";
 		public static final String GROUPBY_COLUMNS = "groupByCols";
+  		public static final String ORDERBY_COLUMN = "orderByCol";
 		public static final String ORDERBY_COLUMNS = "orderByCols";
 		public static final String COUNT_COLUMN = "count";
 		public static final String ALL_COLUMN = "*";
