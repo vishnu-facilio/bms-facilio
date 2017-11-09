@@ -20,8 +20,7 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName) throws Exception {
-		long startTime = (Instant.now().getEpochSecond())+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName) throws Exception {
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
@@ -35,8 +34,7 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
-		long startTime = (Instant.now().getEpochSecond())+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
@@ -51,8 +49,7 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
-		long startTime = (Instant.now().getEpochSecond())+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
