@@ -61,6 +61,26 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	private long alarmTemplateId = -1;
+	public long getAlarmTemplateId() {
+		return alarmTemplateId;
+	}
+	public void setAlarmTemplateId(long alarmTemplateId) {
+		this.alarmTemplateId = alarmTemplateId;
+	}
+	
+	public String addWorkOrderTemplate() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM, alarm);
+		
+		Chain addTemplate = FacilioChainFactory.getAddAlarmTemplateChain();
+		addTemplate.execute(context);
+		setAlarmTemplateId((long) context.get(FacilioConstants.ContextNames.RECORD_ID));
+		
+		return SUCCESS;
+	}
+
 	private long alarmId = -1;
 	public long getAlarmId() {
 		return alarmId;

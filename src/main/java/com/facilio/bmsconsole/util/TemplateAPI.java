@@ -325,4 +325,36 @@ public class TemplateAPI {
 			throw e;
 		}
 	}
+	
+	public static long addAlarmTemplate(long orgId, AlarmTemplate template) throws Exception {
+		
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			template.setOrgId(orgId);
+			template.setContentId((FileStoreFactory.getInstance().getFileStore().addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain")));
+			
+			Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+			
+			GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+																.connection(conn)
+																.table("Templates")
+																.fields(FieldFactory.getUserTemplateFields())
+																.addRecord(templateProps);
+			
+			userTemplateBuilder.save();
+			
+			GenericInsertRecordBuilder alarmTemplateBuilder = new GenericInsertRecordBuilder()
+																	.connection(conn)
+																	.table("Alarm_Template")
+																	.fields(FieldFactory.getAlarmTemplateFields())
+																	.addRecord(templateProps);
+			alarmTemplateBuilder.save();
+			
+			return (long) templateProps.get("id"); 
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
 }
