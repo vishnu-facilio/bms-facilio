@@ -56,5 +56,19 @@
 				<param name="includeProperties">^eventProperty.*</param>
 			</result>
 		</action>
+		
+		<action name="saveEventFilter" class="com.facilio.events.actions.EventAction" method="saveEventFilter">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^eventRule.*</param>
+			</result>
+		</action>
+		
+		<action name="saveEventTransformRules" class="com.facilio.events.actions.EventAction" method="saveEventTransformRules">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^eventRule.*</param>
+			</result>
+		</action>
 	</package>
 </struts>

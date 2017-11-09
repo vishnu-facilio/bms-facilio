@@ -8,10 +8,11 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
-import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventThresholdRule;
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
@@ -148,6 +149,26 @@ public class EventAction extends ActionSupport {
 		
 		Chain updateEventTransformRuleChain = EventConstants.updateEventTransformRuleChain();
 		updateEventTransformRuleChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private List<EventThresholdRule> eventThresholdRules;
+	public List<EventThresholdRule> getEventThresholdRules() {
+		return eventThresholdRules;
+	}
+	public void setEventThresholdRules(List<EventThresholdRule> eventThresholdRules) {
+		this.eventThresholdRules = eventThresholdRules;
+	}
+	
+	public String saveThresholdRules() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_RULE, eventRule);
+		context.put(EventConstants.EVENT_THRESHOLD_RULE_LIST, eventThresholdRules);
+		
+		Chain updateEventThresholdRulesChain = EventConstants.updateEventThresholdRulesChain();
+		updateEventThresholdRulesChain.execute(context);
 		
 		return SUCCESS;
 	}
