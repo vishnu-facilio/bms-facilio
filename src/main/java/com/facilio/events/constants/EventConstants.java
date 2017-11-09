@@ -33,6 +33,7 @@ public class EventConstants {
 	public static final String FILTER_CONDITIONS = "filterConditions";
 	public static final String CUSTOMIZE_CRITERIA_PATTERN = "customizeCriteriaPattern";
 	public static final String CUSTOMIZE_CONDITIONS = "customizeConditions";
+	public static final String CUSTOMIZE_ALARM_TEMPLATE = "customizeAlarmTemplate";
 	
 	public static Chain getAddEventChain() {
 		Chain c = new ChainBase();

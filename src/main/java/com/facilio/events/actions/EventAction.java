@@ -130,12 +130,21 @@ public class EventAction extends ActionSupport {
 		this.customizePattern = customizePattern;
 	}
 	
+	private Map<String,String> customizeAlarmTemplate;
+	public Map<String,String> getCustomizeAlarmTemplate() {
+		return customizeAlarmTemplate;
+	}
+	public void setCustomizeAlarmTemplate(Map<String,String> customizeAlarmTemplate) {
+		this.customizeAlarmTemplate = customizeAlarmTemplate;
+	}
+	
 	public String saveEventTransformRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EVENT_RULE, eventRule);
 		context.put(EventConstants.CUSTOMIZE_CRITERIA_PATTERN, customizePattern);
 		context.put(EventConstants.CUSTOMIZE_CONDITIONS, customizeConditions);
+		context.put(EventConstants.CUSTOMIZE_ALARM_TEMPLATE, customizeAlarmTemplate);
 		
 		Chain updateEventTransformRuleChain = EventConstants.updateEventTransformRuleChain();
 		updateEventTransformRuleChain.execute(context);

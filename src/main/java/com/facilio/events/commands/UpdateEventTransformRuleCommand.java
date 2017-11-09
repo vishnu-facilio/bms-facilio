@@ -1,6 +1,7 @@
 package com.facilio.events.commands;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -21,6 +23,8 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.minidev.json.parser.JSONParser;
 
 public class UpdateEventTransformRuleCommand implements Command {
 
@@ -52,13 +56,25 @@ public class UpdateEventTransformRuleCommand implements Command {
 		json.put("node", "$(alarm.node)");
 		json.put("subject", "$(alarm.subject)");
 		json.put("description", "$(alarm.description)");
-		Map<String, String> templateMap = (Map<String, String>) context.get(EventConstants.CUSTOMIZE_CONDITIONS);
+		Map<String, String> templateMap = (Map<String, String>) context.get(EventConstants.CUSTOMIZE_ALARM_TEMPLATE);
 		for(Map.Entry<String, String> template : templateMap.entrySet()) 
 		{
 			String key = template.getKey();
 			String value = template.getValue();
 			json.put(key, value);
 		}
+		JSONObject content = new JSONObject();
+		content.put("alarm", json);
+		
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type","application/json");
+		String server = AwsUtil.getConfig("servername");
+		String url = "http://" + server + "/internal/addAlarmTemplate";
+        String response = AwsUtil.doHttpPost(url, headers, null, content.toString());
+        
+        JSONObject resultObj = (JSONObject) new JSONParser().parse(response);
+        long alarmTemplateId = Long.parseLong((String) resultObj.get("alarmTemplateId"));
+        eventRule.setAlarmTemplateId(alarmTemplateId);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);

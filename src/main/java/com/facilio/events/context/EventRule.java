@@ -50,6 +50,14 @@ public class EventRule {
 		this.customizeCriteriaId = customizeCriteriaId;
 	}
 	
+	private Long alarmTemplateId;
+	public Long getAlarmTemplateId() {
+		return alarmTemplateId;
+	}
+	public void setAlarmTemplateId(Long alarmTemplateId) {
+		this.alarmTemplateId = alarmTemplateId;
+	}
+	
 	private Boolean hasThresholdRule;
 	public Boolean getHasThresholdRule() {
 		return hasThresholdRule;
