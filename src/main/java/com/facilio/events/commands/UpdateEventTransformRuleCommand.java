@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -43,6 +44,20 @@ public class UpdateEventTransformRuleCommand implements Command {
 		else
 		{
 			eventRule.setCustomizeCriteriaId(null);
+		}
+		
+		JSONObject json = new JSONObject();
+		json.put("orgId", "$(organizations.orgId)");
+		json.put("source", "$(alarm.source)");
+		json.put("node", "$(alarm.node)");
+		json.put("subject", "$(alarm.subject)");
+		json.put("description", "$(alarm.description)");
+		Map<String, String> templateMap = (Map<String, String>) context.get(EventConstants.CUSTOMIZE_CONDITIONS);
+		for(Map.Entry<String, String> template : templateMap.entrySet()) 
+		{
+			String key = template.getKey();
+			String value = template.getValue();
+			json.put(key, value);
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -84,8 +99,6 @@ public class UpdateEventTransformRuleCommand implements Command {
 			e.printStackTrace();
 			throw e;
 		}
-		
-		
 		
 		return false;
 	}

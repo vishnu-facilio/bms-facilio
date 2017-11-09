@@ -85,8 +85,6 @@ public class UpdateEventFilterCommand implements Command {
 			throw e;
 		}
 		
-		
-		
 		return false;
 	}
 }
