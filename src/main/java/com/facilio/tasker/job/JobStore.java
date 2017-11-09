@@ -1,5 +1,6 @@
 package com.facilio.tasker.job;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +10,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.parser.ParseException;
+
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JobStore {
 	
@@ -25,7 +30,7 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, CRON_EXPRESSION, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 				
 				pstmt.setLong(1, job.getJobId());
 				
@@ -55,8 +60,8 @@ public class JobStore {
 					pstmt.setNull(7, Types.INTEGER);
 				}
 				
-				if(job.getCronExpression() != null && !job.getCronExpression().isEmpty()) {
-					pstmt.setString(8, job.getCronExpression());
+				if(job.getSchedule() != null) {
+					pstmt.setString(8, job.getScheuduleJson());
 				}
 				else {
 					pstmt.setNull(8, Types.VARCHAR);
@@ -115,8 +120,8 @@ public class JobStore {
 			throw new IllegalArgumentException("Invalid execution time for Job : "+job.getJobName());
 		}
 		
-		if(job.isPeriodic() && job.getPeriod() == -1 && job.getCron() == null) {
-			throw new IllegalArgumentException("Either period or cron should be specified for recurring job : "+job);
+		if(job.isPeriodic() && job.getPeriod() == -1 && job.getSchedule() == null) {
+			throw new IllegalArgumentException("Either period or schedule info should be specified for recurring job : "+job);
 		}
 	}
 	
@@ -192,7 +197,7 @@ public class JobStore {
 		
 	}
 	
-	public static List<JobContext> getJobs(String executorName, long startTime, long endTime) throws SQLException {
+	public static List<JobContext> getJobs(String executorName, long startTime, long endTime) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -221,7 +226,7 @@ public class JobStore {
 		return jcs;
 	}
 	
-	private static JobContext getJobFromRS(ResultSet rs) throws SQLException {
+	private static JobContext getJobFromRS(ResultSet rs) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		JobContext jc = new JobContext();
 		
 		jc.setJobId(rs.getLong("JOBID"));
@@ -244,8 +249,8 @@ public class JobStore {
 			jc.setPeriod(rs.getInt("PERIOD"));
 		}
 		
-		if(rs.getObject("CRON_EXPRESSION") != null) {
-			jc.setCronExpression(rs.getString("CRON_EXPRESSION"));
+		if(rs.getObject("SCHEDULE_INFO") != null) {
+			jc.setScheduleJson(rs.getString("SCHEDULE_INFO"));
 		}
 		
 		jc.setExecutionTime(rs.getLong("NEXT_EXECUTION_TIME"));
