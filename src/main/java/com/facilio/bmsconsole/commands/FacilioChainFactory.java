@@ -325,6 +325,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddAlarmTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddAlarmTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAlarmListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
