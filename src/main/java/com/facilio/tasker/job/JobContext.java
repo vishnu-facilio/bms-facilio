@@ -1,6 +1,16 @@
 package com.facilio.tasker.job;
 
-import com.cronutils.model.Cron;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.tasker.executor.ScheduleInfo;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JobContext {
 	
@@ -60,22 +70,23 @@ public class JobContext {
 		this.period = period;
 	}
 	
-	public String getCronExpression() {
-		if(cron != null) {
-			return cron.asString();
+	public String getScheuduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
 		}
 		return null;
 	}
-	public void setCronExpression(String cronExpression) {
-		this.cron = CronUtil.parse(cronExpression);
+	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
 	}
 	
-	private Cron cron;
-	public Cron getCron() {
-		return cron;
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
 	}
-	public void setCron(Cron cron) {
-		this.cron = cron;
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
 	}
 
 	private long executionTime = -1;

@@ -1,7 +1,9 @@
 package com.facilio.tasker;
 
-import com.cronutils.model.Cron;
+import java.time.Instant;
+
 import com.facilio.fw.OrgInfo;
+import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 
@@ -18,48 +20,48 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName) throws Exception {
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName) throws Exception {
+		long startTime = (Instant.now().getEpochSecond())+delay;
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
-		jc.setCron(cron);
+		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
 		jc.setExecutorName(executorName);
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName, int maxExecution) throws Exception {
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
+		long startTime = (Instant.now().getEpochSecond())+delay;
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
-		jc.setCron(cron);
+		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
 		jc.setExecutorName(executorName);
 		jc.setMaxExecution(maxExecution);
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long delay, Cron cron, String executorName, long endTime) throws Exception {
-		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
+	public static void scheduleCalendarJob(long jobId, String jobName, long delay, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
+		long startTime = (Instant.now().getEpochSecond())+delay;
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
-		jc.setCron(cron);
+		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
 		jc.setExecutorName(executorName);
 		jc.setEndExecutionTime(endTime);
 		JobStore.addJob(jc);

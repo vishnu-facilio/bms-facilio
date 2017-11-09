@@ -158,6 +158,18 @@ public class FieldUtil {
 		return properties;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	{
+		JSONObject properties = null;
+		if(bean != null) 
+		{
+			ObjectMapper mapper = getMapper();
+			properties = mapper.convertValue(bean, JSONObject.class);
+		}
+		return properties;
+	}
+	
 	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {
 		if(id > 0) {
 			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {

@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -19,6 +21,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {
@@ -81,34 +86,17 @@ public class FacilioContextListener implements ServletContextListener {
 				c.close();
 			}
 			
-			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
-			scriptRunner = new SQLScriptRunner(file, true, null);
-			c = FacilioConnectionPool.getInstance().getConnection();
-			try
-			{
-			scriptRunner.runScript(c);
-			}
-			catch(Exception e)
-			{
-				
-			}
-			finally
-			{
-				c.close();
-			}
+//			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
-//			List<FieldExpression> expressions = new ArrayList<>();
-//			expressions.add(FieldExpressionFactory.on(7));
-//			expressions.add(FieldExpressionFactory.on(8));
-//			Cron cron = CronBuilder.cron(CronUtil.DEFAULT_CRON_DEFN)
-//					.withYear(FieldExpressionFactory.always())
-//					.withMinute(FieldExpressionFactory.every(2))
-//					.withHour(FieldExpressionFactory.on(15))
-//					.withDoM(FieldExpressionFactory.and(expressions))
-//					.withMonth(FieldExpressionFactory.always())
-//					.withDoW(FieldExpressionFactory.always())
-//					.instance();
-//			FacilioTimer.scheduleCalendarJob(1, "test", 30, cron, "priority", 1507638900l);
+			ScheduleInfo schedule = new ScheduleInfo();
+			schedule.setFrequencyType(FrequencyType.WEEKLY);
+			schedule.setFrequency(2);
+			schedule.addTime(LocalTime.of(16, 53));
+			schedule.addValue(DayOfWeek.THURSDAY.getValue());
+//			schedule.setWeekFrequency(3);
+			
+			FacilioTimer.scheduleCalendarJob(2, "suresh", 30, schedule, "priority", 21);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
