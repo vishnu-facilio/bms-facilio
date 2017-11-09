@@ -8,6 +8,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -29,6 +30,21 @@ public class ZoneAction extends ActionSupport {
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setZones((List<ZoneContext>) context.get(FacilioConstants.ContextNames.ZONE_LIST));
+		
+		return SUCCESS;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String zoneChildrenList() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ZONE_ID, getZoneId());
+		
+		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		getAllZone.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setChildren((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
 		
 		return SUCCESS;
 	}
@@ -174,5 +190,16 @@ public class ZoneAction extends ActionSupport {
 	public ZoneContext getRecord() 
 	{
 		return zone;
+	}
+	
+	private List<BaseSpaceContext> children;
+	public List<BaseSpaceContext> getChildren() 
+	{
+		return children;
+	}
+	
+	public void setChildren(List<BaseSpaceContext> children) 
+	{
+		this.children = children;
 	}
 }

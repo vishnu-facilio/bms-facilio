@@ -118,6 +118,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else {
 				localeObj = new Locale(locale);
 			}
+			System.out.println("### LOCALE: "+localeObj);
 			ActionContext.getContext().getSession().put("org.apache.struts.action.LOCALE", localeObj);
 			
 			String timezone = userInfo.getTimeZone();
@@ -129,6 +130,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else {
 				timezoneObj = TimeZone.getTimeZone(timezone);
 			}
+			System.out.println("### TIMEZONE: "+timezoneObj);
 			ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 		}
 		catch (Exception e) {

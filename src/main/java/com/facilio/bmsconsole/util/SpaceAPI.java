@@ -286,7 +286,7 @@ public class SpaceAPI {
 		return null;
 	}
 	
-	private static List<BaseSpaceContext> getZoneChildren(long zoneId) throws Exception {
+	public static List<BaseSpaceContext> getZoneChildren(long zoneId) throws Exception {
 		List<Long> zoneIds = new ArrayList<>();
 		zoneIds.add(zoneId);
 		return getZoneChildren(zoneIds);
@@ -316,7 +316,7 @@ public class SpaceAPI {
 																		.select(fields)
 																		.table(module.getTableName())
 																		.innerJoin("Zone_Space")
-																		.on("BaseSpace.ID = Zone_Space.ZONE_ID")
+																		.on("BaseSpace.ID = Zone_Space.BASE_SPACE_ID")
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
 																		.andCustomWhere(ids.toString());

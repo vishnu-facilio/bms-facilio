@@ -46,6 +46,19 @@ public class SpaceAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String independentSpaceList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
+		
+		Chain getIndependentSpace = FacilioChainFactory.getIndependentSpaceChain();
+		getIndependentSpace.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setSpaces((List<SpaceContext>) context.get(FacilioConstants.ContextNames.SPACE_LIST));
+		
+		return SUCCESS;
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String newSpace() throws Exception 
 	{
