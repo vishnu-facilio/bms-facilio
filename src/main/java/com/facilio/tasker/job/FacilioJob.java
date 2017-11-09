@@ -1,6 +1,7 @@
 package com.facilio.tasker.job;
 
 import java.sql.SQLException;
+import java.time.Instant;
 
 import com.facilio.tasker.executor.Executor;
 import com.facilio.transaction.FacilioTransactionManager;
@@ -53,10 +54,16 @@ public abstract class FacilioJob implements Runnable {
 		if(jc.isPeriodic() && (jc.getMaxExecution() == -1 || jc.getCurrentExecutionCount()+1 < jc.getMaxExecution())) {
 			long nextExecutionTime = -1; 
 			if(jc.getPeriod() != -1) {
-				nextExecutionTime = (System.currentTimeMillis()/1000)+jc.getPeriod();
+				nextExecutionTime = (Instant.now().getEpochSecond())+jc.getPeriod();
 			}
-			else if(jc.getCron() != null) {
-				nextExecutionTime = CronUtil.nextExecutionTime(jc.getCron(), jc.getOrgId());
+			else if(jc.getSchedule() != null) {
+				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getExecutionTime());
+				if(nextExecutionTime == jc.getExecutionTime()) {// One time job
+					return -1;
+				}
+				while(nextExecutionTime <= Instant.now().getEpochSecond()) {
+					nextExecutionTime = jc.getSchedule().nextExecutionTime(nextExecutionTime);
+				}
 			}
 			if(jc.getEndExecutionTime() == -1 || nextExecutionTime <= jc.getEndExecutionTime()) {
 				return nextExecutionTime;
