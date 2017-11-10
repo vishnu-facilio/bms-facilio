@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -164,72 +165,18 @@ public class TicketAPI {
 		return tasks;
 	}
 	
-	public static List<NoteContext> getRelatedNotes(long ticketId, Connection conn) throws SQLException 
+	public static List<NoteContext> getRelatedNotes(long ticketId, Connection conn) throws Exception 
 	{
-		List<NoteContext> notes = new ArrayList<>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			pstmt = conn.prepareStatement("SELECT * FROM Notes "
-					+ " INNER JOIN Ticket_Note ON Notes.NOTEID = Ticket_Note.NOTEID"
-					+ " WHERE Ticket_Note.TICKET_ID = ?");
-			pstmt.setLong(1, ticketId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				NoteContext nc = new NoteContext();
-				nc.setNoteId(rs.getLong("NOTEID"));
-				nc.setBody(rs.getString("BODY"));
-				nc.setCreationTime(rs.getLong("CREATION_TIME"));
-				nc.setOwnerId(rs.getLong("OWNERID"));
-				notes.add(nc);
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting all tasks" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
-		}
-		return notes;
-	}
-	
-	public static long addTicketNote(long ticketId, long noteId, Connection conn) throws Exception
-	{
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		Long areaId = null;
-		try
-		{
-			pstmt = conn.prepareStatement("INSERT INTO Ticket_Note (TICKET_ID, NOTEID) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-			pstmt.setLong(1, ticketId);
-			pstmt.setLong(2, noteId);
-			
-			if(pstmt.executeUpdate() < 1) 
-			{
-				throw new RuntimeException("Unable to add Ticket note");
-			}
-			else 
-			{
-				rs = pstmt.getGeneratedKeys();
-				rs.next();
-				areaId = rs.getLong(1);
-			}
-		}
-		catch(SQLException | RuntimeException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while adding work order note" +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
-		}
-		return areaId;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_NOTES);
+		
+		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
+																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_NOTES))
+																.module(module)
+																.beanClass(NoteContext.class)
+																.andCustomWhere("PARENT_ID = ?", ticketId);
+		
+		return selectBuilder.get();
 	}
 	
 	public static void loadRelatedModules(TicketContext ticket, Connection conn) throws Exception {

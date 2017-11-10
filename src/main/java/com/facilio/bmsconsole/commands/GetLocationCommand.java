@@ -38,8 +38,6 @@ public class GetLocationCommand implements Command {
 			if(locations.size() > 0) {
 				LocationContext location = locations.get(0);
 				context.put(FacilioConstants.ContextNames.LOCATION, location);
-
-				context.put(GetNotesCommand.MODULE_ID, locationId);
 			}
 		}
 		else {

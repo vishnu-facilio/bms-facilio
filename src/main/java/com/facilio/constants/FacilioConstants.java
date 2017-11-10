@@ -386,10 +386,6 @@ public class FacilioConstants {
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
 		
-		public static final String NOTE_ID = "noteId";
-		public static final String NOTE = "note";
-		public static final String NOTE_LIST = "notes";
-		
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String ATTACHMENT_FILE_LIST = "attachmentFiles";
@@ -412,6 +408,9 @@ public class FacilioConstants {
 		
 		public static final String READINGS = "readings";
 		public static final String PHOTOS = "photos";
+		
+		public static final String NOTE = "note";
+		public static final String NOTE_LIST = "notes";
 		
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
@@ -464,6 +463,10 @@ public class FacilioConstants {
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
+		
+		public static final String TICKET_NOTES = "ticketnotes";
+		public static final String BASE_SPACE_NOTES = "basespacenotes";
+		public static final String ASSET_NOTES = "assetnotes";
 		
 		public static final String PICKLIST = "pickList";
 		

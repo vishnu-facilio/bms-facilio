@@ -45,10 +45,6 @@ public class GetCampusCommand implements Command {
 			if(campuses.size() > 0) {
 				SiteContext campus = campuses.get(0);
 				context.put(FacilioConstants.ContextNames.SITE, campus);
-				
-				context.put(GetNotesCommand.NOTES_REL_TABLE, "Campus_Notes");
-				context.put(GetNotesCommand.MODULEID_COLUMN, "CAMPUS_ID");
-				context.put(GetNotesCommand.MODULE_ID, campusId);
 			}
 		}
 		else {

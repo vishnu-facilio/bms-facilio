@@ -423,13 +423,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getRelatedNotesChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new GetRelatedNotesCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
@@ -868,15 +861,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddNoteChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ValidateNotePropsCommand());
-		c.addCommand(new AddNoteCommand());
-		c.addCommand(new ExecuteNoteWorkflowCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getEmailSettingChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new LoadSupportEmailsCommand());
@@ -1059,6 +1043,23 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPhotosCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddNoteChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddNoteCommand());
+		c.addCommand(new ExecuteNoteWorkflowCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getNotesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetNotesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -979,6 +979,7 @@ public class DeviceAPI
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
 																		.beanClass(EntergyMeterContext.class)
+																		.maxLevel(0)
 																		;
 		
 		return selectBuilder.get();
@@ -993,6 +994,7 @@ public class DeviceAPI
 																		.module(module)
 																		.beanClass(EntergyMeterContext.class)
 																		.andCustomWhere("SPACE_ID = ?", spaceId)
+																		.maxLevel(0)
 																		;
 		
 		return selectBuilder.get();

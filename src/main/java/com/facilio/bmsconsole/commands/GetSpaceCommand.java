@@ -47,9 +47,6 @@ public class GetSpaceCommand implements Command {
 			if(spaces.size() > 0) {
 				SpaceContext space = spaces.get(0);
 				context.put(FacilioConstants.ContextNames.SPACE, space);
-				
-				context.put(GetNotesCommand.MODULEID_COLUMN, "SPACE_ID");
-				context.put(GetNotesCommand.MODULE_ID, spaceId);
 			}
 		}
 		else {

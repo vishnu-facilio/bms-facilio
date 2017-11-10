@@ -37,12 +37,12 @@ public class AddPhotosCommand implements Command {
 				}
 			}
 			
-			InsertRecordBuilder<PhotosContext> readingBuilder = new InsertRecordBuilder<PhotosContext>()
+			InsertRecordBuilder<PhotosContext> photosBuilder = new InsertRecordBuilder<PhotosContext>()
 																		.module(module)
 																		.fields(fields)
 																		.addRecords(photos);
 			
-			readingBuilder.save();
+			photosBuilder.save();
 		}
 		
 		return false;

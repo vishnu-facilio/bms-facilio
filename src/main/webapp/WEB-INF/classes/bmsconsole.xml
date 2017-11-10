@@ -148,12 +148,6 @@
 				<param name="includeProperties">tasks,tasks\[\d+\],tasks\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="note" class="com.facilio.bmsconsole.actions.NoteAction" method="noteList">
-			<param name="permission">WORKORDER_READ</param>
-			<result name="success" type="json">
-				<param name="includeProperties">notes,notes\[\d+\],notes\[\d+\].*</param>
-			</result>
-		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget" extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction" method="viewTabWidget">
@@ -845,6 +839,20 @@
 	</package>
 	
 	<package name="photosApi" namespace="/api/photos" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.PhotosAction" method="addPhotos">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction" method="getPhotosList">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+	
 		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addBaseSpacePhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
@@ -1472,6 +1480,53 @@
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
+		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction" method="addTicketNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^note.*</param>
+			</result>
+		</action>
+		<action name="addspacenote" class="com.facilio.bmsconsole.actions.NoteAction" method="addSpaceNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^note.*</param>
+			</result>
+		</action>
+		<action name="addassetnote" class="com.facilio.bmsconsole.actions.NoteAction" method="addAssetNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^note.*</param>
+			</result>
+		</action>
+		
+		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction" method="getNotesList">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		
+		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getTicketNotes">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		
+		<action name="getspacenotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getSpaceNotes">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		
+		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getAssetNotes">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		
 	</package>
 	
 	<package name="taskSummary" namespace="/app/task/summary" extends="task">

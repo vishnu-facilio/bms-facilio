@@ -38,8 +38,6 @@ public class GetSkillCommand implements Command {
 			if(skills.size() > 0) {
 				SkillContext skill = skills.get(0);
 				context.put(FacilioConstants.ContextNames.SKILL, skill);
-
-				context.put(GetNotesCommand.MODULE_ID, skillId);
 			}
 		}
 		else {
