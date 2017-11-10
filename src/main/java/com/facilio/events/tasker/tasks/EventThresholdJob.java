@@ -72,6 +72,11 @@ public class EventThresholdJob extends FacilioJob{
 								{
 									long prevEventTime = (long) filterevent.get("createdTime");
 									ignoreEvent = (currentEventTime - prevEventTime) > createAlarmOverseconds;
+									if(ignoreEvent)
+									{
+										break;
+									}
+									currentEventTime = prevEventTime;
 								}
 							}
 						}
