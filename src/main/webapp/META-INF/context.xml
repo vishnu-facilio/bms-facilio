@@ -32,10 +32,10 @@
 		auth="Container"
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
-		user="root" 
-		password="" 
+		user="faciliouser" 
+		password="zxcv1212" 
 		explicitUrl="true"
-		url="jdbc:mysql://localhost:3306/bms"
+        url="jdbc:mysql://facilioserver2.cawlzpaoeevi.us-west-2.rds.amazonaws.com:3306/bms"
 		/>
     
     <!-- Transaction Configuration -->
