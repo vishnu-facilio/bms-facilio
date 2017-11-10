@@ -16,17 +16,21 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStore() {
+		return getFileStore(UserInfo.getCurrentUser().getOrgUserId());
+	}
+	
+	public FileStore getFileStore(long userId) {
 		String environment = AwsUtil.getConfig("environment"); 
 		
 		FileStore fs = null;
 		
 		if ("production".equalsIgnoreCase(environment)) {
 			// S3 store
-			fs = new S3FileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), UserInfo.getCurrentUser().getOrgUserId());
+			fs = new S3FileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), userId);
 		}
 		else {
 			// local store
-			fs = new LocalFileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), UserInfo.getCurrentUser().getOrgUserId());
+			fs = new LocalFileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), userId);
 		}
 		return fs;
 	}

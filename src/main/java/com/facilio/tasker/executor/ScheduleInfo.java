@@ -114,7 +114,6 @@ public class ScheduleInfo {
 	
 	public long nextExecutionTime(long startTime) {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime, true);
-		
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
 		if(times == null || times.isEmpty()) {
 			addTime(zdt.toLocalTime().truncatedTo(ChronoUnit.MINUTES));

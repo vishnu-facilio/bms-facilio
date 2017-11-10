@@ -1,7 +1,5 @@
 package com.facilio.tasker;
 
-import java.time.Instant;
-
 import com.facilio.fw.OrgInfo;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
@@ -29,7 +27,7 @@ public class FacilioTimer {
 		jc.setIsPeriodic(true);
 		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
+		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
 		JobStore.addJob(jc);
 	}
@@ -43,7 +41,7 @@ public class FacilioTimer {
 		jc.setIsPeriodic(true);
 		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
+		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
 		jc.setMaxExecution(maxExecution);
 		JobStore.addJob(jc);
@@ -58,9 +56,9 @@ public class FacilioTimer {
 		jc.setIsPeriodic(true);
 		jc.setSchedule(schedule);
 		jc.setActive(true);
-		jc.setExecutionTime(schedule.nextExecutionTime(startTime));
+		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
-		jc.setEndExecutionTime(endTime);
+		jc.setEndExecutionTime(endTime/1000);
 		JobStore.addJob(jc);
 	}
 	
@@ -107,7 +105,7 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		jc.setEndExecutionTime(endTime);
+		jc.setEndExecutionTime(endTime/1000);
 		JobStore.addJob(jc);
 	}
 	
@@ -133,6 +131,13 @@ public class FacilioTimer {
 		}
 		
 		return orgId;
+	}
+	
+	private static long getStartTimeInSecond(long startTime) {
+		long startTimeInSecond = startTime/1000;
+		startTimeInSecond--; //for calculating next execution time
+		
+		return startTimeInSecond;
 	}
 	
 }

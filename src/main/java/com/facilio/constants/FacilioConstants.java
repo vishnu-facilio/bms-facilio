@@ -496,8 +496,8 @@ public class FacilioConstants {
 		public static final String METERLIST = "METERLIST";
 		public static final String METERTYPE = "METERTYPE";
 		
-		public static final String PREVENTIVE_MAINTENANCE = "preventiveMaintenance";
-		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventiveMaintenances";
+		public static final String PREVENTIVE_MAINTENANCE = "preventivemaintenance";
+		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
 		
 		public static String getPKColumn(String module) {

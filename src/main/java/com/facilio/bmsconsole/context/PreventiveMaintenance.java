@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.tasker.executor.ScheduleInfo;
+
 public class PreventiveMaintenance {
 	
-	private long preventiveMaintenanceId = -1;
-	public long getPreventiveMaintenanceId() {
-		return preventiveMaintenanceId;
+	private long id = -1;
+	public long getId() {
+		return id;
 	}
-	public void setPreventiveMaintenanceId(long preventiveMaintenanceId) {
-		this.preventiveMaintenanceId = preventiveMaintenanceId;
+	public void setId(long id) {
+		this.id = id;
 	}
-	
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
@@ -26,7 +28,7 @@ public class PreventiveMaintenance {
 		this.title = title;
 	}
 	
-	private int pmType;
+	private int pmType = -1;
 	public Integer getPmType() {
 		return pmType;
 	}
@@ -34,7 +36,7 @@ public class PreventiveMaintenance {
 		this.pmType = pmType;
 	}
 	
-	private int status;
+	private int status = -1;
 	public Integer getStatus() {
 		return status;
 	}
@@ -42,23 +44,44 @@ public class PreventiveMaintenance {
 		this.status = status;
 	}
 	
-	private long createdBy;
-	public long getCreatedBy() {
+	private UserContext createdBy;
+	public UserContext getCreatedBy() {
 		return createdBy;
 	}
-	public void setCreatedBy(long createdBy) {
+	public void setCreatedBy(UserContext createdBy) {
 		this.createdBy = createdBy;
 	}
 	
-	private long modifiedBy;
-	public long getModifiedBy() {
-		return modifiedBy;
+	private long createdById = -1;
+	public long getCreatedById() {
+		return createdById;
 	}
-	public void setModifiedBy(long modifiedBy) {
+	public void setCreatedById(long createdById) {
+		this.createdById = createdById;
+	}
+
+	private UserContext modifiedBy;
+	public UserContext getModifiedBy() {
+		if(modifiedBy != null) {
+			return modifiedBy;
+		}
+		else {
+			return createdBy;
+		}
+	}
+	public void setModifiedBy(UserContext modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 	
-	private long createdTime;
+	private long modifiedByid = -1;
+	public long getModifiedByid() {
+		return modifiedByid;
+	}
+	public void setModifiedByid(long modifiedByid) {
+		this.modifiedByid = modifiedByid;
+	}
+
+	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;
 	}
@@ -66,19 +89,57 @@ public class PreventiveMaintenance {
 		this.createdTime = createdTime;
 	}
 	
-	private long lastModifiedTime;
+	private long lastModifiedTime = -1;
 	public long getLastModifiedTime() {
-		return lastModifiedTime;
+		if(lastModifiedTime != -1) {
+			return lastModifiedTime;
+		}
+		else {
+			return createdTime;
+		}
 	}
 	public void setLastModifiedTime(long lastModifiedTime) {
 		this.lastModifiedTime = lastModifiedTime;
 	}
 	
-	private long templateId;
+	private long templateId = -1;
 	public long getTemplateId() {
 		return templateId;
 	}
 	public void setTemplateId(long templateId) {
 		this.templateId = templateId;
 	}
+	
+	private long startTime = -1;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
+	}
+	
+	private int maxCount = -1;
+	public int getMaxCount() {
+		return maxCount;
+	}
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
+	
 }

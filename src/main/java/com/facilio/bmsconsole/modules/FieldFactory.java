@@ -778,13 +778,7 @@ public class FieldFactory {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		
-		FacilioField id = new FacilioField();
-		id.setName("preventiveMaintenanceId");
-		id.setDataType(FieldType.NUMBER);
-		id.setColumnName("PREVENTIVE_MAINTENANCE_ID");
-		id.setModule(module);
-		fields.add(id);
-		
+		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		
 		FacilioField title = new FacilioField();
@@ -809,21 +803,21 @@ public class FieldFactory {
 		fields.add(status);
 		
 		FacilioField createdBy = new FacilioField();
-		createdBy.setName("createdBy");
+		createdBy.setName("createdById");
 		createdBy.setDataType(FieldType.NUMBER);
 		createdBy.setColumnName("CREATED_BY");
 		createdBy.setModule(module);
 		fields.add(createdBy);
 		
 		FacilioField modifiedBy = new FacilioField();
-		modifiedBy.setName("modifiedBy");
+		modifiedBy.setName("modifiedById");
 		modifiedBy.setDataType(FieldType.NUMBER);
 		modifiedBy.setColumnName("MODIFIED_BY");
 		modifiedBy.setModule(module);
 		fields.add(modifiedBy);
 		
 		FacilioField creationTime = new FacilioField();
-		creationTime.setName("creationTime");
+		creationTime.setName("createdTime");
 		creationTime.setDataType(FieldType.NUMBER);
 		creationTime.setColumnName("CREATION_TIME");
 		creationTime.setModule(module);
@@ -842,6 +836,13 @@ public class FieldFactory {
 		templateId.setColumnName("TEMPLATE_ID");
 		templateId.setModule(module);
 		fields.add(templateId);
+		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.NUMBER);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
 		
 		return fields;
 	}

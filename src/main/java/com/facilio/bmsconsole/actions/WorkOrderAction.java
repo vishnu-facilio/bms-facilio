@@ -126,17 +126,22 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addPreventiveMaintenance() throws Exception {
 		
-		PreventiveMaintenance pm = new PreventiveMaintenance();
-		
-		//TODO
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
 		
 		return SUCCESS;
+	}
+	
+	private PreventiveMaintenance preventivemaintenance;
+	public PreventiveMaintenance getPreventivemaintenance() {
+		return preventivemaintenance;
+	}
+	public void setPreventivemaintenance(PreventiveMaintenance preventivemaintenance) {
+		this.preventivemaintenance = preventivemaintenance;
 	}
 	
 	public String assignWorkOrder() throws Exception {
