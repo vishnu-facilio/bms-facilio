@@ -690,6 +690,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getIndependentSpaceChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSpace());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetIndependentSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewSpaceChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpace());
@@ -725,6 +735,16 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAllZoneCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllZoneChildrenChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForZone());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetAllZoneChildrenCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -827,6 +847,13 @@ public class FacilioChainFactory {
 	public static Chain getAllAreaChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetAllAreaCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getBaseSpaceChildrenChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetBaseSpaceChildrenCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
