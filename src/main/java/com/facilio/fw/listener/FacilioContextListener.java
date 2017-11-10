@@ -88,14 +88,14 @@ public class FacilioContextListener implements ServletContextListener {
 			
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
-			ScheduleInfo schedule = new ScheduleInfo();
-			schedule.setFrequencyType(FrequencyType.WEEKLY);
-			schedule.setFrequency(2);
-			schedule.addTime(LocalTime.of(16, 53));
-			schedule.addValue(DayOfWeek.THURSDAY.getValue());
-//			schedule.setWeekFrequency(3);
-			
-			FacilioTimer.scheduleCalendarJob(2, "suresh", 30, schedule, "priority", 21);
+//			ScheduleInfo schedule = new ScheduleInfo();
+//			schedule.setFrequencyType(FrequencyType.WEEKLY);
+//			schedule.setFrequency(2);
+//			schedule.addTime(LocalTime.of(16, 53));
+//			schedule.addValue(DayOfWeek.THURSDAY.getValue());
+////			schedule.setWeekFrequency(3);
+//			
+//			FacilioTimer.scheduleCalendarJob(2, "suresh", 30, schedule, "priority", 21);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
