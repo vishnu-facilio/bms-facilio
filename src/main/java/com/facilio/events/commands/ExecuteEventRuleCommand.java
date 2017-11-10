@@ -88,8 +88,50 @@ public class ExecuteEventRuleCommand implements Command {
 				}
 				if(ruleprops.get("hasThresholdRule") != null && (Boolean) ruleprops.get("hasThresholdRule"))
 				{
-					Criteria criteria = new Criteria();
-					ignoreEvent = criteria.computePredicate().evaluate(event);
+					try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+					{
+						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+																.connection(conn)
+																.select(EventConstants.getEventThresholdRuleFields())
+																.table("Event_Threshold_Rule")
+																.andCustomWhere("ORGID = ?", event.getOrgId());	//Org Id
+						
+						List<Map<String, Object>> thresholdrulepropslist = builder.get();
+						for(Map<String, Object> thresholdruleprops : thresholdrulepropslist)
+						{
+							if(thresholdruleprops.get("hasFilterCriteria") != null &&  (Boolean) ruleprops.get("hasFilterCriteria"))
+							{
+								Criteria filterCriteria = CriteriaAPI.getCriteria(event.getOrgId(), (long) thresholdruleprops.get("filterCriteriaId") ,conn);
+								boolean isMatched = filterCriteria.computePredicate().evaluate(event);
+								if(isMatched)
+								{
+									Integer filterCriteriaOccurs = (Integer) thresholdruleprops.get("filterCriteriaOccurs");
+									GenericSelectRecordBuilder filterbuilder = new GenericSelectRecordBuilder()
+											.connection(conn)
+											.select(EventConstants.getEventFields())
+											.table("Event")
+											.limit(filterCriteriaOccurs - 1)
+											.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ?", event.getOrgId(), event.getMessageKey())
+											.orderBy("CREATED_TIME DESC");
+									List<Map<String, Object>> filterpropslist = filterbuilder.get();
+									if(filterCriteriaOccurs <= (filterpropslist.size() + 1))
+									{
+										
+									}
+								}
+							}
+							if(!ignoreEvent && thresholdruleprops.get("hasClearCriteria") != null &&  (Boolean) ruleprops.get("hasClearCriteria"))
+							{
+								Criteria clearCriteria = CriteriaAPI.getCriteria(event.getOrgId(), (long) thresholdruleprops.get("clearCriteriaId") ,conn);
+								boolean isMatched = clearCriteria.computePredicate().evaluate(event);
+							}
+						}
+					} 
+					catch (Exception e) 
+					{
+						e.printStackTrace();
+						throw e;
+					}
 				}
 			}
 		}

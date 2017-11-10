@@ -102,4 +102,20 @@ public class EventContext {
 	public void setState(String state) {
 		this.state = state;
 	}
+
+	public Integer internalState;
+	public Integer getInternalState() {
+		return internalState;
+	}
+	public void setInternalState(Integer internalState) {
+		this.internalState = internalState;
+	}
+	
+	private long eventRuleId = -1;
+	public long getEventRuleId() {
+		return eventRuleId;
+	}
+	public void setEventRuleId(long eventRuleId) {
+		this.eventRuleId = eventRuleId;
+	}
 }

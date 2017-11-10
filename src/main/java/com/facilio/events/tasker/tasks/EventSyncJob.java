@@ -2,12 +2,10 @@ package com.facilio.events.tasker.tasks;
 
 import java.sql.Connection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -22,10 +20,10 @@ import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.events.context.EventContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.events.context.EventContext;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -51,12 +49,9 @@ public class EventSyncJob extends FacilioJob{
 				
 				QuerySpec spec = new QuerySpec().withHashKey("DeviceId", "123").withRangeKeyCondition(rkc);	// Device Mac ID
 				ItemCollection<QueryOutcome> items = table.query(spec);
-				Iterator<Item> iterator = items.iterator();
-				while (iterator.hasNext())
+				if(items.iterator().hasNext())
 				{
-					Item item = iterator.next();
-				    Long timestamp = item.getLong("LogTime");
-				    processPayload(timestamp, item.getMap("payload"));
+					processItems(items, jc.getOrgId());
 				}
 			}
 			catch (Exception e) 
@@ -65,9 +60,35 @@ public class EventSyncJob extends FacilioJob{
 			}
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	private void processItems(ItemCollection<QueryOutcome> items, long orgId) throws Exception 
+	{
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.connection(conn)
+					.table("Event")
+					.fields(EventConstants.getEventFields());
+			Iterator<Item> iterator = items.iterator();
+			while (iterator.hasNext())
+			{
+				Item item = iterator.next();
+			    Long timestamp = item.getLong("LogTime");
+			    EventContext event = processPayload(timestamp, item.getMap("payload"), orgId);
+				Map<String, Object> props = FieldUtil.getAsProperties(event);
+				builder.addRecord(props);
+			}
+			builder.save();
+		}
+		catch(Exception e) 
+		{
+			e.printStackTrace();
+			throw e;
+		}
+	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	private void processPayload(Long timestamp, Map<String, String> payload) throws Exception 
+	@SuppressWarnings({ "unchecked"})
+	private EventContext processPayload(Long timestamp, Map<String, String> payload, long orgId) throws Exception 
 	{
 	    System.out.println("EventSyncJob Payload:::" + payload);
 	    EventContext event = new EventContext();
@@ -106,10 +127,12 @@ public class EventSyncJob extends FacilioJob{
 	    {
 	    	event.setAdditionInfo(additionalInfo.toString());
 	    }
-	    event.setOrgId(1);
+	    event.setOrgId(orgId);
 	    event.setCreatedTime(timestamp);
-	    event.setState("Processed");
+	    event.setState("Ready");
+	    event.setInternalState(1);
 	    
+	    /*
 	    FacilioContext context = new FacilioContext();
 	    context.put(EventConstants.EVENT, event);
 	    
@@ -131,5 +154,8 @@ public class EventSyncJob extends FacilioJob{
 		}
 	    Command addEvent = EventConstants.getAddEventChain();
 	    addEvent.execute(context);
+	    */
+	    
+	    return event;
 	}
 }
