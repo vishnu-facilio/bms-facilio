@@ -1,6 +1,17 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class PreventiveMaintenance {
 	
@@ -122,6 +133,7 @@ public class PreventiveMaintenance {
 	public long getEndTime() {
 		return endTime;
 	}
+	@JsonSetter("endExecutionTime")
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
@@ -134,10 +146,22 @@ public class PreventiveMaintenance {
 		this.schedule = schedule;
 	}
 	
+	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
+		}
+		return null;
+	}
+	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+	}
+	
 	private int maxCount = -1;
 	public int getMaxCount() {
 		return maxCount;
 	}
+	@JsonSetter("maxExecution")
 	public void setMaxCount(int maxCount) {
 		this.maxCount = maxCount;
 	}

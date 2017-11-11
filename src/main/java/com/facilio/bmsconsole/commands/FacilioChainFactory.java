@@ -912,9 +912,16 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAddPreventiveMaintenanceChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
 		c.addCommand(new AddWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getGetPreventiveMaintenanceListChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetPreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

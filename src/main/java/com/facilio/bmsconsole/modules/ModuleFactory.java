@@ -312,6 +312,14 @@ public class ModuleFactory {
 		alarmModule.setTableName("Preventive_Maintenance");
 		return alarmModule;
 	}
+	
+	public static FacilioModule getJobsModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName("jobs");
+		alarmModule.setDisplayName("Jobs");
+		alarmModule.setTableName("Jobs");
+		return alarmModule;
+	}
 
 	public static FacilioModule getConnectedAppModule() {
 		FacilioModule connectedApp = new FacilioModule();

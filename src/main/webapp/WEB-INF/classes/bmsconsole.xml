@@ -955,6 +955,13 @@
 			</result>
 		</action>
 		
+		<action name="getPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getPreventiveMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">pms</param>
+			</result>
+		</action>
+		
 		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="assignWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">

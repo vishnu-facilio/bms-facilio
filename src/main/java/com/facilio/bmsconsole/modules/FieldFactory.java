@@ -847,6 +847,108 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMJobFields() {
+		FacilioModule module = ModuleFactory.getJobsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField scheduleJson = new FacilioField();
+		scheduleJson.setName("scheduleJson");
+		scheduleJson.setDataType(FieldType.STRING);
+		scheduleJson.setColumnName("SCHEDULE_INFO");
+		scheduleJson.setModule(module);
+		fields.add(scheduleJson);
+		
+		FacilioField endExecutionTime = new FacilioField();
+		endExecutionTime.setName("endExecutionTime");
+		endExecutionTime.setDataType(FieldType.NUMBER);
+		endExecutionTime.setColumnName("END_EXECUTION_TIME");
+		endExecutionTime.setModule(module);
+		fields.add(endExecutionTime);
+		
+		FacilioField maxExecution = new FacilioField();
+		maxExecution.setName("maxExecution");
+		maxExecution.setDataType(FieldType.NUMBER);
+		maxExecution.setColumnName("MAX_EXECUTION");
+		maxExecution.setModule(module);
+		fields.add(maxExecution);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getJobFields() {
+		FacilioModule module = ModuleFactory.getJobsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField jobId = new FacilioField();
+		jobId.setName("jobId");
+		jobId.setDataType(FieldType.NUMBER);
+		jobId.setColumnName("JOBID");
+		jobId.setModule(module);
+		fields.add(jobId);
+		
+		fields.add(getOrgIdField(module));
+		
+		FacilioField jobName = new FacilioField();
+		jobName.setName("jobName");
+		jobName.setDataType(FieldType.STRING);
+		jobName.setColumnName("JOBNAME");
+		jobName.setModule(module);
+		fields.add(jobName);
+		
+		FacilioField isActive = new FacilioField();
+		isActive.setName("active");
+		isActive.setDataType(FieldType.BOOLEAN);
+		isActive.setColumnName("IS_ACTIVE");
+		isActive.setModule(module);
+		fields.add(isActive);
+		
+		FacilioField transactionTimeout = new FacilioField();
+		transactionTimeout.setName("transactionTimeout");
+		transactionTimeout.setDataType(FieldType.NUMBER);
+		transactionTimeout.setColumnName("TRANSACTION_TIMEOUT");
+		transactionTimeout.setModule(module);
+		fields.add(transactionTimeout);
+		
+		FacilioField isPeriodic = new FacilioField();
+		isPeriodic.setName("isPeriodic");
+		isPeriodic.setDataType(FieldType.BOOLEAN);
+		isPeriodic.setColumnName("IS_PERIODIC");
+		isPeriodic.setModule(module);
+		fields.add(isPeriodic);
+		
+		FacilioField period = new FacilioField();
+		period.setName("period");
+		period.setDataType(FieldType.NUMBER);
+		period.setColumnName("PERIOD");
+		period.setModule(module);
+		fields.add(period);
+		
+		FacilioField executionTime = new FacilioField();
+		executionTime.setName("executionTime");
+		executionTime.setDataType(FieldType.NUMBER);
+		executionTime.setColumnName("NEXT_EXECUTION_TIME");
+		executionTime.setModule(module);
+		fields.add(executionTime);
+		
+		FacilioField executorName = new FacilioField();
+		executorName.setName("executorName");
+		executorName.setDataType(FieldType.STRING);
+		executorName.setColumnName("EXECUTOR_NAME");
+		executorName.setModule(module);
+		fields.add(executorName);
+		
+		FacilioField currentExecutionCount = new FacilioField();
+		currentExecutionCount.setName("currentExecutionCount");
+		currentExecutionCount.setDataType(FieldType.NUMBER);
+		currentExecutionCount.setColumnName("CURRENT_EXECUTION_COUNT");
+		currentExecutionCount.setModule(module);
+		fields.add(currentExecutionCount);
+		
+		fields.addAll(getPMJobFields());
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getCriteriaFields() {
 		FacilioModule module = ModuleFactory.getCriteriaModule();
 		List<FacilioField> fields = new ArrayList<>();
