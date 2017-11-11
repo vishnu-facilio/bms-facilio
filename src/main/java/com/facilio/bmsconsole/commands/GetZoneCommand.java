@@ -47,9 +47,6 @@ public class GetZoneCommand implements Command {
 			if(zones.size() > 0) {
 				ZoneContext zone = zones.get(0);
 				context.put(FacilioConstants.ContextNames.ZONE, zone);
-				
-				context.put(GetNotesCommand.MODULEID_COLUMN, "ZONE_ID");
-				context.put(GetNotesCommand.MODULE_ID, zoneId);
 			}
 		}
 		else {

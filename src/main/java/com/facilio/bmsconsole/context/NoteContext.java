@@ -1,39 +1,25 @@
 package com.facilio.bmsconsole.context;
 
-public class NoteContext {
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class NoteContext extends ModuleBaseWithCustomFields {
 	
-	private long noteId;
-	public long getNoteId() {
-		return noteId;
+	private UserContext createdBy;
+	public UserContext getCreatedBy() {
+		return createdBy;
 	}
-	public void setNoteId(long noteId) {
-		this.noteId = noteId;
+	public void setCreatedBy(UserContext createdBy) {
+		this.createdBy = createdBy;
 	}
-	
-	private long orgId = 0;
-	public long getOrgId() {
-		return orgId;
+
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
 	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
 	}
-	
-	private Long ownerId;
-	public Long getOwnerId() {
-		return ownerId;
-	}
-	public void setOwnerId(Long ownerId) {
-		this.ownerId = ownerId;
-	}
-	
-	private Long creationTime;
-	public Long getCreationTime() {
-		return creationTime;
-	}
-	public void setCreationTime(Long creationTime) {
-		this.creationTime = creationTime;
-	}
-	
+
 	private String title;
 	public String getTitle() {
 		return title;
@@ -56,14 +42,6 @@ public class NoteContext {
 	}
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
-	}
-	
-	private String parentModuleLinkName;
-	public String getParentModuleLinkName() {
-		return parentModuleLinkName;
-	}
-	public void setParentModuleLinkName(String parentModuleLinkName) {
-		this.parentModuleLinkName = parentModuleLinkName;
 	}
 	
 	public boolean notifyRequester = false;

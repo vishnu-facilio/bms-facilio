@@ -1,24 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.fw.UserInfo;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AddNoteCommand implements Command {
 
@@ -30,26 +29,25 @@ public class AddNoteCommand implements Command {
 		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		if(note != null)
 		{
-			note.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-			note.setCreationTime(System.currentTimeMillis());
-			note.setOwnerId(UserInfo.getCurrentUser().getOrgUserId());
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			Map<String, Object> props = mapper.convertValue(note, Map.class);
-			System.out.println(props);
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
-			List<FacilioField> fields = FieldFactory.getNoteFields();
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-													.connection(((FacilioContext)context).getConnectionWithTransaction())
-													.table("Notes")
-													.fields(fields)
-													.addRecord(props);
-			builder.save();
-			note.setNoteId((long) props.get("id"));
-			if(note.getParentModuleLinkName() != null && note.getParentModuleLinkName().equals(FacilioConstants.ContextNames.TICKET))
+			note.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			note.setCreatedTime(System.currentTimeMillis());
+			UserContext currentUser = new UserContext();
+			currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
+			note.setCreatedBy(currentUser);
+			InsertRecordBuilder<NoteContext> noteBuilder = new InsertRecordBuilder<NoteContext>()
+																	.module(module)
+																	.fields(fields)
+																	;
+			
+			note.setId(noteBuilder.insert(note));
+			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES))
 			{
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
-				TicketAPI.addTicketNote(note.getParentId(), note.getNoteId(), ((FacilioContext)context).getConnectionWithTransaction());
 				if(note.getNotifyRequester())
 				{
 					JSONObject mailJson = new JSONObject();

@@ -6,19 +6,11 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NoteAction extends ActionSupport {
-	
-	//New Task Props
-	public String newNote() throws Exception {
-		
-		return SUCCESS;
-	}
 	
 	private long noteId;
 	public long getNoteId() {
@@ -28,29 +20,42 @@ public class NoteAction extends ActionSupport {
 		this.noteId = noteId;
 	}
 	
-	public String getModuleName() {
-		return "Note";
+	public String addTicketNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.TICKET_NOTES);
 	}
 	
-	private ActionForm actionForm;
-	public ActionForm getActionForm() {
-		return actionForm;
-	}
-	public void setActionForm(ActionForm actionForm) {
-		this.actionForm = actionForm;
+	public String addSpaceNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.BASE_SPACE_NOTES);
 	}
 	
-	public String addNote() throws Exception 
+	public String addAssetNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.ASSET_NOTES);
+	}
+	
+	public String addNote() throws Exception {
+		return addNote(module);
+	}
+	
+	private String addNote(String moduleName) throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
 
 		Chain addNote = FacilioChainFactory.getAddNoteChain();
 		addNote.execute(context);
 		
-		setNoteId(note.getNoteId());
+		setNoteId(note.getId());
 		
 		return SUCCESS;
+	}
+	
+	private String module;
+	public String getModule() {
+		return module;
+	}
+	public void setModule(String module) {
+		this.module = module;
 	}
 
 	private NoteContext note;
@@ -61,34 +66,6 @@ public class NoteAction extends ActionSupport {
 		this.note = note;
 	}
 	
-	public List getFormlayout()
-	{
-		return FormLayout.getNewNoteLayout();
-	}
-	
-	public String getModuleLinkName()
-	{
-		return FacilioConstants.ContextNames.NOTE;
-	}
-	
-	private String module;
-	public String getModule() {
-		return this.module;
-	}
-	
-	public void setModule(String module) {
-		this.module = module;
-	}
-	
-	private long recordId;
-	public long getRecordId() {
-		return this.recordId;
-	}
-	
-	public void setRecordId(long recordId) {
-		this.recordId = recordId;
-	}
-	
 	private List<NoteContext> notes;
 	public List<NoteContext> getNotes() {
 		return notes;
@@ -97,14 +74,37 @@ public class NoteAction extends ActionSupport {
 		this.notes = notes;
 	}
 	
-	public String noteList() throws Exception {
+	private long parentId = -1;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+	public String getTicketNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.TICKET_NOTES);
+	}
+	
+	public String getSpaceNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.BASE_SPACE_NOTES);
+	}
+	
+	public String getAssetNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.ASSET_NOTES);
+	}
+	
+	public String getNotesList() throws Exception {
+		return getNotesList(module);
+	}
+	
+	private String getNotesList(String moduleName) throws Exception {
 		
 		try {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
 
-			Chain getRelatedNoteChain = FacilioChainFactory.getRelatedNotesChain();
+			Chain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
 			getRelatedNoteChain.execute(context);
 
 			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));

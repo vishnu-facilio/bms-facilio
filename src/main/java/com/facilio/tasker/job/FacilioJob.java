@@ -29,6 +29,7 @@ public abstract class FacilioJob implements Runnable {
 		long nextExecutionTime = getNextExecutionTime();
 		
 		try {
+			OrgInfo.cleanup();
 			retryExecutionCount++;
 			
 			if(jc.getTransactionTimeout() != -1) {
@@ -36,10 +37,8 @@ public abstract class FacilioJob implements Runnable {
 			}
 			
 			long orgId = jc.getOrgId();
-			if (orgId != -1 && ((OrgInfo.getCurrentOrgInfo() != null && OrgInfo.getCurrentOrgInfo().getOrgid() != orgId) || OrgInfo.getCurrentOrgInfo() == null)) {
-				OrgInfo orginfo = OrgApi.getOrgInfo(orgId);
-				OrgInfo.setCurrentOrgInfo(orginfo);
-			}
+			OrgInfo orginfo = OrgApi.getOrgInfo(orgId);
+			OrgInfo.setCurrentOrgInfo(orginfo);
 			
 			execute(jc);
 			

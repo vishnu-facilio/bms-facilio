@@ -12,7 +12,6 @@ import java.util.Map;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.UserContext;
@@ -33,17 +32,6 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.twilio.sdk.Twilio;
 
 public class CommonCommandUtil {
-	public static NoteContext getNoteContextFromRS(ResultSet rs) throws SQLException {
-		NoteContext context = new NoteContext();
-		context.setNoteId(rs.getLong("NOTEID"));
-		context.setOrgId(rs.getLong("ORGID"));
-		context.setOwnerId(rs.getLong("OWNERID"));
-		context.setCreationTime(rs.getLong("CREATION_TIME"));
-		context.setTitle(rs.getString("TITLE"));
-		context.setBody(rs.getString("BODY"));
-		return context;
-	}
-	
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
 		String orgEmailDomain = "@"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".facilio.com";

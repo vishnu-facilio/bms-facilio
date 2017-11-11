@@ -20,6 +20,10 @@ public class PhotosAction extends ActionSupport {
 		return addPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
 	}
 	
+	public String addPhotos() throws Exception {
+		return addPhotos(module);
+	}
+	
 	private String addPhotos(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -39,6 +43,10 @@ public class PhotosAction extends ActionSupport {
 		return getPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
 	}
 	
+	public String getPhotosList() throws Exception {
+		return getPhotos(module);
+	}
+	
 	private String getPhotos(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -52,6 +60,15 @@ public class PhotosAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private String module;
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
+	}
+
 	private long parentId;
 	public long getParentId() {
 		return parentId;

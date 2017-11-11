@@ -47,17 +47,6 @@ public class GetBuildingCommand implements Command {
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
 				context.put(FacilioConstants.ContextNames.BUILDING, building);
-				
-				context.put(GetNotesCommand.MODULEID_COLUMN, "BUILDING_ID");
-				context.put(GetNotesCommand.MODULE_ID, buildingId);
-/*Suresh Included for testing				
-				UtilityProviderContext upc = new UtilityProviderContext();
-				upc.setName("Test");
-				System.out.println("################ test ##############");
-				List<UtilityProviderContext> upcs = new ArrayList<>();
-				upcs.add(upc);
-				building.setUtilityProviders(upcs);
-*/
 			}
 			
 

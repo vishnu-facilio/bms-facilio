@@ -18,8 +18,14 @@ import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EntergyMeterContext;
 import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -965,6 +971,34 @@ public class DeviceAPI
 		return null;
 	}
 	
+	public static List<EntergyMeterContext> getAllEnergyMeters() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		SelectRecordsBuilder<EntergyMeterContext> selectBuilder = new SelectRecordsBuilder<EntergyMeterContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EntergyMeterContext.class)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
+	
+	public static List<EntergyMeterContext> getEnergyMetersOfSpace(long spaceId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		SelectRecordsBuilder<EntergyMeterContext> selectBuilder = new SelectRecordsBuilder<EntergyMeterContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EntergyMeterContext.class)
+																		.andCustomWhere("SPACE_ID = ?", spaceId)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
 			
 			
 	 public static List<Device> getDevices() throws SQLException

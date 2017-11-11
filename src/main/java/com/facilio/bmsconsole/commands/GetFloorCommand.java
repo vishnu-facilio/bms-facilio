@@ -47,9 +47,6 @@ public class GetFloorCommand implements Command {
 			if(floors.size() > 0) {
 				FloorContext floor = floors.get(0);
 				context.put(FacilioConstants.ContextNames.FLOOR, floor);
-				
-				context.put(GetNotesCommand.MODULEID_COLUMN, "FLOOR_ID");
-				context.put(GetNotesCommand.MODULE_ID, floorId);
 			}
 		}
 		else {

@@ -39,30 +39,32 @@ public class ExecuteNoteWorkflowCommand implements Command {
 		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		if(note != null) {
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-			String moduleName = note.getParentModuleLinkName();
-			long parentId = note.getParentId();
-			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-			if(parentId != -1 && eventType != null && eventType == EventType.ADD_TICKET_NOTE) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				long moduleId = modBean.getModule(moduleName).getModuleId();
-				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
-				if(workflowRules != null && workflowRules.size() > 0) {
-					WorkflowRuleContext workflowRule = workflowRules.get(0);
-					TicketContext ticket = getParentTicket(note, ((FacilioContext) context).getConnectionWithoutTransaction());
-					if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getOrgUserId() != note.getOwnerId()) {
-						long workflowRuleId = workflowRule.getId();
-						List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
-						if(actions != null) {
-							Map<String, Object> placeHolders = new HashMap<>();
-							CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.TICKET, FacilioConstants.ContextNames.TICKET, FieldUtil.getAsProperties(ticket), placeHolders);
-							CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-							CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
-							for(ActionContext action : actions)
-							{
-								ActionTemplate template = action.getTemplate();
-								if(template != null) {
-									JSONObject actionObj = template.getTemplate(placeHolders);
-									action.getActionType().performAction(actionObj, context);
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
+				long parentId = note.getParentId();
+				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+				if(parentId != -1 && eventType != null && eventType == EventType.ADD_TICKET_NOTE) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
+					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
+					if(workflowRules != null && workflowRules.size() > 0) {
+						WorkflowRuleContext workflowRule = workflowRules.get(0);
+						TicketContext ticket = getParentTicket(note, ((FacilioContext) context).getConnectionWithoutTransaction());
+						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getOrgUserId() != note.getCreatedBy().getId()) {
+							long workflowRuleId = workflowRule.getId();
+							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
+							if(actions != null) {
+								Map<String, Object> placeHolders = new HashMap<>();
+								CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.TICKET, FacilioConstants.ContextNames.TICKET, FieldUtil.getAsProperties(ticket), placeHolders);
+								CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
+								CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+								for(ActionContext action : actions)
+								{
+									ActionTemplate template = action.getTemplate();
+									if(template != null) {
+										JSONObject actionObj = template.getTemplate(placeHolders);
+										action.getActionType().performAction(actionObj, context);
+									}
 								}
 							}
 						}

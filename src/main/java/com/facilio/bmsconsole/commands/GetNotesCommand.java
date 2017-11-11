@@ -1,78 +1,47 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
+import com.facilio.fw.BeanFactory;
 
 public class GetNotesCommand implements Command {
 
-	public static final String NOTES_REL_TABLE = "notesRelTable";
-	public static final String MODULEID_COLUMN = "notesModuleColumn";
-	public static final String MODULE_ID = "notesModuleId";
-	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
-		long moduleId = (long) context.get(MODULE_ID);
-		
-		if(moduleId > 0) {
-			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		if(moduleName != null && !moduleName.isEmpty()) {
+			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
 			
-			String moduleRelTable = (String) context.get(NOTES_REL_TABLE);
-			String moduleIdColumn = (String) context.get(MODULEID_COLUMN);
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
-			try {
-				
-				StringBuilder sql = new StringBuilder();
-				
-				sql.append("SELECT * FROM Notes INNER JOIN ")
-					.append(moduleRelTable)
-					.append(" ON Notes.NOTEID = ")
-					.append(moduleRelTable)
-					.append(".NOTEID WHERE ORGID = ? AND ")
-					.append(moduleRelTable)
-					.append(".")
-					.append(moduleIdColumn)
-					.append(" = ? ORDER BY CREATION_TIME");
-				
-				Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setLong(1, orgId);
-				pstmt.setLong(2, moduleId);
-				
-				List<NoteContext> notes = new ArrayList<>();
-				
-				rs = pstmt.executeQuery();
-				while(rs.next()) {
-					notes.add(CommonCommandUtil.getNoteContextFromRS(rs));
-				}
-				
-				context.put(FacilioConstants.ContextNames.NOTE_LIST, notes);
-			}
-			catch(SQLException e) {
-				e.printStackTrace();
-				throw e;
-			}
-			finally {
-				DBUtil.closeAll(pstmt, rs);
-			}
+			Condition idCondition = new Condition();
+			idCondition.setField(modBean.getField("parentId", moduleName));
+			idCondition.setOperator(NumberOperators.EQUALS);
+			idCondition.setValue(String.valueOf(parentId));
+			
+			SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
+																		.select(fields)
+																		.module(module)
+																		.beanClass(NoteContext.class)
+																		.andCondition(idCondition)
+																		.maxLevel(0);
+			
+			context.put(FacilioConstants.ContextNames.NOTE_LIST, selectBuilder.get());
 		}
-		
 		return false;
 	}
 

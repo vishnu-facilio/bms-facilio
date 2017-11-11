@@ -6,10 +6,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
@@ -24,16 +27,29 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		pm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		pm.setTemplateId(templateId);
 		
+		pm.setCreatedById(UserInfo.getCurrentUser().getOrgUserId());
+		pm.setCreatedTime(System.currentTimeMillis());
+		
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-															.table("Preventive_Maintenance")
-															.fields(FieldFactory.getPreventiveMaintenanceFields())
-															.addRecord(pmProps);
+													.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+													.fields(FieldFactory.getPreventiveMaintenanceFields())
+													.addRecord(pmProps);
 		
 		builder.save();
+		long id = (long) pmProps.get("id");
+		pm.setId(id);
 		
-		FacilioTimer.scheduleCalendarJob(1, "test", 30, null, "priority", 1507638900l);
+		if(pm.getMaxCount() != -1) {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority", pm.getMaxCount());
+		}
+		else if(pm.getEndTime() != -1) {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority", pm.getEndTime());
+		}
+		else {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority");
+		}
 		return false;
 	}
 	
