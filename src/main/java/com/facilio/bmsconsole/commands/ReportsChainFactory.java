@@ -40,6 +40,14 @@ public class ReportsChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain getTopNTabularReportChain() {
+		Chain c = new ChainBase();
+		addTopNReportCommand(c);
+		addReportCommands(c);
+		addSummaryReportCommand(c);
+		addCleanUpCommand(c);
+		return c;
+	}
 	public static Chain getTopNSummaryReportChain() {
 		Chain c = new ChainBase();
 		addTopNReportCommand(c);

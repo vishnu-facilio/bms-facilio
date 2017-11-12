@@ -397,7 +397,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		JSONArray groupByCols = (JSONArray) parser.parse(groupByJSON);
 		repContext.setGroupByCols(groupByCols);
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
-		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
+		repContext.setReportType(FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);

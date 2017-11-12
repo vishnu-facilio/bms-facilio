@@ -23,7 +23,7 @@ public class SetReportResultCommand implements Command {
 		// TODO Auto-generated method stub
 		FacilioReportContext repContext = (FacilioReportContext)context;
 		String reportType = repContext.getReportType();
-		if(reportType.equals(FacilioConstants.Reports.TABULAR_REPORT_TYPE)) {
+		if(reportType.equals(FacilioConstants.Reports.TABULAR_REPORT_TYPE) || reportType.equals(FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE)) {
 			return false;
 		}
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);

@@ -657,6 +657,7 @@ public class FacilioConstants {
 		public static final String TOP_N_NUMERIC_REPORT_TYPE = "topNNumericReport";
 		public static final String TREND_REPORT_TYPE = "trendReport";
 		public static final String NUMERIC_REPORT_TYPE = "numericReport";	
+		public static final String TOP_N_TABULAR_REPORT_TYPE = "topNTabularReport";	
 		public static final String TOP_N_DATA = "topNData";	
 		public static final String TOP_N = "topN";
 		public static final String BOTTOM_N = "bottomN";
