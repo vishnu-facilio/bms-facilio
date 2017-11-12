@@ -129,12 +129,16 @@ public class LoadSelectFieldsCommand implements Command{
 				break;
 			}
 			if(conversion.length()>0) {
-				thisField.setColumnName(columnName+"/"+conversion);
+				aggrColStr = "FLOOR("+columnName+"/"+conversion+")";
 			}
 		}
 		else {
 			aggrColStr = aggFunc + "(" + thisField.getColumnName() + ")";
 		}
-		thisField.setColumnName(aggrColStr);
+		if(aggrColStr.length()>0) {
+			thisField.setColumnName(aggrColStr);
+			thisField.setModule(null);
+			thisField.setExtendedModule(null);
+		}
 	}
 }

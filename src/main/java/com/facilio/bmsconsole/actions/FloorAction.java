@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -79,6 +81,38 @@ public class FloorAction extends ActionSupport {
 		getFloorChain.execute(context);
 		
 		setFloor((FloorContext) context.get(FacilioConstants.ContextNames.FLOOR));
+		
+		return SUCCESS;
+	}
+	
+	private JSONObject reports;
+	public JSONObject getReports() {
+		return reports;
+	}
+	public void setReports(JSONObject reports) {
+		this.reports = reports;
+	}
+	
+	private JSONArray reportcards;
+	public JSONArray getReportcards() {
+		return reportcards;
+	}
+	public void setReportcards(JSONArray reportcards) {
+		this.reportcards = reportcards;
+	}
+	
+	public String reportCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getFloorId());
+		
+		Chain getReportCardsChain = FacilioChainFactory.getFloorReportCardsChain();
+		getReportCardsChain.execute(context);
+		
+		JSONObject reports = (JSONObject) context.get(FacilioConstants.ContextNames.REPORTS);
+		
+		setReports(reports);
+		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
 		
 		return SUCCESS;
 	}
