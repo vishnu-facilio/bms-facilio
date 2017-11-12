@@ -19,7 +19,7 @@ public class SetOrderByCommand implements Command {
 		// TODO Auto-generated method stub
 		FacilioReportContext repContext = (FacilioReportContext)context;
 		JSONArray orderByCols = repContext.getOrderByCols();
-		String orderType = repContext.getOrderType() + "";
+		String orderType = repContext.getOrderType();
 		String orderByQuery = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		StringBuilder thisOrderBy =  null;
 		if(orderByQuery != null && !orderByQuery.isEmpty()) {
@@ -42,16 +42,24 @@ public class SetOrderByCommand implements Command {
 			for(int i=0;i<orderByCols.size();i++) {
 				JSONObject thisOrderByCol = (JSONObject) orderByCols.get(i);
 				String fieldAlias = LoadSelectFieldsCommand.addToFieldList(thisOrderByCol, selectFieldNames, selectFields);
-				orderByStr.append(fieldAlias);
+				if(fieldAlias!=null && !fieldAlias.isEmpty()) {
+					if(orderByStr.length()>0) {
+						orderByStr.append(",");
+					}
+					orderByStr.append(fieldAlias);
+				}
 			}
 			if(orderByStr.length()>0) {
-				thisOrderBy.append(orderByStr);
+				if(thisOrderBy.length()>0) {
+					thisOrderBy.append(",");
+				}
+				thisOrderBy.append(orderByStr.toString());
 			}
 		}
-		if(orderType.length()>0) {
-			thisOrderBy.append(" " + orderType);
-		}
 		if(thisOrderBy.length()>0) {
+			if(orderType!=null && !orderType.isEmpty()) {
+				thisOrderBy.append(" " + orderType);
+			}
 			context.put(FacilioConstants.ContextNames.SORTING_QUERY, thisOrderBy.toString());	
 		}
 		

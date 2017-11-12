@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -26,7 +27,12 @@ public class GenerateSortingQueryCommand implements Command {
 				for (FacilioField field : fields) {
 					if (orderByStr[i].equalsIgnoreCase(field.getName())) {
 						String thisField = field.getColumnName();
-						orderBy.append(thisField);
+						if(thisField!=null && !thisField.isEmpty()) {
+							if(orderBy.length()>0) {
+								orderBy.append(",");
+							}
+							orderBy.append(thisField);
+						}
 					}
 				}
 			}

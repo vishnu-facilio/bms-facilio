@@ -666,6 +666,7 @@ public class FacilioConstants {
 		public static final String AVG_FUNC = "avg";
 		public static final String AGG_FUNC = "aggregate";
 		public static final String LABEL = "label";
+		public static final String VALUE = "value";
 		public static final String JOINS = "joins";
 		public static final String JOIN_TABLE = "joinTable";
 		public static final String JOIN_ON = "joinOn";
