@@ -673,6 +673,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getFloorReportCardsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForFloor());
+		c.addCommand(new GetFloorReportCards());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAllSpaceChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForSpace());
@@ -718,6 +726,14 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSpaceReportCardsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForFloor());
+		c.addCommand(new GetSpaceReportCards());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -771,6 +787,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getNewAssetChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
@@ -804,6 +829,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;

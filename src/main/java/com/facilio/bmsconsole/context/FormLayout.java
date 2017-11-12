@@ -61,6 +61,31 @@ public class FormLayout {
 		
 	}
 	
+	public static List<NewPanel> getNewAssetLayout(List<FacilioField> fields)
+	{
+		List<NewPanel> panels = new ArrayList<NewPanel>();
+		
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		
+		for(FacilioField field : fields) {
+			if(field.getName().equals("localId")) {
+				continue;
+			}
+			if(field.getName().equals("name") || field.getName().equals("description") || field.getName().equals("space") || field.getName().equals("type") || field.getName().equals("category") || field.getName().equals("department")) {
+				first.addField(field);
+			}
+			else {
+				second.addField(field);
+			}
+		}
+		
+		panels.add(first);
+		panels.add(second);
+		
+		return panels;
+	}
+	
 	
 	public static List<NewPanel> getNewCampusLayout(List<FacilioField> fields)
 	{

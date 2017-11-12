@@ -287,6 +287,13 @@
 	</package>
 	
 	<package name="assetApi" namespace="/api/asset" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction" method="newAsset">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction" method="addAsset">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
@@ -1298,6 +1305,13 @@
 			</result>
 		</action>
 		
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.FloorAction" method="reportCards">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="floorId">{1}</param>
@@ -1318,6 +1332,13 @@
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
+			</result>
+		</action>
+		
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.SpaceAction" method="reportCards">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
 		

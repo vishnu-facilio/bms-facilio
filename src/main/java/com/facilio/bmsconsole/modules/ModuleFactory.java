@@ -81,6 +81,15 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 	
+	public static FacilioModule getAssetsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("assets");
+		fieldModule.setDisplayName("Assets");
+		fieldModule.setTableName("Assets");
+		
+		return fieldModule;
+	}
+	
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("assetcategoryreading");

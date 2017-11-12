@@ -458,7 +458,7 @@ public class SpaceAPI {
 		}
 	}
 
-	public static long getWorkOrdersCount(long siteId) throws Exception {
+	public static long getWorkOrdersCount(long spaceId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();
 		countFld.setName("count");
@@ -477,7 +477,7 @@ public class SpaceAPI {
 		Condition spaceCond = new Condition();
 		spaceCond.setField(spaceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
-		spaceCond.setValue(siteId+"");
+		spaceCond.setValue(spaceId+"");
 
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -499,7 +499,7 @@ public class SpaceAPI {
 		}
 	}
 	
-	public static long getFireAlarmsCount(long siteId) throws Exception {
+	public static long getFireAlarmsCount(long spaceId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();
 		countFld.setName("count");
@@ -518,7 +518,7 @@ public class SpaceAPI {
 		Condition spaceCond = new Condition();
 		spaceCond.setField(spaceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
-		spaceCond.setValue(siteId+"");
+		spaceCond.setValue(spaceId+"");
 
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -527,6 +527,43 @@ public class SpaceAPI {
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
 				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.STATUS=?", orgId, orgId, AlarmStatus.ACTIVE.getIntVal())
+				.andCondition(spaceCond);
+		
+		List<Map<String, Object>> rs = builder.get();
+		if (rs == null || rs.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (Long) rs.get(0).get("count");
+		}
+	}
+	
+	public static long getAssetsCount(long spaceId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		
+		FacilioField spaceIdFld = new FacilioField();
+		spaceIdFld.setName("space_id");
+		spaceIdFld.setColumnName("SPACE_ID");
+		spaceIdFld.setModule(ModuleFactory.getAssetsModule());
+		spaceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(spaceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Assets")
+				.andCustomWhere("Assets.ORGID=?", orgId)
 				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = builder.get();

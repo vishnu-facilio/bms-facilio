@@ -9,11 +9,32 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AssetAction extends ActionSupport {
+	
+	public String newAsset() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain newAsset = FacilioChainFactory.getNewAssetChain();
+		newAsset.execute(context);
+		
+		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		
+		return SUCCESS;
+	}
+	
+	private List<FacilioField> fields;
+	
+	public List getFormlayout()
+	{
+		return FormLayout.getNewAssetLayout(fields);
+	}
+	
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);

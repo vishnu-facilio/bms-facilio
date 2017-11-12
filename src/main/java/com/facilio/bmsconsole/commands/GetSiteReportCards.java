@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -37,17 +38,31 @@ public class GetSiteReportCards implements Command {
 			woCount.put("type", "count");
 			woCount.put("name", "work_orders");
 			woCount.put("label", "Work Orders");
-			woCount.put("data", getWorkOrdersCount(campusId));
+			woCount.put("data", SpaceAPI.getWorkOrdersCount(campusId));
 			
 			JSONObject faCount = new JSONObject();
 			faCount.put("type", "count");
 			faCount.put("name", "fire_alarms");
-			faCount.put("label", "Fire Alarms");
-			faCount.put("data", getFireAlarms(campusId));
+			faCount.put("label", "Alarms");
+			faCount.put("data", SpaceAPI.getFireAlarmsCount(campusId));
+			
+			JSONObject assetCount = new JSONObject();
+			assetCount.put("type", "count");
+			assetCount.put("name", "assets");
+			assetCount.put("label", "Assets");
+			assetCount.put("data", SpaceAPI.getAssetsCount(campusId));
+			
+			JSONObject energyUsage= new JSONObject();
+			energyUsage.put("type", "count");
+			energyUsage.put("name", "energy");
+			energyUsage.put("label", "ENERGY CONSUMED");
+			energyUsage.put("data", "20000 Kwh");
 			
 			JSONArray reportCards = new JSONArray();
 			reportCards.add(woCount);
 			reportCards.add(faCount);
+			reportCards.add(assetCount);
+			reportCards.add(energyUsage);
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);
@@ -76,86 +91,6 @@ public class GetSiteReportCards implements Command {
 				.innerJoin("BaseSpace")
 				.on("Site.ID = BaseSpace.ID")
 				.andCustomWhere("Site.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.SITE_ID = ? AND BaseSpace.BUILDING_ID = -1 AND BaseSpace.FLOOR_ID = -1", orgId, orgId, siteId);
-		
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
-			return 0;
-		}
-		else {
-			return (Long) rs.get(0).get("count");
-		}
-	}
-
-	private long getWorkOrdersCount (long siteId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
-		
-		FacilioField spaceIdFld = new FacilioField();
-		spaceIdFld.setName("space_id");
-		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
-		spaceIdFld.setDataType(FieldType.NUMBER);
-
-		Condition spaceCond = new Condition();
-		spaceCond.setField(spaceIdFld);
-		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
-		spaceCond.setValue(siteId+"");
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("WorkOrders")
-				.innerJoin("Tickets")
-				.on("WorkOrders.ID = Tickets.ID")
-				.innerJoin("TicketStatus")
-				.on("Tickets.STATUS_ID = TicketStatus.ID")
-				.andCustomWhere("WorkOrders.ORGID=? AND Tickets.ORGID = ? AND TicketStatus.ORGID = ? AND TicketStatus.STATUS_TYPE = ?", orgId, orgId, orgId, TicketStatusContext.StatusType.OPEN.getIntVal())
-				.andCondition(spaceCond);
-		
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
-			return 0;
-		}
-		else {
-			return (Long) rs.get(0).get("count");
-		}
-	}
-	
-	private long getFireAlarms (long siteId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
-		
-		FacilioField spaceIdFld = new FacilioField();
-		spaceIdFld.setName("space_id");
-		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
-		spaceIdFld.setDataType(FieldType.NUMBER);
-
-		Condition spaceCond = new Condition();
-		spaceCond.setField(spaceIdFld);
-		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
-		spaceCond.setValue(siteId+"");
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Alarms")
-				.innerJoin("Tickets")
-				.on("Alarms.ID = Tickets.ID")
-				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.STATUS=?", orgId, orgId, AlarmStatus.ACTIVE.getIntVal())
-				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = builder.get();
 		if (rs == null || rs.isEmpty()) {
