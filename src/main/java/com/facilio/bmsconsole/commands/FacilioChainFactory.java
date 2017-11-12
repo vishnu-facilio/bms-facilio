@@ -919,6 +919,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getChangePreventiveMaintenanceStatusChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getGetPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetPreventiveMaintenanceCommand());

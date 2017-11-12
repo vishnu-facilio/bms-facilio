@@ -955,7 +955,21 @@
 			</result>
 		</action>
 		
-		<action name="getPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getPreventiveMaintenance">
+		<action name="changePreventiveMaintenanceStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="changePreventiveMaintenanceStatus">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">preventivemaintenance</param>
+			</result>
+		</action>
+		
+		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getActivePreventiveMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">pms</param>
+			</result>
+		</action>
+		
+		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getInactivePreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>

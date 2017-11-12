@@ -47,11 +47,11 @@ public class PreventiveMaintenance {
 		this.pmType = pmType;
 	}
 	
-	private int status = -1;
-	public Integer getStatus() {
+	private boolean status;
+	public boolean getStatus() {
 		return status;
 	}
-	public void setStatus(Integer status) {
+	public void setStatus(boolean status) {
 		this.status = status;
 	}
 	

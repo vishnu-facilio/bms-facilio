@@ -20,6 +20,8 @@ public class GetPreventiveMaintenanceCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STATUS);
+		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		fields.addAll(FieldFactory.getPMJobFields());
 		
@@ -29,6 +31,15 @@ public class GetPreventiveMaintenanceCommand implements Command {
 															.innerJoin("Jobs")
 															.on("Preventive_Maintenance.ID = Jobs.JOBID")
 															.andCustomWhere("Preventive_Maintenance.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		if (status != null) {
+			if (status) {
+				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ? OR Preventive_Maintenance.STATUS IS NULL", status);
+			}
+			else {
+				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ?", status);
+			}
+		}
 		
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		
