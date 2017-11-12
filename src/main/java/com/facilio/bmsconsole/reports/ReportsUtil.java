@@ -27,17 +27,17 @@ public class ReportsUtil
 	
 	private static StringBuilder select = new StringBuilder(" SELECT ");
 
-	private static StringBuilder fieldsDevice= new StringBuilder("DEVICE_ID");
+	private static StringBuilder fieldsDevice= new StringBuilder("PARENT_METER_ID");
 
-	private  static StringBuilder fieldsTime= new StringBuilder("ADDED_TIME");
+	private  static StringBuilder fieldsTime= new StringBuilder("TTIME");
 
-	private  static StringBuilder fieldsDate= new StringBuilder("ADDED_DATE");
+	private  static StringBuilder fieldsDate= new StringBuilder("TTIME_DATE");
 
-	private  static StringBuilder fieldsMonth= new StringBuilder("ADDED_MONTH");
+	private  static StringBuilder fieldsMonth= new StringBuilder("TTIME_MONTH");
 
-	private  static  StringBuilder fieldsHour= new StringBuilder("ADDED_HOUR");
+	private  static  StringBuilder fieldsHour= new StringBuilder("TTIME_HOUR");
 
-	private  static StringBuilder fieldsWeek= new StringBuilder("ADDED_WEEK");
+	private  static StringBuilder fieldsWeek= new StringBuilder("TTIME_WEEK");
 
 	private  static StringBuilder from = new StringBuilder(" FROM ");
 	
@@ -49,7 +49,7 @@ public class ReportsUtil
 
 	private  static StringBuilder andOperator = new StringBuilder(" AND ");
 
-	private  static StringBuilder fieldsDay = new StringBuilder("ADDED_DAY");
+	private  static StringBuilder fieldsDay = new StringBuilder("TTIME_DAY");
 
 	private  static StringBuilder separator = new StringBuilder(",");
 

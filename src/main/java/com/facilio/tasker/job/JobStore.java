@@ -61,7 +61,7 @@ public class JobStore {
 				}
 				
 				if(job.getSchedule() != null) {
-					pstmt.setString(8, job.getScheuduleJson());
+					pstmt.setString(8, job.getScheduleJson());
 				}
 				else {
 					pstmt.setNull(8, Types.VARCHAR);

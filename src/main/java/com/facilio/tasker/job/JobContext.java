@@ -38,12 +38,18 @@ public class JobContext {
 		this.jobName = jobName;
 	}
 	
-	private boolean active;
+	private Boolean active;
 	public boolean isActive() {
-		return active;
+		if(active != null) {
+			return active.booleanValue();
+		}
+		return false;
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	public Boolean getActive() {
+		return active;
 	}
 	
 	private int transactionTimeout = -1;
@@ -54,12 +60,18 @@ public class JobContext {
 		this.transactionTimeout = transactionTimeout;
 	}
 
-	private boolean isPeriodic;
+	private Boolean isPeriodic;
 	public boolean isPeriodic() {
-		return isPeriodic;
+		if(isPeriodic != null) {
+			return isPeriodic.booleanValue();
+		}
+		return false;
 	}
 	public void setIsPeriodic(boolean isPeriodic) {
 		this.isPeriodic = isPeriodic;
+	}
+	public Boolean getIsPeriodic() {
+		return isPeriodic;
 	}
 	
 	private int period = -1;
@@ -70,7 +82,7 @@ public class JobContext {
 		this.period = period;
 	}
 	
-	public String getScheuduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if(schedule != null) {
 			return FieldUtil.getAsJSON(schedule).toJSONString();
 		}
