@@ -6,10 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.OrgInfo;
@@ -128,6 +131,20 @@ public class ImportDataAction extends ActionSupport {
 	}
 	// column heading vs field name mapping + importid
 	
+	
+	public String getAssets() throws Exception
+	{
+		switch(moduleName)
+		{
+		  
+		case "Energy" : 
+			this.energyMeters=DeviceAPI.getAllEnergyMeters();
+		
+		}
+		return SUCCESS;
+	}
+	
+	
 	public String processImport() throws Exception
 	{
 		System.out.println("Meta info"+getMetainfo());
@@ -144,6 +161,7 @@ public class ImportDataAction extends ActionSupport {
 		
 		long fileId = ImportMetaInfo.getInstance(getMetainfo().getImportprocessid()).getFileId();
 		metainfo.setFileId(fileId);
+		metainfo.setAssetId(assetId);
 		ProcessXLS.processImport(metainfo);
 		
 		return SUCCESS;
@@ -206,4 +224,25 @@ public class ImportDataAction extends ActionSupport {
 	}
 
 	ImportMetaInfo metainfo =new ImportMetaInfo();
+	
+	
+	public void setModuleName(String module)
+	{
+		this.moduleName=module;
+	}
+	
+	public String getModuleName()
+	{
+		return this.moduleName;
+	}
+	
+	private List<EnergyMeterContext> energyMeters;
+	public List<EnergyMeterContext> getEnergyMeters() {
+		return energyMeters;
+	}
+	public void setAssetId(long id) {
+		this.assetId = id;
+	}
+	private long assetId;
+	private String moduleName="Energy";
 }

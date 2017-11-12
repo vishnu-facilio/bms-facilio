@@ -1976,6 +1976,12 @@
 		</action>
 	</package>	
 	<package name="importapi" namespace="/api/import" extends="home">
+	
+	<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction" method="getAssets">
+		<result name="success" type="json">
+				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 		<result name="success" type="json">
 				<param name="includeProperties">metainfo.*</param>

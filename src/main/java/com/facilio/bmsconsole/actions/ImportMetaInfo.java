@@ -40,6 +40,16 @@ public class ImportMetaInfo
 		this.fileId = fileId;
 	}
 	
+	long assetId=0;
+	public void setAssetId(long id)
+	{
+		this.assetId=id;
+	}
+	
+	public long getAssetId()
+	{
+		return assetId;
+	}
 	public static ImportMetaInfo getInstance(long processid) throws Exception
 	{
 		

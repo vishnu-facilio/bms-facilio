@@ -185,7 +185,7 @@ public class ProcessXLS implements Command {
 				props.put(key, cellValue);
 			});
 			ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-			//reading.setParentId(1);
+			reading.setParentId(metainfo.getAssetId());
 			readingsList.add(reading);
 		}
 		
