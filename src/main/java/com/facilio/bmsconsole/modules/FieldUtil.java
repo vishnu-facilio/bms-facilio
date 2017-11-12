@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -18,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -105,26 +107,6 @@ public class FieldUtil {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static JSONObject getPropertiesAsJson(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
-		JSONObject properties = null;
-		if(bean != null) 
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-			properties = mapper.convertValue(bean, JSONObject.class);
-			
-			Map<String, String> customProps = (Map<String, String>) properties.remove("customProps");
-			if(customProps != null)
-			{
-				properties.putAll(customProps);
-			}
-		}
-		return properties;
-	}
-	
 	private static ObjectMapper getMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);
@@ -144,6 +126,11 @@ public class FieldUtil {
 	{
 		ObjectMapper mapper = getMapper();
 		return mapper.convertValue(props, classObj);
+	}
+	public static <E> List<E> getAsBeanListFromJsonArray(JSONArray content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
+	{
+		ObjectMapper mapper = getMapper();
+		return mapper.readValue(content.toJSONString(), mapper.getTypeFactory().constructCollectionType(List.class, classObj));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -168,6 +155,18 @@ public class FieldUtil {
 			properties = mapper.convertValue(bean, JSONObject.class);
 		}
 		return properties;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static JSONArray getAsJSONArray(List<? extends Object> beans) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	{
+		JSONArray array = null;
+		if(beans != null) 
+		{
+			ObjectMapper mapper = getMapper();
+			array = mapper.convertValue(beans, JSONArray.class);
+		}
+		return array;
 	}
 	
 	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {

@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -40,7 +43,8 @@ public class PMToWorkOrder extends FacilioJob {
 				long templateId = (long) prop.get("templateId");
 				WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), templateId);
 				
-				WorkOrderContext wo = FieldUtil.getAsBeanFromJson(template.getTemplate(null), WorkOrderContext.class);
+				JSONObject content = template.getTemplate(null);
+				WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject)content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
 				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
@@ -48,6 +52,20 @@ public class PMToWorkOrder extends FacilioJob {
 				
 				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
+				
+				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
+				if(taskJson != null) {
+					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
+					for(TaskContext task : tasks) {
+						task.setParentTicketId(wo.getId());
+					}
+					
+					context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+					
+					Chain addTasksChain = FacilioChainFactory.getAddTasksChain();
+					addTasksChain.execute(context);
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
