@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,9 +12,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.FacilioReportContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -26,6 +30,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderReportAction extends ActionSupport {
@@ -59,6 +64,14 @@ public class WorkOrderReportAction extends ActionSupport {
 	public void setReportData(List<Map<String, Object>> reportData) {
 		this.reportData = reportData;
 	}
+	private JSONArray woStats;
+	public JSONArray getWoStats() {
+		return this.woStats;
+	}
+	
+	public void setWoStats(JSONArray woStats) {
+		this.woStats = woStats;
+	}
 
 	public String summary() throws Exception {
 
@@ -80,19 +93,140 @@ public class WorkOrderReportAction extends ActionSupport {
 		else if ("technician".equalsIgnoreCase(getType())) {
 			setReportData(getTechnicianWorkSummary());
 		}
-		
+		else if("efficiency".equalsIgnoreCase(getType())) {
+			setReportData(getTechnicianAvgResolutionTime());
+		}
+		else if("inflowTrend".equalsIgnoreCase(getType())) {
+			setReportData(getWoInflowTrend());
+		}
+		else if("countSummary".equalsIgnoreCase(getType())) {
+			setReportData(getCountSummary());
+		}
 		return SUCCESS;
 	}
-	private List<Map<String, Object>> getTechnicianAvgResponseTime() throws Exception {
+	@SuppressWarnings("unchecked")
+	public String map() throws Exception {
+		JSONArray woStats = new JSONArray();
+		FacilioContext context = new FacilioContext();
+		Chain buildChain = FacilioChainFactory.getAllBuildingChain();
+		buildChain.execute(context);
+		List<BuildingContext> buildings = (List<BuildingContext>) context.get(FacilioConstants.ContextNames.BUILDING_LIST);
+		if(buildings != null && !buildings.isEmpty()) {
+			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+				for(BuildingContext building : buildings) {
+					JSONObject buildingObj = new JSONObject();
+					buildingObj.put("id", building.getId());
+					buildingObj.put("name", building.getName());
+					buildingObj.put("avatarUrl", building.getAvatarUrl());
+					
+					if(building.getLocation() != null) {
+						JSONObject location = new JSONObject();
+						location.put("lat", building.getLocation().getLat());
+						location.put("lng", building.getLocation().getLng());
+						buildingObj.put("location", location);
+					}
+					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
+					buildingObj.put("stats", getOpenWorkOrderSummary());
+					woStats.add(buildingObj);
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+		setWoStats(woStats);
+		return SUCCESS;
+	}
+	
+	private Map<String, Object> getDueTodayCount() throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
-		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"dueToday\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		String filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Today\"}}";
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	private Map<String, Object> getOverDueCount() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"overdue\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		Long nowTime = DateTimeUtil.getCurrenTime();
+		String filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	private List<Map<String, Object>> getCountSummary() throws Exception {
+ 		List<Map<String, Object>> rs = new ArrayList<>();
+ 		rs.add(getDueTodayCount());
+ 		rs.add(getOverDueCount());
+ 		List<Map<String, Object>> openWoResult = getOpenWorkOrderSummary();
+ 		Map<String,Object> openWO = new HashMap<>();
+ 		openWO.put(FacilioConstants.Reports.LABEL, "open");
+ 		openWO.put(FacilioConstants.Reports.VALUE, openWoResult);
+ 		rs.add(openWO);
+		return rs;
+	}
+	private List<Map<String, Object>> getWoInflowTrend() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.CREATED_TIME+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.CREATED_TIME+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"}]";
 		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
-		int topN = 5;
-		String topNData = FacilioConstants.Reports.TOP_N+":"+topN+":"+FacilioConstants.Reports.COUNT_COLUMN;
+		String filters ="{\""+FacilioConstants.Ticket.CREATED_TIME+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"}}";
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
+		repContext.setYAxis(yAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONArray groupByCols = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setGroupByCols(groupByCols);
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	private List<Map<String, Object>> getTechnicianAvgResolutionTime() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.RESOLUTION_TIME+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.RESOLUTION_TIME+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.AVG_FUNC+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String filters ="{\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.ACTUAL_WORK_START+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
 		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
@@ -101,9 +235,10 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setJoins(joins);
 		JSONArray groupByCols = (JSONArray) parser.parse(groupByJSON);
 		repContext.setGroupByCols(groupByCols);
-		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
-		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
-		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "closed");
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
@@ -137,13 +272,12 @@ public class WorkOrderReportAction extends ActionSupport {
 	}
 	
 	private List<Map<String, Object>> getClosedWorkOrderSummary(String period) throws Exception {
-		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
-		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
-		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"}]";
+		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"},{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"},{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"}]";
 		String filters ="{\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
@@ -220,7 +354,6 @@ public class WorkOrderReportAction extends ActionSupport {
 	}
 	
 	private List<Map<String, Object>> getTechnicianWorkSummary() throws Exception {
-
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();

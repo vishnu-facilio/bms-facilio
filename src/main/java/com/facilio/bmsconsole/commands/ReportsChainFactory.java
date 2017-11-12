@@ -14,11 +14,26 @@ public class ReportsChainFactory {
 	private static void addSummaryReportCommand(Chain c) {
 		c.addCommand(new GenerateGrpByQueryCommand());
 		c.addCommand(new GetSummaryReportCommand());
+		c.addCommand(new SetReportResultCommand());
 	}
 	private static void addTopNReportCommand(Chain c) {
 		c.addCommand(new SetTopNReportCommand());
 	}
 	public static Chain getSummaryReportChain() {
+		Chain c = new ChainBase();
+		addReportCommands(c);
+		addSummaryReportCommand(c);
+		addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getNumericReportChain() {
+		Chain c = new ChainBase();
+		addReportCommands(c);
+		addSummaryReportCommand(c);
+		addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getTabularReportChain() {
 		Chain c = new ChainBase();
 		addReportCommands(c);
 		addSummaryReportCommand(c);

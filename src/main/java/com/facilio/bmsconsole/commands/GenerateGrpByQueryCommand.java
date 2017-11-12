@@ -35,7 +35,12 @@ public class GenerateGrpByQueryCommand implements Command{
 			for(int i=0;i<groupByCols.size();i++) {
 				JSONObject thisGroupBy = (JSONObject) groupByCols.get(i);
 				String fieldAlias = LoadSelectFieldsCommand.addToFieldList(thisGroupBy, selectFieldNames, selectFields);
-				groupByStr.append(fieldAlias);
+				if(fieldAlias!=null && !fieldAlias.isEmpty()) {
+					if(groupByStr.length()>0) {
+						groupByStr.append(",");
+					}
+					groupByStr.append(fieldAlias);
+				}
 			}
 			if(groupByStr.length()>0) {
 				repContext.put(FacilioConstants.Reports.GROUPBY,groupByStr.toString());

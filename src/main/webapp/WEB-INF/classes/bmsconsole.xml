@@ -1185,6 +1185,11 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
+			<result name="success" type="json">
+				<param name="includeProperties">^woStats.*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="alarmReportApi" namespace="/api/report/alarms" extends="home">
