@@ -45,12 +45,12 @@ public class EventAction extends ActionSupport {
 		this.eventProperty = eventProperty;
 	}
 	
-	private EventRule eventRule;
-	public EventRule getEventRule() {
-		return eventRule;
+	private List<EventRule> eventRules;
+	public List<EventRule> getEventRules() {
+		return eventRules;
 	}
-	public void setEventRule(EventRule eventRule) {
-		this.eventRule = eventRule;
+	public void setEventRules(List<EventRule> eventRules) {
+		this.eventRules = eventRules;
 	}
 	
 	private Map<Long, Criteria> eventCriteriaMap;
@@ -68,9 +68,7 @@ public class EventAction extends ActionSupport {
 		Chain eventRulesChain = EventConstants.getEventRulesChain();
 		eventRulesChain.execute(context);
 		
-		setEventProperty((EventProperty) context.get(EventConstants.EVENT_PROPERTY));
-		setEventRule((EventRule) context.get(EventConstants.EVENT_RULE));
-		setEventCriteriaMap((Map<Long, Criteria>) context.get(EventConstants.EVENT_CRITERIA_MAP));
+		setEventRules((List<EventRule>) context.get(EventConstants.EVENT_RULE_LIST));
 		
 		return SUCCESS;
 	}
@@ -84,6 +82,16 @@ public class EventAction extends ActionSupport {
 		updateEventPropertyChain.execute(context);
 		
 		return SUCCESS;
+	}
+	
+	private EventRule eventRule;
+	public EventRule getEventRule() 
+	{
+		return eventRule;
+	}
+	public void setEventRule(EventRule eventRule) 
+	{
+		this.eventRule = eventRule;
 	}
 	
 	private Map<Integer, Condition> filterConditions;

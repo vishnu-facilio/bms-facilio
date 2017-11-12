@@ -31,19 +31,19 @@ public class UpdateEventFilterCommand implements Command {
 		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
 		eventRule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
-		if(eventRule.getHasEventFilter() != null && eventRule.getHasEventFilter())
-		{
-			Criteria criteria = new Criteria();
-			criteria.setPattern((String) context.get(EventConstants.FILTER_CRITERIA_PATTERN));
-			criteria.setConditions((Map<Integer, Condition>) context.get(EventConstants.FILTER_CONDITIONS));
-			
-			long criteriaId = CriteriaAPI.addCriteria(criteria, OrgInfo.getCurrentOrgInfo().getOrgid());
-			eventRule.setFilterCriteriaId(criteriaId);
-		}
-		else
-		{
-			eventRule.setFilterCriteriaId(null);
-		}
+//		if(eventRule.getHasEventFilter() != null && eventRule.getHasEventFilter())
+//		{
+//			Criteria criteria = new Criteria();
+//			criteria.setPattern((String) context.get(EventConstants.FILTER_CRITERIA_PATTERN));
+//			criteria.setConditions((Map<Integer, Condition>) context.get(EventConstants.FILTER_CONDITIONS));
+//			
+//			long criteriaId = CriteriaAPI.addCriteria(criteria, OrgInfo.getCurrentOrgInfo().getOrgid());
+//			eventRule.setFilterCriteriaId(criteriaId);
+//		}
+//		else
+//		{
+//			eventRule.setFilterCriteriaId(null);
+//		}
 		
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);

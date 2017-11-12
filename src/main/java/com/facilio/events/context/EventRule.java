@@ -1,5 +1,7 @@
 package com.facilio.events.context;
 
+import com.facilio.bmsconsole.criteria.Criteria;
+
 public class EventRule {
 	
 	private long orgId = -1;
@@ -18,20 +20,44 @@ public class EventRule {
 		this.eventRuleId = eventRuleId;
 	}
 	
-	private Boolean hasEventFilter;
-	public Boolean getHasEventFilter() {
-		return hasEventFilter;
+	private String name;
+	public String getName() {
+		return name;
 	}
-	public void setHasEventFilter(Boolean hasEventFilter) {
-		this.hasEventFilter = hasEventFilter;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
-	private Long filterCriteriaId;
-	public Long getFilterCriteriaId() {
-		return filterCriteriaId;
+	private Long ruleOrder;
+	public Long getRuleOrder() {
+		return ruleOrder;
 	}
-	public void setFilterCriteriaId(Long filterCriteriaId) {
-		this.filterCriteriaId = filterCriteriaId;
+	public void setRuleOrder(Long ruleOrder) {
+		this.ruleOrder = ruleOrder;
+	}
+	
+	private Boolean ignoreEvent;
+	public Boolean getIgnoreEvent() {
+		return ignoreEvent;
+	}
+	public void setIgnoreEvent(Boolean ignoreEvent) {
+		this.ignoreEvent = ignoreEvent;
+	}
+	
+	private Long baseCriteriaId;
+	public Long getBaseCriteriaId() {
+		return baseCriteriaId;
+	}
+	public void setBaseCriteriaId(Long baseCriteriaId) {
+		this.baseCriteriaId = baseCriteriaId;
+	}
+	
+	private Criteria baseCriteria;
+	public Criteria getBaseCriteria() {
+		return baseCriteria;
+	}
+	public void setBaseCriteria(Criteria baseCriteria) {
+		this.baseCriteria = baseCriteria;
 	}
 	
 	private Boolean hasCustomizeRule;
@@ -50,6 +76,14 @@ public class EventRule {
 		this.customizeCriteriaId = customizeCriteriaId;
 	}
 	
+	private Criteria customizeCriteria;
+	public Criteria getCustomizeCriteria() {
+		return customizeCriteria;
+	}
+	public void setCustomizeCriteria(Criteria customizeCriteria) {
+		this.customizeCriteria = customizeCriteria;
+	}
+	
 	private Long alarmTemplateId;
 	public Long getAlarmTemplateId() {
 		return alarmTemplateId;
@@ -64,5 +98,37 @@ public class EventRule {
 	}
 	public void setHasThresholdRule(Boolean hasThresholdRule) {
 		this.hasThresholdRule = hasThresholdRule;
+	}
+	
+	private Long createAlarmCriteriaId;
+	public Long getCreateAlarmCriteriaId() {
+		return createAlarmCriteriaId;
+	}
+	public void setCreateAlarmCriteriaId(Long createAlarmCriteriaId) {
+		this.createAlarmCriteriaId = createAlarmCriteriaId;
+	}
+	
+	private Criteria createAlarmCriteria;
+	public Criteria getCreateAlarmCriteria() {
+		return createAlarmCriteria;
+	}
+	public void setCreateAlarmCriteria(Criteria createAlarmCriteria) {
+		this.createAlarmCriteria = createAlarmCriteria;
+	}
+	
+	private Long createAlarmOccurs;
+	public Long getCreateAlarmOccurs() {
+		return createAlarmOccurs;
+	}
+	public void setCreateAlarmOccurs(Long createAlarmOccurs) {
+		this.createAlarmOccurs = createAlarmOccurs;
+	}
+	
+	private Long createAlarmOverseconds;
+	public Long setCreateAlarmOverseconds() {
+		return createAlarmOverseconds;
+	}
+	public void setCreateAlarmOverseconds(Long createAlarmOverseconds) {
+		this.createAlarmOverseconds = createAlarmOverseconds;
 	}
 }

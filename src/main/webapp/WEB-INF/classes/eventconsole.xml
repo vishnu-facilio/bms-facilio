@@ -46,7 +46,7 @@
 		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^eventProperty.*,^eventRule.*,^eventCriteriaMap.*</param>
+				<param name="includeProperties">eventRules,eventRules\[\d+\],eventRules\[\d+\].*</param>
 			</result>
 		</action>
 		

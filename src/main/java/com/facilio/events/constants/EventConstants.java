@@ -16,7 +16,7 @@ import com.facilio.events.commands.ExecuteEventMappingRuleCommand;
 import com.facilio.events.commands.ExecuteEventRuleCommand;
 import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventPropertyCommand;
-import com.facilio.events.commands.GetEventRuleCommand;
+import com.facilio.events.commands.GetEventRulesCommand;
 import com.facilio.events.commands.UpdateEventFilterCommand;
 import com.facilio.events.commands.UpdateEventPropertyCommand;
 import com.facilio.events.commands.UpdateEventThresholdRulesCommand;
@@ -28,6 +28,7 @@ public class EventConstants {
 	public static final String EVENT_LIST = "events";
 	public static final String EVENT_PROPERTY = "eventProperty";
 	public static final String EVENT_RULE = "eventRule";
+	public static final String EVENT_RULE_LIST = "eventRules";
 	public static final String EVENT_CRITERIA_MAP = "eventCriteriaList";
 	public static final String IGNORE_EVENT = "ignoreEvent";
 	public static final String FILTER_CRITERIA_PATTERN = "filterCriteriaPattern";
@@ -49,8 +50,7 @@ public class EventConstants {
 	
 	public static Chain getEventRulesChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new GetEventPropertyCommand());
-		c.addCommand(new GetEventRuleCommand());
+		c.addCommand(new GetEventRulesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -271,19 +271,33 @@ public class EventConstants {
 		
 		fields.add(getOrgIdField(module));
 		
-		FacilioField hasEventFilter = new FacilioField();
-		hasEventFilter.setName("hasEventFilter");
-		hasEventFilter.setDataType(FieldType.BOOLEAN);
-		hasEventFilter.setColumnName("HASEVENTFILTER");
-		hasEventFilter.setModule(module);
-		fields.add(hasEventFilter);
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.BOOLEAN);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
 		
-		FacilioField filterCriteriaId = new FacilioField();
-		filterCriteriaId.setName("filterCriteriaId");
-		filterCriteriaId.setDataType(FieldType.NUMBER);
-		filterCriteriaId.setColumnName("FILTER_CRITERIAID");
-		filterCriteriaId.setModule(module);
-		fields.add(filterCriteriaId);
+		FacilioField ruleOrder = new FacilioField();
+		ruleOrder.setName("ruleOrder");
+		ruleOrder.setDataType(FieldType.NUMBER);
+		ruleOrder.setColumnName("RULE_ORDER");
+		ruleOrder.setModule(module);
+		fields.add(ruleOrder);
+		
+		FacilioField ignoreEvent = new FacilioField();
+		ignoreEvent.setName("ignoreEvent");
+		ignoreEvent.setDataType(FieldType.BOOLEAN);
+		ignoreEvent.setColumnName("IGNOREEVENT");
+		ignoreEvent.setModule(module);
+		fields.add(ignoreEvent);
+		
+		FacilioField baseCriteriaId = new FacilioField();
+		baseCriteriaId.setName("baseCriteriaId");
+		baseCriteriaId.setDataType(FieldType.NUMBER);
+		baseCriteriaId.setColumnName("BASE_CRITERIAID");
+		baseCriteriaId.setModule(module);
+		fields.add(baseCriteriaId);
 		
 		FacilioField hasCustomizeRule = new FacilioField();
 		hasCustomizeRule.setName("hasCustomizeRule");
