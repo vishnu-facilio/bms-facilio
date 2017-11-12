@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,6 +12,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ImportMetaInfo
@@ -122,38 +127,21 @@ public class ImportMetaInfo
 		switch(moduletype)
 		{
 		case 1:
-			fields.add("ADDED_TIME");
-			fields.add("TOTAL_ENERGY_CONSUMPTION");
-			fields.add("TOTAL_ENERGY_CONSUMPTION_DELTA");
-			fields.add("LINE_VOLTAGE_R");
-			fields.add("LINE_VOLTAGE_Y");
-			fields.add("LINE_VOLTAGE_B");
-			fields.add("PHASE_VOLTAGE_R");
-			fields.add("PHASE_VOLTAGE_Y");
-			fields.add("PHASE_VOLTAGE_B");
-			fields.add("LINE_CURRENT_R");
-			fields.add("LINE_CURRENT_Y");
-			fields.add("LINE_CURRENT_B");
-			fields.add("POWER_FACTOR_R");
-			fields.add("POWER_FACTOR_Y");
-			fields.add("POWER_FACTOR_B");
-			fields.add("FREQUENCY_R");
-			fields.add("FREQUENCY_Y");
-			fields.add("FREQUENCY_B");
-			fields.add("ACTIVE_POWER_R");
-			fields.add("ACTIVE_POWER_Y");
-			fields.add("ACTIVE_POWER_B");
-			fields.add("REACTIVE_POWER_R");
-			fields.add("REACTIVE_POWER_Y");
-			fields.add("REACTIVE_POWER_B");
-			fields.add("APPARENT_POWER_R");
-			fields.add("APPARENT_POWER_Y");
-			fields.add("APPARENT_POWER_B");
-			fields.add("PHASE_ENERGY_R");
-			fields.add("PHASE_ENERGY_Y");
-			fields.add("PHASE_ENERGY_B");
-			//fields.add("Device_id");
-			
+			try {
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				ArrayList<FacilioField> fieldsList= bean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+
+				for(FacilioField field : fieldsList)
+				{
+					if(!isRemovableField(field.getName()))
+					{
+						fields.add(field.getName());
+					}
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 			return fields;
 		}
 		return null;
@@ -161,6 +149,21 @@ public class ImportMetaInfo
 			
 	}
 	
+	private static boolean isRemovableField(String name) {
+
+		switch (name){
+
+		case "parentId":
+		case "date":
+		case "month":
+		case "week":
+		case "day":
+		case "hour":{
+			return true;
+		}
+		}
+		return false;
+	}
 	public void populateFieldMapping()
 	{
 		for(Object field: fields)
@@ -169,12 +172,12 @@ public class ImportMetaInfo
 		}
 	}
 	
-	private HashMap fieldMapping = new LinkedHashMap();
-	public HashMap getFieldMapping() {
+	private HashMap<String, String> fieldMapping = new LinkedHashMap <String, String> ();
+	public HashMap<String, String> getFieldMapping() {
 		System.out.println(fieldMapping);
 		return fieldMapping;
 	}
-	public void setFieldMapping(HashMap fieldMapping) {
+	public void setFieldMapping(HashMap<String, String> fieldMapping) {
 		this.fieldMapping = fieldMapping;
 	}
 	public String getFieldValue(String key) {
@@ -188,14 +191,13 @@ public class ImportMetaInfo
 	public JSONObject getFieldMappingJSON()
 	{
 		JSONObject json = new JSONObject();
-		Iterator keys = fieldMapping.keySet().iterator();
+		Iterator<String> keys = fieldMapping.keySet().iterator();
 		while(keys.hasNext())
 		{
-			String key =(String) keys.next();
-			String value = (String)fieldMapping.get(key);
+			String key = keys.next();
+			String value = fieldMapping.get(key);
 			json.put(key, value);
 		}
-		
 		return json;
 	}
 	

@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.commands.data;
 
 import java.io.File;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -20,12 +19,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
-import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.fw.BeanFactory;
 
 public class ProcessXLS implements Command {
 
@@ -121,27 +123,9 @@ public class ProcessXLS implements Command {
 	{
 		System.out.println("All set for importing "+metainfo);
 		
-		HashMap fieldMapping = metainfo.getFieldMapping();
-		
-		Connection conn = FacilioConnectionPool.getInstance().getConnection();
-		
-		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO Energy_Data SET ");
-		
-		List<String> dbCols = new ArrayList<>();
-		Iterator keys = fieldMapping.keySet().iterator();
-		while (keys.hasNext()) {
-			String key = (String) keys.next();
-			sql.append(key+"=?");
-			sql.append(",");
-			dbCols.add(key);
-		}
-		sql.append(ReportsUtil.getAdditionalTimeSql());
-		dbCols.addAll(dbCols.size(),ReportsUtil.getAdditionalTimeCols());
-		
-		PreparedStatement pstmt = conn.prepareStatement(sql.toString());
-		
+		HashMap<String, String> fieldMapping = metainfo.getFieldMapping();			
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(metainfo.getFileId());
 		
 		HashMap<Integer, String> colIndex = new HashMap<Integer, String>();
@@ -193,39 +177,27 @@ public class ProcessXLS implements Command {
 
 				cellIndex++;
 			}
-
-			int idx = 1;
 			
-			HashMap <String,Object> additionalColVals= new HashMap<String,Object>();
-			for (String dbColName: dbCols) 
+			HashMap <String, Object> props = new LinkedHashMap<String,Object>();
+			fieldMapping.forEach((key,value) -> 
 			{
-				String cellName = (String)fieldMapping.get(dbColName);
-				Object value=colVal.get(cellName);
-
-				if (value!=null || (value=additionalColVals.get(dbColName))!=null) {
-					
-					//we have to make sure we need to have this column for all the collected data table.. 
-					if(dbColName.equalsIgnoreCase("ADDED_TIME"))
-					{
-						//value=getAddedTime(value);
-						additionalColVals= DateTimeUtil.getTimeData(((Double)value).longValue(), true);	
-					}
-					pstmt.setObject(idx, value);
-				}
-				else {
-					pstmt.setObject(idx, 0.0);
-				}
-				idx++;
-			}
-
-			pstmt.addBatch();
+				Object cellValue=colVal.get(value);
+				props.put(key, cellValue);
+			});
+			ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
+			//reading.setParentId(1);
+			readingsList.add(reading);
 		}
 		
-		pstmt.executeBatch();
-		pstmt.close();
-		conn.close();
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
+				.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
+				.fields(bean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
+				.addRecords(readingsList);
+		readingBuilder.save();
 		workbook.close();
 	}
+
 	
 	public static JSONArray getColumnHeadings(File excelfile) throws Exception
 	{
