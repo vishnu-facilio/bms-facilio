@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.EntergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -556,7 +556,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_TYPE, AssetTypeContext.class);
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
-			classMap.put(ENERGY_METER, EntergyMeterContext.class);
+			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			
 			return classMap;

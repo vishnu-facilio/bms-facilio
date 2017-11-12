@@ -19,7 +19,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.EntergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -971,28 +971,28 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static List<EntergyMeterContext> getAllEnergyMeters() throws Exception {
+	public static List<EnergyMeterContext> getAllEnergyMeters() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 		
-		SelectRecordsBuilder<EntergyMeterContext> selectBuilder = new SelectRecordsBuilder<EntergyMeterContext>()
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
-																		.beanClass(EntergyMeterContext.class)
+																		.beanClass(EnergyMeterContext.class)
 																		.maxLevel(0)
 																		;
 		
 		return selectBuilder.get();
 	}
 	
-	public static List<EntergyMeterContext> getEnergyMetersOfSpace(long spaceId) throws Exception {
+	public static List<EnergyMeterContext> getEnergyMetersOfSpace(long spaceId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 		
-		SelectRecordsBuilder<EntergyMeterContext> selectBuilder = new SelectRecordsBuilder<EntergyMeterContext>()
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
-																		.beanClass(EntergyMeterContext.class)
+																		.beanClass(EnergyMeterContext.class)
 																		.andCustomWhere("SPACE_ID = ?", spaceId)
 																		.maxLevel(0)
 																		;
