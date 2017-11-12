@@ -32,20 +32,35 @@ public class GetCategoryReadingsCommand implements Command {
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			
+			List<FacilioModule> readings = null;
+			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
+				readings = getDefaultReadings();
+			}
+			else {
+				readings = new ArrayList<>();
+			}
+			
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioModule> readings = new ArrayList<>();
 				for(Map<String, Object> prop : props) {
 					readings.add(modBean.getModule((long) prop.get("readingModuleId")));
 				}
-				context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 			}
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}
-		else {
-			throw new IllegalAccessException("Parent Category ID cannot be null during retrieval of Category wise readings");
+		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, getDefaultReadings());
 		}
 		
 		return false;
+	}
+	
+	private List<FacilioModule> getDefaultReadings() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> readings = new ArrayList<>();
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.CURRENT_OCCUPANCY_READING));
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.ASSIGNED_OCCUPANCY_READING));
+		return readings;
 	}
 
 }
