@@ -381,4 +381,13 @@ public class ModuleFactory {
 		
 		return filesModule;
 	}
+	
+	public static FacilioModule getZoneRelModule() {
+		FacilioModule zoneRelModule = new FacilioModule();
+		zoneRelModule.setName("zonespacerel");
+		zoneRelModule.setDisplayName("Zone Space Rel");
+		zoneRelModule.setTableName("Zone_Space");
+		
+		return zoneRelModule;
+	}
 }

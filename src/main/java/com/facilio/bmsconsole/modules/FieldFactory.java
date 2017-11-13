@@ -1350,4 +1350,25 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getZoneRelFields() {
+		FacilioModule module = ModuleFactory.getZoneRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField zoneId = new FacilioField();
+		zoneId.setName("zoneId");
+		zoneId.setDataType(FieldType.NUMBER);
+		zoneId.setColumnName("ZONE_ID");
+		zoneId.setModule(module);
+		fields.add(zoneId);
+		
+		FacilioField basespaceId = new FacilioField();
+		basespaceId.setName("basespaceId");
+		basespaceId.setDataType(FieldType.NUMBER);
+		basespaceId.setColumnName("BASE_SPACE_ID");
+		basespaceId.setModule(module);
+		fields.add(basespaceId);
+		
+		return fields;
+	}
 }	

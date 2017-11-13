@@ -75,7 +75,7 @@ public class ZoneAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ZONE, zone);
-		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
 		Chain addZone = FacilioChainFactory.getAddZoneChain();
 		addZone.execute(context);
 		
@@ -84,6 +84,15 @@ public class ZoneAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<Long> spaceId;
+	public List<Long> getSpaceId() {
+		return spaceId;
+	}
+
+	public void setSpaceId(List<Long> spaceId) {
+		this.spaceId = spaceId;
+	}
+
 	public String viewZone() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
