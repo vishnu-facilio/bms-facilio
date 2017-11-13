@@ -3,9 +3,17 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -56,6 +64,49 @@ public class ReportActions extends ActionSupport {
  		return SUCCESS;
 		
 	}
+	
+	
+	public String getBuildingDetails() throws Exception
+	{
+		BuildingContext building =getBuilding();
+		String buildingName=building.getDisplayName();
+		LocationContext location= building.getLocation();
+		String cityName=location.getCity();
+		String streetName=location.getStreet();
+		double buildingArea=building.getGrossFloorArea();
+		//Energy Meter purpose id: Main, AHU, Lighting, Chiller, Lift, UPS..
+		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose("Main").get(0);
+		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
+		EnergyMeterContext energyMeter= energyMeters.get(0);
+		long deviceId=energyMeter.getId();
+		//get the data for This month & Previous month by group by Month in one query by giving proper ttime between..
+		//calculate EUI -- KWH/SqFt/No.of days for this month & last month..
+		
+		return SUCCESS;
+		
+	}
+	
+	
+	
+	private BuildingContext getBuilding() throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getBuildingId());		
+		Chain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
+		getBuildingChain.execute(context);
+		return (BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING);
+	}
+	
+	private long buildingId;
+	public long getBuildingId() 
+	{
+		return buildingId;
+	}
+	public void setBuildingId(long buildingId) 
+	{
+		this.buildingId = buildingId;
+	}
+	
 	private JSONObject reportAllData = null;
 	
 	public JSONObject getReportAllData() {

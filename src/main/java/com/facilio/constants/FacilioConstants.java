@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -456,6 +457,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
@@ -558,6 +560,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
+			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			
 			return classMap;
 		}

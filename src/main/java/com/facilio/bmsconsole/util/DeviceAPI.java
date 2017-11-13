@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.device.types.DistechControls;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -993,13 +994,57 @@ public class DeviceAPI
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
 																		.beanClass(EnergyMeterContext.class)
-																		.andCustomWhere("SPACE_ID = ?", spaceId)
+																		.andCustomWhere("PURPOSE_SPACE_ID = ?", spaceId)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
+	
+	public static List<EnergyMeterContext> getEnergyMetersOfPurpose(long purposeId,boolean root) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EnergyMeterContext.class)
+																		.andCustomWhere("PURPOSE_ID = ? AND IS_ROOT=?", purposeId,root)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
+	
+	public static List<EnergyMeterContext> getAllEnergyMeters(long spaceId,long purposeId, boolean root) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EnergyMeterContext.class)
+																		.andCustomWhere("PURPOSE_ID=? AND PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", purposeId, spaceId,root)
 																		.maxLevel(0)
 																		;
 		
 		return selectBuilder.get();
 	}
 			
+	public static List<EnergyMeterPurposeContext> getEnergyMeterPurpose(String purpose) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+		
+		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EnergyMeterPurposeContext.class)
+																		.andCustomWhere("NAME = ?", purpose)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
 			
 	 public static List<Device> getDevices() throws SQLException
 	 {
