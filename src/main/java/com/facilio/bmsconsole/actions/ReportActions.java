@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -12,9 +13,15 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ReportActions extends ActionSupport {
@@ -68,17 +75,107 @@ public class ReportActions extends ActionSupport {
 	
 	public String getBuildingDetails() throws Exception
 	{
+		JSONObject buildingData = new JSONObject();
+		
 		BuildingContext building =getBuilding();
+		long photoId=building.getPhotoId();
+		buildingData.put("photoid", photoId);
+		
+		String avatarUrl=building.getAvatarUrl();
 		String buildingName=building.getDisplayName();
 		LocationContext location= building.getLocation();
 		String cityName=location.getCity();
 		String streetName=location.getStreet();
 		double buildingArea=building.getGrossFloorArea();
+		
+		buildingData.put("avatar",avatarUrl);
+		buildingData.put("name", buildingName);
+		buildingData.put("city", cityName);
+		buildingData.put("street", streetName);
+		buildingData.put("area", buildingArea);
+		
+		
 		//Energy Meter purpose id: Main, AHU, Lighting, Chiller, Lift, UPS..
 		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose("Main").get(0);
 		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
+		
 		EnergyMeterContext energyMeter= energyMeters.get(0);
 		long deviceId=energyMeter.getId();
+		FacilioField monthFld = new FacilioField();
+		monthFld.setName("MONTH");
+		monthFld.setColumnName("TTIME_MONTH");
+		monthFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField energyFld = new FacilioField();
+		energyFld.setName("KWH");
+		energyFld.setColumnName("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)");
+		energyFld.setDataType(FieldType.DECIMAL);
+		long startTime=DateTimeUtil.getMonthStartTime(-1);
+		long endTime=DateTimeUtil.getCurrenTime();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(energyFld);
+		fields.add(monthFld);
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Energy_Data")
+				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
+				.groupBy("TTIME_MONTH")
+				.orderBy("TTIME_MONTH");
+		List<Map<String, Object>> result = builder.get();
+		
+		int lastMonth=-1;
+		double lastMonthKwh=-1;
+		int thisMonth=-1;
+		double thisMonthKwh=-1;
+		
+		if(result!=null && !result.isEmpty())
+		{
+			if(result.size()==2){
+				Map<String,Object> map = result.get(0);
+				lastMonth =(int)map.get("MONTH");
+				lastMonthKwh = (double)map.get("KWH");
+				map = result.get(1);
+				thisMonth =(int)map.get("MONTH");
+				thisMonthKwh = (double)map.get("KWH");		
+			}
+			else{
+				
+				Map<String,Object> map = result.get(0);
+				thisMonth =(int)map.get("MONTH");
+				thisMonthKwh = (double)map.get("KWH");
+			}
+			
+		}
+		
+		long endTimestamp=DateTimeUtil.getMonthStartTime();
+		int lastMonthDays= DateTimeUtil.getDaysBetween(startTime, endTimestamp-1);
+		int thisMonthDays=DateTimeUtil.getDaysBetween(endTimestamp,endTime);
+		
+		double lastMonthAvgEUI= lastMonthKwh/buildingArea/lastMonthDays;
+		double thisMonthAvgEUI=thisMonthKwh/buildingArea/thisMonthDays;
+		
+		
+		JSONObject lastMonthData = new JSONObject();
+		lastMonthData.put("kwh",lastMonthKwh);
+		lastMonthData.put("days", lastMonthDays);
+		lastMonthData.put("eui", lastMonthAvgEUI);
+		lastMonthData.put("monthVal", lastMonth);
+		
+		JSONObject thisMonthData = new JSONObject();
+		thisMonthData.put("kwh",thisMonthKwh);
+		thisMonthData.put("days", thisMonthDays);
+		thisMonthData.put("eui", thisMonthAvgEUI);
+		thisMonthData.put("monthVal", thisMonth);
+		
+		buildingData.put("lastMonth", lastMonthData);
+		buildingData.put("thisMonth", thisMonthData);
+		
+		//need to send temperature & carbon emmission 
+	
+		setReportAllData(buildingData);
+		
 		//get the data for This month & Previous month by group by Month in one query by giving proper ttime between..
 		//calculate EUI -- KWH/SqFt/No.of days for this month & last month..
 		
