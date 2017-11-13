@@ -94,6 +94,18 @@ public class EventAction extends ActionSupport {
 		this.eventRule = eventRule;
 	}
 	
+	public String addEventRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_RULE, eventRule);
+		
+		Chain addEventRuleChain = EventConstants.addEventRuleChain();
+		addEventRuleChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	
 	private Map<Integer, Condition> filterConditions;
 	public Map<Integer, Condition> getFilterConditions() {
 		return filterConditions;

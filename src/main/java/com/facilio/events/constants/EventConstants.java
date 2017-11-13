@@ -11,11 +11,11 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.events.commands.AddEventCommand;
+import com.facilio.events.commands.AddEventRuleCommand;
 import com.facilio.events.commands.AddOrUpdateAlarmCommand;
 import com.facilio.events.commands.ExecuteEventMappingRuleCommand;
 import com.facilio.events.commands.ExecuteEventRuleCommand;
 import com.facilio.events.commands.GetEventListCommand;
-import com.facilio.events.commands.GetEventPropertyCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
 import com.facilio.events.commands.UpdateEventFilterCommand;
 import com.facilio.events.commands.UpdateEventPropertyCommand;
@@ -51,6 +51,13 @@ public class EventConstants {
 	public static Chain getEventRulesChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetEventRulesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addEventRuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddEventRuleCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -273,7 +280,7 @@ public class EventConstants {
 		
 		FacilioField name = new FacilioField();
 		name.setName("name");
-		name.setDataType(FieldType.BOOLEAN);
+		name.setDataType(FieldType.STRING);
 		name.setColumnName("NAME");
 		name.setModule(module);
 		fields.add(name);

@@ -36,7 +36,10 @@ public class GetEventRulesCommand implements Command {
 			{
 				EventRule eventRule = new EventRule();
 				BeanUtils.populate(eventRule, eventRuleMap);
-				eventRule.setBaseCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getBaseCriteriaId() ,conn));
+				if(eventRule.getBaseCriteriaId() != null)
+				{
+					eventRule.setBaseCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getBaseCriteriaId() ,conn));
+				}
 				if(eventRule.getHasCustomizeRule() != null && eventRule.getHasCustomizeRule())
 				{
 					eventRule.setCustomizeCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getCustomizeCriteriaId() ,conn));
