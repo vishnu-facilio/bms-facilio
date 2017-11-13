@@ -26,6 +26,8 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class ReportActions extends ActionSupport {
 	
+	double unitCost=2;
+	
 	public String reportdata() throws Exception 
 	{
 		String strDurat = String.valueOf(report.get("duration"));
@@ -149,9 +151,13 @@ public class ReportActions extends ActionSupport {
 			
 		}
 		
+		double thisMonthCost=thisMonthKwh*unitCost;
+		double lastMonthCost=lastMonthKwh*unitCost;
+		
 		long endTimestamp=DateTimeUtil.getMonthStartTime();
 		int lastMonthDays= DateTimeUtil.getDaysBetween(startTime, endTimestamp-1);
 		int thisMonthDays=DateTimeUtil.getDaysBetween(endTimestamp,endTime);
+		
 		
 		double lastMonthAvgEUI= lastMonthKwh/buildingArea/lastMonthDays;
 		double thisMonthAvgEUI=thisMonthKwh/buildingArea/thisMonthDays;
@@ -161,18 +167,21 @@ public class ReportActions extends ActionSupport {
 		lastMonthData.put("kwh",lastMonthKwh);
 		lastMonthData.put("days", lastMonthDays);
 		lastMonthData.put("eui", lastMonthAvgEUI);
+		lastMonthData.put("cost", lastMonthCost);
 		lastMonthData.put("monthVal", lastMonth);
 		
 		JSONObject thisMonthData = new JSONObject();
 		thisMonthData.put("kwh",thisMonthKwh);
 		thisMonthData.put("days", thisMonthDays);
 		thisMonthData.put("eui", thisMonthAvgEUI);
+		lastMonthData.put("cost", thisMonthCost);
 		thisMonthData.put("monthVal", thisMonth);
 		
 		buildingData.put("lastMonth", lastMonthData);
 		buildingData.put("thisMonth", thisMonthData);
-		buildingData.put("variance%", variance);
+		buildingData.put("variance", variance);
 		
+		// need to send cost..as well..
 		//need to send temperature & carbon emmission [
 	
 		setReportAllData(buildingData);
