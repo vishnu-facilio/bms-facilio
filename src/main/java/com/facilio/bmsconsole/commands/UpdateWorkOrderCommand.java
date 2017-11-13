@@ -40,6 +40,12 @@ public class UpdateWorkOrderCommand implements Command {
 				workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
 			}
 			
+			if(workOrder.getStatus() != null) {
+				if(workOrder.getStatus().getId() == TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed").getId()) {
+					workOrder.setActualWorkEnd(System.currentTimeMillis());
+				}
+			}
+			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
