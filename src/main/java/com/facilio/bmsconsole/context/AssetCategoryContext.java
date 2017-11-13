@@ -44,8 +44,10 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public static enum AssetCategoryType {
-		AHU(1, "AHU"),
-		HVAC(2, "HVAC")
+		MISC(0, "Misc"),
+		HVAC(1, "HVAC"),
+		ENERGY(2, "Energy"),
+		FIRE(3, "Fire")
 		;
 		
 		private int intVal;
