@@ -155,7 +155,7 @@ public class ReportActions extends ActionSupport {
 		
 		double lastMonthAvgEUI= lastMonthKwh/buildingArea/lastMonthDays;
 		double thisMonthAvgEUI=thisMonthKwh/buildingArea/thisMonthDays;
-		
+		double variance= ((thisMonthAvgEUI - lastMonthAvgEUI)/thisMonthAvgEUI)*100;
 		
 		JSONObject lastMonthData = new JSONObject();
 		lastMonthData.put("kwh",lastMonthKwh);
@@ -171,8 +171,9 @@ public class ReportActions extends ActionSupport {
 		
 		buildingData.put("lastMonth", lastMonthData);
 		buildingData.put("thisMonth", thisMonthData);
+		buildingData.put("variance%", variance);
 		
-		//need to send temperature & carbon emmission 
+		//need to send temperature & carbon emmission [
 	
 		setReportAllData(buildingData);
 		
