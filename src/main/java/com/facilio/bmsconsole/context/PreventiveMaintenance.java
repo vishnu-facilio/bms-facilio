@@ -121,6 +121,22 @@ public class PreventiveMaintenance {
 		this.templateId = templateId;
 	}
 	
+	private long spaceId = -1;
+	public long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(long spaceId) {
+		this.spaceId = spaceId;
+	}
+	
+	private long assetId = -1;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+
 	private long startTime = -1;
 	public long getStartTime() {
 		return startTime;

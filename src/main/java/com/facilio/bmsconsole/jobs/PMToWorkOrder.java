@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -45,6 +46,7 @@ public class PMToWorkOrder extends FacilioJob {
 				
 				JSONObject content = template.getTemplate(null);
 				WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject)content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
+				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());

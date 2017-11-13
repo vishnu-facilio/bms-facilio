@@ -296,7 +296,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		WEB(1, "Web"),
 		EMAIL(2, "E Mail"),
 		SMS(3, "SMS"),
-		ALARM(4, "Alarm")
+		ALARM(4, "Alarm"),
+		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance")
 		;
 		
 		private int intVal;

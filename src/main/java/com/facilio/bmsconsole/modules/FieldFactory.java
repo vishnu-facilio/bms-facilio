@@ -837,6 +837,20 @@ public class FieldFactory {
 		templateId.setModule(module);
 		fields.add(templateId);
 		
+		FacilioField spaceId = new FacilioField();
+		spaceId.setName("spaceId");
+		spaceId.setDataType(FieldType.NUMBER);
+		spaceId.setColumnName("SPACE_ID");
+		spaceId.setModule(module);
+		fields.add(spaceId);
+		
+		FacilioField assetId = new FacilioField();
+		assetId.setName("assetId");
+		assetId.setDataType(FieldType.NUMBER);
+		assetId.setColumnName("ASSET_ID");
+		assetId.setModule(module);
+		fields.add(assetId);
+		
 		FacilioField startTime = new FacilioField();
 		startTime.setName("startTime");
 		startTime.setDataType(FieldType.NUMBER);

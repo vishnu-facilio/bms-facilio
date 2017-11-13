@@ -128,6 +128,14 @@ public class WorkOrderAction extends ActionSupport {
 	public String addPreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		
+		if(workorder.getAsset() != null) {
+			preventivemaintenance.setAssetId(workorder.getAsset().getId());
+		}
+		if(workorder.getSpace() != null) {
+			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
+		}
+		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
