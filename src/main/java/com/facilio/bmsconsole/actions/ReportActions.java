@@ -84,20 +84,21 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("photoid", photoId);
 		
 		String avatarUrl=building.getAvatarUrl();
-		String buildingName=building.getDisplayName();
+		String buildingName=building.getName();
+		String displayName=building.getDisplayName();
 		LocationContext location= building.getLocation();
+		if(location!=null){
 		String cityName=location.getCity();
 		String streetName=location.getStreet();
-		double buildingArea=building.getGrossFloorArea();
-		
-		buildingData.put("avatar",avatarUrl);
-		buildingData.put("name", buildingName);
 		buildingData.put("city", cityName);
 		buildingData.put("street", streetName);
+		}
+		
+		double buildingArea=building.getGrossFloorArea();
+		buildingData.put("avatar",avatarUrl);
+		buildingData.put("name", buildingName);
+		buildingData.put("displayName", displayName);
 		buildingData.put("area", buildingArea);
-		
-		
-		//Energy Meter purpose id: Main, AHU, Lighting, Chiller, Lift, UPS..
 		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose("Main").get(0);
 		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
 		
@@ -110,7 +111,7 @@ public class ReportActions extends ActionSupport {
 		
 		FacilioField energyFld = new FacilioField();
 		energyFld.setName("KWH");
-		energyFld.setColumnName("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)");
+		energyFld.setColumnName("ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
 		energyFld.setDataType(FieldType.DECIMAL);
 		long startTime=DateTimeUtil.getMonthStartTime(-1);
 		long endTime=DateTimeUtil.getCurrenTime();
