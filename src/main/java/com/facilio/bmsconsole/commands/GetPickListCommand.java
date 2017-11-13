@@ -38,16 +38,13 @@ public class GetPickListCommand implements Command {
 																	.orderBy("ID");
 				
 				List<Map<String, Object>> records = builder.getAsProps();
-				
+				Map<Long, String> pickList = new HashMap<>();
 				if(records != null && records.size() > 0) {
-					Map<Long, String> pickList = new HashMap<>();
-					
 					for(Map<String, Object> record : records) {
 						pickList.put((Long) record.get("id"), record.get(defaultField.getName()).toString());
 					}
-					
-					context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
 				}
+				context.put(FacilioConstants.ContextNames.PICKLIST, pickList);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

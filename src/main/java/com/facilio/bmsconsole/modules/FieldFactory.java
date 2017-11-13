@@ -1294,4 +1294,46 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getFileFields() {
+		FacilioModule module = ModuleFactory.getFilesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField fileName = new FacilioField();
+		fileName.setName("fileName");
+		fileName.setDataType(FieldType.STRING);
+		fileName.setColumnName("FILE_NAME");
+		fileName.setModule(module);
+		fields.add(fileName);
+		
+		FacilioField fileSize = new FacilioField();
+		fileSize.setName("fileSize");
+		fileSize.setDataType(FieldType.NUMBER);
+		fileSize.setColumnName("FILE_SIZE");
+		fileSize.setModule(module);
+		fields.add(fileSize);
+		
+		FacilioField uploadedBy = new FacilioField();
+		uploadedBy.setName("uploadedBy");
+		uploadedBy.setDataType(FieldType.NUMBER);
+		uploadedBy.setColumnName("UPLOADED_BY");
+		uploadedBy.setModule(module);
+		fields.add(uploadedBy);
+		
+		FacilioField uploadedTime = new FacilioField();
+		uploadedTime.setName("uploadedTime");
+		uploadedTime.setDataType(FieldType.NUMBER);
+		uploadedTime.setColumnName("UPLOADED_TIME");
+		uploadedTime.setModule(module);
+		fields.add(uploadedTime);
+		
+		FacilioField contentType = new FacilioField();
+		contentType.setName("contentType");
+		contentType.setDataType(FieldType.NUMBER);
+		contentType.setColumnName("CONTENT_TYPE");
+		contentType.setModule(module);
+		fields.add(contentType);
+		
+		return fields;
+	}
 }	

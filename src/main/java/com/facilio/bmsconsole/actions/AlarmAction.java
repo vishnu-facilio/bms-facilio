@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -27,7 +28,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
@@ -110,12 +111,12 @@ public class AlarmAction extends ActionSupport {
 		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
-
-		Long spaceId = DeviceAPI.getDevice(alarm.getDeviceId()).getSpaceId();
-		
-		BaseSpaceContext space = new BaseSpaceContext();
-		space.setId(spaceId);
-		alarm.setSpace(space);
+		if(alarm.getAsset() != null) {
+			AssetContext asset = AssetsAPI.getAssetInfo(alarm.getAsset().getId());
+			BaseSpaceContext space = asset.getSpace();
+			alarm.setSpace(space);
+			alarm.setAsset(asset);
+		}
 		return alarm;
 	}
 
