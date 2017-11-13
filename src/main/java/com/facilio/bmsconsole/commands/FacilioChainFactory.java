@@ -1080,6 +1080,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetLatestReadingValuesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetLatestReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddPhotosChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

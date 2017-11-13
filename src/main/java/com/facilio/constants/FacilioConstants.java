@@ -510,20 +510,6 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
 		
-		public static String getPKColumn(String module) {
-			if (TICKET.equalsIgnoreCase(module)) {
-				return "TICKET_ID";
-			}
-			return "TICKET_ID";
-		}
-		
-		public static String getAttachmentTableName(String module) {
-			if (TICKET.equalsIgnoreCase(module)) {
-				return "Ticket_Attachment";
-			}
-			return "Ticket_Attachment";
-		}
-
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String NEW_CV = "newCV";
@@ -533,6 +519,7 @@ public class FacilioConstants {
 		public static final String SEARCH_CRITERIA = "searchCriteria";
 		public static final String SORTING = "sorting";
 		public static final String SORTING_QUERY = "sortingQuery";
+		public static final String LIMIT_VALUE = "limitValue";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

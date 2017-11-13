@@ -843,6 +843,13 @@
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
+		
+		<action name="getlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getLatestReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
+				<param name="includeProperties">readingData.*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="photosApi" namespace="/api/photos" extends="home">
