@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
@@ -20,27 +21,7 @@ public class UpdateEventRulesCommand implements Command {
 		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
 		if(eventRule != null && eventRule.getEventRuleId() != -1) {
 			long orgId =  OrgInfo.getCurrentOrgInfo().getOrgid();
-			if(eventRule.getBaseCriteria() != null) {
-				long criteriaId = CriteriaAPI.addCriteria(eventRule.getBaseCriteria(),orgId);
-				eventRule.setBaseCriteriaId(criteriaId);
-			}
-			
-			if(eventRule.getTransformCriteria() != null) {
-				long criteriaId = CriteriaAPI.addCriteria(eventRule.getTransformCriteria(),orgId);
-				eventRule.setTransformCriteriaId(criteriaId);
-			}
-			
-			if(eventRule.getTransformTemplate() != null) {
-				AlarmTemplate alarmTemplate = new AlarmTemplate();
-				alarmTemplate.setContent(eventRule.getTransformTemplate().toJSONString());
-				long alarmTemplateId = TemplateAPI.addAlarmTemplate(orgId, alarmTemplate);
-				eventRule.setTransformAlertTemplateId(alarmTemplateId);
-			}
-			
-			if(eventRule.getThresholdCriteria() != null) {
-				long criteriaId = CriteriaAPI.addCriteria(eventRule.getThresholdCriteria(), orgId);
-				eventRule.setThresholdCriteriaId(criteriaId);
-			}
+			EventRulesAPI.updateEventRuleChildIds(eventRule, orgId);
 			
 			
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

@@ -1,6 +1,5 @@
 package com.facilio.events.commands;
 
-import java.sql.Connection;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -9,9 +8,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddEventRuleCommand implements Command {
 
@@ -20,24 +19,20 @@ public class AddEventRuleCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
-		eventRule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		
-		Map<String, Object> eventRulesProp = FieldUtil.getAsProperties(eventRule);
-		System.out.println(eventRulesProp);
-		
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
-		{
+		if(eventRule != null) {
+			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+			eventRule.setOrgId(orgId);
+			EventRulesAPI.updateEventRuleChildIds(eventRule, orgId);
+			
+			Map<String, Object> prop = FieldUtil.getAsProperties(eventRule);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table("Event_Rule")
-					.fields(EventConstants.getEventRuleFields())
-					.addRecord(eventRulesProp);
-
+															.table(EventConstants.getEventRuleModule().getTableName())
+															.fields(EventConstants.getEventRuleFields())
+															.addRecord(prop);
+			
 			insertBuilder.save();
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-			throw e;
+			long id = (long) prop.get("id");
+			eventRule.setEventRuleId(id);
 		}
 		
 		return false;

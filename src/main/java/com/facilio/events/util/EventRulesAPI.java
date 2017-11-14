@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventToAlarmFieldMapping;
@@ -58,5 +61,29 @@ public class EventRulesAPI {
 			return eventTransformMappings;
 		}
 		return null;
+	}
+	
+	public static final void updateEventRuleChildIds(EventRule eventRule, long orgId) throws Exception {
+		if(eventRule.getBaseCriteria() != null) {
+			long criteriaId = CriteriaAPI.addCriteria(eventRule.getBaseCriteria(),orgId);
+			eventRule.setBaseCriteriaId(criteriaId);
+		}
+		
+		if(eventRule.getTransformCriteria() != null) {
+			long criteriaId = CriteriaAPI.addCriteria(eventRule.getTransformCriteria(),orgId);
+			eventRule.setTransformCriteriaId(criteriaId);
+		}
+		
+		if(eventRule.getTransformTemplate() != null) {
+			AlarmTemplate alarmTemplate = new AlarmTemplate();
+			alarmTemplate.setContent(eventRule.getTransformTemplate().toJSONString());
+			long alarmTemplateId = TemplateAPI.addAlarmTemplate(orgId, alarmTemplate);
+			eventRule.setTransformAlertTemplateId(alarmTemplateId);
+		}
+		
+		if(eventRule.getThresholdCriteria() != null) {
+			long criteriaId = CriteriaAPI.addCriteria(eventRule.getThresholdCriteria(), orgId);
+			eventRule.setThresholdCriteriaId(criteriaId);
+		}
 	}
 }
