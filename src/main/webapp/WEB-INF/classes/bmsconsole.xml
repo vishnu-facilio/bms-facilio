@@ -851,7 +851,7 @@
 			</result>
 		</action>
 		
-		<action name="getlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getLatestReadingData">
+ 		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceLatestReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
 				<param name="includeProperties">readingData.*</param>
@@ -1199,17 +1199,22 @@
  	</package>
 	
 	<package name="reportsApi" namespace="/api/report" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="reportdata">
+		<action name="reportdata" class="com.facilio.bmsconsole.actions.ReportActions" method="reportdata">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="getBuildingDetails">
+		<action name="getBuildingDetails" class="com.facilio.bmsconsole.actions.ReportActions" method="getBuildingDetails">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="getEnergyConsumption">
+		<action name="getEnergyConsumption" class="com.facilio.bmsconsole.actions.ReportActions" method="getEnergyConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportAllData.*</param>
+			</result>
+		</action>
+		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.ReportActions" method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
