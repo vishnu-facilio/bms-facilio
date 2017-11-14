@@ -12,6 +12,10 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventContext.EventInternalState;
+import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.context.EventRule;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -23,7 +27,6 @@ public class EventThresholdJob extends FacilioJob{
 
 	private static Logger logger = Logger.getLogger(EventThresholdJob.class.getName());
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(JobContext jc) 
 	{
@@ -31,47 +34,40 @@ public class EventThresholdJob extends FacilioJob{
 		{
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 			{
+				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.connection(conn)
 														.select(EventConstants.getEventFields())
 														.table("Event")
-														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = 3", jc.getOrgId(), "Ready");
+														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.TRANSFORMED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
 				for(Map<String, Object> prop : props)
 				{
 					EventContext event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
-					GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
-												.connection(conn)
-												.select(EventConstants.getEventRuleFields())
-												.table("Event_Rule")
-												.andCustomWhere("ORGID = ? AND EVENT_RULE_ID", jc.getOrgId(), (long) event.getEventRuleId());
-					List<Map<String, Object>> ruleprops = rulebuilder.get();
-					Map<String, Object> ruleprop = ruleprops.get(0);
+					EventRule eventRule = EventRulesAPI.getEventRule(orgId, (long) event.getEventRuleId());
 					
-					if((Boolean) ruleprop.get("hasThresholdRule"))
+					if(eventRule.getThresholdCriteriaId() != -1)
 					{
-						boolean ignoreEvent = true;
-						Criteria criteria = CriteriaAPI.getCriteria(jc.getOrgId(), (long) ruleprop.get("createAlarmCriteriaId"), conn);
+						Criteria criteria = CriteriaAPI.getCriteria(orgId, eventRule.getThresholdCriteriaId(), conn);
 						boolean isMatched = criteria.computePredicate().evaluate(event);
 						if(isMatched)
 						{
-							Integer createAlarmOccurs = (Integer) ruleprop.get("createAlarmOccurs");
+							boolean ignoreEvent = true;
+							int thresholdOccurs = eventRule.getThresholdOccurs();
 							GenericSelectRecordBuilder filterbuilder = new GenericSelectRecordBuilder()
-									.connection(conn)
-									.select(EventConstants.getEventFields())
-									.table("Event")
-									.limit(createAlarmOccurs - 1)
-									.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ?", event.getOrgId(), event.getMessageKey())
-									.orderBy("CREATED_TIME DESC");
+																			.select(EventConstants.getEventFields())
+																			.table("Event")
+																			.limit(thresholdOccurs - 1)
+																			.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND CREATED_TIME < ?", event.getOrgId(), event.getMessageKey(), event.getCreatedTime())
+																			.orderBy("CREATED_TIME DESC");
 							List<Map<String, Object>> filtereventslist = filterbuilder.get();
-							if(createAlarmOccurs <= (filtereventslist.size() + 1))
+							if(thresholdOccurs <= (filtereventslist.size() + 1))
 							{
-								Integer createAlarmOverseconds = (Integer) ruleprop.get("createAlarmOverseconds");
+								int thresholdOverSeconds = eventRule.getThresholdOverSeconds();
 								long currentEventTime = event.getCreatedTime();
 								for(Map<String, Object> filterevent : filtereventslist)
 								{
 									long prevEventTime = (long) filterevent.get("createdTime");
-									ignoreEvent = (currentEventTime - prevEventTime) > createAlarmOverseconds;
+									ignoreEvent = (currentEventTime - prevEventTime) > thresholdOverSeconds;
 									if(ignoreEvent)
 									{
 										break;
@@ -79,20 +75,20 @@ public class EventThresholdJob extends FacilioJob{
 									currentEventTime = prevEventTime;
 								}
 							}
-						}
-						if(ignoreEvent)
-						{
-							event.setState("Ignored");
+							if(ignoreEvent)
+							{
+								event.setState(EventState.IGNORED);
+							}
 						}
 					}
-					event.setInternalState(4);
+					event.setInternalState(EventInternalState.THRESHOLD_DONE);
+					event.getMessageKey();
 					prop = FieldUtil.getAsProperties(event);
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
-															.connection(conn)
-															.table("Event")
-															.fields(EventConstants.getEventFields())
-															.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+																	.table("Event")
+																	.fields(EventConstants.getEventFields())
+																	.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}
 			} 

@@ -1,5 +1,9 @@
 package com.facilio.events.context;
 
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.criteria.Criteria;
 
 public class EventRule {
@@ -20,6 +24,13 @@ public class EventRule {
 		this.eventRuleId = eventRuleId;
 	}
 	
+	public long getId() {
+		return getEventRuleId();
+	}
+	public void setId(long id) {
+		this.setEventRuleId(id);
+	}
+	
 	private String name;
 	public String getName() {
 		return name;
@@ -28,27 +39,19 @@ public class EventRule {
 		this.name = name;
 	}
 	
-	private Long ruleOrder;
-	public Long getRuleOrder() {
+	private long ruleOrder = -1;
+	public long getRuleOrder() {
 		return ruleOrder;
 	}
-	public void setRuleOrder(Long ruleOrder) {
+	public void setRuleOrder(long ruleOrder) {
 		this.ruleOrder = ruleOrder;
 	}
-	
-	private Boolean ignoreEvent;
-	public Boolean getIgnoreEvent() {
-		return ignoreEvent;
-	}
-	public void setIgnoreEvent(Boolean ignoreEvent) {
-		this.ignoreEvent = ignoreEvent;
-	}
-	
-	private Long baseCriteriaId;
-	public Long getBaseCriteriaId() {
+
+	private long baseCriteriaId = -1;
+	public long getBaseCriteriaId() {
 		return baseCriteriaId;
 	}
-	public void setBaseCriteriaId(Long baseCriteriaId) {
+	public void setBaseCriteriaId(long baseCriteriaId) {
 		this.baseCriteriaId = baseCriteriaId;
 	}
 	
@@ -60,75 +63,117 @@ public class EventRule {
 		this.baseCriteria = baseCriteria;
 	}
 	
-	private Boolean hasCustomizeRule;
-	public Boolean getHasCustomizeRule() {
-		return hasCustomizeRule;
+	private Boolean ignoreEvent;
+	public Boolean getIgnoreEvent() {
+		return ignoreEvent;
 	}
-	public void setHasCustomizeRule(Boolean hasCustomizeRule) {
-		this.hasCustomizeRule = hasCustomizeRule;
+	public void setIgnoreEvent(Boolean ignoreEvent) {
+		this.ignoreEvent = ignoreEvent;
+	}
+	public boolean isIgnoreEvent() {
+		if(ignoreEvent != null) {
+			return ignoreEvent.booleanValue();
+		}
+		return false;
+	}
+
+//	private Boolean hasCustomizeRule;
+//	public Boolean getHasCustomizeRule() {
+//		return hasCustomizeRule;
+//	}
+//	public void setHasCustomizeRule(Boolean hasCustomizeRule) {
+//		this.hasCustomizeRule = hasCustomizeRule;
+//	}
+//	public boolean hasCustomizeRule() {
+//		if(hasCustomizeRule != null) {
+//			return hasCustomizeRule.booleanValue();
+//		}
+//		return false;
+//	}
+	
+	private long transformCriteriaId = -1;
+	public long getTransformCriteriaId() {
+		return transformCriteriaId;
+	}
+	public void setTransformCriteriaId(long transformCriteriaId) {
+		this.transformCriteriaId = transformCriteriaId;
+	}
+
+	private Criteria transformCriteria;
+	public Criteria getTransformCriteria() {
+		return transformCriteria;
+	}
+	public void setTransformCriteria(Criteria transformCriteria) {
+		this.transformCriteria = transformCriteria;
 	}
 	
-	private Long customizeCriteriaId;
-	public Long getCustomizeCriteriaId() {
-		return customizeCriteriaId;
+//	private Boolean hasThresholdRule;
+//	public Boolean getHasThresholdRule() {
+//		return hasThresholdRule;
+//	}
+//	public void setHasThresholdRule(Boolean hasThresholdRule) {
+//		this.hasThresholdRule = hasThresholdRule;
+//	}
+//	public boolean hasThresholdRule() {
+//		if(hasThresholdRule != null) {
+//			return hasThresholdRule.booleanValue();
+//		}
+//		return false;
+//	}
+	
+	private long transformAlertTemplateId = -1;
+	public long getTransformAlertTemplateId() {
+		return transformAlertTemplateId;
 	}
-	public void setCustomizeCriteriaId(Long customizeCriteriaId) {
-		this.customizeCriteriaId = customizeCriteriaId;
+	public void setTransformAlertTemplateId(long transformAlertTemplateId) {
+		this.transformAlertTemplateId = transformAlertTemplateId;
 	}
 	
-	private Criteria customizeCriteria;
-	public Criteria getCustomizeCriteria() {
-		return customizeCriteria;
+	private JSONObject transformTemplate;
+	public JSONObject getTransformTemplate() {
+		return transformTemplate;
 	}
-	public void setCustomizeCriteria(Criteria customizeCriteria) {
-		this.customizeCriteria = customizeCriteria;
+	public void setTransformTemplate(JSONObject transformTemplate) {
+		this.transformTemplate = transformTemplate;
 	}
-	
-	private Long alarmTemplateId;
-	public Long getAlarmTemplateId() {
-		return alarmTemplateId;
+
+	private long thresholdCriteriaId = -1;
+	public long getThresholdCriteriaId() {
+		return thresholdCriteriaId;
 	}
-	public void setAlarmTemplateId(Long alarmTemplateId) {
-		this.alarmTemplateId = alarmTemplateId;
+	public void setThresholdCriteriaId(long thresholdCriteriaId) {
+		this.thresholdCriteriaId = thresholdCriteriaId;
 	}
-	
-	private Boolean hasThresholdRule;
-	public Boolean getHasThresholdRule() {
-		return hasThresholdRule;
+
+	private Criteria thresholdCriteria;
+	public Criteria getThresholdCriteria() {
+		return thresholdCriteria;
 	}
-	public void setHasThresholdRule(Boolean hasThresholdRule) {
-		this.hasThresholdRule = hasThresholdRule;
+	public void setThresholdCriteria(Criteria thresholdCriteria) {
+		this.thresholdCriteria = thresholdCriteria;
 	}
-	
-	private Long createAlarmCriteriaId;
-	public Long getCreateAlarmCriteriaId() {
-		return createAlarmCriteriaId;
+
+	private int thresholdOccurs = -1;
+	public int getThresholdOccurs() {
+		return thresholdOccurs;
 	}
-	public void setCreateAlarmCriteriaId(Long createAlarmCriteriaId) {
-		this.createAlarmCriteriaId = createAlarmCriteriaId;
+	public void setThresholdOccurs(int thresholdOccurs) {
+		this.thresholdOccurs = thresholdOccurs;
 	}
-	
-	private Criteria createAlarmCriteria;
-	public Criteria getCreateAlarmCriteria() {
-		return createAlarmCriteria;
+
+	private int thresholdOverSeconds = -1;
+	public int getThresholdOverSeconds() {
+		return thresholdOverSeconds;
 	}
-	public void setCreateAlarmCriteria(Criteria createAlarmCriteria) {
-		this.createAlarmCriteria = createAlarmCriteria;
-	}
-	
-	private Long createAlarmOccurs;
-	public Long getCreateAlarmOccurs() {
-		return createAlarmOccurs;
-	}
-	public void setCreateAlarmOccurs(Long createAlarmOccurs) {
-		this.createAlarmOccurs = createAlarmOccurs;
+	public void setThresholdOverSeconds(int thresholdOverSeconds) {
+		this.thresholdOverSeconds = thresholdOverSeconds;
 	}
 	
-	private Long createAlarmOverseconds;
-	public Long setCreateAlarmOverseconds() {
-		return createAlarmOverseconds;
+	private List<EventToAlarmFieldMapping> fieldMappings;
+	public List<EventToAlarmFieldMapping> getFieldMappings() {
+		return fieldMappings;
 	}
-	public void setCreateAlarmOverseconds(Long createAlarmOverseconds) {
-		this.createAlarmOverseconds = createAlarmOverseconds;
+	public void setFieldMappings(List<EventToAlarmFieldMapping> fieldMappings) {
+		this.fieldMappings = fieldMappings;
 	}
 }

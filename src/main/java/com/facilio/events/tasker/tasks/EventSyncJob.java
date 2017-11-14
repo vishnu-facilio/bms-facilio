@@ -1,6 +1,5 @@
 package com.facilio.events.tasker.tasks;
 
-import java.sql.Connection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,10 +22,12 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventContext.EventInternalState;
+import com.facilio.events.context.EventContext.EventState;
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class EventSyncJob extends FacilioJob{
 
@@ -40,7 +41,7 @@ public class EventSyncJob extends FacilioJob{
 			try
 			{
 				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
-				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion("us-west-2").build();
 				
 				DynamoDB dd = new DynamoDB(client);
 				Table table = dd.getTable("FacilioEvents"); // Client Table
@@ -51,7 +52,8 @@ public class EventSyncJob extends FacilioJob{
 				ItemCollection<QueryOutcome> items = table.query(spec);
 				if(items.iterator().hasNext())
 				{
-					processItems(items, jc.getOrgId());
+					System.out.println("got item");
+					processItems(items, OrgInfo.getCurrentOrgInfo().getOrgid());
 				}
 			}
 			catch (Exception e) 
@@ -61,30 +63,21 @@ public class EventSyncJob extends FacilioJob{
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void processItems(ItemCollection<QueryOutcome> items, long orgId) throws Exception 
 	{
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.connection(conn)
-					.table("Event")
-					.fields(EventConstants.getEventFields());
-			Iterator<Item> iterator = items.iterator();
-			while (iterator.hasNext())
-			{
-				Item item = iterator.next();
-			    Long timestamp = item.getLong("LogTime");
-			    EventContext event = processPayload(timestamp, item.getMap("payload"), orgId);
-				Map<String, Object> props = FieldUtil.getAsProperties(event);
-				builder.addRecord(props);
-			}
-			builder.save();
-		}
-		catch(Exception e) 
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+												.table("Event")
+												.fields(EventConstants.getEventFields());
+		Iterator<Item> iterator = items.iterator();
+		while (iterator.hasNext())
 		{
-			e.printStackTrace();
-			throw e;
+			Item item = iterator.next();
+		    Long timestamp = item.getLong("LogTime");
+		    EventContext event = processPayload(timestamp, item.getMap("payload"), orgId);
+			Map<String, Object> props = FieldUtil.getAsProperties(event);
+			builder.addRecord(props);
 		}
+		builder.save();
 	}
 
 	@SuppressWarnings({ "unchecked"})
@@ -125,12 +118,12 @@ public class EventSyncJob extends FacilioJob{
 	    }
 	    if(!additionalInfo.isEmpty())
 	    {
-	    	event.setAdditionInfo(additionalInfo.toString());
+	    	event.setAdditionInfo(additionalInfo);
 	    }
 	    event.setOrgId(orgId);
 	    event.setCreatedTime(timestamp);
-	    event.setState("Ready");
-	    event.setInternalState(1);
+	    event.setState(EventState.READY);
+	    event.setInternalState(EventInternalState.ADDED);
 	    
 	    /*
 	    FacilioContext context = new FacilioContext();

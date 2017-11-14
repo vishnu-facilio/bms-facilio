@@ -23,39 +23,39 @@ public class GetEventRulesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<EventRule> eventRules = new ArrayList<>();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(EventConstants.getEventRuleFields())
-					.table("Event_Rule")
-					.andCustomWhere("Event_Rule.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
-	
-			List<Map<String, Object>> eventRulesList = selectBuider.get();
-			for(Map<String, Object> eventRuleMap : eventRulesList)
-			{
-				EventRule eventRule = new EventRule();
-				BeanUtils.populate(eventRule, eventRuleMap);
-				if(eventRule.getBaseCriteriaId() != null)
-				{
-					eventRule.setBaseCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getBaseCriteriaId() ,conn));
-				}
-				if(eventRule.getHasCustomizeRule() != null && eventRule.getHasCustomizeRule())
-				{
-					eventRule.setCustomizeCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getCustomizeCriteriaId() ,conn));
-				}
-				if(eventRule.getHasThresholdRule() != null && eventRule.getHasThresholdRule())
-				{
-					eventRule.setCreateAlarmCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getCreateAlarmCriteriaId() ,conn));
-				}
-				eventRules.add(eventRule);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-		context.put(EventConstants.EVENT_RULE_LIST, eventRules);
+//		List<EventRule> eventRules = new ArrayList<>();
+//		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+//			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+//					.connection(conn)
+//					.select(EventConstants.getEventRuleFields())
+//					.table("Event_Rule")
+//					.andCustomWhere("Event_Rule.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+//	
+//			List<Map<String, Object>> eventRulesList = selectBuider.get();
+//			for(Map<String, Object> eventRuleMap : eventRulesList)
+//			{
+//				EventRule eventRule = new EventRule();
+//				BeanUtils.populate(eventRule, eventRuleMap);
+//				if(eventRule.getBaseCriteriaId() != -1)
+//				{
+//					eventRule.setBaseCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getBaseCriteriaId() ,conn));
+//				}
+//				if(eventRule.hasCustomizeRule())
+//				{
+//					eventRule.setCustomizeCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getCustomizeCriteriaId() ,conn));
+//				}
+//				if(eventRule.hasThresholdRule())
+//				{
+//					eventRule.setCreateAlarmCriteria(CriteriaAPI.getCriteria(eventRule.getOrgId(), eventRule.getCreateAlarmCriteriaId() ,conn));
+//				}
+//				eventRules.add(eventRule);
+//			}
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//			throw e;
+//		}
+//		context.put(EventConstants.EVENT_RULE_LIST, eventRules);
 		return false;
 	}
 }

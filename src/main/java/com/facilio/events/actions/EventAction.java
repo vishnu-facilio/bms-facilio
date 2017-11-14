@@ -210,4 +210,14 @@ public class EventAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	public String updateEventRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT_RULE, eventRule);
+		
+		Chain updateEventRule = EventConstants.updateEventRulesChain();
+		updateEventRule.execute(context);
+		
+		return SUCCESS;
+	}
 }

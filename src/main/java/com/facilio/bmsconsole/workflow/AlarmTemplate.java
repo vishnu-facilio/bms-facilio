@@ -4,14 +4,16 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class AlarmTemplate extends UserTemplate {
 
-	private Long contentId;
-	public Long getContentId() {
+	private long contentId = -1;
+	public long getContentId() {
 		return contentId;
 	}
-	public void setContentId(Long contentId) {
+	public void setContentId(long contentId) {
 		this.contentId = contentId;
 	}
 	
@@ -27,8 +29,13 @@ public class AlarmTemplate extends UserTemplate {
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub
-		JSONObject obj = new JSONObject();
-		obj.put("content", StrSubstitutor.replace(content, placeHolders));
-		return obj;
+		try {
+			JSONParser parser = new JSONParser();
+			return (JSONObject) parser.parse(StrSubstitutor.replace(content, placeHolders));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

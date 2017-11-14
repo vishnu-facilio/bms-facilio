@@ -12,6 +12,10 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventContext.EventInternalState;
+import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.context.EventRule;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -23,7 +27,6 @@ public class EventFilterJob extends FacilioJob{
 
 	private static Logger logger = Logger.getLogger(EventFilterJob.class.getName());
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(JobContext jc) 
 	{
@@ -31,19 +34,13 @@ public class EventFilterJob extends FacilioJob{
 		{
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 			{
-				GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
-														.connection(conn)
-														.select(EventConstants.getEventRuleFields())
-														.table("Event_Rule")
-														.andCustomWhere("ORGID = ?", jc.getOrgId())
-														.orderBy("RULE_ORDER");
-				List<Map<String, Object>> ruleprops = rulebuilder.get();
+				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+				List<EventRule> eventRules = EventRulesAPI.getEventRules(orgId);
 				
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.connection(conn)
 														.select(EventConstants.getEventFields())
 														.table("Event")
-														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = 1", jc.getOrgId(), "Ready");	//Org Id
+														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.ADDED.getIntVal());	//Org Id
 				List<Map<String, Object>> props = builder.get();
 				for(Map<String, Object> prop : props)
 				{
@@ -51,33 +48,35 @@ public class EventFilterJob extends FacilioJob{
 					boolean isMatched = false;
 					boolean ignoreEvent = false;
 					Long matchedRuleId = null;
-					for(Map<String, Object> ruleprop : ruleprops)
-					{
-						Criteria criteria = CriteriaAPI.getCriteria(jc.getOrgId(), (long) ruleprop.get("baseCriteriaId"), conn);
-						isMatched = criteria.computePredicate().evaluate(event);
-						if(isMatched)
+					if(eventRules != null) {
+						for(EventRule rule : eventRules)
 						{
-							matchedRuleId = (long) ruleprop.get("eventRuleId");
-							ignoreEvent = (Boolean) ruleprop.get("ignoreEvent");
-							break;
+							Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId(), conn);
+							isMatched = criteria.computePredicate().evaluate(prop);
+							if(isMatched)
+							{
+								matchedRuleId = rule.getEventRuleId();
+								ignoreEvent = rule.isIgnoreEvent();
+								break;
+							}
 						}
 					}
 					if(ignoreEvent)
 					{
-						event.setState("Ignored");
+						event.setState(EventState.IGNORED);
 					}
-					event.setInternalState(2);
+					event.setInternalState(EventInternalState.FILTERED);
 					if(isMatched)
 					{
 						event.setEventRuleId(matchedRuleId);
 					}
+					event.getMessageKey();
 					prop = FieldUtil.getAsProperties(event);
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
-															.connection(conn)
 															.table("Event")
 															.fields(EventConstants.getEventFields())
-															.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+															.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}
 			} 

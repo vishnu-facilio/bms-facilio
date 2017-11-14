@@ -11,11 +11,11 @@ import com.facilio.constants.FacilioConstants;
 
 public class WorkorderTemplate extends UserTemplate {
 
-	private Long contentId;
-	public Long getContentId() {
+	private long contentId = -1;
+	public long getContentId() {
 		return contentId;
 	}
-	public void setContentId(Long contentId) {
+	public void setContentId(long contentId) {
 		this.contentId = contentId;
 	}
 	

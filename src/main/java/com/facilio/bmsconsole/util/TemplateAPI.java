@@ -238,7 +238,7 @@ public class TemplateAPI {
 	public static long addWorkorderTemplate(long orgId, WorkorderTemplate template) throws Exception {
 		template.setOrgId(orgId);
 		template.setContentId((FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).addFile("Workorder_Template_"+template.getName(), template.getContent(), "text/plain")));
-		
+		template.setType(UserTemplate.Type.WORKORDER);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -259,7 +259,7 @@ public class TemplateAPI {
 	public static long addAlarmTemplate(long orgId, AlarmTemplate template) throws Exception {
 		template.setOrgId(orgId);
 		template.setContentId((FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain")));
-		
+		template.setType(UserTemplate.Type.ALARM);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()

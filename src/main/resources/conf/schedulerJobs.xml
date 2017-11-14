@@ -8,4 +8,8 @@
 	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' />
 	 <job name='PreventiveMaintenance' classname='com.facilio.bmsconsole.jobs.PMToWorkOrder' />
 	 <job name='EventSync' classname='com.facilio.events.tasker.tasks.EventSyncJob' />
+	 <job name='EventFilter' classname='com.facilio.events.tasker.tasks.EventFilterJob' />
+	 <job name='EventTransform' classname='com.facilio.events.tasker.tasks.EventTransformJob' />
+	 <job name='EventThreshold' classname='com.facilio.events.tasker.tasks.EventThresholdJob' />
+	 <job name='EventToAlarm' classname='com.facilio.events.tasker.tasks.EventToAlarmJob' />
 </scheduler>
