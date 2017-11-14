@@ -91,6 +91,16 @@ public class ReadingAction extends ActionSupport {
 	}
 
 	private String parentModule;
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	private String moduleName;
+
 	public String getParentModule() {
 		return parentModule;
 	}
@@ -148,7 +158,7 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String getLatestReadingData(String moduleName) throws Exception {
+	public String getLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
