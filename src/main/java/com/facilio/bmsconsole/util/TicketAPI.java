@@ -86,6 +86,27 @@ public class TicketAPI {
 		}
 	}
 	
+	public static TicketPriorityContext getPriority(long orgId, String priority) throws Exception
+	{
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
+																.table("TicketPriority")
+																.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
+																.beanClass(TicketPriorityContext.class)
+																.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
+																.andCustomWhere("ORGID = ? AND PRIORITY = ?", orgId, priority)
+																.orderBy("ID");
+			List<TicketPriorityContext> categories = builder.get();
+			return categories.get(0);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	public static TicketStatusContext getStatus(long orgId, long id) throws Exception
 	{
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())

@@ -10,7 +10,9 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -70,6 +72,24 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
 			updateAlarm.execute(context);
 			
+			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		}
+		return -1;
+	}
+
+	@Override
+	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception {
+		// TODO Auto-generated method stub
+		if(priority != null && !priority.isEmpty()) {
+			AlarmContext alarm = new AlarmContext();
+			alarm.setPriority(TicketAPI.getPriority(OrgInfo.getCurrentOrgInfo().getOrgid(), priority));
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ALARM, alarm);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+
+			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
+			updateAlarm.execute(context);
 			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}
 		return -1;

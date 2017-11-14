@@ -53,13 +53,19 @@ public class AlarmAction extends ActionSupport {
 	
 	public String addAlarmFromEvent() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
-		context.put("activityType", "alarmFromEvent");
-		context.put(FacilioConstants.ContextNames.ALARM, alarm);
-		
-		Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
-		addAlarmChain.execute(context);
+		if(alarm != null) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
+			setAlarmId(bean.addAlarm(alarm));
+		}
 		return SUCCESS;
+	}
+	
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
 	}
 
 	private long alarmTemplateId = -1;
@@ -146,6 +152,21 @@ public class AlarmAction extends ActionSupport {
 	public String updateStatus() throws Exception {
 		FacilioContext context = new FacilioContext();
 		return updateAlarm(context);
+	}
+	
+	public String updateAlarmPriority() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.updateAlarmPriority(priority, id);
+		return SUCCESS;
+	}
+	
+	private String priority;
+	public String getPriority() {
+		return priority;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
 	}
 
 	private String updateAlarm(FacilioContext context) throws Exception {

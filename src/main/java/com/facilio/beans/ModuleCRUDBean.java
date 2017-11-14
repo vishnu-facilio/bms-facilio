@@ -14,4 +14,6 @@ public interface ModuleCRUDBean {
 	public long addAlarm(AlarmContext alarm) throws Exception;
 	
 	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception;
+	
+	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception;
 }
