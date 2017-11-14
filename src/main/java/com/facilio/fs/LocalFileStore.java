@@ -67,6 +67,11 @@ public class LocalFileStore extends FileStore {
 	}
 	
 	@Override
+	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		return 0;
+	}
+	
+	@Override
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;
@@ -162,6 +167,11 @@ public class LocalFileStore extends FileStore {
 	
 	@Override
 	public String getPrivateUrl(long fileId) throws Exception {
+		return null;
+	}
+
+	@Override
+	public String getPrivateUrl(long fileId, int width) throws Exception {
 		return null;
 	}
 }

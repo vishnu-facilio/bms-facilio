@@ -853,6 +853,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAssetReportCardsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new GetAssetReportCards());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAttachmentChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddAttachmentCommand());
@@ -1091,6 +1099,15 @@ public class FacilioChainFactory {
 	public static Chain getAddPhotosChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddPhotosCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUploadPhotosChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UploadPhotosCommand());
 		c.addCommand(new AddPhotosCommand());
 		addCleanUpCommand(c);
 		return c;

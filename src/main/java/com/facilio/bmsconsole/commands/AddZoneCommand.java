@@ -61,8 +61,8 @@ public class AddZoneCommand implements Command {
 		List<Map<String, Object>> childProps = new ArrayList<>();
 		for(long childId : childrenIds) {
 			Map<String, Object> prop = new HashMap<>();
-			prop.put("ZONE_ID", zone.getId());
-			prop.put("BASE_SPACE_ID", childId);
+			prop.put("zoneId", zone.getId());
+			prop.put("basespaceId", childId);
 			childProps.add(prop);
 		}
 		

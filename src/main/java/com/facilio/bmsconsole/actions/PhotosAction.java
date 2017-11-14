@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -54,6 +55,59 @@ public class PhotosAction extends ActionSupport {
 		
 		Chain getPhotosChain = FacilioChainFactory.getPhotosChain();
 		getPhotosChain.execute(context);
+		
+		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
+		
+		return SUCCESS;
+	}
+	
+	private List<File> file;
+	public List<File> getFile() {
+		return file;
+	}
+	public void setFile(List<File> file) {
+		this.file = file;
+	}
+	
+	private List<String> fileContentType;
+	public List<String> getFileContentType() {
+		return fileContentType;
+	}
+	public void setFileContentType(List<String> fileContentType) {
+		this.fileContentType = fileContentType;
+	}
+	
+	private List<String> fileFileName;
+	public List<String> getFileFileName() {
+		return fileFileName;
+	}
+	public void setFileFileName(List<String> fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+	
+	public String uploadBaseSpacePhotos() throws Exception {
+		return uploadPhotos(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+	}
+	
+	public String uploadAssetPhotos() throws Exception {
+		return uploadPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
+	}
+	
+	public String uploadPhotos() throws Exception {
+		return uploadPhotos(module);
+	}
+	
+	private String uploadPhotos(String moduleName) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
+		
+		Chain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
+		addPhotosChain.execute(context);
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
 		
