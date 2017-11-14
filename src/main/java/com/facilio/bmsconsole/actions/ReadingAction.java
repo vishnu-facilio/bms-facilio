@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
@@ -64,7 +65,7 @@ public class ReadingAction extends ActionSupport {
 	private String getCategoryReadings(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
-		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		
 		Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
@@ -160,14 +161,15 @@ public class ReadingAction extends ActionSupport {
 	
 	public String getLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, parentModule);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
 		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		
-		readingData = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
+		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
 		return SUCCESS;
 	}
 	
@@ -187,11 +189,11 @@ public class ReadingAction extends ActionSupport {
 		this.count = count;
 	}
 
-	private List<ReadingContext> readingData;
-	public List<ReadingContext> getReadingData() {
+	private Map<String, List<ReadingContext>> readingData;
+	public Map<String, List<ReadingContext>> getReadingData() {
 		return readingData;
 	}
-	public void setReadingData(List<ReadingContext> readingData) {
+	public void setReadingData(Map<String, List<ReadingContext>> readingData) {
 		this.readingData = readingData;
 	}
 }

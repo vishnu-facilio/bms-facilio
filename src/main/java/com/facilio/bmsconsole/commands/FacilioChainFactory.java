@@ -1092,8 +1092,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetLatestReadingValuesChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetLatestReadingValuesCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetLatestCategoryReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
