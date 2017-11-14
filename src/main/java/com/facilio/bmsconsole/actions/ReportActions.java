@@ -293,7 +293,7 @@ public class ReportActions extends ActionSupport {
 		// need to send cost..as well..
 		//need to send temperature & carbon emmission [
 	
-		setBuildingEnergyDetails(buildingData);
+		setReportAllData(buildingData);
 		
 		//get the data for This month & Previous month by group by Month in one query by giving proper ttime between..
 		//calculate EUI -- KWH/SqFt/No.of days for this month & last month..
@@ -343,13 +343,6 @@ public class ReportActions extends ActionSupport {
 		this.reportAllData = reportAllData;		
 	}
 	
-	private JSONObject buildingEnergyDetails = null;
-	public void setBuildingEnergyDetails(JSONObject buildingEnergyDetails) {
-		this.buildingEnergyDetails = buildingEnergyDetails;		
-	}
-	public JSONObject getBuildingEnergyDetails() {
-		return buildingEnergyDetails;		
-	}
 	
 	private JSONObject reportData = null;
 	
