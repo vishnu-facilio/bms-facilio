@@ -1184,6 +1184,11 @@
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="getEnergyConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportAllData.*</param>
+			</result>
+		</action>
 		<action name="default" class="com.facilio.bmsconsole.actions.ReportActions" method="reportDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
