@@ -461,6 +461,10 @@ public class FacilioConstants {
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
+		public static final String TEMPERATURE_READING = "temperaturereading";
+		public static final String HUMIDITY_READING = "humidityreading";
+		public static final String CO2_READING = "co2reading";
+		public static final String SET_POINT_READING = "setpointreading";
 		public static final String ENERGY_DATA_READING = "energydata";
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";

@@ -60,6 +60,10 @@ public class GetCategoryReadingsCommand implements Command {
 		List<FacilioModule> readings = new ArrayList<>();
 		readings.add(modBean.getModule(FacilioConstants.ContextNames.CURRENT_OCCUPANCY_READING));
 		readings.add(modBean.getModule(FacilioConstants.ContextNames.ASSIGNED_OCCUPANCY_READING));
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.TEMPERATURE_READING));
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.HUMIDITY_READING));
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.CO2_READING));
+		readings.add(modBean.getModule(FacilioConstants.ContextNames.SET_POINT_READING));
 		return readings;
 	}
 
