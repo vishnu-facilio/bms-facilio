@@ -43,6 +43,12 @@
 	</package>
 	
 	<package name="eventApi" namespace="/api/event" extends="home">
+		<action name="add" class="com.facilio.events.actions.EventAction" method="addEvent">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^event.*</param>
+			</result>
+		</action>
 		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
