@@ -148,6 +148,35 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getLatestReadingData(String moduleName) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestReadingValuesChain();
+		addCurrentOccupancy.execute(context);
+		
+		readingData = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
+		return SUCCESS;
+	}
+	
+	private long parentId = -1;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+
+	private int count = -1;
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
+
 	private List<ReadingContext> readingData;
 	public List<ReadingContext> getReadingData() {
 		return readingData;

@@ -75,6 +75,116 @@ public class ReportActions extends ActionSupport {
 	}
 	
 	
+	//needs building id & period like today/week/month
+	public String getEnergyConsumption() throws Exception
+	{
+		JSONObject consumptionData = new JSONObject();
+		BuildingContext building =getBuilding();
+		long deviceId =getRootMeter("Main");
+		
+		long startTime=-1;
+		long endTime=DateTimeUtil.getCurrenTime();
+		long previousStartTime=-1;
+		long previousEndTime=-1;
+		
+		String groupBy="TTIME_HOUR";
+		
+		FacilioField selectFld = new FacilioField();
+		selectFld.setDataType(FieldType.NUMBER);
+		String duration= getPeriod();
+		String colName="HOUR";
+		if(duration.equals("today"))
+				{
+				colName="HOUR";
+				selectFld.setColumnName("COALESCE(TTIME_HOUR,'TOTAL')");
+				startTime=DateTimeUtil.getDayStartTime();
+				previousStartTime=DateTimeUtil.getDayStartTime(-1);
+				previousEndTime=startTime-1;
+				
+				}
+		else if (duration.equals("week"))
+		{
+			colName="DAY";
+			selectFld.setColumnName("COALESCE(TTIME_DAY,'TOTAL')");
+			startTime=DateTimeUtil.getWeekStartTime();
+			previousStartTime=DateTimeUtil.getWeekStartTime(-1);
+			previousEndTime=startTime-1;
+			groupBy="TTIME_DAY";
+			
+		}
+		else if (duration.equals("month"))
+		{
+			colName="DATE";
+			selectFld.setColumnName("COALESCE(TTIME_DATE,'TOTAL')");
+			startTime=DateTimeUtil.getMonthStartTime();
+			previousStartTime=DateTimeUtil.getMonthStartTime(-1);
+			previousEndTime=startTime-1;
+			groupBy="TTIME_DATE";
+		}
+		selectFld.setName(colName);
+		//select COALESCE(TTIME_HOUR,'TOTAL') AS HOUR, SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data
+		// where TTIME between 1510372799985 AND 1510742699985 GROUP BY TTIME_HOUR WITH ROLLUP;
+		
+		double currentKwh=-1;
+		double previousKwh=-1;
+		
+		List<Map<String, Object>> current=getData(startTime, endTime, groupBy, selectFld);
+		List<Map<String, Object>> previous=getData(startTime, endTime, groupBy, selectFld);
+		if(current!=null & !current.isEmpty()) {
+			Map<String,Object> currentTotal=current.remove(current.size()-1);
+			currentKwh = (double)currentTotal.get("KWH");
+		}
+		if(previous!=null & !previous.isEmpty()) {
+			Map<String,Object> previousTotal=previous.remove(previous.size()-1);
+			previousKwh = (double)previousTotal.get("KWH");
+		}
+		consumptionData.put("current", current);
+		consumptionData.put("previous", previous);
+		consumptionData.put("currentKWH", currentKwh);
+		consumptionData.put("previousKWH", previousKwh);
+		double variance=getVariance(currentKwh, previousKwh);
+		consumptionData.put("variance", variance);
+		
+		setReportAllData(consumptionData);
+		return SUCCESS;
+	}
+
+	
+
+	private List<Map<String, Object>> getData(long startTime, long endTime, String groupBy, FacilioField selectFld) throws Exception {
+		FacilioField energyFld = new FacilioField();
+		energyFld.setName("KWH");
+		energyFld.setColumnName("ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
+		energyFld.setDataType(FieldType.DECIMAL);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(energyFld);
+		fields.add(selectFld);
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Energy_Data")
+				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
+				.groupBy(groupBy+ " WITH ROLLUP");
+		return builder.get();
+	}
+
+	private long getRootMeter(String purpose) throws Exception {
+		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose(purpose).get(0);
+		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
+		
+		EnergyMeterContext energyMeter= energyMeters.get(0);
+		return energyMeter.getId();
+	}
+	
+	
+	private double getVariance(Double currentVal, Double previousVal)
+	{
+		return ((currentVal - previousVal)/currentVal)*100;
+	}
+	
+	
 	public String getBuildingDetails() throws Exception
 	{
 		JSONObject buildingData = new JSONObject();
@@ -84,25 +194,23 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("photoid", photoId);
 		
 		String avatarUrl=building.getAvatarUrl();
-		String buildingName=building.getDisplayName();
+		String buildingName=building.getName();
+		String displayName=building.getDisplayName();
 		LocationContext location= building.getLocation();
+		if(location!=null){
 		String cityName=location.getCity();
 		String streetName=location.getStreet();
-		double buildingArea=building.getGrossFloorArea();
-		
-		buildingData.put("avatar",avatarUrl);
-		buildingData.put("name", buildingName);
 		buildingData.put("city", cityName);
 		buildingData.put("street", streetName);
+		}
+		
+		double buildingArea=building.getGrossFloorArea();
+		buildingData.put("avatar",avatarUrl);
+		buildingData.put("name", buildingName);
+		buildingData.put("displayName", displayName);
 		buildingData.put("area", buildingArea);
 		
-		
-		//Energy Meter purpose id: Main, AHU, Lighting, Chiller, Lift, UPS..
-		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose("Main").get(0);
-		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
-		
-		EnergyMeterContext energyMeter= energyMeters.get(0);
-		long deviceId=energyMeter.getId();
+		long deviceId=getRootMeter("Main");
 		FacilioField monthFld = new FacilioField();
 		monthFld.setName("MONTH");
 		monthFld.setColumnName("TTIME_MONTH");
@@ -110,7 +218,7 @@ public class ReportActions extends ActionSupport {
 		
 		FacilioField energyFld = new FacilioField();
 		energyFld.setName("KWH");
-		energyFld.setColumnName("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)");
+		energyFld.setColumnName("ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
 		energyFld.setDataType(FieldType.DECIMAL);
 		long startTime=DateTimeUtil.getMonthStartTime(-1);
 		long endTime=DateTimeUtil.getCurrenTime();
@@ -161,7 +269,8 @@ public class ReportActions extends ActionSupport {
 		
 		double lastMonthAvgEUI= lastMonthKwh/buildingArea/lastMonthDays;
 		double thisMonthAvgEUI=thisMonthKwh/buildingArea/thisMonthDays;
-		double variance= ((thisMonthAvgEUI - lastMonthAvgEUI)/thisMonthAvgEUI)*100;
+		
+		double variance= getVariance(thisMonthAvgEUI, lastMonthAvgEUI);
 		
 		JSONObject lastMonthData = new JSONObject();
 		lastMonthData.put("kwh",lastMonthKwh);
@@ -174,7 +283,7 @@ public class ReportActions extends ActionSupport {
 		thisMonthData.put("kwh",thisMonthKwh);
 		thisMonthData.put("days", thisMonthDays);
 		thisMonthData.put("eui", thisMonthAvgEUI);
-		lastMonthData.put("cost", thisMonthCost);
+		thisMonthData.put("cost", thisMonthCost);
 		thisMonthData.put("monthVal", thisMonth);
 		
 		buildingData.put("lastMonth", lastMonthData);
@@ -214,6 +323,17 @@ public class ReportActions extends ActionSupport {
 		this.buildingId = buildingId;
 	}
 	
+	private String period="today";
+	
+	public void setPeriod(String period)
+	{
+		this.period=period;
+	}
+	
+	public String getPeriod()
+	{
+		return this.period;
+	}
 	private JSONObject reportAllData = null;
 	
 	public JSONObject getReportAllData() {
