@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -79,25 +82,102 @@ public class ReportActions extends ActionSupport {
 	
 	public String getServiceConsumption() throws Exception
 	{
+		JSONObject resultJson = new JSONObject();
 		
+		HashMap<Long,String> purposeMapping= getPurposeMapping(getBuildingId(),true);
 		
+		Set<Long> keys=purposeMapping.keySet();
+		String deviceList=StringUtils.join(keys, ",");
+		String duration = getPeriod();
+		long startTime=-1;
+		long endTime=DateTimeUtil.getCurrenTime();
+		
+		if(duration.equals("today"))
+		{
+		startTime=DateTimeUtil.getDayStartTime();
+		}
+		else if (duration.equals("week"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime();	
+		}
+		else if (duration.equals("month"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime();
+		}
+		else if (duration.equals("year"))
+		{
+			startTime=DateTimeUtil.getYearStartTime();
+		}
+		
+		FacilioField selectFld = new FacilioField();
+		selectFld.setName("Meter_ID");
+		selectFld.setColumnName("PARENT_METER_ID");
+		selectFld.setDataType(FieldType.NUMBER);
+		List<Map<String, Object>> current=getData(deviceList,startTime, endTime, selectFld,false);
+		resultJson.put("data", current);
+		resultJson.put("mapping", purposeMapping);
+		setReportAllData(resultJson);
 		return SUCCESS;
 	}
 	
+	private HashMap getPurposeMapping(long buildingId,boolean root) throws Exception {
+		
+		
+		
+		HashMap<Long,String> deviceMapping = new LinkedHashMap();
+		FacilioField meterFld = new FacilioField();
+		meterFld.setName("Meter");
+		meterFld.setColumnName("Energy_Meter.ID");
+		meterFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField purposeField = new FacilioField();
+		purposeField.setName("Name");
+		purposeField.setColumnName("Energy_Meter_PURPOSE.NAME");
+		purposeField.setDataType(FieldType.STRING);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(meterFld);
+		fields.add(purposeField);
+		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Energy_Meter")
+				.innerJoin("Energy_Meter_Purpose")
+				.on("Energy_Meter.PURPOSE_ID = Energy_Meter_Purpose.ID")
+				.andCustomWhere("Energy_Meter.ORGID= ? AND Energy_Meter_Purpose.NAME != ? "
+						+ "AND Energy_Meter.PURPOSE_SPACE_ID =? AND Energy_Meter.IS_ROOT=?", orgId,"Main",buildingId,root);
+		List<Map<String, Object>> stats = builder.get();
+		for(Map<String, Object> rowData: stats) {
+
+			long meterId=(long)rowData.get("Meter");
+			String purposeName=(String)rowData.get("Name");
+			deviceMapping.put(meterId, purposeName);
+		}
+		return deviceMapping;
+	}
+		
+		
+	
+
 	//needs building id & period like today/week/month
+	// needs service id like 'Main/AHU/Chiller/Lighting/Lift
 	public String getEnergyConsumption() throws Exception
 	{
+		getRootConsumption(getPurpose());
+		return SUCCESS;
+	}
+	
+	
+	
+	private void getRootConsumption(String purpose) throws Exception
+	{
 		JSONObject consumptionData = new JSONObject();
-		BuildingContext building =getBuilding();
-		long deviceId =getRootMeter("Main");
-		
-		
+		long deviceId =getRootMeter(purpose);
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
 		long previousStartTime=-1;
 		long previousEndTime=-1;
-		
-		String groupBy="TTIME_HOUR";
 		
 		FacilioField selectFld = new FacilioField();
 		selectFld.setDataType(FieldType.NUMBER);
@@ -106,7 +186,7 @@ public class ReportActions extends ActionSupport {
 		if(duration.equals("today"))
 				{
 				colName="HOUR";
-				selectFld.setColumnName("COALESCE(TTIME_HOUR,'TOTAL')");
+				selectFld.setColumnName("TTIME_HOUR");
 				startTime=DateTimeUtil.getDayStartTime();
 				previousStartTime=DateTimeUtil.getDayStartTime(-1);
 				previousEndTime=startTime-1;
@@ -115,38 +195,35 @@ public class ReportActions extends ActionSupport {
 		else if (duration.equals("week"))
 		{
 			colName="DAY";
-			selectFld.setColumnName("COALESCE(TTIME_DAY,'TOTAL')");
+			selectFld.setColumnName("TTIME_DAY");
 			startTime=DateTimeUtil.getWeekStartTime();
 			previousStartTime=DateTimeUtil.getWeekStartTime(-1);
 			previousEndTime=startTime-1;
-			groupBy="TTIME_DAY";
 			
 		}
 		else if (duration.equals("month"))
 		{
 			colName="DATE";
-			selectFld.setColumnName("COALESCE(TTIME_DATE,'TOTAL')");
+			selectFld.setColumnName("TTIME_DATE");
 			startTime=DateTimeUtil.getMonthStartTime();
 			previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 			previousEndTime=startTime-1;
-			groupBy="TTIME_DATE";
 		}
 		else if (duration.equals("year"))
 		{
 			colName="YEAR";
-			selectFld.setColumnName("COALESCE(TTIME_MONTH,'TOTAL')");
+			selectFld.setColumnName("TTIME_MONTH");
 			startTime=DateTimeUtil.getYearStartTime();
 			previousStartTime=DateTimeUtil.getYearStartTime(-1);
 			previousEndTime=startTime-1;
-			groupBy="TTIME_MONTH";
 		}
 		selectFld.setName(colName);
 		double currentKwh=-1;
 		double previousKwh=-1;
 		
 		//send deviceid..
-		List<Map<String, Object>> current=getData(startTime, endTime, groupBy, selectFld,deviceId);
-		List<Map<String, Object>> previous=getData(previousStartTime, previousEndTime, groupBy, selectFld,deviceId);
+		List<Map<String, Object>> current=getData(String.valueOf(deviceId),startTime, endTime, selectFld,true);
+		List<Map<String, Object>> previous=getData(String.valueOf(deviceId),previousStartTime, previousEndTime, selectFld, true);
 		if(current!=null & !current.isEmpty()) {
 			Map<String,Object> currentTotal=current.remove(current.size()-1);
 			currentKwh = (double)currentTotal.get("KWH");
@@ -163,12 +240,11 @@ public class ReportActions extends ActionSupport {
 		consumptionData.put("variance", variance);
 		
 		setReportAllData(consumptionData);
-		return SUCCESS;
 	}
 
 	
 
-	private List<Map<String, Object>> getData( long startTime, long endTime, String groupBy, FacilioField selectFld, long... deviceList ) throws Exception {
+	private List<Map<String, Object>> getData( String deviceList, long startTime, long endTime, FacilioField selectFld, boolean rollUp ) throws Exception {
 		FacilioField energyFld = new FacilioField();
 		energyFld.setName("KWH");
 		energyFld.setColumnName("ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
@@ -176,14 +252,22 @@ public class ReportActions extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
 		fields.add(selectFld);
-		
+		String groupBy=selectFld.getName();
+		if(rollUp)
+		{
+			groupBy+=" WITH ROLLUP";
+		}
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
 				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
 				.andCondition(getDeviceListCondition(deviceList))
-				.groupBy(groupBy+ " WITH ROLLUP");
+				.groupBy(groupBy);
+		if(!rollUp)
+		{
+			builder.orderBy(groupBy);
+		}
 		return builder.get();
 	}
 
@@ -228,7 +312,7 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("area", buildingArea);
 		
 		long deviceId=getRootMeter("Main");
-		long[] deviceList= {deviceId};
+		
 		FacilioField monthFld = new FacilioField();
 		monthFld.setName("MONTH");
 		monthFld.setColumnName("TTIME_MONTH");
@@ -249,7 +333,7 @@ public class ReportActions extends ActionSupport {
 				.select(fields)
 				.table("Energy_Data")
 				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
-				.andCondition(getDeviceListCondition(deviceList))
+				.andCondition(getDeviceListCondition(""+deviceId))
 				.groupBy("TTIME_MONTH")
 				.orderBy("TTIME_MONTH");
 		List<Map<String, Object>> result = builder.get();
@@ -322,20 +406,20 @@ public class ReportActions extends ActionSupport {
 	}
 	
 	
-	private Condition getDeviceListCondition (long... deviceList)
+	private Condition getDeviceListCondition (String deviceList)
 	{
 		
-		String deviceIds = ""+deviceList[0];
-		
-		if(deviceList.length>1)
-		{
-				deviceIds=StringUtils.join(deviceList, ",");
-		}
+//		String deviceIds = ""+deviceList[0];
+//		
+//		if(deviceList.length>1)
+//		{
+//				deviceIds=StringUtils.join(deviceList, ",");
+//		}
 		
 				Condition deviceIdCondition = new Condition();
 				deviceIdCondition.setColumnName("PARENT_METER_ID");
 				deviceIdCondition.setOperator(NumberOperators.EQUALS);
-				deviceIdCondition.setValue(deviceIds);
+				deviceIdCondition.setValue(deviceList);
 				return deviceIdCondition;
 	}
 	
@@ -354,9 +438,22 @@ public class ReportActions extends ActionSupport {
 	{
 		return buildingId;
 	}
+	
+	
 	public void setBuildingId(long buildingId) 
 	{
 		this.buildingId = buildingId;
+	}
+	
+	private String purpose="Main";
+	public String getPurpose() 
+	{
+		return purpose;
+	}
+	
+	public void setPurpose(String purpose) 
+	{
+		this.purpose = purpose;
 	}
 	
 	private String period="today";

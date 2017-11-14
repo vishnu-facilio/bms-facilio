@@ -1030,6 +1030,21 @@ public class DeviceAPI
 		
 		return selectBuilder.get();
 	}
+	
+	public static List<EnergyMeterContext> getAllEnergyMeters(long spaceId, boolean root) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EnergyMeterContext.class)
+																		.andCustomWhere("PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", spaceId,root)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
 			
 	public static List<EnergyMeterPurposeContext> getEnergyMeterPurpose(String purpose) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
