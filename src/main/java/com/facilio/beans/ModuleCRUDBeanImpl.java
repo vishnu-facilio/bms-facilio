@@ -80,7 +80,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception {
 		// TODO Auto-generated method stub
-		if(priority != null && priority.isEmpty()) {
+		if(priority != null && !priority.isEmpty()) {
 			AlarmContext alarm = new AlarmContext();
 			alarm.setPriority(TicketAPI.getPriority(OrgInfo.getCurrentOrgInfo().getOrgid(), priority));
 			
