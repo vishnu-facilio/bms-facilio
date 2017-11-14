@@ -390,4 +390,13 @@ public class ModuleFactory {
 		
 		return zoneRelModule;
 	}
+	
+	public static FacilioModule getAssetCategoryModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("assetcategory");
+		fieldModule.setDisplayName("Asset Category");
+		fieldModule.setTableName("Asset_Categories");
+		
+		return fieldModule;
+	}
 }

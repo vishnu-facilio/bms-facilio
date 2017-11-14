@@ -837,6 +837,8 @@ public class FacilioChainFactory {
 	public static Chain getAssetListChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
@@ -1090,8 +1092,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetLatestReadingValuesChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetLatestReadingValuesCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetLatestCategoryReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
