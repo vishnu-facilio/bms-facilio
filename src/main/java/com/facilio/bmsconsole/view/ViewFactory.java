@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -46,12 +48,130 @@ public class ViewFactory {
 		viewMap.put("workorder-my", getMyWorkOrders());
 		viewMap.put("task-my", getMyTasks());
 		
+		viewMap.put("asset-energy", getAssets("Energy"));
+		viewMap.put("asset-hvac", getAssets("HVAC"));
+		viewMap.put("asset-active", getAssetsByState("Active"));
+		viewMap.put("asset-retired", getAssetsByState("Retired"));
+		
 		
 		//Add module name in field objects
 		
 		//viewMap.put("workorder-all", getAllWorkorders());
 		
 		return viewMap;
+	}
+	
+	private static Criteria getAssetCategoryCriteria(String category) {
+		FacilioField categoryType = new FacilioField();
+		categoryType.setName("categoryType");
+		categoryType.setColumnName("CATEGORY_TYPE");
+		categoryType.setDataType(FieldType.NUMBER);
+		categoryType.setModule(ModuleFactory.getAssetCategoryModule());
+		
+		Condition statusOpen = new Condition();
+		statusOpen.setField(categoryType);
+		statusOpen.setOperator(NumberOperators.EQUALS);
+		if(category.equals("Energy"))
+		{
+			statusOpen.setValue(String.valueOf(AssetCategoryContext.AssetCategoryType.ENERGY.getIntVal()));
+		}
+		else if(category.equals("HVAC"))
+		{
+			statusOpen.setValue(String.valueOf(AssetCategoryContext.AssetCategoryType.HVAC.getIntVal()));
+		}
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(statusOpen);
+		
+		return criteria;
+	}
+	
+	private static Condition getAssetStateCondition(FacilioModule module, String state) {
+		FacilioField statusField = new FacilioField();
+		statusField.setName("state");
+		statusField.setColumnName("STATE");
+		statusField.setDataType(FieldType.NUMBER);
+		statusField.setModule(module);
+		
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(NumberOperators.EQUALS);
+		if(state.equals("Active"))
+		{
+			open.setValue(String.valueOf(AssetState.ACTIVE.getIntVal()));
+		}
+		else if(state.equals("Retired"))
+		{
+			open.setValue(String.valueOf(AssetState.RETIRED.getIntVal()));
+		}
+		
+		return open;
+	}
+	
+	private static Condition getAssetCategoryCondition(FacilioModule module, String category) {
+		LookupField statusField = new LookupField();
+		statusField.setName("category");
+		statusField.setColumnName("CATEGORY");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getAssetCategoryModule());
+		
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(LookupOperator.LOOKUP);
+		open.setCriteriaValue(getAssetCategoryCriteria(category));
+		
+		return open;
+	}
+	
+	private static FacilioView getAssetsByState(String state) {
+		
+		FacilioView assetView = new FacilioView();
+		if(state.equals("Active"))
+		{
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getAssetStateCondition(ModuleFactory.getAssetsModule(), state));
+			
+			assetView.setName("active");
+			assetView.setDisplayName("Active Assets");
+			assetView.setCriteria(criteria);
+		}
+		else if(state.equals("Retired"))
+		{
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getAssetStateCondition(ModuleFactory.getAssetsModule(), state));
+			
+			assetView.setName("retired");
+			assetView.setDisplayName("Retired Assets");
+			assetView.setCriteria(criteria);
+		}
+		
+		return assetView;
+	}
+	
+	private static FacilioView getAssets(String category) {
+		
+		FacilioView assetView = new FacilioView();
+		if(category.equals("Energy"))
+		{
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getAssetCategoryCondition(ModuleFactory.getAssetsModule(), category));
+			
+			assetView.setName("energy");
+			assetView.setDisplayName("Energy Assets");
+			assetView.setCriteria(criteria);
+		}
+		else if(category.equals("HVAC"))
+		{
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getAssetCategoryCondition(ModuleFactory.getAssetsModule(), category));
+			
+			assetView.setName("hvac");
+			assetView.setDisplayName("HVAC Assets");
+			assetView.setCriteria(criteria);
+		}
+		
+		return assetView;
 	}
 	
 	private static Criteria getNotOpenStatusCriteria() {
