@@ -1227,6 +1227,11 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="technician" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
 			<result name="success" type="json">
 				<param name="includeProperties">^woStats.*</param>
