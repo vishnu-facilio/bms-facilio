@@ -315,6 +315,13 @@
 			</result>
 		</action>
 		
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.AssetAction" method="reportCards">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
@@ -860,6 +867,12 @@
 			</result>
 		</action>
 		
+		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadPhotos">
+			<result name="success" type="json">
+				<param name="root">photos</param>
+			</result>
+		</action>
+		
 		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction" method="getPhotosList">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
@@ -874,6 +887,12 @@
 			</result>
 		</action>
 		
+		<action name="uploadspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadBaseSpacePhotos">
+			<result name="success" type="json">
+				<param name="root">photos</param>
+			</result>
+		</action>
+		
 		<action name="getspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getBaseSpacePhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
@@ -885,6 +904,12 @@
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
+		
+		<action name="uploadassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadAssetPhotos">
+			<result name="success" type="json">
+				<param name="root">photos</param>
 			</result>
 		</action>
 		
@@ -1184,6 +1209,11 @@
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ReportActions" method="getEnergyConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportAllData.*</param>
+			</result>
+		</action>
 		<action name="default" class="com.facilio.bmsconsole.actions.ReportActions" method="reportDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
@@ -1193,6 +1223,11 @@
 	
 	<package name="workorderReportApi" namespace="/api/report/workorder" extends="home">
 		<action name="summary" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="technician" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>

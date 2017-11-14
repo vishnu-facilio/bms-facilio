@@ -143,9 +143,42 @@ public abstract class FileStore {
 		}
 	}
 	
+	protected boolean addResizedFileEntry(long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
+			
+			pstmt.setLong(1, fileId);
+			pstmt.setLong(2, getOrgId());
+			pstmt.setInt(3, width);
+			pstmt.setInt(4, height);
+			pstmt.setString(5, filePath);
+			pstmt.setLong(6, fileSize);
+			pstmt.setString(7, contentType);
+			pstmt.setLong(8, System.currentTimeMillis());
+			
+			if(pstmt.executeUpdate() < 1) {
+				throw new RuntimeException("Unable to add resized file");
+			}
+			return true;
+		}
+		catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	protected abstract String getRootPath();
 	
 	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
+	
+	public abstract long addFile(String fileName, File file, String contentType, int[] resize) throws Exception;
 	
 	public abstract long addFile(String fileName, String content, String contentType) throws Exception;
 	
@@ -159,6 +192,34 @@ public abstract class FileStore {
 			pstmt = conn.prepareStatement("SELECT * FROM File WHERE FILE_ID=? AND ORGID=? ORDER BY FILE_NAME");
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				FileInfo fileInfo = getFileInfoFromRS(rs);
+				return fileInfo;
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return null;
+	}
+	
+	public FileInfo getResizedFileInfo(long fileId, int width, int height) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT File.FILE_ID, File.ORGID, File.FILE_NAME, File.UPLOADED_BY, File.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE FROM ResizedFile join File on ResizedFile.FILE_ID = File.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
+			pstmt.setLong(1, fileId);
+			pstmt.setLong(2, getOrgId());
+			pstmt.setInt(3, width);
+			pstmt.setInt(4, height);
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -273,4 +334,6 @@ public abstract class FileStore {
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
 	
 	public abstract String getPrivateUrl(long fileId) throws Exception;
+	
+	public abstract String getPrivateUrl(long fileId, int width) throws Exception;
 }

@@ -43,8 +43,12 @@ public class AddAttachmentRelationshipCommand implements Command {
 			}
 			
 			AttachmentsAPI.addAttachments(attachments, moduleName);
+			List<Long> attachmentIds = new ArrayList<>();
+			for (AttachmentContext ac : attachments) {
+				attachmentIds.add(ac.getId());
+			}
 			
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, recordId));
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
 		}
 		return false;
 	}
