@@ -43,6 +43,8 @@ public class AddPhotosCommand implements Command {
 																		.addRecords(photos);
 			
 			photosBuilder.save();
+			
+			context.put(FacilioConstants.ContextNames.PHOTOS, photos);
 		}
 		
 		return false;

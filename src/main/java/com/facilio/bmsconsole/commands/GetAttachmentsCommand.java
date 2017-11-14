@@ -7,7 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetAttachmentsCommand implements Command {
@@ -24,7 +24,7 @@ public class GetAttachmentsCommand implements Command {
 		
 		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
-		List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordId, conn);
+		List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(moduleName, recordId);
 		
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachments);
 		return false;

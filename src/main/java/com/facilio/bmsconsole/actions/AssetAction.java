@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -97,6 +98,36 @@ public class AssetAction extends ActionSupport {
 		assetDetailsChain.execute(context);
 		
 		asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		
+		return SUCCESS;
+	}
+	
+	private JSONObject reports;
+	public JSONObject getReports() {
+		return reports;
+	}
+	public void setReports(JSONObject reports) {
+		this.reports = reports;
+	}
+	
+	private JSONArray reportcards;
+	public JSONArray getReportcards() {
+		return reportcards;
+	}
+	public void setReportcards(JSONArray reportcards) {
+		this.reportcards = reportcards;
+	}
+	
+	public String reportCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getAssetId());
+		
+		Chain getReportCardsChain = FacilioChainFactory.getAssetReportCardsChain();
+		getReportCardsChain.execute(context);
+		
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
+		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
 		
 		return SUCCESS;
 	}
