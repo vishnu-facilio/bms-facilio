@@ -17,7 +17,8 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.EntergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -456,6 +457,7 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
@@ -467,6 +469,10 @@ public class FacilioConstants {
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
+		
+		public static final String TICKET_ATTACHMENTS = "ticketattachments";
+		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
+		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -504,20 +510,6 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
 		
-		public static String getPKColumn(String module) {
-			if (TICKET.equalsIgnoreCase(module)) {
-				return "TICKET_ID";
-			}
-			return "TICKET_ID";
-		}
-		
-		public static String getAttachmentTableName(String module) {
-			if (TICKET.equalsIgnoreCase(module)) {
-				return "Ticket_Attachment";
-			}
-			return "Ticket_Attachment";
-		}
-
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String NEW_CV = "newCV";
@@ -527,6 +519,7 @@ public class FacilioConstants {
 		public static final String SEARCH_CRITERIA = "searchCriteria";
 		public static final String SORTING = "sorting";
 		public static final String SORTING_QUERY = "sortingQuery";
+		public static final String LIMIT_VALUE = "limitValue";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -556,8 +549,9 @@ public class FacilioConstants {
 			classMap.put(ASSET_TYPE, AssetTypeContext.class);
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
-			classMap.put(ENERGY_METER, EntergyMeterContext.class);
+			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
+			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			
 			return classMap;
 		}
@@ -657,6 +651,7 @@ public class FacilioConstants {
 		public static final String TOP_N_NUMERIC_REPORT_TYPE = "topNNumericReport";
 		public static final String TREND_REPORT_TYPE = "trendReport";
 		public static final String NUMERIC_REPORT_TYPE = "numericReport";	
+		public static final String TOP_N_TABULAR_REPORT_TYPE = "topNTabularReport";	
 		public static final String TOP_N_DATA = "topNData";	
 		public static final String TOP_N = "topN";
 		public static final String BOTTOM_N = "bottomN";

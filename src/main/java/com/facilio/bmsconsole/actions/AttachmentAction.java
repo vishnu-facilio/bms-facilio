@@ -26,7 +26,7 @@ public class AttachmentAction  extends ActionSupport {
 		this.module = module;
 	}
 	
-	private long recordId;
+	private long recordId = -1;
 	public long getRecordId() {
 		return this.recordId;
 	}
@@ -35,7 +35,7 @@ public class AttachmentAction  extends ActionSupport {
 		this.recordId = recordId;
 	}
 	
-	private long id;
+	private long id = -1;
 	public long getId() {
 		return this.id;
 	}

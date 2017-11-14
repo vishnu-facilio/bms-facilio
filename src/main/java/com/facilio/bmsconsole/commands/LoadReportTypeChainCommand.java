@@ -30,6 +30,10 @@ public class LoadReportTypeChainCommand implements Command{
  			break;
  		case FacilioConstants.Reports.TOP_N_NUMERIC_REPORT_TYPE:
  			break;
+ 		case FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE:
+ 	 		Chain topNTabularReportChain = ReportsChainFactory.getTopNTabularReportChain();
+ 	 		topNTabularReportChain.execute(repContext);
+ 			break;
  		case FacilioConstants.Reports.NUMERIC_REPORT_TYPE:
  	 		Chain numericReportChain = ReportsChainFactory.getNumericReportChain();
  	 		numericReportChain.execute(repContext);

@@ -98,14 +98,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.sourceType = type;
 	}
 		
-	private long assetId = -1;
-	public long getAssetId() {
-		return assetId;
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
 	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
 	}
-	
+
 	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
 	
 	private long dueDate = -1;
@@ -296,7 +296,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		WEB(1, "Web"),
 		EMAIL(2, "E Mail"),
 		SMS(3, "SMS"),
-		ALARM(4, "Alarm")
+		ALARM(4, "Alarm"),
+		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance")
 		;
 		
 		private int intVal;

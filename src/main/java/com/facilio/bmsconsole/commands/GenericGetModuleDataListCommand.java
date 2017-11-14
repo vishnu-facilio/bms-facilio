@@ -32,7 +32,8 @@ public class GenericGetModuleDataListCommand implements Command {
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
-															.maxLevel(0);
+															//.maxLevel(0)
+															;
 		
 		if(view != null) {
 			Criteria criteria = view.getCriteria();

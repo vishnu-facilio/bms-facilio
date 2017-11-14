@@ -375,6 +375,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddTasksChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddTasksCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateTaskChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
@@ -1067,6 +1076,14 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getGetLatestReadingValuesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetLatestReadingValuesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -1,15 +1,11 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
@@ -34,7 +30,6 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
-import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -42,42 +37,9 @@ public class TicketAPI {
 	
 	private static Logger logger = Logger.getLogger(TicketAPI.class.getName());
 	
-	public static List<AttachmentContext> getRelatedAttachments(long ticketId, Connection conn) throws SQLException 
+	public static List<AttachmentContext> getRelatedAttachments(long ticketId, Connection conn) throws Exception 
 	{
-		List<AttachmentContext> attachments = new ArrayList<>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			pstmt = conn.prepareStatement("SELECT * FROM File "
-					+ " INNER JOIN Ticket_Attachment ON File.FILE_ID = Ticket_Attachment.FILE_ID"
-					+ " WHERE Ticket_Attachment.TICKET_ID = ?");
-			pstmt.setLong(1, ticketId);
-			rs = pstmt.executeQuery();
-			while(rs.next()) 
-			{
-				AttachmentContext ac = new AttachmentContext();
-				ac.setAttachmentId(rs.getLong("TICKET_ATTACHMENT_ID"));
-				ac.setFileId(rs.getLong("FILE_ID"));
-				ac.setOrgId(rs.getLong("ORGID"));
-				ac.setFileName(rs.getString("FILE_NAME"));
-				ac.setFileSize(rs.getLong("FILE_SIZE"));
-				ac.setContentType(rs.getString("CONTENT_TYPE"));
-				ac.setUploadedBy(rs.getLong("UPLOADED_BY"));
-				ac.setUploadedTime(rs.getLong("UPLOADED_TIME"));
-				attachments.add(ac);
-			}
-		}
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Exception while getting related attachments." +e.getMessage(), e);
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(pstmt, rs);
-		}
-		return attachments;
+		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
 	}
 	
 	public static TicketStatusContext getStatus(long orgId, String status) throws Exception

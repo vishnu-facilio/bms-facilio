@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -127,8 +128,17 @@ public class WorkOrderAction extends ActionSupport {
 	public String addPreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		
+		if(workorder.getAsset() != null) {
+			preventivemaintenance.setAssetId(workorder.getAsset().getId());
+		}
+		if(workorder.getSpace() != null) {
+			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
+		}
+		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
@@ -341,6 +351,14 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<TaskContext> tasks;
+	public List<TaskContext> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<TaskContext> tasks) {
+		this.tasks = tasks;
+	}
+
 	private List<WorkOrderContext> workOrders;
 	public List<WorkOrderContext> getWorkOrders() {
 		return workOrders;

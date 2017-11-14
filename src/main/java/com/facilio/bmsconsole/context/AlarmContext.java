@@ -112,15 +112,6 @@ public class AlarmContext extends TicketContext {
 		this.clearedTime = clearedTime;
 	}
 
-	private long deviceId = -1;
-	public long getDeviceId() {
-		return deviceId;
-	}
-	
-	public void setDeviceId(long deviceId) {
-		this.deviceId = deviceId;
-	}
-
 	private String source;
 	public String getSource() {
 		return source;

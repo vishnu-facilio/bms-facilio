@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -20,6 +21,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -131,33 +133,60 @@ public class CommonCommandUtil {
 				alarm.setCategory(category);
 			}
 		}
-		if(alarm.getDeviceId() != -1) {
-			Device device = DeviceAPI.getDevice(alarm.getDeviceId());
-			if(device != null) {
-				String description;
-				BaseSpaceContext space = SpaceAPI.getBaseSpace(device.getSpaceId());
-				if(alarm.getIsAcknowledged()) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
+		AssetContext asset = alarm.getAsset();
+		if(asset != null) {
+			String description;
+			BaseSpaceContext space = alarm.getSpace();
+			if(alarm.getIsAcknowledged()) {
+				if(space != null) {
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",alarm.getTypeVal(),asset.getName(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nSensor Type - {2}\nLocation - {3}",alarm.getTypeVal(),device.getName(),device.getType(), space.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",alarm.getTypeVal(),asset.getName());
 				}
-				alarm.setDescription(description);
 			}
+			else {
+				if(space != null) {
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",alarm.getTypeVal(),asset.getName(), space.getName());
+				}
+				else {
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",alarm.getTypeVal(),asset.getName());
+				}
+			}
+			alarm.setDescription(description);
 		}
 	}
 	
 	public static String sendAlarmSMS(AlarmContext alarm, String to, String message) throws Exception {
-		Device device = DeviceAPI.getDevice(alarm.getDeviceId());
-		BaseSpaceContext space = getSpace(device.getSpaceId());
-		String sms = null;
-		if(message != null && !message.isEmpty()) {
-			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Movenpick Hotel - {3}", alarm.getTypeVal(), alarm.getSubject(), space.getName(), message);
+		AssetContext asset = alarm.getAsset();
+		if(asset != null) {
+			asset = AssetsAPI.getAssetInfo(asset.getId());
+			BaseSpaceContext space = asset.getSpace();
+			String spaceName = null;
+			if(space != null) {
+				spaceName = space.getName();
+			}
+			
+			String sms = null;
+			if(message != null && !message.isEmpty()) {
+				if(spaceName != null) {
+					sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, {3}", alarm.getTypeVal(), alarm.getSubject(), spaceName, message);
+				}
+				else {
+					sms = MessageFormat.format("[ALARM] [{0}] {1}, {2}", alarm.getTypeVal(), alarm.getSubject(), message);
+				}
+			}
+			else {
+				if(spaceName != null) {
+					sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}", alarm.getTypeVal(), alarm.getSubject(), spaceName);
+				}
+				else {
+					sms = MessageFormat.format("[ALARM] [{0}] {1}", alarm.getTypeVal(), alarm.getSubject());
+				}
+			}
+			return sendSMS(to, sms);
 		}
-		else {
-			sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, Movenpick Hotel", alarm.getTypeVal(), alarm.getSubject(), space.getName());
-		}
-		return sendSMS(to, sms);
+		return null;
 	}
 	
 	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account

@@ -837,6 +837,20 @@ public class FieldFactory {
 		templateId.setModule(module);
 		fields.add(templateId);
 		
+		FacilioField spaceId = new FacilioField();
+		spaceId.setName("spaceId");
+		spaceId.setDataType(FieldType.NUMBER);
+		spaceId.setColumnName("SPACE_ID");
+		spaceId.setModule(module);
+		fields.add(spaceId);
+		
+		FacilioField assetId = new FacilioField();
+		assetId.setName("assetId");
+		assetId.setDataType(FieldType.NUMBER);
+		assetId.setColumnName("ASSET_ID");
+		assetId.setModule(module);
+		fields.add(assetId);
+		
 		FacilioField startTime = new FacilioField();
 		startTime.setName("startTime");
 		startTime.setDataType(FieldType.NUMBER);
@@ -1291,6 +1305,69 @@ public class FieldFactory {
 		endTime.setColumnName("END_TIME");
 		endTime.setModule(module);
 		fields.add(endTime);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getFileFields() {
+		FacilioModule module = ModuleFactory.getFilesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField fileName = new FacilioField();
+		fileName.setName("fileName");
+		fileName.setDataType(FieldType.STRING);
+		fileName.setColumnName("FILE_NAME");
+		fileName.setModule(module);
+		fields.add(fileName);
+		
+		FacilioField fileSize = new FacilioField();
+		fileSize.setName("fileSize");
+		fileSize.setDataType(FieldType.NUMBER);
+		fileSize.setColumnName("FILE_SIZE");
+		fileSize.setModule(module);
+		fields.add(fileSize);
+		
+		FacilioField uploadedBy = new FacilioField();
+		uploadedBy.setName("uploadedBy");
+		uploadedBy.setDataType(FieldType.NUMBER);
+		uploadedBy.setColumnName("UPLOADED_BY");
+		uploadedBy.setModule(module);
+		fields.add(uploadedBy);
+		
+		FacilioField uploadedTime = new FacilioField();
+		uploadedTime.setName("uploadedTime");
+		uploadedTime.setDataType(FieldType.NUMBER);
+		uploadedTime.setColumnName("UPLOADED_TIME");
+		uploadedTime.setModule(module);
+		fields.add(uploadedTime);
+		
+		FacilioField contentType = new FacilioField();
+		contentType.setName("contentType");
+		contentType.setDataType(FieldType.NUMBER);
+		contentType.setColumnName("CONTENT_TYPE");
+		contentType.setModule(module);
+		fields.add(contentType);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getZoneRelFields() {
+		FacilioModule module = ModuleFactory.getZoneRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField zoneId = new FacilioField();
+		zoneId.setName("zoneId");
+		zoneId.setDataType(FieldType.NUMBER);
+		zoneId.setColumnName("ZONE_ID");
+		zoneId.setModule(module);
+		fields.add(zoneId);
+		
+		FacilioField basespaceId = new FacilioField();
+		basespaceId.setName("basespaceId");
+		basespaceId.setDataType(FieldType.NUMBER);
+		basespaceId.setColumnName("BASE_SPACE_ID");
+		basespaceId.setModule(module);
+		fields.add(basespaceId);
 		
 		return fields;
 	}

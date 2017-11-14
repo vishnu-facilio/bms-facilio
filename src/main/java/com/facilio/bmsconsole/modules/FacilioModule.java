@@ -56,7 +56,8 @@ public class FacilioModule implements Serializable {
 		MISC(1),
 		READING(2),
 		PHOTOS(3),
-		NOTES(4)
+		NOTES(4),
+		ATTACHMENTS(5)
 		;
 		
 		private int intVal;

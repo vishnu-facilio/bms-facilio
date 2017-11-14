@@ -20,7 +20,7 @@ public class AddAlarmTemplateCommand implements Command {
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		
 		AlarmTemplate alarmTemplate = new AlarmTemplate();
-		JSONObject content = FieldUtil.getPropertiesAsJson(alarm);
+		JSONObject content = FieldUtil.getAsJSON(alarm);
 		alarmTemplate.setContent(content.toString());
 		
 		alarmTemplate.setName(alarm.getSubject());

@@ -897,21 +897,5 @@ public class ReportsUtil
 		return resultJson;
 	}
 	
-	public static StringBuilder getAdditionalTimeSql()
-	{
-		return new StringBuilder("ADDED_DATE=?,ADDED_MONTH=?,ADDED_WEEK=?,ADDED_DAY=?,ADDED_HOUR=?"); 
-	}
-	
-	public static List<String> getAdditionalTimeCols()
-	{
-		List<String> dbCols = new ArrayList<>();
-		dbCols.add("date");
-		dbCols.add("month");
-		dbCols.add("week");
-		dbCols.add("day");
-		dbCols.add("hour");
-		return dbCols;
-		
-	}
 	
 }
