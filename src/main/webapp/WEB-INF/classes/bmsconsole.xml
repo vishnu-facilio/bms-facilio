@@ -1177,6 +1177,11 @@
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
+		<action name="dashboard1" class="com.facilio.bmsconsole.actions.ReportActions" method="getBuildingDetails">
+			<result name="success" type="json">
+				<param name="includeProperties">^setBuildingEnergyDetails.*</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="workorderReportApi" namespace="/api/report/workorder" extends="home">
