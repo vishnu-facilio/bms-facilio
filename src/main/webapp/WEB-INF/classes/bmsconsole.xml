@@ -1952,6 +1952,13 @@
 			</result>
 		</action>
 		
+		<action name="updateAlarmPriority"
+			class="com.facilio.bmsconsole.actions.AlarmAction" method="updateAlarmPriority">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
 		<action name="addAlarmTemplate"
 			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarmTemplate">
 			<result name="success" type="json">
