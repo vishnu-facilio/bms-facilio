@@ -121,6 +121,15 @@ public class ReportActions extends ActionSupport {
 			previousEndTime=startTime-1;
 			groupBy="TTIME_DATE";
 		}
+		else if (duration.equals("year"))
+		{
+			colName="YEAR";
+			selectFld.setColumnName("COALESCE(TTIME_MONTH,'TOTAL')");
+			startTime=DateTimeUtil.getYearStartTime();
+			previousStartTime=DateTimeUtil.getYearStartTime(-1);
+			previousEndTime=startTime-1;
+			groupBy="TTIME_MONTH";
+		}
 		selectFld.setName(colName);
 		//select COALESCE(TTIME_HOUR,'TOTAL') AS HOUR, SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data
 		// where TTIME between 1510372799985 AND 1510742699985 GROUP BY TTIME_HOUR WITH ROLLUP;
