@@ -590,6 +590,7 @@ public class FacilioConstants {
 		public static final String CATEGORY_ID = "category_id";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		public static final String STATUS = "status";
+		public static final String PRIORITY = "priority";
 		public static final String SPACE = "space";
 		public static final String ACTUAL_WORK_START = "actualWorkStart";
 		public static final String ACTUAL_WORK_END = "actualWorkEnd";
