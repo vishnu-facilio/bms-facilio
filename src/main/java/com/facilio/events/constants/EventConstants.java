@@ -40,10 +40,7 @@ public class EventConstants {
 	
 	public static Chain getAddEventChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new ExecuteEventRuleCommand());
-		c.addCommand(new ExecuteEventMappingRuleCommand());
 		c.addCommand(new AddEventCommand());
-		c.addCommand(new AddOrUpdateAlarmCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -18,6 +18,24 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class EventAction extends ActionSupport {
 
+	private EventContext event;
+	public EventContext getEvent() {
+		return event;
+	}
+	public void setEvent(EventContext event) {
+		this.event = event;
+	}
+	
+	public String addEvent() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EVENT, event);
+		Chain getAddEventChain = EventConstants.getAddEventChain();
+		getAddEventChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private List<EventContext> events;
 	public List<EventContext> getEvents() {
 		return events;
