@@ -851,7 +851,7 @@
 			</result>
 		</action>
 		
-		<action name="getlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getLatestReadingData">
+ 		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceLatestReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.customProps</param>
 				<param name="includeProperties">readingData.*</param>

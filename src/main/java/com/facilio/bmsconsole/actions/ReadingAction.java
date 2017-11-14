@@ -159,9 +159,13 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String getLatestReadingData() throws Exception {
+	public String getSpaceLatestReadingData() throws Exception {
+  		return getCategoryLatestReadingData(ModuleFactory.getSpaceCategoryReadingRelModule());
+  	}
+  	
+  	private String getCategoryLatestReadingData(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, parentModule);
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
