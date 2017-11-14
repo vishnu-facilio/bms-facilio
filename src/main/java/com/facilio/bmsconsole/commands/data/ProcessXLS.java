@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands.data;
 
 import java.io.File;
 import java.io.InputStream;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -121,7 +122,7 @@ public class ProcessXLS implements Command {
 	
 	public static void processImport(ImportMetaInfo metainfo) throws Exception
 	{
-		System.out.println("All set for importing "+metainfo);
+		System.out.println("All set for importing "+metainfo+" \n" + new Date(System.currentTimeMillis()));
 		
 		HashMap<String, String> fieldMapping = metainfo.getFieldMapping();			
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -135,7 +136,9 @@ public class ProcessXLS implements Command {
 
 		Iterator<Row> itr = datatypeSheet.iterator();
 		boolean heading=true;
+		int row_no = 0;
 		while (itr.hasNext()) {
+			row_no++;
 			Row row = itr.next();
 			if (heading) {
 				// column heading
@@ -177,16 +180,21 @@ public class ProcessXLS implements Command {
 
 				cellIndex++;
 			}
-			
+			System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
+
 			HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 			fieldMapping.forEach((key,value) -> 
 			{
 				Object cellValue=colVal.get(value);
 				props.put(key, cellValue);
 			});
+			System.out.println("Loading  ReadingContext   . "+metainfo + new Date(System.currentTimeMillis()));
+
 			ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 			reading.setParentId(metainfo.getAssetId());
 			readingsList.add(reading);
+			System.out.println("Finished commit data  for assetid ="+metainfo.getAssetId() +" \n"+ new Date(System.currentTimeMillis()));
+
 		}
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
