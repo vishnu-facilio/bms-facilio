@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -13,6 +14,8 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -74,6 +77,12 @@ public class ReportActions extends ActionSupport {
 		
 	}
 	
+	public String getServiceConsumption() throws Exception
+	{
+		
+		
+		return SUCCESS;
+	}
 	
 	//needs building id & period like today/week/month
 	public String getEnergyConsumption() throws Exception
@@ -81,6 +90,7 @@ public class ReportActions extends ActionSupport {
 		JSONObject consumptionData = new JSONObject();
 		BuildingContext building =getBuilding();
 		long deviceId =getRootMeter("Main");
+		
 		
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
@@ -131,14 +141,12 @@ public class ReportActions extends ActionSupport {
 			groupBy="TTIME_MONTH";
 		}
 		selectFld.setName(colName);
-		//select COALESCE(TTIME_HOUR,'TOTAL') AS HOUR, SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data
-		// where TTIME between 1510372799985 AND 1510742699985 GROUP BY TTIME_HOUR WITH ROLLUP;
-		
 		double currentKwh=-1;
 		double previousKwh=-1;
 		
-		List<Map<String, Object>> current=getData(startTime, endTime, groupBy, selectFld);
-		List<Map<String, Object>> previous=getData(startTime, endTime, groupBy, selectFld);
+		//send deviceid..
+		List<Map<String, Object>> current=getData(startTime, endTime, groupBy, selectFld,deviceId);
+		List<Map<String, Object>> previous=getData(previousStartTime, previousEndTime, groupBy, selectFld,deviceId);
 		if(current!=null & !current.isEmpty()) {
 			Map<String,Object> currentTotal=current.remove(current.size()-1);
 			currentKwh = (double)currentTotal.get("KWH");
@@ -160,12 +168,11 @@ public class ReportActions extends ActionSupport {
 
 	
 
-	private List<Map<String, Object>> getData(long startTime, long endTime, String groupBy, FacilioField selectFld) throws Exception {
+	private List<Map<String, Object>> getData( long startTime, long endTime, String groupBy, FacilioField selectFld, long... deviceList ) throws Exception {
 		FacilioField energyFld = new FacilioField();
 		energyFld.setName("KWH");
 		energyFld.setColumnName("ROUND(SUM(TOTAL_ENERGY_CONSUMPTION_DELTA),2)");
 		energyFld.setDataType(FieldType.DECIMAL);
-		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
 		fields.add(selectFld);
@@ -175,6 +182,7 @@ public class ReportActions extends ActionSupport {
 				.select(fields)
 				.table("Energy_Data")
 				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
+				.andCondition(getDeviceListCondition(deviceList))
 				.groupBy(groupBy+ " WITH ROLLUP");
 		return builder.get();
 	}
@@ -220,6 +228,7 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("area", buildingArea);
 		
 		long deviceId=getRootMeter("Main");
+		long[] deviceList= {deviceId};
 		FacilioField monthFld = new FacilioField();
 		monthFld.setName("MONTH");
 		monthFld.setColumnName("TTIME_MONTH");
@@ -240,6 +249,7 @@ public class ReportActions extends ActionSupport {
 				.select(fields)
 				.table("Energy_Data")
 				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
+				.andCondition(getDeviceListCondition(deviceList))
 				.groupBy("TTIME_MONTH")
 				.orderBy("TTIME_MONTH");
 		List<Map<String, Object>> result = builder.get();
@@ -311,6 +321,23 @@ public class ReportActions extends ActionSupport {
 		
 	}
 	
+	
+	private Condition getDeviceListCondition (long... deviceList)
+	{
+		
+		String deviceIds = ""+deviceList[0];
+		
+		if(deviceList.length>1)
+		{
+				deviceIds=StringUtils.join(deviceList, ",");
+		}
+		
+				Condition deviceIdCondition = new Condition();
+				deviceIdCondition.setColumnName("PARENT_METER_ID");
+				deviceIdCondition.setOperator(NumberOperators.EQUALS);
+				deviceIdCondition.setValue(deviceIds);
+				return deviceIdCondition;
+	}
 	
 	
 	private BuildingContext getBuilding() throws Exception
