@@ -92,6 +92,8 @@ public class EventToAlarmJob extends FacilioJob{
 						String server = AwsUtil.getConfig("servername");
 						String url = "http://" + server + "/internal/updateAlarmPriority";
 						AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
+						
+						event.setAlarmId(alarmId);
 					}
 					else
 					{
