@@ -602,8 +602,8 @@ public class FacilioConstants {
 		public static final String RESOLUTION_TIME = "resolutionTime";
 		public static final String FIRST_ACTION_TIME = "firstActionTime";
 		public static final String DUE_STATUS = "dueStatus";
-		public static final String ON_TIME = "ontime";
-		public static final String OVERDUE = "overdue";
+		public static final String ON_TIME = "Ontime";
+		public static final String OVERDUE = "Overdue";
 		public static final String DUE_COUNT = "dueCount";
 		public static final String CREATED_TIME = "createdTime";
 	}
