@@ -21,7 +21,7 @@ public class GetCategoryReadingsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 		
 		if(parentCategoryId != -1) {
