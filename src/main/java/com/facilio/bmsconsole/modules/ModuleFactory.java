@@ -84,7 +84,7 @@ public class ModuleFactory {
 	
 	public static FacilioModule getAssetsModule() {
 		FacilioModule fieldModule = new FacilioModule();
-		fieldModule.setName("assets");
+		fieldModule.setName(FacilioConstants.ContextNames.ASSET);
 		fieldModule.setDisplayName("Assets");
 		fieldModule.setTableName("Assets");
 		
