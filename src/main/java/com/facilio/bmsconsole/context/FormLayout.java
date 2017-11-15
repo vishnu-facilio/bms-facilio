@@ -61,6 +61,31 @@ public class FormLayout {
 		
 	}
 	
+	public static List<NewPanel> getNewReadingLayout(List<FacilioField> fields) {
+		
+		NewPanel first =  new NewPanel(NewPanel.Type.HALF);
+		NewPanel second =  new NewPanel(NewPanel.Type.HALF);
+		
+		int panelNumber = 1;
+		for(FacilioField field : fields) {
+			if(field.getName().equals("parentId") || field.getName().equals("date") || field.getName().equals("month") || field.getName().equals("week") || field.getName().equals("day") || field.getName().equals("hour")) {
+				continue;
+			}
+			if(panelNumber%2 == 1) {
+				first.addField(field);
+			}
+			else {
+				second.addField(field);
+			}
+			panelNumber++;
+		}
+		
+		List<NewPanel> panels = new ArrayList<NewPanel>();
+		panels.add(first);
+		panels.add(second);
+		return panels;
+	}
+	
 	public static List<NewPanel> getNewAssetLayout(List<FacilioField> fields)
 	{
 		List<NewPanel> panels = new ArrayList<NewPanel>();
