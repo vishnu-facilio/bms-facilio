@@ -5,13 +5,16 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ReadingAction extends ActionSupport {
@@ -52,6 +55,17 @@ public class ReadingAction extends ActionSupport {
 		setReadingId(module.getModuleId());
 		
 		return SUCCESS;
+	}
+	
+	public String newReadingData() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		fields = modBean.getAllFields(moduleName);
+		return SUCCESS;
+	}
+	
+	public List getFormlayout()
+	{
+		return FormLayout.getNewAssetLayout(fields);
 	}
 	
 	public String getSpaceReadings() throws Exception {
@@ -152,13 +166,22 @@ public class ReadingAction extends ActionSupport {
 	private String addReadingData(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.READINGS, getReadingData());
+		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		
 		Chain addCurrentOccupancy = FacilioChainFactory.getAddReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
 	}
 	
+	private List<ReadingContext> readingValues;
+	public List<ReadingContext> getReadingValues() {
+		return readingValues;
+	}
+
+	public void setReadingValues(List<ReadingContext> readingValues) {
+		this.readingValues = readingValues;
+	}
+
 	public String getSpaceLatestReadingData() throws Exception {
   		return getCategoryLatestReadingData(ModuleFactory.getSpaceCategoryReadingRelModule());
   	}
