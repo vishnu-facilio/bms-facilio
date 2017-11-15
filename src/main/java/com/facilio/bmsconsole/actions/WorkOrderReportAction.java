@@ -204,10 +204,32 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
-		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"overdue\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"Overdue\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
 		Long nowTime = DateTimeUtil.getCurrenTime();
 		String filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	private Map<String, Object> getUnassignedCount() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"unassigned\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		Long nowTime = DateTimeUtil.getCurrenTime();
+		String filters ="{\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is empty\"}}";
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
 		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
@@ -226,6 +248,7 @@ public class WorkOrderReportAction extends ActionSupport {
  		List<Map<String, Object>> rs = new ArrayList<>();
  		rs.add(getDueTodayCount());
  		rs.add(getOverDueCount());
+ 		rs.add(getUnassignedCount());
  		List<Map<String, Object>> openWoResult = getOpenWorkOrderSummary();
  		Map<String,Object> openWO = new HashMap<>();
  		openWO.put(FacilioConstants.Reports.LABEL, "open");

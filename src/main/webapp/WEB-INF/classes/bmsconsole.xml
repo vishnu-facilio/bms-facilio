@@ -1219,6 +1219,16 @@
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
+		<action name="getTopNSpaces" class="com.facilio.bmsconsole.actions.ReportActions" method="getTopNSpaces">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportAllData.*</param>
+			</result>
+		</action>
+		<action name="getServiceBreakDown" class="com.facilio.bmsconsole.actions.ReportActions" method="getServiceBreakDown">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportAllData.*</param>
+			</result>
+		</action>
 		<action name="default" class="com.facilio.bmsconsole.actions.ReportActions" method="reportDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>

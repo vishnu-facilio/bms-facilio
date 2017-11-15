@@ -247,6 +247,21 @@ public class SpaceAPI {
 		return null;
 	}
 	
+	public static List<BaseSpaceContext> getBuildingFloors(long buildingId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(BaseSpaceContext.class)
+																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,3);
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		return spaces;
+	}
+	
 	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {
 		List<Long> floorIds = new ArrayList<>();
 		floorIds.add(floorId);
