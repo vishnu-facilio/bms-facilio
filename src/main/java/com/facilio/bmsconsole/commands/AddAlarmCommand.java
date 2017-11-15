@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -27,6 +28,11 @@ public class AddAlarmCommand implements Command {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			alarm.setCreatedTime(System.currentTimeMillis());
+			
+			if(alarm.getAlarmStatusVal() == null) {
+				alarm.setAlarmStatus(AlarmStatus.ACTIVE);
+			}
+			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.table(dataTableName)
