@@ -110,8 +110,8 @@ public class ViewFactory {
 	
 	private static Condition getAssetCategoryCondition(FacilioModule module, String category) {
 		LookupField statusField = new LookupField();
-		statusField.setName("name");
-		statusField.setColumnName("NAME");
+		statusField.setName("category");
+		statusField.setColumnName("CATEGORY");
 		statusField.setDataType(FieldType.LOOKUP);
 		statusField.setModule(module);
 		statusField.setLookupModule(ModuleFactory.getAssetCategoryModule());
