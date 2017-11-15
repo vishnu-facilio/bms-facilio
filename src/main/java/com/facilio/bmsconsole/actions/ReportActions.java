@@ -124,8 +124,8 @@ public class ReportActions extends ActionSupport {
 		}
 		
 		List<Map<String, Object>> current=getGroupByData(deviceList,startTime, endTime, fields);
-		
-		List<Map<String, Object>> total=getData(deviceList,startTime, endTime, null,false);
+		fields = new ArrayList<FacilioField>() ;
+		List<Map<String, Object>> total=getData(deviceList,startTime, endTime, fields,false);
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
 			double currentKwh = (double)currentTotal.get("KWH");
@@ -335,7 +335,7 @@ public class ReportActions extends ActionSupport {
 			groupBy.append(field.getName());
 			groupBy.append(",");
 		}
-		groupBy=groupBy.deleteCharAt(groupBy.length()-1);
+		groupBy=groupBy.deleteCharAt(groupBy.lastIndexOf(","));
 		
 		FacilioField energyFld = new FacilioField();
 		energyFld.setName("KWH");
@@ -434,8 +434,12 @@ private List<Map<String, Object>> getData( String deviceList, long startTime, lo
 				deviceList.append(emc.getId());
 				deviceList.append(",");
 			}
-			deviceList.deleteCharAt(deviceList.length()-1);
-			List<Map<String, Object>> total=getData(deviceList.toString(),startTime, endTime, null,false);
+			if(deviceList.length()!=0)
+			{
+				deviceList.deleteCharAt(deviceList.lastIndexOf(","));
+			}
+			List<FacilioField> fields = new ArrayList<FacilioField>() ;
+			List<Map<String, Object>> total=getData(deviceList.toString(),startTime, endTime, fields,false);
 			if(total!=null && !total.isEmpty())
 			{
 				 Map<String,Object> rowData=total.get(0);
@@ -443,7 +447,10 @@ private List<Map<String, Object>> getData( String deviceList, long startTime, lo
 				 result.put(floorName, totalKwh);
 			}
 		}
-		resultData.put("data", sortByValue(result));
+		if(result!=null && result.isEmpty())
+		{
+			resultData.put("data", sortByValue(result));
+		}
 		setReportAllData(resultData);
 		return SUCCESS;
 	}
