@@ -793,6 +793,12 @@
 	</package>
 	
 	<package name="readingApi" namespace="/api/reading" extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.ReadingAction" method="newReadingData">
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+	
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReading">
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
