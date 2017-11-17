@@ -15,7 +15,7 @@ public class AddEventCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		EventContext event = (EventContext) context.get(EventConstants.EVENT);
+		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
 		event.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 	    event.setCreatedTime(System.currentTimeMillis());
 	    event.setState(EventContext.EventState.READY);
@@ -25,7 +25,7 @@ public class AddEventCommand implements Command {
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 															.table("Event")
-															.fields(EventConstants.getEventFields())
+															.fields(EventConstants.EventFieldFactory.getEventFields())
 															.addRecord(props);
 		
 		builder.save();

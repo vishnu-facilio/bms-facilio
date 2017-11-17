@@ -38,7 +38,7 @@ public class EventFilterJob extends FacilioJob{
 				List<EventRule> eventRules = EventRulesAPI.getEventRules(orgId);
 				
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventFields())
+														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.ADDED.getIntVal());	//Org Id
 				List<Map<String, Object>> props = builder.get();
@@ -75,7 +75,7 @@ public class EventFilterJob extends FacilioJob{
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 															.table("Event")
-															.fields(EventConstants.getEventFields())
+															.fields(EventConstants.EventFieldFactory.getEventFields())
 															.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}

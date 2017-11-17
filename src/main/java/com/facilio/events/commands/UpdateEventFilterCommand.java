@@ -28,7 +28,7 @@ public class UpdateEventFilterCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
+		EventRule eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		eventRule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
 //		if(eventRule.getHasEventFilter() != null && eventRule.getHasEventFilter())
@@ -54,7 +54,7 @@ public class UpdateEventFilterCommand implements Command {
 		{
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.connection(conn)
-													.select(EventConstants.getEventRuleFields())
+													.select(EventConstants.EventFieldFactory.getEventRuleFields())
 													.table("Event_Rule")
 													.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());	//Org Id
 			
@@ -63,14 +63,14 @@ public class UpdateEventFilterCommand implements Command {
 			{
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 						.table("Event_Rule")
-						.fields(EventConstants.getEventRuleFields())
+						.fields(EventConstants.EventFieldFactory.getEventRuleFields())
 						.addRecord(eventRules);
 
 				insertBuilder.save();
 			}
 			else
 			{
-				List<FacilioField> fields = EventConstants.getEventRuleFields();
+				List<FacilioField> fields = EventConstants.EventFieldFactory.getEventRuleFields();
 				GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 														.connection(conn)
 														.table("Event_Rule")

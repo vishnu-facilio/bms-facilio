@@ -36,7 +36,7 @@ public class EventThresholdJob extends FacilioJob{
 			{
 				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventFields())
+														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.TRANSFORMED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
@@ -54,7 +54,7 @@ public class EventThresholdJob extends FacilioJob{
 							boolean ignoreEvent = true;
 							int thresholdOccurs = eventRule.getThresholdOccurs();
 							GenericSelectRecordBuilder filterbuilder = new GenericSelectRecordBuilder()
-																			.select(EventConstants.getEventFields())
+																			.select(EventConstants.EventFieldFactory.getEventFields())
 																			.table("Event")
 																			.limit(thresholdOccurs - 1)
 																			.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND CREATED_TIME < ?", event.getOrgId(), event.getMessageKey(), event.getCreatedTime())
@@ -87,7 +87,7 @@ public class EventThresholdJob extends FacilioJob{
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 																	.table("Event")
-																	.fields(EventConstants.getEventFields())
+																	.fields(EventConstants.EventFieldFactory.getEventFields())
 																	.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}

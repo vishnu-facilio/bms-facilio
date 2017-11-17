@@ -67,7 +67,7 @@ public class EventSyncJob extends FacilioJob{
 	{
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 												.table("Event")
-												.fields(EventConstants.getEventFields());
+												.fields(EventConstants.EventFieldFactory.getEventFields());
 		Iterator<Item> iterator = items.iterator();
 		while (iterator.hasNext())
 		{

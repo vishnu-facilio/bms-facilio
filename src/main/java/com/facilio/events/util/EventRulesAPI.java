@@ -16,7 +16,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class EventRulesAPI {
 	public static final EventRule getEventRule(long orgId, long eventRuleId) throws Exception {
 		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
-												.select(EventConstants.getEventRuleFields())
+												.select(EventConstants.EventFieldFactory.getEventRuleFields())
 												.table("Event_Rule")
 												.andCustomWhere("ORGID = ? AND EVENT_RULE_ID = ?", orgId, eventRuleId);
 		
@@ -29,8 +29,8 @@ public class EventRulesAPI {
 	
 	public static final List<EventRule> getEventRules(long orgId) throws Exception {
 		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventRuleFields())
-														.table(EventConstants.getEventRuleModule().getTableName())
+														.select(EventConstants.EventFieldFactory.getEventRuleFields())
+														.table(EventConstants.EventModuleFactory.getEventRuleModule().getTableName())
 														.orderBy("RULE_ORDER")
 														.andCustomWhere("ORGID = ?", orgId);
 
@@ -47,8 +47,8 @@ public class EventRulesAPI {
 	
 	public static final List<EventToAlarmFieldMapping> getEventToAlarmFieldMappings(long orgId) throws Exception {
 		GenericSelectRecordBuilder rulebuilder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventToAlarmFieldMappingFields())
-														.table(EventConstants.getEventToAlarmFieldMappingModule().getTableName())
+														.select(EventConstants.EventFieldFactory.getEventToAlarmFieldMappingFields())
+														.table(EventConstants.EventModuleFactory.getEventToAlarmFieldMappingModule().getTableName())
 														.orderBy("MAPPING_ORDER")
 														.andCustomWhere("ORGID = ?", orgId);
 		

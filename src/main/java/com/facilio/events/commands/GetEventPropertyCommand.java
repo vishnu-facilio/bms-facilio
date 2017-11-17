@@ -27,7 +27,7 @@ public class GetEventPropertyCommand implements Command {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 					.connection(conn)
-					.select(EventConstants.getEventPropertyFields())
+					.select(EventConstants.EventFieldFactory.getEventPropertyFields())
 					.table("Event_Property")
 					.andCustomWhere("Event_Property.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 	
@@ -38,7 +38,7 @@ public class GetEventPropertyCommand implements Command {
 			e.printStackTrace();
 			throw e;
 		}
-		context.put(EventConstants.EVENT_PROPERTY, eventProperty);
+		context.put(EventConstants.EventContextNames.EVENT_PROPERTY, eventProperty);
 		return false;
 	}
 }

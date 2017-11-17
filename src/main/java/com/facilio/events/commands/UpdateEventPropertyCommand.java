@@ -22,13 +22,13 @@ public class UpdateEventPropertyCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		EventProperty eventProperty = (EventProperty) context.get(EventConstants.EVENT_PROPERTY);
+		EventProperty eventProperty = (EventProperty) context.get(EventConstants.EventContextNames.EVENT_PROPERTY);
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_DEFAULT);
 		Map<String, Object> eventProperties = mapper.convertValue(eventProperty, Map.class);
 		System.out.println(eventProperties);
 		
-		List<FacilioField> fields = EventConstants.getEventPropertyFields();
+		List<FacilioField> fields = EventConstants.EventFieldFactory.getEventPropertyFields();
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 												.connection(((FacilioContext)context).getConnectionWithTransaction())
 												.table("Event_Property")

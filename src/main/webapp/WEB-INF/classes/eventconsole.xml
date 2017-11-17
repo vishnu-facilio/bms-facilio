@@ -42,6 +42,15 @@
 		</action>
 	</package>
 	
+	<package name="eventSummaryApi" namespace="/api/event/summary" extends="home">
+		<action name="*" class="com.facilio.events.actions.EventAction" method="eventDetail">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="root">event</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="eventApi" namespace="/api/event" extends="home">
 		<action name="add" class="com.facilio.events.actions.EventAction" method="addEvent">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

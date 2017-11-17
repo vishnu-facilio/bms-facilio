@@ -18,7 +18,7 @@ public class AddEventRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		EventRule eventRule = (EventRule) context.get(EventConstants.EVENT_RULE);
+		EventRule eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(eventRule != null) {
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 			eventRule.setOrgId(orgId);
@@ -26,8 +26,8 @@ public class AddEventRuleCommand implements Command {
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(eventRule);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-															.table(EventConstants.getEventRuleModule().getTableName())
-															.fields(EventConstants.getEventRuleFields())
+															.table(EventConstants.EventModuleFactory.getEventRuleModule().getTableName())
+															.fields(EventConstants.EventFieldFactory.getEventRuleFields())
 															.addRecord(prop);
 			
 			insertBuilder.save();

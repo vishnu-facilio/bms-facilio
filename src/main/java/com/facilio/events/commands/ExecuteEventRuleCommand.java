@@ -25,17 +25,17 @@ public class ExecuteEventRuleCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EVENT_PROPERTY);
+		Map<String, Object> propsMap = (Map<String, Object>) context.get(EventConstants.EventContextNames.EVENT_PROPERTY);
 		boolean ignoreEvent = false;
 		if(propsMap.get("hasEventRule") != null && (Boolean) propsMap.get("hasEventRule"))
 		{
-			EventContext event = (EventContext) context.get(EventConstants.EVENT);
+			EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
 			Map<String, Object> ruleprops = null;
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 			{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)
-														.select(EventConstants.getEventRuleFields())
+														.select(EventConstants.EventFieldFactory.getEventRuleFields())
 														.table("Event_Rule")
 														.andCustomWhere("ORGID = ?", event.getOrgId());	//Org Id
 				
@@ -77,7 +77,7 @@ public class ExecuteEventRuleCommand implements Command {
 							JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(props).get("content"));
 							
 							event = FieldUtil.getAsBeanFromJson(content, EventContext.class);
-							context.put(EventConstants.EVENT, event);
+							context.put(EventConstants.EventContextNames.EVENT, event);
 						}
 					}
 					catch (Exception e) 
@@ -92,7 +92,7 @@ public class ExecuteEventRuleCommand implements Command {
 					{
 						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 																.connection(conn)
-																.select(EventConstants.getEventThresholdRuleFields())
+																.select(EventConstants.EventFieldFactory.getEventThresholdRuleFields())
 																.table("Event_Threshold_Rule")
 																.andCustomWhere("ORGID = ?", event.getOrgId());	//Org Id
 						
@@ -108,7 +108,7 @@ public class ExecuteEventRuleCommand implements Command {
 									Integer filterCriteriaOccurs = (Integer) thresholdruleprops.get("filterCriteriaOccurs");
 									GenericSelectRecordBuilder filterbuilder = new GenericSelectRecordBuilder()
 											.connection(conn)
-											.select(EventConstants.getEventFields())
+											.select(EventConstants.EventFieldFactory.getEventFields())
 											.table("Event")
 											.limit(filterCriteriaOccurs - 1)
 											.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ?", event.getOrgId(), event.getMessageKey())
@@ -135,7 +135,7 @@ public class ExecuteEventRuleCommand implements Command {
 				}
 			}
 		}
-		context.put(EventConstants.IGNORE_EVENT, ignoreEvent);
+		context.put(EventConstants.EventContextNames.IGNORE_EVENT, ignoreEvent);
 		return false;
 	}
 }

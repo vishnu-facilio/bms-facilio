@@ -13,7 +13,7 @@ public class GetEventRulesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		context.put(EventConstants.EVENT_RULE_LIST, EventRulesAPI.getEventRules(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, EventRulesAPI.getEventRules(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		return false;
 	}
 }

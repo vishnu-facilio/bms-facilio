@@ -40,7 +40,7 @@ public class EventTransformJob extends FacilioJob{
 			{
 				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventFields())
+														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ? AND EVENT_RULE_ID IS NOT NULL", orgId, EventState.READY.getIntVal(), EventInternalState.FILTERED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
@@ -67,7 +67,7 @@ public class EventTransformJob extends FacilioJob{
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 															.table("Event")
-															.fields(EventConstants.getEventFields())
+															.fields(EventConstants.EventFieldFactory.getEventFields())
 															.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}

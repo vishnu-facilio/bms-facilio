@@ -20,15 +20,15 @@ public class AddOrUpdateAlarmCommand implements Command {
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public boolean execute(Context context) throws Exception {
-		boolean ignoreEvent = (Boolean) context.get(EventConstants.IGNORE_EVENT);
+		boolean ignoreEvent = (Boolean) context.get(EventConstants.EventContextNames.IGNORE_EVENT);
 		if(!ignoreEvent)
 		{
-			EventContext event = (EventContext) context.get(EventConstants.EVENT);
+			EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
 			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
 			{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)
-														.select(EventConstants.getEventFields())
+														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ?", 1, event.getMessageKey());	//Org Id
 				

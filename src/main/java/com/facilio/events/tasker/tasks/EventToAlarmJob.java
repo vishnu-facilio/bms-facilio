@@ -37,7 +37,7 @@ public class EventToAlarmJob extends FacilioJob{
 			{
 				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.select(EventConstants.getEventFields())
+														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND STATE = ? AND (INTERNAL_STATE = ? OR (INTERNAL_STATE = ? AND EVENT_RULE_ID IS NULL))", orgId, EventState.READY.getIntVal(), EventInternalState.THRESHOLD_DONE.getIntVal(), EventInternalState.FILTERED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
@@ -68,7 +68,7 @@ public class EventToAlarmJob extends FacilioJob{
 					}
 					event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
 					GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
-																.select(EventConstants.getEventFields())
+																.select(EventConstants.EventFieldFactory.getEventFields())
 																.table("Event")
 																.limit(1)
 																.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND ALARM_ID IS NOT NULL", orgId, event.getMessageKey())
@@ -125,7 +125,7 @@ public class EventToAlarmJob extends FacilioJob{
 					
 					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
 															.table("Event")
-															.fields(EventConstants.getEventFields())
+															.fields(EventConstants.EventFieldFactory.getEventFields())
 															.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
 					updatebuilder.update(prop);
 				}

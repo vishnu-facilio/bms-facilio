@@ -26,7 +26,7 @@ public class GetEventListCommand implements Command {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 					.connection(conn)
-					.select(EventConstants.getEventFields())
+					.select(EventConstants.EventFieldFactory.getEventFields())
 					.table("Event")
 					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
 	
@@ -43,7 +43,7 @@ public class GetEventListCommand implements Command {
 			e.printStackTrace();
 			throw e;
 		}
-		context.put(EventConstants.EVENT_LIST, events);
+		context.put(EventConstants.EventContextNames.EVENT_LIST, events);
 		return false;
 	}
 }

@@ -29,9 +29,28 @@ public class EventAction extends ActionSupport {
 	public String addEvent() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT, event);
-		Chain getAddEventChain = EventConstants.getAddEventChain();
+		context.put(EventConstants.EventContextNames.EVENT, event);
+		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 		getAddEventChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private long eventId = -1;
+	public long getEventId() {
+		return eventId;
+	}
+	public void setEventId(long eventId) {
+		this.eventId = eventId;
+	}
+	
+	public String eventDetail() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_ID, eventId);
+		Chain getEventDetailChain = EventConstants.EventChainFactory.getEventDetailChain();
+		getEventDetailChain.execute(context);
+		
+		setEvent((EventContext) context.get(EventConstants.EventContextNames.EVENT));
 		
 		return SUCCESS;
 	}
@@ -48,10 +67,10 @@ public class EventAction extends ActionSupport {
 	public String eventList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain eventListChain = EventConstants.getEventListChain();
+		Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
 		eventListChain.execute(context);
 		
-		setEvents((List<EventContext>) context.get(EventConstants.EVENT_LIST));
+		setEvents((List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
 		return SUCCESS;
 	}
 	
@@ -83,10 +102,10 @@ public class EventAction extends ActionSupport {
 	public String eventRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain eventRulesChain = EventConstants.getEventRulesChain();
+		Chain eventRulesChain = EventConstants.EventChainFactory.getEventRulesChain();
 		eventRulesChain.execute(context);
 		
-		setEventRules((List<EventRule>) context.get(EventConstants.EVENT_RULE_LIST));
+		setEventRules((List<EventRule>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
 		
 		return SUCCESS;
 	}
@@ -94,9 +113,9 @@ public class EventAction extends ActionSupport {
 	public String updateEventProperty() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_PROPERTY, eventProperty);
+		context.put(EventConstants.EventContextNames.EVENT_PROPERTY, eventProperty);
 		
-		Chain updateEventPropertyChain = EventConstants.updateEventPropertyChain();
+		Chain updateEventPropertyChain = EventConstants.EventChainFactory.updateEventPropertyChain();
 		updateEventPropertyChain.execute(context);
 		
 		return SUCCESS;
@@ -115,9 +134,9 @@ public class EventAction extends ActionSupport {
 	public String addEventRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_RULE, eventRule);
+		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
 		
-		Chain addEventRuleChain = EventConstants.addEventRuleChain();
+		Chain addEventRuleChain = EventConstants.EventChainFactory.addEventRuleChain();
 		addEventRuleChain.execute(context);
 		
 		return SUCCESS;
@@ -143,11 +162,11 @@ public class EventAction extends ActionSupport {
 	public String saveEventFilter() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_RULE, eventRule);
-		context.put(EventConstants.FILTER_CRITERIA_PATTERN, filterPattern);
-		context.put(EventConstants.FILTER_CONDITIONS, filterConditions);
+		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
+		context.put(EventConstants.EventContextNames.FILTER_CRITERIA_PATTERN, filterPattern);
+		context.put(EventConstants.EventContextNames.FILTER_CONDITIONS, filterConditions);
 		
-		Chain updateEventFilterChain = EventConstants.updateEventFilterChain();
+		Chain updateEventFilterChain = EventConstants.EventChainFactory.updateEventFilterChain();
 		updateEventFilterChain.execute(context);
 		
 		return SUCCESS;
@@ -180,12 +199,12 @@ public class EventAction extends ActionSupport {
 	public String saveEventTransformRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_RULE, eventRule);
-		context.put(EventConstants.CUSTOMIZE_CRITERIA_PATTERN, customizePattern);
-		context.put(EventConstants.CUSTOMIZE_CONDITIONS, customizeConditions);
-		context.put(EventConstants.CUSTOMIZE_ALARM_TEMPLATE, customizeAlarmTemplate);
+		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
+		context.put(EventConstants.EventContextNames.CUSTOMIZE_CRITERIA_PATTERN, customizePattern);
+		context.put(EventConstants.EventContextNames.CUSTOMIZE_CONDITIONS, customizeConditions);
+		context.put(EventConstants.EventContextNames.CUSTOMIZE_ALARM_TEMPLATE, customizeAlarmTemplate);
 		
-		Chain updateEventTransformRuleChain = EventConstants.updateEventTransformRuleChain();
+		Chain updateEventTransformRuleChain = EventConstants.EventChainFactory.updateEventTransformRuleChain();
 		updateEventTransformRuleChain.execute(context);
 		
 		return SUCCESS;
@@ -202,10 +221,10 @@ public class EventAction extends ActionSupport {
 	public String saveThresholdRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_RULE, eventRule);
-		context.put(EventConstants.EVENT_THRESHOLD_RULE_LIST, eventThresholdRules);
+		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
+		context.put(EventConstants.EventContextNames.EVENT_THRESHOLD_RULE_LIST, eventThresholdRules);
 		
-		Chain updateEventThresholdRulesChain = EventConstants.updateEventThresholdRulesChain();
+		Chain updateEventThresholdRulesChain = EventConstants.EventChainFactory.updateEventThresholdRulesChain();
 		updateEventThresholdRulesChain.execute(context);
 		
 		return SUCCESS;
@@ -213,9 +232,9 @@ public class EventAction extends ActionSupport {
 	
 	public String updateEventRule() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EVENT_RULE, eventRule);
+		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
 		
-		Chain updateEventRule = EventConstants.updateEventRulesChain();
+		Chain updateEventRule = EventConstants.EventChainFactory.updateEventRulesChain();
 		updateEventRule.execute(context);
 		
 		return SUCCESS;
