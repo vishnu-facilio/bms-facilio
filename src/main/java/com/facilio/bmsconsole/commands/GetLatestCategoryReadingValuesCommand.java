@@ -32,7 +32,7 @@ public class GetLatestCategoryReadingValuesCommand implements Command {
 					count = 1;
 				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+				List<FacilioField> fields = modBean.getAllFields(module.getName());
 				
 				Condition idCondition = new Condition();
 				idCondition.setField(modBean.getField("parentId", module.getName()));

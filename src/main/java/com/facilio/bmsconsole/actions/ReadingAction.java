@@ -185,6 +185,10 @@ public class ReadingAction extends ActionSupport {
 	public String getSpaceLatestReadingData() throws Exception {
   		return getCategoryLatestReadingData(ModuleFactory.getSpaceCategoryReadingRelModule());
   	}
+	
+	public String getAssetLatestReadingData() throws Exception {
+  		return getCategoryLatestReadingData(ModuleFactory.getAssetCategoryReadingRelModule());
+  	}
   	
   	private String getCategoryLatestReadingData(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
