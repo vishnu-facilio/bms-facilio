@@ -254,8 +254,7 @@ public class SpaceAPI {
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
-																	.table(module.getTableName())
-																	.moduleName(module.getName())
+																	.module(module)
 																	.beanClass(BaseSpaceContext.class)
 																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,3);
 		List<BaseSpaceContext> spaces = selectBuilder.get();

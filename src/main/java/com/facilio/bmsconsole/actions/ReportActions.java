@@ -199,7 +199,7 @@ public class ReportActions extends ActionSupport {
 		
 		FacilioField purposeField = new FacilioField();
 		purposeField.setName("Name");
-		purposeField.setColumnName("Energy_Meter_PURPOSE.NAME");
+		purposeField.setColumnName("Energy_Meter_Purpose.NAME");
 		purposeField.setDataType(FieldType.STRING);
 
 		List<FacilioField> fields = new ArrayList<>();
@@ -384,9 +384,18 @@ private List<Map<String, Object>> getData( String deviceList, long startTime, lo
 	}
 
 	private long getRootMeter(String purpose) throws Exception {
-		EnergyMeterPurposeContext empc= DeviceAPI.getEnergyMeterPurpose(purpose).get(0);
+		 List<EnergyMeterPurposeContext> purposeList= DeviceAPI.getEnergyMeterPurpose(purpose);
+		if(purposeList==null || purposeList.size()==0)
+		{
+			return -1;
+		}
+		EnergyMeterPurposeContext empc= purposeList.get(0);
 		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
 		
+		if(energyMeters==null || energyMeters.size()==0)
+		{
+			return -1;
+		}
 		EnergyMeterContext energyMeter= energyMeters.get(0);
 		return energyMeter.getId();
 	}
@@ -447,7 +456,7 @@ private List<Map<String, Object>> getData( String deviceList, long startTime, lo
 				 result.put(floorName, totalKwh);
 			}
 		}
-		if(result!=null && result.isEmpty())
+		if(result!=null && !result.isEmpty())
 		{
 			resultData.put("data", sortByValue(result));
 		}

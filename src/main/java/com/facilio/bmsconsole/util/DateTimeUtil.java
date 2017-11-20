@@ -24,27 +24,14 @@ public class DateTimeUtil
 	{
 		//TODO TimeZone related changes to be done.
 		//like OrgInfo.getCurrentOrgInfo().getTimezone() & set the ZoneId..
-		return ZoneId.systemDefault();
+		return ZoneId.of("Z");
 	}
 	
 	private static Locale getLocale()
 	{
 		//TODO Locale related changes to be done..
 		//like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
-		return Locale.getDefault();
-	}
-	
-	public static ArrayList<Long> getDaysOfTheWeek(long startTime){
-			return getDaysOfTheWeek(getZoneId(),startTime);
-	}
-	public static ArrayList<Long> getDaysOfTheWeek(ZoneId zoneId, long startTime){
-		ZonedDateTime thisDate = getDateTime(startTime);
-		ArrayList<Long> daysOfTheWeek = new ArrayList<Long>();
-		for(int i=1;i<=8;i++) {
-			long thisDay = getMillis(thisDate.plusDays(i),true);
-			daysOfTheWeek.add(thisDay);
-		}
-		return daysOfTheWeek;
+		return Locale.US;
 	}
 	
 	private static ZonedDateTime getMidnight(ZoneId zoneId)
