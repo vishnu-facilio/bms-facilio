@@ -34,31 +34,31 @@ public class ModuleBaseWithCustomFields {
 	}
 	
 	@Element( value = java.lang.String.class )
-	private Map<String, Object> customProps = new HashMap<>();
+	private Map<String, Object> data = null;
 	
 	@JsonAnyGetter
-	public Map<String, Object> getCustomProps() {
-		return customProps;
+	public Map<String, Object> getData() {
+		return data;
 	}
-	public void setCustomProps(Map<String, Object> customProps) {
-		this.customProps = customProps;
+	public void setData(Map<String, Object> data) {
+		this.data = data;
 	}
-	public void addCustomProps(Map<String, Object> customProps) {
-		if(this.customProps != null) {
-			this.customProps.putAll(customProps);
+	public void addData(Map<String, Object> data) {
+		if(this.data != null) {
+			this.data.putAll(data);
 		}
 		else {
-			this.customProps = customProps;
+			this.data = data;
 		}
 	}
 	
 	
 	@JsonAnySetter
-	public void setCustomProp(String key, Object value) {
-		customProps.put(key, value);
+	public void setDatum(String key, Object value) {
+		data.put(key, value);
 	}
 	
-	public Object getCustomProp(String key) {
-		return customProps.get(key);
+	public Object getDatum(String key) {
+		return data.get(key);
 	}
 }
