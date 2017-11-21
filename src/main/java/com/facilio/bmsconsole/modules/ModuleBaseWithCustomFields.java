@@ -55,10 +55,16 @@ public class ModuleBaseWithCustomFields {
 	
 	@JsonAnySetter
 	public void setDatum(String key, Object value) {
+		if(data == null) {
+			data = new HashMap<>();
+		}
 		data.put(key, value);
 	}
 	
 	public Object getDatum(String key) {
+		if(data == null) {
+			return null;
+		}
 		return data.get(key);
 	}
 }

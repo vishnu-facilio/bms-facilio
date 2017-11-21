@@ -194,8 +194,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
-				E bean = beanClass.newInstance();
-				BeanUtils.populate(bean, props);
+				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
 				beans.add(bean);
 			}
 		}
