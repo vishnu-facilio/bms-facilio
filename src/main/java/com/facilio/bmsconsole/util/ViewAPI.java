@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -32,9 +30,7 @@ public class ViewAPI {
 			List<Map<String, Object>> viewProps = builder.get();
 			for(Map<String, Object> viewProp : viewProps) 
 			{
-				FacilioView view = new FacilioView();
-				BeanUtils.populate(view, viewProp);
-				views.add(view);
+				views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
 			}
 		} 
 		catch (Exception e) 
@@ -56,8 +52,7 @@ public class ViewAPI {
 			List<Map<String, Object>> viewProps = builder.get();
 			if(viewProps != null && !viewProps.isEmpty()) {
 				Map<String, Object> viewProp = viewProps.get(0);
-				FacilioView view = new FacilioView();
-				BeanUtils.populate(view, viewProp);
+				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
 				if(view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId(),conn);
 					view.setCriteria(criteria);

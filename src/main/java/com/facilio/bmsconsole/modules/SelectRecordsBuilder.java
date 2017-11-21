@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -225,8 +223,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						}
 					}
 				}
-				E bean = beanClass.newInstance();
-				BeanUtils.populate(bean, props);
+				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
 				beanMap.put(bean.getId(), bean);
 			}
 		}

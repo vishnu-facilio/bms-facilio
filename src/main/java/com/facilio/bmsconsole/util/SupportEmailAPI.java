@@ -86,7 +86,6 @@ public class SupportEmailAPI {
 	}
 	
 	private static SupportEmailContext getSupportEmailFromMap(Map<String, Object> props) throws Exception {
-		SupportEmailContext email = new SupportEmailContext();
 		long groupId = -1;
 		if(props.get("autoAssignGroup") != null) {
 			groupId = (long) props.get("autoAssignGroup");
@@ -98,8 +97,6 @@ public class SupportEmailAPI {
 		else {
 			props.remove("autoAssignGroup");
 		}
-		
-		BeanUtils.populate(email, props);
-		return email;
+		return FieldUtil.getAsBeanFromMap(props, SupportEmailContext.class);
 	}
 }
