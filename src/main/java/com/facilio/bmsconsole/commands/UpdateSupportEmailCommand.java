@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -23,18 +24,17 @@ public class UpdateSupportEmailCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
-		if(supportEmail != null) {
+			if(supportEmail != null) {
+			System.out.println("....UpdateSupport condition");
 			supportEmail.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 			//CommonCommandUtil.setFwdMail(supportEmail);
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.setSerializationInclusion(Include.NON_DEFAULT);
-			Map<String, Object> emailProps = mapper.convertValue(supportEmail, Map.class);
+			Map<String, Object> emailProps = FieldUtil.getAsProperties(supportEmail);
 			System.out.println("mpa"+emailProps);
 			System.out.println("supportEmail"+supportEmail);
-if(emailProps.get("autoAssignGroup")!=null)
-{
-			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
-}
+			if(emailProps.get("autoAssignGroup")!=null)
+			{
+				emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
+			}
 			emailProps.remove("id");
 			Connection con = FacilioConnectionPool.getInstance().getConnection();
 			try {

@@ -921,6 +921,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	
 	public static Chain getSupportEmailChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetSupportEmailCommand());
@@ -939,9 +940,17 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());
 		//addCleanUpCommand(c);
+		System.out.println("........ c"+ c);
 		return c;
 	}
 	
+	public static Chain getUpdateNotificationSettingChain(){
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateNotificationSettings());
+		System.out.println("....Notification");
+
+		return c;
+	}
 	public static Chain getDeleteSupportEmailChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteSupportEmailCommand());

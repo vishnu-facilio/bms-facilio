@@ -10,6 +10,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -49,7 +50,8 @@ public class SupportEmailAPI {
 			List<Map<String, Object>> emailList = builder.get();
 			if(emailList != null && emailList.size() > 0) {
 				Map<String, Object> email = emailList.get(0);
-				return getSupportEmailFromMap(email);
+				return FieldUtil.getAsBeanFromMap(email, SupportEmailContext.class);
+//				return getSupportEmailFromMap(email);
 			}
 		}
 		catch(Exception e) {

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -190,6 +191,16 @@ public String importData() throws Exception {
 		return SUCCESS;
 	}
 	
+	public String updateNotificationSettings() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_UPDATE, workflowRule);
+		System.out.println("........ notification----->  " + workflowRule);
+		Chain updateNotification= FacilioChainFactory.getUpdateNotificationSettingChain();
+		updateNotification.execute(context);
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		return SUCCESS;
+	}
+	
 	public String showEmailSettings() throws Exception {
 		FacilioContext context  = new FacilioContext();
 		Chain emailSetting = FacilioChainFactory.getEmailSettingChain();
@@ -263,12 +274,14 @@ public String importData() throws Exception {
 	public String updateSupportEmailSetting() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
+		System.out.println("........ update" + supportEmail);
 		Chain updateSupportEmail = FacilioChainFactory.getUpdateSupportEmailChain();
 		updateSupportEmail.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
 	}
+	
 	
 	public String deleteSupportEmailSetting() throws Exception {
 		
@@ -317,7 +330,13 @@ public String importData() throws Exception {
 		
 		return SUCCESS;
 	}
-
 	
+	private WorkflowRuleContext workflowRule;
+	public WorkflowRuleContext getWorkflowRule(){
+		return workflowRule;
+	}
 	
+	public void setWorkflowRule(WorkflowRuleContext workflowRule) {
+		this.workflowRule = workflowRule;
+	}
 }

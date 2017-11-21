@@ -124,10 +124,27 @@
 				<param name="includeProperties">emailNotifications.*</param>
 			</result>
 		</action>	
+	<action name="updatenotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="updateNotificationSettings">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>	
 <action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		<action name="addemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">supportEmailId</param>
+			</result>
+		</action>
+		<action name="deleteemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
 			</result>
 		</action>
 				
