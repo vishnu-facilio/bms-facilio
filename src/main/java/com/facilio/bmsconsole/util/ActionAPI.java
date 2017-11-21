@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -75,8 +73,7 @@ public class ActionAPI {
 		if(props != null && props.size() > 0) {
 			List<ActionContext> actions = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				ActionContext action = new ActionContext();
-				BeanUtils.populate(action, prop);
+				ActionContext action = FieldUtil.getAsBeanFromMap(prop, ActionContext.class);
 				if(action.getTemplateId() != -1) {
 					action.setTemplate(TemplateAPI.getTemplate(action.getOrgId(), action.getTemplateId())); //Template should be obtained from some api
 					

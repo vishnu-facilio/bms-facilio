@@ -70,15 +70,15 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public Map<String, Object> getReadings() {
-		return super.getCustomProps();
+		return super.getData();
 	}
 	public void setReadings(Map<String, Object> readings) {
-		super.setCustomProps(readings);
+		super.setData(readings);
 	}
 	public void addReading(String key, Object value) {
-		super.setCustomProp(key, value);
+		super.setDatum(key, value);
 	}
 	public Object getReading(String key) {
-		return super.getCustomProp(key);
+		return super.getDatum(key);
 	}
 } 

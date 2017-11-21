@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AddSupportEmailCommand implements Command {
-
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
@@ -29,7 +29,11 @@ public class AddSupportEmailCommand implements Command {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.setSerializationInclusion(Include.NON_DEFAULT);
 			Map<String, Object> emailProps = mapper.convertValue(supportEmail, Map.class);
-			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
+//			emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
+			if(emailProps.get("autoAssignGroup")!=null)
+			{
+						emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
+			}
 			System.out.println(emailProps);
 			
 			List<FacilioField> fields = FieldFactory.getSupportEmailFields();

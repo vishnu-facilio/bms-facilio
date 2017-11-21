@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -34,8 +34,7 @@ public class LoadAlarmCreationRulesCommand implements Command {
 			if(rules != null && !rules.isEmpty()) {
 				List<WorkflowRuleContext> alarmCreationRules = new ArrayList<>();
 				for(Map<String, Object> rule : rules) {
-					WorkflowRuleContext workflow = new WorkflowRuleContext();
-					BeanUtils.populate(workflow, rule);
+					WorkflowRuleContext workflow = FieldUtil.getAsBeanFromMap(rule, WorkflowRuleContext.class);
 					alarmCreationRules.add(workflow);
 				}
 				

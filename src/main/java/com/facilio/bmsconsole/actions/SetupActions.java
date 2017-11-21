@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
@@ -13,13 +14,16 @@ import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -178,6 +182,31 @@ public String importData() throws Exception {
 		return SUCCESS;
 	}
 	
+	public String showWONotificationSettings() throws Exception {
+		
+		setSetup(SetupLayout.getEmailNotificationsLayout());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		
+		//OrgContext org = OrgApi.getOrgContext();
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid(), woModule.getModuleId());
+		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
+		return SUCCESS;
+	}
+	
+    public String showAlarmsNotificationSettings() throws Exception {
+		
+		setSetup(SetupLayout.getEmailNotificationsLayout());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
+		
+		//OrgContext org = OrgApi.getOrgContext();
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid(), woModule.getModuleId());
+		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
+		return SUCCESS;
+	}
 	
 	
 	public String showNotificationSettings() throws Exception {
@@ -187,6 +216,16 @@ public String importData() throws Exception {
 		//OrgContext org = OrgApi.getOrgContext();
 		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
+		return SUCCESS;
+	}
+	
+	public String updateNotificationSettings() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_UPDATE, workflowRule);
+		System.out.println("........ notification----->  " + workflowRule);
+		Chain updateNotification= FacilioChainFactory.getUpdateNotificationSettingChain();
+		updateNotification.execute(context);
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
 	}
 	
@@ -263,12 +302,14 @@ public String importData() throws Exception {
 	public String updateSupportEmailSetting() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
+		System.out.println("........ update" + supportEmail);
 		Chain updateSupportEmail = FacilioChainFactory.getUpdateSupportEmailChain();
 		updateSupportEmail.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
 	}
+	
 	
 	public String deleteSupportEmailSetting() throws Exception {
 		
@@ -317,7 +358,13 @@ public String importData() throws Exception {
 		
 		return SUCCESS;
 	}
-
 	
+	private WorkflowRuleContext workflowRule;
+	public WorkflowRuleContext getWorkflowRule(){
+		return workflowRule;
+	}
 	
+	public void setWorkflowRule(WorkflowRuleContext workflowRule) {
+		this.workflowRule = workflowRule;
+	}
 }

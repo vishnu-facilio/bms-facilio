@@ -30,11 +30,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 															.table("Preventive_Maintenance")
 															.innerJoin("Jobs")
 															.on("Preventive_Maintenance.ID = Jobs.JOBID")
-															.andCustomWhere("Preventive_Maintenance.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), "PreventiveMaintenance");
 		
 		if (status != null) {
 			if (status) {
-				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ? OR Preventive_Maintenance.STATUS IS NULL", status);
+				selectRecordBuilder.andCustomWhere("(Preventive_Maintenance.STATUS = ? OR Preventive_Maintenance.STATUS IS NULL)", status);
 			}
 			else {
 				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ?", status);

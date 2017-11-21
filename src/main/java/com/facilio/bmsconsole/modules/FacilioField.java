@@ -210,7 +210,7 @@ public class FacilioField implements Serializable {
 				return moduleName+"."+name;
 			}
 			else {
-				return moduleName+".customProps['"+name+"']";
+				return moduleName+".data['"+name+"']";
 			}
 		}
 		return null;

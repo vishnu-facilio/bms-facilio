@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -20,42 +18,27 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class WorkflowAPI {
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.connection(conn)
-														.table("Workflow_Rule")
-														.fields(FieldFactory.getWorkflowRuleFields())
-														.addRecord(ruleProps);
-			insertBuilder.save();
-			return (long) ruleProps.get("id");
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+													.table("Workflow_Rule")
+													.fields(FieldFactory.getWorkflowRuleFields())
+													.addRecord(ruleProps);
+		insertBuilder.save();
+		return (long) ruleProps.get("id");
 	}
 	
 	public static int updateWorkflowRule(long orgId, WorkflowRuleContext rule, long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.connection(conn)
-														.table("Workflow_Rule")
-														.fields(FieldFactory.getWorkflowRuleFields())
-														.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
-			return updateBuilder.update(ruleProps);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+													.table("Workflow_Rule")
+													.fields(FieldFactory.getWorkflowRuleFields())
+													.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);
+		return updateBuilder.update(ruleProps);
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long orgId) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table("Workflow_Rule")
 					.select(FieldFactory.getWorkflowRuleFields())
 					.andCustomWhere("Workflow_Rule.ORGID = ?", orgId);
@@ -66,10 +49,24 @@ public class WorkflowAPI {
 		}
 	}
 	
+	public static List<WorkflowRuleContext> getWorkflowRules(long orgId, long moduleId) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getWorkflowRuleFields())
+					.table("Workflow_Rule")
+					.innerJoin("Workflow_Event")
+					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
+					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
+			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+	}
+	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromEvent(long orgId, long moduleId, int eventType) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table("Workflow_Rule")
 					.select(FieldFactory.getWorkflowRuleFields())
 					.innerJoin("Workflow_Event")
@@ -87,15 +84,9 @@ public class WorkflowAPI {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				WorkflowRuleContext workflow = new WorkflowRuleContext();
-				BeanUtils.populate(workflow, prop);
+				WorkflowRuleContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 				long criteriaId = workflow.getCriteriaId();
 				workflow.setCriteria(CriteriaAPI.getCriteria(orgId, criteriaId, conn));
-				
-				/*if(workflow.getCriteria() == null) {
-					throw new RuntimeException("Criteria cannot be null for WorkflowRule : "+workflow.getId());
-				}*/
-				
 				workflows.add(workflow);
 			}
 			return workflows;

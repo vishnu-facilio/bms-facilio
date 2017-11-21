@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -187,8 +186,7 @@ public class TemplateAPI {
 	}
 	
 	private static EMailTemplate getEMailTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		EMailTemplate template = new EMailTemplate();
-		BeanUtils.populate(template, templateMap);
+		EMailTemplate template = FieldUtil.getAsBeanFromMap(templateMap, EMailTemplate.class);
 		
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getBodyId())) {
 			template.setBody(IOUtils.toString(body));
@@ -202,14 +200,12 @@ public class TemplateAPI {
 	}
 	
 	private static SMSTemplate getSMSTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		SMSTemplate template = new SMSTemplate();
-		BeanUtils.populate(template, templateMap);
+		SMSTemplate template = FieldUtil.getAsBeanFromMap(templateMap, SMSTemplate.class);
 		return template;
 	}
 	
 	private static WorkorderTemplate getWorkorderTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		WorkorderTemplate template = new WorkorderTemplate();
-		BeanUtils.populate(template, templateMap);
+		WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WorkorderTemplate.class);
 		
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getContentId())) {
 			template.setContent(IOUtils.toString(body));
@@ -222,8 +218,7 @@ public class TemplateAPI {
 	}
 	
 	private static AlarmTemplate getAlarmTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		AlarmTemplate template = new AlarmTemplate();
-		BeanUtils.populate(template, templateMap);
+		AlarmTemplate template = FieldUtil.getAsBeanFromMap(templateMap, AlarmTemplate.class);
 		
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getContentId())) {
 			template.setContent(IOUtils.toString(body));

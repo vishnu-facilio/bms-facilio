@@ -28,7 +28,7 @@ public class FacilioModulePredicate extends BeanPredicate {
 			return super.evaluate(object);
 		}
 		else if(object instanceof ModuleBaseWithCustomFields) {
-			Object propertyVal = ((ModuleBaseWithCustomFields) object).getCustomProp(getPropertyName());
+			Object propertyVal = ((ModuleBaseWithCustomFields) object).getDatum(getPropertyName());
 			return getPredicate().evaluate(propertyVal);
 		}
 		else {
