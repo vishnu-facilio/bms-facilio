@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -22,8 +23,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import com.facilio.events.context.EventContext.EventInternalState;
-import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -69,86 +69,15 @@ public class EventSyncJob extends FacilioJob{
 												.table("Event")
 												.fields(EventConstants.EventFieldFactory.getEventFields());
 		Iterator<Item> iterator = items.iterator();
+		JSONParser parser = new JSONParser();
 		while (iterator.hasNext())
 		{
 			Item item = iterator.next();
 		    Long timestamp = item.getLong("LogTime");
-		    EventContext event = processPayload(timestamp, item.getMap("payload"), orgId);
+		    EventContext event = EventAPI.processPayload(timestamp, (JSONObject) parser.parse(item.getJSON("payload")), orgId);
 			Map<String, Object> props = FieldUtil.getAsProperties(event);
 			builder.addRecord(props);
 		}
 		builder.save();
-	}
-
-	@SuppressWarnings({ "unchecked"})
-	private EventContext processPayload(Long timestamp, Map<String, String> payload, long orgId) throws Exception 
-	{
-	    System.out.println("EventSyncJob Payload:::" + payload);
-	    EventContext event = new EventContext();
-	    JSONObject additionalInfo = new JSONObject();
-	    Iterator<String> iterator = payload.keySet().iterator();
-	    while(iterator.hasNext())
-	    {
-	    	String key = iterator.next();
-	    	String value = payload.get(key);
-	    	if(key.equals("source"))
-	    	{
-	    		event.setSource(value);
-	    	}
-	    	else if(key.equals("node"))
-	    	{
-	    		event.setNode(value);
-	    	}
-	    	else if(key.equals("type"))
-	    	{
-	    		event.setEventType(value);
-	    	}
-	    	else if(key.equals("severity"))
-	    	{
-	    		event.setSeverity(value);
-	    	}
-	    	else if(key.equals("description"))
-	    	{
-	    		event.setDescription(value);
-	    	}
-	    	else
-	    	{
-	    		additionalInfo.put(key, value);
-	    	}
-	    }
-	    if(!additionalInfo.isEmpty())
-	    {
-	    	event.setAdditionInfo(additionalInfo);
-	    }
-	    event.setOrgId(orgId);
-	    event.setCreatedTime(timestamp);
-	    event.setState(EventState.READY);
-	    event.setInternalState(EventInternalState.ADDED);
-	    
-	    /*
-	    FacilioContext context = new FacilioContext();
-	    context.put(EventConstants.EVENT, event);
-	    
-	    try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
-		{
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.connection(conn)
-													.select(EventConstants.getEventPropertyFields())
-													.table("Event_Property")
-													.andCustomWhere("ORGID = ?", 1);	//Org Id
-			
-			List<Map<String, Object>> props = builder.get();
-			context.put(EventConstants.EVENT_PROPERTY, props.get(0));
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-			throw e;
-		}
-	    Command addEvent = EventConstants.getAddEventChain();
-	    addEvent.execute(context);
-	    */
-	    
-	    return event;
 	}
 }

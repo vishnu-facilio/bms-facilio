@@ -17,6 +17,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventToAlarmFieldMapping;
+import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -121,13 +122,7 @@ public class EventToAlarmJob extends FacilioJob{
 					
 					event.setInternalState(EventInternalState.COMPLETED);
 					event.setState(EventState.PROCESSED);
-					prop = FieldUtil.getAsProperties(event);
-					
-					GenericUpdateRecordBuilder updatebuilder = new GenericUpdateRecordBuilder()
-															.table("Event")
-															.fields(EventConstants.EventFieldFactory.getEventFields())
-															.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
-					updatebuilder.update(prop);
+					EventAPI.updateEvent(event, orgId);
 				}
 			} 
 			catch (Exception e) 

@@ -27,6 +27,7 @@ public class EventConstants {
 	
 		public static final String EVENT_ID = "eventId";
 		public static final String EVENT = "event";
+		public static final String EVENT_PAYLOAD = "eventPayload";
 		public static final String EVENT_LIST = "events";
 		public static final String EVENT_PROPERTY = "eventProperty";
 		public static final String EVENT_RULE = "eventRule";

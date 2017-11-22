@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -18,18 +19,18 @@ import com.opensymphony.xwork2.ActionSupport;
 @SuppressWarnings("serial")
 public class EventAction extends ActionSupport {
 
-	private EventContext event;
-	public EventContext getEvent() {
-		return event;
+	private JSONObject payload;
+	public JSONObject getPayload() {
+		return payload;
 	}
-	public void setEvent(EventContext event) {
-		this.event = event;
+	public void setPayload(JSONObject payload) {
+		this.payload = payload;
 	}
 	
 	public String addEvent() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT, event);
+		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
 		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 		getAddEventChain.execute(context);
 		
@@ -53,6 +54,14 @@ public class EventAction extends ActionSupport {
 		setEvent((EventContext) context.get(EventConstants.EventContextNames.EVENT));
 		
 		return SUCCESS;
+	}
+	
+	private EventContext event;
+	public EventContext getEvent() {
+		return event;
+	}
+	public void setEvent(EventContext event) {
+		this.event = event;
 	}
 	
 	private List<EventContext> events;
