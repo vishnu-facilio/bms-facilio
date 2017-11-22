@@ -5,15 +5,16 @@
 
 <struts>
 
-	<package name="homeApi" strict-method-invocation="false" namespace="/api"  extends="struts-default,json-default">
+	<package name="homeApi" strict-method-invocation="false"
+		namespace="/api" extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
 			<result-type name="jsoncache"
-				class="com.facilio.bmsconsole.interceptors.CacheResult" />	
+				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
 		<interceptors>
-		<interceptor name="cacheinterceptor"
+			<interceptor name="cacheinterceptor"
 				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
@@ -37,120 +38,142 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
-		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogin">
+		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="apiLogin">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
-		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="apiLogout">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
-		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction" method="currentAccount">
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="currentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
-		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="attachmentList">
+		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="attachmentList">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="campusList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="buildingList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="floorList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
+		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="spaceList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
+		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="zoneList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-	    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+		<action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
 			<result name="success" type="json">
 				<param name="root">pickList</param>
 			</result>
 		</action>
-		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userPickList">
-	    	<result name="success" type="json">
+		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
+			method="userPickList">
+			<result name="success" type="json">
 				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
 			</result>
+
 		</action>
-		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
-	    	<result name="success" type="json">
+		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="groupList">
+			<result name="success" type="json">
 				<param name="includeProperties">groups,groups\[\d+\],groups\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="skillsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
+		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="baseSpaceList">
 			<result name="success" type="json">
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="getDevices">
 			<result name="success" type="json">
 				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
+		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="alarmList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction" method="viewList">
+		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="viewList">
 			<result name="success" type="json">
 				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="taskList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">tasks,tasks\[\d+\],tasks\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
-	<package name="tabwidgetApi" namespace="/api/tabwidget" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction" method="viewTabWidget">
+	<package name="tabwidgetApi" namespace="/api/tabwidget"
+		extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction"
+			method="viewTabWidget">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="tabLinkName">{1}</param>
 			<result name="success" type="json">
@@ -159,14 +182,16 @@
 		</action>
 	</package>
 	<package name="skillApi" namespace="/api/skill" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
+		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="newSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="addSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
@@ -174,29 +199,34 @@
 		</action>
 	</package>
 	<package name="locationApi" namespace="/api/location" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions" method="newLocation">
+		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="newLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions" method="addLocation">
+		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="addLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
 			</result>
 		</action>
 	</package>
-	<package name="businessHoursApi" namespace="/api/businesshours" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
+	<package name="businessHoursApi" namespace="/api/businesshours"
+		extends="home">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
+
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="id">{1}</param>
 			<result name="success" type="json">
@@ -205,42 +235,48 @@
 		</action>
 	</package>
 	<package name="taskApi" namespace="/api/task" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
+		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="newTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
+		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">taskId</param>
 			</result>
 		</action>
-		
-		<action name="assign" class="com.facilio.bmsconsole.actions.TaskAction" method="assignTask">
+
+		<action name="assign" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="assignTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction" method="updateStatus">
+
+		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="updateStatus">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction" method="updateTask">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="updateTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.TaskAction" method="deleteTask">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="deleteTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
@@ -248,81 +284,93 @@
 		</action>
 	</package>
 	<package name="alarmApi" namespace="/api/alarm" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.AlarmAction" method="newAlarm">
+		<action name="layout" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="newAlarm">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="notify" class="com.facilio.bmsconsole.actions.AlarmAction" method="notifyUser">
+		<action name="notify" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="notifyUser">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">followers,followers\[\d+\],followers\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="viewWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction" method="viewWorkorder">
+		<action name="viewWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="viewWorkorder">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workorderId</param>
 			</result>
 		</action>
-		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarm">
+		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="addAlarm">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
-		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction" method="assignAlarm">
+		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="assignAlarm">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction" method="updateStatus">
+		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateStatus">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="assetApi" namespace="/api/asset" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction" method="newAsset">
+		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="newAsset">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction" method="addAsset">
+
+		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="addAsset">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetId</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction" method="updateAsset">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="updateAsset">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction" method="deleteAsset">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="deleteAsset">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="reportcards" class="com.facilio.bmsconsole.actions.AssetAction" method="reportCards">
+
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="reportCards">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="assetList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
@@ -330,9 +378,11 @@
 			</result>
 		</action>
 	</package>
-	
-	<package name="assetSummaryApi" namespace="/api/asset/summary" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetDetails">
+
+	<package name="assetSummaryApi" namespace="/api/asset/summary"
+		extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="assetDetails">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="assetId">{1}</param>
 			<result name="success" type="json">
@@ -340,8 +390,9 @@
 			</result>
 		</action>
 	</package>
-	
-	<package name="home" strict-method-invocation="false" namespace="/app"  extends="struts-default,json-default">
+
+	<package name="home" strict-method-invocation="false"
+		namespace="/app" extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
@@ -370,174 +421,206 @@
 			</result>
 		</global-results>
 
-  	<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
-        <result  type="tiles">homepage</result>
-    </action>
-    
-    <action name="setuphome" class="com.facilio.bmsconsole.actions.SetupActions">
-		<param name="permission">SETUP</param>
-        <result  type="tiles">setuphome</result>
-    </action>
-    
-    <action name="setup" class="com.facilio.bmsconsole.actions.SetupActions">
-		<param name="permission">SETUP</param>
-        <result  type="tiles">setup</result>
-    </action>
-    
-    <action name="dashboard" class="com.facilio.bmsconsole.actions.HomePageActions">
-		<param name="permission">DASHBOARD_ACCESS_ENABLE</param>
-        <result name="success">/jsps/dashboard.jsp</result>
-    </action>
-    <action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction" method="show">
-    	<param name="permission">TASK_READ</param>
-    	<result name="success">/jsps/calendar.jsp</result>
-    </action> 
-    <action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction" method="centraldispatch">
-    	<param name="permission">TASK_ASSIGN</param>
-    	<result name="success">/jsps/centraldispatch.jsp</result>
-    </action>     
-    <action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction" method="show">
-    	<result name="success">/jsps/device.jsp</result>
-    </action>
-    <action name="newDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showAdd">
-    	<result name="success">/jsps/newdevice.jsp</result>
-    </action>
-    <action name="addController" class="com.facilio.bmsconsole.actions.DeviceAction" method="add">
-    </action>
-    <action name="downloadAgent" class="com.facilio.bmsconsole.actions.DeviceAction" method="downloadAgent">
-    </action>
-    <action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceData">
-    	<result name="success">/jsps/devicedata.jsp</result>
-    </action>
-    <action name="showTree" class="com.facilio.bmsconsole.actions.DeviceAction" method="showTree">
-    </action>
-    <action name="showDevices" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDevices">
-    	<result name="success">/jsps/devicetree.jsp</result>
-    </action>
-    <action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="showConfigureDevice">
-    	<result name="success">/jsps/deviceconf.jsp</result>
-    </action>
-    <action name="configureDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureDevice">
-    </action>
-    <action name="enableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="enableDeviceMonitoring">
-    </action>
-     <action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction" method="disableDeviceMonitoring">
-    </action>
-	<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
-    </action>
-    <action name="rearrangeDevices" class="com.facilio.bmsconsole.actions.DeviceAction" method="rearrangeDevices">
-    </action>
-    <action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction" method="updateControllerInstances">
-    </action>
-    
-   	<action name="admin" class="com.facilio.bmsconsole.actions.AdminAction" method="show">
-		<result name="success">/jsps/admin.jsp</result>
-	</action>
+		<action name="index" class="com.facilio.bmsconsole.actions.HomePageActions">
+			<result type="tiles">homepage</result>
+		</action>
 
-	<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userPickList">
-	    <result name="success" type="json">
-			<param name="root">users</param>
-		</result>
-	</action>
-		
-	<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
-		<param name="permission">WORKORDER_READ</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
-		<param name="permission">WORKORDER_READ</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="workorderrequest" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-		<param name="permission">WORKORDER_READ</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
-		<param name="permission">WORKORDER_READ</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="leed" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
-		<!-- <param name="permission">WORKORDER_READ</param> -->
-		<result name="success">/jsps/leed/leedhome.jsp</result>
-	</action>
-	
-	<action name="leedDemo" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
-		<!-- <param name="permission">WORKORDER_READ</param> -->
-		<result name="success">/jsps/leed/leedDemo.jsp</result>
-	</action>
-	
-	<action name="leedRegistration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
-		<!-- <param name="permission">WORKORDER_READ</param> -->
-		<result name="success">/jsps/leed/leedRegistration.jsp</result>
-	</action>
-	
-	<action name="task" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
-		<param name="permission">TASK_READ</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
-		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
-		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
-		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction" method="spaceList">
-		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneList">
-		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
-		<result name="success">/jsps/listview.jsp</result>
-	</action>
-	
-	<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
-		<param name="permission">REPORTS_ACCESS_ENABLE</param>
-        <result name="success">/jsps/reports.jsp</result>
-    </action>
-    
-	<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
-		<param name="permission">ORG_ACCESS_ADMINISTER</param>
-        <result name="success">/jsps/locations.jsp</result>
-    </action>
-    
-    <action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
-    	<param name="permission">ORG_ACCESS_ADMINISTER</param>
-        <result name="success">/jsps/listview.jsp</result>
-    </action>
-    
-	<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
-		<param name="permission">ORG_ACCESS_ADMINISTER</param>
-        <result name="success">/jsps/assignmentRules.jsp</result>
-    </action>
-    
-    <action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
-		<result name="success" type="json">
-			<param name="root">pickList</param>
-		</result>
-	</action>
-    
+		<action name="setuphome" class="com.facilio.bmsconsole.actions.SetupActions">
+			<param name="permission">SETUP</param>
+			<result type="tiles">setuphome</result>
+		</action>
+
+		<action name="setup" class="com.facilio.bmsconsole.actions.SetupActions">
+			<param name="permission">SETUP</param>
+			<result type="tiles">setup</result>
+		</action>
+
+		<action name="dashboard" class="com.facilio.bmsconsole.actions.HomePageActions">
+			<param name="permission">DASHBOARD_ACCESS_ENABLE</param>
+			<result name="success">/jsps/dashboard.jsp</result>
+		</action>
+		<action name="calendar" class="com.facilio.bmsconsole.actions.CalendarAction"
+			method="show">
+			<param name="permission">TASK_READ</param>
+			<result name="success">/jsps/calendar.jsp</result>
+		</action>
+		<action name="centraldispatch" class="com.facilio.bmsconsole.actions.CalendarAction"
+			method="centraldispatch">
+			<param name="permission">TASK_ASSIGN</param>
+			<result name="success">/jsps/centraldispatch.jsp</result>
+		</action>
+		<action name="controller" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="show">
+			<result name="success">/jsps/device.jsp</result>
+		</action>
+		<action name="newDevice" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showAdd">
+			<result name="success">/jsps/newdevice.jsp</result>
+		</action>
+		<action name="addController" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="add">
+		</action>
+		<action name="downloadAgent" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="downloadAgent">
+		</action>
+		<action name="showDeviceData" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showDeviceData">
+			<result name="success">/jsps/devicedata.jsp</result>
+		</action>
+		<action name="showTree" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showTree">
+		</action>
+		<action name="showDevices" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showDevices">
+			<result name="success">/jsps/devicetree.jsp</result>
+		</action>
+		<action name="showConfigureDevice" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showConfigureDevice">
+			<result name="success">/jsps/deviceconf.jsp</result>
+		</action>
+		<action name="configureDevice" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="configureDevice">
+		</action>
+		<action name="enableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="enableDeviceMonitoring">
+		</action>
+		<action name="disableDeviceMonitoring" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="disableDeviceMonitoring">
+		</action>
+		<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="addDevice">
+		</action>
+		<action name="rearrangeDevices" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="rearrangeDevices">
+		</action>
+		<action name="updateControllerInstances" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="updateControllerInstances">
+		</action>
+
+		<action name="admin" class="com.facilio.bmsconsole.actions.AdminAction"
+			method="show">
+			<result name="success">/jsps/admin.jsp</result>
+		</action>
+
+		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
+			method="userPickList">
+			<result name="success" type="json">
+				<param name="root">users</param>
+			</result>
+		</action>
+
+		<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="ticketList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="workorderrequest"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="alarmList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="leed" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
+			<!-- <param name="permission">WORKORDER_READ</param> -->
+			<result name="success">/jsps/leed/leedhome.jsp</result>
+		</action>
+
+		<action name="leedDemo" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
+			<!-- <param name="permission">WORKORDER_READ</param> -->
+			<result name="success">/jsps/leed/leedDemo.jsp</result>
+		</action>
+
+		<action name="leedRegistration" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
+			<!-- <param name="permission">WORKORDER_READ</param> -->
+			<result name="success">/jsps/leed/leedRegistration.jsp</result>
+		</action>
+
+		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="taskList">
+			<param name="permission">TASK_READ</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="campusList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="buildingList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="floorList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="spaceList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="zoneList">
+			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
+			<param name="permission">REPORTS_ACCESS_ENABLE</param>
+			<result name="success">/jsps/reports.jsp</result>
+		</action>
+
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success">/jsps/locations.jsp</result>
+		</action>
+
+		<action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success">/jsps/listview.jsp</result>
+		</action>
+
+		<action name="rules"
+			class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success">/jsps/assignmentRules.jsp</result>
+		</action>
+
+		<action name="picklist" class="com.facilio.bmsconsole.actions.PickListAction">
+			<result name="success" type="json">
+				<param name="root">pickList</param>
+			</result>
+		</action>
+
 	</package>
 	<package name="modules" namespace="/app/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/newCFs.jsp</result>
 		</action>
-		
+
 		<action name="addCF" class="com.facilio.bmsconsole.actions.AddCFAction">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
@@ -546,192 +629,229 @@
 		</action>
 	</package>
 
-	<package name="controllers" namespace="/app/controller" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="showDeviceInfo">
+	<package name="controllers" namespace="/app/controller"
+		extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="showDeviceInfo">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-    		<result name="success">/jsps/deviceinfo.jsp</result>
-    	</action>
-    </package>
-    
-    <package name="admin" namespace="/app/admin" extends="home">
-		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction" method="addJob">
-    	</action>
-    	<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction" method="deleteJob">
-    	</action>
-		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction" method="jobs">
-    		<result name="success">/jsps/adminjobs.jsp</result>
-    	</action>
-    </package>
-    
-    <package name="setup" namespace="/app/setup" extends="home">
-		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions" method="mySettings">
+			<result name="success">/jsps/deviceinfo.jsp</result>
+		</action>
+	</package>
+
+	<package name="admin" namespace="/app/admin" extends="home">
+		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
+			method="addJob">
+		</action>
+		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
+			method="deleteJob">
+		</action>
+		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
+			method="jobs">
+			<result name="success">/jsps/adminjobs.jsp</result>
+		</action>
+	</package>
+
+	<package name="setup" namespace="/app/setup" extends="home">
+		<action name="mysettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="mySettings">
 			<result type="tiles">setuplayout/setup/mysettings.jsp</result>
 		</action>
 
-		<action name="orgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
+		<action name="orgsettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="orgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/orgsettings.jsp</result>
 		</action>
-		
-		<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+
+		<action name="updateorgsettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="updateOrgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
 		</action>
-		
-		<action name="viewOrgPhoto" class="com.facilio.bmsconsole.actions.SetupActions" method="viewOrgPhoto">
+
+		<action name="viewOrgPhoto" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="viewOrgPhoto">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
- 			<result name="success" type="stream">
-		      <param name="contentType">${fileInfo.contentType}</param>
-		      <param name="inputName">downloadStream</param>
-		      <param name="contentDisposition">images;filename="${fileInfo.fileName}"</param>
-		      <param name="contentLength">${fileInfo.fileSize}</param>
-		      <param name="bufferSize">4096</param>
-		    </result>
-		    <result name="error">/jsps/viewOrgPhotoError.jsp</result>
+			<result name="success" type="stream">
+				<param name="contentType">${fileInfo.contentType}</param>
+				<param name="inputName">downloadStream</param>
+				<param name="contentDisposition">images;filename="${fileInfo.fileName}"</param>
+				<param name="contentLength">${fileInfo.fileSize}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+			<result name="error">/jsps/viewOrgPhotoError.jsp</result>
 		</action>
-		
-		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
+
+		<action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/notifications.jsp</result>
 		</action>
-		<action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
+		<action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="showEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/setup/emailsettings.jsp</result>
 		</action>
-		
-		<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateEmailSettings">
+
+		<action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="updateEmailSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
-		
-		<action name="supportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="supportEmailSetting">
+
+		<action name="supportemail" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="supportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" >/jsps/setup/supportemail.jsp</result>
+			<result name="success">/jsps/setup/supportemail.jsp</result>
 		</action>
-		
-		<action name="addsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
+
+		<action name="addsupportemail" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="addSupportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">supportEmailId</param>
 			</result>
 		</action>
-		
-		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
+
+		<action name="editsupportemail" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="updateSupportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
-		
-		<action name="deletesupportemail" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
+
+		<action name="deletesupportemail" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="deleteSupportEmailSetting">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
-		
-		<action name="users" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
-	    	<param name="permission">USER_ACCESS_ADMINISTER</param>
-	    	<result type="tiles">setuplayout/usersList.jsp</result>
+
+		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
+			method="userList">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/usersList.jsp</result>
 		</action>
-		
-		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
+
+		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="roleList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/roleList.jsp</result>
 		</action>
-		
-		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions" method="locationsList">
+
+		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/locations.jsp</result>
 		</action>
-		
-		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+
+		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="skillsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/skills.jsp</result>
 		</action>
-		
-	    <action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
-	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
-	    	<result type="tiles">setuplayout/groups/groupsList.jsp</result>
+
+		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="groupList">
+			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+			<result type="tiles">setuplayout/groups/groupsList.jsp</result>
 		</action>
-		
-		<action name="ticketstatus" class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
+
+		<action name="ticketstatus"
+			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="statusList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/ticketStatusList.jsp</result>
 		</action>
-		
-		<action name="ticketpriority" class="com.facilio.bmsconsole.actions.TicketPriorityAction" method="priorityList">
+
+		<action name="ticketpriority"
+			class="com.facilio.bmsconsole.actions.TicketPriorityAction" method="priorityList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/ticketPriorityList.jsp</result>
 		</action>
-		
-		<action name="ticketcategory" class="com.facilio.bmsconsole.actions.TicketCategoryAction" method="categoryList">
+
+		<action name="ticketcategory"
+			class="com.facilio.bmsconsole.actions.TicketCategoryAction" method="categoryList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/ticketCategoryList.jsp</result>
 		</action>
-		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions" method="importData">
+		<action name="import" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="importData">
 			<result type="tiles">setuplayout/importData.jsp</result>
 		</action>
 
 
-		<action name="servicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="servicePortal">		
+		<action name="servicePortal"
+			class="com.facilio.bmsconsole.actions.ServicePortalSetupAction"
+			method="servicePortal">
 			<result type="tiles">setuplayout/setup/servicePortal.jsp</result>
 		</action>
-		<action name="updateServicePortal" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction" method="updateServicePortal">
+		<action name="updateServicePortal"
+			class="com.facilio.bmsconsole.actions.ServicePortalSetupAction"
+			method="updateServicePortal">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
-			</action>		
+		</action>
 
-		
-		<action name="assignment" class="com.facilio.bmsconsole.actions.SetupActions" method="assignmentRules">
+
+		<action name="assignment" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="assignmentRules">
 			<result type="tiles">setuplayout/assignmentRules.jsp</result>
 		</action>
-		
-		<action name="newAssignmentRules" class="com.facilio.bmsconsole.actions.SetupActions" method="newAssignmentRules">
+
+		<action name="newAssignmentRules" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="newAssignmentRules">
 			<result type="tiles">setuplayout/newAssignmentRules.jsp</result>
 		</action>
-		
 
-		
-		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions" method="showSubscriptions">
+
+
+		<action name="subscriptions" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="showSubscriptions">
 			<result name="success">/jsps/setup/showPlans.jsp</result>
 		</action>
-		
+
 	</package>
 
 	<package name="ticket" namespace="/app/ticket" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction" method="newTicket">
+		<action name="new" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="newTicket">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction" method="addTicket">
+		<action name="add" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="addTicket">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.TicketAction" method="updateTicket">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="updateTicket">
 			<param name="permission">WORKORDER_UPDATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction" method="deleteTicket">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="deleteTicket">
 			<param name="permission">WORKORDER_DELETE</param>
 			<result name="success" type="json">
 				<param name="status">deleted</param>
 				<param name="includeProperties">ticketId</param>
 			</result>
 		</action>
-		<action name="assign" class="com.facilio.bmsconsole.actions.TicketAction" method="assignTicket">
+		<action name="assign" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="assignTicket">
 			<param name="permission">WORKORDER_ASSIGN</param>
 			<result name="success" type="json">
 				<param name="status">assigned</param>
@@ -739,325 +859,373 @@
 			</result>
 		</action>
 
-		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="ticketList">
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="ticketList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
-	<package name="ticketSummary" namespace="/app/ticket/summary" extends="ticket">
-		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction" method="viewTicket">
+
+	<package name="ticketSummary" namespace="/app/ticket/summary"
+		extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.TicketAction"
+			method="viewTicket">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="ticketId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
-		
+
+
 	<package name="workOrder" namespace="/app/workorder" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
+		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrder">
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderId</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updateWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="viewApi" namespace="/api/view" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction" method="addView">
+		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="addView">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewId</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="readingApi" namespace="/api/reading" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.ReadingAction" method="newReadingData">
+		<action name="layout" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="newReadingData">
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-	
-		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReading">
+
+		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addReading">
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
 			</result>
 		</action>
-		
-		<action name="addspacereading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addSpaceReading">
+
+		<action name="addspacereading" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addSpaceReading">
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
 			</result>
 		</action>
-		
-		<action name="addassetreading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssetReading">
+
+		<action name="addassetreading" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addAssetReading">
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
 			</result>
 		</action>
-		
-		<action name="getspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceReadings">
+
+		<action name="getspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getSpaceReadings">
 			<result name="success" type="json">
 				<param name="root">readings</param>
 			</result>
 		</action>
-		
-		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getAssetReadings">
+
+		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetReadings">
 			<result name="success" type="json">
 				<param name="root">readings</param>
 			</result>
 		</action>
-		
-		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addCurrentOccupancyReading">
+
+		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addCurrentOccupancyReading">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
-		
-		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addAssignedOccupancyReading">
+
+		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addAssignedOccupancyReading">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
-		
-		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addEnergyData">
+
+		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addEnergyData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
-		
-		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
+
+		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
-		
- 		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSpaceLatestReadingData">
+
+		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getSpaceLatestReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
-		
-		<action name="getassetlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getAssetLatestReadingData">
+
+		<action name="getassetlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetLatestReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingData.*</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="photosApi" namespace="/api/photos" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.PhotosAction" method="addPhotos">
+		<action name="add" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="addPhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
-		
-		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadPhotos">
+
+		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="uploadPhotos">
 			<result name="success" type="json">
 				<param name="root">photos</param>
 			</result>
 		</action>
-		
-		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction" method="getPhotosList">
+
+		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getPhotosList">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
-	
-		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addBaseSpacePhotos">
+
+		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="addBaseSpacePhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
-		
-		<action name="uploadspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadBaseSpacePhotos">
+
+		<action name="uploadspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="uploadBaseSpacePhotos">
 			<result name="success" type="json">
 				<param name="root">photos</param>
 			</result>
 		</action>
-		
-		<action name="getspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getBaseSpacePhotos">
+
+		<action name="getspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getBaseSpacePhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
-		
-		<action name="addassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="addAssetPhotos">
+
+		<action name="addassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="addAssetPhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
-		
-		<action name="uploadassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="uploadAssetPhotos">
+
+		<action name="uploadassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="uploadAssetPhotos">
 			<result name="success" type="json">
 				<param name="root">photos</param>
 			</result>
 		</action>
-		
-		<action name="getassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction" method="getAssetPhotos">
+
+		<action name="getassetphotos" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getAssetPhotos">
 			<result name="success" type="json">
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="moduleApi" namespace="/api/module" extends="home">
-		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction" method="addNewModule">
+		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addNewModule">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">moduleId</param>
 			</result>
 		</action>
-		
-		<action name="addfields" class="com.facilio.bmsconsole.actions.ModuleAction" method="addCustomFields">
+
+		<action name="addfields" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addCustomFields">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">fieldIds</param>
 			</result>
 		</action>
-		
-		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction" method="metadata">
+
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="metadata">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
-		
-		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction" method="updateField">
+
+		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="updateField">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction" method="deleteFields">
+
+		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="deleteFields">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsDeleted</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="workOrderApi" namespace="/api/workorder" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
+
+	<package name="workOrderApi" namespace="/api/workorder"
+		extends="home">
+		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrder">
+
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
-		
-		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrderFromTemplate">
+
+		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrderFromTemplate">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
-		
-		<action name="saveTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrderTemplate">
+
+		<action name="saveTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrderTemplate">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
-		
-		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPreventiveMaintenance">
+
+		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addPreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
-		
-		<action name="changePreventiveMaintenanceStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="changePreventiveMaintenanceStatus">
+
+		<action name="changePreventiveMaintenanceStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="changePreventiveMaintenanceStatus">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">preventivemaintenance</param>
 			</result>
 		</action>
-		
-		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getActivePreventiveMaintenance">
+
+		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getActivePreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
 		</action>
-		
-		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getInactivePreventiveMaintenance">
+
+		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getInactivePreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
 		</action>
-		
-		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="assignWorkOrder">
+
+		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="assignWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="updateWorkOrder">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updateWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="closeWorkOrder">
+
+		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="closeWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="deleteWorkOrder">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="deleteWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
@@ -1065,80 +1233,93 @@
 			</result>
 		</action>
 	</package>
-	
-	<package name="workOrderRequest" namespace="/app/workorderrequest" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
+
+	<package name="workOrderRequest" namespace="/app/workorderrequest"
+		extends="home">
+		<action name="new"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequestId</param>
 			</result>
 		</action>
-		
-		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+
+		<action name="approve"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="reject" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
+
+		<action name="reject"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
-	<package name="workOrderRequestApi" namespace="/api/workorderrequest" extends="home">
-	
-		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
+
+	<package name="workOrderRequestApi" namespace="/api/workorderrequest"
+		extends="home">
+
+		<action name="layout"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequestId</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
+
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="approve" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
+
+		<action name="approve"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="reject" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
+
+		<action name="reject"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
@@ -1146,17 +1327,21 @@
 			</result>
 		</action>
 	</package>
-	
-	<package name="workOrderRequestSummary" namespace="/app/workorderrequest/summary" extends="ticket">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+
+	<package name="workOrderRequestSummary" namespace="/app/workorderrequest/summary"
+		extends="ticket">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="workOrderRequestId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
-	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary" extends="ticket">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
+
+	<package name="workOrderRequestSummaryApi" namespace="/api/workorderrequest/summary"
+		extends="ticket">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="workOrderRequestId">{1}</param>
 			<result name="success" type="json">
@@ -1164,173 +1349,203 @@
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="alarm" namespace="/app/alarm" extends="home">
-		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction" method="assignAlarm">
+		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="assignAlarm">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-	
-		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction" method="alarmList">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="alarmList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="templateApi" namespace="/api/template" extends="home">
-		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction" method="addEmail">
+		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addEmail">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">templateId</param>
 			</result>
 		</action>
-		
-		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction" method="addSms">
+
+		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addSms">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">templateId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="attachmentApi" namespace="/api/attachment" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
+
+	<package name="attachmentApi" namespace="/api/attachment"
+		extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
- 			</result>
- 		</action>
- 		
- 		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+			</result>
+		</action>
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="deleteAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
- 			</result>
- 		</action>
- 	</package>
-	
+			</result>
+		</action>
+	</package>
+
 	<package name="reportsApi" namespace="/api/report" extends="home">
-		<action name="reportdata" class="com.facilio.bmsconsole.actions.ReportActions" method="reportdata">
+		<action name="reportdata" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="reportdata">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="getBuildingDetails" class="com.facilio.bmsconsole.actions.ReportActions" method="getBuildingDetails">
+		<action name="getBuildingDetails" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="getBuildingDetails">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="getEnergyConsumption" class="com.facilio.bmsconsole.actions.ReportActions" method="getEnergyConsumption">
+		<action name="getEnergyConsumption" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="getEnergyConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.ReportActions" method="getServiceConsumption">
+		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="getTopNSpaces" class="com.facilio.bmsconsole.actions.ReportActions" method="getTopNSpaces">
+		<action name="getTopNSpaces" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="getTopNSpaces">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="getServiceBreakDown" class="com.facilio.bmsconsole.actions.ReportActions" method="getServiceBreakDown">
+		<action name="getServiceBreakDown" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="getServiceBreakDown">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
-		<action name="default" class="com.facilio.bmsconsole.actions.ReportActions" method="reportDashboard">
+		<action name="default" class="com.facilio.bmsconsole.actions.ReportActions"
+			method="reportDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportAllData.*</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="workorderReportApi" namespace="/api/report/workorder" extends="home">
-		<action name="summary" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
+
+	<package name="workorderReportApi" namespace="/api/report/workorder"
+		extends="home">
+		<action name="summary"
+			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="technician" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
+		<action name="technician"
+			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
+		<action name="map"
+			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
 			<result name="success" type="json">
 				<param name="includeProperties">^woStats.*</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="alarmReportApi" namespace="/api/report/alarms" extends="home">
-		<action name="summary" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="summary">
+
+	<package name="alarmReportApi" namespace="/api/report/alarms"
+		extends="home">
+		<action name="summary" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="summary">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		
-		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="map">
+
+		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="map">
 			<result name="success" type="json">
 				<param name="root">alarmTypeStats</param>
 			</result>
 		</action>
-		
-		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="spaceResponse">
+
+		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="spaceResponse">
 			<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
 		</action>
-		
-		<action name="techresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction" method="technicianResponse">
+
+		<action name="techresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="technicianResponse">
 			<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="devicesApi" namespace="/api/device" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+		<action name="*" class="com.facilio.bmsconsole.actions.DeviceAction"
+			method="getDevices">
 			<result name="success" type="json">
 				<param name="includeProperties">^deviceList.*,energyConstant.*,dateFilter.*</param>
 			</result>
 		</action>
 	</package>
-	<package name="baseSpaceApi" namespace="/api/basespace" extends="home">
-		<action name="children" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="childrenList">
+	<package name="baseSpaceApi" namespace="/api/basespace"
+		extends="home">
+		<action name="children" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="childrenList">
 			<result name="success" type="json">
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
-	</package>	
+	</package>
 	<package name="campusApi" namespace="/api/campus" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
+		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="newCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction" method="addCampus">
+		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="addCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
-		
-		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction" method="reportCards">
+
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="reportCards">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="viewCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="campusId">{1}</param>
 			<result name="success" type="json">
@@ -1338,31 +1553,35 @@
 			</result>
 		</action>
 	</package>
-	
-	
+
+
 	<package name="buildingApi" namespace="/api/building" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
+		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="newBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction" method="addBuilding">
+		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="addBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
 		</action>
-		
-		<action name="reportcards" class="com.facilio.bmsconsole.actions.BuildingAction" method="reportCards">
+
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="reportCards">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="viewBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
@@ -1370,30 +1589,34 @@
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="floorApi" namespace="/api/floor" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
+		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="newFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction" method="addFloor">
+		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="addFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
-		
-		<action name="reportcards" class="com.facilio.bmsconsole.actions.FloorAction" method="reportCards">
+
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="reportCards">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="viewFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="floorId">{1}</param>
 			<result name="success" type="json">
@@ -1402,35 +1625,40 @@
 		</action>
 	</package>
 	<package name="spaceApi" namespace="/api/space" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
+		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="newSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="addSpace">
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="addSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
 			</result>
 		</action>
-		
-		<action name="reportcards" class="com.facilio.bmsconsole.actions.SpaceAction" method="reportCards">
+
+		<action name="reportcards" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="reportCards">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="independent" class="com.facilio.bmsconsole.actions.SpaceAction" method="independentSpaceList">
+
+		<action name="independent" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="independentSpaceList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="viewSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="spaceId">{1}</param>
 			<result name="success" type="json">
@@ -1438,89 +1666,111 @@
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="zoneApi" namespace="/api/zone" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
+		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="newZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction" method="addZone">
+		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="addZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
-		
-		<action name="children" class="com.facilio.bmsconsole.actions.ZoneAction" method="zoneChildrenList">
+
+		<action name="children" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="zoneChildrenList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="setupApi" namespace="/api/settings" extends="home">
-		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
+		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="orgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">org,org.*</param>
 			</result>
 		</action>
-		
-		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateOrgSettings">
+
+		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="updateOrgSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
 		</action>
 	</package>
-	
-	<package name="userAvatarApi" namespace="/api/settings/users/avatar" extends="home">
-		<action name="upload" class="com.facilio.bmsconsole.actions.UserAction" method="uploadUserAvatar">
+
+	<package name="userAvatarApi" namespace="/api/settings/users/avatar"
+		extends="home">
+		<action name="upload" class="com.facilio.bmsconsole.actions.UserAction"
+			method="uploadUserAvatar">
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
 		</action>
-		<action name="delete" class="com.facilio.bmsconsole.actions.UserAction" method="deleteUserAvatar">
+		<action name="delete" class="com.facilio.bmsconsole.actions.UserAction"
+			method="deleteUserAvatar">
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
 		</action>
 	</package>
 	
+	<package name="accountApi" namespace="/api/account" extends="home">
+		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
+			<result name="success" type="json">
+			</result>
+		</action>
+	</package>
+
 	<package name="leed" namespace="/app/leed" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="newWorkOrder">
+		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="newWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addWorkOrder">
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrder">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderId</param>
 			</result>
 		</action>
 
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="workOrderList">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
-	<package name="workOrderSummary" namespace="/app/workorder/summary" extends="ticket">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="viewWorkOrder">
+
+	<package name="workOrderSummary" namespace="/app/workorder/summary"
+		extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="viewWorkOrder">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="workOrderId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
-	<package name="workOrderSummaryApi" namespace="/api/workorder/summary" extends="ticket">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="viewWorkOrder">
+
+	<package name="workOrderSummaryApi" namespace="/api/workorder/summary"
+		extends="ticket">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="viewWorkOrder">
 			<param name="permission">WORKORDER_READ</param>
 			<param name="workOrderId">{1}</param>
 			<result name="success" type="json">
@@ -1528,140 +1778,160 @@
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="attachment" namespace="/app/attachment" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction" method="addAttachment">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="addAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="deleteAttachment">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="deleteAttachment">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
 			</result>
 		</action>
-		
-		<action name="view" class="com.facilio.bmsconsole.actions.AttachmentAction" method="viewAttachment">
+
+		<action name="view" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="viewAttachment">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="stream">
-		      <param name="contentType">${fileInfo.contentType}</param>
-		      <param name="inputName">downloadStream</param>
-		      <param name="contentDisposition">attachment;filename="${fileInfo.fileName}"</param>
-		      <param name="contentLength">${fileInfo.fileSize}</param>
-		      <param name="bufferSize">4096</param>
-		    </result>
-		    <result name="error">/jsps/viewAttachmentError.jsp</result>
+				<param name="contentType">${fileInfo.contentType}</param>
+				<param name="inputName">downloadStream</param>
+				<param name="contentDisposition">attachment;filename="${fileInfo.fileName}"</param>
+				<param name="contentLength">${fileInfo.fileSize}</param>
+				<param name="bufferSize">4096</param>
+			</result>
+			<result name="error">/jsps/viewAttachmentError.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="task" namespace="/app/task" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
+		<action name="new" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="newTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 		</action>
-		
-		<action name="newDialog" class="com.facilio.bmsconsole.actions.TaskAction" method="newTask">
+
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="newTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success">/jsps/newFormDialog.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction" method="addTask">
+		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTask">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">taskId</param>
 			</result>
 		</action>
-		
-		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="taskList">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="taskList">
 			<param name="permission">TASK_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="note" namespace="/app/note" extends="home">
-		<action name="newDialog" class="com.facilio.bmsconsole.actions.NoteAction" method="newNote">
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="newNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success">/jsps/newFormDialog.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="addNote">
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">noteId</param>
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="noteApi" namespace="/api/note" extends="home">
-		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction" method="addNote">
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction" method="addTicketNote">
+		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addTicketNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		<action name="addspacenote" class="com.facilio.bmsconsole.actions.NoteAction" method="addSpaceNote">
+		<action name="addspacenote" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addSpaceNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		<action name="addassetnote" class="com.facilio.bmsconsole.actions.NoteAction" method="addAssetNote">
+		<action name="addassetnote" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addAssetNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		
-		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction" method="getNotesList">
+
+		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getNotesList">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
 		</action>
-		
-		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getTicketNotes">
+
+		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getTicketNotes">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
 		</action>
-		
-		<action name="getspacenotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getSpaceNotes">
+
+		<action name="getspacenotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getSpaceNotes">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
 		</action>
-		
-		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction" method="getAssetNotes">
+
+		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getAssetNotes">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
 		</action>
-		
+
 	</package>
-	
-	<package name="taskSummary" namespace="/app/task/summary" extends="task">
-		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction" method="viewTask">
+
+	<package name="taskSummary" namespace="/app/task/summary"
+		extends="task">
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="viewTask">
 			<param name="permission">TASK_READ</param>
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="rules" namespace="/app/rules" extends="home">
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="{1}">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="{1}">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
 			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>
@@ -1671,14 +1941,17 @@
 			<allowed-methods>assignmentRules,newAssignmentRule,addAssignmentRule,businessRules</allowed-methods>
 		</action>
 	</package>
-	
-	<package name="location" namespace="/app/setup/locations" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions" method="newLocation">
+
+	<package name="location" namespace="/app/setup/locations"
+		extends="home">
+		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="newLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/newLocation.jsp</result>
 		</action>
-		
-		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions" method="addLocation">
+
+		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="addLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
@@ -1689,10 +1962,11 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.LocationActions" method="updateLocation">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="updateLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">			
+			<result name="success" type="json">
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
@@ -1700,10 +1974,11 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.LocationActions" method="deleteLocation">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="deleteLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">			
+			<result name="success" type="json">
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
@@ -1711,22 +1986,25 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="edit" class="com.facilio.bmsconsole.actions.LocationActions" method="editLocation">
+
+		<action name="edit" class="com.facilio.bmsconsole.actions.LocationActions"
+			method="editLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/editLocation.jsp</result>
 		</action>
-		
+
 	</package>
-	
+
 	<package name="skills" namespace="/app/setup/skills" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkill">
+		<action name="new" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="newSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/newSkill.jsp</result>
 			<!-- result name="success">/jsps/newForm.jsp</result -->
 		</action>
-				
-		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions" method="addSkill">
+
+		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="addSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
@@ -1737,15 +2015,17 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="edit" class="com.facilio.bmsconsole.actions.SkillActions" method="editSkill">
+
+		<action name="edit" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="editSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/editSkill.jsp</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions" method="updateSkill">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="updateSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">			
+			<result name="success" type="json">
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
@@ -1753,10 +2033,11 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.SkillActions" method="deleteSkill">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="deleteSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">			
+			<result name="success" type="json">
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
@@ -1764,31 +2045,37 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions" method="newSkillDialog">
+
+		<action name="newDialog" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="newSkillDialog">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/newFormDialog.jsp</result>
 		</action>
-		
+
 	</package>
-	
+
 	<package name="users" namespace="/app/setup/users" extends="home">
-	<action name="list" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+		<action name="list" class="com.facilio.bmsconsole.actions.UserAction"
+			method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-			<param name="includeProperties">users.*</param></result>
+				<param name="includeProperties">users.*</param>
+			</result>
 		</action>
-  	<action name="popup" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+		<action name="popup" class="com.facilio.bmsconsole.actions.UserAction"
+			method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/usersListPopup.jsp</result>
 		</action>
-		
-		<action name="new" class="com.facilio.bmsconsole.actions.UserAction" method="newUser">
+
+		<action name="new" class="com.facilio.bmsconsole.actions.UserAction"
+			method="newUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/inviteUser.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
+		<action name="add" class="com.facilio.bmsconsole.actions.UserAction"
+			method="addUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
@@ -1799,13 +2086,15 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="edit" class="com.facilio.bmsconsole.actions.UserAction" method="editUser">
+
+		<action name="edit" class="com.facilio.bmsconsole.actions.UserAction"
+			method="editUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/editUser.jsp</result>
 		</action>
 
-		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
+		<action name="update" class="com.facilio.bmsconsole.actions.UserAction"
+			method="updateUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">user.orgUserId</param>
@@ -1816,8 +2105,9 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction" method="changeStatus">
+
+		<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction"
+			method="changeStatus">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">user.orgUserId</param>
@@ -1828,8 +2118,9 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="resetpassword" class="com.facilio.bmsconsole.actions.UserAction" method="resetPassword">
+
+		<action name="resetpassword" class="com.facilio.bmsconsole.actions.UserAction"
+			method="resetPassword">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
@@ -1841,19 +2132,20 @@
 			</result>
 		</action>
 
-		<!-- <action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction" method="viewUser">
-			<param name="userId">{1}</param>
-			<result type="tiles">viewUser</result>
-		</action> -->
+		<!-- <action name="*" class="com.facilio.bmsconsole.actions.ViewUserAction" 
+			method="viewUser"> <param name="userId">{1}</param> <result type="tiles">viewUser</result> 
+			</action> -->
 	</package>
-	
+
 	<package name="groups" namespace="/app/setup/groups" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.GroupAction" method="newGroup">
+		<action name="new" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="newGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/groups/newGroup.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
+		<action name="add" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="addGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
@@ -1864,13 +2156,15 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="edit" class="com.facilio.bmsconsole.actions.GroupAction" method="editGroup">
+
+		<action name="edit" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="editGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/groups/editGroup.jsp</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.GroupAction" method="updateGroup">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="updateGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
@@ -1881,8 +2175,9 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.GroupAction" method="deleteGroup">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.GroupAction"
+			method="deleteGroup">
 			<param name="permission">GROUP_ACCESS_DELETE</param>
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
@@ -1894,26 +2189,28 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="getGroupMembers" class="com.facilio.bmsconsole.actions.GetGroupMembersAction">
+
+		<action name="getGroupMembers"
+			class="com.facilio.bmsconsole.actions.GetGroupMembersAction">
 			<result name="success" type="json">
 				<param name="root">members</param>
 			</result>
 		</action>
 
-		 <!-- <action name="*" class="com.facilio.bmsconsole.actions.GroupAction" method="viewGroup">
-			<param name="groupId">{1}</param>
-			<result name="success">/jsps/groups/viewGroup.jsp</result>
-		</action> -->
+		<!-- <action name="*" class="com.facilio.bmsconsole.actions.GroupAction" 
+			method="viewGroup"> <param name="groupId">{1}</param> <result name="success">/jsps/groups/viewGroup.jsp</result> 
+			</action> -->
 	</package>
-	
+
 	<package name="roles" namespace="/app/setup/roles" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.RoleAction" method="newRole">
+		<action name="new" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="newRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">setuplayout/newRole.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.RoleAction" method="addRole">
+		<action name="add" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="addRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
@@ -1924,13 +2221,15 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="edit" class="com.facilio.bmsconsole.actions.RoleAction" method="editRole">
+
+		<action name="edit" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="editRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result type="tiles">editRole</result>
 		</action>
-		
-		<action name="update" class="com.facilio.bmsconsole.actions.RoleAction" method="updateRole">
+
+		<action name="update" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="updateRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
@@ -1941,8 +2240,9 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		
-		<action name="delete" class="com.facilio.bmsconsole.actions.RoleAction" method="deleteRole">
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.RoleAction"
+			method="deleteRole">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
@@ -1955,7 +2255,7 @@
 			</result>
 		</action>
 	</package>
-	
+
 	<package name="internal" namespace="/internal"
 		extends='struts-default,tiles-default,json-default'>
 		<interceptors>
@@ -1973,32 +2273,33 @@
 				<param name="includeProperties">workOrderId</param>
 			</result>
 		</action>
-		
-		<action name="addAlarm"
-			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarmFromEvent">
+
+		<action name="addAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="addAlarmFromEvent">
 			<result name="success" type="json">
 				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
-		
-		<action name="updateAlarmPriority"
-			class="com.facilio.bmsconsole.actions.AlarmAction" method="updateAlarmPriority">
+
+		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmPriority">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		
-		<action name="addAlarmTemplate"
-			class="com.facilio.bmsconsole.actions.AlarmAction" method="addAlarmTemplate">
+
+		<action name="addAlarmTemplate" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="addAlarmTemplate">
 			<result name="success" type="json">
 				<param name="includeProperties">alarmTemplateId</param>
 			</result>
 		</action>
-		
+
 	</package>
 
-	<package name="login" strict-method-invocation="false" namespace="/" extends='struts-default,tiles-default,json-default'>
-	
+	<package name="login" strict-method-invocation="false"
+		namespace="/" extends='struts-default,tiles-default,json-default'>
+
 		<interceptors>
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
@@ -2009,45 +2310,48 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
-		
-		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction" method="login">
+
+		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="login">
 			<result name="loginpage">/jsps/login.jsp</result>
 			<result name="loginsuccess">/jsps/loginSuccess.jsp</result>
 			<result name="samlresponse">/jsps/samlLoginSuccess.jsp</result>
 		</action>
-		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="logout">
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="logout">
 			<result>/jsps/logout.jsp</result>
 			<result name="REDIRECT" type="redirect">
 				<param name="location">${#request.redirUrl}</param>
-				
+
 			</result>
 		</action>
-		<action name="validateuser" class="com.facilio.bmsconsole.actions.LoginAction" method="validateUser">
+		<action name="validateuser" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="validateUser">
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
-		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction" method="signup">
+		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="signup">
 			<result>/jsps/validateLogin.jsp</result>
 		</action>
 	</package>
-	
-	<!-- package name="unauth" namespace="/login" extends="login">
-		<action name="validate" class="com.facilio.bmsconsole.actions.LoginAction" method="validateLogin">
-			<result>/jsps/validateLogin.jsp</result>
-		</action>
-	<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction" method="signup">
-			<result>/jsps/validateLogin.jsp</result>
-		</action>
 
-	</package-->
-	
-<package name="importmodule" namespace="/app/import" extends="home">
-	<action name="showformupload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="showformupload">
+	<!-- package name="unauth" namespace="/login" extends="login"> <action name="validate" 
+		class="com.facilio.bmsconsole.actions.LoginAction" method="validateLogin"> 
+		<result>/jsps/validateLogin.jsp</result> </action> <action name="signup" 
+		class="com.facilio.bmsconsole.actions.LoginAction" method="signup"> <result>/jsps/validateLogin.jsp</result> 
+		</action> </package -->
+
+	<package name="importmodule" namespace="/app/import" extends="home">
+		<action name="showformupload" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="showformupload">
 			<result name="success">/jsps/import/showfileupload.jsp</result>
 		</action>
-		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
+		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="upload">
 			<result name="success">/jsps/import/displayColumnMapping.jsp</result>
 		</action>
-		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="processImport">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
 			</result>
@@ -2057,20 +2361,23 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-	</package>	
+	</package>
 	<package name="importapi" namespace="/api/import" extends="home">
-	
-	<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction" method="getAssets">
-		<result name="success" type="json">
+
+		<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="getAssets">
+			<result name="success" type="json">
 				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
-		<result name="success" type="json">
+		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="upload">
+			<result name="success" type="json">
 				<param name="includeProperties">metainfo.*</param>
 			</result>
 		</action>
-		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="processImport">
+		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="processImport">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
 			</result>
@@ -2080,147 +2387,171 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-	</package>		
-	
+	</package>
+
 	<package name="campus" namespace="/app/campus" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction" method="campusList">
+		<action name="popup" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="campusList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/campusListPopup.jsp</result>
 		</action>
-		
-		<action name="new" class="com.facilio.bmsconsole.actions.CampusAction" method="newCampus">
+
+		<action name="new" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="newCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction" method="addCampus">
+		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="addCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">campusId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="campusSummary" namespace="/app/campus/summary" extends="campus">
-		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction" method="viewCampus">
+
+	<package name="campusSummary" namespace="/app/campus/summary"
+		extends="campus">
+		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction"
+			method="viewCampus">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="campusId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="building" namespace="/app/building" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.BuildingAction" method="buildingList">
+		<action name="popup" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="buildingList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/buildingListPopup.jsp</result>
 		</action>
-		
-		<action name="new" class="com.facilio.bmsconsole.actions.BuildingAction" method="newBuilding">
+
+		<action name="new" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="newBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction" method="addBuilding">
+		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="addBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="buildingSummary" namespace="/app/building/summary" extends="building">
-		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction" method="viewBuilding">
+
+	<package name="buildingSummary" namespace="/app/building/summary"
+		extends="building">
+		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="viewBuilding">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="buildingId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="floor" namespace="/app/floor" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.FloorAction" method="floorList">
+		<action name="popup" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="floorList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/floorListPopup.jsp</result>
 		</action>
-		
-		<action name="new" class="com.facilio.bmsconsole.actions.FloorAction" method="newFloor">
+
+		<action name="new" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="newFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction" method="addFloor">
+		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="addFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">floorId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="floorSummary" namespace="/app/floor/summary" extends="floor">
-		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction" method="viewFloor">
+
+	<package name="floorSummary" namespace="/app/floor/summary"
+		extends="floor">
+		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="viewFloor">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="floorId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="space" namespace="/app/space" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction" method="newSpace">
+		<action name="new" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="newSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction" method="addSpace">
+		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="addSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="spaceSummary" namespace="/app/space/summary" extends="space">
-		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction" method="viewSpace">
+
+	<package name="spaceSummary" namespace="/app/space/summary"
+		extends="space">
+		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="viewSpace">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="spaceId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="zone" namespace="/app/zone" extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.ZoneAction" method="newZone">
+		<action name="new" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="newZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/newForm.jsp</result>
 			<result name="ajaxsuccess">/jsps/newForm.jsp</result>
 		</action>
 
-		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction" method="addZone">
+		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="addZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
 			</result>
 		</action>
 	</package>
-	
-	<package name="zoneSummary" namespace="/app/zone/summary" extends="zone">
-		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction" method="viewZone">
+
+	<package name="zoneSummary" namespace="/app/zone/summary"
+		extends="zone">
+		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="viewZone">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<param name="zoneId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-	
+
 	<package name="basespace" namespace="/app/basespace" extends="home">
-		<action name="popup" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="baseSpaceList">
+		<action name="popup" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="baseSpaceList">
 			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
-	</package>	
+	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
-		<action name="*" >
-        <result>/jsps/samples/{1}.jsp</result>
-    </action>
-		</package>
+		<action name="*">
+			<result>/jsps/samples/{1}.jsp</result>
+		</action>
+	</package>
 </struts>

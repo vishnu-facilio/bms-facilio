@@ -412,7 +412,120 @@ public class FieldFactory {
 		
 		return fields;
 	}
-
+	
+	public static List<FacilioField> getUserFields() {
+		List<FacilioField> fields=new ArrayList<>();
+		FacilioModule module = ModuleFactory.getUserModule();
+		
+		FacilioField userid=new FacilioField();
+		userid.setName("userid");
+		userid.setDataType(FieldType.NUMBER);
+		userid.setColumnName("USERID");
+		userid.setModule(module);
+		fields.add(userid);
+		
+		FacilioField name=new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField cognito_id=new FacilioField();
+		cognito_id.setName("cognito_id");
+		cognito_id.setDataType(FieldType.STRING);
+		cognito_id.setColumnName("COGNITO_ID");
+		cognito_id.setModule(module);
+		fields.add(cognito_id);
+		
+		FacilioField user_verified=new FacilioField();
+		user_verified.setName("user_verified");
+		user_verified.setDataType(FieldType.BOOLEAN);
+		user_verified.setColumnName("USER_VERIFIED");
+		user_verified.setModule(module);
+		fields.add(user_verified);
+		
+		FacilioField email=new FacilioField();
+		email.setName("email");
+		email.setDataType(FieldType.STRING);
+		email.setColumnName("EMAIL");
+		email.setModule(module);
+		fields.add(email);
+		
+		FacilioField photo_id=new FacilioField();
+		photo_id.setName("photo_id");
+		photo_id.setDataType(FieldType.NUMBER);
+		photo_id.setColumnName("PHOTO_ID");
+		photo_id.setModule(module);
+		fields.add(photo_id);
+		
+		FacilioField timezone=new FacilioField();
+		timezone.setName("timezone");
+		timezone.setDataType(FieldType.STRING);
+		timezone.setColumnName("TIMEZONE");
+		timezone.setModule(module);
+		fields.add(timezone);
+		
+		FacilioField language=new FacilioField();
+		language.setName("language");
+		language.setDataType(FieldType.STRING);
+		language.setColumnName("LANGUAGE");
+		language.setModule(module);
+		fields.add(language);
+		
+		FacilioField phone=new FacilioField();
+		phone.setName("phone");
+		phone.setDataType(FieldType.STRING);
+		phone.setColumnName("PHONE");
+		phone.setModule(module);
+		fields.add(phone);
+		
+		FacilioField mobile=new FacilioField();
+		mobile.setName("mobile");
+		mobile.setDataType(FieldType.STRING);
+		mobile.setColumnName("MOBILE");
+		mobile.setModule(module);
+		fields.add(mobile);
+		
+		FacilioField street = new FacilioField();
+		street.setName("street");
+		street.setDataType(FieldType.STRING);
+		street.setColumnName("STREET");
+		street.setModule(module);
+		fields.add(street);
+		
+		FacilioField city = new FacilioField();
+		city.setName("city");
+		city.setDataType(FieldType.STRING);
+		city.setColumnName("CITY");
+		city.setModule(module);
+		fields.add(city);
+		
+		FacilioField state = new FacilioField();
+		state.setName("state");
+		state.setDataType(FieldType.STRING);
+		state.setColumnName("STATE");
+		state.setModule(module);
+		fields.add(state);
+		
+		FacilioField zip = new FacilioField();
+		zip.setName("zip");
+		zip.setDataType(FieldType.STRING);
+		zip.setColumnName("ZIP");
+		zip.setModule(module);
+		fields.add(zip);
+		
+		FacilioField country = new FacilioField();
+		country.setName("country");
+		country.setDataType(FieldType.STRING);
+		country.setColumnName("COUNTRY");
+		country.setModule(module);
+		fields.add(country);
+		return fields;
+		
+	}
+	
+	
 	public static List<FacilioField> getSupportEmailFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getSupportEmailsModule();

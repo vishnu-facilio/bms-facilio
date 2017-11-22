@@ -11,12 +11,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+//import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.UserContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class UserAPI {
@@ -194,6 +199,7 @@ public class UserAPI {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ORG_Users.ROLE_ID = Role.ROLE_ID ORDER BY EMAIL");
+			//pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Locations.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users join Users on ORG_Users.USERID=Users.USERID join Role on ORG_Users.ROLE_ID=Role.ROLE_ID left join Locations on Locations.ID=Users.LOCATION_ID where ORG_Users.ORGID=? ORDER BY EMAIL;");
 			pstmt.setLong(1, orgId);
 			
 			List<UserContext> users = new ArrayList<>();
@@ -391,7 +397,6 @@ public class UserAPI {
 	}
 	
 	public static long addUser(UserContext context) throws Exception {
-
 		boolean isLocalConn = false;
 		Connection conn =null;
 		try {
@@ -405,12 +410,28 @@ public class UserAPI {
 					isLocalConn = true;
 				}
 				
-				String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?, ?)";
+//				long locationId = -1;
+//				if(context.getLocation() != null) {
+////					context.getLocation().sett
+//					locationId = LocationAPI.addLocation(context.getLocation());
+//				}
+//				
+				String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL,TIMEZONE,LANGUAGE,PHONE,MOBILE,PHOTO-ID,STREET, CITY, STATE, ZIP, COUNTRY) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
 				ps1.setString(1, context.getName());
 				ps1.setString(2, null);
 				ps1.setBoolean(3, true);
 				ps1.setString(4, context.getEmail());
+				ps1.setString(5, context.getTimezone());
+				ps1.setString(6, context.getLanguage());
+				ps1.setString(7, context.getPhone());
+				ps1.setString(8, context.getMobile());
+				ps1.setLong(9, context.getPhotoId());
+				ps1.setString(10, context.getStreet());
+				ps1.setString(11, context.getCity());
+				ps1.setString(12, context.getState());
+				ps1.setString(13, context.getZip());
+				ps1.setString(14, context.getCountry());
 				ps1.executeUpdate();
 				ResultSet rs1 = ps1.getGeneratedKeys();
 				rs1.next();
@@ -481,42 +502,37 @@ public class UserAPI {
 		}
 	}
 	
-	public static boolean updateUser(UserContext context, Connection conn) throws Exception {
+	public static boolean updateUser(UserContext context, long orgId) throws Exception {
 
-		boolean isLocalConn = false;
-		try {
-			if (conn == null) {
-				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				isLocalConn = true;
-			}
-			
 			// updating user attributes in cognito 
-			CognitoUtil.updateUserAttributes(context.getEmail(), context.getPhone());
-
-			String insertquery1 = "update Users set NAME=? where USERID=?";
-			PreparedStatement ps1 = conn.prepareStatement(insertquery1);
-			ps1.setString(1, context.getName());
-			ps1.setLong(2, context.getUserId());
-			ps1.executeUpdate();
-			ps1.close();
+			//CognitoUtil.updateUserAttributes(context.getEmail(), context.getPhone());
 			
-			String insertquery2 = "update ORG_Users set ROLE_ID=? where ORG_USERID=?";
-			PreparedStatement ps2 = conn.prepareStatement(insertquery2);
-			ps2.setLong(1, context.getRoleId());
-			ps2.setLong(2, context.getOrgUserId());
-			ps2.executeUpdate();
-			ps2.close();
-			
-			return true;
-		}
-		catch (Exception e) {
-			throw e;
-		}
-		finally {
-			if (isLocalConn) {
-				DBUtil.closeAll(conn, null);
+			Map<String, Object> userprops = FieldUtil.getAsProperties(context);
+			try{
+				List<FacilioField> fields= FieldFactory.getUserFields();
+				GenericUpdateRecordBuilder builder= new GenericUpdateRecordBuilder().table("Users").fields(fields).andCustomWhere("USERID = ?", context.getUserId());
+				builder.update(userprops);
 			}
-		}
+			catch(Exception e){
+				e.printStackTrace();
+				throw e;
+			}
+			
+//			String insertquery1 = "update Users set NAME=?  where USERID=?";
+//			PreparedStatement ps1 = conn.prepareStatement(insertquery1);
+//			ps1.setString(1, context.getName());
+//			ps1.setLong(2, context.getUserId());
+//			ps1.executeUpdate();
+//			ps1.close();
+			
+//			String insertquery2 = "update ORG_Users set ROLE_ID=? where ORG_USERID=?";
+//			PreparedStatement ps2 = conn.prepareStatement(insertquery2);
+//			ps2.setLong(1, context.getRoleId());
+//			ps2.setLong(2, context.getOrgUserId());
+//			ps2.executeUpdate();
+//			ps2.close();
+//			
+			return true;
 	}
 	
 	public static int updateUserType(UserContext uc, UserType type) throws SQLException {
@@ -605,6 +621,16 @@ public class UserAPI {
 		uc.setRoleId(rs.getLong("ROLE_ID"));
 		uc.setPhotoId(rs.getLong("PHOTO_ID"));
 		uc.setUserType(rs.getInt("USER_TYPE"));
+		uc.setPhone(rs.getString("PHONE"));
+		uc.setTimezone(rs.getString("TIMEZONE"));
+		uc.setMobile(rs.getString("MOBILE"));
+		uc.setLanguage(rs.getString("LANGUAGE"));
+		uc.setStreet(rs.getString("STREET"));
+		uc.setCity(rs.getString("CITY"));
+		uc.setState(rs.getString("STATE"));
+		uc.setZip(rs.getString("ZIP"));
+		uc.setCountry(rs.getString("COUNTRY"));
+		
 		
 		RoleContext rc = new RoleContext();
 		rc.setRoleId(rs.getLong("ROLE_ID"));
