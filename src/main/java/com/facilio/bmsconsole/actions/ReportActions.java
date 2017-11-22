@@ -97,10 +97,16 @@ public class ReportActions extends ActionSupport {
 		Set<Long> keys=purposeMapping.keySet();
 		String deviceList=StringUtils.join(keys, ",");
 		String duration = getPeriod();
-		//hardcoding last month here...
-		long startTime=DateTimeUtil.getMonthStartTime(-1);
-		long endTime=DateTimeUtil.getMonthStartTime()-1;
+		long startTime=-1;
+		long endTime=-1;
+		if(duration.equals("week"))
+		{
+			//need to decide on this..
+		}
 		
+		startTime=DateTimeUtil.getMonthStartTime();
+	    endTime=DateTimeUtil.getCurrenTime();
+	    
 		FacilioField selectFld = getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 		FacilioField timeFld = getField("DATE","TTIME_DATE",FieldType.NUMBER);
 				
@@ -222,7 +228,6 @@ public class ReportActions extends ActionSupport {
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		
-		FacilioField additionalFld=null;
 		String duration= getPeriod();
 		String displayName="HOUR";
 		String colName="TTIME_HOUR";
@@ -235,8 +240,8 @@ public class ReportActions extends ActionSupport {
 				}
 		else if (duration.equals("week"))
 		{
-			displayName="DAY";
-			colName="TTIME_DAY";
+			displayName="DATE";
+			colName="TTIME_DATE";
 			startTime=DateTimeUtil.getWeekStartTime();
 			previousStartTime=DateTimeUtil.getWeekStartTime(-1);
 			previousEndTime=startTime-1;
@@ -249,7 +254,6 @@ public class ReportActions extends ActionSupport {
 			startTime=DateTimeUtil.getMonthStartTime();
 			previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 			previousEndTime=startTime-1;
-			additionalFld = getField("DAY","ANY_VALUE(TTIME_DAY)",FieldType.NUMBER);
 		}
 		else if (duration.equals("year"))
 		{
@@ -263,10 +267,7 @@ public class ReportActions extends ActionSupport {
 		periodFld.setName(displayName);
 		
 		fields.add(periodFld);
-		if(additionalFld!=null)
-		{
-			fields.add(additionalFld);
-		}
+		
 		
 		double currentKwh=-1;
 		double previousKwh=-1;
@@ -592,7 +593,6 @@ private FacilioField getField(String name, String colName, FieldType type) {
 	
 	private Condition getDeviceListCondition (String deviceList)
 	{
-		
 				Condition deviceIdCondition = new Condition();
 				deviceIdCondition.setColumnName("PARENT_METER_ID");
 				deviceIdCondition.setOperator(NumberOperators.EQUALS);
