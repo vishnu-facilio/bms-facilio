@@ -48,19 +48,19 @@ public class EventContext {
 		this.assetId = assetId;
 	}
 
-	public String eventType;
-	public String getEventType() {
-		return eventType;
+	public String eventMessage;
+	public String getEventMessage() {
+		return eventMessage;
 	}
-	public void setEventType(String eventType) {
-		this.eventType = eventType;
+	public void setEventMessage(String eventMessage) {
+		this.eventMessage = eventMessage;
 	}
 	
 	public String messageKey;
 	public String getMessageKey() {
-		if(messageKey == null && source != null && node != null && eventType != null)
+		if(messageKey == null && source != null && node != null && eventMessage != null)
 		{
-			this.messageKey = this.source + "_" + this.node + "_" + this.eventType;
+			this.messageKey = this.source + "_" + this.node + "_" + this.eventMessage;
 		}
 		return messageKey;
 	}
@@ -76,6 +76,30 @@ public class EventContext {
 		this.severity = severity;
 	}
 	
+	private String priority;
+	public String getPriority() {
+		return priority;
+	}
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+	
+	private String alarmClass;
+	public String getAlarmClass() {
+		return alarmClass;
+	}
+	public void setAlarmClass(String alarmClass) {
+		this.alarmClass = alarmClass;
+	}
+	
+	private String state;
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;
@@ -84,21 +108,21 @@ public class EventContext {
 		this.createdTime = createdTime;
 	}
 	
-	public EventState state;
-	public int getState() {
-		if(state != null) {
-			return state.getIntVal();
+	public EventState eventState;
+	public int getEventState() {
+		if(eventState != null) {
+			return eventState.getIntVal();
 		}
 		return -1;
 	}
-	public void setState(int state) {
-		this.state = STATES[state - 1];
+	public void setEventState(int eventState) {
+		this.eventState = EVENT_STATES[eventState - 1];
 	}
-	public void setState(EventState state) {
-		this.state = state;
+	public void setEventState(EventState eventState) {
+		this.eventState = eventState;
 	}
-	public EventState getStateEnum() {
-		return state;
+	public EventState getEventStateEnum() {
+		return eventState;
 	}
 
 	public EventInternalState internalState;
@@ -183,7 +207,7 @@ public class EventContext {
 		}
 	}
 	
-	private static final EventState[] STATES = EventState.values();
+	private static final EventState[] EVENT_STATES = EventState.values();
 	public static enum EventState {
 		READY,
 		IGNORED,

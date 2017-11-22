@@ -23,25 +23,34 @@ public class EventAPI {
 	    while(iterator.hasNext())
 	    {
 	    	String key = iterator.next();
-	    	Object value = payload.get(key);
-	    	if(key.equals("source"))
+	    	String value = payload.get(key).toString();
+	    	if(key.equalsIgnoreCase("source"))
 	    	{
-	    		event.setSource((String) value);
+	    		event.setSource(value);
 	    	}
-	    	else if(key.equals("node"))
+	    	else if(key.equalsIgnoreCase("node"))
 	    	{
-	    		event.setNode((String) value);
+	    		event.setNode(value);
 	    	}
-	    	else if(key.equals("message"))
+	    	else if(key.equalsIgnoreCase("message"))
 	    	{
-	    		event.setEventMessage((String) value);
+	    		event.setEventMessage(value);
 	    	}
-	    	else if(key.equals("severity"))
+	    	else if(key.equalsIgnoreCase("severity"))
 	    	{
-	    		event.setSeverity((String) value);
+	    		event.setSeverity(value);
+	    	}
+	    	else if(key.equalsIgnoreCase("priority")) {
+	    		event.setPriority(value);
+	    	}
+	    	else if(key.equalsIgnoreCase("alarmClass")) {
+	    		event.setAlarmClass(value);
+	    	}
+	    	else if(key.equals("state")) {
+	    		event.setState(value);
 	    	}
 	    	else if(key.equals("timestamp")) {
-	    		event.setCreatedTime((long) value);
+	    		event.setCreatedTime(Long.parseLong(value));
 	    	}
 	    	else
 	    	{
@@ -55,7 +64,7 @@ public class EventAPI {
 	    	event.setSeverity("Idle");
 	    }
 	    event.setOrgId(orgId);
-	    event.setState(EventState.READY);
+	    event.setEventState(EventState.READY);
 	    event.setInternalState(EventInternalState.ADDED);
 	    
 	    return event;

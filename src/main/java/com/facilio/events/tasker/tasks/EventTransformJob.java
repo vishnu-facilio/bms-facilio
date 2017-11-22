@@ -23,7 +23,6 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -43,7 +42,7 @@ public class EventTransformJob extends FacilioJob{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
-														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ? AND EVENT_RULE_ID IS NOT NULL", orgId, EventState.READY.getIntVal(), EventInternalState.FILTERED.getIntVal());
+														.andCustomWhere("ORGID = ? AND EVENT_STATE = ? AND INTERNAL_STATE = ? AND EVENT_RULE_ID IS NOT NULL", orgId, EventState.READY.getIntVal(), EventInternalState.FILTERED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
 				for(Map<String, Object> prop : props)
 				{

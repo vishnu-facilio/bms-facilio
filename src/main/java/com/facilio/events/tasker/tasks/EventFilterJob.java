@@ -19,7 +19,6 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -41,7 +40,7 @@ public class EventFilterJob extends FacilioJob{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
-														.andCustomWhere("ORGID = ? AND STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.ADDED.getIntVal());	//Org Id
+														.andCustomWhere("ORGID = ? AND EVENT_STATE = ? AND INTERNAL_STATE = ?", orgId, EventState.READY.getIntVal(), EventInternalState.ADDED.getIntVal());	//Org Id
 				List<Map<String, Object>> props = builder.get();
 				for(Map<String, Object> prop : props)
 				{
@@ -64,7 +63,7 @@ public class EventFilterJob extends FacilioJob{
 					}
 					if(ignoreEvent)
 					{
-						event.setState(EventState.IGNORED);
+						event.setEventState(EventState.IGNORED);
 					}
 					event.setInternalState(EventInternalState.FILTERED);
 					if(isMatched)

@@ -193,9 +193,9 @@ public class EventConstants {
 			fields.add(assetId);
 			
 			FacilioField eventType = new FacilioField();
-			eventType.setName("eventType");
+			eventType.setName("eventMessage");
 			eventType.setDataType(FieldType.STRING);
-			eventType.setColumnName("EVENT_TYPE");
+			eventType.setColumnName("EVENT_MESSAGE");
 			eventType.setModule(module);
 			fields.add(eventType);
 			
@@ -221,9 +221,9 @@ public class EventConstants {
 			fields.add(createdTime);
 			
 			FacilioField state = new FacilioField();
-			state.setName("state");
+			state.setName("eventState");
 			state.setDataType(FieldType.NUMBER);
-			state.setColumnName("STATE");
+			state.setColumnName("EVENT_STATE");
 			state.setModule(module);
 			fields.add(state);
 			

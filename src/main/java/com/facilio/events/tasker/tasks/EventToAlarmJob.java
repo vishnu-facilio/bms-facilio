@@ -11,7 +11,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
@@ -19,9 +22,9 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -29,6 +32,7 @@ public class EventToAlarmJob extends FacilioJob{
 
 	private static Logger logger = Logger.getLogger(EventToAlarmJob.class.getName());
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobContext jc) 
 	{
@@ -40,7 +44,7 @@ public class EventToAlarmJob extends FacilioJob{
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
-														.andCustomWhere("ORGID = ? AND STATE = ? AND (INTERNAL_STATE = ? OR (INTERNAL_STATE = ? AND EVENT_RULE_ID IS NULL))", orgId, EventState.READY.getIntVal(), EventInternalState.THRESHOLD_DONE.getIntVal(), EventInternalState.FILTERED.getIntVal());
+														.andCustomWhere("ORGID = ? AND EVENT_STATE = ? AND (INTERNAL_STATE = ? OR (INTERNAL_STATE = ? AND EVENT_RULE_ID IS NULL))", orgId, EventState.READY.getIntVal(), EventInternalState.THRESHOLD_DONE.getIntVal(), EventInternalState.FILTERED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
 				for(Map<String, Object> prop : props)
 				{
@@ -102,10 +106,34 @@ public class EventToAlarmJob extends FacilioJob{
 						json.put("orgId", event.getOrgId());
 						json.put("source", event.getSource());
 						json.put("node", event.getNode());
-						//json.put("status", event.getState());
-						json.put("subject", event.getEventType());
-						//json.put("priority", event.getEventType());
+						json.put("subject", event.getEventMessage());
 						json.put("description", event.getDescription());
+						json.put("severity", event.getSeverity());
+						json.put("alarmPriority", event.getPriority());
+						json.put("alarmClass", event.getAlarmClass());
+						json.put("state", event.getState());
+						
+						JSONObject additionalInfo = event.getAdditionInfo();
+						if(additionalInfo != null && additionalInfo.size() > 0) {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+							
+							JSONObject data = new JSONObject();
+							for(FacilioField field : alarmFields) {
+								if(additionalInfo.containsKey(field.getName())) {
+									if(field.isDefault()) {
+										json.put(field.getName(), additionalInfo.remove(field.getName()));
+									}
+									else {
+										data.put(field.getName(), additionalInfo.remove(field.getName()));
+									}
+								}
+							}
+							if(data.size() > 0) {
+								json.put("data", data);
+							}
+						}
+						json.put("additionInfo", additionalInfo);
 						
 						JSONObject content = new JSONObject();
 						content.put("alarm", json);
@@ -121,7 +149,7 @@ public class EventToAlarmJob extends FacilioJob{
 					}
 					
 					event.setInternalState(EventInternalState.COMPLETED);
-					event.setState(EventState.PROCESSED);
+					event.setEventState(EventState.PROCESSED);
 					EventAPI.updateEvent(event, orgId);
 				}
 			} 
