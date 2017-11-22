@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.OrgInfo;
 
 public class UpdateUserCommand implements Command {
 
@@ -19,7 +20,7 @@ public class UpdateUserCommand implements Command {
 		if (user != null) {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			UserAPI.updateUser(user, conn);
+			UserAPI.updateUser(user, OrgInfo.getCurrentOrgInfo().getOrgid());
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");

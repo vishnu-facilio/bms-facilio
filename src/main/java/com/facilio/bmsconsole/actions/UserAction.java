@@ -149,6 +149,12 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateMyProfile() throws Exception{
+		boolean status = UserAPI.updateUser(user, OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		return SUCCESS;
+	}
+	
 	public String updateUser() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

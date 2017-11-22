@@ -140,6 +140,63 @@ public class UserContext {
 		this.userType = userType;
 	}
 	
+	private String mobile;	
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	
+	private String language;	
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	private String street;	
+	public String getStreet() {
+		return street;
+	}
+	public void setStreet(String street) {
+		this.street = street;
+	}
+	
+	private String city;
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	
+	private String state;	
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	
+	private String zip;
+	public String getZip() {
+		return zip;
+	}
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+	
+	private String country;
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	
+	
 	public String getAvatarUrl() throws Exception {
 		if (this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
