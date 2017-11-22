@@ -34,7 +34,7 @@ public class EventAPI {
 	    	}
 	    	else if(key.equals("message"))
 	    	{
-	    		event.setEventMessage((String) value);
+	    		event.setMessageKey((String) value);
 	    	}
 	    	else if(key.equals("severity"))
 	    	{
