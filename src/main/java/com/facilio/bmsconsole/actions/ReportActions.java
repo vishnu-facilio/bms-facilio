@@ -514,8 +514,7 @@ private FacilioField getField(String name, String colName, FieldType type) {
 				.table("Energy_Data")
 				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
 				.andCondition(getDeviceListCondition(""+deviceId))
-				.groupBy("TTIME_MONTH")
-				.orderBy("TTIME_MONTH");
+				.groupBy("TTIME_MONTH");
 		List<Map<String, Object>> result = builder.get();
 		
 		int lastMonth=-1;
@@ -576,6 +575,7 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		buildingData.put("previousVal", lastMonthData);
 		buildingData.put("currentVal", thisMonthData);
 		buildingData.put("variance", variance);
+		buildingData.put("purpose", DeviceAPI.getAllEnergyMeterPurpose());
 		
 		// need to send cost..as well..
 		//need to send temperature & carbon emmission [

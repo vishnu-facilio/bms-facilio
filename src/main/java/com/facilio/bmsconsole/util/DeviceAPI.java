@@ -1047,6 +1047,7 @@ public class DeviceAPI
 	}
 			
 	public static List<EnergyMeterPurposeContext> getEnergyMeterPurpose(String purpose) throws Exception {
+		long orgId=OrgInfo.getCurrentOrgInfo().getOrgid();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
 		
@@ -1054,7 +1055,23 @@ public class DeviceAPI
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
 																		.beanClass(EnergyMeterPurposeContext.class)
-																		.andCustomWhere("NAME = ?", purpose)
+																		.andCustomWhere("ORGID=? AND NAME = ?", orgId,purpose)
+																		.maxLevel(0)
+																		;
+		
+		return selectBuilder.get();
+	}
+	
+	public static List<EnergyMeterPurposeContext> getAllEnergyMeterPurpose() throws Exception {
+		long orgId=OrgInfo.getCurrentOrgInfo().getOrgid();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+		
+		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+																		.select(modBean.getAllFields(module.getName()))
+																		.module(module)
+																		.beanClass(EnergyMeterPurposeContext.class)
+																		.andCustomWhere("ORGID=?", orgId)
 																		.maxLevel(0)
 																		;
 		
