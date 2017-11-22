@@ -4,16 +4,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
@@ -91,10 +96,10 @@ public class AlarmContext extends TicketContext {
 			try {
 				this.createdTime = FacilioConstants.HTML5_DATE_FORMAT.parse(createdTime).getTime();
 			}
-			catch (ParseException e) {
+			catch (java.text.ParseException e) {
 				try {
 					this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
-				} catch (ParseException e1) {
+				} catch (java.text.ParseException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -116,7 +121,6 @@ public class AlarmContext extends TicketContext {
 	public String getSource() {
 		return source;
 	}
-	
 	public void setSource(String source) {
 		this.source = source;
 	}
@@ -125,9 +129,65 @@ public class AlarmContext extends TicketContext {
 	public String getNode() {
 		return node;
 	}
-	
 	public void setNode(String node) {
 		this.node = node;
+	}
+	
+	private String severity;
+	public String getSeverity() {
+		return severity;
+	}
+	public void setSeverity(String severity) {
+		this.severity = severity;
+	}
+	
+	private String alarmPriority;
+	public String getAlarmPriority() {
+		return alarmPriority;
+	}
+	public void setAlarmPriority(String alarmPriority) {
+		this.alarmPriority = alarmPriority;
+	}
+
+	private String alarmClass;
+	public String getAlarmClass() {
+		return alarmClass;
+	}
+	public void setAlarmClass(String alarmClass) {
+		this.alarmClass = alarmClass;
+	}
+	
+	private String state;
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	
+	public JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		return additionInfo;
+	}
+	public void setAdditionInfo(JSONObject additionInfo) {
+		this.additionInfo = additionInfo;
+	}
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+	
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
 
 	public static enum AlarmStatus {
