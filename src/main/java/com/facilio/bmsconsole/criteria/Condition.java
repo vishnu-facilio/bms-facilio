@@ -36,8 +36,10 @@ public class Condition {
 	private FacilioField field;
 	public void setField(FacilioField field) {
 		this.field = field;
-		this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
-		this.fieldName = field.getName();
+		if(field != null && field.getExtendedModule() != null && field.getName() != null && field.getColumnName() != null) {
+			this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
+			this.fieldName = field.getName();
+		}
 	}
 	
 	private String columnName;
@@ -67,8 +69,7 @@ public class Condition {
 		this.operatorId = operatorId;
 		this.setOperator(Operator.OPERATOR_MAP.get(operatorId));
 	}
-	
-	
+
 	private Operator operator;
 	public Operator getOperator() {
 		return operator;

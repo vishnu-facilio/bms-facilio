@@ -44,7 +44,16 @@ public class CriteriaAPI {
 			for(Map.Entry<Integer, Condition> conditionEntry : conditions.entrySet()) {
 				Condition condition = conditionEntry.getValue();
 				
-				condition.setSequence(conditionEntry.getKey());
+				int sequence = -1;
+				Object key = conditionEntry.getKey();
+				if(key instanceof Integer) {
+					sequence = (int) key;
+				}
+				else if(key instanceof String) {
+					sequence = Integer.parseInt((String) key);
+				}
+				
+				condition.setSequence(sequence);
 				condition.setConditionId(-1);
 				condition.setParentCriteriaId(parentCriteriaId);
 				
