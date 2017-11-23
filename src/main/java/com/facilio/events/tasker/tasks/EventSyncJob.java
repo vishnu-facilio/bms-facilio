@@ -1,6 +1,7 @@
 package com.facilio.events.tasker.tasks;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,9 @@ import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
@@ -48,12 +51,17 @@ public class EventSyncJob extends FacilioJob{
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
 				
-				QuerySpec spec = new QuerySpec().withHashKey("DeviceId", "123").withRangeKeyCondition(rkc);	// Device Mac ID
-				ItemCollection<QueryOutcome> items = table.query(spec);
-				if(items.iterator().hasNext())
-				{
-					System.out.println("got item");
-					processItems(items, OrgInfo.getCurrentOrgInfo().getOrgid());
+				List<ControllerContext> controllers = DeviceAPI.getAllControllers();
+				
+				if(controllers != null && !controllers.isEmpty()) {
+					for(ControllerContext controller : controllers) {
+						QuerySpec spec = new QuerySpec().withHashKey("DeviceId", controller.getMacAddr()).withRangeKeyCondition(rkc);	// Device Mac ID
+						ItemCollection<QueryOutcome> items = table.query(spec);
+						if(items.iterator().hasNext())
+						{
+							processItems(items, OrgInfo.getCurrentOrgInfo().getOrgid());
+						}
+					}
 				}
 			}
 			catch (Exception e) 

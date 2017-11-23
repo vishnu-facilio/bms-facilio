@@ -75,7 +75,9 @@ public class EventAPI {
 	    if(event.getNode() != null) {
 	    	long assetId = getAssetFromNode(event.getNode(), orgId);
 	    	if(assetId != -1) {
-	    		event.setAssetId(assetId);
+	    		if(assetId != 0) {
+	    			event.setAssetId(assetId);
+	    		}
 	    	}
 	    	else {
 	    		addNodeToAssetMapping(event.getNode(), orgId);
@@ -104,6 +106,9 @@ public class EventAPI {
 			Long assetId = (Long) props.get(0).get(EventConstants.EventContextNames.ASSET_ID);
 			if(assetId != null) {
 				return assetId;
+			}
+			else {
+				return 0;
 			}
 		}
 		return -1;
