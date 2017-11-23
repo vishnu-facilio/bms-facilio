@@ -526,6 +526,7 @@ public class FacilioConstants {
 		public static final String SORTING_QUERY = "sortingQuery";
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
+		public static final String NODE = "node";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -595,6 +596,7 @@ public class FacilioConstants {
 		public static final String STATUS_ID = "status_id";
 		public static final String CATEGORY_ID = "category_id";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
+		public static final String ASSET_ID = "asset";
 		public static final String STATUS = "status";
 		public static final String PRIORITY = "priority";
 		public static final String SPACE = "space";
@@ -608,6 +610,7 @@ public class FacilioConstants {
 		public static final String OVERDUE = "Overdue";
 		public static final String DUE_COUNT = "dueCount";
 		public static final String CREATED_TIME = "createdTime";
+		public static final String SOURCE_TYPE = "sourceType";
 	}
 	public static class TicketStatus{
 		public static final String STATUS = "status";

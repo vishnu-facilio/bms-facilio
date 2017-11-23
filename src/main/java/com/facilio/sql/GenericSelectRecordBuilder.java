@@ -182,10 +182,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					if(val != null) {
 						record.put(field.getName(), val);
 					}
-					//record.put(field.getName(), FieldUtil.getValueAsPerType(field, rs));
 				}
-				
-				records.add(record);
+				if(!record.isEmpty()) {
+					records.add(record);
+				}
 			}
 			return records;
 		}

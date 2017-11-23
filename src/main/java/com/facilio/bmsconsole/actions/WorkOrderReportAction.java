@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.FacilioReportContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -75,9 +76,10 @@ public class WorkOrderReportAction extends ActionSupport {
 	}
 
 	public String summary() throws Exception {
-
+		String technicianGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
+		String technicianNotNull = "\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";
 		if ("open".equalsIgnoreCase(getType())) {
-			setReportData(getOpenWorkOrderSummary());
+			setReportData(getOpenWorkOrderSummary(null));
 		}
 		else if ("closed".equalsIgnoreCase(getType())) {
 			setReportData(getClosedWorkOrderSummary(null));
@@ -88,31 +90,66 @@ public class WorkOrderReportAction extends ActionSupport {
 		else if ("requests".equalsIgnoreCase(getType())) {
 			setReportData(getWorkOrderRequestSummary());
 		}
-		else if ("location".equalsIgnoreCase(getType())) {
-			setReportData(getWorkOrderLocationSummary());
-		}
 		else if ("technician".equalsIgnoreCase(getType())) {
 			setReportData(getTechnicianWorkSummary());
 		}
-		else if("efficiency".equalsIgnoreCase(getType())) {
-			setReportData(getTechnicianAvgResolutionTime());
+		else if("technicianEfficiency".equalsIgnoreCase(getType())) {
+			setReportData(getAvgResolutionTime(technicianNotNull,technicianGroupBy));
 		}
 		else if("inflowTrend".equalsIgnoreCase(getType())) {
 			setReportData(getWoInflowTrend());
 		}
 		else if("countSummary".equalsIgnoreCase(getType())) {
-			setReportData(getCountSummary());
+			setReportData(getCountSummary(null));
+		}
+		return SUCCESS;
+	}
+	public String preventiveMaintenance() throws Exception {
+		String preventiveCdn ="\""+FacilioConstants.Ticket.SOURCE_TYPE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"=\",\"value\":[\""+TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()+"_\"]}";
+		String assetGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
+		String assetNotNullFilter = "\""+FacilioConstants.Ticket.ASSET_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";
+		String spaceGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
+		String spaceNotNullFilter = "\""+FacilioConstants.Ticket.SPACE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";
+		if ("open".equalsIgnoreCase(getType())) {
+			setReportData(getOpenWorkOrderSummary(preventiveCdn));
+		}
+		else if ("closed".equalsIgnoreCase(getType())) {
+			setReportData(getClosedWorkOrderSummary(preventiveCdn));
+		}
+		else if ("woVolume".equalsIgnoreCase(getType())) {
+			setReportData(getWorkOrderCategorySummary());
+		}
+		else if ("location".equalsIgnoreCase(getType())) {
+			setReportData(getWorkOrderLocationSummary());
+		}
+		else if ("assets".equalsIgnoreCase(getType())) {
+			setReportData(getWorkOrderAssetSummary());
+		}
+		else if ("tasks".equalsIgnoreCase(getType())) {
+			setReportData(getWorkOrderPreventiveSummary());
+		}
+		else if("assetEfficiency".equalsIgnoreCase(getType())) {
+			setReportData(getAvgResolutionTime(assetNotNullFilter,assetGroupBy));
+		}
+		else if("spaceEfficiency".equalsIgnoreCase(getType())) {
+			setReportData(getAvgResolutionTime(spaceNotNullFilter,spaceGroupBy));
+		}
+		else if("countSummary".equalsIgnoreCase(getType())) {
+			setReportData(getCountSummary(preventiveCdn));
 		}
 		return SUCCESS;
 	}
 	public String technician() throws Exception {
 		String userFilter ="\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is\",\"value\":[\""+UserInfo.getCurrentUser().getOrgUserId()+"_\"]}";
-		
+		String technicianDailyGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"},{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
 		if ("priority".equalsIgnoreCase(getType())) {
 			setReportData(getMyWOPrioritySummary(userFilter));
 		}
 		else if("efficiency".equalsIgnoreCase(getType())) {
-			setReportData(getTechnicianAvgResolutionTime());
+			setReportData(getAvgResolutionTime(userFilter,technicianDailyGroupBy));
+		}
+		else if("countSummary".equalsIgnoreCase(getType())) {
+			setReportData(getCountSummary(userFilter));
 		}
 		else if ("closed".equalsIgnoreCase(getType())) {
 			setReportData(getClosedWorkOrderSummary(userFilter));
@@ -141,7 +178,7 @@ public class WorkOrderReportAction extends ActionSupport {
 						buildingObj.put("location", location);
 					}
 					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
-					buildingObj.put("stats", getOpenWorkOrderSummary());
+					buildingObj.put("stats", getOpenWorkOrderSummary(null));
 					woStats.add(buildingObj);
 				}
 			}
@@ -153,6 +190,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		setWoStats(woStats);
 		return SUCCESS;
 	}
+	
 	private List<Map<String, Object>> getMyWOPrioritySummary(String filterBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
@@ -179,13 +217,20 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		return rs;
 	}
-	private Map<String, Object> getDueTodayCount() throws Exception {
+	
+	private Map<String, Object> getDueTodayCount(String filterBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
 		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"dueToday\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		String filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Today\"}}";
+		String filters = "";
+		if(filterBy!=null && !filterBy.isEmpty()) {
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Today\"}}";
+		}
+		else {
+			filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Today\"}}";
+			}
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
 		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
@@ -200,14 +245,21 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		return rs;
 	}
-	private Map<String, Object> getOverDueCount() throws Exception {
+	
+	private Map<String, Object> getOverDueCount(String filterBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
 		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\"Overdue\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
 		Long nowTime = DateTimeUtil.getCurrenTime();
-		String filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+		String filters = "";
+		if(filterBy!=null && !filterBy.isEmpty()) {
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+		}
+		else {
+			filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+		}
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
 		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
@@ -222,6 +274,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		return rs;
 	}
+	
 	private Map<String, Object> getUnassignedCount() throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
@@ -244,18 +297,20 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		return rs;
 	}
-	private List<Map<String, Object>> getCountSummary() throws Exception {
+	
+	private List<Map<String, Object>> getCountSummary(String filterBy) throws Exception {
  		List<Map<String, Object>> rs = new ArrayList<>();
- 		rs.add(getDueTodayCount());
- 		rs.add(getOverDueCount());
+ 		rs.add(getDueTodayCount(filterBy));
+ 		rs.add(getOverDueCount(filterBy));
  		rs.add(getUnassignedCount());
- 		List<Map<String, Object>> openWoResult = getOpenWorkOrderSummary();
+ 		List<Map<String, Object>> openWoResult = getOpenWorkOrderSummary(filterBy);
  		Map<String,Object> openWO = new HashMap<>();
  		openWO.put(FacilioConstants.Reports.LABEL, "open");
  		openWO.put(FacilioConstants.Reports.VALUE, openWoResult);
  		rs.add(openWO);
 		return rs;
 	}
+	
 	private List<Map<String, Object>> getWoInflowTrend() throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
@@ -281,23 +336,32 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		return rs;
 	}
-	private List<Map<String, Object>> getTechnicianAvgResolutionTime() throws Exception {
+	
+	private List<Map<String, Object>> getAvgResolutionTime(String filterBy, String groupBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
-		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
 		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.RESOLUTION_TIME+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.RESOLUTION_TIME+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.AVG_FUNC+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
-		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
-		String filters ="{\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.ACTUAL_WORK_START+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
-		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
-		repContext.setXAxis(xAxis);
+		String filters = "";
+		if(filterBy!=null && !filterBy.isEmpty()) {
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.ACTUAL_WORK_START+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
+		}
+		else {
+			filters ="{\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.ACTUAL_WORK_START+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
+		}
+		if(groupBy!=null && !groupBy.isEmpty()) {
+			String groupByJSON = "["+ groupBy +"]";
+			String xAxisJSON = "["+ groupBy +"]";
+			JSONArray groupByCols = (JSONArray) parser.parse(groupByJSON);
+			repContext.setGroupByCols(groupByCols);
+			JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+			repContext.setXAxis(xAxis);
+		}
 		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
 		repContext.setYAxis(yAxis);
 		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
 		repContext.setJoins(joins);
-		JSONArray groupByCols = (JSONArray) parser.parse(groupByJSON);
-		repContext.setGroupByCols(groupByCols);
 		JSONObject filterObj = (JSONObject) parser.parse(filters);
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
@@ -309,7 +373,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		return rs;
 	}
 
-	private List<Map<String, Object>> getOpenWorkOrderSummary() throws Exception {
+	private List<Map<String, Object>> getOpenWorkOrderSummary(String filterBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();
@@ -317,6 +381,11 @@ public class WorkOrderReportAction extends ActionSupport {
 		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
 		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
 		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.STATUS_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		if(filterBy!=null && !filterBy.isEmpty()) {
+			String filters ="{"+filterBy+"}";
+			JSONObject filterObj = (JSONObject) parser.parse(filters.toString());
+			repContext.setFilters(filterObj);
+		}
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
 		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
@@ -343,7 +412,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.DUE_STATUS+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"},{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"}]";
 		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
-			filters ="{"+filterBy+"\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";
 		}
 		else {
 			filters ="{\""+FacilioConstants.Ticket.ACTUAL_WORK_END+"\":[{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"},{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}],\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}}";	
@@ -448,6 +517,60 @@ public class WorkOrderReportAction extends ActionSupport {
 	}
 	
 	private List<Map<String, Object>> getWorkOrderLocationSummary() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		String groupByJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.SPACE+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		int topN = 5;
+		String topNData = FacilioConstants.Reports.TOP_N+":"+topN+":"+FacilioConstants.Reports.COUNT_COLUMN;
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
+		repContext.setYAxis(yAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONArray groupByCols = (JSONArray) parser.parse(groupByJSON);
+		repContext.setGroupByCols(groupByCols);
+		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
+		repContext.setReportType(FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	
+	private List<Map<String, Object>> getWorkOrderAssetSummary() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSET_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}]";
+		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		int topN = 5;
+		String topNData = FacilioConstants.Reports.TOP_N+":"+topN+":"+FacilioConstants.Reports.COUNT_COLUMN;
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
+		repContext.setYAxis(yAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		repContext.setGroupByCols(xAxis);
+		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
+		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
+		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	
+	private List<Map<String, Object>> getWorkOrderPreventiveSummary() throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
 		JSONParser parser = new JSONParser();

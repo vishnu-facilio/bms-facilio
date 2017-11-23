@@ -1463,8 +1463,12 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="map"
-			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
+		<action name="preventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="preventiveMaintenance">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
 			<result name="success" type="json">
 				<param name="includeProperties">^woStats.*</param>
 			</result>
@@ -2283,6 +2287,13 @@
 
 		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="updateAlarmPriority">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="updateAlarmAsset" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmAsset">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>

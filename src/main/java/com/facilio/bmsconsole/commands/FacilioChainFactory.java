@@ -355,6 +355,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateAlarmAssetChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateAlarmAssetCommand());
+		c.addCommand(new AddWOFromAlarmCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewTaskChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());

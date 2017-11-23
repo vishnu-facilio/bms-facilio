@@ -980,8 +980,7 @@ public class DeviceAPI
 																		.select(modBean.getAllFields(module.getName()))
 																		.module(module)
 																		.beanClass(EnergyMeterContext.class)
-																		.maxLevel(0)
-																		;
+																		.maxLevel(0);
 		
 		return selectBuilder.get();
 	}

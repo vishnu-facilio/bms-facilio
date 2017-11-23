@@ -160,6 +160,28 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String updateAlarmAsset() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.updateAlarmAsset(assetId, node);
+		return SUCCESS;
+	}
+	
+	private long assetId = -1;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
+	private String node;
+	public String getNode() {
+		return node;
+	}
+	public void setNode(String node) {
+		this.node = node;
+	}
+
 	private String priority;
 	public String getPriority() {
 		return priority;
