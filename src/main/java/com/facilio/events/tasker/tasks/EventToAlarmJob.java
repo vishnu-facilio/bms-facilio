@@ -84,19 +84,21 @@ public class EventToAlarmJob extends FacilioJob{
 					{
 						//TODO update alarm
 						long alarmId = (long) props1.get(0).get("alarmId");
-						JSONObject json = new JSONObject();
+						JSONObject alarm = new JSONObject();
 						JSONArray ids = new JSONArray();
 						ids.add(alarmId);
-						json.put("priority", event.getSeverity());
-						json.put("id", ids);
-						json.put("orgId", event.getOrgId());
-						//Update severity
+						alarm.put("severity", event.getSeverity());
+						alarm.put("orgId", event.getOrgId());
+						
+						JSONObject content = new JSONObject();
+						content.put("alarm", alarm);
+						content.put("id", ids);
 						
 						Map<String, String> headers = new HashMap<>();
 						headers.put("Content-Type","application/json");
 						String server = AwsUtil.getConfig("servername");
-						String url = "http://" + server + "/internal/updateAlarmPriority";
-						AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
+						String url = "http://" + server + "/internal/updateAlarmFromEvent";
+						AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
 						
 						event.setAlarmId(alarmId);
 					}

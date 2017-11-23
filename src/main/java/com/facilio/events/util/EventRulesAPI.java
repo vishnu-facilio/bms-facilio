@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -85,5 +86,14 @@ public class EventRulesAPI {
 			long criteriaId = CriteriaAPI.addCriteria(eventRule.getThresholdCriteria(), orgId);
 			eventRule.setThresholdCriteriaId(criteriaId);
 		}
+	}
+	
+	public static final EventProperty getEventProperty(long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(EventConstants.EventModuleFactory.getEventPropertyModule().getTableName())
+														.select(EventConstants.EventFieldFactory.getEventPropertyFields())
+														.andCustomWhere("ORGID = ?", orgId);
+		
+		return FieldUtil.getAsBeanFromMap(selectBuilder.get().get(0), EventProperty.class);
 	}
 }

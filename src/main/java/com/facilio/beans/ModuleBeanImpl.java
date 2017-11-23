@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.Even;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
@@ -100,6 +102,10 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
+		
+		if(moduleName.equals(EventConstants.EventContextNames.EVENT)) {
+			return EventConstants.EventModuleFactory.getEventModule();
+		}
 		
 		PreparedStatement pstmt = null;
 		Connection conn  =null;
@@ -316,6 +322,11 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
+		
+		if(moduleName.equals(EventConstants.EventContextNames.EVENT)) {
+			return (ArrayList<FacilioField>) EventConstants.EventFieldFactory.getEventFields();
+		}
+		
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

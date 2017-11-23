@@ -2,6 +2,14 @@ package com.facilio.events.context;
 
 public class EventProperty {
 	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
@@ -10,27 +18,25 @@ public class EventProperty {
 		this.orgId = orgId;
 	}
 	
-	private long eventPropertyId = -1;
-	public long getEventPropertyId() {
-		return eventPropertyId;
+	private Boolean isEventEnabled;
+	public Boolean getIsEventEnabled() {
+		return isEventEnabled;
 	}
-	public void setEventPropertyId(long eventPropertyId) {
-		this.eventPropertyId = eventPropertyId;
+	public void setIsEventEnabled(Boolean isEventEnabled) {
+		this.isEventEnabled = isEventEnabled;
 	}
-	
-	private Boolean hasEventRule;
-	public Boolean getHasEventRule() {
-		return hasEventRule;
-	}
-	public void setHasEventRule(Boolean hasEventRule) {
-		this.hasEventRule = hasEventRule;
+	public boolean isEventEnabled() {
+		if(isEventEnabled != null) {
+			return isEventEnabled.booleanValue();
+		}
+		return false;
 	}
 	
-	private Boolean hasMappingRule;
-	public Boolean getHasMappingRule() {
-		return hasMappingRule;
+	private String eventTopicName;
+	public String getEventTopicName() {
+		return eventTopicName;
 	}
-	public void setHasMappingRule(Boolean hasMappingRule) {
-		this.hasMappingRule = hasMappingRule;
+	public void setEventTopicName(String eventTopicName) {
+		this.eventTopicName = eventTopicName;
 	}
 }

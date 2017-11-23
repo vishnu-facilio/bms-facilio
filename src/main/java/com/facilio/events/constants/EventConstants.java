@@ -120,14 +120,6 @@ public class EventConstants {
 			return eventrule;
 		}
 		
-		public static FacilioModule getEventThresholdRuleModule() {
-			FacilioModule eventthresholdrule = new FacilioModule();
-			eventthresholdrule.setName("eventthresholdrule");
-			eventthresholdrule.setDisplayName("Event Threshold Rule");
-			eventthresholdrule.setTableName("Event_Threshold_Rule");
-			return eventthresholdrule;
-		}
-		
 		public static FacilioModule getEventToAlarmFieldMappingModule() {
 			FacilioModule eventmappingrule = new FacilioModule();
 			eventmappingrule.setName("eventtoalaemfieldmapping");
@@ -157,6 +149,7 @@ public class EventConstants {
 			FacilioField source = new FacilioField();
 			source.setName("source");
 			source.setDataType(FieldType.STRING);
+			source.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			source.setColumnName("SOURCE");
 			source.setModule(module);
 			fields.add(source);
@@ -164,6 +157,7 @@ public class EventConstants {
 			FacilioField node = new FacilioField();
 			node.setName("node");
 			node.setDataType(FieldType.STRING);
+			node.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			node.setColumnName("NODE");
 			node.setModule(module);
 			fields.add(node);
@@ -171,6 +165,7 @@ public class EventConstants {
 			FacilioField assetId = new FacilioField();
 			assetId.setName("assetId");
 			assetId.setDataType(FieldType.NUMBER);
+			assetId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			assetId.setColumnName("ASSETID");
 			assetId.setModule(module);
 			fields.add(assetId);
@@ -178,6 +173,7 @@ public class EventConstants {
 			FacilioField eventType = new FacilioField();
 			eventType.setName("eventMessage");
 			eventType.setDataType(FieldType.STRING);
+			eventType.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			eventType.setColumnName("EVENT_MESSAGE");
 			eventType.setModule(module);
 			fields.add(eventType);
@@ -185,6 +181,7 @@ public class EventConstants {
 			FacilioField messageKey = new FacilioField();
 			messageKey.setName("messageKey");
 			messageKey.setDataType(FieldType.STRING);
+			messageKey.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			messageKey.setColumnName("MESSAGE_KEY");
 			messageKey.setModule(module);
 			fields.add(messageKey);
@@ -192,13 +189,15 @@ public class EventConstants {
 			FacilioField severity = new FacilioField();
 			severity.setName("severity");
 			severity.setDataType(FieldType.STRING);
+			severity.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			severity.setColumnName("SEVERITY");
 			severity.setModule(module);
 			fields.add(severity);
 			
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("createdTime");
-			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setDataType(FieldType.DATE_TIME);
+			createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
 			createdTime.setColumnName("CREATED_TIME");
 			createdTime.setModule(module);
 			fields.add(createdTime);
@@ -206,6 +205,7 @@ public class EventConstants {
 			FacilioField state = new FacilioField();
 			state.setName("eventState");
 			state.setDataType(FieldType.NUMBER);
+			state.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			state.setColumnName("EVENT_STATE");
 			state.setModule(module);
 			fields.add(state);
@@ -213,6 +213,7 @@ public class EventConstants {
 			FacilioField internalState = new FacilioField();
 			internalState.setName("internalState");
 			internalState.setDataType(FieldType.NUMBER);
+			internalState.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			internalState.setColumnName("INTERNAL_STATE");
 			internalState.setModule(module);
 			fields.add(internalState);
@@ -220,6 +221,7 @@ public class EventConstants {
 			FacilioField eventRuleId = new FacilioField();
 			eventRuleId.setName("eventRuleId");
 			eventRuleId.setDataType(FieldType.NUMBER);
+			eventRuleId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			eventRuleId.setColumnName("EVENT_RULE_ID");
 			eventRuleId.setModule(module);
 			fields.add(eventRuleId);
@@ -227,6 +229,7 @@ public class EventConstants {
 			FacilioField alarmId = new FacilioField();
 			alarmId.setName("alarmId");
 			alarmId.setDataType(FieldType.NUMBER);
+			alarmId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
 			alarmId.setColumnName("ALARM_ID");
 			alarmId.setModule(module);
 			fields.add(alarmId);
@@ -234,6 +237,7 @@ public class EventConstants {
 			FacilioField description = new FacilioField();
 			description.setName("description");
 			description.setDataType(FieldType.STRING);
+			description.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			description.setColumnName("DESCRIPTION");
 			description.setModule(module);
 			fields.add(description);
@@ -241,6 +245,7 @@ public class EventConstants {
 			FacilioField additionalInfo = new FacilioField();
 			additionalInfo.setName("additionalInfoJsonStr");
 			additionalInfo.setDataType(FieldType.STRING);
+			additionalInfo.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
 			additionalInfo.setColumnName("ADDITIONAL_INFO");
 			additionalInfo.setModule(module);
 			fields.add(additionalInfo);
@@ -250,31 +255,24 @@ public class EventConstants {
 		
 		public static List<FacilioField> getEventPropertyFields() {
 			FacilioModule module = EventModuleFactory.getEventPropertyModule();
-			
 			List<FacilioField> fields = new ArrayList<>();
 			
-			FacilioField id = new FacilioField();
-			id.setName("eventPropertyId");
-			id.setDataType(FieldType.NUMBER);
-			id.setColumnName("EVENT_PROPERTY_ID");
-			id.setModule(module);
-			fields.add(id);
-			
+			fields.add(FieldFactory.getIdField(module));
 			fields.add(FieldFactory.getOrgIdField(module));
 			
-			FacilioField hasEventRule = new FacilioField();
-			hasEventRule.setName("hasEventRule");
-			hasEventRule.setDataType(FieldType.BOOLEAN);
-			hasEventRule.setColumnName("HASEVENTRULE");
-			hasEventRule.setModule(module);
-			fields.add(hasEventRule);
+			FacilioField isEventEnabled = new FacilioField();
+			isEventEnabled.setName("isEventEnabled");
+			isEventEnabled.setDataType(FieldType.BOOLEAN);
+			isEventEnabled.setColumnName("IS_EVENT_ENABLED");
+			isEventEnabled.setModule(module);
+			fields.add(isEventEnabled);
 			
-			FacilioField hasMappingRule = new FacilioField();
-			hasMappingRule.setName("hasMappingRule");
-			hasMappingRule.setDataType(FieldType.BOOLEAN);
-			hasMappingRule.setColumnName("HASMAPPINGRULE");
-			hasMappingRule.setModule(module);
-			fields.add(hasMappingRule);
+			FacilioField eventTopicName = new FacilioField();
+			eventTopicName.setName("eventTopicName");
+			eventTopicName.setDataType(FieldType.STRING);
+			eventTopicName.setColumnName("EVENTS_TOPIC_NAME");
+			eventTopicName.setModule(module);
+			fields.add(eventTopicName);
 			
 			return fields;
 		}
@@ -349,93 +347,6 @@ public class EventConstants {
 			clearCriteriaOverseconds.setColumnName("THRESHOLD_OVER_SECONDS");
 			clearCriteriaOverseconds.setModule(module);
 			fields.add(clearCriteriaOverseconds);
-			
-			return fields;
-		}
-		
-		public static List<FacilioField> getEventThresholdRuleFields() {
-			FacilioModule module = EventModuleFactory.getEventThresholdRuleModule();
-			
-			List<FacilioField> fields = new ArrayList<>();
-			
-			FacilioField id = new FacilioField();
-			id.setName("eventThresholdRuleId");
-			id.setDataType(FieldType.NUMBER);
-			id.setColumnName("EVENT_THRESHOLD_RULE_ID");
-			id.setModule(module);
-			fields.add(id);
-			
-			fields.add(FieldFactory.getOrgIdField(module));
-			
-			FacilioField eventRuleId = new FacilioField();
-			eventRuleId.setName("eventRuleId");
-			eventRuleId.setDataType(FieldType.NUMBER);
-			eventRuleId.setColumnName("EVENT_RULE_ID");
-			eventRuleId.setModule(module);
-			fields.add(eventRuleId);
-			
-			FacilioField hasFilterCriteria = new FacilioField();
-			hasFilterCriteria.setName("hasFilterCriteria");
-			hasFilterCriteria.setDataType(FieldType.BOOLEAN);
-			hasFilterCriteria.setColumnName("HASFILTERCRITERIA");
-			hasFilterCriteria.setModule(module);
-			fields.add(hasFilterCriteria);
-			
-			FacilioField filterCriteriaId = new FacilioField();
-			filterCriteriaId.setName("filterCriteriaId");
-			filterCriteriaId.setDataType(FieldType.NUMBER);
-			filterCriteriaId.setColumnName("FILTER_CRITERIAID");
-			filterCriteriaId.setModule(module);
-			fields.add(filterCriteriaId);
-			
-			FacilioField filterCriteriaOccurs = new FacilioField();
-			filterCriteriaOccurs.setName("filterCriteriaOccurs");
-			filterCriteriaOccurs.setDataType(FieldType.NUMBER);
-			filterCriteriaOccurs.setColumnName("FILTER_CRITERIA_OCCURS");
-			filterCriteriaOccurs.setModule(module);
-			fields.add(filterCriteriaOccurs);
-			
-			FacilioField filterCriteriaOverseconds = new FacilioField();
-			filterCriteriaOverseconds.setName("filterCriteriaOverseconds");
-			filterCriteriaOverseconds.setDataType(FieldType.NUMBER);
-			filterCriteriaOverseconds.setColumnName("FILTER_CRITERIA_OVERSECONDS");
-			filterCriteriaOverseconds.setModule(module);
-			fields.add(filterCriteriaOverseconds);
-			
-			FacilioField hasClearCriteria = new FacilioField();
-			hasClearCriteria.setName("hasClearCriteria");
-			hasClearCriteria.setDataType(FieldType.BOOLEAN);
-			hasClearCriteria.setColumnName("HASCLEARCRITERIA");
-			hasClearCriteria.setModule(module);
-			fields.add(hasClearCriteria);
-			
-			FacilioField clearCriteriaId = new FacilioField();
-			clearCriteriaId.setName("clearCriteriaId");
-			clearCriteriaId.setDataType(FieldType.NUMBER);
-			clearCriteriaId.setColumnName("CLEAR_CRITERIAID");
-			clearCriteriaId.setModule(module);
-			fields.add(clearCriteriaId);
-			
-			FacilioField clearCriteriaOccurs = new FacilioField();
-			clearCriteriaOccurs.setName("clearCriteriaOccurs");
-			clearCriteriaOccurs.setDataType(FieldType.NUMBER);
-			clearCriteriaOccurs.setColumnName("CLEAR_CRITERIA_OCCURS");
-			clearCriteriaOccurs.setModule(module);
-			fields.add(clearCriteriaOccurs);
-			
-			FacilioField clearCriteriaOverseconds = new FacilioField();
-			clearCriteriaOverseconds.setName("clearCriteriaOverseconds");
-			clearCriteriaOverseconds.setDataType(FieldType.NUMBER);
-			clearCriteriaOverseconds.setColumnName("CLEAR_CRITERIA_OVERSECONDS");
-			clearCriteriaOverseconds.setModule(module);
-			fields.add(clearCriteriaOverseconds);
-			
-			FacilioField ruleOrder = new FacilioField();
-			ruleOrder.setName("ruleOrder");
-			ruleOrder.setDataType(FieldType.NUMBER);
-			ruleOrder.setColumnName("RULE_ORDER");
-			ruleOrder.setModule(module);
-			fields.add(ruleOrder);
 			
 			return fields;
 		}

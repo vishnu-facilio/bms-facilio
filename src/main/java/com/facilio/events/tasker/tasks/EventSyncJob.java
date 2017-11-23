@@ -26,7 +26,9 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventProperty;
 import com.facilio.events.util.EventAPI;
+import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -47,7 +49,8 @@ public class EventSyncJob extends FacilioJob{
 				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion("us-west-2").build();
 				
 				DynamoDB dd = new DynamoDB(client);
-				Table table = dd.getTable("FacilioEvents"); // Client Table
+				EventProperty eventProperty = EventRulesAPI.getEventProperty(OrgInfo.getCurrentOrgInfo().getOrgid());
+				Table table = dd.getTable(eventProperty.getEventTopicName()); // Client Table
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
 				
