@@ -14,6 +14,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -94,14 +97,14 @@ public class DeviceAPI
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 		
-		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
-																		.select(modBean.getAllFields(module.getName()))
-																		.module(module)
-																		.beanClass(EnergyMeterContext.class)
-																		.andCustomWhere("PURPOSE_ID=? AND PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", purposeId, spaceId,root)
-																		.maxLevel(0)
-																		;
-		
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", spaceId,root)
+				.andCondition(getCondition("PURPOSE_ID",""+purposeId,NumberOperators.EQUALS))
+				.maxLevel(0);
 		return selectBuilder.get();
 	}
 	
@@ -109,14 +112,13 @@ public class DeviceAPI
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 		
-		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
-																		.select(modBean.getAllFields(module.getName()))
-																		.module(module)
-																		.beanClass(EnergyMeterContext.class)
-																		.andCustomWhere("PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", spaceId,root)
-																		.maxLevel(0)
-																		;
-		
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("PURPOSE_SPACE_ID = ? AND IS_ROOT= ?", spaceId,root)
+				.maxLevel(0);
 		return selectBuilder.get();
 	}
 			
@@ -125,14 +127,13 @@ public class DeviceAPI
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
 		
-		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
-																		.select(modBean.getAllFields(module.getName()))
-																		.module(module)
-																		.beanClass(EnergyMeterPurposeContext.class)
-																		.andCustomWhere("ORGID=? AND NAME = ?", orgId,purpose)
-																		.maxLevel(0)
-																		;
-		
+		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterPurposeContext.class)
+				.andCustomWhere("ORGID=? AND NAME = ?", orgId,purpose)
+				.maxLevel(0);
 		return selectBuilder.get();
 	}
 	
@@ -141,15 +142,25 @@ public class DeviceAPI
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
 		
-		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
-																		.select(modBean.getAllFields(module.getName()))
-																		.module(module)
-																		.beanClass(EnergyMeterPurposeContext.class)
-																		.andCustomWhere("ORGID=?", orgId)
-																		.maxLevel(0)
-																		;
-		
+		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterPurposeContext.class)
+				.andCustomWhere("ORGID=?", orgId)
+				.maxLevel(0);
 		return selectBuilder.get();
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	public static Condition getCondition (String colName,String valueList,Operator operator)
+	{
+				Condition condition = new Condition();
+				condition.setColumnName(colName);
+				condition.setOperator(operator);
+				condition.setValue(valueList);
+				return condition;
 	}
 			
 	 public static List<Device> getDevices() throws SQLException

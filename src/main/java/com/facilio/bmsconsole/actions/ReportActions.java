@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -366,6 +367,8 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		{
 			return -1;
 		}
+		
+		
 		EnergyMeterPurposeContext empc= purposeList.get(0);
 		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllEnergyMeters(getBuildingId(), empc.getId(), true);
 		
@@ -470,7 +473,7 @@ private FacilioField getField(String name, String colName, FieldType type) {
 	{
 		JSONObject buildingData = new JSONObject();
 		
-		BuildingContext building =getBuilding();
+		BuildingContext building =SpaceAPI.getBuildingSpace(getBuildingId());
 		int floors=building.getNoOfFloors();
 		buildingData.put("floors", floors);
 		long photoId=building.getPhotoId();
@@ -517,8 +520,8 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		List<Map<String, Object>> result = builder.get();
 		
 		int lastMonth=-1;
-		double lastMonthKwh=-1;
 		int thisMonth=-1;
+		double lastMonthKwh=-1;
 		double thisMonthKwh=-1;
 		
 		if(result!=null && !result.isEmpty())
@@ -591,22 +594,9 @@ private FacilioField getField(String name, String colName, FieldType type) {
 	
 	private Condition getDeviceListCondition (String deviceList)
 	{
-				Condition deviceIdCondition = new Condition();
-				deviceIdCondition.setColumnName("PARENT_METER_ID");
-				deviceIdCondition.setOperator(NumberOperators.EQUALS);
-				deviceIdCondition.setValue(deviceList);
-				return deviceIdCondition;
+		return DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS);
 	}
 	
-	
-	private BuildingContext getBuilding() throws Exception
-	{
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getBuildingId());		
-		Chain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
-		getBuildingChain.execute(context);
-		return (BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING);
-	}
 	
 	private long buildingId;
 	public long getBuildingId() 
