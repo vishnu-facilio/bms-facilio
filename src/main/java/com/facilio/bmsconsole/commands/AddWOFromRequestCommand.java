@@ -44,7 +44,6 @@ public class AddWOFromRequestCommand implements Command {
 			idCondition.setValue(ids);
 			
 			SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
-																	.connection(((FacilioContext) context).getConnectionWithoutTransaction())
 																	.table(dataTableName)
 																	.moduleName(moduleName)
 																	.beanClass(WorkOrderRequestContext.class)
