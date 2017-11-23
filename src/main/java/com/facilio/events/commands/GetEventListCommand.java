@@ -28,7 +28,8 @@ public class GetEventListCommand implements Command {
 					.connection(conn)
 					.select(EventConstants.EventFieldFactory.getEventFields())
 					.table("Event")
-					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.orderBy("CREATED_TIME desc");
 	
 			List<Map<String, Object>> eventList = selectBuider.get();
 			
