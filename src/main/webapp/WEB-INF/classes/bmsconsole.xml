@@ -2213,6 +2213,13 @@
 				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
+		
+		<action name="updateAlarmFromEvent" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmFromEvent">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="updateAlarmPriority">
