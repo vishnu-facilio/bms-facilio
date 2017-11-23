@@ -97,21 +97,19 @@ public class ReportActions extends ActionSupport {
 		Set<Long> keys=purposeMapping.keySet();
 		String deviceList=StringUtils.join(keys, ",");
 		String duration = getPeriod();
-		long startTime=-1;
-		long endTime=-1;
+		long startTime=DateTimeUtil.getMonthStartTime();
+	    long endTime=DateTimeUtil.getCurrenTime();
+	    
+	    List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		if(duration.equals("week"))
 		{
-			//need to decide on this..
+			FacilioField dayFld = getField("DAY","TTIME_DAY",FieldType.NUMBER);
+			fields.add(dayFld);
 		}
 		
-		startTime=DateTimeUtil.getMonthStartTime();
-	    endTime=DateTimeUtil.getCurrenTime();
-	    
-		FacilioField selectFld = getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
+		FacilioField meterFld = getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 		FacilioField timeFld = getField("DATE","TTIME_DATE",FieldType.NUMBER);
-				
-		List<FacilioField> fields = new ArrayList<FacilioField>() ;
-		fields.add(selectFld);
+		fields.add(meterFld);
 		fields.add(timeFld);
 		
 		List<Map<String, Object>> current=getGroupByData(deviceList,startTime, endTime, fields);
