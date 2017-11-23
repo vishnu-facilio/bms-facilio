@@ -13,13 +13,13 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.events.commands.AddEventCommand;
 import com.facilio.events.commands.AddEventRuleCommand;
+import com.facilio.events.commands.GetEventDetailCommand;
 import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
-import com.facilio.events.commands.UpdateEventFilterCommand;
-import com.facilio.events.commands.UpdateEventPropertyCommand;
+import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
+import com.facilio.events.commands.UpdateEventAssetsMappingCommand;
 import com.facilio.events.commands.UpdateEventRulesCommand;
-import com.facilio.events.commands.UpdateEventThresholdRulesCommand;
-import com.facilio.events.commands.UpdateEventTransformRuleCommand;
+import com.facilio.events.commands.UpdateNodeToAssetMappingCommand;
 
 public class EventConstants {
 	
@@ -32,14 +32,8 @@ public class EventConstants {
 		public static final String EVENT_PROPERTY = "eventProperty";
 		public static final String EVENT_RULE = "eventRule";
 		public static final String EVENT_RULE_LIST = "eventRules";
-		public static final String EVENT_CRITERIA_MAP = "eventCriteriaList";
-		public static final String IGNORE_EVENT = "ignoreEvent";
-		public static final String FILTER_CRITERIA_PATTERN = "filterCriteriaPattern";
-		public static final String FILTER_CONDITIONS = "filterConditions";
-		public static final String CUSTOMIZE_CRITERIA_PATTERN = "customizeCriteriaPattern";
-		public static final String CUSTOMIZE_CONDITIONS = "customizeConditions";
-		public static final String CUSTOMIZE_ALARM_TEMPLATE = "customizeAlarmTemplate";
-		public static final String EVENT_THRESHOLD_RULE_LIST = "eventThresholdRuleList";
+		public static final String NODE = "node";
+		public static final String ASSET_ID = "assetId";
 	
 	}
 	
@@ -53,7 +47,7 @@ public class EventConstants {
 		
 		public static Chain getEventDetailChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new AddEventCommand());
+			c.addCommand(new GetEventDetailCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
@@ -72,34 +66,6 @@ public class EventConstants {
 			return c;
 		}
 		
-		public static Chain updateEventPropertyChain() {
-			Chain c = new ChainBase();
-			c.addCommand(new UpdateEventPropertyCommand());
-			addCleanUpCommand(c);
-			return c;
-		}
-		
-		public static Chain updateEventFilterChain() {
-			Chain c = new ChainBase();
-			c.addCommand(new UpdateEventFilterCommand());
-			addCleanUpCommand(c);
-			return c;
-		}
-		
-		public static Chain updateEventTransformRuleChain() {
-			Chain c = new ChainBase();
-			c.addCommand(new UpdateEventTransformRuleCommand());
-			addCleanUpCommand(c);
-			return c;
-		}
-		
-		public static Chain updateEventThresholdRulesChain() {
-			Chain c = new ChainBase();
-			c.addCommand(new UpdateEventThresholdRulesCommand());
-			addCleanUpCommand(c);
-			return c;
-		}
-		
 		public static Chain updateEventRulesChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new UpdateEventRulesCommand());
@@ -110,6 +76,15 @@ public class EventConstants {
 		public static Chain getEventListChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new GetEventListCommand());
+			addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain updateNodeToAssetMappingChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new UpdateNodeToAssetMappingCommand());
+			c.addCommand(new UpdateEventAssetsMappingCommand());
+			c.addCommand(new UpdateAlarmAssetMappingCommand());
 			addCleanUpCommand(c);
 			return c;
 		}
@@ -159,6 +134,14 @@ public class EventConstants {
 			eventmappingrule.setDisplayName("Event To Alarm Field Mapping");
 			eventmappingrule.setTableName("Event_To_Alarm_Field_Mapping");
 			return eventmappingrule;
+		}
+		
+		public static FacilioModule getNodeAssetMappingModule() {
+			FacilioModule nodeAssetMappingModule = new FacilioModule();
+			nodeAssetMappingModule.setName("nodetoassetmapping");
+			nodeAssetMappingModule.setDisplayName("Node To Asset Mapping");
+			nodeAssetMappingModule.setTableName("Node_To_Asset_Mapping");
+			return  nodeAssetMappingModule;
 		}
 	}
 	
@@ -511,6 +494,30 @@ public class EventConstants {
 			mappingPairs.setColumnName("MAPPING_PAIRS");
 			mappingPairs.setModule(module);
 			fields.add(mappingPairs);
+			
+			return fields;
+		}
+		
+		public static List<FacilioField> getNodeToAssetMappingFields() {
+			FacilioModule module = EventModuleFactory.getNodeAssetMappingModule();
+			List<FacilioField> fields = new ArrayList<>();
+			
+			fields.add(FieldFactory.getIdField(module));
+			fields.add(FieldFactory.getOrgIdField(module));
+			
+			FacilioField node = new FacilioField();
+			node.setName(EventConstants.EventContextNames.NODE);
+			node.setDataType(FieldType.STRING);
+			node.setColumnName("NODE");
+			node.setModule(module);
+			fields.add(node);
+			
+			FacilioField assetId = new FacilioField();
+			assetId.setName(EventConstants.EventContextNames.ASSET_ID);
+			assetId.setDataType(FieldType.NUMBER);
+			assetId.setColumnName("ASSET_ID");
+			assetId.setModule(module);
+			fields.add(assetId);
 			
 			return fields;
 		}

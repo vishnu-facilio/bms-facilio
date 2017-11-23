@@ -7,13 +7,13 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
-import com.facilio.events.context.EventThresholdRule;
+import com.facilio.events.util.EventAPI;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 @SuppressWarnings("serial")
@@ -99,14 +99,6 @@ public class EventAction extends ActionSupport {
 		this.eventRules = eventRules;
 	}
 	
-	private Map<Long, Criteria> eventCriteriaMap;
-	public Map<Long, Criteria> getEventCriteriaMap() {
-		return eventCriteriaMap;
-	}
-	public void setEventCriteriaMap(Map<Long, Criteria> eventCriteriaMap) {
-		this.eventCriteriaMap = eventCriteriaMap;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public String eventRules() throws Exception {
 		
@@ -115,17 +107,6 @@ public class EventAction extends ActionSupport {
 		eventRulesChain.execute(context);
 		
 		setEventRules((List<EventRule>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
-		
-		return SUCCESS;
-	}
-	
-	public String updateEventProperty() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_PROPERTY, eventProperty);
-		
-		Chain updateEventPropertyChain = EventConstants.EventChainFactory.updateEventPropertyChain();
-		updateEventPropertyChain.execute(context);
 		
 		return SUCCESS;
 	}
@@ -151,94 +132,6 @@ public class EventAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	
-	private Map<Integer, Condition> filterConditions;
-	public Map<Integer, Condition> getFilterConditions() {
-		return filterConditions;
-	}
-	public void setFilterConditions(Map<Integer, Condition> filterConditions) {
-		this.filterConditions = filterConditions;
-	}
-	
-	private String filterPattern;
-	public String getFilterPattern() {
-		return filterPattern;
-	}
-	public void setFilterPattern(String filterPattern) {
-		this.filterPattern = filterPattern;
-	}
-	
-	public String saveEventFilter() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
-		context.put(EventConstants.EventContextNames.FILTER_CRITERIA_PATTERN, filterPattern);
-		context.put(EventConstants.EventContextNames.FILTER_CONDITIONS, filterConditions);
-		
-		Chain updateEventFilterChain = EventConstants.EventChainFactory.updateEventFilterChain();
-		updateEventFilterChain.execute(context);
-		
-		return SUCCESS;
-	}
-	
-	private Map<Integer, Condition> customizeConditions;
-	public Map<Integer, Condition> getCustomizeConditions() {
-		return customizeConditions;
-	}
-	public void setCustomizeConditions(Map<Integer, Condition> customizeConditions) {
-		this.customizeConditions = customizeConditions;
-	}
-	
-	private String customizePattern;
-	public String getCustomizePattern() {
-		return customizePattern;
-	}
-	public void setCustomizePattern(String customizePattern) {
-		this.customizePattern = customizePattern;
-	}
-	
-	private Map<String,String> customizeAlarmTemplate;
-	public Map<String,String> getCustomizeAlarmTemplate() {
-		return customizeAlarmTemplate;
-	}
-	public void setCustomizeAlarmTemplate(Map<String,String> customizeAlarmTemplate) {
-		this.customizeAlarmTemplate = customizeAlarmTemplate;
-	}
-	
-	public String saveEventTransformRules() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
-		context.put(EventConstants.EventContextNames.CUSTOMIZE_CRITERIA_PATTERN, customizePattern);
-		context.put(EventConstants.EventContextNames.CUSTOMIZE_CONDITIONS, customizeConditions);
-		context.put(EventConstants.EventContextNames.CUSTOMIZE_ALARM_TEMPLATE, customizeAlarmTemplate);
-		
-		Chain updateEventTransformRuleChain = EventConstants.EventChainFactory.updateEventTransformRuleChain();
-		updateEventTransformRuleChain.execute(context);
-		
-		return SUCCESS;
-	}
-	
-	private List<EventThresholdRule> eventThresholdRules;
-	public List<EventThresholdRule> getEventThresholdRules() {
-		return eventThresholdRules;
-	}
-	public void setEventThresholdRules(List<EventThresholdRule> eventThresholdRules) {
-		this.eventThresholdRules = eventThresholdRules;
-	}
-	
-	public String saveThresholdRules() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
-		context.put(EventConstants.EventContextNames.EVENT_THRESHOLD_RULE_LIST, eventThresholdRules);
-		
-		Chain updateEventThresholdRulesChain = EventConstants.EventChainFactory.updateEventThresholdRulesChain();
-		updateEventThresholdRulesChain.execute(context);
-		
-		return SUCCESS;
-	}
-	
 	public String updateEventRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
@@ -248,4 +141,49 @@ public class EventAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-}
+	
+	public String getAllNodes() throws Exception {
+		setNodes(EventAPI.getAllNodes(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		return SUCCESS;
+	}
+	
+	public String updateNodeWithAsset() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.NODE, node);
+		context.put(EventConstants.EventContextNames.ASSET_ID, assetId);
+		
+		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToAssetMappingChain();
+		updateAssetChain.execute(context);
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		return SUCCESS;
+	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	
+	private String node;
+	public String getNode() {
+		return node;
+	}
+	public void setNode(String node) {
+		this.node = node;
+	}
+	
+	private long assetId = -1;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+
+	private List<Map<String, Object>> nodes;
+	public List<Map<String, Object>> getNodes() {
+		return nodes;
+	}
+	public void setNodes(List<Map<String, Object>> nodes) {
+		this.nodes = nodes;
+	}
+ }

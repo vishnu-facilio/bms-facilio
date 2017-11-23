@@ -72,31 +72,24 @@
 			</result>
 		</action>
 		
-		<action name="updateEventProperty" class="com.facilio.events.actions.EventAction" method="updateEventProperty">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^eventProperty.*</param>
-			</result>
-		</action>
-		
-		<action name="saveEventFilter" class="com.facilio.events.actions.EventAction" method="saveEventFilter">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^eventRule.*</param>
-			</result>
-		</action>
-		
-		<action name="saveEventTransformRules" class="com.facilio.events.actions.EventAction" method="saveEventTransformRules">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^eventRule.*</param>
-			</result>
-		</action>
-		
 		<action name="updateEventRule" class="com.facilio.events.actions.EventAction" method="updateEventRule">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
+			</result>
+		</action>
+		
+		<action name="nodes" class="com.facilio.events.actions.EventAction" method="getAllNodes">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="root">nodes</param>
+			</result>
+		</action>
+		
+		<action name="updatenode" class="com.facilio.events.actions.EventAction" method="updateNodeWithAsset">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
 			</result>
 		</action>
 	</package>
