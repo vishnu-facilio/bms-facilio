@@ -190,6 +190,12 @@ public class AlarmAction extends ActionSupport {
 	public void setPriority(String priority) {
 		this.priority = priority;
 	}
+	
+	public String updateAlarmFromEvent() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
+		rowsUpdated = bean.updateAlarm(alarm, id);
+		return SUCCESS;
+	}
 
 	private String updateAlarm(FacilioContext context) throws Exception {
 		//		System.out.println(id);

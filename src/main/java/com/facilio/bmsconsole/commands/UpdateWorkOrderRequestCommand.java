@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -32,7 +32,7 @@ public class UpdateWorkOrderRequestCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -41,7 +41,6 @@ public class UpdateWorkOrderRequestCommand implements Command {
 			idCondition.setValue(ids);
 			
 			UpdateRecordBuilder<WorkOrderRequestContext> updateBuilder = new UpdateRecordBuilder<WorkOrderRequestContext>()
-																		.connection(conn)
 																		.moduleName(moduleName)
 																		.table(dataTableName)
 																		.fields(fields)

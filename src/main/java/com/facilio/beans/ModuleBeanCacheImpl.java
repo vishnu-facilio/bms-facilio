@@ -33,7 +33,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleName), moduleObj);
 			
-			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleName);
 		}
 		else {
 			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleName);
@@ -52,7 +52,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			CacheUtil.set(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
 			
-			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
+			//LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
 		}
 		else {
 			LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
@@ -71,7 +71,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName), modules);
 			
-			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
 			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
@@ -109,7 +109,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleName, type.getIntVal()), modules);
 			
-			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
+			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
 			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);

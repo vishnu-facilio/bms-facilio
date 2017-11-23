@@ -309,7 +309,7 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateWorkOrderRequestCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new AddWOFromRequestCommand());
-		addCleanUpCommand(c);
+		//addCleanUpCommand(c);
 		return c;
 	}
 	
