@@ -407,4 +407,13 @@ public class ModuleFactory {
 		
 		return fieldModule;
 	}
+	
+	public static FacilioModule getControllerModule() {
+		FacilioModule controllerModule = new FacilioModule();
+		controllerModule.setName("controller");
+		controllerModule.setDisplayName("Controllers");
+		controllerModule.setTableName("Controller");
+		
+		return controllerModule;
+	}
 }

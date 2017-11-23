@@ -1484,4 +1484,29 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getControllerFields() {
+		FacilioModule module = ModuleFactory.getControllerModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		
+		FacilioField spaceId = new FacilioField();
+		spaceId.setName("spaceId");
+		spaceId.setDataType(FieldType.NUMBER);
+		spaceId.setColumnName("SPACE_ID");
+		spaceId.setModule(module);
+		fields.add(spaceId);
+		
+		FacilioField macAddr = new FacilioField();
+		macAddr.setName("macAddr");
+		macAddr.setDataType(FieldType.STRING);
+		macAddr.setColumnName("MAC_ADDR");
+		macAddr.setModule(module);
+		fields.add(macAddr);
+		
+		return fields;
+	}
 }	
