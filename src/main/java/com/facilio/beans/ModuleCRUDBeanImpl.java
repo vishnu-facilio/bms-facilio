@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -91,6 +92,27 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
 			updateAlarm.execute(context);
 			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		}
+		return -1;
+	}
+
+	@Override
+	public int updateAlarmAsset(long assetId, String node) throws Exception {
+		// TODO Auto-generated method stub
+		if(node != null && !node.isEmpty() && assetId != -1) {
+			AlarmContext alarm = new AlarmContext();
+			AssetContext asset = new AssetContext();
+			asset.setId(assetId);
+			alarm.setAsset(asset);
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ALARM, alarm);
+			context.put(FacilioConstants.ContextNames.NODE, node);
+
+			Chain updateAlarm = FacilioChainFactory.getUpdateAlarmAssetChain();
+			updateAlarm.execute(context);
+			return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+			
 		}
 		return -1;
 	}

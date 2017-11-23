@@ -98,17 +98,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.sourceType = type;
 	}
 	
-	private long assetId = -1;
-	public long getAssetId() {
-		if(asset != null) {
-			return asset.getId();
-		}
-		return assetId;
-	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
-	}
-
 	private AssetContext asset;
 	public AssetContext getAsset() {
 		return asset;

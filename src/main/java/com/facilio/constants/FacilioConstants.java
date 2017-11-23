@@ -526,6 +526,7 @@ public class FacilioConstants {
 		public static final String SORTING_QUERY = "sortingQuery";
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
+		public static final String NODE = "node";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

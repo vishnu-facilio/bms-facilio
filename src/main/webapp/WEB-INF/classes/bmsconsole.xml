@@ -2291,6 +2291,13 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		
+		<action name="updateAlarmAsset" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmAsset">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="addAlarmTemplate" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="addAlarmTemplate">
