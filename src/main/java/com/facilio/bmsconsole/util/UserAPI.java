@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.UserType;
+import com.facilio.fw.OrgInfo;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -227,12 +228,12 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_Users.ORG_USERID, ORG_Users.USER_TYPE, ORG_Users.ORGID, Users.USERID, Users.NAME, Users.EMAIL, ORG_Users.INVITEDTIME, ORG_Users.USER_STATUS, ORG_Users.INVITATION_ACCEPT_STATUS, ORG_Users.ROLE_ID, Users.PHOTO_ID FROM Users INNER JOIN ORG_Users ON ORG_Users.USERID = Users.USERID WHERE Users.USERID = ?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.USERID=?");
 			pstmt.setLong(1, userId);
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				UserContext tc = getUserObjectFromRS(rs);
+				UserContext tc = getUserObjectFromRS1(rs);
 				return tc;
 			}
 		}
@@ -416,7 +417,7 @@ public class UserAPI {
 //					locationId = LocationAPI.addLocation(context.getLocation());
 //				}
 //				
-				String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL,TIMEZONE,LANGUAGE,PHONE,MOBILE,PHOTO-ID,STREET, CITY, STATE, ZIP, COUNTRY) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				String insertquery1 = "insert into Users (NAME, COGNITO_ID, USER_VERIFIED, EMAIL, TIMEZONE, LANGUAGE, PHONE, MOBILE, PHOTO_ID, STREET, CITY, STATE, ZIP, COUNTRY) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
 				ps1.setString(1, context.getName());
 				ps1.setString(2, null);
@@ -512,6 +513,10 @@ public class UserAPI {
 				List<FacilioField> fields= FieldFactory.getUserFields();
 				GenericUpdateRecordBuilder builder= new GenericUpdateRecordBuilder().table("Users").fields(fields).andCustomWhere("USERID = ?", context.getUserId());
 				builder.update(userprops);
+				
+				List<FacilioField> orgfields = FieldFactory.getOrgUserFields();
+				GenericUpdateRecordBuilder orgBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(orgfields).andCustomWhere("ORGID = ? AND ORG_USERID = ?",orgId, context.getOrgUserId());
+				orgBuilder.update(userprops);
 			}
 			catch(Exception e){
 				e.printStackTrace();

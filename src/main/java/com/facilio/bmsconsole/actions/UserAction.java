@@ -119,6 +119,10 @@ public class UserAction extends ActionSupport {
 			else if (e instanceof InvalidParameterException) {
 				addFieldError("phone", "Invalid phone number format.");
 			}
+			else{
+				e.printStackTrace();
+				System.out.println("........> Error");
+			}
 			return ERROR;
 		}
 		return SUCCESS;
@@ -162,7 +166,7 @@ public class UserAction extends ActionSupport {
 
 		Command addUser = FacilioChainFactory.getUpdateUserCommand();
 		addUser.execute(context);
-		
+				
 		return SUCCESS;
 	}
 
@@ -238,4 +242,10 @@ System.out.println("User object is "+params+"\n"+ user);
 		
 		return SUCCESS;
 	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	
 }

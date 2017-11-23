@@ -482,6 +482,7 @@ public class FacilioConstants {
 		public static final String PICKLIST = "pickList";
 		
 		public static final String USERS = "users";
+		public static final String ORGUSERS = "orgusers";
 		
 		public static final String GROUPS = "groups";
 		

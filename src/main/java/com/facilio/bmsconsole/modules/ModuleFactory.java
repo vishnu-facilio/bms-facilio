@@ -149,6 +149,15 @@ public class ModuleFactory {
 		return supportEmailsModule;
 	}
 	
+	public static FacilioModule getOrgUserModule(){
+		FacilioModule orgUserModule = new FacilioModule();
+		orgUserModule.setName("orgusers");
+		orgUserModule.setDisplayName("Org Users");
+		orgUserModule.setTableName("ORG_Users");
+		return orgUserModule;
+		
+	}
+	
 	public static FacilioModule getUserModule() {
 		FacilioModule userModule = new FacilioModule();
 		userModule.setName(FacilioConstants.ContextNames.USER);

@@ -256,9 +256,36 @@ public class SpaceAPI {
 																	.select(fields)
 																	.module(module)
 																	.beanClass(BaseSpaceContext.class)
-																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,3);
+																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
+	}
+	
+	public static List<BuildingContext> getSiteBuildings(long siteId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(BuildingContext.class)
+																	.andCustomWhere("SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		List<BuildingContext> buildings = selectBuilder.get();
+		return buildings;
+	}
+	
+	public static List<SiteContext> getAllSites() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(SiteContext.class);
+		List<SiteContext> sites = selectBuilder.get();
+		return sites;
 	}
 	
 	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {
