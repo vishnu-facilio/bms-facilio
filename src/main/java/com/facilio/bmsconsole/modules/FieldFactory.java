@@ -525,7 +525,48 @@ public class FieldFactory {
 		
 	}
 	
-	
+	public static List<FacilioField> getOrgUserFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getOrgUserModule();
+		
+		FacilioField orguserid = new FacilioField();
+		orguserid.setName("orgUserId");
+		orguserid.setDataType(FieldType.NUMBER);
+		orguserid.setColumnName("ORG_USERID");
+		orguserid.setModule(module);
+		fields.add(orguserid);
+		
+		FacilioField userid = new FacilioField();
+		userid.setName("userId");
+		userid.setDataType(FieldType.NUMBER);
+		userid.setColumnName("USERID");
+		userid.setModule(module);
+		fields.add(userid);
+		
+		FacilioField orgid = new FacilioField();
+		orgid.setName("orgId");
+		orgid.setDataType(FieldType.NUMBER);
+		orgid.setColumnName("ORGID");
+		orgid.setModule(module);
+		fields.add(orgid);
+		
+		FacilioField userstatus = new FacilioField();
+		userstatus.setName("userStatus");
+		userstatus.setDataType(FieldType.BOOLEAN);
+		userstatus.setColumnName("USER_STATUS");
+		userstatus.setModule(module);
+		fields.add(userstatus);
+		
+		FacilioField roleid = new FacilioField();
+		roleid.setName("roleId");
+		roleid.setDataType(FieldType.NUMBER);
+		roleid.setColumnName("ROLE_ID");
+		roleid.setModule(module);
+		fields.add(roleid);
+		
+		return fields;
+		
+	}
 	public static List<FacilioField> getSupportEmailFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getSupportEmailsModule();

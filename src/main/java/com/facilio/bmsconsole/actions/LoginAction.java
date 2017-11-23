@@ -427,7 +427,7 @@ public class LoginAction extends ActionSupport{
 		
 		account = new HashMap<>();
 		account.put("org", curOrg);
-		account.put("user", curUser);
+		account.put("user", UserAPI.getUser(curUser.getUserId()));
 		
 		account.put("appProps", appProps);
 		
