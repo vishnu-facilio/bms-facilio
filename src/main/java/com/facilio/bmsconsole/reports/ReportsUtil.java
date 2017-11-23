@@ -252,18 +252,18 @@ public class ReportsUtil
 	//generic
 	private static String getDeviceName(long deviceId)
 	{
-		try 
-		{
-			Device device = DeviceAPI.getDevice(deviceId);
-			if (device!=null)
-			{
-				return device.getName();
-			}
-		} 
-		catch (SQLException e) 
-		{
-			logger.log(Level.SEVERE, "Error while fetching device with id: "+deviceId, e);
-		}
+//		try 
+//		{
+//			Device device = DeviceAPI.getDevice(deviceId);
+//			if (device!=null)
+//			{
+//				return device.getName();
+//			}
+//		} 
+//		catch (SQLException e) 
+//		{
+//			logger.log(Level.SEVERE, "Error while fetching device with id: "+deviceId, e);
+//		}
 		return null;
 	}
 	
