@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -48,6 +50,19 @@ public class GroupAction extends ActionSupport {
 		List<RoleContext> roles = UserAPI.getRolesOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
 		ActionContext.getContext().getValueStack().set("roles", roles);
 		ActionContext.getContext().getValueStack().set("groups", getGroups());
+		ActionContext.getContext().getValueStack().set("users", UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue()));
+
+		
+		
+//		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
+//		UserInfo curUser = UserInfo.getCurrentUser();
+//		
+//		HashMap account = new HashMap<>();
+//		account.put("org", curOrg);
+//		account.put("user", curUser);
+//		ActionContext.getContext().getValueStack().set("account", account);
+//
+
 
 		
 		System.out.println(getGroups());
