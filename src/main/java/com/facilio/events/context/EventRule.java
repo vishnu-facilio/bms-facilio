@@ -63,18 +63,15 @@ public class EventRule {
 		this.baseCriteria = baseCriteria;
 	}
 	
-	private Boolean ignoreEvent;
-	public Boolean getIgnoreEvent() {
+	private boolean ignoreEvent;
+	public boolean getIgnoreEvent() {
 		return ignoreEvent;
 	}
-	public void setIgnoreEvent(Boolean ignoreEvent) {
+	public void setIgnoreEvent(boolean ignoreEvent) {
 		this.ignoreEvent = ignoreEvent;
 	}
 	public boolean isIgnoreEvent() {
-		if(ignoreEvent != null) {
-			return ignoreEvent.booleanValue();
-		}
-		return false;
+		return this.ignoreEvent;
 	}
 
 //	private Boolean hasCustomizeRule;
