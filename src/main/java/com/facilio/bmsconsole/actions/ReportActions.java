@@ -86,7 +86,7 @@ public class ReportActions extends ActionSupport {
 		
 	}
 	
-	//time series data..hardocded for last month..
+	//time series data....
 	//need building id, 
 	// need period to be set to week for By Week break down..
 	// if period not set , by date 
@@ -145,7 +145,7 @@ public class ReportActions extends ActionSupport {
 		
 		FacilioField selectFld = getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 				
-		if(duration.equals("today"))
+		if(duration.equals("day"))
 		{
 			startTime=DateTimeUtil.getDayStartTime();
 		}
@@ -183,7 +183,7 @@ public class ReportActions extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(meterFld);
 		fields.add(purposeField);
-		//hardocding...
+		//hardcoding...
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -231,7 +231,7 @@ public class ReportActions extends ActionSupport {
 		String displayName="HOUR";
 		String colName="TTIME_HOUR";
 		
-		if(duration.equals("today"))
+		if(duration.equals("day"))
 				{
 				startTime=DateTimeUtil.getDayStartTime();
 				previousStartTime=DateTimeUtil.getDayStartTime(-1);
@@ -305,7 +305,7 @@ public class ReportActions extends ActionSupport {
 		}
 		groupBy=groupBy.deleteCharAt(groupBy.lastIndexOf(","));
 		fields.add(getEnergyField());
-		fields.add(getField("TIME","ANY_VALUE(TTIME)",FieldType.NUMBER));
+		fields.add(getField("TIME","MAX(TTIME)",FieldType.NUMBER));
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -323,7 +323,7 @@ private List<Map<String, Object>> getData( String deviceList, long startTime, lo
 		if(!fields.isEmpty())
 		{
 			groupBy=groupBy.append(fields.get(0).getName());
-			fields.add(getField("TIME","ANY_VALUE(TTIME)",FieldType.NUMBER));
+			fields.add(getField("TIME","MAX(TTIME)",FieldType.NUMBER));
 		}
 		
 		FacilioField energyFld = getEnergyField();
@@ -396,9 +396,9 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
 		String duration = getPeriod();
-		if(duration.equals("today"))
+		if(duration.equals("day"))
 		{
-		startTime=DateTimeUtil.getDayStartTime();
+			startTime=DateTimeUtil.getDayStartTime();
 		}
 		else if (duration.equals("week"))
 		{
@@ -407,7 +407,7 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		else if (duration.equals("month"))
 		{
 			startTime=DateTimeUtil.getMonthStartTime();
-			
+
 		}
 		else if (duration.equals("year"))
 		{
@@ -622,7 +622,7 @@ private FacilioField getField(String name, String colName, FieldType type) {
 		this.purpose = purpose;
 	}
 	
-	private String period="today";
+	private String period="day";
 	
 	public void setPeriod(String period)
 	{
