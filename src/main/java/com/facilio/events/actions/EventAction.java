@@ -76,6 +76,7 @@ public class EventAction extends ActionSupport {
 	public String eventList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
 		eventListChain.execute(context);
 		
@@ -97,6 +98,14 @@ public class EventAction extends ActionSupport {
 	}
 	public void setEventRules(List<EventRule> eventRules) {
 		this.eventRules = eventRules;
+	}
+	
+	private String viewName = null;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -163,6 +163,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			
 			String sql = constructSelectStatement();
+			System.out.println("##################### FINAL QUER: "+sql);
 			pstmt = conn.prepareStatement(sql);
 			
 			Object[] whereValues = where.getValues();

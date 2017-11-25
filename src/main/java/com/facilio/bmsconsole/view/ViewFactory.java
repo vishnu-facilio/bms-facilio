@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 
 public class ViewFactory {
 	
@@ -53,6 +54,10 @@ public class ViewFactory {
 		viewMap.put("asset-active", getAssetsByState("Active"));
 		viewMap.put("asset-retired", getAssetsByState("Retired"));
 		
+		viewMap.put("event-today", getEvents("Today"));
+		viewMap.put("event-yesterday", getEvents("Yesterday"));
+		viewMap.put("event-thisweek", getEvents("ThisWeek"));
+		viewMap.put("event-lastweek", getEvents("LastWeek"));
 		
 		//Add module name in field objects
 		
@@ -61,6 +66,44 @@ public class ViewFactory {
 		return viewMap;
 	}
 	
+	private static FacilioView getEvents(String category) {
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(EventConstants.EventModuleFactory.getEventModule());
+		
+		Condition dateCondition = new Condition();
+		dateCondition.setField(createdTime);
+		if(category.equals("Today"))
+		{
+			dateCondition.setOperator(DateOperators.TODAY);
+		}
+		else if(category.equals("Yesterday"))
+		{
+			dateCondition.setOperator(DateOperators.YESTERDAY);
+		}
+		else if(category.equals("ThisWeek"))
+		{
+			dateCondition.setOperator(DateOperators.CURRENT_WEEK);
+		}		
+		else if(category.equals("LastWeek"))
+		{
+			dateCondition.setOperator(DateOperators.LAST_WEEK);
+		}
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(dateCondition);
+		
+		FacilioView eventsView = new FacilioView();
+		eventsView.setName("Created Time");
+		eventsView.setDisplayName("Event Time");
+		eventsView.setCriteria(criteria);
+		
+		return eventsView;
+	}
+
 	private static Criteria getAssetCategoryCriteria(String category) {
 		FacilioField categoryType = new FacilioField();
 		categoryType.setName("categoryType");
