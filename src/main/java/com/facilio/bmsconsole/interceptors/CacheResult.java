@@ -35,7 +35,7 @@ public class CacheResult extends JSONResult {
 		}
 		else
 		{
-			System.out.println("pls check the cache parameter in struts config file !!!");
+			//System.out.println("pls check the cache parameter in struts config file !!!");
 		}
 		
 					super.writeToResponse(response,json,gzip);

@@ -10,7 +10,7 @@
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
-			<result-type name="jsoncache"
+			<result-type name="json"
 				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
 		<interceptors>
