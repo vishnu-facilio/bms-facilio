@@ -78,7 +78,7 @@ public class EventAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		
- 		int offset = this.page > 1 ? (this.page * this.perPage) + 1 : this.page;
+ 		int offset = (this.page - 1) * this.perPage;
  		JSONObject pagination = new JSONObject();
  		pagination.put("offset", offset);
  		pagination.put("limit", this.perPage);
