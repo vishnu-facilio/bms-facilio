@@ -66,5 +66,4 @@ public class ActionContext {
 	public void setTemplate(ActionTemplate template) {
 		this.template = template;
 	}
-	
 }
