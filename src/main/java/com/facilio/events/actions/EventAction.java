@@ -77,6 +77,14 @@ public class EventAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+ 		
+ 		int offset = this.page > 1 ? (this.page * this.perPage) + 1 : this.page;
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("offset", offset);
+ 		pagination.put("limit", this.perPage);
+ 		
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		
 		Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
 		eventListChain.execute(context);
 		
@@ -194,5 +202,23 @@ public class EventAction extends ActionSupport {
 	}
 	public void setNodes(List<Map<String, Object>> nodes) {
 		this.nodes = nodes;
+	}
+	
+	private int page = 1;
+	public int getPage() {
+		return this.page;
+	}
+	
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	private int perPage = 50;
+	public int getPerPage() {
+		return this.perPage;
+	}
+	
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
 	}
  }

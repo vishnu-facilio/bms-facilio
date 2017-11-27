@@ -5,12 +5,17 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ModuleAction extends ActionSupport {
@@ -90,11 +95,18 @@ public class ModuleAction extends ActionSupport {
 			operators.put(ftype.name(), ftype.getOperators());
 		}
 		
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
+		FacilioModule mod = modBean.getModule(getModuleName());
+		
+		List<WorkflowEventContext> workflowEvents = WorkflowAPI.getWorkflowEvents(orgId, mod.getModuleId());
+		
 		JSONObject meta = new JSONObject();
 		meta.put("name", getModuleName());
 		meta.put("displayName", displayName);
 		meta.put("fields", fields);
 		meta.put("operators", operators);
+		meta.put("workflowEvents", workflowEvents);
 		setMeta(meta);
 		
 		return SUCCESS;

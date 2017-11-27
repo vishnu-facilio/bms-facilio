@@ -166,6 +166,13 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteAlarm() throws Exception {
+		
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.deleteAlarm(id);
+		return SUCCESS;
+	}
+	
 	private long assetId = -1;
 	public long getAssetId() {
 		return assetId;

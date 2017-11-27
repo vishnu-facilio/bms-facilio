@@ -9,6 +9,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -43,6 +44,19 @@ public class WorkflowAPI {
 					.select(FieldFactory.getWorkflowRuleFields())
 					.andCustomWhere("Workflow_Rule.ORGID = ?", orgId);
 			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+	}
+	
+	public static List<WorkflowEventContext> getWorkflowEvents(long orgId, long moduleId) throws Exception {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getWorkflowEventFields())
+					.table("Workflow_Event")
+					.andCustomWhere("Workflow_Event.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
+			return getWorkFlowEventsFromMapList(ruleBuilder.get(), orgId, conn);
 		}
 		catch(SQLException e) {
 			throw e;
@@ -90,6 +104,18 @@ public class WorkflowAPI {
 				workflows.add(workflow);
 			}
 			return workflows;
+		}
+		return null;
+	}
+	
+	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props, long orgId, Connection conn) throws Exception {
+		if(props != null && props.size() > 0) {
+			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
+				workflowEvents.add(workflowEvent);
+			}
+			return workflowEvents;
 		}
 		return null;
 	}

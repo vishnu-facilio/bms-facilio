@@ -5,6 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorkflowEventContext {
+	private long id;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 	private long eventId;
 	public long getEventId() {
 		return eventId;

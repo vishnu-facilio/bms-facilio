@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.workflow;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 public class ActionContext {
 	private long id = -1;
 	public long getId() {
@@ -38,6 +41,9 @@ public class ActionContext {
 	public void setActionType(ActionType actionType) {
 		this.actionType = actionType;
 	}
+	public void setActionType(int actionTypeVal) {
+		this.actionType = ActionType.getActionType(actionTypeVal);
+	}
 	
 	private int defaultTemplateId = -1;
 	public int getDefaultTemplateId() {
@@ -67,4 +73,33 @@ public class ActionContext {
 		this.template = template;
 	}
 	
+	public void setTemplate(JSONObject template) {
+		JSONArray recipients = (JSONArray) template.get("to");
+		String to = "";
+		for (int i=0; i< recipients.size(); i++) {
+			if (i != 0) {
+				to += ",";
+			}
+			to += (String) recipients.get(i);
+		}
+		
+		if (this.getActionType().getVal() == ActionType.EMAIL_NOTIFICATION.getVal() || this.getActionType().getVal() == ActionType.BULK_EMAIL_NOTIFICATION.getVal()) {			
+			
+			
+			EMailTemplate emailTemplate = new EMailTemplate();
+			emailTemplate.setTo(to);
+			emailTemplate.setSubject((String) template.get("subject"));
+			emailTemplate.setBody((String) template.get("body"));
+			
+			this.template = emailTemplate;
+		}
+		else if (this.getActionType().getVal() == ActionType.SMS_NOTIFICATION.getVal() || this.getActionType().getVal() == ActionType.BULK_SMS_NOTIFICATION.getVal()) {
+			
+			SMSTemplate smsTemplate = new SMSTemplate();
+			smsTemplate.setTo(to);
+			smsTemplate.setMsg((String) template.get("body"));
+			
+			this.template = smsTemplate;
+		}
+	}
 }

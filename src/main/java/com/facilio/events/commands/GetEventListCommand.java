@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.events.context.EventContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -27,6 +28,8 @@ public class GetEventListCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		String cvName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		
 		FacilioView view = ViewFactory.getView("event-" + cvName);
 		
 		List<EventContext> events = new ArrayList<>();
@@ -41,6 +44,11 @@ public class GetEventListCommand implements Command {
 			if (view != null) {
 				Criteria criteria = view.getCriteria();
 				selectBuider.andCriteria(criteria);
+			}
+			
+			if (pagination != null) {
+				selectBuider.offset((int) pagination.get("offset"));
+				selectBuider.limit((int) pagination.get("limit"));
 			}
 	
 			List<Map<String, Object>> eventList = selectBuider.get();

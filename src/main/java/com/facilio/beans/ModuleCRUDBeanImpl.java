@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 
@@ -45,6 +46,23 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			return alarm.getId();
 		}
 		return -1;
+	}
+	
+	@Override
+	public int deleteAlarm(List<Long> id) throws Exception {
+		// TODO Auto-generated method stub
+		if(id != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+			
+			Chain deleteAlarmChain = FacilioChainFactory.getDeleteAlarmChain();
+			deleteAlarmChain.execute(context);
+			
+			int rowsDeleted = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+			return rowsDeleted;
+		}
+		return 0;
 	}
 
 	@Override

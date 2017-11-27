@@ -325,6 +325,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteAlarmChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new DeleteAlarmCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAlarmTemplateChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddAlarmTemplateCommand());
@@ -1000,6 +1009,15 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddTemplateChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddWorkflowRuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new AddTemplateCommand());
 		addCleanUpCommand(c);
 		return c;

@@ -4,12 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
@@ -54,6 +60,18 @@ public class WorkflowRuleAction extends ActionSupport {
 		return "addAssignmentRuleSuccess";
 	}
 	
+	public String addWorkflowRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
+		
+		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
+		addRule.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	public String businessRules() throws Exception {
 		
 	    return SUCCESS;
@@ -75,6 +93,15 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	public void setRule(WorkflowRuleContext rule) {
 		this.rule = rule;
+	}
+	
+	private List<ActionContext> actions;
+	public List<ActionContext> getActions() {
+		return this.actions;
+	}
+	
+	public void setActions(List<ActionContext> actions) {
+		this.actions = actions;
 	}
 	
 	private List<WorkflowRuleContext> rules = null;
