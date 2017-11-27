@@ -2,10 +2,12 @@ package com.facilio.bmsconsole.view;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -22,8 +24,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.GroupAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.OrgInfo;
+import com.facilio.fw.UserInfo;
 
 public class ViewFactory {
 	
@@ -42,6 +47,7 @@ public class ViewFactory {
 		viewMap.put("workorder-overdue", getAllOverdueWorkOrders());
 		viewMap.put("workorder-duetoday", getAllDueTodayWorkOrders());
 		viewMap.put("workorder-myopen", getMyOpenWorkOrders());
+		viewMap.put("workorder-myteamopen", getMyTeamOpenWorkOrders());
 		viewMap.put("workorder-unassigned", getUnassignedWorkorders());
 		viewMap.put("workorder-closed", getAllClosedWorkOrders());
 		viewMap.put("workorder-openfirealarms", getFireSafetyWOs());
@@ -437,6 +443,20 @@ public class ViewFactory {
 		overdueView.setCriteria(criteria);
 		return overdueView;
 	}
+
+	private static FacilioView getMyTeamOpenWorkOrders() {
+	
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getMyTeamCondition(ModuleFactory.getWorkOrdersModule()));
+	
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("myteamopen");
+		openTicketsView.setDisplayName("My Team Open Work Orders");
+		openTicketsView.setCriteria(criteria);
+	
+		return openTicketsView;
+	}
 	
 	private static FacilioView getAllOverdueWorkOrders() {
 		FacilioField dueField = new FacilioField();
@@ -548,6 +568,42 @@ public class ViewFactory {
 		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
 		
 		return myUserCondition;
+	}
+	
+	public static Condition getMyTeamCondition(FacilioModule module) {
+		LookupField groupField = new LookupField();
+		groupField.setName("assignmentGroup");
+		groupField.setColumnName("ASSIGNMENT_GROUP_ID");
+		groupField.setDataType(FieldType.LOOKUP);
+		groupField.setModule(module);
+		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
+		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+				
+		String groupIds = "";
+		try {
+			List<GroupContext> myGroups = GroupAPI.getMyGroups(OrgInfo.getCurrentOrgInfo().getOrgid(), UserInfo.getCurrentUser().getOrgUserId());
+			if (myGroups != null) {
+				for (int i=0; i< myGroups.size(); i++) {
+					if (i != 0) {
+						groupIds += ",";
+					}
+					groupIds += myGroups.get(i).getId();
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (groupIds.equals("")) {
+			groupIds = "-100";
+		}
+		
+		Condition myTeamCondition = new Condition();
+		myTeamCondition.setField(groupField);
+		myTeamCondition.setOperator(PickListOperators.IS);
+		myTeamCondition.setValue(groupIds);
+		
+		return myTeamCondition;
 	}
 	
 	private static Criteria getFireSafetyCategoryCriteria() {

@@ -130,6 +130,35 @@ public class GroupAPI {
 		}
 	}
 	
+	public static List<GroupContext> getMyGroups(long orgId, long userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT t1.*, COUNT(t2.MEMBERID) as MEMBERS_COUNT FROM Groups t1 JOIN GroupMembers t2 ON t1.GROUPID=t2.GROUPID WHERE t1.ORGID = ? AND t2.ORG_USERID = ? GROUP BY t1.GROUPID ORDER BY t1.GROUP_NAME");
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, userId);
+			
+			List<GroupContext> groups = new ArrayList<>();
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				GroupContext gc = getGroupObjectFromRS(rs, true);
+				groups.add(gc);
+			}
+			
+			return groups;
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	public static List<GroupContext> getGroupsOfOrg(long orgId, boolean isActive) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
