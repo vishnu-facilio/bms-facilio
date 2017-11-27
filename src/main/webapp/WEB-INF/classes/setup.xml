@@ -20,7 +20,7 @@
 		
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
-			   <param name="cache">org</param>  
+			<param name="cache">org</param>  
 			<result name="success" type="json">
 			<param name="includeProperties">users.*</param></result>
 		</action>
