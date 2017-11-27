@@ -39,13 +39,15 @@ public class ViewFactory {
 		viewMap.put("workorderrequest-rejected", getRejectedWorkorderRequests());
 		
 		viewMap.put("workorder-open", getAllOpenWorkOrders());
+		viewMap.put("workorder-overdue", getAllOverdueWorkOrders());
+		viewMap.put("workorder-duetoday", getAllDueTodayWorkOrders());
 		viewMap.put("workorder-myopen", getMyOpenWorkOrders());
 		viewMap.put("workorder-unassigned", getUnassignedWorkorders());
 		viewMap.put("workorder-closed", getAllClosedWorkOrders());
 		viewMap.put("workorder-openfirealarms", getFireSafetyWOs());
 		
-		viewMap.put("workorder-overdue", getAllOverdueWorkOrders());
 		viewMap.put("workorder-myoverdue", getMyOverdueWorkOrders());
+		viewMap.put("workorder-myduetoday", getMyDueTodayWorkOrders());
 		viewMap.put("workorder-my", getMyWorkOrders());
 		viewMap.put("task-my", getMyTasks());
 		
@@ -413,6 +415,29 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 	
+	private static FacilioView getAllDueTodayWorkOrders() {
+		FacilioField dueField = new FacilioField();
+		dueField.setName("dueDate");
+		dueField.setColumnName("DUE_DATE");
+		dueField.setDataType(FieldType.DATE_TIME);
+		dueField.setModule(ModuleFactory.getWorkOrdersModule());
+		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition overdue = new Condition();
+		overdue.setField(dueField);
+		overdue.setOperator(DateOperators.TODAY);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overdue);
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		
+		FacilioView overdueView = new FacilioView();
+		overdueView.setName("overdue");
+		overdueView.setDisplayName("Overdue Work Orders");
+		overdueView.setCriteria(criteria);
+		return overdueView;
+	}
+	
 	private static FacilioView getAllOverdueWorkOrders() {
 		FacilioField dueField = new FacilioField();
 		dueField.setName("dueDate");
@@ -427,12 +452,38 @@ public class ViewFactory {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overdue);
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView overdueView = new FacilioView();
 		overdueView.setName("overdue");
 		overdueView.setDisplayName("Overdue Work Orders");
 		overdueView.setCriteria(criteria);
 		return overdueView;
+	}
+	
+	private static FacilioView getMyDueTodayWorkOrders() {
+		
+		FacilioField dueField = new FacilioField();
+		dueField.setName("dueDate");
+		dueField.setColumnName("DUE_DATE");
+		dueField.setDataType(FieldType.DATE_TIME);
+		dueField.setModule(ModuleFactory.getWorkOrdersModule());
+		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition overdue = new Condition();
+		overdue.setField(dueField);
+		overdue.setOperator(DateOperators.TODAY);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overdue);
+		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		
+		FacilioView view = new FacilioView();
+		view.setName("myoverduetickets");
+		view.setDisplayName("My Overdue Tickets");
+		view.setCriteria(criteria);
+		return view;
 	}
 	
 	private static FacilioView getMyOverdueWorkOrders() {
@@ -451,6 +502,7 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overdue);
 		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView view = new FacilioView();
 		view.setName("myoverduetickets");
