@@ -330,10 +330,9 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID and ? & ORG_Users.USER_TYPE = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.EMAIL = ? and ORG_Users.ROLE_ID = Role.ROLE_ID");
 			pstmt.setString(1, email);
-			pstmt.setInt(2, UserType.USER.getValue());
-			pstmt.setInt(3, UserType.USER.getValue());
+//			pstmt.setInt(2, UserType.USER.getValue());
 			
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -357,17 +356,24 @@ public class UserAPI {
 			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
-			String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?, ?)";
-			PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
-			ps1.setString(1, context.getName());
-			ps1.setString(2, null);
-			ps1.setBoolean(3, true);
-			ps1.setString(4, context.getEmail());
-			ps1.executeUpdate();
-			ResultSet rs1 = ps1.getGeneratedKeys();
-			rs1.next();
-			long userId = rs1.getLong(1);
-			ps1.close();
+			long userId = -1;
+			UserContext usr = getUser(context.getEmail());
+			if (usr == null) {
+				String insertquery1 = "insert into Users (NAME,COGNITO_ID,USER_VERIFIED,EMAIL) values (?, ?, ?, ?)";
+				PreparedStatement ps1 = conn.prepareStatement(insertquery1, Statement.RETURN_GENERATED_KEYS);
+				ps1.setString(1, context.getName());
+				ps1.setString(2, null);
+				ps1.setBoolean(3, true);
+				ps1.setString(4, context.getEmail());
+				ps1.executeUpdate();
+				ResultSet rs1 = ps1.getGeneratedKeys();
+				rs1.next();
+				userId = rs1.getLong(1);
+				ps1.close();
+			}
+			else {
+				userId =usr.getUserId();
+			}
 			
 			String insertquery2 = "insert into ORG_Users (USERID,ORGID,INVITEDTIME,ISDEFAULT,USER_STATUS,INVITATION_ACCEPT_STATUS,USER_TYPE) values (?,?,?,?,?,?,?)";
 			PreparedStatement ps2 = conn.prepareStatement(insertquery2, Statement.RETURN_GENERATED_KEYS);
