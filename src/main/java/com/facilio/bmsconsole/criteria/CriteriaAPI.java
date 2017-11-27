@@ -77,7 +77,7 @@ public class CriteriaAPI {
 		}
 	}
 	
-	public static Criteria getCriteria(long orgId, long criteriaId, Connection conn) throws Exception {
+	public static Criteria getCriteria(long orgId, long criteriaId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(FieldFactory.getCriteriaFields());

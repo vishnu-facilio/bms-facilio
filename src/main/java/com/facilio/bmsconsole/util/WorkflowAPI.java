@@ -38,12 +38,12 @@ public class WorkflowAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long orgId) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.table("Workflow_Rule")
 					.select(FieldFactory.getWorkflowRuleFields())
 					.andCustomWhere("Workflow_Rule.ORGID = ?", orgId);
-			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
+			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
 		}
 		catch(SQLException e) {
 			throw e;
@@ -64,14 +64,14 @@ public class WorkflowAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long orgId, long moduleId) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getWorkflowRuleFields())
 					.table("Workflow_Rule")
 					.innerJoin("Workflow_Event")
 					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
-			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
+			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
 		}
 		catch(SQLException e) {
 			throw e;
@@ -79,7 +79,7 @@ public class WorkflowAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromEvent(long orgId, long moduleId, int eventType) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.table("Workflow_Rule")
 					.select(FieldFactory.getWorkflowRuleFields())
@@ -87,20 +87,20 @@ public class WorkflowAPI {
 					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.EVENT_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, eventType, eventType)
 					.orderBy("EXECUTION_ORDER");
-			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId, conn);
+			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
 		}
 		catch(SQLException e) {
 			throw e;
 		}
 	}
 	
-	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, long orgId, Connection conn) throws Exception {
+	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, long orgId) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				WorkflowRuleContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 				long criteriaId = workflow.getCriteriaId();
-				workflow.setCriteria(CriteriaAPI.getCriteria(orgId, criteriaId, conn));
+				workflow.setCriteria(CriteriaAPI.getCriteria(orgId, criteriaId));
 				workflows.add(workflow);
 			}
 			return workflows;
