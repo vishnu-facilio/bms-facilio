@@ -1,6 +1,5 @@
 package com.facilio.events.tasker.tasks;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -25,7 +24,6 @@ import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class EventTransformJob extends FacilioJob{
 
@@ -36,7 +34,7 @@ public class EventTransformJob extends FacilioJob{
 	{
 		if(AwsUtil.getConfig("enableeventjob").equals("true"))
 		{
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+			try 
 			{
 				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -51,7 +49,7 @@ public class EventTransformJob extends FacilioJob{
 					
 					if(rule.getTransformCriteriaId() != -1)
 					{
-						Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId(), conn);
+						Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId());
 						boolean isMatched = criteria.computePredicate().evaluate(prop);
 						if(isMatched)
 						{

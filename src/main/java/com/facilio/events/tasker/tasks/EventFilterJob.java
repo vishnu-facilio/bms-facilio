@@ -1,6 +1,5 @@
 package com.facilio.events.tasker.tasks;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -21,7 +20,6 @@ import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class EventFilterJob extends FacilioJob{
 
@@ -32,7 +30,7 @@ public class EventFilterJob extends FacilioJob{
 	{
 		if(AwsUtil.getConfig("enableeventjob").equals("true"))
 		{
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+			try 
 			{
 				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
 				List<EventRule> eventRules = EventRulesAPI.getEventRules(orgId);
@@ -51,7 +49,7 @@ public class EventFilterJob extends FacilioJob{
 					if(eventRules != null) {
 						for(EventRule rule : eventRules)
 						{
-							Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId(), conn);
+							Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId());
 							isMatched = criteria.computePredicate().evaluate(prop);
 							if(isMatched)
 							{
