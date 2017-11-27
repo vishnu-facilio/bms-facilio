@@ -10,7 +10,7 @@
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
-			<result-type name="jsoncache"
+			<result-type name="json"
 				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
 		<interceptors>
@@ -110,6 +110,11 @@
 				<param name="root">pickList</param>
 			</result>
 		</action>
+		<!-- <action name="picklistmodules" class="com.facilio.bmsconsole.actions.PickListAction" method="">
+			<result name="success" type="json">
+				<param name="root">pickList</param>
+			</result>
+		</action> -->
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

@@ -27,7 +27,7 @@
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
 	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
             <result name="success" type="json">
-			<param name="includeProperties">groups.*,roles.*</param></result>
+			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>		
 		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="deviceList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
@@ -62,6 +62,17 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="deleteUser" class = "com.facilio.bmsconsole.actions.UserAction" method = "deleteUser">
+			<param name= "permission">USER_ACCESS_ADMINISTER</param>
+			<result name = "Success" type="json">
+				<param name ="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 	    <action name="adduser" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
@@ -72,7 +83,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
-		</action>
+			</action>
 		<action name="updateuser"  class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

@@ -182,6 +182,8 @@ System.out.println("User object is "+params+"\n"+ user);
 		
 		return SUCCESS;
 	}
+	
+
 
 	private File avatar;
 	

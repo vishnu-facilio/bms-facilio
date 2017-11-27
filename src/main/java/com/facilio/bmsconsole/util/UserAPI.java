@@ -520,6 +520,8 @@ public class UserAPI {
 				GenericUpdateRecordBuilder builder= new GenericUpdateRecordBuilder().table("Users").fields(fields).andCustomWhere("USERID = ?", context.getUserId());
 				builder.update(userprops);
 				
+				
+				
 				List<FacilioField> orgfields = FieldFactory.getOrgUserFields();
 				GenericUpdateRecordBuilder orgBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(orgfields).andCustomWhere("ORGID = ? AND ORG_USERID = ?",orgId, context.getOrgUserId());
 				orgBuilder.update(userprops);
