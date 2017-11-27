@@ -1,23 +1,48 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.OrgInfo;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class DeviceAPI 
 {
 	private static Logger logger = Logger.getLogger(DeviceAPI.class.getName());
 
+	public static List<ControllerContext> getAllControllers() throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(ModuleFactory.getControllerModule().getTableName())
+														.select(FieldFactory.getControllerFields())
+														.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<ControllerContext> controllers = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
+			}
+			return controllers;
+		}
+		return null;
+	}
+	
 	public static List<EnergyMeterContext> getAllEnergyMeters() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
