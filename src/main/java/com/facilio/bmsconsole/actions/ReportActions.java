@@ -99,8 +99,8 @@ public class ReportActions extends ActionSupport {
 		List<Map<String, Object>> total=getData(deviceList,startTime, endTime, fields,false);
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
-			double currentMWh = (double)currentTotal.get("CONSUMPTION")/1000;
-			resultJson.put("totalMWh", currentMWh);
+			double currentKwh = (double)currentTotal.get("CONSUMPTION");
+			resultJson.put("totalMWh", toMegaNRound(currentKwh));
 		}
 		  
 		resultJson.put("currentVal", current);
@@ -218,9 +218,9 @@ public class ReportActions extends ActionSupport {
 	{
 		JSONObject consumptionData = new JSONObject();
 		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
 		long previousStartTime=-1;
 		long previousEndTime=-1;
+		long endTime=DateTimeUtil.getCurrenTime();
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		
@@ -265,25 +265,24 @@ public class ReportActions extends ActionSupport {
 		fields.add(periodFld);
 		
 		
-		double currentMWh=-1;
-		double previousMWh=-1;
-		//send deviceid..
+		double currentKwh=-1;
+		double previousKwh=-1;
 		List<Map<String, Object>> current=getData(deviceId,startTime, endTime, fields,true);
 		List<Map<String, Object>> previous=getData(deviceId,previousStartTime, previousEndTime, fields, true);
 		if(current!=null & !current.isEmpty()) {
 			Map<String,Object> currentTotal=current.remove(current.size()-1);
-			currentMWh = (double)currentTotal.get("CONSUMPTION")/1000;
+			currentKwh = (double)currentTotal.get("CONSUMPTION");
 		}
 		if(previous!=null & !previous.isEmpty()) {
 			Map<String,Object> previousTotal=previous.remove(previous.size()-1);
-			previousMWh = (double)previousTotal.get("CONSUMPTION")/1000;
+			previousKwh = (double)previousTotal.get("CONSUMPTION");
 		}
 		consumptionData.put("currentVal", current);
 		consumptionData.put("previousVal", previous);
-		consumptionData.put("currentTotal", currentMWh);
-		consumptionData.put("previousTotal", previousMWh);
+		consumptionData.put("currentTotal", toMegaNRound(currentKwh));
+		consumptionData.put("previousTotal", toMegaNRound(previousKwh));
 		consumptionData.put("units", "MWh");
-		double variance=getVariance(currentMWh, previousMWh);
+		double variance=getVariance(currentKwh, previousKwh);
 		consumptionData.put("variance", variance);
 		
 		setReportAllData(consumptionData);
@@ -292,7 +291,6 @@ public class ReportActions extends ActionSupport {
 	
 
 	private List<Map<String, Object>> getGroupByData( String deviceList, long startTime, long endTime, List<FacilioField> fields) throws Exception {
-		
 		
 		StringBuilder groupBuilder= new StringBuilder();		
 		for(FacilioField field: fields)
@@ -308,7 +306,8 @@ public class ReportActions extends ActionSupport {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
-				.andCustomWhere("ORGID=? AND TTIME between ? AND ?",orgId,startTime,endTime)
+				.andCustomWhere("ORGID=?",orgId)
+				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
 				.andCondition(getDeviceListCondition(deviceList))
 				.groupBy(groupBy);
 		return builder.get();
@@ -392,10 +391,22 @@ public class ReportActions extends ActionSupport {
 	private double getVariance(Double currentVal, Double previousVal)
 	{
 		double variance =(currentVal - previousVal)/currentVal;
-		variance=Math.round(variance*100)/ 100;
+		variance=roundOff(variance, 2);
 		return variance*100;
 	}
 	
+	
+	private double toMegaNRound(double value)
+	{
+		//Converting Kilo into Mega
+		return roundOff(value/1000,2);
+	}
+	
+	private double roundOff(double value, int decimalDigits)
+	{
+		int multiplier =100 * 10^decimalDigits;
+		return (double)Math.round(value*multiplier)/ multiplier ;
+	}
 	// needs building id, duration,
 	// no time series data...
 	public String getTopNSpaces() throws Exception
@@ -434,8 +445,8 @@ public class ReportActions extends ActionSupport {
 			if(total!=null && !total.isEmpty())
 			{
 				 Map<String,Object> rowData=total.get(0);
-				 Double totalMWh=(Double)rowData.get("CONSUMPTION")/1000;
-				 result.put(floorName, totalMWh);
+				 Double totalKwh=(Double)rowData.get("CONSUMPTION");
+				 result.put(floorName, toMegaNRound(totalKwh));
 			}
 		}
 		if(result!=null && !result.isEmpty())
@@ -504,16 +515,12 @@ public class ReportActions extends ActionSupport {
 	public JSONObject getBuildingDetails(long buildingId) throws Exception
 	{
 		JSONObject buildingData = new JSONObject();
-		
 		BuildingContext building =SpaceAPI.getBuildingSpace(getBuildingId());
-		
 		buildingData=getBuildingData(buildingData,building);
-		 
 		List<EnergyMeterContext> rootMeterList= DeviceAPI.getRootEnergyMeter(""+buildingId);
-		
+
 		StringBuilder rootBuilder= new StringBuilder();
 		StringBuilder purposeBuilder= new StringBuilder();
-	
 		for(EnergyMeterContext emc : rootMeterList)
 		{
 			rootBuilder.append(emc.getId());
@@ -544,57 +551,34 @@ public class ReportActions extends ActionSupport {
 		List<Map<String, Object>> result = builder.get();
 		
 		int lastMonth=-1;int thisMonth=-1;
-		double lastMonthMWh=-1;double thisMonthMWh=-1;
+		double lastMonthKwh=-1;double thisMonthKwh=-1;
 		
 		if(result!=null && !result.isEmpty())
 		{
 			if(result.size()==2){
 				Map<String,Object> map = result.get(0);
 				lastMonth =(int)map.get("MONTH");
-				lastMonthMWh = (double)map.get("CONSUMPTION");
+				lastMonthKwh = (double)map.get("CONSUMPTION");
 				map = result.get(1);
 				thisMonth =(int)map.get("MONTH");
-				thisMonthMWh = (double)map.get("CONSUMPTION");		
+				thisMonthKwh = (double)map.get("CONSUMPTION");		
 			}
 			else{
 				Map<String,Object> map = result.get(0);
 				thisMonth =(int)map.get("MONTH");
-				thisMonthMWh = (double)map.get("CONSUMPTION");
+				thisMonthKwh = (double)map.get("CONSUMPTION");
 			}
 			
 		}
-		
-		lastMonthMWh=lastMonthMWh/1000;
-		thisMonthMWh=thisMonthMWh/1000;
-		
-		double thisMonthCost=thisMonthMWh*unitCost;
-		double lastMonthCost=lastMonthMWh*unitCost;
 		
 		long endTimestamp=DateTimeUtil.getMonthStartTime();
 		int lastMonthDays= DateTimeUtil.getDaysBetween(startTime, endTimestamp-1);
 		int thisMonthDays=DateTimeUtil.getDaysBetween(endTimestamp,endTime);
 		
-		//double lastMonthAvgEUI= lastMonthKwh/buildingArea/lastMonthDays;
-		//double thisMonthAvgEUI=thisMonthKwh/buildingArea/thisMonthDays;
-		double variance= getVariance(thisMonthMWh, lastMonthMWh);
+		double variance= getVariance(thisMonthKwh, lastMonthKwh);
+		JSONObject lastMonthData = getMonthData(lastMonthKwh,lastMonthDays,lastMonth);
+		JSONObject thisMonthData = getMonthData(thisMonthKwh,thisMonthDays,thisMonth);
 		
-		JSONObject lastMonthData = new JSONObject();
-		lastMonthData.put("kwh",lastMonthMWh);
-		lastMonthData.put("days", lastMonthDays);
-		lastMonthData.put("units","MWh");
-		lastMonthData.put("currency","$");
-		//lastMonthData.put("eui", lastMonthAvgEUI);
-		lastMonthData.put("cost", lastMonthCost);
-		lastMonthData.put("monthVal", lastMonth);
-		
-		JSONObject thisMonthData = new JSONObject();
-		thisMonthData.put("kwh",thisMonthMWh);
-		thisMonthData.put("days", thisMonthDays);
-		thisMonthData.put("units","kWh");
-		thisMonthData.put("currency","$");
-		//thisMonthData.put("eui", thisMonthAvgEUI);
-		thisMonthData.put("cost", thisMonthCost);
-		thisMonthData.put("monthVal", thisMonth);
 		
 		buildingData.put("previousVal", lastMonthData);
 		buildingData.put("currentVal", thisMonthData);
@@ -606,6 +590,19 @@ public class ReportActions extends ActionSupport {
 		return buildingData;
 	}
 	
+	private JSONObject getMonthData(double kwh,int days,  int monthVal)
+	{
+		JSONObject monthData = new JSONObject();
+		monthData.put("consumption",toMegaNRound(kwh));
+		monthData.put("days", days);
+		monthData.put("units","MWh");
+		monthData.put("currency","$");
+		monthData.put("cost", roundOff(kwh*unitCost,2));
+		monthData.put("monthVal", monthVal);
+		////double EUI= kwh/buildingArea/lastMonthDays;
+		//monthData.put("eui", EUI);
+		return monthData;
+	}
 	
 	private Condition getDeviceListCondition (String deviceList)
 	{
