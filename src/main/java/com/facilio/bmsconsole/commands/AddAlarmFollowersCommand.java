@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -21,21 +21,20 @@ public class AddAlarmFollowersCommand implements Command {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		if(alarm != null) {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			//Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			List<String> emails = (List<String>) context.get(FacilioConstants.Workflow.NOTIFIED_EMAILS);
 			List<String> smsList = (List<String>) context.get(FacilioConstants.Workflow.NOTIFIED_SMS);
 			
 			if((emails != null && !emails.isEmpty()) || (smsList != null && !smsList.isEmpty())) {
-				addFollowers(alarm, emails, smsList, conn);
+				addFollowers(alarm, emails, smsList);
 			}
 		}
 		return false;
 	}
 	
-	private void addFollowers(AlarmContext alarm, List<String> emails, List<String> smsList, Connection conn) throws SQLException, RuntimeException {
+	private void addFollowers(AlarmContext alarm, List<String> emails, List<String> smsList) throws SQLException, RuntimeException {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.connection(conn)
 				.table("AlarmFollowers")
 				.fields(FieldFactory.getAlarmFollowersFeilds());
 		

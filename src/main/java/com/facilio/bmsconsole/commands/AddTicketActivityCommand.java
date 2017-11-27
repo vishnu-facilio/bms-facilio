@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,9 +36,7 @@ public class AddTicketActivityCommand implements Command {
 			{
 				List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-				Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-						.connection(conn)
 						.table("WorkOrders")
 						.moduleName("workorder")
 						.beanClass(WorkOrderContext.class)
@@ -75,9 +72,7 @@ public class AddTicketActivityCommand implements Command {
 			
 			map.put("info", info.toString());
 			
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.connection(conn)
 					.table("Ticket_Activity")
 					.fields(FieldFactory.getTicketActivityFields())
 					.addRecord(map);
