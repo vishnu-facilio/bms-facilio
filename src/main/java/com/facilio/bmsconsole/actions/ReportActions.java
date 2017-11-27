@@ -102,12 +102,9 @@ public class ReportActions extends ActionSupport {
 			double currentKwh = (double)currentTotal.get("CONSUMPTION");
 			resultJson.put("totalMWh", toMegaNRound(currentKwh));
 		}
-		  
 		resultJson.put("currentVal", current);
 		resultJson.put("mapping", purposeMapping);
-		
 		setReportAllData(resultJson);
-		
 		return SUCCESS;
 	}
 	
@@ -404,9 +401,32 @@ public class ReportActions extends ActionSupport {
 	
 	private double roundOff(double value, int decimalDigits)
 	{
-		int multiplier =100 * 10^decimalDigits;
+		double multiplier =Math.pow(10, decimalDigits);;
 		return (double)Math.round(value*multiplier)/ multiplier ;
 	}
+	
+	private String costConversionToMillion(double value)
+	{
+		long length=(long)Math.log10(value)+1;
+		int divider=1;
+		int decimal=2;
+		String units="";
+		if(length>6)
+		{
+			divider=1000000;
+			units=" M";
+			decimal=4;
+		}
+		else if(length>4)
+		{
+			divider=1000;
+			units=" K";
+			decimal=4;
+		}
+		double finalValue=value/divider;
+		return roundOff(finalValue, decimal)+units;
+	}
+	
 	// needs building id, duration,
 	// no time series data...
 	public String getTopNSpaces() throws Exception
@@ -597,7 +617,8 @@ public class ReportActions extends ActionSupport {
 		monthData.put("days", days);
 		monthData.put("units","MWh");
 		monthData.put("currency","$");
-		monthData.put("cost", roundOff(kwh*unitCost,2));
+		
+		monthData.put("cost", costConversionToMillion(kwh*unitCost));
 		monthData.put("monthVal", monthVal);
 		////double EUI= kwh/buildingArea/lastMonthDays;
 		//monthData.put("eui", EUI);
