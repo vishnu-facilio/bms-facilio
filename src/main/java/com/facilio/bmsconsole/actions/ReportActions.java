@@ -402,8 +402,8 @@ public class ReportActions extends ActionSupport {
 			thisMonthKwh = (double)map.get("CONSUMPTION");
 		}
 
-		int lastMonthDays= DateTimeUtil.getDaysBetween(previousStartTime, currentStartTime-1);
-		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime);
+		int lastMonthDays= DateTimeUtil.getDaysBetween(previousStartTime, currentStartTime);
+		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
 
 		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
 		JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);

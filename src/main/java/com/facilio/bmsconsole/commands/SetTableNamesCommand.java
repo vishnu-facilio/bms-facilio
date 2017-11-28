@@ -91,4 +91,11 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForAsset(){
 		return new SetTableNamesCommand("asset","Assets");
 	}
+	
+	public static SetTableNamesCommand getForEnergyMeter(){
+		return new SetTableNamesCommand("energymeter","Energy_Meter");
+	}
+	public static SetTableNamesCommand getForEnergyMeterPurpose(){
+		return new SetTableNamesCommand("energymeterpurpose","Energy_Meter_Purpose");
+	}
 }

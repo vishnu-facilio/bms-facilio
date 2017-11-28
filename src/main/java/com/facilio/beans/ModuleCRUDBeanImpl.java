@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 
@@ -53,7 +53,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if(id != null) {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 			
 			Chain deleteAlarmChain = FacilioChainFactory.getDeleteAlarmChain();

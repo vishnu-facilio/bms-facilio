@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.workflow;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 public class WorkflowEventContext {
 	private long id;
 	public long getId() {
@@ -37,60 +33,17 @@ public class WorkflowEventContext {
 		this.moduleId = moduleId;
 	}
 	
-	private EventType eventType;
-	public EventType getEventType() {
-		return eventType;
-	}
-	public void setEventType(int eventType) {
-		this.eventType = EventType.valueOf(eventType);
-	}
-	
-	public static enum EventType {
-	    
-		/* Bitwise calculation
-		 * 
-		 * var workflowRule = currentWorkflowRule;
-		 * 
-		 * If ((workflowRule.eventType & CREATE) == CREATE) {
-		 * 		Workflow rule needs to be executed for create action
-		 * } 
-		 * 
-		 */
-		CREATE(1),
-		EDIT(2),
-		DELETE(4),
-		CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()),
-		APPROVE_WORK_ORDER_REQUEST(8),
-		ASSIGN_TICKET(16),
-		ADD_TICKET_NOTE(32),
-		CLOSE_WORK_ORDER(64)
-		;
-
-	    private int eventType;
-
-	    EventType(int eventType) {
-	        this.eventType = eventType;
-	    }
-
-	    public int getValue() {
-	        return eventType;
-	    }
-	    
-	    public static EventType valueOf(int eventTypeVal) {
-	    	return typeMap.get(eventTypeVal);
-	    }
-	    
-	    private static final Map<Integer, EventType> typeMap = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, EventType> initTypeMap() {
-			Map<Integer, EventType> typeMap = new HashMap<>();
-			
-			for(EventType type : values()) {
-				typeMap.put(type.getValue(), type);
-			}
-			return typeMap;
+	private ActivityType activityType;
+	public int getActivityType() {
+		if(activityType != null) {
+			return activityType.getValue();
 		}
-		public Map<Integer, EventType> getAllTypes() {
-			return typeMap;
-		}
+		return -1;
+	}
+	public void setActivityType(int activityType) {
+		this.activityType = ActivityType.valueOf(activityType);
+	}
+	public void setActivityType(ActivityType activityType) {
+		this.activityType = activityType;
 	}
 }

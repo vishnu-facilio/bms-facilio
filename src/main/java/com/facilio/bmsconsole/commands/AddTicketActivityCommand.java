@@ -16,8 +16,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ActivityType;
 import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 

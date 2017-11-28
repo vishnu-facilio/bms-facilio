@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionTemplate;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -32,11 +32,11 @@ public class ExecuteAllWorkflowsCommand implements Command
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(record != null) {
 			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-			if(eventType != null) {
+			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			if(activityType != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
-				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
+				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivity(orgId, moduleId, activityType.getValue());
 				
 				if(workflowRules != null && workflowRules.size() > 0) {
 					Map<String, Object> placeHolders = new HashMap<>();

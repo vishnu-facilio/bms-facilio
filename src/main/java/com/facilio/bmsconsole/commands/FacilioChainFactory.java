@@ -835,6 +835,25 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddEnergyMeterChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getAddEnergyMeterPurposeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeterPurpose());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());

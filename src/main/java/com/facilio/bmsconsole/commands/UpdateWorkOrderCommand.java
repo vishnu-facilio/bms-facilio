@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
@@ -63,7 +63,7 @@ public class UpdateWorkOrderCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(workOrder));
 			
-			if(EventType.ASSIGN_TICKET == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE) || EventType.CLOSE_WORK_ORDER == (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE)) {
+			if(ActivityType.ASSIGN_TICKET == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) || ActivityType.CLOSE_WORK_ORDER == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.connection(conn)
 						.table(dataTableName)

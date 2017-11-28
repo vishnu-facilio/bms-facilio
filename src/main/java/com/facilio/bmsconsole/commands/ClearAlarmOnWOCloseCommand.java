@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -22,9 +22,9 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(EventType.CLOSE_WORK_ORDER == eventType && workOrder != null) {
+		if(ActivityType.CLOSE_WORK_ORDER == eventType && workOrder != null) {
 			if(workOrder.getSourceType() == TicketContext.SourceType.ALARM.getIntVal()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);

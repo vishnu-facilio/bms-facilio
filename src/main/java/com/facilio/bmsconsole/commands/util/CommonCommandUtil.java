@@ -125,35 +125,56 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	public static void updateAlarmDetailsInTicket(AlarmContext alarm, Connection conn) throws Exception {
+	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
 		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
 		{
 			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
 			if(category != null) {
-				alarm.setCategory(category);
+				destinationAlarm.setCategory(category);
 			}
 		}
-		AssetContext asset = alarm.getAsset();
+		AssetContext asset = sourceAlarm.getAsset();
 		if(asset != null) {
 			String description;
-			BaseSpaceContext space = alarm.getSpace();
-			if(alarm.getIsAcknowledged()) {
+			BaseSpaceContext space = sourceAlarm.getSpace();
+			if(sourceAlarm.getIsAcknowledged()) {
 				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",alarm.getTypeVal(),asset.getName(), space.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",alarm.getTypeVal(),asset.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
 				}
 			}
 			else {
 				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",alarm.getTypeVal(),asset.getName(), space.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",alarm.getTypeVal(),asset.getName());
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
 				}
 			}
-			alarm.setDescription(description);
+			destinationAlarm.setDescription(description);
+		}
+		else if(sourceAlarm.getNode() != null) {
+			String description;
+			BaseSpaceContext space = sourceAlarm.getSpace();
+			if(sourceAlarm.getIsAcknowledged()) {
+				if(space != null) {
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),sourceAlarm.getNode(), space.getName());
+				}
+				else {
+					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),sourceAlarm.getNode());
+				}
+			}
+			else {
+				if(space != null) {
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),sourceAlarm.getNode(), space.getName());
+				}
+				else {
+					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),sourceAlarm.getNode());
+				}
+			}
+			destinationAlarm.setDescription(description);
 		}
 	}
 	

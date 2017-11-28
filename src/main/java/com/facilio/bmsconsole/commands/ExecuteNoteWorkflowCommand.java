@@ -24,7 +24,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionTemplate;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -42,11 +42,11 @@ public class ExecuteNoteWorkflowCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				long parentId = note.getParentId();
-				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-				if(parentId != -1 && eventType != null && eventType == EventType.ADD_TICKET_NOTE) {
+				ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
-					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromEvent(orgId, moduleId, eventType.getValue());
+					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivity(orgId, moduleId, eventType.getValue());
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
 						TicketContext ticket = getParentTicket(note, ((FacilioContext) context).getConnectionWithoutTransaction());
