@@ -275,6 +275,21 @@ public class SpaceAPI {
 		return buildings;
 	}
 	
+	
+	public static List<BuildingContext> getAllBuildings() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(BuildingContext.class)
+																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		List<BuildingContext> buildings = selectBuilder.get();
+		return buildings;
+	}
+	
 	public static List<SiteContext> getAllSites() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);

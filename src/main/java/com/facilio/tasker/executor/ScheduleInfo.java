@@ -110,6 +110,17 @@ public class ScheduleInfo {
 		values.add(value);
 	}
 	
+	public List<Long> nextExecutionTimes(long startTime, long endTime) {
+		List<Long> nextExecutionTimes = new ArrayList<>();
+		long flag = nextExecutionTime(startTime);
+		while(flag <= endTime)
+		{
+			nextExecutionTimes.add(flag);
+			flag = nextExecutionTime(flag);
+		}
+		return nextExecutionTimes;
+	}
+	
 	public long nextExecutionTime(long startTime) {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime, true);
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
