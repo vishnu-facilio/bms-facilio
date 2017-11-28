@@ -117,7 +117,7 @@ public class WorkOrderReportAction extends ActionSupport {
 			setReportData(getClosedWorkOrderSummary(preventiveCdn));
 		}
 		else if ("woVolume".equalsIgnoreCase(getType())) {
-			setReportData(getWorkOrderCategorySummary());
+			setReportData(getWorkOrderVolumeSummary());
 		}
 		else if ("location".equalsIgnoreCase(getType())) {
 			setReportData(getWorkOrderLocationSummary());
@@ -563,6 +563,31 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
 		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+ 		summaryReportChain.execute(repContext);
+ 		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
+		
+		return rs;
+	}
+	private List<Map<String, Object>> getWorkOrderVolumeSummary() throws Exception {
+		
+		FacilioReportContext repContext = new FacilioReportContext();
+		JSONParser parser = new JSONParser();
+		String xAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.CREATED_TIME+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.CREATED_TIME+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",,\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.DAILY+"\"}]";
+		String yAxisJSON = "[{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Reports.ALL_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\""+FacilioConstants.Reports.AGG_FUNC+"\":\""+FacilioConstants.Reports.COUNT_COLUMN+"\"}]";
+		String joinsJSON = "[{\""+FacilioConstants.Reports.JOIN_TABLE+"\":\""+FacilioConstants.ContextNames.TICKET+"\",\""+FacilioConstants.Reports.JOIN_TYPE+"\":\""+FacilioConstants.Reports.INNER_JOIN+"\"}]";
+		String filters ="{\""+FacilioConstants.Ticket.CREATED_TIME+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\""+getPeriod()+"\"}}";
+		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setXAxis(xAxis);
+		JSONArray yAxis = (JSONArray) parser.parse(yAxisJSON);
+		repContext.setYAxis(yAxis);
+		JSONArray joins = (JSONArray) parser.parse(joinsJSON);
+		repContext.setJoins(joins);
+		JSONArray groupByCols = (JSONArray) parser.parse(xAxisJSON);
+		repContext.setGroupByCols(groupByCols);
+		JSONObject filterObj = (JSONObject) parser.parse(filters);
+		repContext.setFilters(filterObj);
+		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
