@@ -85,7 +85,7 @@ public class WorkflowAPI {
 					.select(FieldFactory.getWorkflowRuleFields())
 					.innerJoin("Workflow_Event")
 					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.EVENT_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, activityType, activityType)
+					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.ACTIVITY_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, activityType, activityType)
 					.orderBy("EXECUTION_ORDER");
 			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
 		}
