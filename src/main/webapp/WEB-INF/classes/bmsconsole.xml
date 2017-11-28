@@ -333,7 +333,23 @@
 			</result>
 		</action>
 	</package>
-
+	<package name="energyMeterApi" namespace="/api/energy" extends="home">
+		<action name="addMeter" class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="addEnergyMeter">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="addMeterPurpose" class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="addEnergyMeterPurpose">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="assetApi" namespace="/api/asset" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="newAsset">
