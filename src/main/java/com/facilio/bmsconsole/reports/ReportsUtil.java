@@ -178,7 +178,15 @@ public class ReportsUtil
 	}
 	
 	
-	public static List<Map<String, Object>> fetchMothlyData(String deviceList,long startTime, long endTime, boolean building)
+	public static double getEUI(double currentKwh, double buildingArea) {
+
+		double conversionMultiplier=3.4;//this for electrical energy..
+		double convertedVal=currentKwh*conversionMultiplier;
+		double eui= convertedVal/buildingArea;
+		return roundOff(eui, 2);
+	}
+	
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean building)
 	{
 		List<Map<String, Object>> result=null;
 		
