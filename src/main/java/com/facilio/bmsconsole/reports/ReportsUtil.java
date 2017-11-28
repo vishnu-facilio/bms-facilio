@@ -154,7 +154,7 @@ public class ReportsUtil
 		double buildingArea=building.getGrossFloorArea();
 		buildingData.put("avatar",avatarUrl);
 		buildingData.put("name", buildingName);
-		buildingData.put("id", building.getBuildingId());
+		buildingData.put("id", building.getId());
 		buildingData.put("displayName", displayName);
 		buildingData.put("area", buildingArea);
 		return buildingData;

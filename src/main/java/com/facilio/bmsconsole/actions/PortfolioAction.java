@@ -53,23 +53,32 @@ public class PortfolioAction extends ActionSupport {
 		
 		List<Map<String, Object>> currentResult= ReportsUtil.fetchMothlyData(deviceList,currentStartTime,endTime,false);
 		Map<Long,Double> currentMeterVsConsumption=ReportsUtil.getMeterVsConsumption(currentResult);
-		int lastMonthDays= DateTimeUtil.getDaysBetween(prevStartTime, currentStartTime-1);
-		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime);
+		int lastMonthDays= DateTimeUtil.getDaysBetween(prevStartTime, currentStartTime);
+		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
 		JSONArray buildingArray= new JSONArray ();
 		
 		for(BuildingContext building:buildings) {
 			
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
-			long buildingId=building.getBuildingId();
+			long buildingId=building.getId();
 			long meterId=meterVsBuilding.get(buildingId);
-			double lastMonthKwh= prevMeterVsConsumption.get(meterId);
-			double thisMonthKwh= currentMeterVsConsumption.get(meterId);
-			double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-			JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
-			JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
-			buildingData.put("previousVal", lastMonthData);
-			buildingData.put("currentVal", thisMonthData);
-			buildingData.put("variance", variance);
+			double lastMonthKwh=0;
+			double thisMonthKwh=0;
+			if(prevMeterVsConsumption.containsKey(meterId)){
+				lastMonthKwh= prevMeterVsConsumption.get(meterId);
+				JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
+				buildingData.put("previousVal", lastMonthData);
+			}
+			if(currentMeterVsConsumption.containsKey(meterId)){
+				thisMonthKwh= currentMeterVsConsumption.get(meterId);
+				JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
+				buildingData.put("currentVal", thisMonthData);
+			}
+			if(lastMonthKwh!=0 || thisMonthKwh!=0)
+			{
+				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
+				buildingData.put("variance", variance);
+			}
 			buildingArray.add(buildingData);
 		}
 		result.put("buildingDetails", buildingArray);
