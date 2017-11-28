@@ -20,8 +20,10 @@ public class ReportsUtil
 		return variance*100;
 	}
 	
+	private static double unitCost=0.65;
+
 	
-	public static double toMegaNRound(double value)
+	public static double toMega(double value)
 	{
 		//Converting Kilo into Mega
 		return roundOff(value/1000,2);
@@ -33,8 +35,16 @@ public class ReportsUtil
 		return (double)Math.round(value*multiplier)/ multiplier ;
 	}
 	
-	public static String costConversionToMillion(double value)
+	public static String getCost(double kWh)
 	{
+		//later we need to calculate based on slab..
+		return toMillions(kWh*unitCost);
+	}
+	
+	
+	public static String toMillions(double value)
+	{
+
 		long length=(long)Math.log10(value)+1;
 		int divider=1;
 		int decimal=2;
@@ -53,7 +63,9 @@ public class ReportsUtil
 		}
 		double finalValue=value/divider;
 		return roundOff(finalValue, decimal)+units;
+		
 	}
+	
 	
 	public static FacilioField getEnergyField() {
 		FacilioField energyFld = new FacilioField();
@@ -100,4 +112,5 @@ public class ReportsUtil
 		}
 		return builder.deleteCharAt(index).toString();
 	}
+	
 }
