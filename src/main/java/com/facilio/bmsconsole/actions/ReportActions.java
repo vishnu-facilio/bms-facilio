@@ -13,7 +13,6 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -125,7 +124,8 @@ public class ReportActions extends ActionSupport {
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
 			double currentKwh = (double)currentTotal.get("CONSUMPTION");
-			resultJson.put("totalMWh", ReportsUtil.toMega(currentKwh));
+			resultJson.put("totalConsumption", ReportsUtil.toMega(currentKwh));
+			resultJson.put("units","MWh");
 		}
 		resultJson.put("currentVal", current);
 		resultJson.put("mapping", purposeMapping);
@@ -360,38 +360,14 @@ public class ReportActions extends ActionSupport {
 
 
 
-	@SuppressWarnings("unchecked")
-	private JSONObject getBuildingData(JSONObject buildingData, BuildingContext building) throws Exception
-	{
-		int floors=building.getNoOfFloors();
-		buildingData.put("floors", floors);
-		long photoId=building.getPhotoId();
-		buildingData.put("photoid", photoId);
-		String avatarUrl=building.getAvatarUrl();
-		String buildingName=building.getName();
-		String displayName=building.getDisplayName();
-		LocationContext location= building.getLocation();
-		if(location!=null){
-			String cityName=location.getCity();
-			String streetName=location.getStreet();
-			buildingData.put("city", cityName);
-			buildingData.put("street", streetName);
-		}
-		double buildingArea=building.getGrossFloorArea();
-		buildingData.put("avatar",avatarUrl);
-		buildingData.put("name", buildingName);
-		buildingData.put("displayName", displayName);
-		buildingData.put("area", buildingArea);
-		return buildingData;
-	}
+	
 
 
 	@SuppressWarnings("unchecked")
 	private JSONObject getBuildingDetails(long buildingId) throws Exception
 	{
-		JSONObject buildingData = new JSONObject();
 		BuildingContext building =SpaceAPI.getBuildingSpace(getBuildingId());
-		buildingData=getBuildingData(buildingData,building);
+		JSONObject buildingData=ReportsUtil.getBuildingData(building);
 		List<EnergyMeterContext> rootMeterList= DeviceAPI.getMainEnergyMeter(""+buildingId);
 
 		StringBuilder rootBuilder= new StringBuilder();
@@ -406,52 +382,32 @@ public class ReportActions extends ActionSupport {
 		String rootList=ReportsUtil.removeLastChar(rootBuilder, ",");
 		String rootPurposeList=ReportsUtil.removeLastChar(purposeBuilder,",");
 
-		long startTime=DateTimeUtil.getMonthStartTime(-1);
+		long previousStartTime=DateTimeUtil.getMonthStartTime(-1);
+		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 
-		FacilioField monthFld = ReportsUtil.getField("MONTH", "TTIME_MONTH", FieldType.NUMBER);
-		FacilioField energyFld = ReportsUtil.getEnergyField();
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(energyFld);
-		fields.add(monthFld);
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Energy_Data")
-				.andCustomWhere("ORGID=?",orgId)
-				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
-				.andCondition(getDeviceListCondition(rootList))
-				.groupBy("TTIME_MONTH");
-		List<Map<String, Object>> result = builder.get();
-
-		int lastMonth=-1;int thisMonth=-1;
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMothlyData(rootList,previousStartTime,currentStartTime-1,true);
+		List<Map<String, Object>> currentResult = ReportsUtil.fetchMothlyData(rootList,currentStartTime,endTime,true);
+		
 		double lastMonthKwh=-1;double thisMonthKwh=-1;
 
-		if(result!=null && !result.isEmpty())
-		{
-			if(result.size()==2){
-				Map<String,Object> map = result.get(0);
-				lastMonth =(int)map.get("MONTH");
+		if(previousResult!=null && !previousResult.isEmpty()){
+			
+				Map<String,Object> map = previousResult.get(0);
 				lastMonthKwh = (double)map.get("CONSUMPTION");
-				map = result.get(1);
-				thisMonth =(int)map.get("MONTH");
-				thisMonthKwh = (double)map.get("CONSUMPTION");		
-			}
-			else{
-				Map<String,Object> map = result.get(0);
-				thisMonth =(int)map.get("MONTH");
-				thisMonthKwh = (double)map.get("CONSUMPTION");
-			}
+		}
+		if(currentResult!=null && !currentResult.isEmpty()){
+
+			Map<String,Object> map = currentResult.get(0);
+			thisMonthKwh = (double)map.get("CONSUMPTION");
 		}
 
-		long endTimestamp=DateTimeUtil.getMonthStartTime();
-		int lastMonthDays= DateTimeUtil.getDaysBetween(startTime, endTimestamp-1);
-		int thisMonthDays=DateTimeUtil.getDaysBetween(endTimestamp,endTime);
+		int lastMonthDays= DateTimeUtil.getDaysBetween(previousStartTime, currentStartTime-1);
+		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime);
 
 		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-		JSONObject lastMonthData = getMonthData(lastMonthKwh,lastMonthDays,lastMonth);
-		JSONObject thisMonthData = getMonthData(thisMonthKwh,thisMonthDays,thisMonth);
+		JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
+		JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
 
 
 		buildingData.put("previousVal", lastMonthData);
@@ -460,28 +416,14 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("purpose", DeviceAPI.getFilteredPurposes(rootPurposeList,NumberOperators.NOT_EQUALS));
 
 		// need to send cost..as well..
-		//need to send temperature & carbon emmission [
+		//need to send temperature & carbon emission [
 		return buildingData;
 	}
 
 
 
 
-	@SuppressWarnings("unchecked")
-	private JSONObject getMonthData(double kwh,int days,  int monthVal)
-	{
-		JSONObject monthData = new JSONObject();
-		monthData.put("consumption",ReportsUtil.toMega(kwh));
-		monthData.put("days", days);
-		monthData.put("units","MWh");
-		monthData.put("currency","$");
-
-		monthData.put("cost", ReportsUtil.getCost(kwh));
-		monthData.put("monthVal", monthVal);
-		////double EUI= kwh/buildingArea/lastMonthDays;
-		//monthData.put("eui", EUI);
-		return monthData;
-	}
+	
 
 	private Condition getDeviceListCondition (String deviceList)
 	{
@@ -526,7 +468,7 @@ public class ReportActions extends ActionSupport {
 	public JSONObject getReportData() {
 		return reportData;
 	}
-	public void setReportData(JSONObject reportAData) {
+	public void setReportData(JSONObject reportData) {
 		this.reportData = reportData;		
 	}
 
