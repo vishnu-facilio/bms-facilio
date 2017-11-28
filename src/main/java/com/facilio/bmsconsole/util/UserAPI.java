@@ -228,7 +228,7 @@ public class UserAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and Users.USERID=?");
+			pstmt = conn.prepareStatement("SELECT ORG_Users.*, Users.*, Role.ROLE_ID, Role.NAME AS ROLE_NAME, Role.DESCRIPTION AS ROLE_DESC, Role.PERMISSIONS AS ROLE_PERMISSIONS FROM ORG_Users, Users, Role where ORG_Users.USERID = Users.USERID and ORG_Users.ROLE_ID = Role.ROLE_ID and Users.USERID=?");
 			pstmt.setLong(1, userId);
 			
 			rs = pstmt.executeQuery();

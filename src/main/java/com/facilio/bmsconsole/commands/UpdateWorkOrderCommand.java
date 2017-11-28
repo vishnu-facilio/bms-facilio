@@ -36,7 +36,7 @@ public class UpdateWorkOrderCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			if(workOrder.getAssignedTo() != null) {
+			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
 				workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
 			}
 			

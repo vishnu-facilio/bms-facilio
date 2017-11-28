@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +18,9 @@ public class ViewAPI {
 	public static List<FacilioView> getAllViews(long moduleId, long orgId) throws Exception {
 		
 		List<FacilioView> views = new ArrayList<>();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) 
+		try 
 		{
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.connection(conn)
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULEID = ?", orgId, moduleId);
@@ -42,9 +40,8 @@ public class ViewAPI {
 	}
 	
 	public static FacilioView getView(String name, long moduleId, long orgId) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.connection(conn)
 													.select(FieldFactory.getViewFields())
 													.table("Views")
 													.andCustomWhere("ORGID = ? AND MODULEID = ? AND NAME = ?", orgId, moduleId, name);
@@ -54,7 +51,7 @@ public class ViewAPI {
 				Map<String, Object> viewProp = viewProps.get(0);
 				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
 				if(view.getCriteriaId() != -1) {
-					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId(),conn);
+					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
 					view.setCriteria(criteria);
 				}
 				return view;
@@ -70,7 +67,7 @@ public class ViewAPI {
 	
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {
 				long criteriaId = CriteriaAPI.addCriteria(criteria, orgId);
@@ -79,7 +76,6 @@ public class ViewAPI {
 			
 			Map<String, Object> viewProp = FieldUtil.getAsProperties(view);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-															.connection(conn)
 															.table("Views")
 															.fields(FieldFactory.getViewFields())
 															.addRecord(viewProp);

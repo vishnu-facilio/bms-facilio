@@ -38,7 +38,6 @@ public class AddSupportEmailCommand implements Command {
 			
 			List<FacilioField> fields = FieldFactory.getSupportEmailFields();
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-													.connection(((FacilioContext)context).getConnectionWithTransaction())
 													.table("SupportEmails")
 													.fields(fields)
 													.addRecord(emailProps);
