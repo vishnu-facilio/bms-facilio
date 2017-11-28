@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -14,7 +14,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		//energyMeter.setName("test1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
@@ -26,7 +26,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String addEnergyMeterPurpose() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeterPurpose);
 		//energyMeterPurpose.setName("new name 1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterPurposeChain();
