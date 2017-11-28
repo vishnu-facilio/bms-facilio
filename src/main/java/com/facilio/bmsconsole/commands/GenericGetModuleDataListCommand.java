@@ -34,7 +34,10 @@ public class GenericGetModuleDataListCommand implements Command {
 															.select(fields)
 															//.maxLevel(0)
 															;
-		
+		if(moduleName.equals(FacilioConstants.ContextNames.ASSET))
+		{
+			builder.orderBy("Assets.LOCAL_ID desc");
+		}
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
