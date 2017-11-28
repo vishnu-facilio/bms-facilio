@@ -39,7 +39,7 @@ public class AddAlarmCommand implements Command {
 																.fields(fields)
 																.connection(conn);
 			
-			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, conn);
+			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
 			long alarmId = builder.insert(alarm);
 			alarm.setId(alarmId);
