@@ -171,6 +171,21 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getUpcomingPreventiveMaintenance() throws Exception {
+		
+		long startTime = System.currentTimeMillis() / 1000;
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, startTime);
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, startTime + (7*24*60*60));
+		
+		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
+		getPmchain.execute(context);
+		
+		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		
+		return SUCCESS;
+	}
+	
 	public String getInactivePreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
