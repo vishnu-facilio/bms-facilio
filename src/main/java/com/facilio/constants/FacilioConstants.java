@@ -515,6 +515,8 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
+		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
+		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
