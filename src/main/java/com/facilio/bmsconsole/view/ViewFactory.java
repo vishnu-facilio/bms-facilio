@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -66,6 +69,17 @@ public class ViewFactory {
 		viewMap.put("event-yesterday", getEvents("Yesterday"));
 		viewMap.put("event-thisweek", getEvents("ThisWeek"));
 		viewMap.put("event-lastweek", getEvents("LastWeek"));
+		
+		viewMap.put("alarm-active", getStatusAlarms("active", "Active Alarms", AlarmStatus.ACTIVE));
+		viewMap.put("alarm-suppressed", getStatusAlarms("suppressed", "Suppressed Alarms", AlarmStatus.SUPPRESS));
+		viewMap.put("alarm-myalarms", getMyAlarms());
+		viewMap.put("alarm-unassigned", getUnassignedAlarms());
+		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
+		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.LIFE_SAFETY));
+		viewMap.put("alarm-critical", getTypeAlarms("critical", "Critical Alarms", AlarmType.CRITICAL));
+		viewMap.put("alarm-maintenance", getTypeAlarms("maintenance", "Maintenance Alarms", AlarmType.MAINTENANCE));
+		viewMap.put("alarm-energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY));
+		
 		
 		//Add module name in field objects
 		
@@ -661,5 +675,103 @@ public class ViewFactory {
 		fireSafetyWOView.setCriteria(criteria);
 		
 		return fireSafetyWOView;
+	}
+	
+	private static FacilioView getStatusAlarms(String name, String displayName, AlarmStatus status) {
+		
+		Condition condition = new Condition();
+		condition.setColumnName("Alarms.STATUS");
+		condition.setFieldName("alarmStatus");
+		condition.setOperator(NumberOperators.EQUALS);
+		condition.setValue(String.valueOf(status.getIntVal()));
+		
+		Criteria crtieria = new Criteria();
+		crtieria.addAndCondition(condition);
+		
+		FacilioView activeAlarms = new FacilioView();
+		activeAlarms.setName(name);
+		activeAlarms.setDisplayName(displayName);
+		activeAlarms.setCriteria(crtieria);
+		return activeAlarms;
+	}
+	
+	private static FacilioView getMyAlarms() {
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getAlarmsModule()));
+		
+		FacilioView myAlarms = new FacilioView();
+		myAlarms.setName("myalarms");
+		myAlarms.setDisplayName("My Alarms");
+		myAlarms.setCriteria(criteria);
+		
+		return myAlarms;
+	}
+	
+	private static FacilioView getTypeAlarms(String name, String displayName, AlarmType type) {
+		Condition condition = new Condition();
+		condition.setColumnName("Alarms.ALARM_TYPE");
+		condition.setFieldName("type");
+		condition.setOperator(NumberOperators.EQUALS);
+		condition.setValue(String.valueOf(type.getIntVal()));
+		
+		Criteria crtieria = new Criteria();
+		crtieria.addAndCondition(condition);
+		
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName(name);
+		typeAlarms.setDisplayName(displayName);
+		typeAlarms.setCriteria(crtieria);
+		
+		return typeAlarms;
+	}
+	
+	private static FacilioView getUnacknowledgedAlarms() {
+		Condition falseCondition = new Condition();
+		falseCondition.setColumnName("Alarms.IS_ACKNOWLEDGED");
+		falseCondition.setFieldName("isAcknowledged");
+		falseCondition.setOperator(BooleanOperators.IS);
+		falseCondition.setValue(String.valueOf(false));
+		
+		Condition emptyCondition = new Condition();
+		emptyCondition.setColumnName("Alarms.IS_ACKNOWLEDGED");
+		emptyCondition.setFieldName("isAcknowledged");
+		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
+		
+		Criteria crtieria = new Criteria();
+		crtieria.addOrCondition(emptyCondition);
+		crtieria.addOrCondition(falseCondition);
+		
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledged");
+		typeAlarms.setDisplayName("Unacknowledged Alarms");
+		typeAlarms.setCriteria(crtieria);
+		
+		return typeAlarms;
+	}
+	
+	private static FacilioView getUnassignedAlarms() {
+		
+		LookupField userField = new LookupField();
+		userField.setName("assignedTo");
+		userField.setColumnName("ASSIGNED_TO_ID");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getAlarmsModule());
+		userField.setExtendedModule(ModuleFactory.getTicketsModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		
+		Condition userFieldCondition = new Condition();
+		userFieldCondition.setField(userField);
+		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
+		
+		Criteria unassignedWOCriteria = new Criteria();
+		unassignedWOCriteria.addAndCondition(userFieldCondition);
+		
+		FacilioView unassignedWOView = new FacilioView();
+		unassignedWOView.setName("unassigned");
+		unassignedWOView.setDisplayName("Unassigned Alarms");
+		unassignedWOView.setCriteria(unassignedWOCriteria);
+		
+		return unassignedWOView;
 	}
 }
