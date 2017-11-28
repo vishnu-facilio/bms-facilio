@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -38,7 +38,7 @@ public class AssetAction extends ActionSupport {
 	
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		
 		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
@@ -50,7 +50,7 @@ public class AssetAction extends ActionSupport {
 	
 	public String updateAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
@@ -63,7 +63,7 @@ public class AssetAction extends ActionSupport {
 	
 	public String deleteAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, WorkflowEventContext.EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();

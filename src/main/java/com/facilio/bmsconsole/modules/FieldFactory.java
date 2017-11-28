@@ -318,9 +318,9 @@ public class FieldFactory {
 		fields.add(getModuleIdField(module));
 		
 		FacilioField field3 = new FacilioField();
-		field3.setName("eventType");
+		field3.setName("activityType");
 		field3.setDataType(FieldType.NUMBER);
-		field3.setColumnName("EVENT_TYPE");
+		field3.setColumnName("ACTIVITY_TYPE");
 		field3.setModule(module);
 		fields.add(field3);
 

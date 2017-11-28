@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.workflow.WorkflowEventContext.EventType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
@@ -47,7 +47,7 @@ public class AddNoteCommand implements Command {
 			note.setId(noteBuilder.insert(note));
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES))
 			{
-				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TICKET_NOTE);
 				if(note.getNotifyRequester())
 				{
 					JSONObject mailJson = new JSONObject();

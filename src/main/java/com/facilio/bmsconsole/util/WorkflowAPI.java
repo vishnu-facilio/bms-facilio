@@ -78,14 +78,14 @@ public class WorkflowAPI {
 		}
 	}
 	
-	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromEvent(long orgId, long moduleId, int eventType) throws Exception {
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivity(long orgId, long moduleId, int activityType) throws Exception {
 		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 					.table("Workflow_Rule")
 					.select(FieldFactory.getWorkflowRuleFields())
 					.innerJoin("Workflow_Event")
 					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.EVENT_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, eventType, eventType)
+					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.EVENT_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, activityType, activityType)
 					.orderBy("EXECUTION_ORDER");
 			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
 		}
