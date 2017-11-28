@@ -1418,6 +1418,18 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="getConsumptionDetails" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getConsumptionDetails">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getAllConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="workorderReportApi" namespace="/api/report/workorder"

@@ -255,10 +255,10 @@ public class WorkOrderReportAction extends ActionSupport {
 		Long nowTime = DateTimeUtil.getCurrenTime();
 		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
-			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterdaye\"}}";
 		}
 		else {
-			filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is before\",\"value\":[\""+nowTime+"_\"]}}";
+			filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterday\"}}";
 		}
 		JSONArray xAxis = (JSONArray) parser.parse(xAxisJSON);
 		repContext.setXAxis(xAxis);
