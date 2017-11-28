@@ -32,6 +32,8 @@ public class GetEventListCommand implements Command {
 		
 		FacilioView view = ViewFactory.getView("event-" + cvName);
 		
+		long alarmId = (long) context.get(EventConstants.EventContextNames.ALARM_ID);
+		
 		List<EventContext> events = new ArrayList<>();
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
@@ -41,6 +43,10 @@ public class GetEventListCommand implements Command {
 					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
 					.orderBy("CREATED_TIME desc");
 			
+			if(alarmId != -1)
+			{
+				selectBuider.andCustomWhere("EVENT.ALARM_ID", alarmId);
+			}
 			if (view != null) {
 				Criteria criteria = view.getCriteria();
 				selectBuider.andCriteria(criteria);

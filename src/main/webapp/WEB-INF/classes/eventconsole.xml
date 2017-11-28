@@ -55,6 +55,16 @@
 		</action>
 	</package>
 	
+	<package name="alarmEventApi" namespace="/api/alarm/event" extends="home">
+		<action name="*" class="com.facilio.events.actions.EventAction" method="eventList">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="alarmId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">events,events\[\d+\],events\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="eventApi" namespace="/api/event" extends="home">
 		<action name="addevent" class="com.facilio.events.actions.EventAction" method="addEvent">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

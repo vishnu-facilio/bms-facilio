@@ -72,6 +72,14 @@ public class EventAction extends ActionSupport {
 		this.events = events;
 	}
 	
+	private long alarmId = -1;
+	public long getAlarmId() {
+		return alarmId;
+	}
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public String eventList() throws Exception {
 		
@@ -84,6 +92,7 @@ public class EventAction extends ActionSupport {
  		pagination.put("limit", this.perPage);
  		
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
  		
 		Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
 		eventListChain.execute(context);
