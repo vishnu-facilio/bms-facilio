@@ -34,6 +34,7 @@ public class EventConstants {
 		public static final String EVENT_RULE_LIST = "eventRules";
 		public static final String NODE = "node";
 		public static final String ASSET_ID = "assetId";
+		public static final String ALARM_ID = "alarmId";
 	
 	}
 	
