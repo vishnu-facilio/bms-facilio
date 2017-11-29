@@ -66,7 +66,7 @@ public class EventAPI {
 	    	event.setCreatedTime(timestamp);
 	    }
 	    if(event.getSeverity() == null) {
-	    	event.setSeverity("Idle");
+	    	event.setSeverity("Info");
 	    }
 	    event.setOrgId(orgId);
 	    event.setEventState(EventState.READY);
