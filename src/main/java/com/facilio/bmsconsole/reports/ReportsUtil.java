@@ -180,7 +180,7 @@ public class ReportsUtil
 	
 	public static double getEUI(double currentKwh, double buildingArea) {
 
-		double conversionMultiplier=3.4;//this for electrical energy..
+		double conversionMultiplier=3.412;//this for electrical energy..
 		double convertedVal=currentKwh*conversionMultiplier;
 		double eui= convertedVal/buildingArea;
 		return roundOff(eui, 2);

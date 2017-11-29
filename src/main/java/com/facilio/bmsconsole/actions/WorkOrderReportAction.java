@@ -177,8 +177,9 @@ public class WorkOrderReportAction extends ActionSupport {
 						location.put("lng", building.getLocation().getLng());
 						buildingObj.put("location", location);
 					}
-					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
-					buildingObj.put("stats", getOpenWorkOrderSummary(null));
+//					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
+					String buildingCnd ="\""+FacilioConstants.Ticket.SPACE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"building_is\",\"value\":[\""+building.getId()+"_\"]}";
+					buildingObj.put("stats", getOpenWorkOrderSummary(buildingCnd));
 					woStats.add(buildingObj);
 				}
 			}

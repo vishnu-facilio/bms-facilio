@@ -241,7 +241,7 @@ public class PortfolioAction extends ActionSupport {
 				buildingList.put(building.getDisplayName(), currentKwh);
 			}
 		}
-		
+		result.put("buildingDetails", buildingList);
 		setReportData(result);
 		return SUCCESS;
 	}
