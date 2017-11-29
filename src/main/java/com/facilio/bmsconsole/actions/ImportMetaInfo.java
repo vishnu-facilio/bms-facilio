@@ -68,8 +68,10 @@ public class ImportMetaInfo
 				System.out.println("columnheadeing"+iminfo.columnheadings);
 				int instanceid = rs.getInt("INSTANCE_ID");
 				iminfo.setFileId(rs.getLong("FILEID"));
-				iminfo.fields = getFields(instanceid);
+				Module module = Module.getModuleFromValue(instanceid);
+				iminfo.fields = getFields(module);
 				iminfo.setImportprocessid(processid);
+				iminfo.setModule(module);
 				System.out.println("fields"+iminfo.fields);
 				return iminfo;
 			}
@@ -109,20 +111,34 @@ public class ImportMetaInfo
 	}
 	public enum Module
 	{
-		Energy(1),
-		Campuse(2),
-		Space(3);
+		Energy(1,FacilioConstants.ContextNames.ENERGY_DATA_READING),
+		Building(2,FacilioConstants.ContextNames.BUILDING),
+		Space(3,FacilioConstants.ContextNames.SPACE),
+		EnergyMeter(4,FacilioConstants.ContextNames.ENERGY_METER);
 		int value;
-		private Module(int value)
+		String moduleName;
+		private Module(int value,String moduleName)
 		{
 			this.value=value;
+			this.moduleName = moduleName;
 		}
 		public int getValue()
 		{
 			System.out.println("this get value "+value);
 			return this.value;
 		}
-		
+		public String getModuleName() {
+			return this.moduleName;
+		}
+		public static Module getModuleFromValue(int value) {
+			switch(value) {
+			case 1:
+				return Module.Energy;
+			case 4:
+				return Module.EnergyMeter;
+			}
+			return null;
+		}
 	}
 	public Module getModule() {
 		return module;
@@ -130,33 +146,27 @@ public class ImportMetaInfo
 	public void setModule(Module module) {
 		this.module = module;
 	}
-	private Module module=Module.Energy;
-	public static JSONArray getFields(int moduletype)
+	private Module module;
+	public static JSONArray getFields(Module module)
 	{
 		JSONArray fields = new JSONArray();
-		switch(moduletype)
-		{
-		case 1:
-			try {
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				ArrayList<FacilioField> fieldsList= bean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		
+		try {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			ArrayList<FacilioField> fieldsList= bean.getAllFields(module.getModuleName());
 
-				for(FacilioField field : fieldsList)
+			for(FacilioField field : fieldsList)
+			{
+				if(!isRemovableField(field.getName()))
 				{
-					if(!isRemovableField(field.getName()))
-					{
-						fields.add(field.getName());
-					}
+					fields.add(field.getName());
 				}
 			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-			return fields;
 		}
-		return null;
-			
-			
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return fields;
 	}
 	
 	private static boolean isRemovableField(String name) {
