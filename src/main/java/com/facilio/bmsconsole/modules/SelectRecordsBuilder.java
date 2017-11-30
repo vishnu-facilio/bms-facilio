@@ -22,7 +22,7 @@ import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
-	private static final int LEVEL = 2;
+	private static final int LEVEL = 0;
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
