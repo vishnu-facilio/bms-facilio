@@ -76,13 +76,13 @@ public class ReportActions extends ActionSupport {
 			{
 				Map<String,Object> rowData=total.get(0);
 				Double totalKwh=(Double)rowData.get("CONSUMPTION");
-				result.put(floorName, ReportsUtil.toMega(totalKwh));
+				result.put(floorName, ReportsUtil.roundOff(totalKwh,2));
 			}
 		}
 		if(result!=null && !result.isEmpty())
 		{
 			resultData.put("currentVal", ReportsUtil.valueSort(result,true));
-			resultData.put("units", "MWh");
+			resultData.put("units", "kWh");
 		}
 		setReportData(resultData);
 		return SUCCESS;
@@ -124,8 +124,9 @@ public class ReportActions extends ActionSupport {
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
 			double currentKwh = (double)currentTotal.get("CONSUMPTION");
-			resultJson.put("totalConsumption", ReportsUtil.toMega(currentKwh));
-			resultJson.put("units","MWh");
+			String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
+			resultJson.put("totalConsumption", consumptionArray[0]);
+			resultJson.put("units",consumptionArray[1]);
 		}
 		resultJson.put("currentVal", current);
 		resultJson.put("mapping", purposeMapping);
@@ -271,9 +272,12 @@ public class ReportActions extends ActionSupport {
 		}
 		consumptionData.put("currentVal", current);
 		consumptionData.put("previousVal", previous);
-		consumptionData.put("currentTotal", ReportsUtil.toMega(currentKwh));
-		consumptionData.put("previousTotal", ReportsUtil.toMega(previousKwh));
-		consumptionData.put("units", "MWh");
+		String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
+		consumptionData.put("currentTotal", consumptionArray[0]);
+		consumptionData.put("currentUnits",consumptionArray[1]);
+		consumptionArray=ReportsUtil.energyConverter(previousKwh);
+		consumptionData.put("previousTotal", consumptionArray[0]);
+		consumptionData.put("previousUnits",consumptionArray[1]);
 		consumptionData.put("variance",ReportsUtil.getVariance(currentKwh, previousKwh));
 		setReportData(consumptionData);
 	}

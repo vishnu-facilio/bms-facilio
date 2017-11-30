@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -63,6 +64,27 @@ public class SpaceAPI {
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<BuildingContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0);
+		}
+		return null;
+	}
+	
+	
+	public static LocationContext getLocationSpace(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.LOCATION);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.LOCATION);
+		
+		SelectRecordsBuilder<LocationContext> selectBuilder = new SelectRecordsBuilder<LocationContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(LocationContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		List<LocationContext> spaces = selectBuilder.get();
 		
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
@@ -255,6 +277,7 @@ public class SpaceAPI {
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
 																	.module(module)
+																	.maxLevel(0)
 																	.beanClass(BaseSpaceContext.class)
 																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 		List<BaseSpaceContext> spaces = selectBuilder.get();
@@ -269,6 +292,7 @@ public class SpaceAPI {
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
 																	.select(fields)
 																	.module(module)
+																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		List<BuildingContext> buildings = selectBuilder.get();
@@ -284,6 +308,7 @@ public class SpaceAPI {
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
 																	.select(fields)
 																	.module(module)
+																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		List<BuildingContext> buildings = selectBuilder.get();
@@ -298,9 +323,35 @@ public class SpaceAPI {
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
 																	.module(module)
+																	.maxLevel(0)
 																	.beanClass(SiteContext.class);
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
+	}
+	
+	
+public static long getSitesCount() throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Site")
+				.andCustomWhere("Site.ORGID=?", orgId);
+		
+		List<Map<String, Object>> result = builder.get();
+		if (result == null || result.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (long) result.get(0).get("count");
+		}
 	}
 	
 	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {

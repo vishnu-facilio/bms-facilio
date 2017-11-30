@@ -25,7 +25,8 @@
 			<param name="includeProperties">users.*</param></result>
 		</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
-	    	<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+		<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+		<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>		

@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.json.simple.JSONArray;
 
+import com.facilio.bmsconsole.actions.ImportMetaInfo.Module;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -27,8 +28,6 @@ public class ImportDataAction extends ActionSupport {
 		
 		System.out.println("entry code"+ this.hashCode());
 
-		// Test code 
-		
 		if(getImportprocessid()!=0)
 		{
 			System.out.println("secondtime code"+ this.hashCode());
@@ -42,7 +41,7 @@ public class ImportDataAction extends ActionSupport {
 
 			try(Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();
 					PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery))
-			{			
+			{
 				pstmtCheck.setObject(1, orgId);
 				pstmtCheck.setObject(2, getColumnheading());
 				//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
@@ -86,7 +85,8 @@ public class ImportDataAction extends ActionSupport {
 			long fileid = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 			String  insert = INSERTQUERY.replaceAll("#orguserid#", fs.getUserId()+"").replaceAll("#fileid#", fileid+"").replaceAll("#COLUMN_HEADING#", getColumnheading());
 
-			System.out.println(""+metainfo.getModule());
+			metainfo.setModule(Module.valueOf(getModuleName()));
+			System.out.println("Module -- "+metainfo.getModule());
 			insert =insert.replaceAll("#module#", String.valueOf(metainfo.getModule().getValue())); // 1 for energy data
 			 conn  = FacilioConnectionPool.INSTANCE.getConnection();
 			System.out.println(insert);
