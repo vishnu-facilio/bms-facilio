@@ -1451,6 +1451,11 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="pmTaskList" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="preventiveMaintenance">
+			<result name="success" type="json">
+				<param name="root">pms</param>
+			</result>
+		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
 			<result name="success" type="json">
 				<param name="includeProperties">^woStats.*</param>

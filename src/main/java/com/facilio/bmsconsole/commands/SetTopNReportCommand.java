@@ -28,14 +28,14 @@ public class SetTopNReportCommand implements Command {
 					repContext.setOrderType("desc");
 				}
 				else if(topNArr[0]!=null && topNArr[0].equals(FacilioConstants.Reports.BOTTOM_N)) {
-					repContext.setOrderType("desc");
+					repContext.setOrderType("asc");
 				}
 				if(topNArr[1]!=null && !topNArr[1].isEmpty()) {
 					int limit = Integer.parseInt(topNArr[1]);
 					repContext.setLimit(limit);
 				}
 				if(topNArr[2]!=null && !topNArr[2].isEmpty()) {
-					context.put(FacilioConstants.ContextNames.SORTING_QUERY, topNArr[2]);	
+					repContext.put(FacilioConstants.ContextNames.SORTING_QUERY, topNArr[2]);	
 				}
 			}
 		}
