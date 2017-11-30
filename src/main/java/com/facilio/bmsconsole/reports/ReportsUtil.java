@@ -14,11 +14,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -201,34 +204,48 @@ public class ReportsUtil
 		return roundOff(eui, 2);
 	}
 	
-	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean building)
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime)
+	{
+		return fetchMeterData(deviceList,startTime,endTime,false);
+	}
+	
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org)
+	{
+		return fetchMeterData(deviceList,startTime,endTime, org,false);
+	}
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org,boolean rollUp)
 	{
 		List<Map<String, Object>> result=null;
 		
 		FacilioField energyFld = ReportsUtil.getEnergyField();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
-		String groupBy="";
-		if(!building)
+		StringBuilder groupBy=new StringBuilder();
+		if(org)
 		{
 			FacilioField meterFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 			fields.add(meterFld);
-			groupBy= meterFld.getName();
+			groupBy.append(meterFld.getName());
+			if(rollUp)
+			{
+				groupBy.append(" WITH ROLLUP");
+			}
 		}
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		
+        long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
-				.andCustomWhere("ORGID=?",orgId)
+                .andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
 				.andCondition(DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
-				.groupBy(groupBy);
+				.groupBy(groupBy.toString());
 		try {
 			result = builder.get();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+//		
 		return result;	
 	}
 	
@@ -242,5 +259,24 @@ public class ReportsUtil
 			meterConsumption.put(meterId, consumption);
 		}
 		return meterConsumption;
+	}
+	
+	public static Map<Long,Double> getMeterVsConsumptionPercentage(List<Map<String, Object>> result, double totalKwh)
+	{
+		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
+		for(Map<String,Object> rowData: result)
+		{
+			long meterId=(long)	rowData.get("Meter_ID");
+			double consumption=(double) rowData.get("CONSUMPTION");
+			double percentage=getPercentage(consumption,totalKwh);
+			meterConsumption.put(meterId, percentage);
+		}
+		return meterConsumption;
+	}
+	
+	public static double getPercentage(double numerator, double denominator)
+	{
+		double returnVal=numerator/denominator;
+		return returnVal*100;
 	}
 }

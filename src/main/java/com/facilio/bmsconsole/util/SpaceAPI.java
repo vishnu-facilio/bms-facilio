@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -437,37 +440,38 @@ public static long getSitesCount() throws Exception {
 	public static List<BaseSpaceContext> getBaseSpaces(List<Long> idList) throws Exception
 	{
 		if(idList != null && !idList.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
-			
-			StringBuilder ids = new StringBuilder();
-			ids.append(module.getTableName())
-								.append(".ID IN (");
-			boolean isFirst = true;
-			for(long id : idList) {
-				if(isFirst) {
-					isFirst = false;
-				}
-				else {
-					ids.append(", ");
-				}
-				ids.append(id);
-			}
-			ids.append(")");
-			
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
-			
-			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
-																		.select(fields)
-																		.table(module.getTableName())
-																		.moduleName(module.getName())
-																		.beanClass(BaseSpaceContext.class)
-																		.andCustomWhere(ids.toString());
-			List<BaseSpaceContext> spaces = selectBuilder.get();
-			return spaces;
+			String list=StringUtils.join(idList, ",");
+			return getBaseSpaces(list);
 		}
 		return null;
 	}
+	
+	public static List<BaseSpaceContext> getBaseSpaces(String idList) throws Exception
+	{
+		if(idList == null || idList.isEmpty()) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+
+		Condition condition = new Condition();
+		condition.setColumnName("ID");
+		condition.setOperator(NumberOperators.EQUALS);
+		condition.setValue(idList);
+
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(condition);
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		return spaces;
+		
+	}
+	
+	
 	
 	public static List<BaseSpaceContext> getAllBaseSpaces() throws Exception
 	{

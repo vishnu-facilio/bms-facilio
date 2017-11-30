@@ -1425,7 +1425,19 @@
 			</result>
 		</action>
 		<action name="getBuildingRankings" class="com.facilio.bmsconsole.actions.PortfolioAction"
-			method="getAllConsumption">
+			method="getBuildingRankings">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getAllServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllServiceConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
