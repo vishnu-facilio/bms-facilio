@@ -329,6 +329,31 @@ public class SpaceAPI {
 		return sites;
 	}
 	
+	
+public static long getSitesCount() throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Site")
+				.andCustomWhere("Site.ORGID=?", orgId);
+		
+		List<Map<String, Object>> result = builder.get();
+		if (result == null || result.isEmpty()) {
+			return 0;
+		}
+		else {
+			return (long) result.get(0).get("count");
+		}
+	}
+	
 	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {
 		List<Long> floorIds = new ArrayList<>();
 		floorIds.add(floorId);

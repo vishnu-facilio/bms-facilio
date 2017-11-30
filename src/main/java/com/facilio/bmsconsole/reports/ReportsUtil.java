@@ -27,6 +27,10 @@ public class ReportsUtil
 	
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
+		if(currentVal==0 || previousVal==0)
+		{
+			return 0;
+		}
 		double variance =(currentVal - previousVal)/currentVal;
 		variance=roundOff(variance, 2);
 		return variance*100;
@@ -35,9 +39,8 @@ public class ReportsUtil
 	private static double unitCost=0.65;
 
 	
-	public static String[] toMega(double value)
+	public static String[] energyConverter(Double value)
 	{
-		
 		long length=(long)Math.log10(value)+1;
 		String units="kWh";
 		if(length>4)
@@ -58,35 +61,32 @@ public class ReportsUtil
 		return (double)Math.round(value*multiplier)/ multiplier ;
 	}
 	
-	public static String[] getCost(double kWh)
+	public static String[] getCost(Double kWh)
 	{
 		//later we need to calculate based on slab..
-		return toMillions(kWh*unitCost);
+		return costConverter(kWh*unitCost);
 	}
 	
 	
-	public static String[] toMillions(double value)
+	public static String[] costConverter(double value)
 	{
 
 		long length=(long)Math.log10(value)+1;
 		int divider=1;
-		int decimal=2;
 		String units="";
 		if(length>6)
 		{
 			divider=1000000;
 			units=" M";
-			decimal=4;
 		}
 		else if(length>4)
 		{
 			divider=1000;
 			units=" K";
-			decimal=4;
 		}
 		double finalValue=value/divider;
 		String[] result= new String[2];
-		result[0] =""+roundOff(finalValue, decimal);
+		result[0] =""+roundOff(finalValue, 2);
 		result[1] =units;
 		return result;
 	}
@@ -167,10 +167,14 @@ public class ReportsUtil
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JSONObject getMonthData(double kwh,int days)
+	public static JSONObject getMonthData(Double kwh,int days)
 	{
 		JSONObject monthData = new JSONObject();
-		String[] consumptionArray=ReportsUtil.toMega(kwh);
+		if(kwh==null || kwh==0)
+		{
+			return monthData;
+		}
+		String[] consumptionArray=ReportsUtil.energyConverter(kwh);
 		monthData.put("consumption",consumptionArray[0]);
 		monthData.put("units",consumptionArray[1]);
 		monthData.put("currency","$");
@@ -185,8 +189,12 @@ public class ReportsUtil
 	}
 	
 	
-	public static double getEUI(double currentKwh, double buildingArea) {
+	public static double getEUI(Double currentKwh, Double buildingArea) {
 
+		if(currentKwh==null || currentKwh==0)
+		{
+			return 0;
+		}
 		double conversionMultiplier=3.412;//this for electrical energy..
 		double convertedVal=currentKwh*conversionMultiplier;
 		double eui= convertedVal/buildingArea;

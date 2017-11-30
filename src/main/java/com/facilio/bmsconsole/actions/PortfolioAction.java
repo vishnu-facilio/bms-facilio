@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -27,9 +26,9 @@ public class PortfolioAction extends ActionSupport {
 	public String getAllBuildings() throws Exception
 	{
 		JSONObject result = new JSONObject();
-		List<SiteContext> sites = SpaceAPI.getAllSites();
+		long sitesCount = SpaceAPI.getSitesCount();
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
-		result.put("sitesCount", sites.size());
+		result.put("sitesCount", sitesCount);
 		result.put("buildingCount", buildings.size());
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
 		StringBuilder deviceBuilder = new StringBuilder();
@@ -49,11 +48,12 @@ public class PortfolioAction extends ActionSupport {
 
 		List<Map<String, Object>> prevResult= ReportsUtil.fetchMeterData(deviceList,prevStartTime,currentStartTime-1,false);
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMeterVsConsumption(prevResult);
-		
+		//going for two queries.. so that it will be easy while going for separate queries in case of caching url..
 		List<Map<String, Object>> currentResult= ReportsUtil.fetchMeterData(deviceList,currentStartTime,endTime,false);
 		Map<Long,Double> currentMeterVsConsumption=ReportsUtil.getMeterVsConsumption(currentResult);
-		int lastMonthDays= DateTimeUtil.getDaysBetween(prevStartTime, currentStartTime);
-		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
+		
+		int lastMonthDays= DateTimeUtil.getDaysBetween(prevStartTime, currentStartTime);//sending this month startTime as to time is excluded
+		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1; //adding 1 as it to time is excluded..
 		JSONArray buildingArray= new JSONArray ();
 		
 		for(BuildingContext building:buildings) {
@@ -61,19 +61,14 @@ public class PortfolioAction extends ActionSupport {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long buildingId=building.getId();
 			long meterId=meterVsBuilding.get(buildingId);
-			double lastMonthKwh=0;
-			double thisMonthKwh=0;
-			if(prevMeterVsConsumption.containsKey(meterId)){
-				lastMonthKwh= prevMeterVsConsumption.get(meterId);
-				JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
-				buildingData.put("previousVal", lastMonthData);
-			}
-			if(currentMeterVsConsumption.containsKey(meterId)){
-				thisMonthKwh= currentMeterVsConsumption.get(meterId);
-				JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
-				buildingData.put("currentVal", thisMonthData);
-			}
-			if(lastMonthKwh!=0 || thisMonthKwh!=0)
+			Double lastMonthKwh=prevMeterVsConsumption.get(meterId);
+			Double thisMonthKwh=currentMeterVsConsumption.get(meterId);
+			JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
+			buildingData.put("previousVal", lastMonthData);
+			JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
+			buildingData.put("currentVal", thisMonthData);
+			
+			if(lastMonthKwh!=null || thisMonthKwh!=null)
 			{
 				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
 				buildingData.put("variance", variance);
@@ -86,9 +81,8 @@ public class PortfolioAction extends ActionSupport {
 	}
 	
 	//period -year & lastYear -EUI ranking
-	//type - ranking
 	@SuppressWarnings("unchecked")
-	public String getConsumptionDetails() throws Exception
+	public String getBuildingRankings() throws Exception
 	{
 		JSONObject result = new JSONObject();
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
@@ -119,66 +113,28 @@ public class PortfolioAction extends ActionSupport {
 			startTime=DateTimeUtil.getYearStartTime(-1);
 			endTime=DateTimeUtil.getYearStartTime()-1;
 		}
-		else if(period.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if(period.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();
-		}
-		else if(period.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-		}
 		
-		String type=getType();
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,false);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
 		
-		JSONArray buildingArray= new JSONArray ();
 		Map<String,Double> euiMap = new LinkedHashMap<String,Double>();
 		
 		for(BuildingContext building:buildings) {
 			
 			long buildingId=building.getId();
 			long meterId=meterVsBuilding.get(buildingId);
-			double currentKwh=0;
-			if(meterVsConsumption.containsKey(meterId)){
-				currentKwh= meterVsConsumption.get(meterId);
-			}
-			
-			if(type.equals("ranking"))
+			Double currentKwh= meterVsConsumption.get(meterId);
+			String displayName=building.getDisplayName();
+			double buildingArea=building.getGrossFloorArea();
+			if(!(currentKwh==null || currentKwh==0))
 			{
-				String displayName=building.getDisplayName();
-				double buildingArea=building.getGrossFloorArea();
-				if(currentKwh!=0)
-				{
-					euiMap.put(displayName, ReportsUtil.getEUI(currentKwh,buildingArea));
-				}
-			}
-			else
-			{
-				JSONObject buildingData=ReportsUtil.getBuildingData(building);
-				if(currentKwh!=0)
-				{
-					JSONObject currentData = ReportsUtil.getMonthData(currentKwh,-1);
-					buildingData.put("currentVal", currentData);
-				}
-				buildingArray.add(buildingData);
+				euiMap.put(displayName, ReportsUtil.getEUI(currentKwh,buildingArea));
 			}
 		}
-		if(type.equals("ranking"))
+		if(!euiMap.isEmpty())
 		{
-			if(!euiMap.isEmpty())
-			{
-				result.put("buildingDetails",ReportsUtil.valueSort(euiMap,false));
-				result.put("units", "kBTU/sq.ft");
-			}
-		}
-		else
-		{
-			result.put("buildingDetails", buildingArray);
+			result.put("buildingDetails",ReportsUtil.valueSort(euiMap,false));
+			result.put("units", "kBTU/sq.ft");
 		}
 		setReportData(result);
 		return SUCCESS;
@@ -186,8 +142,9 @@ public class PortfolioAction extends ActionSupport {
 	
 	
 	//period - year/day/week/month
+	// use this for Building Consumption Stats & Consumption vs Buildings
 	@SuppressWarnings("unchecked")
-	public String getAllConsumption() throws Exception
+	public String getConsumptionDetails() throws Exception
 	{
 		JSONObject result = new JSONObject();
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
@@ -228,20 +185,19 @@ public class PortfolioAction extends ActionSupport {
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,false);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
-		
-		JSONObject buildingList= new JSONObject ();
+		JSONArray buildingArray= new JSONArray ();
 		
 		for(BuildingContext building:buildings) {
 			
 			long buildingId=building.getId();
+			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long meterId=meterVsBuilding.get(buildingId);
-			double currentKwh=0;
-			if(meterVsConsumption.containsKey(meterId)){
-				currentKwh= meterVsConsumption.get(meterId);
-				buildingList.put(building.getDisplayName(), currentKwh);
-			}
+			Double currentKwh=meterVsConsumption.get(meterId);
+			JSONObject currentData = ReportsUtil.getMonthData(currentKwh,-1);
+			buildingData.put("currentVal", currentData);
+			buildingArray.add(buildingData);
 		}
-		result.put("buildingDetails", buildingList);
+		result.put("buildingDetails", buildingArray);
 		setReportData(result);
 		return SUCCESS;
 	}

@@ -124,7 +124,7 @@ public class ReportActions extends ActionSupport {
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
 			double currentKwh = (double)currentTotal.get("CONSUMPTION");
-			String[] consumptionArray=ReportsUtil.toMega(currentKwh);
+			String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
 			resultJson.put("totalConsumption", consumptionArray[0]);
 			resultJson.put("units",consumptionArray[1]);
 		}
@@ -272,10 +272,10 @@ public class ReportActions extends ActionSupport {
 		}
 		consumptionData.put("currentVal", current);
 		consumptionData.put("previousVal", previous);
-		String[] consumptionArray=ReportsUtil.toMega(currentKwh);
+		String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
 		consumptionData.put("currentTotal", consumptionArray[0]);
 		consumptionData.put("currentUnits",consumptionArray[1]);
-		consumptionArray=ReportsUtil.toMega(previousKwh);
+		consumptionArray=ReportsUtil.energyConverter(previousKwh);
 		consumptionData.put("previousTotal", consumptionArray[0]);
 		consumptionData.put("previousUnits",consumptionArray[1]);
 		consumptionData.put("variance",ReportsUtil.getVariance(currentKwh, previousKwh));

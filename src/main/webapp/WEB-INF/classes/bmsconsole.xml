@@ -1424,7 +1424,7 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
-		<action name="getAllConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+		<action name="getBuildingRankings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
