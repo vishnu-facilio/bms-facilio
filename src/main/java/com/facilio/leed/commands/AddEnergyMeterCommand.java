@@ -6,7 +6,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
+import com.facilio.leed.context.FuelContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
 
@@ -15,17 +17,20 @@ public class AddEnergyMeterCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
-		long leedId = (long) context.get(FacilioConstants.ContextNames.LEEDID);
-		String meterName = (String)context.get(FacilioConstants.ContextNames.METERNAME);
-		String meterTypeAdded = (String)context.get(FacilioConstants.ContextNames.METERTYPE);
+		long buildingId = (long)context.get(LeedConstants.ContextNames.BUILDINGID);
+		long leedId = (long) context.get(LeedConstants.ContextNames.LEEDID);
+		String meterName = (String)context.get(LeedConstants.ContextNames.METERNAME);
+		String meterTypeAdded = (String)context.get(LeedConstants.ContextNames.METERTYPE);
 		JSONObject meterInfo = new JSONObject();
 		meterInfo.put("name", meterName);
 		meterInfo.put("included", "true");
+		FuelContext fcontext = new FuelContext();
+		
 		if(meterTypeAdded.equalsIgnoreCase("water"))
 		{	
 			meterInfo.put("native_unit", "gal");
 			meterInfo.put("type", "47");
+		
 		}
 		else
 		{

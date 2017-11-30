@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -22,7 +23,9 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.OrgInfo;
+import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
+import com.facilio.leed.context.FuelContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
 import com.facilio.sql.DBUtil;
@@ -124,12 +127,12 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT DEVICE_ID FROM Device where SPACE_ID = ?");
+			pstmt = conn.prepareStatement("SELECT ID FROM Assets where SPACE_ID = ?");
 			pstmt.setLong(1, buildingId);
 			rs = pstmt.executeQuery();
 			while(rs.next())
 			{
-				deviceIds.add(rs.getLong("DEVICE_ID"));
+				deviceIds.add(rs.getLong("ID"));
 			}			
 		}catch(SQLException | RuntimeException e)
 		{
@@ -157,9 +160,11 @@ public class LeedAPI {
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT Assets.Name,LeedEnergyMeter.DEVICE_ID,LeedEnergyMeter.METERID FROM LeedEnergyMeter LEFT JOIN Device ON LeedEnergyMeter.DEVICE_ID = Device.DEVICE_ID")
-				.append(" LEFT JOIN Assets ON Device.DEVICE_ID = Assets.ASSETID")
-				.append(" WHERE Device.SPACE_ID = ? AND Device.DEVICE_TYPE = ?");		
+			sql.append("SELECT Assets.Name,LeedEnergyMeter.ID,LeedEnergyMeter.METERID,LeedEnergyMeter.SERVICEPROVIDER,LeedEnergyMeter.UNIT,LeedEnergyMeter.CONTACTPERSON,LeedEnergyMeter.CONTACTEMAIL,FuelType.FUELID,FuelType.FUELTYPE,FuelType.SUBTYPE,FuelType.KIND,FuelType.RESOURCE FROM LeedEnergyMeter ")
+				.append(" INNER JOIN Energy_Meter ON LeedEnergyMeter.ID = Energy_Meter.ID")
+				.append(" INNER JOIN Assets ON Energy_Meter.ID = Assets.ID")
+				.append(" INNER JOIN FuelType ON FuelType.ID = LeedEnergyMeter.FUEL_ID")
+				.append(" WHERE Assets.SPACE_ID = ? AND FuelType.KIND = ?");		
 			pstmt =  conn.prepareStatement(sql.toString());
 			pstmt.setLong(1,buildingId);
 			pstmt.setString(2, meterType);
@@ -169,8 +174,19 @@ public class LeedAPI {
 				LeedEnergyMeterContext context = new LeedEnergyMeterContext();
 				context.setName(rs.getString("NAME"));
 				context.setMeterId(rs.getLong("METERID"));
-				context.setDeviceId(rs.getLong("DEVICE_ID"));
-				context.setTypeVal(meterType);
+				context.setId(rs.getLong("ID"));
+				context.setServiceProvider(rs.getString("SERVICEPROVIDER"));
+				context.setUnit(rs.getString("UNIT"));
+				context.setContactPerson(rs.getString("CONTACTPERSON"));
+				context.setContactPerson(rs.getString("CONTACTEMAIL"));
+				
+				FuelContext fcontext = new FuelContext();
+				fcontext.setFuelId(rs.getLong("FUELID"));
+				fcontext.setFuelType(rs.getString("FUELTYPE"));
+				fcontext.setKind(rs.getString("KIND"));
+				fcontext.setSubType(rs.getString("SUBTYPE"));
+				fcontext.setResource(rs.getString("RESOURCE"));
+				context.setFuelContext(fcontext);
 				meterList.add(context);
 			}
 			
@@ -187,6 +203,7 @@ public class LeedAPI {
 		return meterList;
 	}
 	
+	
 	public static void addLeedEnergyMeters(List<LeedEnergyMeterContext> meterList,long buildingId) throws SQLException, RuntimeException 
 	{
 		//long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
@@ -195,35 +212,174 @@ public class LeedAPI {
 		Iterator itr = meterList.iterator();
 		while(itr.hasNext())
 		{
-			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();
+			LeedEnergyMeterContext meter = (LeedEnergyMeterContext)itr.next();		
+	
+			FuelContext fcontext = meter.getFuelContext();
+			long fuelId = checkIfFuelContextExists(fcontext.getFuelId());
+			if(fuelId == -1)
+			{
+				fuelId = addFuelContext(fcontext);
+			}
+			long assetModuleId = getModuleId(orgId,"asset");
 			String metername = meter.getName();
-			String meterType = meter.getTypeVal();
-			long fuelType = meter.getFuelType();
-			long meterId = meter.getMeterId();
-			long assetId = addAsset(metername,orgId);
-			meter.setDeviceId(assetId);
-			addDevice(assetId, buildingId,meterType);
-			addLeedEnergyMeter(assetId,fuelType,meterId);
+			long assetId = addAsset(metername,orgId,buildingId,assetModuleId);
+			meter.setId(assetId);
+			long energymeterModuleId = getModuleId(orgId,"energymeter");
+			long purposeId = getPurposeId("Main");
+			addEnergyMeter(assetId,orgId,energymeterModuleId,purposeId,buildingId);
+			
+			addLeedEnergyMeter(assetId,fuelId,meter.getMeterId(), meter.getServiceProvider(), meter.getUnit(),meter.getContactPerson(), meter.getContactEmail());
 		}	
 	}
 	
-		
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
-		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
-		//long spaceId = getSpaceId(buildingId);
+		LeedEnergyMeterContext meter = (LeedEnergyMeterContext)context.get(LeedConstants.ContextNames.LEEDMETERCONTEXT);
 		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		String metername = (String)context.get(FacilioConstants.ContextNames.METERNAME);
-		long fuelType = (long)context.get(FacilioConstants.ContextNames.FUELTYPE);
-		long meterId = (long)context.get(FacilioConstants.ContextNames.METERID);
-		String meterType = (String)context.get(FacilioConstants.ContextNames.METERTYPE);
-		long assetId = addAsset(metername,orgId);
-		context.put(FacilioConstants.ContextNames.DEVICEID, assetId);
-		addDevice(assetId, buildingId,meterType);
-		addLeedEnergyMeter(assetId,fuelType,meterId);
 		
+		FuelContext fcontext = meter.getFuelContext();
+		long fuelId = checkIfFuelContextExists(fcontext.getFuelId());
+		if(fuelId == -1)
+		{
+			fuelId = addFuelContext(fcontext);
+		}
+		
+		long assetModuleId = getModuleId(orgId,"asset");
+		String metername = meter.getName();
+		
+		long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
+		long assetId = addAsset(metername,orgId,buildingId,assetModuleId);
+
+		long energymeterModuleId = getModuleId(orgId,"energymeter");
+		long purposeId = getPurposeId("Main");
+		addEnergyMeter(assetId,orgId,energymeterModuleId,purposeId,buildingId);
+		
+		addLeedEnergyMeter(assetId,fuelId,meter.getMeterId(), meter.getServiceProvider(), meter.getUnit(),meter.getContactPerson(), meter.getContactEmail());
 	}
 	
+	public static long getPurposeId(String purposeName) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long purposeId = -1;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT ID FROM Energy_Meter_Purpose where NAME = ?");
+			pstmt.setString(1,purposeName);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				purposeId = rs.getLong("ID");
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return purposeId;
+	}
+	
+	public static void addEnergyMeter(long assetId,long orgId,long energymeterModuleId,long purposeId,long buildingId) throws SQLException , RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Energy_Meter(ID,ORGID,MODULEID,IS_ROOT,PURPOSE_SPACE_ID) VALUES(?,?,?,?,?)");
+			pstmt.setLong(1, assetId);
+			pstmt.setLong(2, orgId);
+			pstmt.setLong(3, energymeterModuleId);
+			pstmt.setBoolean(4, true);
+			pstmt.setLong(5, buildingId);
+			pstmt.executeUpdate();
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn,pstmt);
+		}
+	}
+	
+	public static long checkIfFuelContextExists(long fuelId) throws SQLException, RuntimeException
+	{
+		long id = -1;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select ID from FuelType where FUELID = ?");
+			pstmt.setLong(1, fuelId);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+			{
+				id = rs.getLong("ID");
+			}
+
+		}catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return id;
+	}
+	
+	public static long addFuelContext(FuelContext fcontext) throws SQLException, RuntimeException
+	{
+		long fuelId = fcontext.getFuelId();
+		String fuelType = fcontext.getFuelType();
+		String subType = fcontext.getSubType();
+		String kind = fcontext.getKind();
+		String resource = fcontext.getResource();
+		long fuel_Id = -1;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			
+
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO FuelType(FUELID,FUELTYPE,SUBTYPE,KIND,RESOURCE) VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt.setLong(1, fuelId);
+			pstmt.setString(2, fuelType);
+			pstmt.setString(3, subType);
+			pstmt.setString(4, kind);
+			pstmt.setString(5, resource);
+			if(pstmt.executeUpdate() < 1) 
+			{
+				throw new RuntimeException("Unable to add Asset instance while adding LeedEnergyMeter");
+			}
+			else 
+			{
+				rs = pstmt.getGeneratedKeys();
+				rs.next();
+				fuel_Id = rs.getLong(1);
+			}
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return fuel_Id;
+	}
+		
+
 	public static long getLeedId(long buildingId) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
@@ -305,7 +461,35 @@ public class LeedAPI {
 //		return spaceId;
 //	}
 	
-	public static long addAsset(String name, long orgId) throws SQLException,RuntimeException
+	public static long getModuleId(long orgId,String moduleName) throws SQLException,RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		long moduleId = -1;	
+		
+		try{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT MODULEID FROM Modules where ORGID = ? and NAME = ?");
+			pstmt.setLong(1, orgId);
+			pstmt.setString(2, moduleName);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				moduleId = rs.getLong("MODULEID");
+			}
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return moduleId;
+	}
+	
+	public static long addAsset(String name, long orgId,long buildingId,long moduleId) throws SQLException,RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -314,9 +498,11 @@ public class LeedAPI {
 		
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Assets(NAME,ORGID) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, name);
-			pstmt.setLong(2, orgId);
+			pstmt = conn.prepareStatement("INSERT INTO Assets(ORGID,MODULEID,NAME,SPACE_ID) VALUES(?,?,?,?)",Statement.RETURN_GENERATED_KEYS); 
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, moduleId);
+			pstmt.setString(3, name);
+			pstmt.setLong(4, buildingId);
 			if(pstmt.executeUpdate() < 1) 
 			{
 				throw new RuntimeException("Unable to add Asset instance while adding LeedEnergyMeter");
@@ -366,24 +552,36 @@ public class LeedAPI {
 		
 	}
 	
+//	CREATE TABLE IF NOT EXISTS LeedEnergyMeter (
+//			ID BIGINT PRIMARY KEY,
+//			FUEL_ID BIGINT,
+//		  	METERID BIGINT,
+//		  	SERVICEPROVIDER VARCHAR(50),
+//		  	UNIT VARCHAR(50),
+//		  	CONTACTPERSON VARCHAR(50),
+//		  	CONTACTEMAIL VARCHAR(50),
+//		  	CONSTRAINT LEEDENERGYMETER_ENERGYMETER_FK FOREIGN KEY (ID) REFERENCES Energy_Meter(ID),
+//		  	CONSTRAINT LEEDENERGYMETER_FUELTYPE_FK FOREIGN KEY (FUELCONTEXT_ID) REFERENCES FuelType(ID)
+//		);
 	
-	public static void addLeedEnergyMeter(long deviceId,long fuelType,long meterId) throws SQLException, RuntimeException
+	
+	public static void addLeedEnergyMeter(long Id,long fuelId,long meterId, String serviceprovider, String unit, String contactPerson, String contatEmail) throws SQLException, RuntimeException
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(DEVICE_ID,FUELTYPE,METERID) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			pstmt.setLong(1,deviceId);
-			pstmt.setLong(2, fuelType);
+			pstmt = conn.prepareStatement("INSERT INTO LeedEnergyMeter(ID,FUEL_ID,METERID,SERVICEPROVIDER,UNIT,CONTACTPERSON,CONTACTEMAIL) VALUES(?,?,?,?,?,?,?)");
+			pstmt.setLong(1,Id);
+			pstmt.setLong(2, fuelId);
 			pstmt.setLong(3, meterId);
+			pstmt.setString(4, serviceprovider);
+			pstmt.setString(5, unit);
+			pstmt.setString(6, contactPerson);
+			pstmt.setString(7, contatEmail);
+			pstmt.executeUpdate();
 			
-			if(pstmt.executeUpdate() < 1) 
-			{
-				throw new RuntimeException("Unable to add LeedEnergyMeter instance");
-			}
 		}
 		catch(SQLException  | RuntimeException e)
 		{
@@ -391,7 +589,7 @@ public class LeedAPI {
 		}
 		finally 
 		{
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 
 	}
@@ -404,7 +602,7 @@ public class LeedAPI {
 		long meterId = 0;
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where DEVICE_ID = ?");
+			pstmt =  conn.prepareStatement("select METERID from LeedEnergyMeter where ID = ?");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
 			while(rs.next())
@@ -428,36 +626,48 @@ public class LeedAPI {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long moduleId =  getModuleId(orgId,"energydata"); 
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (DEVICE_ID, ADDED_TIME, TOTAL_ENERGY_CONSUMPTION_DELTA, ADDED_DATE, ADDED_MONTH, ADDED_WEEK, ADDED_DAY, ADDED_HOUR) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Energy_Data (ORGID,MODULEID,PARENT_METER_ID, TTIME, TOTAL_ENERGY_CONSUMPTION_DELTA, TTIME_DATE, TTIME_MONTH, TTIME_WEEK, TTIME_DAY, TTIME_HOUR) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
 			Iterator itr = dataMapList.iterator();
 			while(itr.hasNext())
 			{
 				HashMap dataMap = (HashMap)itr.next();
-				pstmt.setLong(1, (long)dataMap.get("deviceId"));
-				pstmt.setLong(2, (long)dataMap.get("endTime"));
-				pstmt.setDouble(3, (double)dataMap.get("consumption"));
+				pstmt.setLong(1, orgId);
+				pstmt.setLong(2, moduleId);
+				pstmt.setLong(3, (long)dataMap.get("id"));
+				pstmt.setLong(4, (long)dataMap.get("endTime"));
+				pstmt.setDouble(5, (double)dataMap.get("consumption"));
+				
+/*				dataMap.put("id", id);
+				dataMap.put("endTime", enDateLong);
+				dataMap.put("consumption", consumption);
+				dataMap.put("timeData", endTimeData);
+				dataMap.put("consumptionId", consumptionId);
+				dataMap.put("startTime", stDateLong);
+				dataMapList.add(dataMap);*/
 				
 				HashMap<String, Object> timeData = (HashMap<String, Object>)dataMap.get("timeData");
 				String added_date = (String)timeData.get("date");
 				int added_month = (int)timeData.get("month");
 				int added_week = (int)timeData.get("week");
-				String added_day = (String)timeData.get("day");
+				int added_day = (int)timeData.get("day");
 				int added_hour = (int)timeData.get("hour");
 				
-				pstmt.setObject(4, added_date);
-				pstmt.setObject(5, added_month);
-				pstmt.setObject(6, added_week);
-				pstmt.setObject(7, added_day);
-				pstmt.setObject(8, added_hour);
+				pstmt.setObject(6, added_date);
+				pstmt.setObject(7, added_month);
+				pstmt.setObject(8, added_week);
+				pstmt.setObject(9, added_day);
+				pstmt.setObject(10, added_hour);
 				pstmt.addBatch();				
 			}
 			pstmt.executeBatch();
 			rs = pstmt.getGeneratedKeys();
 			int loopcount = 0;
-			pstmt = conn.prepareStatement("INSERT INTO ConsumptionInfo(ENERGYDATAID, CONSUMPTIONID, STARTDATE) VALUES(?, ?, ?) ");
+			pstmt = conn.prepareStatement("INSERT INTO ConsumptionInfo(ID, CONSUMPTIONID, STARTDATE) VALUES(?, ?, ?) ");
 			while(rs.next())
 			{
 				long energyId = rs.getLong(1);
@@ -493,14 +703,14 @@ public class LeedAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("select ADDED_MONTH,SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where DEVICE_ID = ? GROUP BY ADDED_MONTH;");
+			pstmt = conn.prepareStatement("select TTIME_MONTH,SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where PARENT_METER_ID = ? GROUP BY TTIME_MONTH;");
 			pstmt.setLong(1,deviceId);
 			rs = pstmt.executeQuery();
 			
 			while(rs.next())
 			{
 				JSONObject obj = new JSONObject();
-				obj.put("Month", rs.getInt("ADDED_MONTH") );
+				obj.put("Month", rs.getInt("TTIME_MONTH") );
 				obj.put("Consumption",  rs.getDouble("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)"));
 				arr.add(obj);;
 			}
