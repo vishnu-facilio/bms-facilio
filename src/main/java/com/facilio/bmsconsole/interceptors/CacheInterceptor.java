@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +26,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 		 boolean cached_url ="GET".equals(request.getMethod())  && (cache !=null && cache.getValue()!=null && cache.getValue().equals("org"));
 		
 		//System.out.println("cache interceptor "+request.getMethod() +"-"+cache.getValue() +" chache object "+cache);
-		 
+		 String result = null;
 		 if(cached_url)
 		 {
 			 String cachekey = null;
@@ -41,25 +42,31 @@ public class CacheInterceptor extends AbstractInterceptor {
 				 // TODO
 				
 				 
-			/*	 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			        CacheResponseWrapper wrappedResponse =
-			          new CacheResponseWrapper(response, baos);
-			        ServletActionContext.setResponse(wrappedResponse); */
+		
 			        
 			        request.setAttribute("cacheurl",id);
-				 String result = arg0.invoke();
-				/* String s =baos.toString();		 
-				 System.out.println("The response to be stored "+ s);*/
-				 return result;
+				  result = arg0.invoke();
+				
+				 
+			
+				 
+				// return result;
 			 }
 		 }
 		 else
 		 {
-			 String result = arg0.invoke();
-			 return result;
+			  result = arg0.invoke();
+			
 		    
 		 }
-		return null;
+		 Object expireat = ActionContext.getContext().getValueStack().findValue("cacheControl");
+		 if(expireat !=null && expireat instanceof CacheControl)
+		 {
+			 CacheControl c = (CacheControl)expireat;
+			 ServletActionContext.getResponse().setHeader("Cache-control", c.getCachecontrol());
+		        ServletActionContext.getResponse().setHeader("Expires", c.getExpires());
+		 }
+		return result;
 
 		
 	}
