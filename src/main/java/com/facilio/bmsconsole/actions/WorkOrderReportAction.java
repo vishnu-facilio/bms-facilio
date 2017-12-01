@@ -62,6 +62,15 @@ public class WorkOrderReportAction extends ActionSupport {
 		this.exportData = exportData;
 	}
 	
+	private String exportType;
+	public String getExportType() {
+		return this.exportType;
+	}
+
+	public void setExportType(String exportType) {
+		this.exportType = exportType;
+	}
+	
 	private String exportUrl;
 	public String getExportUrl() {
 		return this.exportUrl;
@@ -130,8 +139,14 @@ public class WorkOrderReportAction extends ActionSupport {
 				fields.add(field1);
 				fields.add(field2);
 				
-				String exportUrl = ExportUtil.exportDataAsXLS(module, fields, records);
-				setExportUrl(exportUrl);
+				if("csv".equals(getExportType()))
+				{
+					setExportUrl(ExportUtil.exportDataAsCSV(module, fields, records));
+				}
+				else if("xls".equals(getExportType()))
+				{
+					setExportUrl(ExportUtil.exportDataAsXLS(module, fields, records));
+				}
 			}
 			else
 			{
