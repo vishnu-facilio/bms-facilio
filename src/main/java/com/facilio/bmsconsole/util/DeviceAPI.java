@@ -93,6 +93,22 @@ public class DeviceAPI
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
+	
+	//for org..
+	public static List<EnergyMeterContext> getAllServiceMeters() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("IS_ROOT= ?", true)
+				.andCustomWhere("PARENT_ASSET_ID IS NOT NULL")
+				.maxLevel(0);
+		return selectBuilder.get();
+	}
 
 
 
@@ -206,12 +222,12 @@ public class DeviceAPI
 				.table("Energy_Meter")
 				.innerJoin("Energy_Meter_Purpose")
 				.on("Energy_Meter.PURPOSE_ID = Energy_Meter_Purpose.ID")
-				.innerJoin("Assets")
+				.innerJoin("Assets")//if "Mains" is removed from purpose..this is not needed
 				.on("Energy_Meter.ID = Assets.ID")
 				.andCustomWhere("Energy_Meter.ORGID= ?",orgId) 
 				.andCustomWhere("Energy_Meter.PURPOSE_SPACE_ID =?",buildingId)
 				.andCustomWhere("Energy_Meter.IS_ROOT=?",root)
-				.andCustomWhere("Assets.PARENT_ASSET_ID IS NOT NULL");
+				.andCustomWhere("Assets.PARENT_ASSET_ID IS NOT NULL");//if "Mains" is removed from purpose..this is not needed
 		List<Map<String, Object>> stats = builder.get();
 		for(Map<String, Object> rowData: stats) {
 
@@ -222,7 +238,7 @@ public class DeviceAPI
 		return deviceMapping;
 	}
 
-
+	
 	@SuppressWarnings("rawtypes")
 	public static Condition getCondition (String colName,String valueList,Operator operator)
 	{

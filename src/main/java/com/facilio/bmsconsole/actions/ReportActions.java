@@ -375,23 +375,19 @@ public class ReportActions extends ActionSupport {
 		List<EnergyMeterContext> rootMeterList= DeviceAPI.getMainEnergyMeter(""+buildingId);
 
 		StringBuilder rootBuilder= new StringBuilder();
-		StringBuilder purposeBuilder= new StringBuilder();
 		for(EnergyMeterContext emc : rootMeterList)
 		{
 			rootBuilder.append(emc.getId());
 			rootBuilder.append(",");
-			purposeBuilder.append(emc.getPurpose().getId());
-			purposeBuilder.append(",");
 		}
 		String rootList=ReportsUtil.removeLastChar(rootBuilder, ",");
-		String rootPurposeList=ReportsUtil.removeLastChar(purposeBuilder,",");
 
 		long previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 
-		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1,true);
-		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime,true);
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1);
+		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime);
 		
 		double lastMonthKwh=-1;double thisMonthKwh=-1;
 
@@ -417,8 +413,6 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("previousVal", lastMonthData);
 		buildingData.put("currentVal", thisMonthData);
 		buildingData.put("variance", variance);
-		buildingData.put("purpose", DeviceAPI.getFilteredPurposes(rootPurposeList,NumberOperators.NOT_EQUALS));
-
 		// need to send cost..as well..
 		//need to send temperature & carbon emission [
 		return buildingData;

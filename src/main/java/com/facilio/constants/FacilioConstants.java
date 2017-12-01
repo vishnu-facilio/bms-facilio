@@ -598,9 +598,14 @@ public class FacilioConstants {
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String CREATED_TIME = "createdTime";
 	}
+	public static class Job{
+		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
+		public static final String TABLE_NAME = "Jobs";
+	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";
 		public static final String CATEGORY_ID = "category_id";
+		public static final String SPACE_ID = "space_id";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		public static final String ASSET_ID = "asset";
 		public static final String STATUS = "status";
@@ -654,6 +659,7 @@ public class FacilioConstants {
 		public static final String LEFT_JOIN = "leftJoin";
 		public static final String RIGHT_JOIN = "rightJoin";
 		public static final String FULL_JOIN = "fullJoin";
+		public static final String LIMIT = "limit";
 		
 
 		public static final String X_AXIS = "xAxis";

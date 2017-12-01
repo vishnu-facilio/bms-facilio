@@ -1438,7 +1438,19 @@
 			</result>
 		</action>
 		<action name="getBuildingRankings" class="com.facilio.bmsconsole.actions.PortfolioAction"
-			method="getAllConsumption">
+			method="getBuildingRankings">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getAllServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllServiceConsumption">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
@@ -1450,7 +1462,7 @@
 		<action name="summary"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
 			<result name="success" type="json">
-				<param name="includeProperties">^reportData.*</param>
+				<param name="includeProperties">^reportData.*,^exportUrl.*</param>
 			</result>
 		</action>
 		<action name="technician"
@@ -1462,6 +1474,11 @@
 		<action name="preventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="preventiveMaintenance">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="pmTaskList" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="preventiveMaintenance">
+			<result name="success" type="json">
+				<param name="root">pms</param>
 			</result>
 		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">

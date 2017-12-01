@@ -27,13 +27,13 @@ public class ReportsUtil
 	
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
-		if(currentVal==0 || previousVal==0)
+		if(currentVal==null || currentVal==0 || previousVal==null || previousVal==0)
 		{
 			return 0;
 		}
 		double variance =(currentVal - previousVal)/currentVal;
-		variance=roundOff(variance, 2);
-		return variance*100;
+		variance=variance*100;
+		return roundOff(variance, 2);
 	}
 	
 	private static double unitCost=0.65;
@@ -154,6 +154,8 @@ public class ReportsUtil
 			if(location!=null){
 				buildingData.put("city", location.getCity());
 				buildingData.put("street",location.getStreet());
+				buildingData.put("latitude",location.getLat());
+				buildingData.put("longitude",location.getLng());
 			}
 		}
 		catch(Exception e) {
@@ -201,34 +203,48 @@ public class ReportsUtil
 		return roundOff(eui, 2);
 	}
 	
-	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean building)
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime)
+	{
+		return fetchMeterData(deviceList,startTime,endTime,false);
+	}
+	
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org)
+	{
+		return fetchMeterData(deviceList,startTime,endTime, org,false);
+	}
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org,boolean rollUp)
 	{
 		List<Map<String, Object>> result=null;
 		
 		FacilioField energyFld = ReportsUtil.getEnergyField();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
-		String groupBy="";
-		if(!building)
+		StringBuilder groupBy=new StringBuilder();
+		if(org)
 		{
 			FacilioField meterFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 			fields.add(meterFld);
-			groupBy= meterFld.getName();
+			groupBy.append(meterFld.getName());
+			if(rollUp)
+			{
+				groupBy.append(" WITH ROLLUP");
+			}
 		}
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		
+        long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
-				.andCustomWhere("ORGID=?",orgId)
+                .andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
 				.andCondition(DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
-				.groupBy(groupBy);
+				.groupBy(groupBy.toString());
 		try {
 			result = builder.get();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+//		
 		return result;	
 	}
 	
@@ -242,5 +258,24 @@ public class ReportsUtil
 			meterConsumption.put(meterId, consumption);
 		}
 		return meterConsumption;
+	}
+	
+	public static Map<Long,Double> getMeterVsConsumptionPercentage(List<Map<String, Object>> result, double totalKwh)
+	{
+		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
+		for(Map<String,Object> rowData: result)
+		{
+			long meterId=(long)	rowData.get("Meter_ID");
+			double consumption=(double) rowData.get("CONSUMPTION");
+			double percentage=getPercentage(consumption,totalKwh);
+			meterConsumption.put(meterId, percentage);
+		}
+		return meterConsumption;
+	}
+	
+	public static double getPercentage(double numerator, double denominator)
+	{
+		double returnVal=numerator/denominator;
+		return returnVal*100;
 	}
 }
