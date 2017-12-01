@@ -9,7 +9,6 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -92,12 +91,12 @@ public class PortfolioAction extends ActionSupport {
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
 		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> meterVsBuilding= new HashMap<Long,Long>();
+		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
 		for(EnergyMeterContext emc:energyMeters) {
 
 			long meterId=emc.getId();
 			long buildingId =emc.getPurposeSpace().getId();
-			meterVsBuilding.put(buildingId,meterId);
+			buildingVsMeter.put(buildingId,meterId);
 			deviceBuilder.append(meterId);
 			deviceBuilder.append(",");
 		}
@@ -105,9 +104,6 @@ public class PortfolioAction extends ActionSupport {
 		
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
-		
-		String period=getPeriod();
-		
 		if(period.equals("year"))
 		{
 			startTime=DateTimeUtil.getYearStartTime();
@@ -126,7 +122,7 @@ public class PortfolioAction extends ActionSupport {
 		for(BuildingContext building:buildings) {
 			
 			long buildingId=building.getId();
-			long meterId=meterVsBuilding.get(buildingId);
+			long meterId=buildingVsMeter.get(buildingId);
 			Double currentKwh= meterVsConsumption.get(meterId);
 			String displayName=building.getDisplayName();
 			double buildingArea=building.getGrossFloorArea();
@@ -154,12 +150,12 @@ public class PortfolioAction extends ActionSupport {
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
 		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> meterVsBuilding= new HashMap<Long,Long>();
+		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
 		for(EnergyMeterContext emc:energyMeters) {
 
 			long meterId=emc.getId();
 			long buildingId =emc.getPurposeSpace().getId();
-			meterVsBuilding.put(buildingId,meterId);
+			buildingVsMeter.put(buildingId,meterId);
 			deviceBuilder.append(meterId);
 			deviceBuilder.append(",");
 		}
@@ -167,9 +163,6 @@ public class PortfolioAction extends ActionSupport {
 		
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
-		
-		String period=getPeriod();
-		
 		if(period.equals("year"))
 		{
 			startTime=DateTimeUtil.getYearStartTime();
@@ -195,7 +188,7 @@ public class PortfolioAction extends ActionSupport {
 			
 			long buildingId=building.getId();
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
-			long meterId=meterVsBuilding.get(buildingId);
+			long meterId=buildingVsMeter.get(buildingId);
 			Double currentKwh=meterVsConsumption.get(meterId);
 			JSONObject currentData = ReportsUtil.getMonthData(currentKwh,-1);
 			buildingData.put("currentVal", currentData);
@@ -234,9 +227,6 @@ public class PortfolioAction extends ActionSupport {
 
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
-
-		String period=getPeriod();
-
 		if(period.equals("year"))
 		{
 			startTime=DateTimeUtil.getYearStartTime();
@@ -283,44 +273,38 @@ public class PortfolioAction extends ActionSupport {
 	public String getServiceConsumption() throws Exception
 	{
 		JSONObject result = new JSONObject();
-		//List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters =DeviceAPI.getEnergyMetersOfPurpose(""+getPurpose(),true);
 		
 		StringBuilder deviceBuilder = new StringBuilder();
-		StringBuilder buildingBuilder = new StringBuilder();
-		Map <Long, Long> meterVsBuilding= new HashMap<Long,Long>();
+		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
 		for(EnergyMeterContext emc:energyMeters) {
 
 			long meterId=emc.getId();
 			long buildingId =emc.getPurposeSpace().getId();
-			meterVsBuilding.put(buildingId,meterId);
-			buildingBuilder.append(buildingId);
-			buildingBuilder.append(",");
+			buildingVsMeter.put(buildingId,meterId);
 			deviceBuilder.append(meterId);
 			deviceBuilder.append(",");
 		}
 		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
-		String buildingList= ReportsUtil.removeLastChar(buildingBuilder, ",");
-		List<BaseSpaceContext> baseSpaces=  SpaceAPI.getBaseSpaces(buildingList);
-		Map <Long, String> buildingVsName= new HashMap<Long,String>();
-		for(BaseSpaceContext building:baseSpaces)
-		{
-			buildingVsName.put(building.getId(),building.getDisplayName());
-		}
 		
 		long startTime=-1;
 		long endTime=DateTimeUtil.getCurrenTime();
-		
-		String period=getPeriod();
 		
 		if(period.equals("year"))
 		{
 			startTime=DateTimeUtil.getYearStartTime();
 		}
-		else if(period.equals("lastYear"))
+		else if(period.equals("day"))
 		{
-			startTime=DateTimeUtil.getYearStartTime(-1);
-			endTime=DateTimeUtil.getYearStartTime()-1;
+			startTime=DateTimeUtil.getDayStartTime();
+		}
+		else if(period.equals("week"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime();
+		}
+		else if(period.equals("month"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime();
 		}
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true,true);
@@ -331,16 +315,17 @@ public class PortfolioAction extends ActionSupport {
 		}
 		
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumptionPercentage(resultData,totalKwh);
-		for(Map.Entry<Long, Long> entry:meterVsBuilding.entrySet()) {
+		for(Map.Entry<Long, Long> entry:buildingVsMeter.entrySet()) {
 			
-			long meterId=entry.getKey();
-			long buildingId=entry.getValue();
+			long meterId=entry.getValue();
+			long buildingId=entry.getKey();
 			Double percentage=meterVsConsumption.get(meterId);
 			if(percentage!=null)
 			{
-				result.put(buildingVsName.get(buildingId),ReportsUtil.roundOff(percentage, 2));
+				result.put(buildingId,ReportsUtil.roundOff(percentage, 2));
 			}
 		}
+		result.put("units", "%");
 		setReportData(result);
 		return SUCCESS;
 	}

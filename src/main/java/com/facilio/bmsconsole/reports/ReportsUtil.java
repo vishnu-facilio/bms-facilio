@@ -14,14 +14,11 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
