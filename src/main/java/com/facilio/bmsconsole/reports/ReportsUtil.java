@@ -27,13 +27,13 @@ public class ReportsUtil
 	
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
-		if(currentVal==0 || previousVal==0)
+		if(currentVal==null || currentVal==0 || previousVal==null || previousVal==0)
 		{
 			return 0;
 		}
 		double variance =(currentVal - previousVal)/currentVal;
-		variance=roundOff(variance, 2);
-		return variance*100;
+		variance=variance*100;
+		return roundOff(variance, 2);
 	}
 	
 	private static double unitCost=0.65;
