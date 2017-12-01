@@ -1449,7 +1449,7 @@
 		<action name="summary"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="summary">
 			<result name="success" type="json">
-				<param name="includeProperties">^reportData.*</param>
+				<param name="includeProperties">^reportData.*,^exportUrl.*</param>
 			</result>
 		</action>
 		<action name="technician"

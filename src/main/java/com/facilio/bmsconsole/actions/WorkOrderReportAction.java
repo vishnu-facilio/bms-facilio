@@ -29,9 +29,11 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -49,6 +51,24 @@ public class WorkOrderReportAction extends ActionSupport {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	private Boolean exportData;
+	public boolean getExportData() {
+		return this.exportData;
+	}
+
+	public void setExportData(boolean exportData) {
+		this.exportData = exportData;
+	}
+	
+	private String exportUrl;
+	public String getExportUrl() {
+		return this.exportUrl;
+	}
+
+	public void setExportUrl(String exportUrl) {
+		this.exportUrl = exportUrl;
 	}
 	
 	private String period;
@@ -91,7 +111,32 @@ public class WorkOrderReportAction extends ActionSupport {
 		String technicianGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
 		String technicianNotNull = "\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";
 		if ("open".equalsIgnoreCase(getType())) {
-			setReportData(getOpenWorkOrderSummary(null));
+			if(getExportData())
+			{
+				List<Map<String, Object>> records = getOpenWorkOrderSummary(null);
+				FacilioModule module = new FacilioModule();
+				module.setName("openworkorders");
+				module.setDisplayName("Open Workorders");
+				
+				FacilioField field1 = new FacilioField();
+				field1.setName("label");
+				field1.setDisplayName("Status");
+				
+				FacilioField field2 = new FacilioField();
+				field2.setName("value");
+				field2.setDisplayName("Count");
+				
+				List<FacilioField> fields = new ArrayList<>();
+				fields.add(field1);
+				fields.add(field2);
+				
+				String exportUrl = ExportUtil.exportDataAsXLS(module, fields, records);
+				setExportUrl(exportUrl);
+			}
+			else
+			{
+				setReportData(getOpenWorkOrderSummary(null));
+			}
 		}
 		else if ("closed".equalsIgnoreCase(getType())) {
 			setReportData(getClosedWorkOrderSummary(null));

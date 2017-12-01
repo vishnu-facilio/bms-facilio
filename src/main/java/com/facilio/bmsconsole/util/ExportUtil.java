@@ -17,7 +17,7 @@ import com.facilio.fs.FileStoreFactory;
 public class ExportUtil {
 	
 	@SuppressWarnings("resource")
-	public String exportDataAsXLS(FacilioModule facilioModule, List<FacilioField> fields, List<Map<String, Object>> records) throws Exception 
+	public static String exportDataAsXLS(FacilioModule facilioModule, List<FacilioField> fields, List<Map<String, Object>> records) throws Exception 
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 	    HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
