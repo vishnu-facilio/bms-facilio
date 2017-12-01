@@ -154,6 +154,8 @@ public class ReportsUtil
 			if(location!=null){
 				buildingData.put("city", location.getCity());
 				buildingData.put("street",location.getStreet());
+				buildingData.put("latitude",location.getLat());
+				buildingData.put("longitude",location.getLng());
 			}
 		}
 		catch(Exception e) {
