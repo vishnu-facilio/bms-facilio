@@ -59,10 +59,9 @@ public class AddTicketActivityCommand implements Command {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Map<Long, ? extends TicketContext> getNewTickets(List<Long> ids, String moduleName) throws Exception {
+	private Map<Long, ? extends TicketContext> getNewTickets(List<Long> ids, FacilioModule module) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		
 		String id = StringUtils.join(ids, ",");
 		Condition idCondition = new Condition();
@@ -71,9 +70,9 @@ public class AddTicketActivityCommand implements Command {
 		idCondition.setValue(id);
 		
 		SelectRecordsBuilder<? extends TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
-																.moduleName(moduleName)
+																.module(module)
 																.select(fields)
-																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 																.andCondition(idCondition);
 																
 		
@@ -89,7 +88,10 @@ public class AddTicketActivityCommand implements Command {
 		ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Map<Long, ? extends TicketContext> newTickets = getNewTickets(ids, moduleName);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		Map<Long, ? extends TicketContext> newTickets = getNewTickets(ids, module);
 		List<? extends TicketContext> oldTickets = (List<? extends TicketContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
 		
 		Map<String, LookupField> lookupFields = getLookupFields(moduleName);
@@ -121,7 +123,7 @@ public class AddTicketActivityCommand implements Command {
 				JSONObject info = new JSONObject();
 				activity.setInfo(info);
 				
-				info.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+				info.put(FacilioConstants.ContextNames.MODULE_NAME, module.getDisplayName());
 				JSONArray updatedFields = new JSONArray();
 				if(isUpdate) {
 					Map<String, Object> oldTicketProps = FieldUtil.getAsProperties(oldTicketMap.get(recordId));

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -107,6 +108,15 @@ public class CriteriaAPI {
 			}
 		}
 		return criteria;
+	}
+	
+	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getOrgIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		
+		return idCondition;
 	}
 	
 	public static Condition getIdCondition(long id, FacilioModule module) {

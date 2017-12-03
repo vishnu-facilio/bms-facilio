@@ -23,14 +23,15 @@ public enum ActivityType {
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
-			return null;
+			return "created a new "+moduleName;
 		}
 	},
 	EDIT(2) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return null;
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "updated the "+moduleName;
 		}
 	},
 	DELETE(4) {
@@ -51,14 +52,15 @@ public enum ActivityType {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return null;
+			return "approved the request";
 		}
 	},
 	ASSIGN_TICKET(16) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return null;
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "assigned the "+moduleName+" to ";
 		}
 	},
 	ADD_TICKET_NOTE(32) {
@@ -72,7 +74,8 @@ public enum ActivityType {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return null;
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "closed the "+moduleName;
 		}
 	}
 	;

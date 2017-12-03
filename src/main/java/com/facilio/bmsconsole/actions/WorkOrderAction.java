@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.OrgInfo;
@@ -293,7 +294,7 @@ public class WorkOrderAction extends ActionSupport {
 		this.workorder = workorder;
 	}
 	
-	private long workOrderId;
+	private long workOrderId = -1;
 	public long getWorkOrderId() {
 		return workOrderId;
 	}
@@ -309,7 +310,7 @@ public class WorkOrderAction extends ActionSupport {
 		this.id = id;
 	}
 	
-	private int rowsUpdated;
+	private int rowsUpdated = -1;
 	public int getRowsUpdated() {
 		return rowsUpdated;
 	}
@@ -454,4 +455,25 @@ public class WorkOrderAction extends ActionSupport {
 	public String getSearch() {
 		return this.search;
 	}
+	
+	public String getActivitiesList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderId);
+		
+		Chain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
+		activitiesChain.execute(context);
+		
+		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
+		
+		return SUCCESS;
+	}
+	
+	private List<TicketActivity> activities;
+	public List<TicketActivity> getActivities() {
+		return activities;
+	}
+	public void setActivities(List<TicketActivity> activities) {
+		this.activities = activities;
+	}
+
 }

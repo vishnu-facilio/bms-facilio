@@ -99,6 +99,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getTicketActivitiesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetTicketActivitesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getTicketStatusListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicketStatus());

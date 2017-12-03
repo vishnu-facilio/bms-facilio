@@ -1218,6 +1218,14 @@
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getActivitiesList">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="root">activities</param>
+			</result>
+		</action> 
 	</package>
 
 	<package name="workOrderRequest" namespace="/app/workorderrequest"
