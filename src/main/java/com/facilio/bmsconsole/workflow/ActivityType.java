@@ -67,7 +67,7 @@ public enum ActivityType {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return null;
+			return "added a comment";
 		}
 	},
 	CLOSE_WORK_ORDER(64) {

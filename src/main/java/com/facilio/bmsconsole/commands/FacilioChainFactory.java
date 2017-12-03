@@ -1200,6 +1200,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddNoteCommand());
 		c.addCommand(new ExecuteNoteWorkflowCommand());
+		c.addCommand(new AddNoteTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
