@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -23,7 +23,6 @@ public class AddWorkOrderCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			
 			TicketAPI.updateTicketStatus(workOrder);
@@ -31,8 +30,7 @@ public class AddWorkOrderCommand implements Command {
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.table(dataTableName)
-																.fields(fields)
-																.connection(conn);
+																.fields(fields);
 			
 			Integer insertLevel = (Integer) context.get(FacilioConstants.ContextNames.INSERT_LEVEL);
 			if(insertLevel != null) {
@@ -41,9 +39,9 @@ public class AddWorkOrderCommand implements Command {
 			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
-			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

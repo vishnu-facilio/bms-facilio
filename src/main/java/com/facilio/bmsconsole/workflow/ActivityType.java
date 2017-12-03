@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
+import com.facilio.constants.FacilioConstants;
+
 public enum ActivityType {
 	/* Bitwise calculation
 	 * 
@@ -14,14 +18,63 @@ public enum ActivityType {
 	 * } 
 	 * 
 	 */
-	CREATE(1),
-	EDIT(2),
-	DELETE(4),
-	CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()),
-	APPROVE_WORK_ORDER_REQUEST(8),
-	ASSIGN_TICKET(16),
-	ADD_TICKET_NOTE(32),
-	CLOSE_WORK_ORDER(64)
+	CREATE(1) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return null;
+		}
+	},
+	EDIT(2) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	DELETE(4) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	CREATE_OR_EDIT(CREATE.getValue() + EDIT.getValue()) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	APPROVE_WORK_ORDER_REQUEST(8) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	ASSIGN_TICKET(16) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	ADD_TICKET_NOTE(32) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	},
+	CLOSE_WORK_ORDER(64) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
 	;
 
     private int eventType;
@@ -35,10 +88,12 @@ public enum ActivityType {
     }
     
     public static ActivityType valueOf(int eventTypeVal) {
-    	return typeMap.get(eventTypeVal);
+    	return TYPE_MAP.get(eventTypeVal);
     }
     
-    private static final Map<Integer, ActivityType> typeMap = Collections.unmodifiableMap(initTypeMap());
+    public abstract String getMessage(JSONObject json);
+    
+    private static final Map<Integer, ActivityType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 	private static Map<Integer, ActivityType> initTypeMap() {
 		Map<Integer, ActivityType> typeMap = new HashMap<>();
 		
@@ -48,6 +103,6 @@ public enum ActivityType {
 		return typeMap;
 	}
 	public Map<Integer, ActivityType> getAllTypes() {
-		return typeMap;
+		return TYPE_MAP;
 	}
 }

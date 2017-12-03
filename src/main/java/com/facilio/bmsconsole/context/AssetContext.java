@@ -171,7 +171,7 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.warrantyExpiryDate = warrantyExpiryDate;
 	}
 	
-	private long localId;
+	private long localId = -1;
 	public long getLocalId() {
 		return localId;
 	}

@@ -151,10 +151,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			updateLookupFields(moduleProps);
 			
-			fields.add(FieldFactory.getOrgIdField(module));
-			fields.add(FieldFactory.getModuleIdField(module));
-			fields.add(FieldFactory.getIdField(module));
-			builder.fields(fields);
+			List<FacilioField> updateFields = new ArrayList<>();
+			updateFields.add(FieldFactory.getOrgIdField(module));
+			updateFields.add(FieldFactory.getModuleIdField(module));
+			updateFields.add(FieldFactory.getIdField(module));
+			updateFields.addAll(fields);
+			builder.fields(updateFields);
 			
 			builder.table(module.getTableName());
 			

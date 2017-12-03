@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -335,6 +334,13 @@ public class FacilioConstants {
 		}
 	}
 	
+	public static class TicketActivity {
+		public static final String TICKET_ACTIVITIES = "ticketActivities";
+		public static final String OLD_TICKETS = "oldTickets";
+		public static final String MODIFIED_TIME = "modifiedTime";
+		public static final String MODIFIED_USER = "modifiedUser";
+	}
+	
 	public static class ContextNames {
 		
 		public static final String RECORD = "record";
@@ -414,6 +420,7 @@ public class FacilioConstants {
 		public static final String NOTE_LIST = "notes";
 		
 		public static final String MODULE_FIELD = "moduleField";
+		public static final String MODULE_FIELD_NAME = "fieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String FIELD_NAME_LIST = "fieldList";

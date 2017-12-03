@@ -207,6 +207,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -218,7 +219,7 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
-		//c.addCommand(new AddTicketActivityCommand());
+		c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

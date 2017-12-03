@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,28 @@ public class LookupSpecialTypeUtil {
 	}
 	
 	public static String getWhereClause(String specialType, FacilioField field, Criteria value) {
+		return null;
+	}
+	
+	public static Object getPrimaryFieldValue(String specialType, long id) throws Exception {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			UserContext user =  UserAPI.getUserFromOrgUserId(id);
+			if(user != null) {
+				return user.getName();
+			}
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			GroupContext group = GroupAPI.getGroup(id);
+			if(group != null) {
+				return group.getName();
+			}
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			BusinessHoursList businessHours = BusinessHoursAPI.getBusinessHours(id);
+			if(businessHours != null) {
+				return businessHours.toString();
+			}
+		}
 		return null;
 	}
 }

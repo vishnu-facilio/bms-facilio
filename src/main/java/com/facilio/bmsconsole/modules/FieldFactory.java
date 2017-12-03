@@ -721,45 +721,45 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getTicketActivityFields() {
-
 		FacilioModule module = ModuleFactory.getTicketActivityModule();
+		List<FacilioField> fields = new ArrayList<>();
 		
-		FacilioField tId = new FacilioField();
-		tId.setName("ticketId");
-		tId.setDataType(FieldType.NUMBER);
-		tId.setColumnName("TICKET_ID");
-		tId.setModule(module);
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField ticketId = new FacilioField();
+		ticketId.setName("ticketId");
+		ticketId.setDataType(FieldType.NUMBER);
+		ticketId.setColumnName("TICKET_ID");
+		ticketId.setModule(module);
+		fields.add(ticketId);
 		
 		FacilioField modifiedTime = new FacilioField();
 		modifiedTime.setName("modifiedTime");
 		modifiedTime.setDataType(FieldType.NUMBER);
 		modifiedTime.setColumnName("MODIFIED_TIME");
 		modifiedTime.setModule(module);
+		fields.add(modifiedTime);
 		
-		LookupField modifiedBy = new LookupField();
+		FacilioField modifiedBy = new FacilioField();
 		modifiedBy.setName("modifiedBy");
-		modifiedBy.setDataType(FieldType.LOOKUP);
+		modifiedBy.setDataType(FieldType.NUMBER);
 		modifiedBy.setColumnName("MODIFIED_BY");
 		modifiedBy.setModule(module);
-		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USER);
+		fields.add(modifiedBy);
 		
 		FacilioField activityType = new FacilioField();
 		activityType.setName("activityType");
 		activityType.setDataType(FieldType.NUMBER);
 		activityType.setColumnName("ACTIVITY_TYPE");
 		activityType.setModule(module);
+		fields.add(activityType);
 		
 		FacilioField info = new FacilioField();
-		info.setName("info");
+		info.setName("infoJsonStr");
 		info.setDataType(FieldType.STRING);
 		info.setColumnName("INFO");
 		info.setModule(module);
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(tId);
-		fields.add(modifiedTime);
-		fields.add(modifiedBy);
-		fields.add(activityType);
 		fields.add(info);
 		
 		return fields;

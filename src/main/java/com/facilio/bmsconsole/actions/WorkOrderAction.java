@@ -244,6 +244,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		return updateWorkOrder(context);
 	}
 	

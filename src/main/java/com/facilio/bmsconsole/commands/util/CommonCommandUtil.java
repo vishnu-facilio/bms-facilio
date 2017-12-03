@@ -16,13 +16,11 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.device.Device;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -97,7 +95,7 @@ public class CommonCommandUtil {
 					for(FacilioField field : fields) {
 						if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
-							if(props != null) {
+							if(props != null && !props.isEmpty()) {
 								LookupField lookupField = (LookupField) field;
 								if(props.size() <= 2) {
 									Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);

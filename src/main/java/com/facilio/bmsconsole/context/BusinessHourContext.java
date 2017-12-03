@@ -81,4 +81,10 @@ public class BusinessHourContext {
 	public void setEndTime(String value) {
 		this.endTime = LocalTime.parse(value);
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return dayOfWeek.name()+", "+startTime+" - "+endTime;
+	}
 }
