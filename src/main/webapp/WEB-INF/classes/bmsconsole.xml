@@ -368,9 +368,7 @@
 		</action>
 	</package>
 	
-	<!--  -->
-	
-		<!-- <package name="urjanetApi" namespace="/api/unet" extends="home">
+	<package name="urjanetApi" namespace="/api/unet" extends="home">
 		<action name="" class="com.facilio.urjanet.actions.UrjanetAction"
 			method="userLogin">
 			<param name="permission">WORKORDER_CREATE</param>
@@ -379,7 +377,7 @@
 			</result>
 		</action>
 
-	</package> -->
+	</package>
 	<!-- Urjanet Packages  -->
 	<package name="assetApi" namespace="/api/asset" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
