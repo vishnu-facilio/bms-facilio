@@ -49,6 +49,26 @@ public class NotificationAPI {
 		WmsApi.sendNotification(recipients, new WmsNotification().setNotification(FieldUtil.getAsJSON(notification)));
 	}
 	
+	public static boolean markAllAsSeen(long userId) throws Exception {
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getNotificationModule().getTableName())
+				.fields(FieldFactory.getNotificationFields())
+				.andCustomWhere("ORGID = ? AND USERID = ? AND IS_SEEN = false", orgId, userId);
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("isSeen", true);
+		prop.put("seenAt", System.currentTimeMillis());
+		
+		int updatedRows = updateBuilder.update(prop);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static boolean markAllAsRead(long userId) throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -60,6 +80,7 @@ public class NotificationAPI {
 		
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("isRead", true);
+		prop.put("readAt", System.currentTimeMillis());
 		
 		int updatedRows = updateBuilder.update(prop);
 		if (updatedRows > 0) {
@@ -86,6 +107,7 @@ public class NotificationAPI {
 		
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("isRead", true);
+		prop.put("readAt", System.currentTimeMillis());
 		
 		int updatedRows = updateBuilder.update(prop);
 		if (updatedRows > 0) {
@@ -94,6 +116,31 @@ public class NotificationAPI {
 		return false;
 	}
 
+	public static int getUnseenNotificationsCount(long userId) throws Exception {
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("unseen");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getNotificationModule().getTableName())
+				.andCustomWhere("ORGID = ? AND USERID = ? AND (IS_SEEN IS NULL OR IS_SEEN = false)", orgId, userId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Long count = (Long) props.get(0).get("unseen");
+			return count.intValue();
+		}
+		return 0;
+	}
+	
 	public static int getUnreadNotificationsCount(long userId) throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();

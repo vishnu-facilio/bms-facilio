@@ -29,6 +29,7 @@ public class NotificationAction extends ActionSupport {
 		
 		setNotifications(NotificationAPI.getNotifications(ouid, 0, 30));
 		setUnread(NotificationAPI.getUnreadNotificationsCount(ouid));
+		setUnseen(NotificationAPI.getUnseenNotificationsCount(ouid));
 		
 		return SUCCESS;
 	}
@@ -55,6 +56,17 @@ public class NotificationAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String markAllAsSeen() throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		
+		NotificationAPI.markAllAsSeen(ouid);
+		
+		setUnread(NotificationAPI.getUnseenNotificationsCount(ouid));
+		
+		return SUCCESS;
+	}
+	
 	private List<NotificationContext> notifications;
 	
 	public List<NotificationContext> getNotifications() {
@@ -72,6 +84,16 @@ public class NotificationAction extends ActionSupport {
 	
 	public void setUnread(int unread) {
 		this.unread = unread;
+	}
+	
+	private int unseen;
+	
+	public int getUnseen() {
+		return unseen;
+	}
+	
+	public void setUnseen(int unseen) {
+		this.unseen = unseen;
 	}
 	
 	private List<Long> id;

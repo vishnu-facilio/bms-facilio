@@ -217,7 +217,7 @@ System.out.println("User object is "+params+"\n"+ user);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		
-//		UserAPI.updateUserPhoto(userId, fileId, null);
+		AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
 		
 		setAvatarUrl(fs.getPrivateUrl(fileId));
 		

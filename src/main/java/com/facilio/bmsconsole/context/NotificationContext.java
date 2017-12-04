@@ -15,6 +15,9 @@ public class NotificationContext {
 	private long actorId;
 	private String info;
 	private boolean isRead;
+	private long readAt;
+	private boolean isSeen;
+	private long seenAt;
 	private long createdTime;
 	
 	public long getId() {
@@ -76,6 +79,30 @@ public class NotificationContext {
 	}
 	public void setIsRead(boolean isRead) {
 		this.isRead = isRead;
+	}
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
+	}
+	public long getReadAt() {
+		return readAt;
+	}
+	public void setReadAt(long readAt) {
+		this.readAt = readAt;
+	}
+	public boolean getIsSeen() {
+		return isSeen;
+	}
+	public void setIsSeen(boolean isSeen) {
+		this.isSeen = isSeen;
+	}
+	public void setSeen(boolean isSeen) {
+		this.isSeen = isSeen;
+	}
+	public long getSeenAt() {
+		return seenAt;
+	}
+	public void setSeenAt(long seenAt) {
+		this.seenAt = seenAt;
 	}
 	public long getCreatedTime() {
 		return createdTime;
