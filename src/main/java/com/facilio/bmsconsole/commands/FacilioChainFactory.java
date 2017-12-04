@@ -400,6 +400,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());
+		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -409,6 +410,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTasksCommand());
+		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
