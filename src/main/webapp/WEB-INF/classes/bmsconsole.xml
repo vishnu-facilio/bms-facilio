@@ -71,7 +71,7 @@
 		<action name="notification" class="com.facilio.bmsconsole.actions.NotificationAction"
 			method="notificationList">
 			<result name="success" type="json">
-				<param name="includeProperties">unread,notifications,notifications\[\d+\],notifications\[\d+\].*</param>
+				<param name="includeProperties">unread,unseen,notifications,notifications\[\d+\],notifications\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -1775,6 +1775,11 @@
 		<action name="readall" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAllAsRead">
 			<result name="success" type="json">
 				<param name="includeProperties">unread</param>
+			</result>
+		</action>
+		<action name="seenall" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAllAsSeen">
+			<result name="success" type="json">
+				<param name="includeProperties">unseen</param>
 			</result>
 		</action>
 	</package>

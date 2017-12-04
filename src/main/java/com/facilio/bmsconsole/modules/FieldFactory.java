@@ -1598,6 +1598,27 @@ public class FieldFactory {
 		isRead.setModule(module);
 		fields.add(isRead);
 		
+		FacilioField readAt = new FacilioField();
+		readAt.setName("readAt");
+		readAt.setDataType(FieldType.NUMBER);
+		readAt.setColumnName("READ_AT");
+		readAt.setModule(module);
+		fields.add(readAt);
+		
+		FacilioField isSeen = new FacilioField();
+		isSeen.setName("isSeen");
+		isSeen.setDataType(FieldType.BOOLEAN);
+		isSeen.setColumnName("IS_SEEN");
+		isSeen.setModule(module);
+		fields.add(isSeen);
+		
+		FacilioField seenAt = new FacilioField();
+		seenAt.setName("seenAt");
+		seenAt.setDataType(FieldType.NUMBER);
+		seenAt.setColumnName("SEEN_AT");
+		seenAt.setModule(module);
+		fields.add(seenAt);
+		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);

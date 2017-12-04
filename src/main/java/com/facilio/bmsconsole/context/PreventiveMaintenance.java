@@ -48,11 +48,11 @@ public class PreventiveMaintenance {
 		this.pmType = pmType;
 	}
 	
-	private boolean status;
-	public boolean getStatus() {
+	private Boolean status;
+	public Boolean getStatus() {
 		return status;
 	}
-	public void setStatus(boolean status) {
+	public void setStatus(Boolean status) {
 		this.status = status;
 	}
 	

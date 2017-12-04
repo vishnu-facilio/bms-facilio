@@ -136,6 +136,9 @@ public class User {
 	public long getId() {
 		return ouid;
 	}
+	public void setId(long id) {
+		this.ouid = id;
+	}
 	public void setOuid(long ouid) {
 		this.ouid = ouid;
 	}

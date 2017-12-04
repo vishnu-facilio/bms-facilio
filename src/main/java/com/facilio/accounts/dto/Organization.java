@@ -1,7 +1,5 @@
 package com.facilio.accounts.dto;
 
-import com.facilio.accounts.util.AccountUtil;
-
 public class Organization {
 
 	private long orgId;
@@ -24,6 +22,9 @@ public class Organization {
 	}
 	public long getId() {
 		return orgId;
+	}
+	public void setId(long id) {
+		this.orgId = id;
 	}
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;

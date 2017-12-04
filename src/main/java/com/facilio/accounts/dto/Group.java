@@ -18,6 +18,9 @@ public class Group {
 	public long getId() {
 		return groupId;
 	}
+	public void setId(long id) {
+		this.groupId = id;
+	}
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
