@@ -133,6 +133,14 @@ public class ModuleFactory {
 		return workflowRuleModule;
 	}
 	
+	public static FacilioModule getWorkflowRuleActionModule() {
+		FacilioModule workflowRuleModule = new FacilioModule();
+		workflowRuleModule.setName("workflowruleaction");
+		workflowRuleModule.setDisplayName("Workflow Rule Action");
+		workflowRuleModule.setTableName("Workflow_Rule_Action");
+		return workflowRuleModule;
+	}
+	
 	public static FacilioModule getActionModule() {
 		FacilioModule actionModule = new FacilioModule();
 		actionModule.setName("action");

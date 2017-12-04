@@ -9,6 +9,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -30,7 +31,22 @@ public class ActionAPI {
 			throw e;
 		}
 	}
-	
+	public static List<Long> addActions(List<ActionContext> actions) throws Exception {
+		List<Long> actionIds = new ArrayList<>();
+		
+		for(ActionContext action:actions) {
+			Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table("Action")
+														.fields(FieldFactory.getActionFields())
+														.addRecord(actionProps);
+			insertBuilder.save();
+			actionIds.add((Long) actionProps.get("id"));
+			action.setId((Long) actionProps.get("id"));
+		}
+		return actionIds;
+		
+	}
 	public static List<ActionContext> getActionsFromWorkflowRuleName(long orgId, String workflowName) throws Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()

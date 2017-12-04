@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
@@ -139,6 +142,27 @@ public enum ActionType {
 			if(obj != null) {
 //				NotificationContext notification = new NotificationContext();
 //				NotificationAPI.sendNotification(notification);
+			}
+		}
+	},
+	ADD_ALARM(6){
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+
+			if(obj != null) {
+				try {
+					if(obj.containsKey("type")) {
+						obj.remove("type");
+					}
+					obj.put("type", 5);
+					FacilioContext context1 = new FacilioContext();
+					context1.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+					getAddEventChain.execute(context1);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};

@@ -72,4 +72,11 @@ public class ActionContext {
 	public void setTemplate(ActionTemplate template) {
 		this.template = template;
 	}
+	JSONObject templateJson;
+	public JSONObject getTemplateJson() {
+		return templateJson;
+	}
+	public void setTemplateJson(JSONObject templateJson) {
+		this.templateJson = templateJson;
+	}
 }

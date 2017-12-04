@@ -76,6 +76,13 @@
 			</result>
 		</action>
 		
+		 <action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="root">eventRule</param>
+			</result>
+		</action>
+		
 		<action name="updateEventRule" class="com.facilio.events.actions.EventAction" method="updateEventRule">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
