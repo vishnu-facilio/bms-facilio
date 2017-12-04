@@ -101,18 +101,9 @@ public class PortfolioAction extends ActionSupport {
 			deviceBuilder.append(",");
 		}
 		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
-		
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		if(period.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-		else if(period.equals("lastYear"))
-		{
-			startTime=DateTimeUtil.getYearStartTime(-1);
-			endTime=DateTimeUtil.getYearStartTime()-1;
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
@@ -160,25 +151,9 @@ public class PortfolioAction extends ActionSupport {
 			deviceBuilder.append(",");
 		}
 		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
-		
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		if(period.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-		else if(period.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if(period.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();
-		}
-		else if(period.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
@@ -224,25 +199,9 @@ public class PortfolioAction extends ActionSupport {
 			deviceBuilder.append(",");
 		}
 		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
-
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		if(period.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-		else if(period.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if(period.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();
-		}
-		else if(period.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
@@ -287,25 +246,9 @@ public class PortfolioAction extends ActionSupport {
 		}
 		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
 		
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		
-		if(period.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-		else if(period.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if(period.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();
-		}
-		else if(period.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true,true);
 		double totalKwh=0;
