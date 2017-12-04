@@ -41,7 +41,7 @@ public class ReportsUtil
 	private static double unitCost=0.65;
 
 	
-	public static String[] energyConverter(Double value)
+	public static String[] energyUnitConverter(Double value)
 	{
 		long length=(long)Math.log10(value)+1;
 		String units="kWh";
@@ -235,7 +235,7 @@ public class ReportsUtil
 		{
 			return data;
 		}
-		String[] consumptionArray=ReportsUtil.energyConverter(kwh);
+		String[] consumptionArray=ReportsUtil.energyUnitConverter(kwh);
 		data.put("consumption",consumptionArray[0]);
 		data.put("units",consumptionArray[1]);
 		data.put("currency","$");
