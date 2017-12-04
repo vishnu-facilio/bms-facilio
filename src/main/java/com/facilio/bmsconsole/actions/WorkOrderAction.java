@@ -146,6 +146,20 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String editPreventiveMaintenance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		
+		Chain editPM = FacilioChainFactory.getEditPreventiveMaintenanceChain();
+		editPM.execute(context);
+		
+		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		
+		return SUCCESS;
+	}
+	
 	public String changePreventiveMaintenanceStatus() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
