@@ -1162,6 +1162,14 @@
 			</result>
 		</action>
 
+		<action name="updatePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updatePreventiveMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+
 		<action name="editPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="editPreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>

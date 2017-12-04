@@ -1024,9 +1024,25 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdatePreventiveMaintenanceChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeletePreventiveMaintenanceCommand());
+		c.addCommand(new AddWorkorderTemplateCommand());
+		c.addCommand(new AddPreventiveMaintenanceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getEditPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new EditPreventiveMaintenanceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeletePreventiveMaintenanceChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeletePreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
