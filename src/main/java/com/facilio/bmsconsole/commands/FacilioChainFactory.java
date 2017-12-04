@@ -915,6 +915,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
+		c.addCommand(new AddAttachmentTicketActivityCommand());
 		return c;
 	}
 	
