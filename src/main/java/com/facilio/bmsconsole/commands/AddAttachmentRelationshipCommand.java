@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAttachmentRelationshipCommand implements Command {
@@ -49,6 +50,9 @@ public class AddAttachmentRelationshipCommand implements Command {
 			}
 			
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
+			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TICKET_ATTACHMENTS);
+			}
 		}
 		return false;
 	}

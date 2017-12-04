@@ -77,6 +77,13 @@ public enum ActivityType {
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			return "closed the "+moduleName;
 		}
+	},
+	ADD_TICKET_ATTACHMENTS(128) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "added the following file(s).";
+		}
 	}
 	;
 
