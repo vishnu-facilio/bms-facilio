@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.accounts.bean.GroupBean;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class AddGroupMembersCommand implements Command {
@@ -19,7 +23,16 @@ public class AddGroupMembersCommand implements Command {
 		if (groupId != null && memberIds != null) {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			GroupAPI.updateGroupMembers(groupId, memberIds, 1, conn);
+			List<Long> members = new ArrayList<>();
+			for (long memberId : memberIds) {
+				members.add(memberId);
+			}
+			
+			GroupBean groupBean = AccountUtil.getGroupBean();
+			
+			groupBean.removeGroupMember(groupId, members);
+			
+			groupBean.addGroupMember(groupId, members, AccountConstants.GroupMemberRole.MEMBER);
 		}
 		else {
 			throw new IllegalArgumentException("Group Object cannot be null");

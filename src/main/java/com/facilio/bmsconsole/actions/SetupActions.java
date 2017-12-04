@@ -6,25 +6,23 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.EmailSettingContext;
-import com.facilio.bmsconsole.context.OrgContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.OrgApi;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -87,18 +85,18 @@ public String importData() throws Exception {
 		
 		setSetup(SetupLayout.getCompanySettingsLayout());
 	
-		setOrg(OrgApi.getOrgContext());
+		setOrg(AccountUtil.getCurrentOrg());
 		
 		return SUCCESS;
 	}
 	
 	
-	private OrgContext org;
-	public void setOrg(OrgContext org) {
+	private Organization org;
+	public void setOrg(Organization org) {
 		this.org = org;
 	}
 	
-	public OrgContext getOrg() {
+	public Organization getOrg() {
 		return this.org;
 	}
 	
@@ -139,7 +137,7 @@ public String importData() throws Exception {
 			org.setLogoId(fileId);
 		}
 		
-	OrgApi.updateOrgsettings(org, null);
+		AccountUtil.getOrgBean().updateOrg(AccountUtil.getCurrentOrg().getOrgId(), org);
 		
 		return SUCCESS;
 	}
@@ -167,7 +165,7 @@ public String importData() throws Exception {
 		
 		try {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			this.org = OrgApi.getOrgContext();
+			this.org = AccountUtil.getCurrentOrg();
 			fileInfo = fs.getFileInfo(this.org.getLogoId());
 			if (fileInfo != null) {
 				downloadStream = fs.readFile(this.org.getLogoId());
@@ -190,7 +188,7 @@ public String importData() throws Exception {
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid(), woModule.getModuleId());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId(), woModule.getModuleId());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
@@ -203,7 +201,7 @@ public String importData() throws Exception {
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid(), woModule.getModuleId());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId(), woModule.getModuleId());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
@@ -214,7 +212,7 @@ public String importData() throws Exception {
 		setSetup(SetupLayout.getEmailNotificationsLayout());
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
@@ -283,7 +281,7 @@ public String importData() throws Exception {
 			
 			setSupportEmail((SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL));
 		}
-		orgDomain = OrgInfo.getCurrentOrgInfo().getOrgDomain();
+		orgDomain = AccountUtil.getCurrentOrg().getDomain();
 		
 		return SUCCESS;
 	}

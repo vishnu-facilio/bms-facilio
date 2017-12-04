@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -50,11 +51,11 @@ public class AlarmContext extends TicketContext {
 		return this.isAcknowledged;
 	}
 	
-	private UserContext acknowledgedBy;
-	public UserContext getAcknowledgedBy() {
+	private User acknowledgedBy;
+	public User getAcknowledgedBy() {
 		return acknowledgedBy;
 	}
-	public void setAcknowledgedBy(UserContext acknowledgedBy) {
+	public void setAcknowledgedBy(User acknowledgedBy) {
 		this.acknowledgedBy = acknowledgedBy;
 	}
 

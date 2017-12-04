@@ -1,14 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class NoteContext extends ModuleBaseWithCustomFields {
 	
-	private UserContext createdBy;
-	public UserContext getCreatedBy() {
+	private User createdBy;
+	public User getCreatedBy() {
 		return createdBy;
 	}
-	public void setCreatedBy(UserContext createdBy) {
+	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
 

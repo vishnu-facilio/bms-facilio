@@ -1,8 +1,8 @@
 package com.facilio.leed.context;
 
-import com.facilio.bmsconsole.context.OrgContext;
+import com.facilio.accounts.dto.Organization;
 
-public class ArcContext extends OrgContext{
+public class ArcContext extends Organization {
 
 	private String userName;
 	private String password;

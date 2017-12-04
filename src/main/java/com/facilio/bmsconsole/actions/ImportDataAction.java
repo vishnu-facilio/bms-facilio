@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.json.simple.JSONArray;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportMetaInfo.Module;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -36,7 +36,7 @@ public class ImportDataAction extends ActionSupport {
 			//Here: We are checking whether the field mapping exists for the same column headings..
 			//if already exists.. setting the old fieldMapping to display the mappings in the form set with old mappings 
 			// when users upload similar set of data with same mapping frequently..
-			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			String checkQuery="select FIELD_MAPPING from ImportProcess where 	FIELD_MAPPING IS NOT NULL AND ORG_USERID=? AND COLUMN_HEADING=? ORDER BY IMPORT_TIME DESC LIMIT 1";
 
 			try(Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();

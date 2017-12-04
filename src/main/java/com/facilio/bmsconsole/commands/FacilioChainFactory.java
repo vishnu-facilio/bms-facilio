@@ -18,7 +18,7 @@ public class FacilioChainFactory {
 	public static Chain getOrgSignupChain()
 	{
 		Chain c = new ChainBase();
-		c.addCommand(new CreateUserCommand());
+		c.addCommand(new CreateAccountCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddEventModuleCommand());
 		addCleanUpCommand(c);
@@ -225,6 +225,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
 		c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);

@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.Even;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -30,7 +30,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -48,7 +47,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public long getOrgId() {
-		return OrgInfo.getCurrentOrgInfo().getOrgid();
+		return AccountUtil.getCurrentOrg().getOrgId();
 	}
 	
 	private FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {
@@ -401,7 +400,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table("Fields")
 															.fields(FieldFactory.getUpdateFieldFields())
-															.andCustomWhere("ORGID = ? AND FIELDID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), field.getFieldId());
+															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), field.getFieldId());
 			
 			return updateBuilder.update(FieldUtil.getAsProperties(field));
 		}
@@ -416,7 +415,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if(fieldId != -1) {
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table("Fields")
-															.andCustomWhere("ORGID = ? AND FIELDID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), fieldId);
+															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
 			
 			return deleteBuilder.delete();
 		}
@@ -443,7 +442,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 					.table("Fields")
-					.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.andCustomWhere("ORGID = ?", getOrgId())
 					.andCondition(idCondition);
 			
 
@@ -547,7 +546,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	//String query = "select STATE_ID,TicketStatus.STATUS , GROUP_CONCAT(concat('{\"',NEXT_STATE_ID,'\":','\"',ts2.STATUS,'\"}')) from TicketStateFlow , TicketStatus, TicketStatus ts2 where TicketStatus.ID=TicketStateFlow.STATE_ID and TicketStateFlow.NEXT_STATE_ID=ts2.ID  group by STATE_ID";
 		
 		//FacilioModule fm = getModule("ticketstatus");
-		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID="+OrgInfo.getCurrentOrgInfo().getOrgid()+" group by STATE_ID ";
+		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID=" + getOrgId() +" group by STATE_ID ";
 
 		System.out.println(nextstatequery);
 		try(java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();

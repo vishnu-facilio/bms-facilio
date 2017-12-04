@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -15,10 +16,10 @@ import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ModuleAction extends ActionSupport {
+	
 	public String addNewModule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -95,7 +96,7 @@ public class ModuleAction extends ActionSupport {
 			operators.put(ftype.name(), ftype.getOperators());
 		}
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioModule mod = modBean.getModule(getModuleName());
 		

@@ -6,16 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
-import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.UserType;
-import com.facilio.fw.OrgInfo;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
@@ -28,15 +27,29 @@ public class LookupSpecialTypeUtil {
 	
 	public static Map<Long, String> getPickList(String specialType) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
-			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			Map<Long, String> userMap = new HashMap<Long, String>();
+			if (users != null) {
+				for (User usr : users) {
+					userMap.put(usr.getId(), usr.getName());
+				}
+			}
+			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.REQUESTER.getValue());
+			List<User> users = AccountUtil.getOrgBean().getRequesters(AccountUtil.getCurrentOrg().getOrgId());
+			Map<Long, String> userMap = new HashMap<Long, String>();
+			if (users != null) {
+				for (User usr : users) {
+					userMap.put(usr.getId(), usr.getName());
+				}
+			}
+			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
+			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
 			Map<Long, String> groupList = new HashMap<>();
-			for(GroupContext group : groups) {
+			for(Group group : groups) {
 				groupList.put(group.getGroupId(), group.getName());
 			}
 			return groupList;
@@ -58,13 +71,13 @@ public class LookupSpecialTypeUtil {
 	
 	public static Object getLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
-			return UserAPI.getUserFromOrgUserId(id);
+			return AccountUtil.getUserBean().getUser(id);
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return UserAPI.getUserFromOrgUserId(id);
+			return AccountUtil.getUserBean().getUser(id);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			return GroupAPI.getGroup(id);
+			return AccountUtil.getGroupBean().getGroup(id);
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return BusinessHoursAPI.getBusinessHours(id);
@@ -74,17 +87,17 @@ public class LookupSpecialTypeUtil {
 	
 	public static Object getEmptyLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
-			UserContext user = new UserContext();
-			user.setId(id);
+			User user = new User();
+			user.setOuid(id);
 			return user;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			UserContext requester = new UserContext();
-			requester.setId(id);
-			return requester;
+			User user = new User();
+			user.setOuid(id);
+			return user;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			GroupContext group = new GroupContext();
+			Group group = new Group();
 			group.setGroupId(id);
 			return group;
 		}
@@ -102,13 +115,13 @@ public class LookupSpecialTypeUtil {
 	
 	public static Object getPrimaryFieldValue(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			UserContext user =  UserAPI.getUserFromOrgUserId(id);
+			User user = AccountUtil.getUserBean().getUser(id);
 			if(user != null) {
 				return user.getName();
 			}
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			GroupContext group = GroupAPI.getGroup(id);
+			Group group = AccountUtil.getGroupBean().getGroup(id);
 			if(group != null) {
 				return group.getName();
 			}

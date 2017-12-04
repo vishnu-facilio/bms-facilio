@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -19,7 +19,7 @@ public class BusinessHoursAPI {
 	
 	public static long addBusinessHours(List<BusinessHourContext> businessHours) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> props = new HashMap<>();
-		props.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
+		props.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		GenericInsertRecordBuilder businessHoursBuilder = new GenericInsertRecordBuilder()
 																.table(ModuleFactory.getBusinessHoursModule().getTableName())
 																.fields(FieldFactory.getBusinessHoursFields())
@@ -45,7 +45,7 @@ public class BusinessHoursAPI {
 		
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSingleDayBusinessHoursFields())
 														.table(businessHoursTable)

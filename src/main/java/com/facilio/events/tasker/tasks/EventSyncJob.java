@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
 import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -29,7 +30,6 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -49,7 +49,7 @@ public class EventSyncJob extends FacilioJob{
 				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion("us-west-2").build();
 				
 				DynamoDB dd = new DynamoDB(client);
-				EventProperty eventProperty = EventRulesAPI.getEventProperty(OrgInfo.getCurrentOrgInfo().getOrgid());
+				EventProperty eventProperty = EventRulesAPI.getEventProperty(AccountUtil.getCurrentOrg().getOrgId());
 				Table table = dd.getTable(eventProperty.getEventTopicName()); // Client Table
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
@@ -62,7 +62,7 @@ public class EventSyncJob extends FacilioJob{
 						ItemCollection<QueryOutcome> items = table.query(spec);
 						if(items.iterator().hasNext())
 						{
-							processItems(items, OrgInfo.getCurrentOrgInfo().getOrgid());
+							processItems(items, AccountUtil.getCurrentOrg().getOrgId());
 						}
 					}
 				}

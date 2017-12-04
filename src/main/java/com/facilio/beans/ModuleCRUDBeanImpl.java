@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -101,7 +101,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if(priority != null && !priority.isEmpty()) {
 			AlarmContext alarm = new AlarmContext();
-			alarm.setPriority(TicketAPI.getPriority(OrgInfo.getCurrentOrgInfo().getOrgid(), priority));
+			alarm.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getOrgId(), priority));
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);

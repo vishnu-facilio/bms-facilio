@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -13,7 +14,6 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.SelectBuilderIfc;
@@ -317,7 +317,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Condition orgCondition = new Condition();
 		orgCondition.setField(orgIdField);
 		orgCondition.setOperator(NumberOperators.EQUALS);
-		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 		whereCondition.andCondition(orgCondition);
 		
 		Condition moduleCondition = new Condition();

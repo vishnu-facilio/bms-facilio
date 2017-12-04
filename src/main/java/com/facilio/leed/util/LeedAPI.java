@@ -13,6 +13,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -22,7 +23,6 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.FuelContext;
@@ -208,7 +208,7 @@ public class LeedAPI {
 	{
 		//long buildingId = (long)context.get(FacilioConstants.ContextNames.BUILDINGID);
 		//long spaceId = getSpaceId(buildingId);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		Iterator itr = meterList.iterator();
 		while(itr.hasNext())
 		{
@@ -235,7 +235,7 @@ public class LeedAPI {
 	public static void addLeedEnergyMeter(FacilioContext context) throws SQLException, RuntimeException 
 	{
 		LeedEnergyMeterContext meter = (LeedEnergyMeterContext)context.get(LeedConstants.ContextNames.LEEDMETERCONTEXT);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		FuelContext fcontext = meter.getFuelContext();
 		long fuelId = checkIfFuelContextExists(fcontext.getFuelId());
@@ -626,7 +626,7 @@ public class LeedAPI {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		long moduleId =  getModuleId(orgId,"energydata"); 
 		try
 		{
@@ -731,7 +731,7 @@ public class LeedAPI {
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		long orgId = AccountUtil.getCurrentOrg().getOrgId(); 
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("UPDATE ArcCredential SET AUTHKEY = ? , AUTHUPDATETIME = ? WHERE ORGID= ?;");
@@ -755,7 +755,7 @@ public class LeedAPI {
 	{
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid(); 
+		long orgId = AccountUtil.getCurrentOrg().getOrgId(); 
 		try{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO ArcCredential VALUES(?,?,?,?,?,?,?,?,?)");
@@ -786,7 +786,7 @@ public class LeedAPI {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -804,7 +804,6 @@ public class LeedAPI {
 				context.setAuthUpdateTime(rs.getLong("AUTHUPDATETIME"));
 				context.setUserName(rs.getString("USERNAME"));
 				context.setPassword(rs.getString("PASSWORD"));
-				context.setOrgId(rs.getLong("ORGID"));
 			}
 		}
 		catch(SQLException | RuntimeException e)

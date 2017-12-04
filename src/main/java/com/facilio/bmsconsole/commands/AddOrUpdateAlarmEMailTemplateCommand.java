@@ -4,13 +4,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 
@@ -20,7 +20,7 @@ public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 		String email = (String) context.get(FacilioConstants.Workflow.NOTIFICATION_EMAIL);
 		
 		if(email != null && !email.isEmpty()) {
-			EMailTemplate emailTemplate = (EMailTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.EMAIL);
+			EMailTemplate emailTemplate = (EMailTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), "New Alarm Raised", Type.EMAIL);
 			
 			if(emailTemplate != null) {
 				updateTemplate(emailTemplate, email);
@@ -41,7 +41,7 @@ public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 		EMailTemplate updatedTemplate = new EMailTemplate();
 		updatedTemplate.setTo(to+", "+email);
 		
-		TemplateAPI.updateEmailTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), updatedTemplate, emailTemplate.getId());
+		TemplateAPI.updateEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), updatedTemplate, emailTemplate.getId());
 	}
 	
 	private EMailTemplate addTemplate(String email) throws Exception {
@@ -55,7 +55,7 @@ public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 		emailTemplate.setSubject((String) alarmMailJson.get("subject"));
 		emailTemplate.setBody((String) alarmMailJson.get("message"));
 		
-		long id = TemplateAPI.addEmailTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), emailTemplate);
+		long id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), emailTemplate);
 		emailTemplate.setId(id);
 		
 		return emailTemplate;

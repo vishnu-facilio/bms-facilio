@@ -6,12 +6,12 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddTicketCommand implements Command {
 
@@ -33,7 +33,7 @@ public class AddTicketCommand implements Command {
 			
 			if(ticket.getStatus() == null)
 			{
-				ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
+				ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Submitted"));
 			}
 			
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()

@@ -9,13 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -24,9 +26,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.constants.FacilioConstants.UserType;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.twilio.sdk.Twilio;
@@ -34,7 +34,7 @@ import com.twilio.sdk.Twilio;
 public class CommonCommandUtil {
 	public static void setFwdMail(SupportEmailContext supportEmail) {
 		String actualEmail = supportEmail.getActualEmail();
-		String orgEmailDomain = "@"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".facilio.com";
+		String orgEmailDomain = "@"+AccountUtil.getCurrentOrg().getDomain()+".facilio.com";
 		
 		if(actualEmail.toLowerCase().endsWith(orgEmailDomain)) {
 			supportEmail.setFwdEmail(actualEmail);
@@ -50,25 +50,25 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	public static Map<Long, UserContext> getRequesters(String ids, Connection conn) throws Exception {
+	public static Map<Long, User> getRequesters(String ids, Connection conn) throws Exception {
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		Map<Long, UserContext> requesters = new HashMap<>();
+		Map<Long, User> requesters = new HashMap<>();
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ? & ORG_Users.USER_TYPE = ? ORDER BY EMAIL");
 			
-			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
-			pstmt.setInt(2, UserType.REQUESTER.getValue());
-			pstmt.setInt(3, UserType.REQUESTER.getValue());
+			pstmt.setLong(1, AccountUtil.getCurrentOrg().getOrgId());
+			pstmt.setInt(2, AccountConstants.UserType.REQUESTER.getValue());
+			pstmt.setInt(3, AccountConstants.UserType.REQUESTER.getValue());
 			
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				UserContext rc = new UserContext();
+				User rc = new User();
 				rc.setEmail((String)rs.getString("EMAIL"));
 				rc.setName((String) rs.getString("NAME"));
 				
@@ -126,7 +126,7 @@ public class CommonCommandUtil {
 	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
 		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
 		{
-			TicketCategoryContext category = TicketAPI.getCategory(OrgInfo.getCurrentOrgInfo().getOrgid(), "Fire Safety");
+			TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
 			if(category != null) {
 				destinationAlarm.setCategory(category);
 			}

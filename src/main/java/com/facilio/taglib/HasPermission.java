@@ -5,8 +5,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.facilio.bmsconsole.context.RoleContext;
-import com.facilio.fw.UserInfo;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
 
 public class HasPermission extends BodyTagSupport {
 
@@ -14,7 +14,7 @@ public class HasPermission extends BodyTagSupport {
 
 	public int doAfterBody() throws JspException {
 		try {
-			RoleContext role = UserInfo.getCurrentUser().getRole(); 
+			Role role = AccountUtil.getCurrentUser().getRole(); 
 
 			if (role != null && role.hasPermission(getPermission())) {
 				

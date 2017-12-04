@@ -3,8 +3,7 @@ package com.facilio.tasker.job;
 import java.sql.SQLException;
 import java.time.Instant;
 
-import com.facilio.bmsconsole.util.OrgApi;
-import com.facilio.fw.OrgInfo;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.transaction.FacilioTransactionManager;
 
@@ -29,7 +28,7 @@ public abstract class FacilioJob implements Runnable {
 		long nextExecutionTime = getNextExecutionTime();
 		
 		try {
-			OrgInfo.cleanup();
+			AccountUtil.cleanCurrentAccount();
 			retryExecutionCount++;
 			
 			if(jc.getTransactionTimeout() != -1) {
@@ -37,8 +36,7 @@ public abstract class FacilioJob implements Runnable {
 			}
 			
 			long orgId = jc.getOrgId();
-			OrgInfo orginfo = OrgApi.getOrgInfo(orgId);
-			OrgInfo.setCurrentOrgInfo(orginfo);
+			AccountUtil.setCurrentAccount(orgId);
 			
 			execute(jc);
 			

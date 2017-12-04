@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.interceptors;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-import com.facilio.bmsconsole.util.OrgApi;
-import com.facilio.fw.OrgInfo;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.sql.DBUtil;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
@@ -24,8 +26,10 @@ public class ApiInterceptor  extends AbstractInterceptor {
 		HashMap record = DBUtil.getRecord(query);
 		if(record!=null)
 		{
-		OrgInfo.setCurrentOrgInfo(OrgApi.getOrgInfo((Long)record.get("ORGID")));
-
+			Organization org = AccountUtil.getOrgBean().getOrg((Long) record.get("ORGID"));
+			User user = AccountUtil.getUserBean().getUser((Long) record.get("USERID"));
+			
+			AccountUtil.setCurrentAccount(new Account(org, user));
 		
 		String result = invocation.invoke();
 		

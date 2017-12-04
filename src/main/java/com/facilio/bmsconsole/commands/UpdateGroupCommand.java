@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateGroupCommand implements Command {
@@ -14,12 +12,11 @@ public class UpdateGroupCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 
-		GroupContext group = (GroupContext) context.get(FacilioConstants.ContextNames.GROUP);
+		Group group = (Group) context.get(FacilioConstants.ContextNames.GROUP);
 		
 		if (group != null) {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			GroupAPI.updateGroup(group, conn);
+			AccountUtil.getGroupBean().updateGroup(group.getGroupId(), group);
 			
 			context.put(FacilioConstants.ContextNames.GROUP_ID, group.getGroupId());
 		}
@@ -28,5 +25,4 @@ public class UpdateGroupCommand implements Command {
 		}
 		return false;
 	}
-
 }

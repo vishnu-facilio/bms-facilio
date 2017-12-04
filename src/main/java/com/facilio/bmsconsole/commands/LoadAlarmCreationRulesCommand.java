@@ -9,11 +9,11 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -27,7 +27,7 @@ public class LoadAlarmCreationRulesCommand implements Command {
 					.connection(conn)
 					.select(FieldFactory.getWorkflowRuleFields())
 					.table("Workflow_Rule")
-					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Rule.NAME IN ('Create Alarm - EMail', 'Create Alarm - SMS')", OrgInfo.getCurrentOrgInfo().getOrgid());
+					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Rule.NAME IN ('Create Alarm - EMail', 'Create Alarm - SMS')", AccountUtil.getCurrentOrg().getOrgId());
 			
 			List<Map<String, Object>> rules = workflowBuilder.get();
 			

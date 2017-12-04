@@ -7,8 +7,8 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -80,17 +80,17 @@ public class GetWorkOrderRequestListCommand implements Command {
 					else {
 						ids.append(",");
 					}
-					ids.append(workOrderRequest.getRequester().getOrgUserId());
+					ids.append(workOrderRequest.getRequester().getId());
 				}
 			}
 			
 			if(ids.length() > 0)
 			{
-				Map<Long, UserContext> requesters = CommonCommandUtil.getRequesters(ids.toString(), conn);
+				Map<Long, User> requesters = CommonCommandUtil.getRequesters(ids.toString(), conn);
 				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
 					if(workOrderRequest.getRequester() != null)
 					{
-						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getOrgUserId()));
+						workOrderRequest.setRequester(requesters.get(workOrderRequest.getRequester().getId()));
 					}
 				}
 			}

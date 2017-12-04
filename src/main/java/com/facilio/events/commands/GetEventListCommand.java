@@ -11,12 +11,12 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.events.context.EventContext;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -38,7 +38,7 @@ public class GetEventListCommand implements Command {
 					.connection(conn)
 					.select(EventConstants.EventFieldFactory.getEventFields())
 					.table("Event")
-					.andCustomWhere("Event.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+					.andCustomWhere("Event.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.orderBy("CREATED_TIME desc");
 			
 			if (view != null) {

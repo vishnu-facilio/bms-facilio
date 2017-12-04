@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -55,11 +56,11 @@ public class PreventiveMaintenance {
 		this.status = status;
 	}
 	
-	private UserContext createdBy;
-	public UserContext getCreatedBy() {
+	private User createdBy;
+	public User getCreatedBy() {
 		return createdBy;
 	}
-	public void setCreatedBy(UserContext createdBy) {
+	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
 	
@@ -71,8 +72,8 @@ public class PreventiveMaintenance {
 		this.createdById = createdById;
 	}
 
-	private UserContext modifiedBy;
-	public UserContext getModifiedBy() {
+	private User modifiedBy;
+	public User getModifiedBy() {
 		if(modifiedBy != null) {
 			return modifiedBy;
 		}
@@ -80,7 +81,7 @@ public class PreventiveMaintenance {
 			return createdBy;
 		}
 	}
-	public void setModifiedBy(UserContext modifiedBy) {
+	public void setModifiedBy(User modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 	

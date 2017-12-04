@@ -38,6 +38,18 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="signup">
+			<result name="success" type="json">
+				<param name="includeProperties">response</param>
+			</result>
+		</action>
+		<action name="validateInviteLink" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="validateInviteLink">
+			<result name="success" type="json">
+				<param name="includeProperties">invitation.*</param>
+			</result>
+		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogin">
 			<result name="success" type="json">
@@ -54,6 +66,12 @@
 			method="currentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
+		<action name="notification" class="com.facilio.bmsconsole.actions.NotificationAction"
+			method="notificationList">
+			<result name="success" type="json">
+				<param name="includeProperties">unread,notifications,notifications\[\d+\],notifications\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -352,7 +370,7 @@
 	
 	<!--  -->
 	
-		<package name="urjanetApi" namespace="/api/unet" extends="home">
+		<!-- <package name="urjanetApi" namespace="/api/unet" extends="home">
 		<action name="" class="com.facilio.urjanet.actions.UrjanetAction"
 			method="userLogin">
 			<param name="permission">WORKORDER_CREATE</param>
@@ -361,7 +379,7 @@
 			</result>
 		</action>
 
-	</package>
+	</package> -->
 	<!-- Urjanet Packages  -->
 	<package name="assetApi" namespace="/api/asset" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -1746,6 +1764,19 @@
 	<package name="accountApi" namespace="/api/account" extends="home">
 		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
 			<result name="success" type="json">
+			</result>
+		</action>
+	</package>
+	
+	<package name="notificationApi" namespace="/api/notification" extends="home">
+		<action name="read" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAsRead">
+			<result name="success" type="json">
+				<param name="includeProperties">unread</param>
+			</result>
+		</action>
+		<action name="readall" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAllAsRead">
+			<result name="success" type="json">
+				<param name="includeProperties">unread</param>
 			</result>
 		</action>
 	</package>

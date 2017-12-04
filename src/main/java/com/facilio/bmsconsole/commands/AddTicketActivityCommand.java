@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -30,8 +31,6 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
@@ -50,7 +49,7 @@ public class AddTicketActivityCommand implements Command {
 			
 			if(activityType != null) {
 				context.put(FacilioConstants.TicketActivity.MODIFIED_TIME, System.currentTimeMillis());
-				context.put(FacilioConstants.TicketActivity.MODIFIED_USER, UserInfo.getCurrentUser().getOrgId());
+				context.put(FacilioConstants.TicketActivity.MODIFIED_USER, AccountUtil.getCurrentUser().getId());
 				
 				computeAndAddActivity(context);
 			}
@@ -118,7 +117,7 @@ public class AddTicketActivityCommand implements Command {
 				activity.setModifiedTime(modifiedTime);
 				activity.setModifiedBy(modifiedBy);
 				activity.setActivityType(activityType);
-				activity.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+				activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				
 				JSONObject info = new JSONObject();
 				activity.setInfo(info);

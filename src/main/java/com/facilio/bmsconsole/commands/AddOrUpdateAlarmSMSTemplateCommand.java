@@ -4,13 +4,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 	
@@ -20,7 +20,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 		String sms = (String) context.get(FacilioConstants.Workflow.NOTIFICATION_SMS);
 		
 		if(sms != null && !sms.isEmpty()) {
-			SMSTemplate smsTemplate = (SMSTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.SMS);
+			SMSTemplate smsTemplate = (SMSTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), "New Alarm Raised", Type.SMS);
 			
 			if(smsTemplate != null) {
 				updateTemplate(smsTemplate, sms);
@@ -41,7 +41,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 		SMSTemplate updatedTemplate = new SMSTemplate();
 		updatedTemplate.setTo(to+", "+phone);
 		
-		TemplateAPI.updateSMSTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), updatedTemplate, smsTemplate.getId());
+		TemplateAPI.updateSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), updatedTemplate, smsTemplate.getId());
 	}
 	
 	private SMSTemplate addTemplate(String phone) throws Exception {
@@ -54,7 +54,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 		smsTemplate.setTo(phone);
 		smsTemplate.setMsg((String) alarmSmsJson.get("message"));
 		
-		long id = TemplateAPI.addSMSTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), smsTemplate);
+		long id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), smsTemplate);
 		smsTemplate.setId(id);
 		
 		return smsTemplate;

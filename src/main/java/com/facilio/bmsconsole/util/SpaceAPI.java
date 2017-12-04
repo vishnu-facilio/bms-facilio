@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -27,7 +28,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class SpaceAPI {
@@ -342,7 +342,7 @@ public static long getSitesCount() throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Site")
@@ -498,7 +498,7 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Site")
@@ -525,7 +525,7 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Building")
@@ -552,7 +552,7 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Floor")
@@ -590,7 +590,7 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("WorkOrders")
@@ -631,7 +631,7 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -670,7 +670,7 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Assets")

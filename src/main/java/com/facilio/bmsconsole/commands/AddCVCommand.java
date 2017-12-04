@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class AddCVCommand implements Command {
 
@@ -52,7 +52,7 @@ public class AddCVCommand implements Command {
 				view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			}
 			
-			long viewId = ViewAPI.addView(view, OrgInfo.getCurrentOrgInfo().getOrgid());
+			long viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());
 			view.setId(viewId);
 		}
 		return false;

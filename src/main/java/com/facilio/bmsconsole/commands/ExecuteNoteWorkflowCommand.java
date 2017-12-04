@@ -10,6 +10,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -28,8 +29,6 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 
 public class ExecuteNoteWorkflowCommand implements Command {
 
@@ -38,7 +37,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 		// TODO Auto-generated method stub
 		NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
 		if(note != null) {
-			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				long parentId = note.getParentId();
@@ -50,14 +49,14 @@ public class ExecuteNoteWorkflowCommand implements Command {
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
 						TicketContext ticket = getParentTicket(note, ((FacilioContext) context).getConnectionWithoutTransaction());
-						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getOrgUserId() != note.getCreatedBy().getId()) {
+						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != note.getCreatedBy().getId()) {
 							long workflowRuleId = workflowRule.getId();
 							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
 							if(actions != null) {
 								Map<String, Object> placeHolders = new HashMap<>();
 								CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.TICKET, FacilioConstants.ContextNames.TICKET, FieldUtil.getAsProperties(ticket), placeHolders);
-								CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-								CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+								CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+								CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 								for(ActionContext action : actions)
 								{
 									ActionTemplate template = action.getTemplate();

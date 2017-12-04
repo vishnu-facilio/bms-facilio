@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -13,7 +14,6 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddWorkorderTemplateCommand implements Command {
 
@@ -34,7 +34,7 @@ public class AddWorkorderTemplateCommand implements Command {
 		workorderTemplate.setName(workorder.getSubject());
 		workorderTemplate.setType(UserTemplate.Type.WORKORDER);
 
-		long templateId = TemplateAPI.addWorkorderTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), workorderTemplate);
+		long templateId = TemplateAPI.addWorkorderTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID, templateId);
 		return false;

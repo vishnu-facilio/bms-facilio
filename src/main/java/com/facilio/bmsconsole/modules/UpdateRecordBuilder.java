@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.UpdateBuilderIfc;
@@ -137,7 +137,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			Condition orgCondition = new Condition();
 			orgCondition.setField(FieldFactory.getOrgIdField(module));
 			orgCondition.setOperator(NumberOperators.EQUALS);
-			orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 			whereCondition.andCondition(orgCondition);
 			
 			Condition moduleCondition = new Condition();

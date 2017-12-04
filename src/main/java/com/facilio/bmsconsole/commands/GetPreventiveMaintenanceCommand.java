@@ -7,12 +7,12 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetPreventiveMaintenanceCommand implements Command {
@@ -30,7 +30,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 															.table("Preventive_Maintenance")
 															.innerJoin("Jobs")
 															.on("Preventive_Maintenance.ID = Jobs.JOBID")
-															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), "PreventiveMaintenance");
+															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance");
 		
 		if (status != null) {
 			if (status) {

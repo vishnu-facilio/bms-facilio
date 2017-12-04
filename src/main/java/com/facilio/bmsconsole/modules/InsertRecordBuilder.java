@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.InsertBuilderIfc;
 
@@ -161,7 +161,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
-		moduleProps.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
+		moduleProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {

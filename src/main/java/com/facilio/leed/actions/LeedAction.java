@@ -13,12 +13,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.ConsumptionInfoContext;
@@ -123,7 +124,7 @@ public class LeedAction extends ActionSupport {
 	public String leedList() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(LeedConstants.ContextNames.ORGID, OrgInfo.getCurrentOrgInfo().getOrgid());
+		context.put(LeedConstants.ContextNames.ORGID, AccountUtil.getCurrentOrg().getOrgId());
 		
 		Chain fetchLeedListChain = LeedConstants.FetchLeedListChain();
 		fetchLeedListChain.execute(context);
@@ -519,7 +520,7 @@ public class LeedAction extends ActionSupport {
 		context.put(LeedConstants.ContextNames.METERTYPE,getMeterType());
 		
 		String meterType = getMeterType();
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		FuelContext fcontext = new FuelContext();
 		LeedEnergyMeterContext leedEnergyMeterContext = new LeedEnergyMeterContext();
@@ -544,10 +545,12 @@ public class LeedAction extends ActionSupport {
 			leedEnergyMeterContext.setUnit("GAL");
 		}
 		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getId());
+		
 		leedEnergyMeterContext.setFuelContext(fcontext);
 		leedEnergyMeterContext.setOrgId(orgId);
-		leedEnergyMeterContext.setContactPerson(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getName());
-		leedEnergyMeterContext.setContactEmail(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getEmail());
+		leedEnergyMeterContext.setContactPerson(superAdmin.getName());
+		leedEnergyMeterContext.setContactEmail(superAdmin.getEmail());
 		leedEnergyMeterContext.setName(getMeterName());
 		
 		context.put(LeedConstants.ContextNames.LEEDMETERCONTEXT, leedEnergyMeterContext);

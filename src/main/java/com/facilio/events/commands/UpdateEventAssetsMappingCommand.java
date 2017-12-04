@@ -3,10 +3,10 @@ package com.facilio.events.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateEventAssetsMappingCommand implements Command {
@@ -21,7 +21,7 @@ public class UpdateEventAssetsMappingCommand implements Command {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(EventConstants.EventFieldFactory.getEventFields())
 														.table(EventConstants.EventModuleFactory.getEventModule().getTableName())
-														.andCustomWhere("ORGID = ? AND NODE = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), node);
+														.andCustomWhere("ORGID = ? AND NODE = ?", AccountUtil.getCurrentOrg().getOrgId(), node);
 		updateBuilder.update(FieldUtil.getAsProperties(event));
 		return false;
 	}

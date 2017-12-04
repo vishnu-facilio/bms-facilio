@@ -6,11 +6,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddEventCommand implements Command {
@@ -19,7 +19,7 @@ public class AddEventCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		JSONObject payload = (JSONObject) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
 		if(payload != null) {
-			EventContext event = EventAPI.processPayload(System.currentTimeMillis(), payload, OrgInfo.getCurrentOrgInfo().getOrgid());
+			EventContext event = EventAPI.processPayload(System.currentTimeMillis(), payload, AccountUtil.getCurrentOrg().getOrgId());
 			
 			Map<String, Object> props = FieldUtil.getAsProperties(event);
 			

@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -23,7 +24,6 @@ import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -40,7 +40,7 @@ public class EventToAlarmJob extends FacilioJob{
 		{
 			try 
 			{
-				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+				long orgId = AccountUtil.getCurrentOrg().getOrgId();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")

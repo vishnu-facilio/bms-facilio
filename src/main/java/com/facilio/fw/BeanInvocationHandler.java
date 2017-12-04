@@ -4,7 +4,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.util.AccountUtil;
 
 public class BeanInvocationHandler implements InvocationHandler {
 
@@ -29,25 +30,20 @@ public class BeanInvocationHandler implements InvocationHandler {
 		Object result;
 		
 		try {
-			
-			OrgInfo oldorginfo = null;
+			Account oldAccount = AccountUtil.getCurrentAccount();
 
-			if (orgid != 0 && ((OrgInfo.getCurrentOrgInfo() != null && OrgInfo.getCurrentOrgInfo().getOrgid() != orgid) || OrgInfo.getCurrentOrgInfo() == null)) {
-				OrgInfo orginfo = OrgApi.getOrgInfo(orgid);
-				oldorginfo = OrgInfo.getCurrentOrgInfo();
-				OrgInfo.setCurrentOrgInfo(orginfo);
+			if (orgid != 0) {
+				if (oldAccount == null || orgid != oldAccount.getOrg().getOrgId()) {
+					AccountUtil.setCurrentAccount(orgid);
+				}
 			}
-			//Connection oldConn = BeanFactory.setConnection(this.conn);
 
 			// TODO switch context to orgid
 		
 			result = method.invoke(delegate, args);
 			
-			if(orgid!=0 && oldorginfo!=null)
-			{
-			// OrgInfo orginfo = 	OrgApi.getOrgInfo(orgid);
-			 // oldorginfo = OrgInfo.getCurrentOrgInfo();
-			 OrgInfo.setCurrentOrgInfo(oldorginfo);
+			if (orgid != 0 && oldAccount != null) {
+				AccountUtil.setCurrentAccount(oldAccount);
 			}
 		
 		} catch (InvocationTargetException e) {

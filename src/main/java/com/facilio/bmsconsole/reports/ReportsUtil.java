@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -19,7 +20,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ReportsUtil 
@@ -231,7 +231,7 @@ public class ReportsUtil
 			}
 		}
 		
-        long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")

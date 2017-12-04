@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -19,7 +20,6 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class UpdateWorkOrderCommand implements Command {
 
@@ -36,11 +36,11 @@ public class UpdateWorkOrderCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
-				workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
+				workOrder.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Assigned"));
 			}
 			
 			if(workOrder.getStatus() != null) {
-				if(workOrder.getStatus().getId() == TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed").getId()) {
+				if(workOrder.getStatus().getId() == TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Closed").getId()) {
 					workOrder.setActualWorkEnd(System.currentTimeMillis());
 				}
 			}

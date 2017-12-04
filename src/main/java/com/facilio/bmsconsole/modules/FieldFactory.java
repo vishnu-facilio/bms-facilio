@@ -223,6 +223,17 @@ public class FieldFactory {
 		return field;
 	}
 	
+	public static FacilioField getUserIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("userId");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("USERID");
+		if(module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
+	
 	public static FacilioField getModuleIdField() {
 		return getModuleIdField(null);
 	}
@@ -1547,6 +1558,52 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getNotificationFields() {
+		FacilioModule module = ModuleFactory.getNotificationModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getUserIdField(module));
+		
+		FacilioField notificationType = new FacilioField();
+		notificationType.setName("notificationTypeVal");
+		notificationType.setDataType(FieldType.NUMBER);
+		notificationType.setColumnName("NOTIFICATION_TYPE");
+		notificationType.setModule(module);
+		fields.add(notificationType);
+		
+		FacilioField actorId = new FacilioField();
+		actorId.setName("actorId");
+		actorId.setDataType(FieldType.NUMBER);
+		actorId.setColumnName("ACTOR_ID");
+		actorId.setModule(module);
+		fields.add(actorId);
+		
+		FacilioField info = new FacilioField();
+		info.setName("info");
+		info.setDataType(FieldType.STRING);
+		info.setColumnName("INFO");
+		info.setModule(module);
+		fields.add(info);
+		
+		FacilioField isRead = new FacilioField();
+		isRead.setName("isRead");
+		isRead.setDataType(FieldType.BOOLEAN);
+		isRead.setColumnName("IS_READ");
+		isRead.setModule(module);
+		fields.add(isRead);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(module);
+		fields.add(createdTime);
 		
 		return fields;
 	}

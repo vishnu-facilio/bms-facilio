@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -24,7 +25,6 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class DeviceAPI 
@@ -35,7 +35,7 @@ public class DeviceAPI
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getControllerModule().getTableName())
 				.select(FieldFactory.getControllerFields())
-				.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
@@ -216,7 +216,7 @@ public class DeviceAPI
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(meterFld);
 		fields.add(purposeField);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Meter")

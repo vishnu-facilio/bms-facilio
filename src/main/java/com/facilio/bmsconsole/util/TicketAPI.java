@@ -8,17 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.GroupContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -29,7 +30,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -131,7 +131,7 @@ public class TicketAPI {
 	
 	public static List<TaskContext> getRelatedTasks(long ticketId, Connection conn) throws Exception 
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
@@ -205,14 +205,14 @@ public class TicketAPI {
 		TicketStatusContext status = ticket.getStatus();
 		
 		if(status != null) {
-			status = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), status.getId());
+			status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), status.getId());
 		}
 		else {
-			ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Submitted"));
+			ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Submitted"));
 		}
 		
 		if(ticket.getAssignedTo() != null && (status == null || status.getStatus().equals("Submitted"))) {
-			ticket.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
+			ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Assigned"));
 		}
 	}
 	
@@ -342,15 +342,15 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 	
 	private static void loadTicketUsers(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
-			List<UserContext> users = UserAPI.getUsersOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
 			
-			Map<Long, UserContext> userMap = new HashMap<>();
-			for(UserContext user : users) {
+			Map<Long, User> userMap = new HashMap<>();
+			for(User user : users) {
 				userMap.put(user.getId(), user);
 			}
 			
 			for(TicketContext ticket : tickets) {
-				UserContext assignTo = ticket.getAssignedTo();
+				User assignTo = ticket.getAssignedTo();
 				if(assignTo != null) {
 					ticket.setAssignedTo(userMap.get(assignTo.getId()));
 				}
@@ -360,15 +360,15 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 	
 	private static void loadTicketGroups(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
-			List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
+			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
 			
-			Map<Long, GroupContext> groupMap = new HashMap<>();
-			for(GroupContext group : groups) {
+			Map<Long, Group> groupMap = new HashMap<>();
+			for(Group group : groups) {
 				groupMap.put(group.getId(), group);
 			}
 			
 			for(TicketContext ticket : tickets) {
-				GroupContext assignGroup = ticket.getAssignmentGroup();
+				Group assignGroup = ticket.getAssignmentGroup();
 				if(assignGroup != null) {
 					ticket.setAssignmentGroup(groupMap.get(assignGroup.getId()));
 				}

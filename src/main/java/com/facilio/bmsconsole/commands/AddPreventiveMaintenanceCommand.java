@@ -5,14 +5,12 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
@@ -24,10 +22,10 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		long templateId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
-		pm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		pm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		pm.setTemplateId(templateId);
 		
-		pm.setCreatedById(UserInfo.getCurrentUser().getOrgUserId());
+		pm.setCreatedById(AccountUtil.getCurrentUser().getId());
 		pm.setCreatedTime(System.currentTimeMillis());
 		
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
@@ -52,5 +50,4 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		}
 		return false;
 	}
-	
 }

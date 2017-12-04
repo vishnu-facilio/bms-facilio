@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -36,19 +38,19 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private GroupContext assignmentGroup;
-	public GroupContext getAssignmentGroup() {
+	private Group assignmentGroup;
+	public Group getAssignmentGroup() {
 		return assignmentGroup;
 	}
-	public void setAssignmentGroup(GroupContext assignmentGroup) {
+	public void setAssignmentGroup(Group assignmentGroup) {
 		this.assignmentGroup = assignmentGroup;
 	}
 	
-	private UserContext assignedTo;
-	public UserContext getAssignedTo() {
+	private User assignedTo;
+	public User getAssignedTo() {
 		return assignedTo;
 	}
-	public void setAssignedTo(UserContext assignedTo) {
+	public void setAssignedTo(User assignedTo) {
 		this.assignedTo = assignedTo;
 	}
 	
