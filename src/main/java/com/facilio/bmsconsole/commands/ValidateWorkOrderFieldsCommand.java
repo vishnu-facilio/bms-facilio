@@ -6,7 +6,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -37,19 +36,6 @@ public class ValidateWorkOrderFieldsCommand implements Command {
 				woContext.setDueDate((cal.getTimeInMillis())+TicketContext.DEFAULT_DURATION);
 			}
 		}
-		else if (context instanceof UserContext) {
-
-			UserContext userContext = (UserContext) context;
-
-			if(userContext.getEmail() == null || userContext.getEmail().isEmpty()) {
-				throw new IllegalArgumentException("Email is invalid");
-			}
-
-			if(userContext.getPassword() == null || userContext.getPassword().isEmpty()) {
-				throw new IllegalArgumentException("Password is invalid");
-			}
-		}
 		return false;
 	}
-
 }

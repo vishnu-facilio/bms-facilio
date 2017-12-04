@@ -14,6 +14,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -34,8 +35,6 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -114,7 +113,7 @@ public class AlarmAction extends ActionSupport {
 			ticket.setDescription("Alarm Testing");
 		}
 		alarm.setAlarmStatus(AlarmContext.AlarmStatus.ACTIVE);
-		alarm.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		alarm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
 		if(alarm.getAsset() != null) {
@@ -336,8 +335,8 @@ public class AlarmAction extends ActionSupport {
 			if ("email".equalsIgnoreCase(type)) {
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.ALARM, FacilioConstants.ContextNames.ALARM, FieldUtil.getAsProperties(alarm), placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(OrgInfo.getCurrentOrgInfo()), placeHolders);
-				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(UserInfo.getCurrentUser()), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 				
 				placeHolders.put("follower.email", value);
 				JSONObject mailJson = DefaultTemplates.ALARM_CREATION_EMAIL.getTemplate(placeHolders);
@@ -456,7 +455,7 @@ public class AlarmAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(idFld);
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.connection(conn)

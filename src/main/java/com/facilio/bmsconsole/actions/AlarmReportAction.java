@@ -9,6 +9,7 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
@@ -23,7 +24,6 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
@@ -82,7 +82,7 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -103,7 +103,7 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -185,7 +185,7 @@ public class AlarmReportAction extends ActionSupport {
 		}
 		where.append(")");
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -219,7 +219,7 @@ public class AlarmReportAction extends ActionSupport {
 				.moduleName(FacilioConstants.ContextNames.BUILDING)
 				.beanClass(BuildingContext.class)
 				.select(buildingFields)
-				.andCustomWhere("Building.ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid())
+				.andCustomWhere("Building.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.orderBy("ID");
 		return builder.get();
 	}
@@ -321,7 +321,7 @@ public class AlarmReportAction extends ActionSupport {
 			where.append(")");
 		}
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -388,7 +388,7 @@ public class AlarmReportAction extends ActionSupport {
 			where.append(")");
 		}
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
@@ -484,7 +484,7 @@ public class AlarmReportAction extends ActionSupport {
 		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
 		
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms");
@@ -561,7 +561,7 @@ public class AlarmReportAction extends ActionSupport {
 		where.append("Alarms.ORGID = ? AND Alarms.STATUS = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		
 		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")

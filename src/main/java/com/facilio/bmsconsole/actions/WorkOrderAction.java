@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -24,9 +25,9 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -103,7 +104,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrderFromTemplate() throws Exception {
 		
-		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), getTemplateId());
+		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), getTemplateId());
 		JSONParser parser = new JSONParser();
 		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
 		
@@ -225,7 +226,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
 		
 		workorder = new WorkOrderContext();
-		workorder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed")); //We shouldn't allow close to be edited
+		workorder.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Closed")); //We shouldn't allow close to be edited
 		
 		return updateWorkOrder(context);
 	}
@@ -244,6 +245,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		return updateWorkOrder(context);
 	}
 	
@@ -255,7 +257,7 @@ public class WorkOrderAction extends ActionSupport {
 		// updating start time, end time when workorder status changes
 		if (workorder.getStatus() != null) {
 			
-			TicketStatusContext statusObj = TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), workorder.getStatus().getId());
+			TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workorder.getStatus().getId());
 			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 				workorder.setActualWorkStart(System.currentTimeMillis());
 			}
@@ -292,7 +294,7 @@ public class WorkOrderAction extends ActionSupport {
 		this.workorder = workorder;
 	}
 	
-	private long workOrderId;
+	private long workOrderId = -1;
 	public long getWorkOrderId() {
 		return workOrderId;
 	}
@@ -308,7 +310,7 @@ public class WorkOrderAction extends ActionSupport {
 		this.id = id;
 	}
 	
-	private int rowsUpdated;
+	private int rowsUpdated = -1;
 	public int getRowsUpdated() {
 		return rowsUpdated;
 	}
@@ -453,4 +455,25 @@ public class WorkOrderAction extends ActionSupport {
 	public String getSearch() {
 		return this.search;
 	}
+	
+	public String getActivitiesList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderId);
+		
+		Chain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
+		activitiesChain.execute(context);
+		
+		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
+		
+		return SUCCESS;
+	}
+	
+	private List<TicketActivity> activities;
+	public List<TicketActivity> getActivities() {
+		return activities;
+	}
+	public void setActivities(List<TicketActivity> activities) {
+		this.activities = activities;
+	}
+
 }

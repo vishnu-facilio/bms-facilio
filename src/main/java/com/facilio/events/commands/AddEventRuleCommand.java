@@ -5,11 +5,11 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddEventRuleCommand implements Command {
@@ -20,7 +20,7 @@ public class AddEventRuleCommand implements Command {
 		
 		EventRule eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(eventRule != null) {
-			long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			eventRule.setOrgId(orgId);
 			EventRulesAPI.updateEventRuleChildIds(eventRule, orgId);
 			

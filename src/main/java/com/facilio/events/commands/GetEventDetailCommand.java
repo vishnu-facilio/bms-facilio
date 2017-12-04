@@ -6,10 +6,10 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetEventDetailCommand implements Command {
@@ -22,7 +22,7 @@ public class GetEventDetailCommand implements Command {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.table("Event")
 															.select(EventConstants.EventFieldFactory.getEventFields())
-															.andCustomWhere("ORGID = ? AND ID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), eventId);
+															.andCustomWhere("ORGID = ? AND ID = ?", AccountUtil.getCurrentOrg().getOrgId(), eventId);
 			List<Map<String, Object>> eventProps = selectBuilder.get();
 			
 			if(eventProps != null && !eventProps.isEmpty()) {

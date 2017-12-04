@@ -7,12 +7,12 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -26,7 +26,7 @@ public class UpdateSupportEmailCommand implements Command {
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 			if(supportEmail != null) {
 			System.out.println("....UpdateSupport condition");
-			supportEmail.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			supportEmail.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			//CommonCommandUtil.setFwdMail(supportEmail);
 			Map<String, Object> emailProps = FieldUtil.getAsProperties(supportEmail);
 			System.out.println("mpa"+emailProps);

@@ -120,6 +120,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
 				if(sql != null && !sql.isEmpty()) {
+					System.out.println("################ sql: "+sql);
 					pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 					
 					int paramIndex = 1;

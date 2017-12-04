@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -10,7 +11,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class SetOrgIdConditionCommand implements Command{
 
@@ -27,7 +27,7 @@ public class SetOrgIdConditionCommand implements Command{
 		Condition orgCondition = new Condition();
 		orgCondition.setField(FieldFactory.getOrgIdField(module));
 		orgCondition.setOperator(NumberOperators.EQUALS);
-		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 
 		repContext.put(FacilioConstants.Reports.ORG_CONDITION, orgCondition);
 		return false;

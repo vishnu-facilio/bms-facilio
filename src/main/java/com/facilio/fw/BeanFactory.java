@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.facilio.bmsconsole.util.OrgApi;
+import com.facilio.accounts.util.AccountUtil;
 
 public class BeanFactory {
 	
@@ -67,11 +67,10 @@ public class BeanFactory {
 	
 	public static Object lookup(String beanname) throws InstantiationException, IllegalAccessException
 	{
-		long orgid = OrgInfo.getCurrentOrgInfo().getOrgid();
 		Class implclass = beans.get(beanname);
 		Object implobj = implclass.newInstance();
 		return Proxy.newProxyInstance(implclass.getClassLoader(),
-				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj, 0L));	
 	}
 	
 	public static Object lookup(String beanname, Long orgid) throws InstantiationException, IllegalAccessException
@@ -81,9 +80,9 @@ public class BeanFactory {
 		return Proxy.newProxyInstance(implclass.getClassLoader(),
 				implclass.getInterfaces(), new BeanInvocationHandler(implobj,orgid));	
 	}
-	public static Object lookup(String beanname, String domainname) throws InstantiationException, IllegalAccessException, SQLException
+	public static Object lookup(String beanname, String domainname) throws InstantiationException, IllegalAccessException, Exception
 	{
-		Long orgid = OrgApi.getOrgIdFromDomain(domainname);
+		Long orgid = AccountUtil.getOrgBean().getOrg(domainname).getOrgId();
 		Class implclass = beans.get(beanname);
 		Object implobj = implclass.newInstance();
 		return Proxy.newProxyInstance(implclass.getClassLoader(),

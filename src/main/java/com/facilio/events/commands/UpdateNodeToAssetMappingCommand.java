@@ -3,9 +3,9 @@ package com.facilio.events.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
-import com.facilio.fw.OrgInfo;
 
 public class UpdateNodeToAssetMappingCommand implements Command {
 
@@ -22,7 +22,7 @@ public class UpdateNodeToAssetMappingCommand implements Command {
 			throw new IllegalArgumentException("Invalid Asset ID specified during updation of Node-Asset mapping");
 		}
 		
-		EventAPI.updateAssetForNode(assetId, node, OrgInfo.getCurrentOrgInfo().getOrgid());
+		EventAPI.updateAssetForNode(assetId, node, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return false;
 	}

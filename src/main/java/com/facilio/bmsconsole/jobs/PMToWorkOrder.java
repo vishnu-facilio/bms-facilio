@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -18,7 +19,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -42,7 +42,7 @@ public class PMToWorkOrder extends FacilioJob {
 			if(props != null && !props.isEmpty()) {
 				Map<String, Object> prop = props.get(0);
 				long templateId = (long) prop.get("templateId");
-				WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), templateId);
+				WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), templateId);
 				
 				JSONObject content = template.getTemplate(null);
 				WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject)content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);

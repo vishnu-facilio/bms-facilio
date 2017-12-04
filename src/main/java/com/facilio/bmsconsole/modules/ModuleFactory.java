@@ -425,4 +425,13 @@ public class ModuleFactory {
 		
 		return controllerModule;
 	}
+	
+	public static FacilioModule getNotificationModule() {
+		FacilioModule notificationModule = new FacilioModule();
+		notificationModule.setName("notification");
+		notificationModule.setDisplayName("Notifications");
+		notificationModule.setTableName("Notification");
+		
+		return notificationModule;
+	}
 }

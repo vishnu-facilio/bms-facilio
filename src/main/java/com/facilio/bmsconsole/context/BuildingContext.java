@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+
 public class BuildingContext extends BaseSpaceContext {
 	
 	private LocationContext location;
@@ -10,11 +12,11 @@ public class BuildingContext extends BaseSpaceContext {
 		this.location = location;
 	}
 	
-	private UserContext managedBy;
-	public UserContext getManagedBy() {
+	private User managedBy;
+	public User getManagedBy() {
 		return managedBy;
 	}
-	public void setManagedBy(UserContext managedBy) {
+	public void setManagedBy(User managedBy) {
 		this.managedBy = managedBy;
 	}
 	

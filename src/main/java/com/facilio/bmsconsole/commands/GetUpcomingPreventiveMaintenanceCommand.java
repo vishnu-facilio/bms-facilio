@@ -10,12 +10,12 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetUpcomingPreventiveMaintenanceCommand implements Command {
@@ -33,9 +33,21 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 															.table("Preventive_Maintenance")
 															.innerJoin("Jobs")
 															.on("Preventive_Maintenance.ID = Jobs.JOBID")
-															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), "PreventiveMaintenance");
+															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance");
 		
 		selectRecordBuilder.andCustomWhere("(Preventive_Maintenance.STATUS = ? OR Preventive_Maintenance.STATUS IS NULL)", true);
+		
+
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		if (orderBy != null && !orderBy.isEmpty()) {
+			selectRecordBuilder.orderBy(orderBy);
+		}
+
+		Integer limit = (Integer) context.get(FacilioConstants.Reports.LIMIT);
+		if(limit!=null) {
+			selectRecordBuilder.limit(limit);
+		}
+		
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		
 		if(pmProps != null && !pmProps.isEmpty()) 

@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.modules;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -16,10 +15,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -169,6 +166,39 @@ public class FieldUtil {
 		return array;
 	}
 	
+	public static Map<String, Object> getLookupProp(LookupField lookupField, long id, int level) throws Exception {
+		if(id > 0) {
+			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+				return FieldUtil.getAsProperties(LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id));
+			}
+			else {
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				if(moduleClass != null) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
+					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
+																						.table(lookupField.getLookupModule().getTableName())
+																						.moduleName(lookupField.getLookupModule().getName())
+																						.select(lookupBeanFields)
+																						.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
+					List<Map<String, Object>> records = lookupBeanBuilder.getAsProps();
+					if(records != null && records.size() > 0) {
+						return records.get(0);
+					}
+					else {
+						return null;
+					}
+				}
+				else {
+					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
+				}
+			}	
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {
 		if(id > 0) {
 			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
@@ -177,27 +207,20 @@ public class FieldUtil {
 			else {
 				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
 				if(moduleClass != null) {
-					try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
-						SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
-																							.connection(conn)
-																							.table(lookupField.getLookupModule().getTableName())
-																							.moduleName(lookupField.getLookupModule().getName())
-																							.beanClass(moduleClass)
-																							.select(lookupBeanFields)
-																							.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
-						List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
-						if(records != null && records.size() > 0) {
-							return records.get(0);
-						}
-						else {
-							return null;
-						}
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
+					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
+																						.table(lookupField.getLookupModule().getTableName())
+																						.moduleName(lookupField.getLookupModule().getName())
+																						.beanClass(moduleClass)
+																						.select(lookupBeanFields)
+																						.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
+					List<ModuleBaseWithCustomFields> records = lookupBeanBuilder.get();
+					if(records != null && records.size() > 0) {
+						return records.get(0);
 					}
-					catch(Exception e) {
-						e.printStackTrace();
-						throw e;
+					else {
+						return null;
 					}
 				}
 				else {

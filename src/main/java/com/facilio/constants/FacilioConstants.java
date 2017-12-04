@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -71,272 +70,16 @@ public class FacilioConstants {
 		}
 	}
 	
-	public static enum Permission {
-		
-		ORG_ACCESS_ADMINISTER(1), // full control over the organization
-		
-		ORG_ACCESS_DELETE(2), // permission to close organization
-		
-		USER_ACCESS_ADMINISTER(4), // view, create or edit users
-		
-		USER_ACCESS_DELETE(8), // delete users
-		
-		GROUP_ACCESS_ADMINISTER(16), // view, create or edit groups
-		
-		GROUP_ACCESS_DELETE(32), // delete groups
-		
-		WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES(64),
-		
-		WORKORDER_ACCESS_CREATE_ANY(128),
-		
-		WORKORDER_ACCESS_UPDATE_OWN(256),
-		
-		WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES(512),
-		
-		WORKORDER_ACCESS_UPDATE_ANY(1024),
-		
-		WORKORDER_ACCESS_READ_OWN(2048),
-		
-		WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES(4096),
-		
-		WORKORDER_ACCESS_READ_ANY(8192),
-		
-		WORKORDER_ACCESS_DELETE_OWN(16384),
-		
-		WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES(32768),
-		
-		WORKORDER_ACCESS_DELETE_ANY(65536),
-		
-		WORKORDER_ACCESS_ASSIGN_OWN(131072),
-		
-		WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES(262144),
-		
-		WORKORDER_ACCESS_ASSIGN_ANY(524288),
-		
-		WORKORDER_ACCESS_CAN_BE_ASSIGNED_ACCESSIBLE_SPACES(1048576),
-		
-		WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY(2097152),
-		
-		TASK_ACCESS_CREATE_ANY(4194304),
-		
-		TASK_ACCESS_UPDATE_OWN(8388608),
-		
-		TASK_ACCESS_UPDATE_ANY(16777216),
-		
-		TASK_ACCESS_READ_OWN(33554432),
-		
-		TASK_ACCESS_READ_ANY(67108864),
-		
-		TASK_ACCESS_DELETE_OWN(134217728),
-		
-		TASK_ACCESS_DELETE_ANY(268435456),
-		
-		TASK_ACCESS_ASSIGN_OWN(536870912),
-		
-		TASK_ACCESS_ASSIGN_ACCESSIBLE_GRPUPS(1073741824),
-		
-		TASK_ACCESS_ASSIGN_ANY(2147483648L),
-		
-		TASK_ACCESS_CAN_BE_ASSIGNED_ANY(4294967296L),
-		
-		DASHBOARD_ACCESS_ENABLE(8589934592L),
-		
-		REPORTS_ACCESS_ENABLE(17179869184L),
-		
-		SPACEMANAGEMENT_ACCESS_ENABLE(34359738368L),
-		
-		FIREALARM_ACCESS_ENABLE(68719476736L);
-		
-		long permission;
-		
-		Permission(long permission) {
-			this.permission = permission;
-		}
-		
-		public long getPermission() {
-			return this.permission;
-		}
-		
-		public static long getSumOf(Permission... permissions) {
-			long sumOf = 0;
-			for (Permission perm : permissions) {
-				sumOf += perm.getPermission();
-			}
-			return sumOf;
-		}
-		
-		public static Map<String, Long> toMap() {
-			HashMap<String, Long> permissionMap = new HashMap<>();
-			for (Permission permission : Permission.values()) {
-				permissionMap.put(permission.name(), permission.getPermission());
-			}
-			return permissionMap;
-		}
-	}
-	
-	public static enum PermissionGroup {
-		
-		SETUP(
-				Permission.ORG_ACCESS_ADMINISTER,
-				Permission.ORG_ACCESS_DELETE,
-				Permission.USER_ACCESS_ADMINISTER,
-				Permission.USER_ACCESS_DELETE,
-				Permission.GROUP_ACCESS_ADMINISTER,
-				Permission.GROUP_ACCESS_DELETE
-			),
-		
-		WORKORDER_CREATE(
-				Permission.WORKORDER_ACCESS_CREATE_ACCESSIBLE_SPACES,
-				Permission.WORKORDER_ACCESS_CREATE_ANY
-				),
-		
-		WORKORDER_UPDATE(
-				Permission.WORKORDER_ACCESS_UPDATE_ACCESSIBLE_SPACES,
-				Permission.WORKORDER_ACCESS_UPDATE_OWN,
-				Permission.WORKORDER_ACCESS_UPDATE_ANY
-				),
-		
-		WORKORDER_READ(
-				Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES,
-				Permission.WORKORDER_ACCESS_READ_OWN,
-				Permission.WORKORDER_ACCESS_READ_ANY
-				),
-		
-		WORKORDER_DELETE(
-				Permission.WORKORDER_ACCESS_DELETE_ACCESSIBLE_SPACES,
-				Permission.WORKORDER_ACCESS_DELETE_OWN,
-				Permission.WORKORDER_ACCESS_DELETE_ANY
-				),
-		
-		WORKORDER_ASSIGN(
-				Permission.WORKORDER_ACCESS_ASSIGN_ACCESSIBLE_SPACES,
-				Permission.WORKORDER_ACCESS_ASSIGN_OWN,
-				Permission.WORKORDER_ACCESS_ASSIGN_ANY
-				),
-		
-		TASK_CREATE(
-				Permission.TASK_ACCESS_CREATE_ANY
-				),
-		
-		TASK_UPDATE(
-				Permission.TASK_ACCESS_UPDATE_OWN,
-				Permission.TASK_ACCESS_UPDATE_ANY
-				),
-		
-		TASK_READ(
-				Permission.TASK_ACCESS_READ_OWN,
-				Permission.TASK_ACCESS_READ_ANY
-				),
-		
-		TASK_DELETE(
-				Permission.TASK_ACCESS_DELETE_OWN,
-				Permission.TASK_ACCESS_DELETE_ANY
-				),
-		
-		TASK_ASSIGN(
-				Permission.TASK_ACCESS_ASSIGN_ACCESSIBLE_GRPUPS,
-				Permission.TASK_ACCESS_ASSIGN_OWN,
-				Permission.TASK_ACCESS_ASSIGN_ANY
-				);
-		
-		
-		Permission[] permission;
-		
-		PermissionGroup(Permission... permission) {
-			this.permission = permission;
-		}
-		
-		public Permission[] getPermission() {
-			return this.permission;
-		}
-		
-		public static long getSumOf(Permission... permissions) {
-			long sumOf = 0;
-			for (Permission perm : permissions) {
-				sumOf += perm.getPermission();
-			}
-			return sumOf;
-		}
-		
-		public static Map<String, List<String>> toMap() {
-			HashMap<String, List<String>> permissionGroupMap = new HashMap<>();
-			for (PermissionGroup permissionGroup : PermissionGroup.values()) {
-				List<String> permissions = new ArrayList<>();
-				for (Permission permission : permissionGroup.getPermission()) {
-					permissions.add(permission.name());
-				}
-				permissionGroupMap.put(permissionGroup.name(), permissions);
-			}
-			return permissionGroupMap;
-		}
-	}
-	
-	public static class Role 
-	{
-		public static final String SUPER_ADMIN 	= "Super Administrator";
-		public static final String ADMINISTRATOR 	= "Administrator";
-		public static final String MANAGER 		    = "Manager";
-		public static final String DISPATCHER 		= "Dispatcher";
-		public static final String TECHNICIAN 		= "Technician";
-		
-		public static final Map<String, Long> DEFAULT_ROLES = Collections.unmodifiableMap(initPermissions());
-		
-		private static Map<String, Long> initPermissions()
-		{
-			Map<String, Long> defaultRoles = new HashMap<>();
-			
-			defaultRoles.put(SUPER_ADMIN, 0L); // 0 means full permission
-			defaultRoles.put(ADMINISTRATOR, 0L); // 0 means full permission
-			
-			defaultRoles.put(MANAGER, Permission.getSumOf(
-					Permission.USER_ACCESS_ADMINISTER,
-					Permission.GROUP_ACCESS_ADMINISTER,
-					Permission.WORKORDER_ACCESS_CREATE_ANY,
-					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
-					Permission.WORKORDER_ACCESS_READ_ANY,
-					Permission.WORKORDER_ACCESS_DELETE_ANY,
-					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_CREATE_ANY,
-					Permission.TASK_ACCESS_UPDATE_ANY,
-					Permission.TASK_ACCESS_READ_ANY,
-					Permission.TASK_ACCESS_DELETE_ANY,
-					Permission.TASK_ACCESS_ASSIGN_ANY,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.DASHBOARD_ACCESS_ENABLE,
-					Permission.REPORTS_ACCESS_ENABLE
-					));
-			
-			defaultRoles.put(DISPATCHER, Permission.getSumOf(
-					Permission.WORKORDER_ACCESS_CREATE_ANY,
-					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
-					Permission.WORKORDER_ACCESS_READ_ANY,
-					Permission.WORKORDER_ACCESS_DELETE_ANY,
-					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_CREATE_ANY,
-					Permission.TASK_ACCESS_UPDATE_ANY,
-					Permission.TASK_ACCESS_READ_ANY,
-					Permission.TASK_ACCESS_DELETE_ANY,
-					Permission.TASK_ACCESS_ASSIGN_ANY,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
-					));
-			
-			defaultRoles.put(TECHNICIAN, Permission.getSumOf(
-					Permission.WORKORDER_ACCESS_UPDATE_OWN, 
-					Permission.WORKORDER_ACCESS_READ_OWN,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_UPDATE_OWN,
-					Permission.TASK_ACCESS_READ_OWN,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
-					));
-			
-			return defaultRoles;
-		}
+	public static class TicketActivity {
+		public static final String TICKET_ACTIVITIES = "ticketActivities";
+		public static final String OLD_TICKETS = "oldTickets";
+		public static final String MODIFIED_TIME = "modifiedTime";
+		public static final String MODIFIED_USER = "modifiedUser";
 	}
 	
 	public static class ContextNames {
 		
+		public static final String SIGNUP_INFO = "signupinfo";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_ID = "recordId";
@@ -414,6 +157,7 @@ public class FacilioConstants {
 		public static final String NOTE_LIST = "notes";
 		
 		public static final String MODULE_FIELD = "moduleField";
+		public static final String MODULE_FIELD_NAME = "fieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String FIELD_NAME_LIST = "fieldList";
@@ -598,9 +342,14 @@ public class FacilioConstants {
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String CREATED_TIME = "createdTime";
 	}
+	public static class Job{
+		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
+		public static final String TABLE_NAME = "Jobs";
+	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";
 		public static final String CATEGORY_ID = "category_id";
+		public static final String SPACE_ID = "space_id";
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		public static final String ASSET_ID = "asset";
 		public static final String STATUS = "status";
@@ -654,6 +403,7 @@ public class FacilioConstants {
 		public static final String LEFT_JOIN = "leftJoin";
 		public static final String RIGHT_JOIN = "rightJoin";
 		public static final String FULL_JOIN = "fullJoin";
+		public static final String LIMIT = "limit";
 		
 
 		public static final String X_AXIS = "xAxis";

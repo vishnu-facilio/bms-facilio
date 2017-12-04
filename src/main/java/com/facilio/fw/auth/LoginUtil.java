@@ -1,70 +1,101 @@
 package com.facilio.fw.auth;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.chain.Chain;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.OrgApi;
-import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.fw.UserInfo;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 
 public class LoginUtil {
 
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
-	public static UserInfo getUserInfo(CognitoUser cognitoUser) throws Exception {
-		return getUserInfo(null, cognitoUser, false);
-	}
-	
-	public static UserInfo getUserInfo(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
-		return getUserInfo(null, cognitoUser, addUserEntryIfNotExists);
-	}
-	
-	public static UserInfo getUserInfo(String threadpoolname, CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
+	public static Account getAccount(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
 		
-		UserInfo userInfo = new UserInfo();
+		User user = AccountUtil.getUserBean().getUser(cognitoUser.getEmail());
+		Organization org = null;
 		
-		UserContext usrCtx = UserAPI.getUser(cognitoUser.getEmail());
-		if (usrCtx == null && addUserEntryIfNotExists) {
-			
+		if (user == null) {
 			JSONObject userAttributes = CognitoUtil.getUserAttributes(cognitoUser.getEmail());
 			if (userAttributes == null) {
 				throw new Exception("This user not associated with any organization.");
 			}
 			
-			String userSubDomain = (String) (userAttributes.containsKey("custom:orgDomain") ? userAttributes.get("custom:orgDomain") : userAttributes.get("custom:orgName"));
-			String name = (cognitoUser.getName() == null) ? cognitoUser.getName() : cognitoUser.getUserName();
+			String orgName = (String) userAttributes.get("custom:orgName");
+			String orgDomain = (String) userAttributes.get("custom:orgDomain");
+			if (orgName == null || orgName.equals("")) {
+				orgName = orgDomain;
+			}
 			
-			OrgApi.createOrganization(null, userSubDomain, userSubDomain, name, cognitoUser.getEmail(), cognitoUser.getCognitoId(), true);
-			
-			usrCtx = UserAPI.getUser(cognitoUser.getEmail());
-			userInfo.setSubdomain(userSubDomain);
+			org = AccountUtil.getOrgBean().getOrg(orgDomain);
+			if (org == null) {
+				Map<String, String> signupInfo = new HashMap<String, String>();
+				signupInfo.put("name", cognitoUser.getName());
+				signupInfo.put("email", cognitoUser.getEmail());
+				signupInfo.put("cognitoId", cognitoUser.getCognitoId());
+				signupInfo.put("phone", cognitoUser.getPhoneNumber());
+				signupInfo.put("companyname", orgName);
+				signupInfo.put("domainname", orgDomain);
+				
+				FacilioContext signupContext = new FacilioContext();
+				signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
+				
+				Chain c = FacilioChainFactory.getOrgSignupChain();
+				c.execute(signupContext);
+				
+				org = AccountUtil.getOrgBean().getOrg(orgDomain);
+				user = AccountUtil.getUserBean().getUser(cognitoUser.getEmail());
+			}
+			else {
+				HttpServletRequest request = ServletActionContext.getRequest();
+				Locale locale = request.getLocale();
+				if (locale == null) {
+					locale = Locale.US;
+				}
+				
+				Role adminRole = AccountUtil.getRoleBean().getRole(org.getOrgId(), AccountConstants.DefaultRole.ADMINISTRATOR);
+				
+				User createUser = new User();
+				createUser.setName(cognitoUser.getName());
+				createUser.setEmail(cognitoUser.getEmail());
+				createUser.setCognitoId(cognitoUser.getCognitoId());
+				createUser.setUserVerified(true);
+				createUser.setTimezone(org.getTimezone());
+				createUser.setLanguage(locale.getLanguage());
+				createUser.setCountry(locale.getCountry());
+				createUser.setPhone(cognitoUser.getPhoneNumber());
+				createUser.setRoleId(adminRole.getRoleId());
+				createUser.setInviteAcceptStatus(true);
+				createUser.setDefaultOrg(true);
+				createUser.setUserStatus(true);
+				createUser.setInvitedTime(System.currentTimeMillis());
+				
+				long ouid = AccountUtil.getUserBean().createUser(org.getOrgId(), createUser);
+				
+				user = AccountUtil.getUserBean().getUser(ouid);
+			}
 		}
-		
-		userInfo.setCognitoId(cognitoUser.getCognitoId());
-		userInfo.setUserName(cognitoUser.getUserName());
-		userInfo.setEmail(cognitoUser.getEmail());
-		userInfo.setEmailVerified(cognitoUser.isEmailVerified());
-		userInfo.setPhoneNumber(cognitoUser.getPhoneNumber());
-		userInfo.setPhoneNumberVerified(cognitoUser.isPhoneNumberVerified());
-		userInfo.setLocale(cognitoUser.getLocale());
-		userInfo.setTimeZone(cognitoUser.getTimezone());
-		userInfo.setAdditionalProps(cognitoUser.getAdditionalProps());
-		
-		if (usrCtx != null) {
-			userInfo.setUserId(usrCtx.getUserId());
-			userInfo.setOrgUserId(usrCtx.getOrgUserId());
-			userInfo.setOrgId(usrCtx.getOrgId());
-			userInfo.setName(usrCtx.getName());
-			userInfo.setActive(usrCtx.getUserStatus());
-			userInfo.setRole(usrCtx.getRole());
-			userInfo.setPhotoId(usrCtx.getPhotoId());
+		else {
+			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
-		return userInfo;
+		return new Account(org, user);
 	}
 	
 	public static String getUserCookie(HttpServletRequest request, String key) {

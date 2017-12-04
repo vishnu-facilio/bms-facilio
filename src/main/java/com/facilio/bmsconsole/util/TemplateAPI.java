@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.AlarmTemplate;
@@ -14,7 +16,6 @@ import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -124,8 +125,11 @@ public class TemplateAPI {
 	}
 	
 	public static long addEmailTemplate(long orgId, EMailTemplate template) throws Exception {
+		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
 		template.setOrgId(orgId);
-		template.setBodyId(FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).addFile("Email_Template_"+template.getName(), template.getBody(), "text/plain"));
+		template.setBodyId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getBody(), "text/plain"));
 		
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -188,7 +192,9 @@ public class TemplateAPI {
 	private static EMailTemplate getEMailTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		EMailTemplate template = FieldUtil.getAsBeanFromMap(templateMap, EMailTemplate.class);
 		
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getBodyId())) {
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
+		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
 			template.setBody(IOUtils.toString(body));
 		}
 		catch(Exception e) {
@@ -207,7 +213,9 @@ public class TemplateAPI {
 	private static WorkorderTemplate getWorkorderTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WorkorderTemplate.class);
 		
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getContentId())) {
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
+		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
 			template.setContent(IOUtils.toString(body));
 		}
 		catch(Exception e) {
@@ -218,9 +226,12 @@ public class TemplateAPI {
 	}
 	
 	private static AlarmTemplate getAlarmTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
 		AlarmTemplate template = FieldUtil.getAsBeanFromMap(templateMap, AlarmTemplate.class);
 		
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).readFile(template.getContentId())) {
+		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
 			template.setContent(IOUtils.toString(body));
 		}
 		catch(Exception e) {
@@ -231,8 +242,11 @@ public class TemplateAPI {
 	}
 	
 	public static long addWorkorderTemplate(long orgId, WorkorderTemplate template) throws Exception {
+		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
 		template.setOrgId(orgId);
-		template.setContentId((FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).addFile("Workorder_Template_"+template.getName(), template.getContent(), "text/plain")));
+		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Workorder_Template_"+template.getName(), template.getContent(), "text/plain")));
 		template.setType(UserTemplate.Type.WORKORDER);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
@@ -252,8 +266,11 @@ public class TemplateAPI {
 	}
 	
 	public static long addAlarmTemplate(long orgId, AlarmTemplate template) throws Exception {
+		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
 		template.setOrgId(orgId);
-		template.setContentId((FileStoreFactory.getInstance().getFileStore(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getOrgUserId()).addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain")));
+		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain")));
 		template.setType(UserTemplate.Type.ALARM);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		

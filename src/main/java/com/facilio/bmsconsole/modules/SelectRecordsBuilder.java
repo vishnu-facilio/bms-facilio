@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -13,7 +14,6 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.SelectBuilderIfc;
@@ -26,7 +26,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
-	private List<FacilioField> selectFields;
+	private List<FacilioField> select;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
@@ -44,7 +44,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	@Override
 	public SelectRecordsBuilder<E> select(List<FacilioField> selectFields) {
-		this.selectFields = selectFields;
+		this.select = selectFields;
 		return this;
 	}
 	
@@ -230,6 +230,37 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return beanMap;
 	}
 	
+	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
+		checkForNull(false);
+		List<Map<String, Object>> propList = getAsJustProps();
+		
+		Map<Long, Map<String, Object>> mapProps = new HashMap<>();
+		
+		if(propList != null && propList.size() > 0) {
+			List<FacilioField> lookupFields = getLookupFields();
+			for(Map<String, Object> props : propList) {
+				for(FacilioField lookupField : lookupFields) {
+					Long recordId = (Long) props.remove(lookupField.getName());
+					if(recordId != null) {
+						Map<String, Object> lookedupProp = null;
+						if(level < maxLevel) {
+							lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
+						}
+						else {
+							lookedupProp = new HashMap<>();
+							lookedupProp.put("id", recordId);
+						}
+						if(lookedupProp != null) {
+							props.put(lookupField.getName(), lookedupProp);
+						}
+					}
+				}
+				mapProps.put((Long) props.get("id"), props);
+			}
+		}
+		return mapProps;
+	}
+	
 	public List<Map<String, Object>> getAsProps() throws Exception {
 		checkForNull(false);
 		List<Map<String, Object>> propList = getAsJustProps();
@@ -241,15 +272,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 					for(FacilioField lookupField : lookupFields) {
 						Long recordId = (Long) props.remove(lookupField.getName());
 						if(recordId != null) {
-							Object lookedupObj = null;
-							if(level <= maxLevel) {
-								lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
+							Map<String, Object> lookedupProp = null;
+							if(level < maxLevel) {
+								lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
 							}
 							else {
-								lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+								lookedupProp = new HashMap<>();
+								lookedupProp.put("id", recordId);
 							}
-							if(lookedupObj != null) {
-								props.put(lookupField.getName(), lookedupObj);
+							if(lookedupProp != null) {
+								props.put(lookupField.getName(), lookedupProp);
 							}
 						}
 					}
@@ -261,7 +293,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	private List<FacilioField> getLookupFields() {
 		List<FacilioField> lookupFields = new ArrayList<>();
-		for(FacilioField field : selectFields) {
+		for(FacilioField field : select) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				lookupFields.add(field);
 			}
@@ -273,9 +305,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		
+		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(orgIdField);
 		selectFields.add(moduleIdField);
 		selectFields.add(FieldFactory.getIdField(module));
+		selectFields.addAll(select);
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
@@ -283,7 +317,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Condition orgCondition = new Condition();
 		orgCondition.setField(orgIdField);
 		orgCondition.setOperator(NumberOperators.EQUALS);
-		orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 		whereCondition.andCondition(orgCondition);
 		
 		Condition moduleCondition = new Condition();
@@ -338,7 +372,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if(selectFields == null || selectFields.size() <= 0) {
+		if(select == null || select.size() <= 0) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 		

@@ -7,50 +7,62 @@ import org.json.simple.JSONObject;
  */
 public class Message 
 {
-    private int from;
-    private int to;
-    private JSONObject content;
+	private MessageType messageType;
+	private long from;
+	private long to;
+	private JSONObject content = new JSONObject();
 
-    public Message() 
-    {
-    	
+	public Message() {
 	}
-    
-    @Override
-    public String toString() 
-    {
-        return super.toString();
-    }
 
-    public int getFrom() 
-    {
-        return from;
-    }
+	@Override
+	public String toString() 
+	{
+		return super.toString();
+	}
 
-    public void setFrom(int from) 
-    {
-        this.from = from;
-    }
+	public MessageType getMessageType() {
+		return this.messageType;
+	}
 
-    public int getTo() 
-    {
-        return to;
-    }
+	public Message setMessageType(MessageType messageType) {
+		this.messageType = messageType;
+		return this;
+	}
+	
+	public long getFrom() {
+		return this.from;
+	}
 
-    public Message setTo(int to) 
-    {
-        this.to = to;
-        return this;
-    }
+	public Message setFrom(long from) {
+		this.from = from;
+		return this;
+	}
+	
+	public long getTo() {
+		return this.to;
+	}
 
-    public JSONObject getContent() 
-    {
-        return content;
-    }
+	public Message setTo(long to) {
+		this.to = to;
+		return this;
+	}
 
-    public Message setContent(JSONObject content) 
-    {
-        this.content = content;
-        return this;
-    }
+	public JSONObject getContent() {
+		return content;
+	}
+
+	public Message setContent(JSONObject content) {
+		this.content = content;
+		return this;
+	}
+	
+	public Message addData(String key, Object value) {
+		this.content.put(key, value);
+		return this;
+	}
+	
+	public Object getData(String key) {
+		return this.content.get(key);
+	}
 }

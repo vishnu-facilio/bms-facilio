@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
+
 public class SiteContext extends BaseSpaceContext {
 
 	private LocationContext location;
@@ -14,11 +16,11 @@ public class SiteContext extends BaseSpaceContext {
 		this.location = location;
 	}
 	
-	private UserContext managedBy;
-	public UserContext getManagedBy() {
+	private User managedBy;
+	public User getManagedBy() {
 		return managedBy;
 	}
-	public void setManagedBy(UserContext managedBy) {
+	public void setManagedBy(User managedBy) {
 		this.managedBy = managedBy;
 	}
 	

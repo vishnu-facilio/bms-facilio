@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -19,7 +20,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -44,7 +44,7 @@ public class SkillActions extends ActionSupport {
 	public String execute() {
 
 		try {
-			setSkills(SkillAPI.getAllSkill(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -109,7 +109,7 @@ public class SkillActions extends ActionSupport {
 
 		Connection conn = null;
 		try {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
 
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -232,7 +232,7 @@ public class SkillActions extends ActionSupport {
 	public String skillsList() throws Exception {
 
 		setSetup(SetupLayout.getSkillsListLayout());
-		setSkills(SkillAPI.getAllSkill(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
 
 		return SUCCESS;
 	}

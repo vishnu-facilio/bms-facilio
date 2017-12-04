@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.EventInfo;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ApiAction extends ActionSupport {
@@ -9,7 +9,7 @@ public class ApiAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("Org Info is :"+OrgInfo.getCurrentOrgInfo());
+		System.out.println("Org Info is :"+ AccountUtil.getCurrentOrg().getOrgId());
 		EventInfo.save(events.toArray(new EventInfo[events.size()]));
 		return super.execute();
 	}

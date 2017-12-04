@@ -6,18 +6,15 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.util.GroupAPI;
-import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.UserType;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkflowRuleAction extends ActionSupport {
@@ -29,28 +26,28 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	public String assignmentRules() throws Exception 
 	{
-		setRules(WorkflowAPI.getWorkflowRules(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setRules(WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId()));
 	    return "assignmentRules";
 	}
 	
 	public String newAssignmentRule() throws Exception 
 	{
-		List<GroupContext> groups = GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid(), true);
-		assignmentGroupList = new HashMap<>();
-		if (groups != null && groups.size() > 0) {
-			for(GroupContext group : groups) {
-				assignmentGroupList.put(group.getGroupId(), group.getName());
-			}
-		}
-		
-		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
+//		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(orgId, true);
+//		assignmentGroupList = new HashMap<>();
+//		if (groups != null && groups.size() > 0) {
+//			for(Group group : groups) {
+//				assignmentGroupList.put(group.getGroupId(), group.getName());
+//			}
+//		}
+//		
+//		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		return "newAssignmentRule";
 	}
 	
 	public String addAssignmentRule() throws Exception {
 		
 		WorkflowRuleContext rule = new WorkflowRuleContext();
-		rule.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		rule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		rule.setName(getName());
 		rule.setDescription(getDescription());
 		rule.setExecutionOrder(getExecutionOrder());

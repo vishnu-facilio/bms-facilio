@@ -1,6 +1,6 @@
 package com.facilio.tasker;
 
-import com.facilio.fw.OrgInfo;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
@@ -126,8 +126,8 @@ public class FacilioTimer {
 	
 	private static long getCurrentOrgId() {
 		long orgId = -1;
-		if(OrgInfo.getCurrentOrgInfo() != null) {
-			orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		if(AccountUtil.getCurrentOrg() != null) {
+			orgId = AccountUtil.getCurrentOrg().getOrgId();
 		}
 		
 		return orgId;

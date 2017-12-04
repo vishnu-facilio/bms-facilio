@@ -3,12 +3,12 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 
 public class AddTemplateCommand implements Command {
 
@@ -19,11 +19,11 @@ public class AddTemplateCommand implements Command {
 		
 		if(template != null) {
 			if(template instanceof EMailTemplate) {
-				long id = TemplateAPI.addEmailTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), (EMailTemplate) template);
+				long id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), (EMailTemplate) template);
 				template.setId(id);
 			}
 			else if(template instanceof SMSTemplate) {
-				long id = TemplateAPI.addSMSTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), (SMSTemplate) template);
+				long id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SMSTemplate) template);
 				template.setId(id);
 			}
 		}

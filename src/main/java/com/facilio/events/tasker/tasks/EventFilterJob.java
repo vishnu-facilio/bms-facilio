@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -16,7 +17,6 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -32,7 +32,7 @@ public class EventFilterJob extends FacilioJob{
 		{
 			try 
 			{
-				long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+				long orgId = AccountUtil.getCurrentOrg().getOrgId();
 				List<EventRule> eventRules = EventRulesAPI.getEventRules(orgId);
 				
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class LocationActions extends ActionSupport {
@@ -33,7 +33,7 @@ public class LocationActions extends ActionSupport {
 	
 	public String execute() throws Exception {
 		
-		setLocations(LocationAPI.getAllLocations(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
 		
 	    return SUCCESS;
 	}
@@ -66,7 +66,7 @@ public class LocationActions extends ActionSupport {
 	
 	public String updateLocation() throws Exception {
 		
-		location.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		boolean isUpdated = LocationAPI.updateLocation(location);
 
 		return SUCCESS;
@@ -74,14 +74,14 @@ public class LocationActions extends ActionSupport {
 	
 	public String deleteLocation() throws Exception {
 		
-		boolean isDeleted = LocationAPI.deleteLocation(locationId,OrgInfo.getCurrentOrgInfo().getOrgid());
+		boolean isDeleted = LocationAPI.deleteLocation(locationId, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return SUCCESS;
 	}
 	
 	public String addLocation() throws Exception {
 		
-		location.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		long locationId = LocationAPI.addLocation(location);
 		
 		setLocationId(locationId);
@@ -117,7 +117,7 @@ public class LocationActions extends ActionSupport {
 	public String locationsList() throws Exception  {
 		
 		setSetup(SetupLayout.getLocationsListLayout());
-		setLocations(LocationAPI.getAllLocations(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
 		
 		return SUCCESS;
 	}

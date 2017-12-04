@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.facilio.bmsconsole.context.GroupContext;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -67,7 +67,7 @@ public class SupportEmailAPI {
 					.connection(conn)
 					.table(TABLE_NAME)
 					.select(FieldFactory.getSupportEmailFields())
-					.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 			
 			List<Map<String, Object>> emailList = builder.get();
 			if(emailList != null && emailList.size() > 0) {
@@ -91,7 +91,7 @@ public class SupportEmailAPI {
 			groupId = (long) props.get("autoAssignGroup");
 		}
 		if(groupId != -1) {
-			GroupContext group = GroupAPI.getGroup(groupId);
+			Group group = AccountUtil.getGroupBean().getGroup(groupId);
 			props.put("autoAssignGroup", group);
 		}
 		else {

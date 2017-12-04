@@ -6,8 +6,12 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
@@ -15,10 +19,91 @@ import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NotificationAction extends ActionSupport {
+	
+	public String notificationList() throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		
+		setNotifications(NotificationAPI.getNotifications(ouid, 0, 30));
+		setUnread(NotificationAPI.getUnreadNotificationsCount(ouid));
+		setUnseen(NotificationAPI.getUnseenNotificationsCount(ouid));
+		
+		return SUCCESS;
+	}
+	
+	public String markAsRead() throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		
+		NotificationAPI.markAsRead(ouid, getId());
+		
+		setUnread(NotificationAPI.getUnreadNotificationsCount(ouid));
+		
+		return SUCCESS;
+	}
+	
+	public String markAllAsRead() throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		
+		NotificationAPI.markAllAsRead(ouid);
+		
+		setUnread(NotificationAPI.getUnreadNotificationsCount(ouid));
+		
+		return SUCCESS;
+	}
+	
+	public String markAllAsSeen() throws Exception {
+		
+		long ouid = AccountUtil.getCurrentUser().getOuid();
+		
+		NotificationAPI.markAllAsSeen(ouid);
+		
+		setUnread(NotificationAPI.getUnseenNotificationsCount(ouid));
+		
+		return SUCCESS;
+	}
+	
+	private List<NotificationContext> notifications;
+	
+	public List<NotificationContext> getNotifications() {
+		return notifications;
+	}
+	public void setNotifications(List<NotificationContext> notifications) {
+		this.notifications = notifications;
+	}
+	
+	private int unread;
+	
+	public int getUnread() {
+		return unread;
+	}
+	
+	public void setUnread(int unread) {
+		this.unread = unread;
+	}
+	
+	private int unseen;
+	
+	public int getUnseen() {
+		return unseen;
+	}
+	
+	public void setUnseen(int unseen) {
+		this.unseen = unseen;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+
 	public String addAlarmEMailNotifier() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -84,27 +169,31 @@ public class NotificationAction extends ActionSupport {
 		
 		alarmCreationRules = (List<WorkflowRuleContext>) context.get(FacilioConstants.Workflow.WORKFLOW_LIST);
 		
-		EMailTemplate emailTemplate = (EMailTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.EMAIL);
+		EMailTemplate emailTemplate = (EMailTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), "New Alarm Raised", Type.EMAIL);
 		if(emailTemplate != null)
 		{
 			setEmails(Arrays.asList(emailTemplate.getTo().split(", ")));
 		}
 		else
 		{
+			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+			
 			List<String> emails = new ArrayList<>();
-			emails.add(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getEmail());
+			emails.add(superAdmin.getEmail());
 			setEmails(emails);
 		}
 		
-		SMSTemplate smsTemplate = (SMSTemplate) TemplateAPI.getTemplate(OrgInfo.getCurrentOrgInfo().getOrgid(), "New Alarm Raised", Type.SMS);
+		SMSTemplate smsTemplate = (SMSTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), "New Alarm Raised", Type.SMS);
 		if(smsTemplate != null)
 		{
 			setPhoneNumbers(Arrays.asList(smsTemplate.getTo().split(", ")));
 		}
 		else
 		{
+			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+			
 			List<String> phoneNumbers = new ArrayList<>();
-			phoneNumbers.add(OrgInfo.getCurrentOrgInfo().getSuperAdmin().getPhone());
+			phoneNumbers.add(superAdmin.getPhone());
 			setPhoneNumbers(phoneNumbers);
 		}
 		
@@ -141,7 +230,7 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(false);
-			WorkflowAPI.updateWorkflowRule(OrgInfo.getCurrentOrgInfo().getOrgid(), workFlow, workflowId);
+			WorkflowAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
 			setResult("success");
 		}
 		return SUCCESS;
@@ -151,7 +240,7 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(true);
-			WorkflowAPI.updateWorkflowRule(OrgInfo.getCurrentOrgInfo().getOrgid(), workFlow, workflowId);
+			WorkflowAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
 			setResult("success");
 		}
 		return SUCCESS;

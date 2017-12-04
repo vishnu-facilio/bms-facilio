@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -16,7 +17,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -64,7 +64,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(field);
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.connection(conn)

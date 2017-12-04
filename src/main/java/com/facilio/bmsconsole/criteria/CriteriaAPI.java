@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -105,5 +108,33 @@ public class CriteriaAPI {
 			}
 		}
 		return criteria;
+	}
+	
+	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getOrgIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+		
+		return idCondition;
+	}
+	
+	public static Condition getIdCondition(long id, FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(id));
+		
+		return idCondition;
+	}
+	
+	public static Condition getIdCondition(List<Long> ids, FacilioModule module) {
+		String id = StringUtils.join(ids, ",");
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(id);
+		
+		return idCondition;
 	}
 }

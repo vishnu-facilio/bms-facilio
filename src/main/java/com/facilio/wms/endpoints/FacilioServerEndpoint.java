@@ -1,7 +1,10 @@
 package com.facilio.wms.endpoints;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
@@ -34,30 +37,33 @@ public class FacilioServerEndpoint
 
     private Session session;
     private static final Set<FacilioServerEndpoint> endpoints = new CopyOnWriteArraySet<FacilioServerEndpoint>();
-    private static HashMap<String,Integer> users = new HashMap<String,Integer>();
+    private static HashMap<String,List<String>> users = new HashMap<>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("uid") int uid) throws IOException, EncodeException 
+    public void onOpen(Session session, @PathParam("uid") long uid) throws IOException, EncodeException 
     {
     	System.out.println("Session started uid ::" +uid + ":::sessionid" + session.getId());
         this.session = session;
         endpoints.add(this);
-        users.put(session.getId(), uid);
+        if (!users.containsKey(String.valueOf(uid))) {
+        	users.put(String.valueOf(uid), new ArrayList<String>());
+        }
+        users.get(String.valueOf(uid)).add(session.getId());
     }
 
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
     	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId());
-        message.setFrom(users.get(session.getId()));
-        sendMessage(message);
+//        message.setFrom(users.get(session.getId()));
+//        sendMessage(message);
     }
 
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
     	System.out.println("Session started closed" +session.getId());
-        users.remove(session.getId());
+    	removeSession(session.getId());
     	endpoints.remove(this);
     	session.close();
     }
@@ -67,6 +73,7 @@ public class FacilioServerEndpoint
     {
     	System.out.println("Session started Error" +throwable.getMessage());
         log.warning(throwable.toString());
+        throwable.printStackTrace();
     }
 
     public static void broadcast(Message message) throws IOException, EncodeException 
@@ -87,28 +94,29 @@ public class FacilioServerEndpoint
         {
             synchronized(endpoint) 
             {
-            	System.out.println("Sending message2 ::" +endpoint.session.getId());
-            	System.out.println("Sending message3 ::" +getSessionId(message.getTo()));
-                if (endpoint.session.getId().equals(getSessionId(message.getTo()))) 
-                {
+            	List<String> sessions = getSessions(message.getTo());
+            	System.out.println("Sending message2 :: " + endpoint.session.getId());
+            	System.out.println("Sending message3 ::" + sessions);
+                if (sessions.contains(endpoint.session.getId())) {
                     endpoint.session.getBasicRemote().sendObject(message);
                 }
             }
         }
     }
 
-    private static String getSessionId(int to) 
+    private static List<String> getSessions(long to) 
     {
-        if (users.containsValue(to)) 
-        {
-            for (String sessionId: users.keySet()) 
-            {
-                if (users.get(sessionId).equals(to)) 
-                {
-                    return sessionId;
-                }
-            }
-        }
-        return null;
+    	return users.get(String.valueOf(to));
+    }
+    
+    private static void removeSession(String sessionId) 
+    {
+    	Iterator<String> keys = users.keySet().iterator();
+    	while (keys.hasNext()) {
+    		String key = keys.next();
+    		if (users.get(key).indexOf(sessionId) != -1) {
+    			users.get(key).remove(sessionId);
+    		}
+    	}
     }
 }

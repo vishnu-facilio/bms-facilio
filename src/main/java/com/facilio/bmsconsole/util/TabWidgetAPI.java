@@ -4,11 +4,11 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.TabWidgetContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -21,7 +21,7 @@ public class TabWidgetAPI {
 					.connection(conn)
 					.select(FieldFactory.getTabWidgetFields())
 					.table("Tab_Widget")
-					.andCustomWhere("Tab_Widget.ORGID = ? AND Tab_Widget.TAB_LINK_NAME = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), tabLinkName);
+					.andCustomWhere("Tab_Widget.ORGID = ? AND Tab_Widget.TAB_LINK_NAME = ?", AccountUtil.getCurrentOrg().getOrgId(), tabLinkName);
 	
 			List<Map<String, Object>> tabWidgets = selectBuider.get();
 			TabWidgetContext tabWidget = FieldUtil.getAsBeanFromMap(tabWidgets.get(0), TabWidgetContext.class);
@@ -30,7 +30,7 @@ public class TabWidgetAPI {
 					.connection(conn)
 					.select(FieldFactory.getConnectedAppFields())
 					.table("Connected_App")
-					.andCustomWhere("Connected_App.ORGID = ? AND Connected_App.CONNECTED_APP_ID = ?", OrgInfo.getCurrentOrgInfo().getOrgid(), tabWidget.getConnectedAppId());
+					.andCustomWhere("Connected_App.ORGID = ? AND Connected_App.CONNECTED_APP_ID = ?", AccountUtil.getCurrentOrg().getOrgId(), tabWidget.getConnectedAppId());
 	
 			List<Map<String, Object>> connectedApps = connectedAppSelectBuider.get();
 			ConnectedAppContext connectedApp = FieldUtil.getAsBeanFromMap(connectedApps.get(0), ConnectedAppContext.class);

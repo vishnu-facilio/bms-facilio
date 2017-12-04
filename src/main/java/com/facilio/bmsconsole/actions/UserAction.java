@@ -8,20 +8,16 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
-import com.amazonaws.services.cognitoidp.model.InvalidParameterException;
-import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
+import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.GroupMemberContext;
 import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.GroupAPI;
-import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -36,12 +32,12 @@ public class UserAction extends ActionSupport {
 		this.setup = setup;
 	}
 	
-	private List<UserContext> users = null;
-	public List<UserContext> getUsers() {
+	private List<User> users = null;
+	public List<User> getUsers() {
 		return users;
 	}
 	
-	public void setUsers(List<UserContext> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 	
@@ -55,16 +51,16 @@ public class UserAction extends ActionSupport {
 	public String userPickList() throws Exception {
 		
 		if (getGroupId() > 0) {
-			List<GroupMemberContext> memberList = (List<GroupMemberContext>) GroupAPI.getGroupMembers(getGroupId());
+			List<GroupMember> memberList = (List<GroupMember>) AccountUtil.getGroupBean().getGroupMembers(getGroupId());
 			this.users = new ArrayList<>();
 			if (memberList != null) {
-				for (GroupMemberContext member : memberList) {
+				for (GroupMember member : memberList) {
 					this.users.add(member);
 				}
 			}
 		}
 		else {
-			setUsers(UserAPI.getUsersOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		}
 		return SUCCESS;
 	}
@@ -72,7 +68,7 @@ public class UserAction extends ActionSupport {
 	public String userList() throws Exception 
 	{
 		setSetup(SetupLayout.getUsersListLayout());
-		setUsers(UserAPI.getUsersOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		
 		return SUCCESS;
 	}
@@ -88,7 +84,7 @@ public class UserAction extends ActionSupport {
 	public String newUser() throws Exception {
 		
 		setSetup(SetupLayout.getNewUserLayout());
-		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
+//		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		
 		return SUCCESS;
 	}
@@ -96,8 +92,7 @@ public class UserAction extends ActionSupport {
 	public String addUser() throws Exception {
 		
 		// setting necessary fields
-		user.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
-		user.setPassword("Test1@34");
+		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
@@ -105,21 +100,16 @@ public class UserAction extends ActionSupport {
 		try {
 			Chain addUser = FacilioChainFactory.getAddUserCommand();
 			addUser.execute(context);
-			setUserId(user.getUserId());
+			setUserId(user.getId());
 		}
 		catch (Exception e) {
-			if (e instanceof UsernameExistsException) {
-				if (UserAPI.getUser(user.getEmail()).getOrgId() == OrgInfo.getCurrentOrgInfo().getOrgid()) {
+			if (e instanceof AccountException) {
+				AccountException ae = (AccountException) e;
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
 					addFieldError("email", "This user already exists in your organization.");
 				}
-				else {
-					addFieldError("email", "This user already exists in other organization.");
-				}
 			}
-			else if (e instanceof InvalidParameterException) {
-				addFieldError("phone", "Invalid phone number format.");
-			}
-			else{
+			else {
 				e.printStackTrace();
 				System.out.println("........> Error");
 			}
@@ -128,11 +118,11 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private UserContext user;
-	public UserContext getUser() {
+	private User user;
+	public User getUser() {
 		return user;
 	}
-	public void setUser(UserContext user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 	
@@ -147,14 +137,14 @@ public class UserAction extends ActionSupport {
 	public String editUser() throws Exception {
 				
 		setSetup(SetupLayout.getEditUserLayout());
-		setUser(UserAPI.getUserFromOrgUserId(getUserId()));
-		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
+//		setUser(UserAPI.getUserFromOrgUserId(getUserId()));
+//		setRoles(UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid()));
 		
 		return SUCCESS;
 	}
 	
 	public String updateMyProfile() throws Exception{
-		boolean status = UserAPI.updateUser(user, OrgInfo.getCurrentOrgInfo().getOrgid());
+		boolean status = AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
 		
 		return SUCCESS;
 	}
@@ -227,7 +217,7 @@ System.out.println("User object is "+params+"\n"+ user);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		
-		UserAPI.updateUserPhoto(userId, fileId, null);
+		AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
 		
 		setAvatarUrl(fs.getPrivateUrl(fileId));
 		
@@ -236,7 +226,7 @@ System.out.println("User object is "+params+"\n"+ user);
 	
 	public String deleteUserAvatar() throws Exception {
 		
-		long photoId = UserInfo.getCurrentUser().getPhotoId();
+		long photoId = AccountUtil.getCurrentUser().getPhotoId();
 		if (photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			fs.deleteFile(photoId);

@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands.data;
 
 import java.sql.PreparedStatement;
 
-import com.facilio.fw.OrgInfo;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class EventInfo {
@@ -77,7 +77,7 @@ public class EventInfo {
 		
 		PreparedStatement ps=null;
 		try {
-			String pre_query = "insert into Event (ORGID,SOURCE,NODE,EVENT_TYPE,SEVERITY,DESCRIPTION,ADDITIONAL_INFO) values ("+OrgInfo.getCurrentOrgInfo()+" ,?,?,?,?,?,? ) ";
+			String pre_query = "insert into Event (ORGID,SOURCE,NODE,EVENT_TYPE,SEVERITY,DESCRIPTION,ADDITIONAL_INFO) values ("+AccountUtil.getCurrentOrg().getOrgId()+" ,?,?,?,?,?,? ) ";
 			ps = con.prepareStatement(pre_query);
 			for(int i=0;i<events.length;i++)
 			{

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -15,7 +17,6 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TicketAction extends ActionSupport {
@@ -183,10 +184,10 @@ public class TicketAction extends ActionSupport {
  		FacilioContext context = new FacilioContext();
  		
  		if (getViewName() == null || getViewName().equals("")) {
- 			if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES) || UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.WORKORDER_ACCESS_READ_ANY)) {
+ 			if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES) || AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ANY)) {
  				this.viewName = null;
  			}
- 			else if (UserInfo.getCurrentUser().getRole().hasPermission(FacilioConstants.Permission.WORKORDER_ACCESS_READ_OWN)) {
+ 			else if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_OWN)) {
  				this.viewName = "mytickets";
  			}
  		}

@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class LoadViewCommand implements Command {
 
@@ -26,7 +26,7 @@ public class LoadViewCommand implements Command {
 			if(isCVEnabled) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
-				view = ViewAPI.getView(viewName, moduleId, OrgInfo.getCurrentOrgInfo().getOrgid());
+				view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 			}
 			
 			if(view == null) {

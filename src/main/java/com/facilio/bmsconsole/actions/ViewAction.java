@@ -6,6 +6,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -14,7 +15,6 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ViewAction extends ActionSupport {
@@ -24,7 +24,7 @@ public class ViewAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule("workorder");
 		
-		setViews(ViewAPI.getAllViews(moduleObj.getModuleId(), OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setViews(ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId()));
 		return SUCCESS;
 	}
 	

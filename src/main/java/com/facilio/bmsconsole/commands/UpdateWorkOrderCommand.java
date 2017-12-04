@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -20,7 +20,6 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public class UpdateWorkOrderCommand implements Command {
 
@@ -37,17 +36,16 @@ public class UpdateWorkOrderCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
-				workOrder.setStatus(TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Assigned"));
+				workOrder.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Assigned"));
 			}
 			
 			if(workOrder.getStatus() != null) {
-				if(workOrder.getStatus().getId() == TicketAPI.getStatus(OrgInfo.getCurrentOrgInfo().getOrgid(), "Closed").getId()) {
+				if(workOrder.getStatus().getId() == TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Closed").getId()) {
 					workOrder.setActualWorkEnd(System.currentTimeMillis());
 				}
 			}
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -55,8 +53,9 @@ public class UpdateWorkOrderCommand implements Command {
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
 			
+			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, getOldWOs(idCondition, fields));
+			
 			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-																		.connection(conn)
 																		.moduleName(moduleName)
 																		.table(dataTableName)
 																		.fields(fields)
@@ -65,7 +64,6 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			if(ActivityType.ASSIGN_TICKET == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) || ActivityType.CLOSE_WORK_ORDER == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-						.connection(conn)
 						.table(dataTableName)
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
@@ -78,6 +76,17 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 		}
 		return false;
+	}
+	
+	private List<WorkOrderContext> getOldWOs(Condition ids, List<FacilioField> fields) throws Exception {
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+															.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+															.beanClass(WorkOrderContext.class)
+															.select(fields)
+															.andCondition(ids)
+															.orderBy("ID");
+
+		return builder.get();
 	}
 	
 }

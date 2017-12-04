@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.Group;
+
 public class SupportEmailContext {
 	
 	private long id = -1;
@@ -62,11 +64,11 @@ public class SupportEmailContext {
 				+ primarySupportMail + "]";
 	}
 
-	private GroupContext autoAssignGroup;
-	public GroupContext getAutoAssignGroup() {
+	private Group autoAssignGroup;
+	public Group getAutoAssignGroup() {
 		return autoAssignGroup;
 	}
-	public void setAutoAssignGroup(GroupContext autoAssignGroup) {
+	public void setAutoAssignGroup(Group autoAssignGroup) {
 		this.autoAssignGroup = autoAssignGroup;
 	}
 	

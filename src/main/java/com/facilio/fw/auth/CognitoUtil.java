@@ -131,15 +131,13 @@ public class CognitoUtil {
 	public static JSONObject getUserAttributes(String email) {
 		
 		JSONObject jobj = new JSONObject();
+		String emailDomain = null;
 		try {
 			// temp code
-			String emailDomain = email.split("@")[1];
+			emailDomain = email.split("@")[1];
 			emailDomain = emailDomain.split("\\.")[0];
-			if ("facilio".equalsIgnoreCase(emailDomain)) {
-				jobj.put("custom:orgDomain", emailDomain);
-			}
 		} catch (Exception e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 		
 		AdminGetUserResult userResult = CognitoUtil.getUser(email);
@@ -148,6 +146,9 @@ public class CognitoUtil {
 			if (!jobj.containsKey(attr.getName())) {
 				jobj.put(attr.getName(), attr.getValue());
 			}
+		}
+		if (!jobj.containsKey("custom:orgDomain") && emailDomain != null) {
+			jobj.put("custom:orgDomain", emailDomain);
 		}
 		return jobj;
 	}

@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -21,7 +22,6 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -42,26 +42,9 @@ public class ReportActions extends ActionSupport {
 	public String getTopNSpaces() throws Exception
 	{
 		JSONObject resultData = new JSONObject();
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		String duration = getPeriod();
-		if(duration.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if (duration.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();	
-		}
-		else if (duration.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-
-		}
-		else if (duration.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 
 		List<BaseSpaceContext> floors=SpaceAPI.getBuildingFloors(getBuildingId());
 		Map<String,Double> result = new LinkedHashMap<String,Double>();
@@ -144,30 +127,12 @@ public class ReportActions extends ActionSupport {
 		HashMap<Long,String> purposeMapping= DeviceAPI.getPurposeMapping(getBuildingId(),true);
 		Set<Long> keys=purposeMapping.keySet();
 		String deviceList=StringUtils.join(keys, ",");
-		String duration = getPeriod();
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
+		
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 
 		FacilioField selectFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
-
-		if(duration.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if (duration.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();	
-		}
-		else if (duration.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-
-		}
-		else if (duration.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		fields.add(selectFld);
 
@@ -296,7 +261,7 @@ public class ReportActions extends ActionSupport {
 
 		fields.add(ReportsUtil.getEnergyField());
 		fields.add(ReportsUtil.getField("TIME","MAX(TTIME)",FieldType.NUMBER));
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
@@ -327,7 +292,7 @@ public class ReportActions extends ActionSupport {
 		{
 			groupBy.append(" WITH ROLLUP");
 		}
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
@@ -375,23 +340,19 @@ public class ReportActions extends ActionSupport {
 		List<EnergyMeterContext> rootMeterList= DeviceAPI.getMainEnergyMeter(""+buildingId);
 
 		StringBuilder rootBuilder= new StringBuilder();
-		StringBuilder purposeBuilder= new StringBuilder();
 		for(EnergyMeterContext emc : rootMeterList)
 		{
 			rootBuilder.append(emc.getId());
 			rootBuilder.append(",");
-			purposeBuilder.append(emc.getPurpose().getId());
-			purposeBuilder.append(",");
 		}
 		String rootList=ReportsUtil.removeLastChar(rootBuilder, ",");
-		String rootPurposeList=ReportsUtil.removeLastChar(purposeBuilder,",");
 
 		long previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 
-		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1,true);
-		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime,true);
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1);
+		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime);
 		
 		double lastMonthKwh=-1;double thisMonthKwh=-1;
 
@@ -417,8 +378,6 @@ public class ReportActions extends ActionSupport {
 		buildingData.put("previousVal", lastMonthData);
 		buildingData.put("currentVal", thisMonthData);
 		buildingData.put("variance", variance);
-		buildingData.put("purpose", DeviceAPI.getFilteredPurposes(rootPurposeList,NumberOperators.NOT_EQUALS));
-
 		// need to send cost..as well..
 		//need to send temperature & carbon emission [
 		return buildingData;

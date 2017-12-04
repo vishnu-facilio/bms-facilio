@@ -223,6 +223,17 @@ public class FieldFactory {
 		return field;
 	}
 	
+	public static FacilioField getUserIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("userId");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("USERID");
+		if(module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
+	
 	public static FacilioField getModuleIdField() {
 		return getModuleIdField(null);
 	}
@@ -721,45 +732,45 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getTicketActivityFields() {
-
 		FacilioModule module = ModuleFactory.getTicketActivityModule();
+		List<FacilioField> fields = new ArrayList<>();
 		
-		FacilioField tId = new FacilioField();
-		tId.setName("ticketId");
-		tId.setDataType(FieldType.NUMBER);
-		tId.setColumnName("TICKET_ID");
-		tId.setModule(module);
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField ticketId = new FacilioField();
+		ticketId.setName("ticketId");
+		ticketId.setDataType(FieldType.NUMBER);
+		ticketId.setColumnName("TICKET_ID");
+		ticketId.setModule(module);
+		fields.add(ticketId);
 		
 		FacilioField modifiedTime = new FacilioField();
 		modifiedTime.setName("modifiedTime");
 		modifiedTime.setDataType(FieldType.NUMBER);
 		modifiedTime.setColumnName("MODIFIED_TIME");
 		modifiedTime.setModule(module);
+		fields.add(modifiedTime);
 		
-		LookupField modifiedBy = new LookupField();
+		FacilioField modifiedBy = new FacilioField();
 		modifiedBy.setName("modifiedBy");
-		modifiedBy.setDataType(FieldType.LOOKUP);
+		modifiedBy.setDataType(FieldType.NUMBER);
 		modifiedBy.setColumnName("MODIFIED_BY");
 		modifiedBy.setModule(module);
-		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USER);
+		fields.add(modifiedBy);
 		
 		FacilioField activityType = new FacilioField();
 		activityType.setName("activityType");
 		activityType.setDataType(FieldType.NUMBER);
 		activityType.setColumnName("ACTIVITY_TYPE");
 		activityType.setModule(module);
+		fields.add(activityType);
 		
 		FacilioField info = new FacilioField();
-		info.setName("info");
+		info.setName("infoJsonStr");
 		info.setDataType(FieldType.STRING);
 		info.setColumnName("INFO");
 		info.setModule(module);
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(tId);
-		fields.add(modifiedTime);
-		fields.add(modifiedBy);
-		fields.add(activityType);
 		fields.add(info);
 		
 		return fields;
@@ -1547,6 +1558,73 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getNotificationFields() {
+		FacilioModule module = ModuleFactory.getNotificationModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getUserIdField(module));
+		
+		FacilioField notificationType = new FacilioField();
+		notificationType.setName("notificationTypeVal");
+		notificationType.setDataType(FieldType.NUMBER);
+		notificationType.setColumnName("NOTIFICATION_TYPE");
+		notificationType.setModule(module);
+		fields.add(notificationType);
+		
+		FacilioField actorId = new FacilioField();
+		actorId.setName("actorId");
+		actorId.setDataType(FieldType.NUMBER);
+		actorId.setColumnName("ACTOR_ID");
+		actorId.setModule(module);
+		fields.add(actorId);
+		
+		FacilioField info = new FacilioField();
+		info.setName("info");
+		info.setDataType(FieldType.STRING);
+		info.setColumnName("INFO");
+		info.setModule(module);
+		fields.add(info);
+		
+		FacilioField isRead = new FacilioField();
+		isRead.setName("isRead");
+		isRead.setDataType(FieldType.BOOLEAN);
+		isRead.setColumnName("IS_READ");
+		isRead.setModule(module);
+		fields.add(isRead);
+		
+		FacilioField readAt = new FacilioField();
+		readAt.setName("readAt");
+		readAt.setDataType(FieldType.NUMBER);
+		readAt.setColumnName("READ_AT");
+		readAt.setModule(module);
+		fields.add(readAt);
+		
+		FacilioField isSeen = new FacilioField();
+		isSeen.setName("isSeen");
+		isSeen.setDataType(FieldType.BOOLEAN);
+		isSeen.setColumnName("IS_SEEN");
+		isSeen.setModule(module);
+		fields.add(isSeen);
+		
+		FacilioField seenAt = new FacilioField();
+		seenAt.setName("seenAt");
+		seenAt.setDataType(FieldType.NUMBER);
+		seenAt.setColumnName("SEEN_AT");
+		seenAt.setModule(module);
+		fields.add(seenAt);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(module);
+		fields.add(createdTime);
 		
 		return fields;
 	}

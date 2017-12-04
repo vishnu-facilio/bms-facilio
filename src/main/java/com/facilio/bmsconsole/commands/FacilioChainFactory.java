@@ -18,7 +18,7 @@ public class FacilioChainFactory {
 	public static Chain getOrgSignupChain()
 	{
 		Chain c = new ChainBase();
-		c.addCommand(new CreateUserCommand());
+		c.addCommand(new CreateAccountCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddEventModuleCommand());
 		addCleanUpCommand(c);
@@ -95,6 +95,13 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());
 		c.addCommand(new AssignTicketCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getTicketActivitiesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetTicketActivitesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -207,6 +214,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -217,8 +225,9 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
-		//c.addCommand(new AddTicketActivityCommand());
+		c.addCommand(new AddTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -906,6 +915,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
+		c.addCommand(new AddAttachmentTicketActivityCommand());
 		return c;
 	}
 	
@@ -1192,6 +1202,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddNoteCommand());
 		c.addCommand(new ExecuteNoteWorkflowCommand());
+		c.addCommand(new AddNoteTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

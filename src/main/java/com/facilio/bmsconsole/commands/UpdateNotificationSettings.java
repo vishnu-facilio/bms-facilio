@@ -7,13 +7,13 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -28,7 +28,7 @@ public class UpdateNotificationSettings implements Command {
 		if(workflow != null){
 			System.out.println("....UpdateNotification condition");
 
-			workflow.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			Map<String, Object> workflowProps= FieldUtil.getAsProperties(workflow);
 			Connection con = FacilioConnectionPool.getInstance().getConnection();
 			try{

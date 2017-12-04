@@ -1,8 +1,7 @@
 package com.facilio.fs;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 
 public class FileStoreFactory {
 
@@ -16,21 +15,21 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStore() {
-		return getFileStore(UserInfo.getCurrentUser().getOrgUserId());
+		return getFileStore(AccountUtil.getCurrentUser().getId());
 	}
 	
-	public FileStore getFileStore(long userId) {
+	public FileStore getFileStore(long ouid) {
 		String environment = AwsUtil.getConfig("environment"); 
 		
 		FileStore fs = null;
 		
 		if ("production".equalsIgnoreCase(environment)) {
 			// S3 store
-			fs = new S3FileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), userId);
+			fs = new S3FileStore(AccountUtil.getCurrentOrg().getOrgId(), ouid);
 		}
 		else {
 			// local store
-			fs = new LocalFileStore(OrgInfo.getCurrentOrgInfo().getOrgid(), userId);
+			fs = new LocalFileStore(AccountUtil.getCurrentOrg().getOrgId(), ouid);
 		}
 		return fs;
 	}

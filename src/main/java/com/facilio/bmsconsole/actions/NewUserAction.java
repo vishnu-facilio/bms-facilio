@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
-import com.facilio.bmsconsole.util.UserAPI;
-import com.facilio.fw.OrgInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class NewUserAction extends ActionSupport {
@@ -19,7 +17,7 @@ public class NewUserAction extends ActionSupport {
 	@Override
 	public String execute() throws Exception {
 		
-		roles = UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid());
+//		roles = UserAPI.getRolesOfOrgMap(OrgInfo.getCurrentOrgInfo().getOrgid());
 		
 		return SUCCESS;
 	}

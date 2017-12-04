@@ -1,24 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.context.RoleContext;
 import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.util.GroupAPI;
-import com.facilio.bmsconsole.util.UserAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.UserType;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -33,41 +25,21 @@ public class GroupAction extends ActionSupport {
 		this.setup = setup;
 	}
 	
-	private List<GroupContext> groups = null;
-	public List<GroupContext> getGroups() {
+	private List<Group> groups = null;
+	public List<Group> getGroups() {
 		return groups;
 	}
 	
-	public void setGroups(List<GroupContext> groups) {
+	public void setGroups(List<Group> groups) {
 		this.groups = groups;
 	}
 	
 	public String groupList() throws Exception 
 	{
 		setSetup(SetupLayout.getGroupsListLayout());
-		setGroups(GroupAPI.getGroupsOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid()));
+		setGroups(AccountUtil.getGroupBean().getAllOrgGroups(AccountUtil.getCurrentOrg().getOrgId()));
 		
-		List<RoleContext> roles = UserAPI.getRolesOfOrg(OrgInfo.getCurrentOrgInfo().getOrgid());
-		ActionContext.getContext().getValueStack().set("roles", roles);
 		ActionContext.getContext().getValueStack().set("groups", getGroups());
-		ActionContext.getContext().getValueStack().set("users", UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue()));
-
-		
-		
-//		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
-//		UserInfo curUser = UserInfo.getCurrentUser();
-//		
-//		HashMap account = new HashMap<>();
-//		account.put("org", curOrg);
-//		account.put("user", curUser);
-//		ActionContext.getContext().getValueStack().set("account", account);
-//
-
-
-		
-		System.out.println(getGroups());
-
-		System.out.println(roles);
 		return SUCCESS;
 	}
 	
@@ -82,7 +54,7 @@ public class GroupAction extends ActionSupport {
 	public String newGroup() throws Exception {
 		
 		setSetup(SetupLayout.getNewGroupLayout());
-		userList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
+//		userList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		
 		return SUCCESS;
 	}
@@ -98,7 +70,7 @@ public class GroupAction extends ActionSupport {
 	public String addGroup() throws Exception {
 		
 		// setting necessary fields
-		group.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		group.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GROUP, getGroup());
@@ -111,11 +83,11 @@ public class GroupAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private GroupContext group;
-	public GroupContext getGroup() {
+	private Group group;
+	public Group getGroup() {
 		return group;
 	}
-	public void setGroup(GroupContext group) {
+	public void setGroup(Group group) {
 		this.group = group;
 	}
 	
@@ -129,16 +101,16 @@ public class GroupAction extends ActionSupport {
 	
 	public String editGroup() throws Exception {
 				
-		setSetup(SetupLayout.getEditGroupLayout());
-		setGroup(GroupAPI.getGroup(getGroupId()));
-		
-		Map<Long, String> membersMap = GroupAPI.getGroupMembersMap(getGroupId());
-		List<Long> membersList = new ArrayList<>();
-		Iterator<Long> itr = membersMap.keySet().iterator();
-		while (itr.hasNext()) {
-			membersList.add(itr.next());
-		}
-		members = membersList.toArray(new Long[membersList.size()]);
+//		setSetup(SetupLayout.getEditGroupLayout());
+//		setGroup(GroupAPI.getGroup(getGroupId()));
+//		
+//		Map<Long, String> membersMap = GroupAPI.getGroupMembersMap(getGroupId());
+//		List<Long> membersList = new ArrayList<>();
+//		Iterator<Long> itr = membersMap.keySet().iterator();
+//		while (itr.hasNext()) {
+//			membersList.add(itr.next());
+//		}
+//		members = membersList.toArray(new Long[membersList.size()]);
 		
 		return SUCCESS;
 	}

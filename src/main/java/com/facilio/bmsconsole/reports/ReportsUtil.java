@@ -12,14 +12,15 @@ import java.util.stream.Stream;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ReportsUtil 
@@ -27,13 +28,13 @@ public class ReportsUtil
 	
 	public static double getVariance(Double currentVal, Double previousVal)
 	{
-		if(currentVal==0 || previousVal==0)
+		if(currentVal==null || currentVal==0 || previousVal==null || previousVal==0)
 		{
 			return 0;
 		}
 		double variance =(currentVal - previousVal)/currentVal;
-		variance=roundOff(variance, 2);
-		return variance*100;
+		variance=variance*100;
+		return roundOff(variance, 2);
 	}
 	
 	private static double unitCost=0.65;
@@ -67,6 +68,51 @@ public class ReportsUtil
 		return costConverter(kWh*unitCost);
 	}
 	
+	
+	
+	public static Long[] getTimeInterval(String duration)
+	{
+		//defaulting to "today"
+		long startTime=DateTimeUtil.getDayStartTime();
+		long endTime=DateTimeUtil.getCurrenTime();
+
+		if (duration.equals("yesterday"))
+		{
+			startTime=DateTimeUtil.getDayStartTime(-1);
+			endTime=DateTimeUtil.getDayStartTime() -1;
+		}
+		else if (duration.equals("week"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime();	
+		}
+		else if (duration.equals("lastWeek"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime(-1);	
+			endTime=DateTimeUtil.getWeekStartTime() -1;	
+		}
+		else if (duration.equals("month"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime();
+		}
+		else if (duration.equals("lastMonth"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime(-1);
+			endTime=DateTimeUtil.getMonthStartTime()-1;
+		}
+		else if (duration.equals("year"))
+		{
+			startTime=DateTimeUtil.getYearStartTime();
+		}
+		else if (duration.equals("lastYear"))
+		{
+			startTime=DateTimeUtil.getYearStartTime(-1);
+			endTime=DateTimeUtil.getYearStartTime()-1;
+		}
+		Long[] timeIntervals= new Long[2];
+		timeIntervals[0]=startTime;
+		timeIntervals[1]=endTime;
+		return timeIntervals;
+	}
 	
 	public static String[] costConverter(double value)
 	{
@@ -154,6 +200,8 @@ public class ReportsUtil
 			if(location!=null){
 				buildingData.put("city", location.getCity());
 				buildingData.put("street",location.getStreet());
+				buildingData.put("latitude",location.getLat());
+				buildingData.put("longitude",location.getLng());
 			}
 		}
 		catch(Exception e) {
@@ -201,34 +249,48 @@ public class ReportsUtil
 		return roundOff(eui, 2);
 	}
 	
-	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean building)
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime)
+	{
+		return fetchMeterData(deviceList,startTime,endTime,false);
+	}
+	
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org)
+	{
+		return fetchMeterData(deviceList,startTime,endTime, org,false);
+	}
+	public static List<Map<String, Object>> fetchMeterData(String deviceList,long startTime, long endTime, boolean org,boolean rollUp)
 	{
 		List<Map<String, Object>> result=null;
 		
 		FacilioField energyFld = ReportsUtil.getEnergyField();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
-		String groupBy="";
-		if(!building)
+		StringBuilder groupBy=new StringBuilder();
+		if(org)
 		{
 			FacilioField meterFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 			fields.add(meterFld);
-			groupBy= meterFld.getName();
+			groupBy.append(meterFld.getName());
+			if(rollUp)
+			{
+				groupBy.append(" WITH ROLLUP");
+			}
 		}
-
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Energy_Data")
-				.andCustomWhere("ORGID=?",orgId)
+                .andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
 				.andCondition(DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
-				.groupBy(groupBy);
+				.groupBy(groupBy.toString());
 		try {
 			result = builder.get();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+//		
 		return result;	
 	}
 	
@@ -242,5 +304,24 @@ public class ReportsUtil
 			meterConsumption.put(meterId, consumption);
 		}
 		return meterConsumption;
+	}
+	
+	public static Map<Long,Double> getMeterVsConsumptionPercentage(List<Map<String, Object>> result, double totalKwh)
+	{
+		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
+		for(Map<String,Object> rowData: result)
+		{
+			long meterId=(long)	rowData.get("Meter_ID");
+			double consumption=(double) rowData.get("CONSUMPTION");
+			double percentage=getPercentage(consumption,totalKwh);
+			meterConsumption.put(meterId, percentage);
+		}
+		return meterConsumption;
+	}
+	
+	public static double getPercentage(double numerator, double denominator)
+	{
+		double returnVal=numerator/denominator;
+		return returnVal*100;
 	}
 }

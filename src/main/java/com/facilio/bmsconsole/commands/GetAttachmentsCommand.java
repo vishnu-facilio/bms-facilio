@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -21,8 +20,6 @@ public class GetAttachmentsCommand implements Command {
 		if(moduleName == null || recordId == null) {
 			return false;
 		}
-		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(moduleName, recordId);
 		

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.fw.BeanFactory;
@@ -48,7 +49,7 @@ public class LocationAPI {
 		}
 	}
 	
-	public static List<LocationContext> getAllLocations(long orgId) throws SQLException {
+	public static List<LocationContext> getAllLocations(long orgId) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -100,7 +101,7 @@ public class LocationAPI {
 			pstmt.setDouble(10, locationContext.getLng());
 			
 			if(locationContext.getContact() != null) {
-				pstmt.setLong(11, locationContext.getContact().getOrgUserId());
+				pstmt.setLong(11, locationContext.getContact().getId());
 			}
 			else {
 				pstmt.setNull(11, Types.BIGINT);
@@ -172,7 +173,7 @@ public class LocationAPI {
 			pstmt.setDouble(8, locationContext.getLng());
 			
 			if(locationContext.getContact() != null) {
-				pstmt.setLong(9, locationContext.getContact().getOrgUserId());
+				pstmt.setLong(9, locationContext.getContact().getId());
 			}
 			else {
 				pstmt.setNull(9, Types.BIGINT);
@@ -196,7 +197,7 @@ public class LocationAPI {
 		}
 	}
 	
-	private static LocationContext getLocationObjectFromRS(ResultSet rs) throws SQLException {
+	private static LocationContext getLocationObjectFromRS(ResultSet rs) throws Exception {
 		
 		LocationContext lc = new LocationContext();
 		lc.setId(rs.getLong("ID"));
@@ -211,7 +212,7 @@ public class LocationAPI {
 		lc.setLng(rs.getDouble("LNG"));
 		
 		if(rs.getLong("CONTACT_ID") != 0) {
-			lc.setContact(UserAPI.getUserFromOrgUserId(rs.getLong("CONTACT_ID")));
+			lc.setContact(AccountUtil.getUserBean().getUser(rs.getLong("CONTACT_ID")));
 		}
 		
 		lc.setPhone(rs.getString("PHONE"));

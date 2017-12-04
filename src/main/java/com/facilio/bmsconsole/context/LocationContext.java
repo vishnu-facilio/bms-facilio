@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class LocationContext extends ModuleBaseWithCustomFields {
@@ -68,11 +69,11 @@ public class LocationContext extends ModuleBaseWithCustomFields {
 		this.lng = lng;
 	}
 	
-	private UserContext contact;
-	public UserContext getContact() {
+	private User contact;
+	public User getContact() {
 		return contact;
 	}
-	public void setContact(UserContext contact) {
+	public void setContact(User contact) {
 		this.contact = contact;
 	}
 

@@ -137,7 +137,7 @@ public class BaseSpaceContext extends ModuleBaseWithCustomFields {
 		this.lastAssignedOccupancyTime = lastAssignedOccupancyTime;
 	}
 	
-	private int localId;
+	private int localId = -1;
 	public int getLocalId() {
 		return localId;
 	}

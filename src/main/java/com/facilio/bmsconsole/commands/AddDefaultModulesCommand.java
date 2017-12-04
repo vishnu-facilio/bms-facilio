@@ -15,15 +15,12 @@ public class AddDefaultModulesCommand implements Command {
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
 		
-//		Map<String, String> signupInfo = (Map<String, String>) context.get(CreateUserCommand.signupinfo);
-		long orgId = (long) context.get(CreateUserCommand.ORG_ID);
-		
+		long orgId = (long) context.get("orgId");
 		
 		Map<String, String> paramValues = new HashMap<>(); 
-		//paramValues.put("orgId", "(SELECT ORGID from Organizations where FACILIODOMAINNAME='"+signupInfo.get("domainname")+"')");
 		paramValues.put("orgId", String.valueOf(orgId));
+		
 		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
 		scriptRunner.runScript(((FacilioContext) context).getConnectionWithTransaction());
 		

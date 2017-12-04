@@ -7,10 +7,10 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.fw.OrgInfo;
 
 public class UpdateAlarmAssetMappingCommand implements Command {
 
@@ -21,7 +21,7 @@ public class UpdateAlarmAssetMappingCommand implements Command {
 		long assetId = (long) context.get(EventConstants.EventContextNames.ASSET_ID);
 		
 		JSONObject json = new JSONObject();
-		json.put("orgId", OrgInfo.getCurrentOrgInfo().getOrgid());
+		json.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		json.put("node", node);
 		json.put("assetId", assetId);
 		

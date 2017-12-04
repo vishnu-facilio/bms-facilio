@@ -5,15 +5,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class WorkOrderRequestContext extends TicketContext {
-	private UserContext requester;
-	public UserContext getRequester() {
+	private User requester;
+	public User getRequester() {
 		return requester;
 	}
-	public void setRequester(UserContext requester) {
+	public void setRequester(User requester) {
 		this.requester = requester;
 	}
 	

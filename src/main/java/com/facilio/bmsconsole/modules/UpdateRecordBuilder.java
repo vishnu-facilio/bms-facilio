@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.UpdateBuilderIfc;
@@ -137,7 +137,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			Condition orgCondition = new Condition();
 			orgCondition.setField(FieldFactory.getOrgIdField(module));
 			orgCondition.setOperator(NumberOperators.EQUALS);
-			orgCondition.setValue(String.valueOf(OrgInfo.getCurrentOrgInfo().getOrgid()));
+			orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 			whereCondition.andCondition(orgCondition);
 			
 			Condition moduleCondition = new Condition();
@@ -151,10 +151,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			updateLookupFields(moduleProps);
 			
-			fields.add(FieldFactory.getOrgIdField(module));
-			fields.add(FieldFactory.getModuleIdField(module));
-			fields.add(FieldFactory.getIdField(module));
-			builder.fields(fields);
+			List<FacilioField> updateFields = new ArrayList<>();
+			updateFields.add(FieldFactory.getOrgIdField(module));
+			updateFields.add(FieldFactory.getModuleIdField(module));
+			updateFields.add(FieldFactory.getIdField(module));
+			updateFields.addAll(fields);
+			builder.fields(updateFields);
 			
 			builder.table(module.getTableName());
 			

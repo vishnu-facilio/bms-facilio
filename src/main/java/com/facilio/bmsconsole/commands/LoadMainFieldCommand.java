@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.DBUtil;
 
 public class LoadMainFieldCommand implements Command {
@@ -26,7 +26,7 @@ public class LoadMainFieldCommand implements Command {
 			throw new IllegalArgumentException("Module Name is not set for the module");
 		}
  		
-		long orgId = OrgInfo.getCurrentOrgInfo().getOrgid();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {

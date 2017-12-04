@@ -11,8 +11,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.UserInfo;
 
 public enum PickListOperators implements Operator<String> {
 	
@@ -145,7 +145,7 @@ public enum PickListOperators implements Operator<String> {
 	public List<Object> computeValues(String value) {
 		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			List<Object> objs = new ArrayList<>();
-			objs.add(UserInfo.getCurrentUser().getOrgUserId());
+			objs.add(AccountUtil.getCurrentUser().getId());
 			return objs;
 		}
 		else {
@@ -206,7 +206,7 @@ public enum PickListOperators implements Operator<String> {
 						return false;
 					}
 					if(id == FacilioConstants.Criteria.LOGGED_IN_USER_ID) {
-						return currentId == UserInfo.getCurrentUser().getOrgUserId();
+						return currentId == AccountUtil.getCurrentUser().getId();
 					}
 					else {
 						return currentId == id;

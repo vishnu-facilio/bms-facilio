@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import com.facilio.fw.OrgInfo;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -116,7 +116,7 @@ public class ServicePortalInfo {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("select * from PortalInfo where ORGID=? and PORTALTYPE=0");
-			pstmt.setLong(1, OrgInfo.getCurrentOrgInfo().getOrgid());
+			pstmt.setLong(1, AccountUtil.getCurrentOrg().getOrgId());
 			
 		rs = pstmt.executeQuery();
 		ServicePortalInfo oc = null;
@@ -156,7 +156,7 @@ public class ServicePortalInfo {
 			psmt.setBoolean(3, data.getTicketAlloedForPublic());
 			psmt.setBoolean(4, data.getAnyDomain());
 			
-			psmt.setLong(5, OrgInfo.getCurrentOrgInfo().getOrgid());
+			psmt.setLong(5, AccountUtil.getCurrentOrg().getOrgId());
 			
 			psmt.executeUpdate();
 			psmt.close();
@@ -169,7 +169,7 @@ public class ServicePortalInfo {
 			psmt.setString(2, ((String[])data.getSamlInfo().get("logouturl"))[0]);
 
 			psmt.setString(3, ((String[])data.getSamlInfo().get("changepasswordurl"))[0]);
-            psmt.setLong(4, OrgInfo.getCurrentOrgInfo().getOrgid());
+            psmt.setLong(4, AccountUtil.getCurrentOrg().getOrgId());
 			
 			psmt.executeUpdate();
 			psmt.close();

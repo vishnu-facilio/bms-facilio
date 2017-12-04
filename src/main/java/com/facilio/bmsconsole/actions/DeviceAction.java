@@ -28,8 +28,6 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants.Reports;
 import com.facilio.constants.FacilioConstants.Reports.Energy;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionContext;

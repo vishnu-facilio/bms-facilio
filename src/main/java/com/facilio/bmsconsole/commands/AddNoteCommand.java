@@ -6,18 +6,17 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.UserContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 
 public class AddNoteCommand implements Command {
 
@@ -34,11 +33,9 @@ public class AddNoteCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
-			note.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+			note.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			note.setCreatedTime(System.currentTimeMillis());
-			UserContext currentUser = new UserContext();
-			currentUser.setOrgUserId(UserInfo.getCurrentUser().getOrgUserId());
-			note.setCreatedBy(currentUser);
+			note.setCreatedBy(AccountUtil.getCurrentUser());
 			InsertRecordBuilder<NoteContext> noteBuilder = new InsertRecordBuilder<NoteContext>()
 																	.module(module)
 																	.fields(fields)

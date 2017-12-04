@@ -5,8 +5,8 @@ import java.sql.Connection;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.GroupContext;
-import com.facilio.bmsconsole.util.GroupAPI;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
 public class AddGroupCommand implements Command {
@@ -14,12 +14,12 @@ public class AddGroupCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		GroupContext group = (GroupContext) context.get(FacilioConstants.ContextNames.GROUP);
+		Group group = (Group) context.get(FacilioConstants.ContextNames.GROUP);
 		
 		if (group != null) {
 			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
-			long groupId = GroupAPI.addGroup(group, conn);
+			long groupId = AccountUtil.getGroupBean().createGroup(AccountUtil.getCurrentOrg().getOrgId(), group);
 			group.setGroupId(groupId);
 			
 			context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);

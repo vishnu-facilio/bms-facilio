@@ -130,6 +130,17 @@ public enum ActionType {
 			}
 		}
 		
+	},
+	PUSH_NOTIFICATION(5) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+			// TODO Auto-generated method stub
+			if(obj != null) {
+//				NotificationContext notification = new NotificationContext();
+//				NotificationAPI.sendNotification(notification);
+			}
+		}
 	};
 	
 	private int val;

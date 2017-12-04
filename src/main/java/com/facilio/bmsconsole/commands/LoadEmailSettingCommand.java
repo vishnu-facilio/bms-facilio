@@ -6,12 +6,12 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class LoadEmailSettingCommand implements Command {
@@ -24,7 +24,7 @@ public class LoadEmailSettingCommand implements Command {
 				.connection(((FacilioContext) context).getConnectionWithTransaction())
 				.table("EmailSettings")
 				.select(fields)
-				.andCustomWhere("ORGID = ?", OrgInfo.getCurrentOrgInfo().getOrgid());
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 		List<Map<String, Object>> settings = builder.get();
 		
 		if(settings != null && settings.size() > 0) {

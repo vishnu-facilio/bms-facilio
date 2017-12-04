@@ -59,6 +59,12 @@ public class SetJoinsCommand implements Command {
 							thisJoin.put(FacilioConstants.Reports.JOIN_TABLE,tktCategoryModule.getTableName());
 							thisJoin.put(FacilioConstants.Reports.JOIN_ON,joinOn);
 						}
+						if(joinTable.equals(FacilioConstants.ContextNames.BUILDING)) {
+							FacilioModule buildingModule = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+							String joinOn = tktModule.getTableName()+"."+FacilioConstants.Ticket.SPACE_ID+"="+buildingModule.getTableName()+"."+FacilioConstants.ContextNames.ID; 
+							thisJoin.put(FacilioConstants.Reports.JOIN_TABLE,buildingModule.getTableName());
+							thisJoin.put(FacilioConstants.Reports.JOIN_ON,joinOn);
+						}
 					}
 					
 				}

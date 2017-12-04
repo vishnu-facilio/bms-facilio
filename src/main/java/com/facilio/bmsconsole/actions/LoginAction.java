@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
@@ -42,18 +44,23 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.UserContext;
-import com.facilio.bmsconsole.util.UserAPI;
+import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -129,14 +136,14 @@ public class LoginAction extends ActionSupport{
 			
 			if (cognitoUser != null) {
 
-				UserInfo userInfo = LoginUtil.getUserInfo(cognitoUser);
+				Account account = LoginUtil.getAccount(cognitoUser, false);
 
 				String samlRequest = request.getParameter("SAMLRequest");
 				String relay = request.getParameter("relayUrl");
 
 				if (samlRequest != null && !"".equals(samlRequest.trim())) {
 
-					boolean status = handleSAMLLogin(cognitoUser.getEmail(), userInfo.getSubdomain(), samlRequest, relay);
+					boolean status = handleSAMLLogin(cognitoUser.getEmail(), account.getOrg().getDomain(), samlRequest, relay);
 
 					if (status) {
 						return "samlresponse";
@@ -147,7 +154,7 @@ public class LoginAction extends ActionSupport{
 				}
 				else {
 
-					String redirectURL = request.getScheme() + "://" + userInfo.getSubdomain() + HOSTNAME + ":" + request.getServerPort();
+					String redirectURL = request.getScheme() + "://" + account.getOrg().getDomain() + HOSTNAME + ":" + request.getServerPort();
 
 					String nextURL = request.getParameter("redirect");
 					if (nextURL == null || nextURL.trim().equals("")) {
@@ -172,12 +179,9 @@ public class LoginAction extends ActionSupport{
 	
 	public String apiLogin() throws Exception {
 		
-		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
-		UserInfo curUser = UserInfo.getCurrentUser();
-		
 		account = new HashMap<>();
-		account.put("org", curOrg);
-		account.put("user", curUser);
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
 		
 		return SUCCESS;
 	}
@@ -220,7 +224,7 @@ public class LoginAction extends ActionSupport{
 		}*/
 
 			CognitoUtil.CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
-			UserInfo userInfo = LoginUtil.getUserInfo(cognitoUser);
+			Account account = LoginUtil.getAccount(cognitoUser, false);
 
 			HttpServletRequest request = ServletActionContext.getRequest();
 			HttpServletResponse httpResp = ServletActionContext.getResponse();
@@ -228,7 +232,7 @@ public class LoginAction extends ActionSupport{
 			// setting id token cookie
 			LoginUtil.addUserCookie(httpResp, LoginUtil.IDTOKEN_COOKIE_NAME, idToken, HOSTNAME);
 
-			String redirectURL = request.getScheme() + "://" + userInfo.getSubdomain() + HOSTNAME + ":" + request.getServerPort();
+			String redirectURL = request.getScheme() + "://" + account.getOrg().getDomain() + HOSTNAME + ":" + request.getServerPort();
 
 			String nextURL = request.getParameter("redirect");
 			if (nextURL == null || nextURL.trim().equals("")) {
@@ -332,11 +336,11 @@ public class LoginAction extends ActionSupport{
 			url = request.getScheme()+"://"+request.getServerName();
 		}
 
-		UserContext uc = UserAPI.getUser(curUser);
+		User user = AccountUtil.getUserBean().getUser(curUser);
 		
 		JSONObject customAttr = new JSONObject();
-		customAttr.put("Facilio User Id", uc.getUserId());
-		customAttr.put("Facilio Org Id", uc.getOrgId());
+		customAttr.put("Facilio User Id", user.getOuid());
+		customAttr.put("Facilio Org Id", user.getOrgId());
 		customAttr.put("Facilio Domain", subdomain);
 
 		SAMLAttribute samlAttributes = 
@@ -360,13 +364,50 @@ public class LoginAction extends ActionSupport{
 	
 	public String signup() throws Exception
 	{
-		FacilioContext orgsignupcontext = new FacilioContext();
-		System.out.println("The parameters list"+ActionContext.getContext().getParameters());
-		orgsignupcontext.put("signupinfo", getSignupInfo());
+		System.out.println("The parameters list::: " + ActionContext.getContext().getParameters());
+		
+		FacilioContext signupContext = new FacilioContext();
+		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, getSignupInfo());
+		
 		Chain c = FacilioChainFactory.getOrgSignupChain();
-		c.execute(orgsignupcontext);
-		response ="<result>signupsuccess</result>";
-		return "success";
+		c.execute(signupContext);
+		
+		response = "success";
+		return SUCCESS;
+	}
+	
+	public String validateInviteLink() throws Exception
+	{
+		String[] inviteIds = EncryptionUtil.decode(getInviteToken()).split("_");
+		long orgId = Long.parseLong(inviteIds[0]);
+		long ouid = Long.parseLong(inviteIds[1]);
+		
+		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
+		
+		JSONObject invitation = new JSONObject();
+		
+		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+		User user = AccountUtil.getUserBean().getUser(ouid);
+		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
+			invitation.put("error", "link_expired");
+		}
+		else {
+			invitation.put("orgname", org.getName());
+			invitation.put("email", user.getEmail());
+		}
+		ActionContext.getContext().getValueStack().set("invitation", invitation);
+		
+		return SUCCESS;
+	}
+	
+	private String inviteToken;
+	
+	public String getInviteToken() {
+		return this.inviteToken;
+	}
+	
+	public void setInviteToken(String inviteToken) {
+		this.inviteToken = inviteToken;
 	}
 	
 	private HashMap<String, Object> account;
@@ -418,17 +459,28 @@ public class LoginAction extends ActionSupport{
 	
 	public String currentAccount() throws Exception {
 		
-		OrgInfo curOrg = OrgInfo.getCurrentOrgInfo();
-		UserInfo curUser = UserInfo.getCurrentUser();
-		
 		HashMap<String, Object> appProps = new HashMap<>();
-		appProps.put("permissions", FacilioConstants.Permission.toMap());
-		appProps.put("permissions_groups", FacilioConstants.PermissionGroup.toMap());
+		appProps.put("permissions", AccountConstants.Permission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
 		
 		account = new HashMap<>();
-		account.put("org", curOrg);
-		account.put("user", UserAPI.getUser(curUser.getUserId()));
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
 		
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("users", users);
+		data.put("groups", groups);
+		data.put("roles", roles);
+		
+		Map<String, Object> config = new HashMap<>();
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getUid()));
+		
+		account.put("data", data);
+		account.put("config", config);
 		account.put("appProps", appProps);
 		
 		return SUCCESS;

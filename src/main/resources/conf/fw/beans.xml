@@ -2,4 +2,9 @@
 	<bean name="Tasker" class="com.facilio.tasker.TaskerImpl"></bean>
 	<bean name="ModuleBean" class="com.facilio.beans.ModuleBeanCacheImpl"></bean>
 	<bean name="ModuleCRUD" class="com.facilio.beans.ModuleCRUDBeanImpl"></bean>
+	
+	<bean name="UserBean" class="com.facilio.accounts.impl.UserBeanImpl"></bean>
+	<bean name="OrgBean" class="com.facilio.accounts.impl.OrgBeanImpl"></bean>
+	<bean name="GroupBean" class="com.facilio.accounts.impl.GroupBeanImpl"></bean>
+	<bean name="RoleBean" class="com.facilio.accounts.impl.RoleBeanImpl"></bean>
 </beans>

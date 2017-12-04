@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
 
 public enum LookupOperator implements Operator<Criteria> {
 
@@ -40,7 +40,7 @@ public enum LookupOperator implements Operator<Criteria> {
 			if(fieldName != null && !fieldName.isEmpty() && value != null) {
 				String[] module = fieldName.split("\\.");
 				if(module.length > 1) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", OrgInfo.getCurrentOrgInfo().getOrgid());
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 					LookupField lookupField = (LookupField) modBean.getField(module[1], module[0]);
 					
 					FacilioModule lookupModule = lookupField.getLookupModule();
