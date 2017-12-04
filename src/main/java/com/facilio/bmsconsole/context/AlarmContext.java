@@ -44,7 +44,13 @@ public class AlarmContext extends TicketContext {
 	}
 	
 	private Boolean isAcknowledged;
-	public void setIsAcknowledged(Boolean isAcknowledged) {
+	public boolean isAcknowledged() {
+		if(isAcknowledged != null) {
+			return isAcknowledged.booleanValue();
+		}
+		return false;
+	}
+	public void setIsAcknowledged(boolean isAcknowledged) {
 		this.isAcknowledged = isAcknowledged;
 	}
 	public Boolean getIsAcknowledged() {
