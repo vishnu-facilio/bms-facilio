@@ -452,4 +452,32 @@ public class UserBeanImpl implements UserBean {
 		long ouid = (Long) props.get("id");
 		return ouid;
 	}
+	
+	@Override
+	public boolean updateUserPhoto(long uid, long fileId) throws Exception {
+		
+		FacilioField photoId = new FacilioField();
+		photoId.setName("photoId");
+		photoId.setDataType(FieldType.NUMBER);
+		photoId.setColumnName("PHOTO_ID");
+		photoId.setModule(AccountConstants.getUserModule());
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.add(photoId);
+		
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getUserModule().getTableName())
+				.fields(fields)
+				.andCustomWhere("USERID = ?", uid);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("photoId", fileId);
+		
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
 }

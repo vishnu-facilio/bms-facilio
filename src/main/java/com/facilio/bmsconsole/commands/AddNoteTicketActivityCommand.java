@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,8 +17,6 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddNoteTicketActivityCommand implements Command {
@@ -33,7 +32,7 @@ public class AddNoteTicketActivityCommand implements Command {
 				ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 				if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
 					context.put(FacilioConstants.TicketActivity.MODIFIED_TIME, System.currentTimeMillis());
-					context.put(FacilioConstants.TicketActivity.MODIFIED_USER,UserInfo.getCurrentUser().getOrgUserId());
+					context.put(FacilioConstants.TicketActivity.MODIFIED_USER, AccountUtil.getCurrentUser().getId());
 					addActivity(context);
 				}
 			}
@@ -49,7 +48,7 @@ public class AddNoteTicketActivityCommand implements Command {
 		activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
 		activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
 		activity.setActivityType((ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE));
-		activity.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
+		activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		JSONObject info = new JSONObject();
 		info.put("content", note.getBody());

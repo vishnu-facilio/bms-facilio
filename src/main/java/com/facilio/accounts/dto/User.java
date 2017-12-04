@@ -1,6 +1,8 @@
 package com.facilio.accounts.dto;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 
 public class User {
 	
@@ -63,6 +65,13 @@ public class User {
 	}
 	public long getPhotoId() {
 		return photoId;
+	}
+	public String getAvatarUrl() throws Exception {
+		if (this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.photoId);
+		}
+		return null;
 	}
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
