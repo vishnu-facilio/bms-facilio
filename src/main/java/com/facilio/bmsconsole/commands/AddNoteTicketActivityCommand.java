@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -14,8 +15,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.OrgInfo;
-import com.facilio.fw.UserInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddNoteTicketActivityCommand implements Command {
