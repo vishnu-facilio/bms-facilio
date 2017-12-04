@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.OrgInfo;
@@ -67,6 +68,51 @@ public class ReportsUtil
 		return costConverter(kWh*unitCost);
 	}
 	
+	
+	
+	public static Long[] getTimeInterval(String duration)
+	{
+		//defaulting to "today"
+		long startTime=DateTimeUtil.getDayStartTime();
+		long endTime=DateTimeUtil.getCurrenTime();
+
+		if (duration.equals("yesterday"))
+		{
+			startTime=DateTimeUtil.getDayStartTime(-1);
+			endTime=DateTimeUtil.getDayStartTime() -1;
+		}
+		else if (duration.equals("week"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime();	
+		}
+		else if (duration.equals("lastWeek"))
+		{
+			startTime=DateTimeUtil.getWeekStartTime(-1);	
+			endTime=DateTimeUtil.getWeekStartTime() -1;	
+		}
+		else if (duration.equals("month"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime();
+		}
+		else if (duration.equals("lastMonth"))
+		{
+			startTime=DateTimeUtil.getMonthStartTime(-1);
+			endTime=DateTimeUtil.getMonthStartTime()-1;
+		}
+		else if (duration.equals("year"))
+		{
+			startTime=DateTimeUtil.getYearStartTime();
+		}
+		else if (duration.equals("lastYear"))
+		{
+			startTime=DateTimeUtil.getYearStartTime(-1);
+			endTime=DateTimeUtil.getYearStartTime()-1;
+		}
+		Long[] timeIntervals= new Long[2];
+		timeIntervals[0]=startTime;
+		timeIntervals[1]=endTime;
+		return timeIntervals;
+	}
 	
 	public static String[] costConverter(double value)
 	{

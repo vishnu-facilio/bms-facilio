@@ -42,26 +42,9 @@ public class ReportActions extends ActionSupport {
 	public String getTopNSpaces() throws Exception
 	{
 		JSONObject resultData = new JSONObject();
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
-		String duration = getPeriod();
-		if(duration.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if (duration.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();	
-		}
-		else if (duration.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-
-		}
-		else if (duration.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 
 		List<BaseSpaceContext> floors=SpaceAPI.getBuildingFloors(getBuildingId());
 		Map<String,Double> result = new LinkedHashMap<String,Double>();
@@ -144,30 +127,12 @@ public class ReportActions extends ActionSupport {
 		HashMap<Long,String> purposeMapping= DeviceAPI.getPurposeMapping(getBuildingId(),true);
 		Set<Long> keys=purposeMapping.keySet();
 		String deviceList=StringUtils.join(keys, ",");
-		String duration = getPeriod();
-		long startTime=-1;
-		long endTime=DateTimeUtil.getCurrenTime();
+		
+		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+		long startTime=timeInterval[0];
+		long endTime=timeInterval[1];
 
 		FacilioField selectFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
-
-		if(duration.equals("day"))
-		{
-			startTime=DateTimeUtil.getDayStartTime();
-		}
-		else if (duration.equals("week"))
-		{
-			startTime=DateTimeUtil.getWeekStartTime();	
-		}
-		else if (duration.equals("month"))
-		{
-			startTime=DateTimeUtil.getMonthStartTime();
-
-		}
-		else if (duration.equals("year"))
-		{
-			startTime=DateTimeUtil.getYearStartTime();
-		}
-
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		fields.add(selectFld);
 
