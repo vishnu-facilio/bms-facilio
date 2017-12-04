@@ -56,7 +56,7 @@ public class NotificationAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getNotificationModule().getTableName())
 				.fields(FieldFactory.getNotificationFields())
-				.andCustomWhere("ORGID = ? AND USERID = ? AND IS_SEEN = false", orgId, userId);
+				.andCustomWhere("ORGID = ? AND USERID = ? AND (IS_SEEN IS NULL OR IS_SEEN = false)", orgId, userId);
 		
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("isSeen", true);
@@ -76,7 +76,7 @@ public class NotificationAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getNotificationModule().getTableName())
 				.fields(FieldFactory.getNotificationFields())
-				.andCustomWhere("ORGID = ? AND USERID = ? AND IS_READ = false", orgId, userId);
+				.andCustomWhere("ORGID = ? AND USERID = ? AND (IS_READ IS NULL OR IS_READ = false)", orgId, userId);
 		
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("isRead", true);
