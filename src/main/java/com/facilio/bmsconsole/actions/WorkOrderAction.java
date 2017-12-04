@@ -134,6 +134,7 @@ public class WorkOrderAction extends ActionSupport {
 		if(workorder.getSpace() != null) {
 			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
 		}
+		preventivemaintenance.setStatus(true);
 		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
