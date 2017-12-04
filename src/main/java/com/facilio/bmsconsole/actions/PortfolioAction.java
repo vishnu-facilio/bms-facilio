@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -32,19 +33,9 @@ public class PortfolioAction extends ActionSupport {
 		result.put("sitesCount", sitesCount);
 		result.put("buildingCount", buildings.size());
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> meterVsBuilding= new HashMap<Long,Long>();
-		for(EnergyMeterContext emc:energyMeters) {
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 
-			long meterId=emc.getId();
-			long buildingId =emc.getPurposeSpace().getId();
-			//under the assumption only one main meter for a building.. 
-			//when there are more than 1 main meter, there should be one virtual meter which will be the main meter..
-			meterVsBuilding.put(buildingId,meterId);
-			deviceBuilder.append(meterId);
-			deviceBuilder.append(",");
-		}
-		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
 		long prevStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
@@ -63,19 +54,15 @@ public class PortfolioAction extends ActionSupport {
 			
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long buildingId=building.getId();
-			long meterId=meterVsBuilding.get(buildingId);
+			long meterId=buildingVsMeter.get(buildingId);
 			Double lastMonthKwh=prevMeterVsConsumption.get(meterId);
 			Double thisMonthKwh=currentMeterVsConsumption.get(meterId);
-			JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
+			JSONObject lastMonthData = ReportsUtil.getEnergyData(lastMonthKwh,lastMonthDays);
 			buildingData.put("previousVal", lastMonthData);
-			JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
+			JSONObject thisMonthData = ReportsUtil.getEnergyData(thisMonthKwh,thisMonthDays);
 			buildingData.put("currentVal", thisMonthData);
-			
-			if(lastMonthKwh!=null || thisMonthKwh!=null)
-			{
-				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-				buildingData.put("variance", variance);
-			}
+			double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
+			buildingData.put("variance", variance);
 			buildingArray.add(buildingData);
 		}
 		result.put("buildingDetails", buildingArray);
@@ -88,38 +75,31 @@ public class PortfolioAction extends ActionSupport {
 	public String getBuildingRankings() throws Exception
 	{
 		JSONObject result = new JSONObject();
-		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
-		for(EnergyMeterContext emc:energyMeters) {
-
-			long meterId=emc.getId();
-			long buildingId =emc.getPurposeSpace().getId();
-			buildingVsMeter.put(buildingId,meterId);
-			deviceBuilder.append(meterId);
-			deviceBuilder.append(",");
-		}
-		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
 		long startTime=timeInterval[0];
 		long endTime=timeInterval[1];
 		
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
+		Map<Long,Double> buildingVsArea= ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
 		
-		Map<String,Double> euiMap = new LinkedHashMap<String,Double>();
+		Map<Long,Double> euiMap = new LinkedHashMap<Long,Double>();
 		
-		for(BuildingContext building:buildings) {
+		for(Map.Entry<Long,Long> entry:buildingVsMeter.entrySet()) {
 			
-			long buildingId=building.getId();
-			long meterId=buildingVsMeter.get(buildingId);
+			long buildingId=entry.getKey();
+			long meterId=entry.getValue();
 			Double currentKwh= meterVsConsumption.get(meterId);
-			String displayName=building.getDisplayName();
-			double buildingArea=building.getGrossFloorArea();
-			if(!(currentKwh==null || currentKwh==0))
+			Double buildingArea=buildingVsArea.get(buildingId);
+			double eui=ReportsUtil.getEUI(currentKwh,buildingArea);
+			if(eui!=0)
 			{
-				euiMap.put(displayName, ReportsUtil.getEUI(currentKwh,buildingArea));
+				euiMap.put(buildingId, eui);
 			}
 		}
 		if(!euiMap.isEmpty())
@@ -140,17 +120,9 @@ public class PortfolioAction extends ActionSupport {
 		JSONObject result = new JSONObject();
 		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
-		for(EnergyMeterContext emc:energyMeters) {
-
-			long meterId=emc.getId();
-			long buildingId =emc.getPurposeSpace().getId();
-			buildingVsMeter.put(buildingId,meterId);
-			deviceBuilder.append(meterId);
-			deviceBuilder.append(",");
-		}
-		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);;
+		
+		String deviceList= StringUtils.join(buildingVsMeter.values(),",");
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
 		long startTime=timeInterval[0];
 		long endTime=timeInterval[1];
@@ -162,10 +134,10 @@ public class PortfolioAction extends ActionSupport {
 		for(BuildingContext building:buildings) {
 			
 			long buildingId=building.getId();
-			JSONObject buildingData=ReportsUtil.getBuildingData(building);
+			JSONObject buildingData=ReportsUtil.getBuildingData(building,false);
 			long meterId=buildingVsMeter.get(buildingId);
 			Double currentKwh=meterVsConsumption.get(meterId);
-			JSONObject currentData = ReportsUtil.getMonthData(currentKwh,-1);
+			JSONObject currentData = ReportsUtil.getEnergyData(currentKwh,-1);
 			buildingData.put("currentVal", currentData);
 			buildingArray.add(buildingData);
 		}
@@ -233,18 +205,8 @@ public class PortfolioAction extends ActionSupport {
 	{
 		JSONObject result = new JSONObject();
 		List<EnergyMeterContext> energyMeters =DeviceAPI.getEnergyMetersOfPurpose(""+getPurpose(),true);
-		
-		StringBuilder deviceBuilder = new StringBuilder();
-		HashMap <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
-		for(EnergyMeterContext emc:energyMeters) {
-
-			long meterId=emc.getId();
-			long buildingId =emc.getPurposeSpace().getId();
-			buildingVsMeter.put(buildingId,meterId);
-			deviceBuilder.append(meterId);
-			deviceBuilder.append(",");
-		}
-		String deviceList= ReportsUtil.removeLastChar(deviceBuilder, ",");
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 		
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
 		long startTime=timeInterval[0];

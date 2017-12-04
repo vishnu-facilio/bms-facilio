@@ -371,8 +371,8 @@ public class ReportActions extends ActionSupport {
 		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
 
 		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-		JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
-		JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
+		JSONObject lastMonthData = ReportsUtil.getEnergyData(lastMonthKwh,lastMonthDays);
+		JSONObject thisMonthData = ReportsUtil.getEnergyData(thisMonthKwh,thisMonthDays);
 
 
 		buildingData.put("previousVal", lastMonthData);
