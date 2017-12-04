@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -685,4 +686,41 @@ public static long getSitesCount() throws Exception {
 			return (Long) rs.get(0).get("count");
 		}
 	}
+	
+	
+public static List<Map<String,Object>> getBuildingArea(String buildingList) throws Exception {
+		
+		FacilioField idFld = new FacilioField();
+		idFld.setName("ID");
+		idFld.setColumnName("ID");
+		idFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField areaFld = new FacilioField();
+		areaFld.setName("AREA");
+		areaFld.setColumnName("GROSS_FLOOR_AREA");
+		areaFld.setDataType(FieldType.DECIMAL);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(idFld);
+		fields.add(areaFld);
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Building")
+				.andCustomWhere("ORGID=?", orgId)
+				.andCondition(getCondition("ID", buildingList,NumberOperators.EQUALS));
+
+		return builder.get();
+	}
+	
+
+@SuppressWarnings("rawtypes")
+private static Condition getCondition (String colName,String valueList,Operator operator)
+{
+	Condition condition = new Condition();
+	condition.setColumnName(colName);
+	condition.setOperator(operator);
+	condition.setValue(valueList);
+	return condition;
+}
 }
