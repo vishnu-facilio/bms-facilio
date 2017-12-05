@@ -154,6 +154,10 @@ public enum ActionType {
 					if(obj.containsKey("type")) {
 						obj.remove("type");
 					}
+					if(obj.containsKey("subject")) {
+						String subject = (String) obj.get("subject");
+						obj.put("message", subject);
+					}
 					obj.put("type", 5);
 					FacilioContext context1 = new FacilioContext();
 					context1.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
