@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -17,7 +16,7 @@ public class AddGroupCommand implements Command {
 		Group group = (Group) context.get(FacilioConstants.ContextNames.GROUP);
 		
 		if (group != null) {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			long groupId = AccountUtil.getGroupBean().createGroup(AccountUtil.getCurrentOrg().getOrgId(), group);
 			group.setGroupId(groupId);

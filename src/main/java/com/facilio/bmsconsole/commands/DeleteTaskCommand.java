@@ -30,7 +30,6 @@ public class DeleteTaskCommand implements Command {
 			}
 			sql += ")";
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-					.connection(((FacilioContext)context).getConnectionWithTransaction())
 					.table(dataTableName)
 					.andCustomWhere(sql, recordIds.toArray());
 			

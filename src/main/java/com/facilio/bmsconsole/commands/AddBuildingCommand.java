@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -23,7 +22,7 @@ public class AddBuildingCommand implements Command {
 		if(building != null) 
 		{
 			building.setSpaceType(SpaceType.BUILDING);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
@@ -32,8 +31,8 @@ public class AddBuildingCommand implements Command {
 			InsertRecordBuilder<BuildingContext> builder = new InsertRecordBuilder<BuildingContext>()
 															.moduleName(moduleName)
 															.table(dataTableName)
-															.fields(fields)
-															.connection(conn);
+															.fields(fields);
+															
 			long id = builder.insert(building);
 			building.setId(id);
 			

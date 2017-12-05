@@ -23,7 +23,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			workOrderRequest.setCreatedTime(System.currentTimeMillis());
 			
 			if(workOrderRequest.getRequestStatus() == -1) {
@@ -35,8 +35,8 @@ public class AddWorkOrderRequestCommand implements Command {
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()
 																.moduleName(moduleName)
 																.table(dataTableName)
-																.fields(fields)
-																.connection(conn);
+																.fields(fields);
+																
 			long workOrderId = builder.insert(workOrderRequest);
 			workOrderRequest.setId(workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrderRequest);
