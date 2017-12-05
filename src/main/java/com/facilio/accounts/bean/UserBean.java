@@ -11,6 +11,8 @@ public interface UserBean {
 	
 	public long inviteUser(long orgId, User user) throws Exception;
 	
+	public boolean resendInvite(long ouid) throws Exception;
+	
 	public boolean acceptInvite(long ouid, String cognitoId) throws Exception;
 	
 	public boolean updateUser(long ouid, User user) throws Exception;
