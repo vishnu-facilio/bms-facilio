@@ -44,7 +44,7 @@ public class UpdateAlarmCommand implements Command {
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
 			
-			if(alarm.getIsAcknowledged() != null && alarm.getIsAcknowledged()) {
+			if(alarm.isAcknowledged()) {
 				alarm.setAcknowledgedTime(System.currentTimeMillis());
 				
 				alarm.setAcknowledgedBy(AccountUtil.getCurrentUser());

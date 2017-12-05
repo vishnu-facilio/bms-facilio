@@ -85,6 +85,17 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 			</action>
+			<action name="resendinvite" class="com.facilio.bmsconsole.actions.UserAction" method="resendInvite">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+			</action>
 		<action name="updateuser"  class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

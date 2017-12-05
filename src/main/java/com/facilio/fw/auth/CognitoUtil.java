@@ -113,6 +113,22 @@ public class CognitoUtil {
 		return getIdpProvider().adminGetUser(adminGetReq);
 	}
 	
+	public static boolean isEmailExists(String email) {
+		
+		try {
+			AdminGetUserRequest adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(email);
+			
+			AdminGetUserResult userObj = getIdpProvider().adminGetUser(adminGetReq);
+			if (userObj != null && email.equalsIgnoreCase(userObj.getUsername())) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public static String getIdentityId(String idToken) {
 		
 		Map<String, String> logins = new HashMap<String, String>();

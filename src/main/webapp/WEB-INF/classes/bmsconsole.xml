@@ -50,6 +50,12 @@
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
+		<action name="acceptInvite" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="acceptInvite">
+			<result name="success" type="json">
+				<param name="includeProperties">invitation.*</param>
+			</result>
+		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogin">
 			<result name="success" type="json">

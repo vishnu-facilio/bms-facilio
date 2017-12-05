@@ -146,6 +146,15 @@ public class UserBeanImpl implements UserBean {
 		
 		long ouid = (Long) props.get("id");
 		
+		user.setOuid(ouid);
+		
+		sendInvitation(orgId, ouid, user);
+		
+		return ouid;
+	}
+	
+	private boolean sendInvitation(long orgId, long ouid, User user) throws Exception {
+		
 		String inviteToken = EncryptionUtil.encode(orgId + "_" + ouid + "_" + System.currentTimeMillis());
 		String inviteLink = AwsUtil.getConfig("app.url") + "/app/invitation/" + inviteToken;
 		
@@ -156,8 +165,41 @@ public class UserBeanImpl implements UserBean {
 		placeholders.put("invitelink", inviteLink);
 		
 		AccountEmailTemplate.INVITE_USER.send(placeholders);
+		return true;
+	}
+	
+	@Override
+	public boolean resendInvite(long ouid) throws Exception {
 		
-		return ouid;
+		User user = getUser(ouid);
+		if (user.getInviteAcceptStatus()) {
+			// invitation already accepted
+			return false;
+		}
+		
+		FacilioField invitedTime = new FacilioField();
+		invitedTime.setName("invitedTime");
+		invitedTime.setDataType(FieldType.NUMBER);
+		invitedTime.setColumnName("INVITEDTIME");
+		invitedTime.setModule(AccountConstants.getOrgUserModule());
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(invitedTime);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getOrgUserModule().getTableName())
+				.fields(fields)
+				.andCustomWhere("ORG_USERID = ?", ouid);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("invitedTime", System.currentTimeMillis());
+		
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			sendInvitation(user.getOrgId(), ouid, user);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
