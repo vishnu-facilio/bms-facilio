@@ -118,6 +118,13 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String resendInvite() throws Exception {
+		
+		AccountUtil.getUserBean().resendInvite(getUserId());
+		
+		return SUCCESS;
+	}
+	
 	private User user;
 	public User getUser() {
 		return user;
