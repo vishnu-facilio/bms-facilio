@@ -37,7 +37,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			
 			// skiping signup url from authorization check
-			if (request.getRequestURI().indexOf("/api/signup") == -1) {
+			if (request.getRequestURI().indexOf("signup") == -1 && request.getRequestURI().indexOf("validateInviteLink") == -1 && request.getRequestURI().indexOf("acceptInvite") == -1) {
 				
 				String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
 				boolean isAPI = false;

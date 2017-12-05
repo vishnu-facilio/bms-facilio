@@ -111,6 +111,7 @@ public class UserAction extends ActionSupport {
 			}
 			else {
 				e.printStackTrace();
+				addFieldError("email", "This user already exists in your organization.");
 				System.out.println("........> Error");
 			}
 			return ERROR;
@@ -173,7 +174,7 @@ public class UserAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.USER, user);
 		Map params = ActionContext.getContext().getParameters();
 		
-System.out.println("User object is "+params+"\n"+ user);
+		System.out.println("User object is "+params+"\n"+ user);
 		Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
 		addUser.execute(context);
 		

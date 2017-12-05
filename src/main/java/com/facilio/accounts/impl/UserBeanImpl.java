@@ -233,7 +233,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean updateUser(long ouid, User user) throws Exception {
 		
 		boolean userUpdateStatus = updateUserEntry(user.getEmail(), user);
-		
+		System.out.println("User status ----->"+ userUpdateStatus) ;
 		if (userUpdateStatus) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getOrgUserModule().getTableName())
