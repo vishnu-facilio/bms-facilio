@@ -25,7 +25,6 @@ public class AddAlarmCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			alarm.setCreatedTime(System.currentTimeMillis());
 			
@@ -36,8 +35,7 @@ public class AddAlarmCommand implements Command {
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
 																.moduleName(moduleName)
 																.table(dataTableName)
-																.fields(fields)
-																.connection(conn);
+																.fields(fields);
 			
 			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
