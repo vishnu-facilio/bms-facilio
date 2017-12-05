@@ -152,8 +152,10 @@ public class EventToAlarmJob extends FacilioJob{
 						String url = "http://" + server + "/internal/addAlarm";
 						
 						JSONParser parser = new JSONParser();
-						JSONObject response = (JSONObject) parser.parse(AwsUtil.doHttpPost(url, headers, null, content.toJSONString())); 
-						event.setAlarmId((long) response.get("alarmId"));
+						String response = AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+						System.out.println(response);
+						JSONObject res = (JSONObject) parser.parse(response); 
+						event.setAlarmId((long) res.get("alarmId"));
 					}
 					
 					event.setInternalState(EventInternalState.COMPLETED);
