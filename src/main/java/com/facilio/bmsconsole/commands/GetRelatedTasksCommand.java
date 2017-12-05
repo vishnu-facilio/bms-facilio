@@ -22,9 +22,9 @@ public class GetRelatedTasksCommand implements Command {
 			return false;
 		}
 		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+		//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
-		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordId, conn);
+		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordId);
 		
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		return false;

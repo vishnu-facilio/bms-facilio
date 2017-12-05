@@ -29,7 +29,6 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 				SelectRecordsBuilder<AlarmContext> alarmBuilder = new SelectRecordsBuilder<AlarmContext>()
-																	.connection(((FacilioContext) context).getConnectionWithTransaction())
 																	.moduleName(FacilioConstants.ContextNames.ALARM)
 																	.table("Alarms")
 																	.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))

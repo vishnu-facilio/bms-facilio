@@ -48,7 +48,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivity(orgId, moduleId, eventType.getValue());
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
-						TicketContext ticket = getParentTicket(note, ((FacilioContext) context).getConnectionWithoutTransaction());
+						TicketContext ticket = getParentTicket(note);
 						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != note.getCreatedBy().getId()) {
 							long workflowRuleId = workflowRule.getId();
 							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
@@ -74,7 +74,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 		return false;
 	}
 	
-	private TicketContext getParentTicket (NoteContext note,Connection conn) throws Exception {
+	private TicketContext getParentTicket (NoteContext note) throws Exception {
 		long parentTicketId = note.getParentId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -93,7 +93,6 @@ public class ExecuteNoteWorkflowCommand implements Command {
 																.table("Tickets")
 																.moduleName(FacilioConstants.ContextNames.TICKET)
 																.beanClass(TicketContext.class)
-																.connection(conn)
 																.andCustomWhere("ID = ?", parentTicketId)
 																;
 		

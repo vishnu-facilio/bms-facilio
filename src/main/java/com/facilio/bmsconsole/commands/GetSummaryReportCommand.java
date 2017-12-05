@@ -29,7 +29,6 @@ public class GetSummaryReportCommand implements Command {
 		String moduleName = context.getModuleName();
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		Condition orgCondition = (Condition) context.get(FacilioConstants.Reports.ORG_CONDITION);
 		String customWhere = (String) context.get(FacilioConstants.Reports.CUSTOM_WHERE_CONDITION);
@@ -38,7 +37,6 @@ public class GetSummaryReportCommand implements Command {
 		int limit = context.getLimit();
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.connection(conn)
 				.select(fields)
 				.table(dataTableName)
 				.andCondition(orgCondition);

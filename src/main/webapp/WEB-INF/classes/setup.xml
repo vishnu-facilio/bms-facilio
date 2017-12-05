@@ -133,11 +133,6 @@
 				<param name="includeProperties">alarmCreationRules.*,emails.*,phoneNumbers.*</param>
 			</result>
 		</action>
-		<action name="readingrules" class="com.facilio.bmsconsole.actions.NotificationAction" method="alarmCreationRulesList">
-            <result name="success" type="json">
-				<param name="includeProperties">alarmCreationRules.*,emails.*,phoneNumbers.*</param>
-			</result>
-		</action>
 		<action name="turnonrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOnWorkflow">
             <result name="success" type="json">
 				<param name="includeProperties">result</param>

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class AddWOFromAlarmCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
 			idCondition.setField(FieldFactory.getIdField(module));
@@ -45,7 +44,6 @@ public class AddWOFromAlarmCommand implements Command {
 			idCondition.setValue(ids);
 			
 			SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
-																	.connection(conn)
 																	.table(dataTableName)
 																	.moduleName(moduleName)
 																	.beanClass(AlarmContext.class)

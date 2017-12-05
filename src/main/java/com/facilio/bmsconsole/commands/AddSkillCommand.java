@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -21,7 +20,7 @@ public class AddSkillCommand implements Command {
 		SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
 		if(skill != null) 
 		{
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();			
+				
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -29,8 +28,8 @@ public class AddSkillCommand implements Command {
 			InsertRecordBuilder<SkillContext> builder = new InsertRecordBuilder<SkillContext>()
 															.moduleName(moduleName)
 															.table(dataTableName)
-															.fields(fields)
-															.connection(conn);
+															.fields(fields);
+															
 			long id = builder.insert(skill);
 			skill.setId(id);
 			

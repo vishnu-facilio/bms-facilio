@@ -28,7 +28,6 @@ public class DeleteWorkOrderCommand implements Command {
 			condition += ")";
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-					.connection(((FacilioContext)context).getConnectionWithTransaction())
 					.table(dataTableName)
 					.andCustomWhere(condition, recordIds.toArray());
 			

@@ -15,7 +15,6 @@ public class DeleteSupportEmailCommand implements Command {
 		long supportEmailId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if(supportEmailId != -1) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-														.connection(((FacilioContext)context).getConnectionWithTransaction())
 														.table("SupportEmails")
 														.andCustomWhere("ID = ?", supportEmailId);
 			builder.delete();

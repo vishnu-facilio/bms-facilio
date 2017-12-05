@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class AddGroupMembersCommand implements Command {
 		Long[] memberIds = (Long[]) context.get(FacilioConstants.ContextNames.GROUP_MEMBER_IDS);
 		
 		if (groupId != null && memberIds != null) {
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			List<Long> members = new ArrayList<>();
 			for (long memberId : memberIds) {

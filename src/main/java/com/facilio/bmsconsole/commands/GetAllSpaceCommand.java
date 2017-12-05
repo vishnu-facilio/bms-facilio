@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -26,10 +25,8 @@ public class GetAllSpaceCommand implements Command{
 		Long floorId = (Long) context.get(FacilioConstants.ContextNames.FLOOR_ID);
 		Long categoryId = (Long) context.get(FacilioConstants.ContextNames.SPACE_CATEGORY);
 		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
-				.connection(conn)
 				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(SpaceContext.class)

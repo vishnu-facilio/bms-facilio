@@ -28,7 +28,6 @@ public class UpdateEmailSettingCommand implements Command {
 		
 		List<FacilioField> fields = FieldFactory.getEmailSettingFields();
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-												.connection(((FacilioContext)context).getConnectionWithTransaction())
 												.table("EmailSettings")
 												.fields(fields)
 												.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());

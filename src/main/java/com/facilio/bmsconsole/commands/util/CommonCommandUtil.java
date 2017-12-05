@@ -50,13 +50,13 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	public static Map<Long, User> getRequesters(String ids, Connection conn) throws Exception {
+	public static Map<Long, User> getRequesters(String ids) throws Exception {
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		Map<Long, User> requesters = new HashMap<>();
-		
+		Connection conn =null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("SELECT ORG_USERID, EMAIL, NAME FROM ORG_Users, Users where ORG_Users.USERID = Users.USERID and ORG_Users.ORGID = ? and ? & ORG_Users.USER_TYPE = ? ORDER BY EMAIL");

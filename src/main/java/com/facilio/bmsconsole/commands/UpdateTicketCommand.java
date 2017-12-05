@@ -22,13 +22,11 @@ public class UpdateTicketCommand implements Command {
 		{
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			UpdateRecordBuilder<TicketContext> builder = new UpdateRecordBuilder<TicketContext>()
 														.moduleName(moduleName)
 														.table(dataTableName)
-														.connection(conn)
 														.fields(fields)
 														.andCustomWhere("ID = ?", ticket.getId());
 			builder.update(ticket);

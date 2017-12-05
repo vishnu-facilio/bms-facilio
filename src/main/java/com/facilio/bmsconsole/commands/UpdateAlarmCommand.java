@@ -36,7 +36,6 @@ public class UpdateAlarmCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -70,7 +69,6 @@ public class UpdateAlarmCommand implements Command {
 			}
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
-																		.connection(conn)
 																		.moduleName(moduleName)
 																		.table(dataTableName)
 																		.fields(fields)
