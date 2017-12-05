@@ -9,8 +9,10 @@ import java.util.Map;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.events.context.EventRule;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -19,6 +21,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class WorkflowAPI {
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
+		updateWorkflowRuleChildIds(rule,rule.getOrgId());
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table("Workflow_Rule")
@@ -28,6 +31,12 @@ public class WorkflowAPI {
 		return (long) ruleProps.get("id");
 	}
 	
+	public static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext, long orgId) throws Exception {
+		if(workflowRuleContext.getCriteria() != null) {
+			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),orgId);
+			workflowRuleContext.setCriteriaId(criteriaId);
+		}
+	}
 	public static int updateWorkflowRule(long orgId, WorkflowRuleContext rule, long id) throws Exception {
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

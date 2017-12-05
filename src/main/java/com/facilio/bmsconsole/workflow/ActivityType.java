@@ -84,6 +84,13 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			return "added the following file(s).";
 		}
+	},
+	ADD_TICKET_TASKS(256) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "added the following task.";
+		}
 	}
 	;
 

@@ -338,6 +338,35 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getWorkflowRuleActionFields() 
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleActionModule();
+		
+		FacilioField workflowRuleActionId = new FacilioField();
+		workflowRuleActionId.setName("workflowRuleActionId");
+		workflowRuleActionId.setDataType(FieldType.NUMBER);
+		workflowRuleActionId.setColumnName("WORKFLOW_RULE_ACTION_ID");
+		workflowRuleActionId.setModule(module);
+		fields.add(workflowRuleActionId);
+		
+		FacilioField workflowRuleId = new FacilioField();
+		workflowRuleId.setName("workflowRuleId");
+		workflowRuleId.setDataType(FieldType.NUMBER);
+		workflowRuleId.setColumnName("WORKFLOW_RULE_ID");
+		workflowRuleId.setModule(module);
+		fields.add(workflowRuleId);
+		
+		FacilioField actionId = new FacilioField();
+		actionId.setName("actionId");
+		actionId.setDataType(FieldType.NUMBER);
+		actionId.setColumnName("ACTION_ID");
+		actionId.setModule(module);
+		fields.add(actionId);
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getWorkflowRuleFields() 
 	{
 		List<FacilioField> fields = new ArrayList<>();

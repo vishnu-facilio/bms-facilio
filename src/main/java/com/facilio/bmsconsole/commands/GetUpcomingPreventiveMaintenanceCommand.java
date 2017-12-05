@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.executor.ScheduleInfo;
 
 public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 
@@ -59,11 +60,22 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			for(Map<String, Object> prop : pmProps) 
 			{
 				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
-				List<Long> nextExecutionTimes = pm.getSchedule().nextExecutionTimes(startTime, endTime);
-				for(Long nextExecutionTime : nextExecutionTimes)
+				if(pm.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT)
 				{
-					Pair<Long, PreventiveMaintenance> pair = new ImmutablePair<Long, PreventiveMaintenance>(nextExecutionTime, pm);
-					pms.add(pair);
+					if(pm.getStartTime() > startTime)
+					{
+						Pair<Long, PreventiveMaintenance> pair = new ImmutablePair<Long, PreventiveMaintenance>(pm.getStartTime(), pm);
+						pms.add(pair);
+					}
+				}
+				else
+				{
+					List<Long> nextExecutionTimes = pm.getSchedule().nextExecutionTimes(startTime, endTime);
+					for(Long nextExecutionTime : nextExecutionTimes)
+					{
+						Pair<Long, PreventiveMaintenance> pair = new ImmutablePair<Long, PreventiveMaintenance>(nextExecutionTime, pm);
+						pms.add(pair);
+					}
 				}
 			}
 			pms.sort(new Comparator<Pair<Long, PreventiveMaintenance>>() {

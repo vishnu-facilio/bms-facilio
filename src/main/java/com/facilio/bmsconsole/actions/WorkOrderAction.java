@@ -134,6 +134,7 @@ public class WorkOrderAction extends ActionSupport {
 		if(workorder.getSpace() != null) {
 			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
 		}
+		preventivemaintenance.setStatus(true);
 		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
@@ -141,6 +142,54 @@ public class WorkOrderAction extends ActionSupport {
 		
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String updatePreventiveMaintenance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		if(workorder.getAsset() != null) {
+			preventivemaintenance.setAssetId(workorder.getAsset().getId());
+		}
+		if(workorder.getSpace() != null) {
+			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
+		}
+		preventivemaintenance.setStatus(true);
+		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		
+		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
+		updatePM.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String editPreventiveMaintenance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		
+		Chain editPM = FacilioChainFactory.getEditPreventiveMaintenanceChain();
+		editPM.execute(context);
+		
+		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
+		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		
+		return SUCCESS;
+	}
+	
+	public String deletePreventiveMaintenance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain deletePM = FacilioChainFactory.getDeletePreventiveMaintenanceChain();
+		deletePM.execute(context);
 		
 		return SUCCESS;
 	}

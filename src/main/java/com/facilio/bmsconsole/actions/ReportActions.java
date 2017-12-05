@@ -107,7 +107,7 @@ public class ReportActions extends ActionSupport {
 		if(total!=null & !total.isEmpty()) {
 			Map<String,Object> currentTotal=total.get(0);
 			double currentKwh = (double)currentTotal.get("CONSUMPTION");
-			String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
+			String[] consumptionArray=ReportsUtil.energyUnitConverter(currentKwh);
 			resultJson.put("totalConsumption", consumptionArray[0]);
 			resultJson.put("units",consumptionArray[1]);
 		}
@@ -237,10 +237,10 @@ public class ReportActions extends ActionSupport {
 		}
 		consumptionData.put("currentVal", current);
 		consumptionData.put("previousVal", previous);
-		String[] consumptionArray=ReportsUtil.energyConverter(currentKwh);
+		String[] consumptionArray=ReportsUtil.energyUnitConverter(currentKwh);
 		consumptionData.put("currentTotal", consumptionArray[0]);
 		consumptionData.put("currentUnits",consumptionArray[1]);
-		consumptionArray=ReportsUtil.energyConverter(previousKwh);
+		consumptionArray=ReportsUtil.energyUnitConverter(previousKwh);
 		consumptionData.put("previousTotal", consumptionArray[0]);
 		consumptionData.put("previousUnits",consumptionArray[1]);
 		consumptionData.put("variance",ReportsUtil.getVariance(currentKwh, previousKwh));
@@ -371,8 +371,8 @@ public class ReportActions extends ActionSupport {
 		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
 
 		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-		JSONObject lastMonthData = ReportsUtil.getMonthData(lastMonthKwh,lastMonthDays);
-		JSONObject thisMonthData = ReportsUtil.getMonthData(thisMonthKwh,thisMonthDays);
+		JSONObject lastMonthData = ReportsUtil.getEnergyData(lastMonthKwh,lastMonthDays);
+		JSONObject thisMonthData = ReportsUtil.getEnergyData(thisMonthKwh,thisMonthDays);
 
 
 		buildingData.put("previousVal", lastMonthData);

@@ -56,7 +56,18 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		return "addAssignmentRuleSuccess";
 	}
-	
+	public String addReadingRule() throws Exception {
+		
+		FacilioContext facilioContext = new FacilioContext();
+		
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
+		
+		Chain addRule = FacilioChainFactory.getAddReadingRuleChain();
+		addRule.execute(facilioContext);
+		
+		return SUCCESS;
+	}
 	public String addWorkflowRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

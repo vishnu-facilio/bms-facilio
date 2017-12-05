@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -40,7 +41,7 @@ public class ReportsUtil
 	private static double unitCost=0.65;
 
 	
-	public static String[] energyConverter(Double value)
+	public static String[] energyUnitConverter(Double value)
 	{
 		long length=(long)Math.log10(value)+1;
 		String units="kWh";
@@ -185,19 +186,34 @@ public class ReportsUtil
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	public static JSONObject getBuildingData(BuildingContext building)
 	{
+		return getBuildingData(building,true);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public static JSONObject getBuildingData(BuildingContext building, boolean fetchLocation)
+	{
 		JSONObject buildingData= new JSONObject();
-		int floors=building.getNoOfFloors();
-		buildingData.put("floors", floors);
-		long photoId=building.getPhotoId();
-		buildingData.put("photoid", photoId);
+		buildingData.put("name", building.getName());
+		buildingData.put("id", building.getId());
+		buildingData.put("displayName", building.getDisplayName());
+		buildingData.put("area", building.getGrossFloorArea());
+		buildingData.put("floors", building.getNoOfFloors());
+		buildingData.put("photoid", building.getPhotoId());
+		if(!fetchLocation)
+		{
+			return buildingData;
+		}
+		
 		try{
 			String avatarUrl=building.getAvatarUrl();
 			buildingData.put("avatar",avatarUrl);
-			LocationContext location=SpaceAPI.getLocationSpace(building.getLocation().getId());
-			if(location!=null){
+			LocationContext location=building.getLocation();
+			if(location!=null)
+			{
+				location=SpaceAPI.getLocationSpace(building.getLocation().getId());
 				buildingData.put("city", location.getCity());
 				buildingData.put("street",location.getStreet());
 				buildingData.put("latitude",location.getLat());
@@ -207,39 +223,50 @@ public class ReportsUtil
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		buildingData.put("name", building.getName());
-		buildingData.put("id", building.getId());
-		buildingData.put("displayName", building.getDisplayName());
-		buildingData.put("area", building.getGrossFloorArea());
 		return buildingData;
 	}
 	
+	
 	@SuppressWarnings("unchecked")
-	public static JSONObject getMonthData(Double kwh,int days)
+	public static JSONObject getEnergyData(Double kwh,int days)
 	{
-		JSONObject monthData = new JSONObject();
+		JSONObject data = new JSONObject();
 		if(kwh==null || kwh==0)
 		{
-			return monthData;
+			return data;
 		}
-		String[] consumptionArray=ReportsUtil.energyConverter(kwh);
-		monthData.put("consumption",consumptionArray[0]);
-		monthData.put("units",consumptionArray[1]);
-		monthData.put("currency","$");
-		monthData.put("days", days);
+		String[] consumptionArray=ReportsUtil.energyUnitConverter(kwh);
+		data.put("consumption",consumptionArray[0]);
+		data.put("units",consumptionArray[1]);
+		data.put("currency","$");
+		data.put("days", days);
 		
 		String [] costArray=ReportsUtil.getCost(kwh);
-		monthData.put("cost", costArray[0]);
-		monthData.put("costUnits", costArray[1]);
-		////double EUI= kwh/buildingArea/lastMonthDays;
-		//monthData.put("eui", EUI);
-		return monthData;
+		data.put("cost", costArray[0]);
+		data.put("costUnits", costArray[1]);
+		return data;
+	}
+	
+	
+	public static Map<Long, Long> getBuildingVsMeter(List<EnergyMeterContext> energyMeters)
+	{
+	
+		Map <Long, Long> buildingVsMeter= new HashMap<Long,Long>();
+		for(EnergyMeterContext emc:energyMeters) {
+
+			long meterId=emc.getId();
+			long buildingId =emc.getPurposeSpace().getId();
+			//under the assumption only one main meter for a building.. 
+			//when there are more than 1 main meter, there should be one virtual meter which will be the main meter..
+			buildingVsMeter.put(buildingId,meterId);
+		}
+		return buildingVsMeter;
 	}
 	
 	
 	public static double getEUI(Double currentKwh, Double buildingArea) {
 
-		if(currentKwh==null || currentKwh==0)
+		if(currentKwh==null || currentKwh==0 || buildingArea==null || buildingArea==0)
 		{
 			return 0;
 		}
@@ -290,20 +317,24 @@ public class ReportsUtil
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		
 		return result;	
 	}
 	
 	public static Map<Long,Double> getMeterVsConsumption(List<Map<String, Object>> result)
 	{
-		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
+		return getMapping(result,"Meter_ID","CONSUMPTION");
+	}
+	
+	public static Map<Long,Double> getMapping(List<Map<String, Object>> result,String key,String value)
+	{
+		Map<Long,Double> keyVsValue = new HashMap<Long,Double>();
 		for(Map<String,Object> rowData: result)
 		{
-			long meterId=(long)	rowData.get("Meter_ID");
-			double consumption=(double) rowData.get("CONSUMPTION");
-			meterConsumption.put(meterId, consumption);
+			Long meterId=(Long)	rowData.get(key);
+			Double consumption=(Double) rowData.get(value);
+			keyVsValue.put(meterId, consumption);
 		}
-		return meterConsumption;
+		return keyVsValue;
 	}
 	
 	public static Map<Long,Double> getMeterVsConsumptionPercentage(List<Map<String, Object>> result, double totalKwh)
@@ -311,9 +342,9 @@ public class ReportsUtil
 		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
 		for(Map<String,Object> rowData: result)
 		{
-			long meterId=(long)	rowData.get("Meter_ID");
-			double consumption=(double) rowData.get("CONSUMPTION");
-			double percentage=getPercentage(consumption,totalKwh);
+			Long meterId=(Long)	rowData.get("Meter_ID");
+			Double consumption=(Double) rowData.get("CONSUMPTION");
+			Double percentage=getPercentage(consumption,totalKwh);
 			meterConsumption.put(meterId, percentage);
 		}
 		return meterConsumption;

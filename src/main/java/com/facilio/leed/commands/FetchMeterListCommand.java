@@ -39,6 +39,8 @@ public class FetchMeterListCommand implements Command {
 			LeedAPI.addLeedEnergyMeters(meterList,buildingId);
 			
 		}
+		//context.put(LeedConstants.ContextNames.METERLIST, meterList);
+		meterList = LeedAPI.fetchMeterListForBuilding(buildingId,meterType);
 		context.put(LeedConstants.ContextNames.METERLIST, meterList);
 		return false;
 	}

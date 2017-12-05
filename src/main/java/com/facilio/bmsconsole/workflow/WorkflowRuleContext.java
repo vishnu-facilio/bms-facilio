@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.workflow;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 
-public class WorkflowRuleContext {
+public class WorkflowRuleContext extends WorkflowEventContext {
 	
 	private long orgId = -1;
 	public long getOrgId() {

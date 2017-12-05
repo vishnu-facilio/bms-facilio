@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -20,14 +19,12 @@ public class AddTaskCommand implements Command {
 		if(task != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			task.setCreatedTime(System.currentTimeMillis());
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
 															.moduleName(moduleName)
 															.table(dataTableName)
-															.fields(fields)
-															.connection(conn);
+															.fields(fields);
 			long taskId = builder.insert(task);
 			task.setId(taskId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
