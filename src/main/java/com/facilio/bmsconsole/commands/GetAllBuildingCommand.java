@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -23,13 +22,12 @@ public class GetAllBuildingCommand implements Command{
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
 		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+		//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
-				.connection(conn)
 				.table(module.getTableName())
 				.moduleName(moduleName)
 				.beanClass(BuildingContext.class)

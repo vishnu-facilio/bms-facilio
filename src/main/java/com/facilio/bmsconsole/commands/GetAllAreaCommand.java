@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -15,7 +14,7 @@ public class GetAllAreaCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces());
 		
 		return false;

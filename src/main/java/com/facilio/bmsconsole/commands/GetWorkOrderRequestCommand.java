@@ -30,10 +30,8 @@ public class GetWorkOrderRequestCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
 			SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
-																.connection(conn)
 																.table(dataTableName)
 																.moduleName(moduleName)
 																.beanClass(WorkOrderRequestContext.class)
@@ -47,7 +45,7 @@ public class GetWorkOrderRequestCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workOrderRequest);
 				
-				TicketAPI.loadRelatedModules(workOrderRequest, conn);
+				TicketAPI.loadRelatedModules(workOrderRequest);
 			}
 		}
 		else {

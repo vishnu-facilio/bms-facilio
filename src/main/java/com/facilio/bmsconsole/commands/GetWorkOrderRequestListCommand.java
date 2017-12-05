@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -26,11 +25,9 @@ public class GetWorkOrderRequestListCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		SelectRecordsBuilder<WorkOrderRequestContext> builder = new SelectRecordsBuilder<WorkOrderRequestContext>()
-														.connection(conn)
 														.table(dataTableName)
 														.moduleName(moduleName)
 														.beanClass(WorkOrderRequestContext.class)
@@ -60,14 +57,14 @@ public class GetWorkOrderRequestListCommand implements Command {
 		}
 		
 		List<WorkOrderRequestContext> workOrderRequests = builder.get();
-		loadRequesters(workOrderRequests, conn);
+		loadRequesters(workOrderRequests);
 		TicketAPI.loadTicketLookups(workOrderRequests);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST_LIST, workOrderRequests);
 		
 		return false;
 	}
 	
-	private void loadRequesters(List<WorkOrderRequestContext> workOrderRequests, Connection conn) throws Exception {
+	private void loadRequesters(List<WorkOrderRequestContext> workOrderRequests) throws Exception {
 		if(workOrderRequests != null && !workOrderRequests.isEmpty()) {
 			StringBuilder ids = new StringBuilder();
 			boolean isFirst = true;
@@ -86,7 +83,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 			
 			if(ids.length() > 0)
 			{
-				Map<Long, User> requesters = CommonCommandUtil.getRequesters(ids.toString(), conn);
+				Map<Long, User> requesters = CommonCommandUtil.getRequesters(ids.toString());
 				for(WorkOrderRequestContext workOrderRequest : workOrderRequests) {
 					if(workOrderRequest.getRequester() != null)
 					{

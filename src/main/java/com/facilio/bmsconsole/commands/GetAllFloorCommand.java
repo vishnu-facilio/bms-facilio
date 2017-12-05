@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -22,10 +21,9 @@ public class GetAllFloorCommand implements Command{
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Long buildingId = (Long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
 		
-		Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
+	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		SelectRecordsBuilder<FloorContext> builder = new SelectRecordsBuilder<FloorContext>()
-				.connection(conn)
 				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(FloorContext.class)

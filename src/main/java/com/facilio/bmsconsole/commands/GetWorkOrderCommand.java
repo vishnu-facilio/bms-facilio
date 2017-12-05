@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -31,10 +30,8 @@ public class GetWorkOrderCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 			
 			SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-																.connection(conn)
 																.table(dataTableName)
 																.moduleName(moduleName)
 																.beanClass(WorkOrderContext.class)
@@ -48,7 +45,7 @@ public class GetWorkOrderCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 				
-				TicketAPI.loadRelatedModules(workOrder, conn);
+				TicketAPI.loadRelatedModules(workOrder);
 			}
 		}
 		else {

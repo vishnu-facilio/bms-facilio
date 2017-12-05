@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,14 +36,14 @@ public class AddZoneCommand implements Command {
 			updateZoneInfo(zone, children);
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
+		//	Connection conn = ((FacilioContext) context).getConnectionWithTransaction();
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			InsertRecordBuilder<ZoneContext> builder = new InsertRecordBuilder<ZoneContext>()
 															.moduleName(moduleName)
 															.table(dataTableName)
-															.fields(fields)
-															.connection(conn);
+															.fields(fields);
+															
 			long zoneId = builder.insert(zone);
 			zone.setId(zoneId);
 			

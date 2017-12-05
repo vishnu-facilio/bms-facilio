@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,18 +36,17 @@ public class TicketAPI {
 	
 	private static Logger logger = Logger.getLogger(TicketAPI.class.getName());
 	
-	public static List<AttachmentContext> getRelatedAttachments(long ticketId, Connection conn) throws Exception 
+	public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception 
 	{
 		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
 	}
 	
 	public static TicketStatusContext getStatus(long orgId, String status) throws Exception
 	{
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		try
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-																.connection(conn)
 																.table("TicketStatus")
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
@@ -66,11 +64,10 @@ public class TicketAPI {
 	
 	public static TicketCategoryContext getCategory(long orgId, String category) throws Exception
 	{
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		try
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
-																.connection(conn)
 																.table("TicketCategory")
 																.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
 																.beanClass(TicketCategoryContext.class)
@@ -88,7 +85,7 @@ public class TicketAPI {
 	
 	public static TicketPriorityContext getPriority(long orgId, String priority) throws Exception
 	{
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		try
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
@@ -109,11 +106,10 @@ public class TicketAPI {
 	
 	public static TicketStatusContext getStatus(long orgId, long id) throws Exception
 	{
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection())
+		try
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-																.connection(conn)
 																.table("TicketStatus")
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
@@ -129,13 +125,12 @@ public class TicketAPI {
 		}
 	}
 	
-	public static List<TaskContext> getRelatedTasks(long ticketId, Connection conn) throws Exception 
+	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-				.connection(conn)
 				.table("Tasks")
 				.moduleName(FacilioConstants.ContextNames.TASK)
 				.beanClass(TaskContext.class)
@@ -147,7 +142,7 @@ public class TicketAPI {
 		return tasks;
 	}
 	
-	public static List<NoteContext> getRelatedNotes(long ticketId, Connection conn) throws Exception 
+	public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_NOTES);
@@ -161,11 +156,11 @@ public class TicketAPI {
 		return selectBuilder.get();
 	}
 	
-	public static void loadRelatedModules(TicketContext ticket, Connection conn) throws Exception {
+	public static void loadRelatedModules(TicketContext ticket) throws Exception {
 		if(ticket != null) {
-			ticket.setTasks(getRelatedTasks(ticket.getId(), conn));
-			ticket.setNotes(getRelatedNotes(ticket.getId(), conn));
-			ticket.setAttachments(getRelatedAttachments(ticket.getId(), conn));
+			ticket.setTasks(getRelatedTasks(ticket.getId()));
+			ticket.setNotes(getRelatedNotes(ticket.getId()));
+			ticket.setAttachments(getRelatedAttachments(ticket.getId()));
 		}
 	}
 	
@@ -182,9 +177,8 @@ public class TicketAPI {
 			maxSerialNumberField.add(field);
 		}
 		
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try{
 			GenericSelectRecordBuilder builder =  new GenericSelectRecordBuilder()
-														.connection(conn)
 														.select(maxSerialNumberField)
 														.table("Tickets")
 														.andCustomWhere("ORGID = ?", orgId);
@@ -216,7 +210,7 @@ public class TicketAPI {
 		}
 	}
 	
-public static Map<Long, TicketContext> getTickets(String ids, Connection conn) throws Exception {
+public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		
 		Condition idCondition = new Condition();
 		idCondition.setField(FieldFactory.getIdField(ModuleFactory.getTicketsModule()));
@@ -227,7 +221,6 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET);
 		
 		SelectRecordsBuilder<TicketContext> selectBuilder = new SelectRecordsBuilder<TicketContext>()
-																	.connection(conn)
 																	.select(fields)
 																	.table("Tickets")
 																	.moduleName(FacilioConstants.ContextNames.TICKET)
@@ -261,9 +254,8 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 			
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			try {
 				SelectRecordsBuilder<TicketStatusContext> selectBuilder = new SelectRecordsBuilder<TicketStatusContext>()
-																				.connection(conn)
 																				.select(fields)
 																				.table("TicketStatus")
 																				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
@@ -289,9 +281,8 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY);
 			
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			try{
 				SelectRecordsBuilder<TicketPriorityContext> selectBuilder = new SelectRecordsBuilder<TicketPriorityContext>()
-																				.connection(conn)
 																				.select(fields)
 																				.table("TicketPriority")
 																				.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
@@ -317,9 +308,8 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY);
 			
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			try {
 				SelectRecordsBuilder<TicketCategoryContext> selectBuilder = new SelectRecordsBuilder<TicketCategoryContext>()
-																				.connection(conn)
 																				.select(fields)
 																				.table("TicketCategory")
 																				.moduleName(FacilioConstants.ContextNames.TICKET_CATEGORY)
@@ -378,7 +368,7 @@ public static Map<Long, TicketContext> getTickets(String ids, Connection conn) t
 	
 	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			try {
 				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces();
 				
 				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();

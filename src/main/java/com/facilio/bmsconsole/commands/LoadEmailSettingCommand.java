@@ -21,7 +21,6 @@ public class LoadEmailSettingCommand implements Command {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = FieldFactory.getEmailSettingFields();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.connection(((FacilioContext) context).getConnectionWithTransaction())
 				.table("EmailSettings")
 				.select(fields)
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
