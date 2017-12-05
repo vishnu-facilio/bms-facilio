@@ -12,9 +12,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -73,7 +72,7 @@ public class DeviceAPI
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?", true)
 				.andCustomWhere("PARENT_ASSET_ID IS NULL")
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -122,7 +121,7 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT=?",root)
-				.andCondition(getCondition("PURPOSE_ID",purposeList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",purposeList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -139,8 +138,8 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?",root)
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
-				.andCondition(getCondition("PURPOSE_ID",purposeList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",purposeList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -157,7 +156,7 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?", root)
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE-SPACE_ID",spaceList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -200,7 +199,7 @@ public class DeviceAPI
 				.select(modBean.getAllFields(module.getName()))
 				.module(module)
 				.beanClass(EnergyMeterPurposeContext.class)
-				.andCondition(getCondition("ID",purposeFilter,operator))
+				.andCondition(CriteriaAPI.getCondition("ID","ID",purposeFilter,operator))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -236,17 +235,6 @@ public class DeviceAPI
 			deviceMapping.put(meterId, purposeName);
 		}
 		return deviceMapping;
-	}
-
-	
-	@SuppressWarnings("rawtypes")
-	public static Condition getCondition (String colName,String valueList,Operator operator)
-	{
-		Condition condition = new Condition();
-		condition.setColumnName(colName);
-		condition.setOperator(operator);
-		condition.setValue(valueList);
-		return condition;
 	}
 
 }

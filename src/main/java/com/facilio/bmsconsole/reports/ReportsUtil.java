@@ -16,11 +16,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -310,7 +310,7 @@ public class ReportsUtil
 				.table("Energy_Data")
                 .andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
-				.andCondition(DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
 				.groupBy(groupBy.toString());
 		try {
 			result = builder.get();
