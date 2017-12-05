@@ -197,7 +197,7 @@ public class WorkOrderAction extends ActionSupport {
 	public String changePreventiveMaintenanceStatus() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		
 		Chain addTemplate = FacilioChainFactory.getChangePreventiveMaintenanceStatusChain();
