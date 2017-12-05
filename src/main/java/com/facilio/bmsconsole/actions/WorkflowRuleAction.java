@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -65,6 +63,16 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		Chain addRule = FacilioChainFactory.getAddReadingRuleChain();
 		addRule.execute(facilioContext);
+		
+		return SUCCESS;
+	}
+	public String getReadingRules() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain workflowRulesChain = FacilioChainFactory.getWorkflowRulesChain();
+		workflowRulesChain.execute(context);
+		
+		setRules((List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 		
 		return SUCCESS;
 	}
