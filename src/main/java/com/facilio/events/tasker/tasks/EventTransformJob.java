@@ -45,11 +45,14 @@ public class EventTransformJob extends FacilioJob{
 				for(Map<String, Object> prop : props)
 				{
 					EventContext event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
+					logger.log(Level.SEVERE, event.getEventRuleId()+"");
+					logger.log(Level.INFO, event.getEventRuleId()+" INfo");
 					EventRule rule = EventRulesAPI.getEventRule(orgId, event.getEventRuleId());
-					
+					logger.log(Level.INFO, "Transform criteria : "+rule.getTransformCriteriaId());
 					if(rule.getTransformCriteriaId() != -1)
 					{
 						Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId());
+						logger.log(Level.INFO, prop.toString());
 						boolean isMatched = criteria.computePredicate().evaluate(prop);
 						if(isMatched)
 						{
