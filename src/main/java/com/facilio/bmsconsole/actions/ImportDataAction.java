@@ -11,12 +11,14 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.ImportMetaInfo.Module;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -44,7 +46,7 @@ public class ImportDataAction extends ActionSupport {
 			{
 				pstmtCheck.setObject(1, orgId);
 				pstmtCheck.setObject(2, getColumnheading());
-				pstmtCheck.setObject(3, metainfo.getModule().getValue());
+				pstmtCheck.setObject(3, metainfo.getModule().getModuleId());
 				//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
 				try(ResultSet fieldMapSet= pstmtCheck.executeQuery())
 				{
@@ -85,10 +87,12 @@ public class ImportDataAction extends ActionSupport {
 			setColumnheading(columnheadings.toJSONString().replaceAll("\"", "\\\""));
 			long fileid = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 			String  insert = INSERTQUERY.replaceAll("#orguserid#", fs.getUserId()+"").replaceAll("#fileid#", fileid+"").replaceAll("#COLUMN_HEADING#", getColumnheading());
-
-			metainfo.setModule(Module.valueOf(getModuleName()));
+	        
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	        FacilioModule facilioModule = modBean.getModule(getModuleName());
+			
 			System.out.println("Module -- "+metainfo.getModule());
-			insert =insert.replaceAll("#module#", String.valueOf(metainfo.getModule().getValue())); // 1 for energy data
+			insert =insert.replaceAll("#module#", String.valueOf(facilioModule.getModuleId()));
 			 conn  = FacilioConnectionPool.INSTANCE.getConnection();
 			System.out.println(insert);
 			PreparedStatement pstmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);	
