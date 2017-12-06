@@ -46,7 +46,7 @@ public class LoginUtil {
 			
 			org = AccountUtil.getOrgBean().getOrg(orgDomain);
 			if (org == null) {
-				Map<String, String> signupInfo = new HashMap<String, String>();
+				JSONObject signupInfo = new JSONObject();
 				signupInfo.put("name", cognitoUser.getName());
 				signupInfo.put("email", cognitoUser.getEmail());
 				signupInfo.put("cognitoId", cognitoUser.getCognitoId());

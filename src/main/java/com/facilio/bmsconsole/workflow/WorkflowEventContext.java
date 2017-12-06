@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.workflow;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+
 public class WorkflowEventContext {
 	private long id;
 	public long getId() {
@@ -32,7 +37,10 @@ public class WorkflowEventContext {
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
 	}
-	
+	public void setModule(String module) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		this.moduleId = modBean.getModule(module).getModuleId();
+	}
 	private ActivityType activityType;
 	public int getActivityType() {
 		if(activityType != null) {
