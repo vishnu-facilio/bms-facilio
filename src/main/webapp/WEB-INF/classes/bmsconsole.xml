@@ -1487,6 +1487,13 @@
 	
 	
 	<package name="energyPorfolioReportsApi" namespace="/api/report/energy/portfolio" extends="home">
+			<action name="getBuildingMap" class="com.facilio.bmsconsole.actions.PortfolioAction"
+					method="getBuildingMap">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+	
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildings">
 			<result name="success" type="json">

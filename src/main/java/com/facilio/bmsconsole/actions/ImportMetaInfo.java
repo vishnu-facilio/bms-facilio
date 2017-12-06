@@ -114,7 +114,9 @@ public class ImportMetaInfo
 		Energy(1,FacilioConstants.ContextNames.ENERGY_DATA_READING),
 		Building(2,FacilioConstants.ContextNames.BUILDING),
 		Space(3,FacilioConstants.ContextNames.SPACE),
-		EnergyMeter(4,FacilioConstants.ContextNames.ENERGY_METER);
+		EnergyMeter(4,FacilioConstants.ContextNames.ENERGY_METER),
+		Asset(5,FacilioConstants.ContextNames.ASSET);
+		
 		int value;
 		String moduleName;
 		private Module(int value,String moduleName)
@@ -134,8 +136,17 @@ public class ImportMetaInfo
 			switch(value) {
 			case 1:
 				return Module.Energy;
+			
+			case 2:
+				return Module.Building;
+			case 3:
+				return Module.Space;
+				
 			case 4:
 				return Module.EnergyMeter;
+			case 5:
+				return Module.Asset;
+			
 			}
 			return null;
 		}
