@@ -27,10 +27,13 @@ public class CacheInterceptor extends AbstractInterceptor {
 		 boolean cached_url ="GET".equals(request.getMethod())  && (cache !=null && cache.getValue()!=null && cache.getValue().equals("org"));
 		
 		//System.out.println("cache interceptor "+request.getMethod() +"-"+cache.getValue() +" chache object "+cache);
-		 String result = null;
-		 
+		 String result = null;		 
 		 Object expireat = null;//ActionContext.getContext().getValueStack().findValue("cacheControl");
-		// expireat = CacheControl.getCacheControl(1);
+		 Parameter cachetype = ActionContext.getContext().getParameters().get("cachetype");
+		 if(cachetype !=null && cachetype.getValue()!=null )
+		 {
+			expireat = CacheControl.getCacheControl(Integer.parseInt(cachetype.getValue()));
+		 }
 		 if(expireat !=null && expireat instanceof CacheControl)
 		 {
 			 CacheControl c = (CacheControl)expireat;

@@ -9,7 +9,6 @@ public class User {
 	private long uid;
 	private String name;
 	private String cognitoId;
-	private boolean userVerified;
 	private String email;
 	private long photoId;
 	private String timezone;
@@ -24,9 +23,6 @@ public class User {
 	private long ouid;
 	private long orgId;
 	private long invitedTime;
-	private boolean isDefaultOrg;
-	private boolean userStatus;
-	private boolean inviteAcceptStatus;
 	private long roleId;
 	private int userType;
 	
@@ -51,11 +47,18 @@ public class User {
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
 	}
-	public boolean isUserVerified() {
+	private Boolean userVerified;
+	public Boolean getUserVerified() {
 		return userVerified;
 	}
-	public void setUserVerified(boolean userVerified) {
+	public void setUserVerified(Boolean userVerified) {
 		this.userVerified = userVerified;
+	}
+	public boolean isUserVerified(){
+		if(userVerified!=null){
+			return userVerified.booleanValue();
+		}
+		return false;
 	}
 	public String getEmail() {
 		return email;
@@ -154,23 +157,46 @@ public class User {
 	public void setInvitedTime(long invitedTime) {
 		this.invitedTime = invitedTime;
 	}
-	public boolean getIsDefaultOrg() {
+	
+	private Boolean isDefaultOrg;
+	public Boolean getIsDefaultOrg() {
 		return isDefaultOrg;
 	}
-	public void setDefaultOrg(boolean isDefaultOrg) {
+	public void setDefaultOrg(Boolean isDefaultOrg) {
 		this.isDefaultOrg = isDefaultOrg;
 	}
-	public boolean getUserStatus() {
+	public boolean isDefaultOrg() {
+		if(isDefaultOrg != null) {
+			return isDefaultOrg.booleanValue();
+		}
+		return false;
+	}
+	
+	private Boolean userStatus;
+	public Boolean getUserStatus() {
 		return userStatus;
 	}
-	public void setUserStatus(boolean userStatus) {
+	public void setUserStatus(Boolean userStatus) {
 		this.userStatus = userStatus;
 	}
-	public boolean getInviteAcceptStatus() {
+	public boolean isActive() {
+		if(userStatus != null) {
+			return userStatus.booleanValue();
+		}
+		return false;
+	}
+	private Boolean inviteAcceptStatus;
+	public Boolean getInviteAcceptStatus() {
 		return inviteAcceptStatus;
 	}
-	public void setInviteAcceptStatus(boolean inviteAcceptStatus) {
+	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
 		this.inviteAcceptStatus = inviteAcceptStatus;
+	}
+	public boolean isInviteAcceptStatus(){
+		if(inviteAcceptStatus!=null){
+			return inviteAcceptStatus.booleanValue();
+		}
+		return false;
 	}
 	public long getRoleId() {
 		return roleId;
