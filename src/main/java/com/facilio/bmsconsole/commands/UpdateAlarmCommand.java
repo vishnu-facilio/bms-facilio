@@ -49,9 +49,12 @@ public class UpdateAlarmCommand implements Command {
 				alarm.setAcknowledgedBy(AccountUtil.getCurrentUser());
 			}
 			
-			if(alarm.getAlarmStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
+			if(alarm.getSeverity() != null && alarm.getSeverity().equalsIgnoreCase(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 				alarm.setClearedTime(System.currentTimeMillis());
+				alarm.setClearedBy(AccountUtil.getCurrentUser());
 			}
+			
+			alarm.setModifiedTime(System.currentTimeMillis());
 			
 			if(recordIds.size() == 1) {
 				SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()

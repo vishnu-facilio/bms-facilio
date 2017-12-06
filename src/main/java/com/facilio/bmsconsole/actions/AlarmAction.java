@@ -112,7 +112,6 @@ public class AlarmAction extends ActionSupport {
 			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
 			ticket.setDescription("Alarm Testing");
 		}
-		alarm.setAlarmStatus(AlarmContext.AlarmStatus.ACTIVE);
 		alarm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
