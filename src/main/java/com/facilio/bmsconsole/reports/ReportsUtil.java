@@ -264,6 +264,19 @@ public class ReportsUtil
 	}
 	
 	
+	public static Map<Long, Long> getMeterVsPurpose(List<EnergyMeterContext> energyMeters)
+	{
+		Map <Long,Long> meterVsPurpose= new HashMap<Long,Long>();
+
+		for(EnergyMeterContext emc:energyMeters) {
+
+			long meterId=emc.getId();
+			long purposeId =emc.getPurpose().getId();
+			meterVsPurpose.put(meterId,purposeId);
+		}
+		return meterVsPurpose;
+	}
+	
 	public static double getEUI(Double currentKwh, Double buildingArea) {
 
 		if(currentKwh==null || currentKwh==0 || buildingArea==null || buildingArea==0)
