@@ -24,7 +24,7 @@ public class EventContext {
 		this.orgId = orgId;
 	}
 	
-	public String source;
+	private String source;
 	public String getSource() {
 		return source;
 	}
@@ -32,7 +32,7 @@ public class EventContext {
 		this.source = source;
 	}
 	
-	public String node;
+	private String node;
 	public String getNode() {
 		return node;
 	}
@@ -48,7 +48,7 @@ public class EventContext {
 		this.assetId = assetId;
 	}
 
-	public String eventMessage;
+	private String eventMessage;
 	public String getEventMessage() {
 		return eventMessage;
 	}
@@ -56,7 +56,7 @@ public class EventContext {
 		this.eventMessage = eventMessage;
 	}
 	
-	public String messageKey;
+	private String messageKey;
 	public String getMessageKey() {
 		if(messageKey == null && source != null && node != null && eventMessage != null)
 		{
@@ -68,7 +68,7 @@ public class EventContext {
 		this.messageKey = messageKey;
 	}
 
-	public String severity;
+	private String severity;
 	public String getSeverity() {
 		return severity;
 	}
@@ -108,7 +108,7 @@ public class EventContext {
 		this.createdTime = createdTime;
 	}
 	
-	public EventState eventState;
+	private EventState eventState;
 	public int getEventState() {
 		if(eventState != null) {
 			return eventState.getIntVal();
@@ -125,7 +125,7 @@ public class EventContext {
 		return eventState;
 	}
 
-	public EventInternalState internalState;
+	private EventInternalState internalState;
 	public int getInternalState() {
 		if(internalState != null) {
 			return internalState.getIntVal();
@@ -158,7 +158,7 @@ public class EventContext {
 		this.alarmId = alarmId;
 	}
 
-	public String description;
+	private String description;
 	public String getDescription() {
 		return description;
 	}
@@ -166,7 +166,7 @@ public class EventContext {
 		this.description = description;
 	}
 
-	public JSONObject additionInfo;
+	private JSONObject additionInfo;
 	@JsonAnyGetter
 	public JSONObject getAdditionInfo() {
 		return additionInfo;
