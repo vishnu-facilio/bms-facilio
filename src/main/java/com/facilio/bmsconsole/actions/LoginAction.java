@@ -362,12 +362,22 @@ public class LoginAction extends ActionSupport{
 		return true;
 	}
 	
+	private JSONObject signupData;
+	
+	public void setSignupData(JSONObject signupData) {
+		this.signupData = signupData;
+	}
+	
+	public JSONObject getSignupData() {
+		return this.signupData;
+	}
+	
 	public String signup() throws Exception
 	{
-		System.out.println("The parameters list::: " + ActionContext.getContext().getParameters());
+		System.out.println("The parameters list::: " + getSignupData());
 		
 		FacilioContext signupContext = new FacilioContext();
-		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, getSignupInfo());
+		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, getSignupData());
 		
 		Chain c = FacilioChainFactory.getOrgSignupChain();
 		c.execute(signupContext);
