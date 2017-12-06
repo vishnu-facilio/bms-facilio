@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
+import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -270,7 +271,10 @@ public class TemplateAPI {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
-		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain")));
+		
+		FileStore fs = FileStoreFactory.getInstance().getFileStore(superAdmin.getId());
+		long contentId = fs.addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain");
+		template.setContentId(contentId);
 		template.setType(UserTemplate.Type.ALARM);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
