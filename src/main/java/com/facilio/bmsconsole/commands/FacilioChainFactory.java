@@ -845,6 +845,13 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain getWorkflowRulesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetWorkflowRulesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+
 	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();
@@ -913,7 +920,7 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-	
+		
 	public static Chain getEnergyMeterListChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());

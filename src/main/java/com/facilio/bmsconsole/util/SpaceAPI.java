@@ -79,14 +79,15 @@ public class SpaceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
-		
+		String tableName=module.getTableName();
+		String fieldName=tableName+".ID";
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
 																	.select(fields)
-																	.table(module.getTableName())
+																	.table(tableName)
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCondition("ID","ID", 
+																	.andCondition(CriteriaAPI.getCondition(fieldName,fieldName, 
 																			buildingList,NumberOperators.EQUALS));
 		return selectBuilder.get();
 		
