@@ -9,7 +9,6 @@ public class User {
 	private long uid;
 	private String name;
 	private String cognitoId;
-	private boolean userVerified;
 	private String email;
 	private long photoId;
 	private String timezone;
@@ -48,11 +47,18 @@ public class User {
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
 	}
-	public boolean isUserVerified() {
+	private Boolean userVerified;
+	public Boolean getUserVerified() {
 		return userVerified;
 	}
-	public void setUserVerified(boolean userVerified) {
+	public void setUserVerified(Boolean userVerified) {
 		this.userVerified = userVerified;
+	}
+	public boolean isUserVerified(){
+		if(userVerified!=null){
+			return userVerified.booleanValue();
+		}
+		return false;
 	}
 	public String getEmail() {
 		return email;
