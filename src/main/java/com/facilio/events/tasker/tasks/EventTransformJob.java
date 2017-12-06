@@ -53,9 +53,12 @@ public class EventTransformJob extends FacilioJob{
 						boolean isMatched = criteria.computePredicate().evaluate(prop);
 						if(isMatched)
 						{
+							logger.log(Level.INFO, event.getMessageKey()+" matched transform critiera of "+event.getEventRuleId());
 							AlarmTemplate template = (AlarmTemplate) TemplateAPI.getTemplate(orgId, rule.getTransformAlertTemplateId());
 							JSONObject content = template.getTemplate(prop);
+							logger.log(Level.INFO, "template val : "+content);
 							prop.putAll(FieldUtil.getAsProperties(content));
+							logger.log(Level.INFO, "Transformed prop : "+prop);
 							event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
 						}
 					}
