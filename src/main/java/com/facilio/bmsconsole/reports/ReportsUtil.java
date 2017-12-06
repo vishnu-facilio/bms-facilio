@@ -16,11 +16,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -264,6 +264,19 @@ public class ReportsUtil
 	}
 	
 	
+	public static Map<Long, Long> getMeterVsPurpose(List<EnergyMeterContext> energyMeters)
+	{
+		Map <Long,Long> meterVsPurpose= new HashMap<Long,Long>();
+
+		for(EnergyMeterContext emc:energyMeters) {
+
+			long meterId=emc.getId();
+			long purposeId =emc.getPurpose().getId();
+			meterVsPurpose.put(meterId,purposeId);
+		}
+		return meterVsPurpose;
+	}
+	
 	public static double getEUI(Double currentKwh, Double buildingArea) {
 
 		if(currentKwh==null || currentKwh==0 || buildingArea==null || buildingArea==0)
@@ -310,7 +323,7 @@ public class ReportsUtil
 				.table("Energy_Data")
                 .andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("TTIME between ? AND ?",startTime,endTime)
-				.andCondition(DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", deviceList, NumberOperators.EQUALS))
 				.groupBy(groupBy.toString());
 		try {
 			result = builder.get();

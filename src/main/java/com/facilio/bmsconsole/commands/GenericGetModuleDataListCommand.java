@@ -28,16 +28,17 @@ public class GenericGetModuleDataListCommand implements Command {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
 															//.maxLevel(0)
 															;
-		if(moduleName.equals(FacilioConstants.ContextNames.ASSET))
-		{
-			builder.orderBy("Assets.LOCAL_ID desc");
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		if (orderBy != null && !orderBy.isEmpty()) {
+			builder.orderBy(orderBy);
 		}
+		
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
@@ -50,7 +51,7 @@ public class GenericGetModuleDataListCommand implements Command {
 			}
 		}
 		
-		List<ModuleBaseWithCustomFields> records = builder.get();
+		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
 		return false;

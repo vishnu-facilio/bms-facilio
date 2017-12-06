@@ -12,9 +12,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -73,7 +72,7 @@ public class DeviceAPI
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?", true)
 				.andCustomWhere("PARENT_ASSET_ID IS NULL")
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -110,6 +109,23 @@ public class DeviceAPI
 		return selectBuilder.get();
 	}
 
+	
+	// for building..
+	public static List<EnergyMeterContext> getRootServiceMeters(String buildingList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("IS_ROOT= ?", true)
+				.andCustomWhere("PARENT_ASSET_ID IS NOT NULL")
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE-SPACE_ID",buildingList,NumberOperators.EQUALS))
+				.maxLevel(0);
+		return selectBuilder.get();
+	}
 
 
 	//for org..
@@ -122,7 +138,7 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT=?",root)
-				.andCondition(getCondition("PURPOSE_ID",purposeList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",purposeList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -139,8 +155,8 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?",root)
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
-				.andCondition(getCondition("PURPOSE_ID",purposeList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",purposeList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
@@ -157,96 +173,9 @@ public class DeviceAPI
 				.module(module)
 				.beanClass(EnergyMeterContext.class)
 				.andCustomWhere("IS_ROOT= ?", root)
-				.andCondition(getCondition("PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE-SPACE_ID",spaceList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
-	}
-
-
-	//for org..
-	public static List<EnergyMeterPurposeContext> getEnergyMeterPurpose(String purpose) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
-
-		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
-				new SelectRecordsBuilder<EnergyMeterPurposeContext>()
-				.select(modBean.getAllFields(module.getName()))
-				.module(module)
-				.beanClass(EnergyMeterPurposeContext.class)
-				.andCustomWhere("NAME = ?", purpose)
-				.maxLevel(0);
-		return selectBuilder.get();
-	}
-
-	//for org..
-	public static List<EnergyMeterPurposeContext> getAllPurposes() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
-		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
-				new SelectRecordsBuilder<EnergyMeterPurposeContext>()
-				.select(modBean.getAllFields(module.getName()))
-				.module(module)
-				.beanClass(EnergyMeterPurposeContext.class)
-				.maxLevel(0);
-		return selectBuilder.get();
-	}
-
-	//should be used for getting building specific service meters..
-	public static List<EnergyMeterPurposeContext> getFilteredPurposes(String purposeFilter,NumberOperators operator) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
-		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
-				new SelectRecordsBuilder<EnergyMeterPurposeContext>()
-				.select(modBean.getAllFields(module.getName()))
-				.module(module)
-				.beanClass(EnergyMeterPurposeContext.class)
-				.andCondition(getCondition("ID",purposeFilter,operator))
-				.maxLevel(0);
-		return selectBuilder.get();
-	}
-
-
-
-	public static HashMap<Long,String> getPurposeMapping(long buildingId,boolean root) throws Exception {
-
-		HashMap<Long,String> deviceMapping = new LinkedHashMap<Long,String>();
-		FacilioField meterFld = ReportsUtil.getField("Meter","Energy_Meter.ID",FieldType.NUMBER);
-		FacilioField purposeField =ReportsUtil.getField("Name","Energy_Meter_Purpose.NAME",FieldType.STRING);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(meterFld);
-		fields.add(purposeField);
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Energy_Meter")
-				.innerJoin("Energy_Meter_Purpose")
-				.on("Energy_Meter.PURPOSE_ID = Energy_Meter_Purpose.ID")
-				.innerJoin("Assets")//if "Mains" is removed from purpose..this is not needed
-				.on("Energy_Meter.ID = Assets.ID")
-				.andCustomWhere("Energy_Meter.ORGID= ?",orgId) 
-				.andCustomWhere("Energy_Meter.PURPOSE_SPACE_ID =?",buildingId)
-				.andCustomWhere("Energy_Meter.IS_ROOT=?",root)
-				.andCustomWhere("Assets.PARENT_ASSET_ID IS NOT NULL");//if "Mains" is removed from purpose..this is not needed
-		List<Map<String, Object>> stats = builder.get();
-		for(Map<String, Object> rowData: stats) {
-
-			long meterId=(long)rowData.get("Meter");
-			String purposeName=(String)rowData.get("Name");
-			deviceMapping.put(meterId, purposeName);
-		}
-		return deviceMapping;
-	}
-
-	
-	@SuppressWarnings("rawtypes")
-	public static Condition getCondition (String colName,String valueList,Operator operator)
-	{
-		Condition condition = new Condition();
-		condition.setColumnName(colName);
-		condition.setOperator(operator);
-		condition.setValue(valueList);
-		return condition;
 	}
 
 }

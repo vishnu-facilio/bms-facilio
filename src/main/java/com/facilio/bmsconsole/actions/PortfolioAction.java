@@ -29,13 +29,15 @@ public class PortfolioAction extends ActionSupport {
 	{
 		JSONObject result = new JSONObject();
 		long sitesCount = SpaceAPI.getSitesCount();
-		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		result.put("sitesCount", sitesCount);
-		result.put("buildingCount", buildings.size());
+		
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
 		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
 		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
-
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
+		result.put("buildingCount", buildings.size());
+		
 		long prevStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
@@ -69,6 +71,36 @@ public class PortfolioAction extends ActionSupport {
 		setReportData(result);
 		return SUCCESS;
 	}
+	
+	
+		//period - month, year, week, day, yesterday, lastWeek lastMonth or lastYear
+		@SuppressWarnings("unchecked")
+		public String getConsumption() throws Exception
+		{
+			JSONObject result = new JSONObject();
+			List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
+			Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+			String deviceList=StringUtils.join(buildingVsMeter.values(),",");
+			
+			Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
+			long startTime=timeInterval[0];
+			long endTime=timeInterval[1];
+			
+			List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
+			Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
+			
+			for(Map.Entry<Long,Long> entry:buildingVsMeter.entrySet()) {
+				
+				long buildingId=entry.getKey();
+				long meterId=entry.getValue();
+				Double consumption=meterVsConsumption.get(meterId);
+				JSONObject consumptionData = ReportsUtil.getEnergyData(consumption,-1);
+				result.put(buildingId,consumptionData);
+			}
+			setReportData(result);
+			return SUCCESS;
+		}
+	
 	
 	//period -year & lastYear -EUI ranking
 	@SuppressWarnings("unchecked")

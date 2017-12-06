@@ -76,6 +76,7 @@ public class AssetAction extends ActionSupport {
 	public String assetList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+ 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();

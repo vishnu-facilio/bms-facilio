@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -71,8 +71,6 @@ public class ReportActions extends ActionSupport {
 		return SUCCESS;
 	}
 
-
-
 	//time series data....
 	//need building id, 
 	// need period to be set to week for By Week break down..
@@ -81,10 +79,10 @@ public class ReportActions extends ActionSupport {
 	public String getServiceBreakDown() throws Exception
 	{
 		JSONObject resultJson = new JSONObject();
-		HashMap<Long,String> purposeMapping= DeviceAPI.getPurposeMapping(getBuildingId(),true);
-
-		Set<Long> keys=purposeMapping.keySet();
-		String deviceList=StringUtils.join(keys, ",");
+		
+		List<EnergyMeterContext> energyMeters = DeviceAPI.getRootServiceMeters(""+getBuildingId());
+		Map <Long,Long> meterVsPurpose= ReportsUtil.getMeterVsPurpose(energyMeters);
+		String deviceList=StringUtils.join(meterVsPurpose.keySet(),",");
 		String duration = getPeriod();
 		long startTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
@@ -112,7 +110,7 @@ public class ReportActions extends ActionSupport {
 			resultJson.put("units",consumptionArray[1]);
 		}
 		resultJson.put("currentVal", current);
-		resultJson.put("mapping", purposeMapping);
+		resultJson.put("mapping", meterVsPurpose);
 		setReportData(resultJson);
 		return SUCCESS;
 	}
@@ -123,11 +121,10 @@ public class ReportActions extends ActionSupport {
 	public String getServiceConsumption() throws Exception
 	{
 		JSONObject resultJson = new JSONObject();
-
-		HashMap<Long,String> purposeMapping= DeviceAPI.getPurposeMapping(getBuildingId(),true);
-		Set<Long> keys=purposeMapping.keySet();
-		String deviceList=StringUtils.join(keys, ",");
 		
+		List<EnergyMeterContext> energyMeters = DeviceAPI.getRootServiceMeters(""+getBuildingId());
+		Map <Long,Long> meterVsPurpose= ReportsUtil.getMeterVsPurpose(energyMeters);
+		String deviceList=StringUtils.join(meterVsPurpose.keySet(),",");
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
 		long startTime=timeInterval[0];
 		long endTime=timeInterval[1];
@@ -138,7 +135,7 @@ public class ReportActions extends ActionSupport {
 
 		List<Map<String, Object>> current=getData(deviceList,startTime, endTime, fields,false);
 		resultJson.put("currentVal", current);
-		resultJson.put("mapping", purposeMapping);
+		resultJson.put("mapping", meterVsPurpose);
 		setReportData(resultJson);
 		return SUCCESS;
 	}
@@ -390,7 +387,7 @@ public class ReportActions extends ActionSupport {
 
 	private Condition getDeviceListCondition (String deviceList)
 	{
-		return DeviceAPI.getCondition("PARENT_METER_ID", deviceList, NumberOperators.EQUALS);
+		return CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", deviceList, NumberOperators.EQUALS);
 	}
 
 	private long buildingId;

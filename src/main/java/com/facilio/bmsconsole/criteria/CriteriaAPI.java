@@ -137,4 +137,16 @@ public class CriteriaAPI {
 		
 		return idCondition;
 	}
+	
+	
+	@SuppressWarnings("rawtypes")
+	public static Condition getCondition (String colName,String fieldName,String valueList,Operator operator)
+	{
+		Condition condition = new Condition();
+		condition.setFieldName(fieldName);
+		condition.setColumnName(colName);
+		condition.setOperator(operator);
+		condition.setValue(valueList);
+		return condition;
+	}
 }

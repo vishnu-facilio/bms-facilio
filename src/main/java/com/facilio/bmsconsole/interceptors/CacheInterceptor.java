@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.dispatcher.Parameter;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -19,7 +20,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 		  HttpServletRequest request =
 				  ServletActionContext.getRequest();
-		  HttpServletResponse response = ServletActionContext.getResponse(); 
+		//  HttpServletResponse response = ServletActionContext.getResponse(); 
 		 String id = request.getRequestURI() + ( request.getQueryString()!=null ? "?"+request.getQueryString():"");
 		 
 		 Parameter cache = ActionContext.getContext().getParameters().get("cache");
@@ -27,6 +28,22 @@ public class CacheInterceptor extends AbstractInterceptor {
 		
 		//System.out.println("cache interceptor "+request.getMethod() +"-"+cache.getValue() +" chache object "+cache);
 		 String result = null;
+		 
+		 Object expireat = null;//ActionContext.getContext().getValueStack().findValue("cacheControl");
+		// expireat = CacheControl.getCacheControl(1);
+		 if(expireat !=null && expireat instanceof CacheControl)
+		 {
+			 CacheControl c = (CacheControl)expireat;
+			 System.out.println("response header " + c );
+			 
+			 final ActionContext ac = arg0.getInvocationContext();
+			    HttpServletResponse response = (HttpServletResponse) ac.get(StrutsStatics.HTTP_RESPONSE);
+			    
+
+			    response.setHeader("Cache-control", c.getCachecontrol());
+			    response.setHeader("Expires", c.getExpires());
+		 }
+
 		 if(cached_url)
 		 {
 			 String cachekey = null;
@@ -55,18 +72,12 @@ public class CacheInterceptor extends AbstractInterceptor {
 		 }
 		 else
 		 {
+			
 			  result = arg0.invoke();
 			
 		    
 		 }
-		 Object expireat = ActionContext.getContext().getValueStack().findValue("cacheControl");
-		 if(expireat !=null && expireat instanceof CacheControl)
-		 {
-			 CacheControl c = (CacheControl)expireat;
-			 ServletActionContext.getResponse().setHeader("Cache-control", c.getCachecontrol());
-		        ServletActionContext.getResponse().setHeader("Expires", c.getExpires());
-		 }
-		return result;
+			return result;
 
 		
 	}

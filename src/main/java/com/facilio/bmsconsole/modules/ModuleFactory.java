@@ -442,4 +442,13 @@ public class ModuleFactory {
 		
 		return notificationModule;
 	}
+	
+	public static FacilioModule getVirtualMeterRelModule() {
+		FacilioModule virtualMeterRelModule = new FacilioModule();
+		virtualMeterRelModule.setName("virtualmeterrelmodule");
+		virtualMeterRelModule.setDisplayName("Virtual Meter Rel");
+		virtualMeterRelModule.setTableName("Virtual_Energy_Meter_Rel");
+		
+		return virtualMeterRelModule;
+	}
 }

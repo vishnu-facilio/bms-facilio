@@ -846,41 +846,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddEnergyMeterChain() {
-		Chain c = new TransactionChain();
-		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenericAddModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	public static Chain getAddEnergyMeterPurposeChain() {
-		Chain c = new TransactionChain();
-		c.addCommand(SetTableNamesCommand.getForEnergyMeterPurpose());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenericAddModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-//	public static Chain getAddEnergyDataChain() {
-//		Chain c = new TransactionChain();
-//		//c.addCommand(SetTableNamesCommand.getForEner);
-//		c.addCommand(new LoadAllFieldsCommand());
-//		c.addCommand(new GenericAddModuleDataCommand());
-//		c.addCommand(new ExecuteAllWorkflowsCommand());
-//		addCleanUpCommand(c);
-//		return c;
-//	}
-	
-	public static Chain getWorkflowRulesChain() {
-		Chain c = new TransactionChain();
-		c.addCommand(new GetWorkflowRulesCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
@@ -934,6 +899,47 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
+		return c;
+	}
+	
+	public static Chain getAddEnergyMeterChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddAdditionalPropsForEnergyMeterCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new AddVirtualMeterRelCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getEnergyMeterListChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddEnergyMeterPurposeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeterPurpose());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getVirtualMeterChildrenChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetVirtualMeterChildrenCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
 	

@@ -35,16 +35,27 @@ public class CacheControl {
 	private String expires="-1";
 	
 	
+	public static CacheControl getCacheControl(int type)
+	{
+		return getCacheControl(TYPE.getType(type));
+		
+	}
 		public static CacheControl getCacheControl(TYPE type)
 		{
 			ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
 			ZonedDateTime currentmonthend = now.withDayOfMonth(28);
+			System.out.println("Month end"+currentmonthend);
 			ZonedDateTime currentyearend = now.withDayOfYear(365);
+			
+			System.out.println("year end"+currentyearend);
+
 			
 			int weekday = now.getDayOfWeek().getValue() -1;
 			ZonedDateTime weekend = now.plusDays(6 -weekday);
 			
-			new Date(currentmonthend.toInstant().toEpochMilli());
+			System.out.println("week end"+weekend);
+
+			
 			
 
 			switch(type)
@@ -65,15 +76,46 @@ public class CacheControl {
 		
 		private static long getSeconds(ZonedDateTime from, ZonedDateTime to)
 		{
-			return (to.toInstant().toEpochMilli() - from.toInstant().toEpochMilli())/1000;
+			System.out.println("from = "+from);
+			System.out.println("to = "+to);
+
+			long value =  (to.toInstant().toEpochMilli() - from.toInstant().toEpochMilli())/1000;
+			return value;
+		}
+		public static enum TYPE {
+			CURRENT_MONTH_END(1),
+			CURRENT_WEEK_END(0),	
+			NEVER(-1),
+			EVER(100),
+			CURRENT_YEAR_END(2);
+			
+			private final int value;
+
+	        TYPE(final int newValue) {
+	            value = newValue;
+	        }
+	        
+	        
+	        public static TYPE getType(int id) {
+	            for (TYPE type : values()) {
+	                if (type.value == id) {
+	                    return type;
+	                }
+	            }
+	            throw new IllegalArgumentException("Invalid Type id: " + id);
+	        }
+
+	        public int getValue() { return value; }
+		}
+		
+		public static void main(String args[]) {
+			System.out.println(getCacheControl(2));
+		}
+		public String toString()
+		{
+			return this.getCachecontrol();
 		}
 	}
  
 // max-age=2628000, public
- enum TYPE {
-	CURRENT_MONTH_END,
-	CURRENT_WEEK_END,	
-	NEVER,
-	EVER,
-	CURRENT_YEAR_END
-}
+ 

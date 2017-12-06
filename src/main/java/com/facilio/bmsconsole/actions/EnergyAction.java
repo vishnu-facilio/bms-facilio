@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -19,7 +21,7 @@ public class EnergyAction extends ActionSupport {
 		//energyMeter.setName("test1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
 		addAssetChain.execute(context);
-		setEnergyMeterId(energyMeter.getId());
+		setId(energyMeter.getId());
 		
 		return SUCCESS;
 	}
@@ -31,7 +33,31 @@ public class EnergyAction extends ActionSupport {
 		//energyMeterPurpose.setName("new name 1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterPurposeChain();
 		addAssetChain.execute(context);
-		setEnergyMeterPurposeId(energyMeterPurpose.getId());
+		setId(energyMeterPurpose.getId());
+		
+		return SUCCESS;
+	}
+	
+	public String getVirtualMeterChildren() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		
+		Chain virtualMeterChain = FacilioChainFactory.getVirtualMeterChildrenChain();
+		virtualMeterChain.execute(context);
+		
+		setEnergyMeters((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String getEnergyMeterList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		
+		Chain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
+		getEnergyMeterListChain.execute(context);
+		
+		setEnergyMeters((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
 		return SUCCESS;
 	}
@@ -45,26 +71,34 @@ public class EnergyAction extends ActionSupport {
 		this.energyMeterPurpose = energyMeterPurpose;
 	}
 
-	private long energyMeterId;
-	private long energyMeterPurposeId;
-	public long getEnergyMeterPurposeId() {
-		return energyMeterPurposeId;
-	}
-
-	public void setEnergyMeterPurposeId(long energyMeterPurposeId) {
-		this.energyMeterPurposeId = energyMeterPurposeId;
-	}
-
 	public EnergyMeterContext getEnergyMeter() {
 		return energyMeter;
 	}
 	public void setEnergyMeter(EnergyMeterContext energyMeter) {
 		this.energyMeter = energyMeter;
 	}
-	public long getEnergyMeterId() {
-		return energyMeterId;
+	
+	private List<EnergyMeterContext> energyMeters;
+	public List<EnergyMeterContext> getEnergyMeters() {
+		return energyMeters;
 	}
-	public void setEnergyMeterId(long energyMeterId) {
-		this.energyMeterId = energyMeterId;
+	public void setEnergyMeters(List<EnergyMeterContext> energyMeters) {
+		this.energyMeters = energyMeters;
+	}
+
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private String viewName = null;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
 	}
 }

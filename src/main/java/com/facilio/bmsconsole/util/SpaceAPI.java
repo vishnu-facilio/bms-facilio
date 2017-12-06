@@ -9,19 +9,19 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -73,6 +73,24 @@ public class SpaceAPI {
 			return spaces.get(0);
 		}
 		return null;
+	}
+	
+	public static List<BuildingContext> getBuildingSpace(String  buildingList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(BuildingContext.class)
+																	.andCondition(CriteriaAPI.getCondition("ID","ID", 
+																			buildingList,NumberOperators.EQUALS));
+		return selectBuilder.get();
+		
+		
 	}
 	
 	
@@ -708,19 +726,8 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 				.select(fields)
 				.table("Building")
 				.andCustomWhere("ORGID=?", orgId)
-				.andCondition(getCondition("ID", buildingList,NumberOperators.EQUALS));
-
+				.andCondition(CriteriaAPI.getCondition("ID","ID", buildingList,NumberOperators.EQUALS));
 		return builder.get();
 	}
 	
-
-@SuppressWarnings("rawtypes")
-private static Condition getCondition (String colName,String valueList,Operator operator)
-{
-	Condition condition = new Condition();
-	condition.setColumnName(colName);
-	condition.setOperator(operator);
-	condition.setValue(valueList);
-	return condition;
-}
 }
