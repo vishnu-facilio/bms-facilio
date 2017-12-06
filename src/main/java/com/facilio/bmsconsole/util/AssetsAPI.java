@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -155,5 +156,21 @@ public class AssetsAPI {
 			DBUtil.closeAll(pstmt, rs);
 		}
 		return assetId;
+	}
+	
+	public static AssetCategoryContext getCategory(String name) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.beanClass(AssetCategoryContext.class);
+		
+		List<AssetCategoryContext> categories = selectBuilder.get();
+		
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
 	}
 }

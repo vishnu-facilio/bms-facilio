@@ -357,19 +357,34 @@
 			</result>
 		</action>
 	</package>
-	<package name="energyMeterApi" namespace="/api/energy" extends="home">
-		<action name="addMeter" class="com.facilio.bmsconsole.actions.EnergyAction"
+	<package name="energyMeterApi" namespace="/api/energymeter" extends="home">
+		<action name="add" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeter">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">id</param>
 			</result>
 		</action>
-		<action name="addMeterPurpose" class="com.facilio.bmsconsole.actions.EnergyAction"
+		<action name="addPurpose" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeterPurpose">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		<action name="getVirtualMeterChildren" class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="getVirtualMeterChildren">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="root">energyMeters</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="getEnergyMeterList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="root">energyMeters</param>
 			</result>
 		</action>
 	</package>

@@ -1657,4 +1657,25 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getVirtualMeterRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getVirtualMeterRelModule();
+		
+		FacilioField virtualMeterId = new FacilioField();
+		virtualMeterId.setName("virtualMeterId");
+		virtualMeterId.setDataType(FieldType.NUMBER);
+		virtualMeterId.setColumnName("VIRTUAL_METER_ID");
+		virtualMeterId.setModule(module);
+		fields.add(virtualMeterId);
+		
+		FacilioField childMeterId = new FacilioField();
+		childMeterId.setName("childMeterId");
+		childMeterId.setDataType(FieldType.NUMBER);
+		childMeterId.setColumnName("CHILD_METER_ID");
+		childMeterId.setModule(module);
+		fields.add(childMeterId);
+		
+		return fields;
+	}
 }	
