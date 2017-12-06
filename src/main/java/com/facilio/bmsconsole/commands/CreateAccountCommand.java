@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -10,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -23,17 +23,17 @@ public class CreateAccountCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		HashMap<String, String> signupInfo = (HashMap<String, String>) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
+		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 		
 		System.out.println("This is the map :- "+signupInfo);
 		try {
-			String name = signupInfo.get("name");
-			String email = signupInfo.get("email");
-			String cognitoId = signupInfo.get("cognitoId");
-			String phone = signupInfo.get("phone");
-			String companyName = signupInfo.get("companyname");
-			String orgDomain = signupInfo.get("domainname");
-			String timezone = signupInfo.get("timezone");
+			String name = (String) signupInfo.get("name");
+			String email = (String) signupInfo.get("email");
+			String cognitoId = (String) signupInfo.get("cognitoId");
+			String phone = (String) signupInfo.get("phone");
+			String companyName = (String) signupInfo.get("companyname");
+			String orgDomain = (String) signupInfo.get("domainname");
+			String timezone = (String) signupInfo.get("timezone");
 			
 			HttpServletRequest request = ServletActionContext.getRequest();
 			Locale locale = request.getLocale();

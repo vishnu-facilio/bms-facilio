@@ -22,6 +22,24 @@ public class PortfolioAction extends ActionSupport {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unchecked")
+	public String getBuildingMap() throws Exception
+	{
+		JSONObject result = new JSONObject();
+		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
+		
+		for(BuildingContext building:buildings) {
+
+			long buildingId=building.getId();
+			String name =building.getName();
+			result.put(buildingId,name);
+		}
+		setReportData(result);
+		return SUCCESS;
+	}
 	
 	
 	@SuppressWarnings("unchecked")

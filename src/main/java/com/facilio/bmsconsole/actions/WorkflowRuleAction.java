@@ -66,9 +66,10 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	public String getReadingRules() throws Exception {
+	public String getWorkflowRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE, this.module);
 		Chain workflowRulesChain = FacilioChainFactory.getWorkflowRulesChain();
 		workflowRulesChain.execute(context);
 		
