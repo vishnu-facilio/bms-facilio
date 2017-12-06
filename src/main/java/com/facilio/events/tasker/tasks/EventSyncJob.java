@@ -66,6 +66,12 @@ public class EventSyncJob extends FacilioJob{
 						}
 					}
 				}
+				
+				//Temp
+				new EventFilterJob().execute(jc);
+				new EventTransformJob().execute(jc);
+				new EventThresholdJob().execute(jc);
+				new EventToAlarmJob().execute(jc);
 			}
 			catch (Exception e) 
 			{

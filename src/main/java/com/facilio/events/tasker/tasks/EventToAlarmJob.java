@@ -101,6 +101,7 @@ public class EventToAlarmJob extends FacilioJob{
 						AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
 						
 						event.setAlarmId(alarmId);
+						event.setEventState(EventState.ALARM_UPDATED);
 					}
 					else
 					{
@@ -156,10 +157,10 @@ public class EventToAlarmJob extends FacilioJob{
 						System.out.println(response);
 						JSONObject res = (JSONObject) parser.parse(response); 
 						event.setAlarmId((long) res.get("alarmId"));
+						event.setEventState(EventState.ALARM_CREATED);
 					}
 					
 					event.setInternalState(EventInternalState.COMPLETED);
-					event.setEventState(EventState.PROCESSED);
 					EventAPI.updateEvent(event, orgId);
 				}
 			} 

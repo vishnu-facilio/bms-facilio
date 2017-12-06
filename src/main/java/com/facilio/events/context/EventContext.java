@@ -211,7 +211,8 @@ public class EventContext {
 	public static enum EventState {
 		READY,
 		IGNORED,
-		PROCESSED
+		ALARM_CREATED,
+		ALARM_UPDATED
 		;
 		
 		public int getIntVal() {
