@@ -10,13 +10,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;

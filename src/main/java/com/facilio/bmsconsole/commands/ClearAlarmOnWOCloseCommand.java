@@ -38,9 +38,9 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 				List<AlarmContext> alarms = alarmBuilder.get();
 				if(alarms != null && !alarms.isEmpty()) {
 					AlarmContext alarm = alarms.get(0);
-					if(alarm.getAlarmStatus() != AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
+					if(alarm.getSeverity() == null || !alarm.equals("Clear")) {
 						AlarmContext updatedAlarm = new AlarmContext();
-						updatedAlarm.setAlarmStatus(AlarmContext.AlarmStatus.CLEAR);
+						updatedAlarm.setSeverity("Clear");
 						
 						//Following should be moved to scheduler
 						List<Long> ids = new ArrayList<>();

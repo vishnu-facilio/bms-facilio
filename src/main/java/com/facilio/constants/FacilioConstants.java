@@ -319,6 +319,11 @@ public class FacilioConstants {
 		}
 	}
 	
+	public static class Alarm {
+		public static final String CLEAR_SEVERITY = "Clear";
+		public static final String INFO_SEVERITY = "Info";
+	}
+	
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
 		public static final long LOGGED_IN_USER_ID = -99;

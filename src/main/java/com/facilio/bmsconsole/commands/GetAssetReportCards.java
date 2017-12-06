@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -126,7 +125,7 @@ public class GetAssetReportCards implements Command {
 				.table("Alarms")
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
-				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.STATUS=?", orgId, orgId, AlarmStatus.ACTIVE.getIntVal())
+				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.SEVERITY!=?", orgId, orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(assetCond);
 		
 		List<Map<String, Object>> rs = builder.get();

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -68,8 +67,8 @@ public class ViewFactory {
 		viewMap.put("event-thisweek", getEvents("ThisWeek"));
 		viewMap.put("event-lastweek", getEvents("LastWeek"));
 		
-		viewMap.put("alarm-active", getStatusAlarms("active", "Active Alarms", AlarmStatus.ACTIVE));
-		viewMap.put("alarm-suppressed", getStatusAlarms("suppressed", "Suppressed Alarms", AlarmStatus.SUPPRESS));
+		viewMap.put("alarm-active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false));
+		viewMap.put("alarm-clear", getSeverityAlarms("clear", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
 		viewMap.put("alarm-myalarms", getMyAlarms());
 		viewMap.put("alarm-unassigned", getUnassignedAlarms());
 		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
@@ -675,13 +674,18 @@ public class ViewFactory {
 		return fireSafetyWOView;
 	}
 	
-	private static FacilioView getStatusAlarms(String name, String displayName, AlarmStatus status) {
+	private static FacilioView getSeverityAlarms(String name, String displayName, String severity, boolean equals) {
 		
 		Condition condition = new Condition();
-		condition.setColumnName("Alarms.STATUS");
-		condition.setFieldName("alarmStatus");
-		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(String.valueOf(status.getIntVal()));
+		condition.setColumnName("Alarms.SEVERITY");
+		condition.setFieldName("severity");
+		if(equals) {
+			condition.setOperator(StringOperators.IS);
+		}
+		else {
+			condition.setOperator(StringOperators.ISN_T);
+		}
+		condition.setValue(severity);
 		
 		Criteria crtieria = new Criteria();
 		crtieria.addAndCondition(condition);

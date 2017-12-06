@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -86,8 +85,8 @@ public class AlarmReportAction extends ActionSupport {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
-				.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=? AND (Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)",
-						orgId, AlarmStatus.ACTIVE.getIntVal(), false);
+				.andCustomWhere("Alarms.ORGID=? AND Alarms.SEVERITY != ? AND (Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)",
+						orgId,FacilioConstants.Alarm.CLEAR_SEVERITY, false);
 		
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
@@ -109,7 +108,7 @@ public class AlarmReportAction extends ActionSupport {
 				.table("Alarms")
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
-				.andCustomWhere("Alarms.ORGID=? AND Alarms.STATUS=? AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, AlarmStatus.ACTIVE.getIntVal(), orgId);
+				.andCustomWhere("Alarms.ORGID=? AND Alarms.SEVERITY!=? AND Tickets.ORGID=? AND Tickets.ASSIGNED_TO_ID IS NULL", orgId, FacilioConstants.Alarm.CLEAR_SEVERITY, orgId);
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
 	}
@@ -372,7 +371,7 @@ public class AlarmReportAction extends ActionSupport {
 		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarms.STATUS = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
+		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		if(spaces != null && !spaces.isEmpty()) {
 			where.append(" AND Tickets.SPACE_ID IN (");
 			boolean isFirst = true;
@@ -395,7 +394,7 @@ public class AlarmReportAction extends ActionSupport {
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
 				.groupBy("ALARM_TYPE")
-				.andCustomWhere(where.toString(), orgId,AlarmStatus.CLEAR.getIntVal())
+				.andCustomWhere(where.toString(), orgId,FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(createdTime);
 		List<Map<String, Object>> stats = builder.get();
 		
@@ -558,7 +557,7 @@ public class AlarmReportAction extends ActionSupport {
 		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarms.STATUS = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
+		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -571,7 +570,7 @@ public class AlarmReportAction extends ActionSupport {
 				{
 					builder.groupBy("Tickets.ASSIGNED_TO_ID");
 				}
-				 builder.andCustomWhere(where.toString(), orgId, AlarmStatus.CLEAR.getIntVal())
+				 builder.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(createdTime)
 				.orderBy(average);
 		List<Map<String, Object>> stats = builder.get();
