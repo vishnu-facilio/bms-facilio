@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -70,6 +69,7 @@ public class UpdateAlarmCommand implements Command {
 					AlarmContext alarmObj = alarms.get(0);
 					CommonCommandUtil.updateAlarmDetailsInTicket(alarmObj, alarm);
 				}
+				context.put(FacilioConstants.ContextNames.RECORD, alarms.get(0));
 			}
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
