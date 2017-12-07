@@ -29,7 +29,7 @@ public class AlarmContext extends TicketContext {
 		}
 		return false;
 	}
-	public void setIsAcknowledged(boolean isAcknowledged) {
+	public void setIsAcknowledged(Boolean isAcknowledged) {
 		this.isAcknowledged = isAcknowledged;
 	}
 	public Boolean getIsAcknowledged() {
