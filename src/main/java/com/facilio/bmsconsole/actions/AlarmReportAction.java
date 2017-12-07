@@ -170,7 +170,7 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(typeField);
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarms.STATUS = 1 AND Tickets.SPACE_ID IN (");
+		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY != ? AND Tickets.SPACE_ID IN (");
 		
 		boolean isFirst = true;
 		for(BaseSpaceContext space : spaces) {
@@ -191,7 +191,7 @@ public class AlarmReportAction extends ActionSupport {
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
 				.groupBy("ALARM_TYPE")
-				.andCustomWhere(where.toString(), orgId);
+				.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY);
 		List<Map<String, Object>> stats = builder.get();
 		
 		if(stats != null && !stats.isEmpty()) {
