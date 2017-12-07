@@ -29,7 +29,7 @@ public class GetAlarmListCommand implements Command {
 														.moduleName(moduleName)
 														.beanClass(AlarmContext.class)
 														.select(fields)
-														.orderBy("CREATED_TIME desc")
+														.orderBy("MODIFIED_TIME desc")
 														.maxLevel(0);
 
 		if(view != null) {
