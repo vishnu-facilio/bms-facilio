@@ -56,6 +56,10 @@ public class UpdateAlarmCommand implements Command {
 			
 			alarm.setModifiedTime(System.currentTimeMillis());
 			
+			if(alarm.getSeverity() != null)
+			{
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			}
 			if(recordIds.size() == 1) {
 				SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
 																	.table(dataTableName)
@@ -78,7 +82,6 @@ public class UpdateAlarmCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		}
 		return false;
 	}
