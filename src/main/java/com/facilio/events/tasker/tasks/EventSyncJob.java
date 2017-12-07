@@ -52,7 +52,7 @@ public class EventSyncJob extends FacilioJob{
 				EventProperty eventProperty = EventRulesAPI.getEventProperty(AccountUtil.getCurrentOrg().getOrgId());
 				Table table = dd.getTable(eventProperty.getEventTopicName()); // Client Table
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
-				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 60 * 1000) - 1))); // One Minute
+				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 30 * 1000) + 1))); // One Minute
 				
 				List<ControllerContext> controllers = DeviceAPI.getAllControllers();
 				
