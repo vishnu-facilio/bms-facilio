@@ -14,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -66,12 +67,13 @@ public class ImportMetaInfo
 				JSONParser parser = new JSONParser();
 				iminfo.columnheadings =(JSONArray)parser.parse(rs.getString("COLUMN_HEADING"));
 				System.out.println("columnheadeing"+iminfo.columnheadings);
-				int instanceid = rs.getInt("INSTANCE_ID");
+				int moduleId = rs.getInt("INSTANCE_ID");
 				iminfo.setFileId(rs.getLong("FILEID"));
-				Module module = Module.getModuleFromValue(instanceid);
-				iminfo.fields = getFields(module);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		        FacilioModule facilioModule = modBean.getModule(moduleId);
+				iminfo.fields = getFields(facilioModule.getName());
 				iminfo.setImportprocessid(processid);
-				iminfo.setModule(module);
+				iminfo.setModule(facilioModule);
 				System.out.println("fields"+iminfo.fields);
 				return iminfo;
 			}
@@ -109,62 +111,23 @@ public class ImportMetaInfo
 		
 		return columnheadings==null?"":columnheadings.toJSONString() + "\n" + (fields==null?"":fields.toJSONString())+"\n Field mapping"+fieldMapping;
 	}
-	public enum Module
-	{
-		Energy(1,FacilioConstants.ContextNames.ENERGY_DATA_READING),
-		Building(2,FacilioConstants.ContextNames.BUILDING),
-		Space(3,FacilioConstants.ContextNames.SPACE),
-		EnergyMeter(4,FacilioConstants.ContextNames.ENERGY_METER),
-		Asset(5,FacilioConstants.ContextNames.ASSET);
-		
-		int value;
-		String moduleName;
-		private Module(int value,String moduleName)
-		{
-			this.value=value;
-			this.moduleName = moduleName;
-		}
-		public int getValue()
-		{
-			System.out.println("this get value "+value);
-			return this.value;
-		}
-		public String getModuleName() {
-			return this.moduleName;
-		}
-		public static Module getModuleFromValue(int value) {
-			switch(value) {
-			case 1:
-				return Module.Energy;
-			
-			case 2:
-				return Module.Building;
-			case 3:
-				return Module.Space;
-				
-			case 4:
-				return Module.EnergyMeter;
-			case 5:
-				return Module.Asset;
-			
-			}
-			return null;
-		}
-	}
-	public Module getModule() {
+	
+	public FacilioModule getModule() {
 		return module;
 	}
-	public void setModule(Module module) {
+	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-	private Module module;
-	public static JSONArray getFields(Module module)
+	private FacilioModule module;
+	
+	
+	public static JSONArray getFields(String module)
 	{
 		JSONArray fields = new JSONArray();
 		
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			ArrayList<FacilioField> fieldsList= bean.getAllFields(module.getModuleName());
+			ArrayList<FacilioField> fieldsList= bean.getAllFields(module);
 
 			for(FacilioField field : fieldsList)
 			{
@@ -249,8 +212,8 @@ public class ImportMetaInfo
 	
 	public static void main(String args[])
 	{
-		Module m = Module.Energy;
-		System.out.println("value is "+ m.getValue());
+		//Module m = Module.Energy;
+		//System.out.println("value is "+ m.getValue());
 	}
 	
 }

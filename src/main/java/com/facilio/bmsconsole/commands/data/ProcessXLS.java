@@ -199,8 +199,8 @@ public class ProcessXLS implements Command {
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-				.moduleName(metainfo.getModule().getModuleName())
-				.fields(bean.getAllFields(metainfo.getModule().getModuleName()))
+				.moduleName(metainfo.getModule().getName())
+				.fields(bean.getAllFields(metainfo.getModule().getName()))
 				.addRecords(readingsList);
 		readingBuilder.save();
 		workbook.close();
