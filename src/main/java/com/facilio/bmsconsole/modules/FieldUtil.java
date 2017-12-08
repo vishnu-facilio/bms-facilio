@@ -83,6 +83,9 @@ public class FieldUtil {
 					if(value instanceof Long) {
 						val = (long) value;
 					}
+					else if(value instanceof Double) {
+						val = new Double((double) value).longValue();
+					}
 					else {
 						val = Long.parseLong(value.toString());
 					}
