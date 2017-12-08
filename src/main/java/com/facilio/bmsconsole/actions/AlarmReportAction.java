@@ -535,19 +535,17 @@ public class AlarmReportAction extends ActionSupport {
 		alarmResponseStats = new JSONObject();
 		if(requestType.equalsIgnoreCase("techResponse"))
 		{
-			alarmResponseStats.put("technicians", getResponseStats(true));
-			alarmResponseStats.put("total", getResponseStats(false));
+			alarmResponseStats.put("technicians", getResponseStats());
 			return SUCCESS;
 		}
-		alarmResponseStats.put("technicians", getResolutionStats(true));
-		alarmResponseStats.put("total", getResolutionStats(false));
+		alarmResponseStats.put("technicians", getResolutionStats());
 		return SUCCESS;
 	}
 	
 	
 	
 	@SuppressWarnings("unchecked")
-	private JSONArray getResponseStats(boolean groupBy) throws Exception {
+	private JSONArray getResponseStats() throws Exception {
 		
 		JSONArray jsonArray = new JSONArray();
 		FacilioField countFld = new FacilioField();
@@ -566,14 +564,12 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(countFld);
 		fields.add(avgFld);
 		
-		if(groupBy)
-		{
-			FacilioField technicianField = new FacilioField();
-			technicianField.setName("acknowledged");
-			technicianField.setColumnName("ACKNOWLEDGED_BY");
-			technicianField.setDataType(FieldType.NUMBER);
-			fields.add(technicianField);
-		}
+
+		FacilioField technicianField = new FacilioField();
+		technicianField.setName("acknowledged");
+		technicianField.setColumnName("ACKNOWLEDGED_BY");
+		technicianField.setDataType(FieldType.NUMBER);
+		fields.add(technicianField);
 		
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
@@ -598,38 +594,31 @@ public class AlarmReportAction extends ActionSupport {
 						.on("Alarms.ID = Tickets.ID");
 						builder.andCondition(getSpaceCondition(buildingId));
 					}
-				 if(groupBy)
-					{
-						builder.groupBy("ACKNOWLEDGED_BY");
-					}
 				builder.andCustomWhere(where.toString(), orgId)
 				.andCondition(createdTime)
+				.groupBy("ACKNOWLEDGED_BY")
 				.orderBy(average);
 		List<Map<String, Object>> stats = builder.get();
-		if(stats != null && !stats.isEmpty()) {
 			for(Map<String, Object> stat : stats) {
 				
 				JSONObject statsObj = new JSONObject();
 				long total = (long) stat.get("total");
 				if(total==0)continue;
-				if(groupBy){
-					long acknowledger = (long) stat.get("acknowledged");
-					statsObj.put("technician", acknowledger);
-				}
+				long acknowledger = (long) stat.get("acknowledged");
+				statsObj.put("technician", acknowledger);
 				double avg = ((BigDecimal) stat.get("average")).doubleValue();
 				statsObj.put("average", avg);
 				statsObj.put("total", total);
 				jsonArray.add(statsObj);
 			}
 		
-		}
 		
 		return jsonArray;
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	private JSONArray getResolutionStats(boolean groupBy) throws Exception {
+	private JSONArray getResolutionStats() throws Exception {
 		
 		JSONArray jsonArray = new JSONArray();
 		FacilioField countFld = new FacilioField();
@@ -647,16 +636,14 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(countFld);
 		fields.add(avgFld);
 		
-		if(groupBy)
-		{	
-			FacilioField assignedToFld = new FacilioField();
-			assignedToFld.setName("technician");
-			assignedToFld.setColumnName("ASSIGNED_TO_ID");
-			assignedToFld.setModule(ModuleFactory.getTicketsModule());
-			assignedToFld.setDataType(FieldType.NUMBER);
-			fields.add(assignedToFld);
-		}
-		
+
+		FacilioField assignedToFld = new FacilioField();
+		assignedToFld.setName("technician");
+		assignedToFld.setColumnName("ASSIGNED_TO_ID");
+		assignedToFld.setModule(ModuleFactory.getTicketsModule());
+		assignedToFld.setDataType(FieldType.NUMBER);
+		fields.add(assignedToFld);
+
 		FacilioField createdTimeFld = new FacilioField();
 		createdTimeFld.setName("createdTime");
 		createdTimeFld.setColumnName("CREATED_TIME");
@@ -670,39 +657,31 @@ public class AlarmReportAction extends ActionSupport {
 		StringBuilder where = new StringBuilder();
 		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		
-		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
 				.innerJoin("Tickets")
-				.on("Alarms.ID = Tickets.ID");
-				if(groupBy)
-				{
-					builder.groupBy("Tickets.ASSIGNED_TO_ID");
-				}
-				 builder.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY);
+				.on("Alarms.ID = Tickets.ID")
+				.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
+				.andCondition(createdTime);
 				 if(buildingId!=-1) {
 						builder.andCondition(getSpaceCondition(buildingId));
 					}
-				builder.andCondition(createdTime)
+				builder.groupBy("Tickets.ASSIGNED_TO_ID")
 				.orderBy(average);
 		List<Map<String, Object>> stats = builder.get();
-		if(stats != null && !stats.isEmpty()) {
-			for(Map<String, Object> stat : stats) {
-				
-				JSONObject statsObj = new JSONObject();
-				long total = (long) stat.get("total");
-				if(total==0)continue;
-				if(groupBy){
-					long technician = (long) stat.get("technician");
-					statsObj.put("technician", technician);
-				}
-				double avg = stat.get("average") != null ? ((BigDecimal) stat.get("average")).doubleValue() : 0d;
-				statsObj.put("average", avg);
-				statsObj.put("total", total);
-				jsonArray.add(statsObj);
-			}
+		for(Map<String, Object> stat : stats) {
+
+			JSONObject statsObj = new JSONObject();
+			long total = (long) stat.get("total");
+			if(total==0)continue;
+			long technician = (long) stat.get("technician");
+			statsObj.put("technician", technician);
+			double avg = stat.get("average") != null ? ((BigDecimal) stat.get("average")).doubleValue() : 0d;
+			statsObj.put("average", avg);
+			statsObj.put("total", total);
+			jsonArray.add(statsObj);
 		}
 		
 		return jsonArray;
