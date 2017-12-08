@@ -10,6 +10,8 @@ public class Message
 	private MessageType messageType;
 	private long from;
 	private long to;
+	private String namespace;
+	private String action;
 	private JSONObject content = new JSONObject();
 
 	public Message() {
@@ -45,6 +47,24 @@ public class Message
 
 	public Message setTo(long to) {
 		this.to = to;
+		return this;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public Message setNamespace(String namespace) {
+		this.namespace = namespace;
+		return this;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public Message setAction(String action) {
+		this.action = action;
 		return this;
 	}
 

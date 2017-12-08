@@ -6,22 +6,9 @@ public class WmsEvent extends Message {
 		super.setMessageType(MessageType.EVENT);
 	}
 	
-	public WmsEvent setNamespace(String namespace) {
-		super.addData("namespace", namespace);
+	public WmsEvent setEventType(WmsEventType eventType) {
+		super.addData("eventType", eventType);
 		return this;
-	}
-	
-	public String getNamespace() {
-		return (String) super.getData("namespace");
-	}
-	
-	public WmsEvent setAction(String action) {
-		super.addData("action", action);
-		return this;
-	}
-	
-	public String getAction() {
-		return (String) super.getData("action");
 	}
 	
 	public WmsEvent setUserStatus(long uid, WmsUserStatus status) {
@@ -33,7 +20,7 @@ public class WmsEvent extends Message {
 	public static enum WmsEventType {
 		USER_STATUS,
 		RECORD_UPDATE,
-		OTER;
+		OTHER;
 	}
 	
 	public static enum WmsUserStatus {

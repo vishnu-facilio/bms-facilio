@@ -329,6 +329,13 @@
 				<param name="includeProperties">workorderId</param>
 			</result>
 		</action>
+		<action name="viewAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="viewAlarm">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="addAlarm">
 			<param name="permission">WORKORDER_READ</param>
@@ -355,6 +362,14 @@
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="alarmList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
 	</package>

@@ -22,7 +22,10 @@ public class ViewAction extends ActionSupport {
 	public String viewList() throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = modBean.getModule("workorder");
+		if (moduleName == null) {
+			moduleName = "workorder";
+		}
+		FacilioModule moduleObj = modBean.getModule(moduleName);
 		
 		setViews(ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId()));
 		return SUCCESS;

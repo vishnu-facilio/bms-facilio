@@ -357,6 +357,19 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
+		c.addCommand(new GetAlarmListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAlarmDetailsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForAlarm());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmListCommand());
 		addCleanUpCommand(c);
 		return c;

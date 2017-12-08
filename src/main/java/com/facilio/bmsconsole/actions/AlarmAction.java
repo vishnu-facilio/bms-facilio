@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -233,25 +234,60 @@ public class AlarmAction extends ActionSupport {
 
 	public String alarmList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		if(getFilters() != null)
-		{	
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(getFilters());
-			context.put(FacilioConstants.ContextNames.FILTERS, json);
-		}
-		System.out.println("View Name : "+getViewName());
-		Chain alarmListChain = FacilioChainFactory.getAlarmListChain();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "alarm.subject,alarm.description");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		
+ 		JSONObject sorting = new JSONObject();
+ 		if (getOrderBy() != null) {
+ 			sorting.put("orderBy", getOrderBy());
+ 			sorting.put("orderType", getOrderType());
+ 		}
+ 		else {
+ 			sorting.put("orderBy", "createdTime");
+ 			sorting.put("orderType", "desc");
+ 		}
+ 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 		
+ 		System.out.println("View Name : "+getViewName());
+ 		Chain alarmListChain = FacilioChainFactory.getAlarmListChain();
 		alarmListChain.execute(context);
-
+ 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
-
+		
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if(cv != null) {
 			setViewDisplayName(cv.getDisplayName());
 		}
-
+		
+		return SUCCESS;
+	}
+	
+	public String viewAlarm() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		if (getViewName() != null) {
+			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		}
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
+ 		
+ 		Chain alarmChain = FacilioChainFactory.getAlarmDetailsChain();
+ 		alarmChain.execute(context);
+ 		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+		
 		return SUCCESS;
 	}
 	
@@ -297,6 +333,33 @@ public class AlarmAction extends ActionSupport {
 	public String getFilters()
 	{
 		return this.filters;
+	}
+	
+	String orderBy;
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+	
+	public String getOrderBy() {
+		return this.orderBy;
+	}
+	
+	String orderType;
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	
+	public String getOrderType() {
+		return this.orderType;
+	}
+	
+	String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	
+	public String getSearch() {
+		return this.search;
 	}
 
 	private HashMap<String, Object> notification;
