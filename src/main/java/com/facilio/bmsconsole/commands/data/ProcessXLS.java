@@ -138,87 +138,90 @@ public class ProcessXLS implements Command {
 		HashMap<Integer, String> colIndex = new HashMap<Integer, String>();
 		
 		Workbook workbook = WorkbookFactory.create(ins);
-		Sheet datatypeSheet = workbook.getSheetAt(0);
+		
+		for(int i=0;i<workbook.getNumberOfSheets();i++) {
+			Sheet datatypeSheet = workbook.getSheetAt(i);
 
-		Iterator<Row> itr = datatypeSheet.iterator();
-		boolean heading=true;
-		int row_no = 0;
-		while (itr.hasNext()) {
-			row_no++;
-			Row row = itr.next();
-			if (heading) {
-				// column heading
-				
+			Iterator<Row> itr = datatypeSheet.iterator();
+			boolean heading=true;
+			int row_no = 0;
+			while (itr.hasNext()) {
+				row_no++;
+				Row row = itr.next();
+				if (heading) {
+					// column heading
+					
+					Iterator<Cell> cellItr = row.cellIterator();
+					int cellIndex = 0;
+					while (cellItr.hasNext()) {
+						Cell cell = cellItr.next();
+						String cellValue = cell.getStringCellValue();
+						colIndex.put(cellIndex, cellValue);
+						cellIndex++;
+					}
+					heading=false;
+					continue;
+				}
+				HashMap<String, Object> colVal = new HashMap<>();
+
 				Iterator<Cell> cellItr = row.cellIterator();
 				int cellIndex = 0;
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
-					String cellValue = cell.getStringCellValue();
-					colIndex.put(cellIndex, cellValue);
+
+					String cellName = colIndex.get(cellIndex);
+					if (cellName == null) {
+						continue;
+					}
+
+					Object val = 0.0;
+					if (cell.getCellTypeEnum() == CellType.STRING) {
+
+						val = cell.getStringCellValue();
+					}
+					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
+
+						val = cell.getNumericCellValue();
+					}
+					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
+						val = cell.getBooleanCellValue();
+					}
+					colVal.put(cellName, val);
+
 					cellIndex++;
 				}
-				heading=false;
-				continue;
-			}
-			HashMap<String, Object> colVal = new HashMap<>();
+				System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
 
-			Iterator<Cell> cellItr = row.cellIterator();
-			int cellIndex = 0;
-			while (cellItr.hasNext()) {
-				Cell cell = cellItr.next();
-
-				String cellName = colIndex.get(cellIndex);
-				if (cellName == null) {
-					continue;
-				}
-
-				Object val = 0.0;
-				if (cell.getCellTypeEnum() == CellType.STRING) {
-
-					val = cell.getStringCellValue();
-				}
-				else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-
-					val = cell.getNumericCellValue();
-				}
-				else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
-					val = cell.getBooleanCellValue();
-				}
-				colVal.put(cellName, val);
-
-				cellIndex++;
-			}
-			System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
-
-			HashMap <String, Object> props = new LinkedHashMap<String,Object>();
-			fieldMapping.forEach((key,value) -> 
-			{
-				Object cellValue=colVal.get(value);
-				boolean isfilledByLookup = false;
-				if(cellValue != null) {
-					FacilioField facilioField = metainfo.getFacilioFieldMapping(metainfo.getModule().getName()).get(key);
-					if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
-						LookupField lookupField = (LookupField) facilioField;
-						List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
-						if(lookupPropsList != null) {
-							Map<String, Object> lookupProps = lookupPropsList.get(0);
-							props.put(key, lookupProps);
-							isfilledByLookup = true;
+				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
+				fieldMapping.forEach((key,value) -> 
+				{
+					Object cellValue=colVal.get(value);
+					boolean isfilledByLookup = false;
+					if(cellValue != null) {
+						FacilioField facilioField = metainfo.getFacilioFieldMapping(metainfo.getModule().getName()).get(key);
+						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
+							LookupField lookupField = (LookupField) facilioField;
+							List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
+							if(lookupPropsList != null) {
+								Map<String, Object> lookupProps = lookupPropsList.get(0);
+								props.put(key, lookupProps);
+								isfilledByLookup = true;
+							}
 						}
 					}
-				}
-				if(!isfilledByLookup) {
-					props.put(key, cellValue);
-				}
-			});
-			System.out.println("Loading  ReadingContext   . "+metainfo + new Date(System.currentTimeMillis()));
+					if(!isfilledByLookup) {
+						props.put(key, cellValue);
+					}
+				});
+				System.out.println("Loading  ReadingContext   . "+metainfo + new Date(System.currentTimeMillis()));
 
-			ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
-			reading.setParentId(metainfo.getAssetId());
-			readingsList.add(reading);
-			
-			System.out.println("Finished commit data  for assetid ="+metainfo.getAssetId() +" \n"+ new Date(System.currentTimeMillis()));
+				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
+				reading.setParentId(metainfo.getAssetId());
+				readingsList.add(reading);
+				
+				System.out.println("Finished commit data  for assetid ="+metainfo.getAssetId() +" \n"+ new Date(System.currentTimeMillis()));
 
+			}
 		}
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");

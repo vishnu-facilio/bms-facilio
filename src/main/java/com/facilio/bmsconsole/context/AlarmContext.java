@@ -191,6 +191,14 @@ public class AlarmContext extends TicketContext {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
+	
+	private long noOfEvents = -1;
+	public long getNoOfEvents() {
+		return noOfEvents;
+	}
+	public void setNoOfEvents(long noOfEvents) {
+		this.noOfEvents = noOfEvents;
+	}
 
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
