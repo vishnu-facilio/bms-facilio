@@ -65,10 +65,10 @@ public class EventAPI {
 	    if(event.getCreatedTime() == -1) {
 	    	event.setCreatedTime(timestamp);
 	    }
-	    if(event.getSeverity() == null && (event.getAlarmClass().equals("Critical") || event.getAlarmClass().equals("Major") || event.getAlarmClass().equals("Minor")))
-	    {
-	    		event.setSeverity(event.getAlarmClass());
-	    }
+//	    if(event.getSeverity() == null && (event.getAlarmClass().equals("Critical") || event.getAlarmClass().equals("Major") || event.getAlarmClass().equals("Minor")))
+//	    {
+//	    		event.setSeverity(event.getAlarmClass());
+//	    }
 	    if(event.getSeverity() == null) {
 	    	event.setSeverity("Info");
 	    }
