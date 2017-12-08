@@ -45,7 +45,7 @@ public class GetEventListCommand implements Command {
 			
 			if(alarmId != -1)
 			{
-				selectBuider.andCustomWhere("EVENT.ALARM_ID = ?", alarmId);
+				selectBuider.andCustomWhere("Event.ALARM_ID = ?", alarmId);
 			}
 			if (view != null) {
 				Criteria criteria = view.getCriteria();
