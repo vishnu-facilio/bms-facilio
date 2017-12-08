@@ -53,6 +53,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
@@ -514,6 +515,8 @@ public class LoginAction extends ActionSupport{
 		data.put("users", users);
 		data.put("groups", groups);
 		data.put("roles", roles);
+		
+		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getUid()));
