@@ -370,7 +370,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetAlarmListCommand());
+		c.addCommand(new GetAlarmCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

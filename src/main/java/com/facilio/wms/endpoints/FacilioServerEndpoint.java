@@ -37,7 +37,8 @@ public class FacilioServerEndpoint
 
     private Session session;
     private static final Set<FacilioServerEndpoint> endpoints = new CopyOnWriteArraySet<FacilioServerEndpoint>();
-    private static HashMap<String,List<String>> users = new HashMap<>();
+//    private static HashMap<String,List<String>> users = new HashMap<>();
+    private static HashMap<String,List<FacilioServerEndpoint>> users = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("uid") long uid) throws IOException, EncodeException 
@@ -46,15 +47,19 @@ public class FacilioServerEndpoint
         this.session = session;
         endpoints.add(this);
         if (!users.containsKey(String.valueOf(uid))) {
-        	users.put(String.valueOf(uid), new ArrayList<String>());
+        	users.put(String.valueOf(uid), new ArrayList<FacilioServerEndpoint>());
         }
-        users.get(String.valueOf(uid)).add(session.getId());
+        users.get(String.valueOf(uid)).add(this);
     }
 
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
     	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId());
+    	if (message.getContent() != null && message.getContent().get("ping") != null) {
+    		message.addData("ping", "pong");
+    		sendMessage(message);
+    	}
 //        message.setFrom(users.get(session.getId()));
 //        sendMessage(message);
     }
@@ -89,22 +94,34 @@ public class FacilioServerEndpoint
 
     public static void sendMessage(Message message) throws IOException, EncodeException 
     {
-    	System.out.println("Sending message ::" +message.getContent());
-        for (FacilioServerEndpoint endpoint : endpoints) 
-        {
-            synchronized(endpoint) 
-            {
-            	List<String> sessions = getSessions(message.getTo());
-            	System.out.println("Sending message2 :: " + endpoint.session.getId());
-            	System.out.println("Sending message3 ::" + sessions);
-                if (sessions.contains(endpoint.session.getId())) {
-                    endpoint.session.getBasicRemote().sendObject(message);
-                }
-            }
-        }
+    	System.out.println("Sending message TO:: "+message.getTo()+"  MSG:: "+message.getContent());
+    	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
+    	if (sessions != null) {
+    		for (FacilioServerEndpoint endpoint : sessions) 
+        	{
+        		synchronized(endpoint) {
+        			endpoint.session.getBasicRemote().sendObject(message);
+        		}
+        	}
+    	}
+    	else {
+    		System.out.println("SESSIONS IS NULL :: "+message.getTo()+"  MSG:: "+message.getContent());
+    	}
+//        for (FacilioServerEndpoint endpoint : endpoints) 
+//        {
+//            synchronized(endpoint) 
+//            {
+//            	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
+//            	System.out.println("Sending message2 :: " + endpoint.session.getId());
+//            	System.out.println("Sending message3 ::" + sessions);
+//                if (sessions.contains(endpoint.session.getId())) {
+//                    endpoint.session.getBasicRemote().sendObject(message);
+//                }
+//            }
+//        }
     }
 
-    private static List<String> getSessions(long to) 
+    private static List<FacilioServerEndpoint> getSessions(long to) 
     {
     	return users.get(String.valueOf(to));
     }
@@ -114,8 +131,16 @@ public class FacilioServerEndpoint
     	Iterator<String> keys = users.keySet().iterator();
     	while (keys.hasNext()) {
     		String key = keys.next();
-    		if (users.get(key).indexOf(sessionId) != -1) {
-    			users.get(key).remove(sessionId);
+    		List<FacilioServerEndpoint> li = users.get(key);
+    		if (li != null) {
+    			for (FacilioServerEndpoint ss : li) {
+    				synchronized(ss) {
+    					if (ss.session.getId().equals(sessionId)) {
+        					li.remove(ss);
+        				}
+    				}
+    			}
+    			users.put(key, li);
     		}
     	}
     }

@@ -15,6 +15,7 @@ import javax.websocket.EncodeException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
+import com.facilio.wms.endpoints.FacilioServerEndpoint;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
@@ -82,8 +83,9 @@ public class WmsApi
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
 			
-			FacilioClientEndpoint clientEndPoint = getFacilioEndPoint(WEBSOCKET_URL + "/" + to);
-	        clientEndPoint.sendMessage(message);
+			FacilioServerEndpoint.sendMessage(message);
+//			FacilioClientEndpoint clientEndPoint = getFacilioEndPoint(WEBSOCKET_URL + "/" + to);
+//	        clientEndPoint.sendMessage(message);
 		}
 	}
 	
