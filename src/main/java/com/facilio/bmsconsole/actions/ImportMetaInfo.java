@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -74,6 +76,7 @@ public class ImportMetaInfo
 				iminfo.fields = getFields(facilioModule.getName());
 				iminfo.setImportprocessid(processid);
 				iminfo.setModule(facilioModule);
+				iminfo.getFacilioFieldMapping(facilioModule.getName());
 				System.out.println("fields"+iminfo.fields);
 				return iminfo;
 			}
@@ -121,6 +124,7 @@ public class ImportMetaInfo
 	private FacilioModule module;
 	
 	
+	
 	public static JSONArray getFields(String module)
 	{
 		JSONArray fields = new JSONArray();
@@ -141,6 +145,32 @@ public class ImportMetaInfo
 			e.printStackTrace();
 		}
 		return fields;
+	}
+	
+	private Map<String, FacilioField> facilioFieldMapping = null;
+	
+	public Map<String, FacilioField> getFacilioFieldMapping(String module) {
+		if(facilioFieldMapping == null) {
+			try {
+				
+				facilioFieldMapping = new HashMap<String, FacilioField>();
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				ArrayList<FacilioField> fieldsList= bean.getAllFields(module);
+
+				for(FacilioField field : fieldsList)
+				{
+					if(!isRemovableField(field.getName()))
+					{
+						facilioFieldMapping.put(field.getName(), field);
+					}
+				}
+				return facilioFieldMapping;
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return facilioFieldMapping;
 	}
 	
 	private static boolean isRemovableField(String name) {
@@ -167,8 +197,8 @@ public class ImportMetaInfo
 	}
 	
 	private HashMap<String, String> fieldMapping = new LinkedHashMap <String, String> ();
+	
 	public HashMap<String, String> getFieldMapping() {
-		System.out.println(fieldMapping);
 		return fieldMapping;
 	}
 	public void setFieldMapping(HashMap<String, String> fieldMapping) {
