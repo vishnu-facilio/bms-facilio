@@ -43,7 +43,8 @@ public class ReportsUtil
 	
 	public static String[] energyUnitConverter(Double value)
 	{
-		long length=(long)Math.log10(value)+1;
+		long longVal=value.longValue();
+		long length=(long)Math.log10(longVal)+1;
 		String units="kWh";
 		if(length>4)
 		{
@@ -115,10 +116,11 @@ public class ReportsUtil
 		return timeIntervals;
 	}
 	
-	public static String[] costConverter(double value)
+	public static String[] costConverter(Double value)
 	{
 
-		long length=(long)Math.log10(value)+1;
+		long longVal=value.longValue();
+		long length=(long)Math.log10(longVal)+1;
 		int divider=1;
 		String units="";
 		if(length>6)

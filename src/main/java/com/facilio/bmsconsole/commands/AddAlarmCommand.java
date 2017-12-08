@@ -9,10 +9,11 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
@@ -32,9 +33,13 @@ public class AddAlarmCommand implements Command {
 			
 			alarm.setCreatedTime(System.currentTimeMillis());
 			alarm.setModifiedTime(alarm.getCreatedTime());
+			alarm.setSourceType(TicketContext.SourceType.ALARM);
 			
-			if(alarm.getSeverity() == null || alarm.getSeverity().isEmpty()) {
-				alarm.setSeverity(FacilioConstants.Alarm.INFO_SEVERITY);
+			if((alarm.getSeverity() == null || alarm.getSeverity().getId() == -1) && alarm.getSeverityString() != null && !alarm.getSeverityString().isEmpty()) {
+				alarm.setSeverity(AlarmAPI.getAlarmSeverity(alarm.getSeverityString()));
+			}
+			if(alarm.getSeverity() == null || alarm.getSeverity().getId() == -1) {
+				alarm.setSeverity(AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.INFO_SEVERITY));
 			}
 			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()
@@ -42,7 +47,7 @@ public class AddAlarmCommand implements Command {
 																.table(dataTableName)
 																.fields(fields);
 			
-			CommonCommandUtil.updateAlarmDetailsInTicket(alarm, alarm);
+			AlarmAPI.updateAlarmDetailsInTicket(alarm, alarm);
 			TicketAPI.updateTicketStatus(alarm);
 			long alarmId = builder.insert(alarm);
 			alarm.setId(alarmId);

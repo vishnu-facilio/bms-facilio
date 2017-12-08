@@ -214,6 +214,14 @@ public class ReportActions extends ActionSupport {
 			previousStartTime=DateTimeUtil.getYearStartTime(-1);
 			previousEndTime=startTime-1;
 		}
+		else if (duration.equals("yearonyear"))
+		{
+			displayName="DATE";
+			colName="TTIME_DATE";
+			startTime=DateTimeUtil.getMonthStartTime();
+			previousStartTime=DateTimeUtil.getAnyYearThisMonthStartTime(-1);
+			previousEndTime=DateTimeUtil.getAnyYearThisMonthEndTime(-1);
+		}
 		FacilioField periodFld = ReportsUtil.getField(displayName,colName, FieldType.NUMBER);
 		periodFld.setName(displayName);
 		fields.add(periodFld);

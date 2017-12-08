@@ -87,7 +87,7 @@ public class EventToAlarmJob extends FacilioJob{
 						JSONObject alarm = new JSONObject();
 						JSONArray ids = new JSONArray();
 						ids.add(alarmId);
-						alarm.put("severity", event.getSeverity());
+						alarm.put("severityString", event.getSeverity());
 						alarm.put("orgId", event.getOrgId());
 						
 						JSONObject content = new JSONObject();
@@ -111,7 +111,7 @@ public class EventToAlarmJob extends FacilioJob{
 						json.put("node", event.getNode());
 						json.put("subject", event.getEventMessage());
 						json.put("description", event.getDescription());
-						json.put("severity", event.getSeverity());
+						json.put("severityString", event.getSeverity());
 						json.put("alarmPriority", event.getPriority());
 						json.put("alarmClass", event.getAlarmClass());
 						json.put("state", event.getState());
