@@ -228,6 +228,7 @@ public class PortfolioAction extends ActionSupport {
 
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
+		Map<Long,Double> purposeVsConsumption= new HashMap<Long,Double>();
 		
 		for (Map.Entry<Long,ArrayList<Long>> entry:purposeVsMeter.entrySet())
 		{
@@ -242,8 +243,9 @@ public class PortfolioAction extends ActionSupport {
 					totalKwh+=value;
 				}
 			}
-			result.put(purposeId, ReportsUtil.roundOff(totalKwh,2));
+			purposeVsConsumption.put(purposeId, ReportsUtil.roundOff(totalKwh,2));
 		}
+		result.put("consumption", ReportsUtil.valueSort(purposeVsConsumption, true));
 		result.put("units", "kWh");
 		setReportData(result);
 		return SUCCESS;
