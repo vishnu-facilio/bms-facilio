@@ -183,7 +183,9 @@ public class AlarmReportAction extends ActionSupport {
 				.andCustomWhere("Alarms.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCustomWhere("Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?",false);
 		if(buildingId!=-1) {
-			builder.andCondition(getSpaceCondition(buildingId));
+			builder.innerJoin("Tickets")
+			.on("Alarms.ID = Tickets.ID")
+			.andCondition(getSpaceCondition(buildingId));
 		}
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
@@ -591,8 +593,8 @@ public class AlarmReportAction extends ActionSupport {
 				.table("Alarms");
 				 if(buildingId!=-1) {
 					 builder.innerJoin("Tickets")
-						.on("Alarms.ID = Tickets.ID");
-						builder.andCondition(getSpaceCondition(buildingId));
+						.on("Alarms.ID = Tickets.ID")
+						.andCondition(getSpaceCondition(buildingId));
 					}
 				builder.andCustomWhere(where.toString(), orgId)
 				.andCondition(createdTime)
