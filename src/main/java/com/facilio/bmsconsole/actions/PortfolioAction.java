@@ -168,9 +168,10 @@ public class PortfolioAction extends ActionSupport {
 	public String getConsumptionDetails() throws Exception
 	{
 		JSONObject result = new JSONObject();
-		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);;
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
 		
 		String deviceList= StringUtils.join(buildingVsMeter.values(),",");
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());

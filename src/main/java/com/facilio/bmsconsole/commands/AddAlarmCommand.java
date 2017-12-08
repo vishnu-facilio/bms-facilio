@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -8,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -27,9 +25,10 @@ public class AddAlarmCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			alarm.setCreatedTime(System.currentTimeMillis());
+			alarm.setModifiedTime(alarm.getCreatedTime());
 			
-			if(alarm.getAlarmStatusVal() == null) {
-				alarm.setAlarmStatus(AlarmStatus.ACTIVE);
+			if(alarm.getSeverity() == null || alarm.getSeverity().isEmpty()) {
+				alarm.setSeverity(FacilioConstants.Alarm.INFO_SEVERITY);
 			}
 			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()

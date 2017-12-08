@@ -1578,6 +1578,13 @@
 				<param name="root">alarmTypeStats</param>
 			</result>
 		</action>
+		
+		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="getAllBuildings">
+			<result name="success" type="json">
+				<param name="root">alarmTypeStats</param>
+			</result>
+		</action>
 
 		<action name="resolution" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="spaceResponse">
