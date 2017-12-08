@@ -54,6 +54,18 @@ public class AlarmReportAction extends ActionSupport {
 		this.period = period;
 	}
 	
+	private long buildingId=-1;
+	public long getBuildingId()
+	{
+		return this.buildingId;
+	}
+	
+	public void setBuildingId(long buildingId)
+	{
+		this.buildingId=buildingId;
+	}
+	
+	
 	private List<Map<String, Object>> reportData;
 	public List<Map<String, Object>> getReportData() {
 		return this.reportData;
@@ -82,9 +94,9 @@ public class AlarmReportAction extends ActionSupport {
 		JSONArray buildingArray= new JSONArray ();
 		for(BuildingContext building:buildings) {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
-			long buildingId=building.getId();
-			buildingData.put("activeCount", getActiveAlarms(buildingId));
-			buildingData.put("totalCount", getTotalAlarms(buildingId));
+			long spaceId=building.getId();
+			buildingData.put("activeCount", getActiveAlarms(spaceId));
+			buildingData.put("totalCount", getTotalAlarms(spaceId));
 			buildingArray.add(buildingData);
 		}
 		setAlarmTypeStats(buildingArray); 
@@ -92,7 +104,7 @@ public class AlarmReportAction extends ActionSupport {
 	}
 	
 	
-	private Long getActiveAlarms(long buildingId) throws Exception
+	private Long getActiveAlarms(long spaceId) throws Exception
 	{
 		
 		FacilioField countFld = new FacilioField();
@@ -111,7 +123,7 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.ID = Tickets.ID")
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarms.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCondition(getSpaceCondition(buildingId));
+				.andCondition(getSpaceCondition(spaceId));
 		List<Map<String, Object>> rs = builder.get();
 		if(rs.isEmpty()) {
 			return 0L;
@@ -121,15 +133,13 @@ public class AlarmReportAction extends ActionSupport {
 		
 	}
 	
-	private Condition getSpaceCondition(long buildingId)
+	private Condition getSpaceCondition(long spaceId)
 	{
-		return 	CriteriaAPI.getCondition("SPACE_ID", "SPACE_ID", ""+buildingId, BuildingOperator.BUILDING_IS);
+		return 	CriteriaAPI.getCondition("SPACE_ID", "SPACE_ID", ""+spaceId, BuildingOperator.BUILDING_IS);
 	}
-	private Long getTotalAlarms(long buildingId) throws Exception
+	private Long getTotalAlarms(long spaceId) throws Exception
 	{
 		long startTime=DateTimeUtil.getWeekStartTime();
-		
-		CriteriaAPI.getCondition("SPACE_ID", "SPACE_ID", ""+buildingId, BuildingOperator.BUILDING_IS);
 		
 		FacilioField countFld = new FacilioField();
 		countFld.setName("total");
@@ -147,7 +157,7 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.ID = Tickets.ID")
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarms.MODIFIED_TIME > ?", startTime)
-				.andCondition(getSpaceCondition(buildingId));
+				.andCondition(getSpaceCondition(spaceId));
 		List<Map<String, Object>> rs = builder.get();
 		if(rs.isEmpty()) {
 			return 0L;
@@ -160,6 +170,7 @@ public class AlarmReportAction extends ActionSupport {
 		countFld.setName("unacknowledged");
 		countFld.setColumnName("COUNT(*)");
 		countFld.setDataType(FieldType.NUMBER);
+		
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
@@ -171,6 +182,9 @@ public class AlarmReportAction extends ActionSupport {
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarms.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCustomWhere("Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?",false);
+		if(buildingId!=-1) {
+			builder.andCondition(getSpaceCondition(buildingId));
+		}
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
 	}
@@ -195,6 +209,9 @@ public class AlarmReportAction extends ActionSupport {
 				.andCustomWhere("Alarms.SEVERITY!=?",FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCustomWhere("Tickets.ORGID=?",orgId)
 				.andCustomWhere("Tickets.ASSIGNED_TO_ID IS NULL");
+		if(buildingId!=-1) {
+			builder.andCondition(getSpaceCondition(buildingId));
+		}
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
 	}
@@ -256,7 +273,7 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(typeField);
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY! = ? AND Tickets.SPACE_ID IN (");
+		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY != ? AND Tickets.SPACE_ID IN (");
 		
 		boolean isFirst = true;
 		for(BaseSpaceContext space : spaces) {
@@ -419,10 +436,13 @@ public class AlarmReportAction extends ActionSupport {
 		
 		if(stats != null && !stats.isEmpty()) {
 			for(Map<String, Object> stat : stats) {
-				int type = (int) stat.get("type");
+				Object type= stat.get("type");
+				if(type==null) {
+					continue;
+				}
 				double count = ((BigDecimal) stat.get("avg")).doubleValue();
 				
-				statsObj.put(AlarmType.getType(type).getStringVal(), count);
+				statsObj.put(AlarmType.getType((int)type).getStringVal(), count);
 			}
 		}
 		
@@ -573,11 +593,16 @@ public class AlarmReportAction extends ActionSupport {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms");
-				if(groupBy)
-				{
-					builder.groupBy("ACKNOWLEDGED_BY");
-				}
-				 builder.andCustomWhere(where.toString(), orgId)
+				 if(buildingId!=-1) {
+					 builder.innerJoin("Tickets")
+						.on("Alarms.ID = Tickets.ID");
+						builder.andCondition(getSpaceCondition(buildingId));
+					}
+				 if(groupBy)
+					{
+						builder.groupBy("ACKNOWLEDGED_BY");
+					}
+				builder.andCustomWhere(where.toString(), orgId)
 				.andCondition(createdTime)
 				.orderBy(average);
 		List<Map<String, Object>> stats = builder.get();
@@ -656,8 +681,11 @@ public class AlarmReportAction extends ActionSupport {
 				{
 					builder.groupBy("Tickets.ASSIGNED_TO_ID");
 				}
-				 builder.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCondition(createdTime)
+				 builder.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY);
+				 if(buildingId!=-1) {
+						builder.andCondition(getSpaceCondition(buildingId));
+					}
+				builder.andCondition(createdTime)
 				.orderBy(average);
 		List<Map<String, Object>> stats = builder.get();
 		if(stats != null && !stats.isEmpty()) {
