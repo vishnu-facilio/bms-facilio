@@ -119,4 +119,14 @@ public class AlarmAPI {
 		}
 		return null;
 	}
+	
+	public static List<AlarmSeverityContext> getAlarmSeverityList() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AlarmSeverityContext> selectBuilder = new SelectRecordsBuilder<AlarmSeverityContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_SEVERITY))
+																		.moduleName(FacilioConstants.ContextNames.ALARM_SEVERITY)
+																		.beanClass(AlarmSeverityContext.class);
+		
+		return selectBuilder.get();
+	}
 }
