@@ -135,14 +135,22 @@ public class AlarmContext extends TicketContext {
 		this.node = node;
 	}
 	
-	private String severity;
-	public String getSeverity() {
+	private String severityString;
+	public String getSeverityString() {
+		return severityString;
+	}
+	public void setSeverityString(String severityString) {
+		this.severityString = severityString;
+	}
+
+	private AlarmSeverityContext severity;
+	public AlarmSeverityContext getSeverity() {
 		return severity;
 	}
-	public void setSeverity(String severity) {
+	public void setSeverity(AlarmSeverityContext severity) {
 		this.severity = severity;
 	}
-	
+
 	private String alarmPriority;
 	public String getAlarmPriority() {
 		return alarmPriority;

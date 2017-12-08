@@ -9,10 +9,12 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -38,9 +40,10 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 				List<AlarmContext> alarms = alarmBuilder.get();
 				if(alarms != null && !alarms.isEmpty()) {
 					AlarmContext alarm = alarms.get(0);
-					if(alarm.getSeverity() == null || !alarm.equals("Clear")) {
+					AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+					if(alarm.getSeverity() == null || alarm.getSeverity().getId() != clearSeverity.getId()) {
 						AlarmContext updatedAlarm = new AlarmContext();
-						updatedAlarm.setSeverity("Clear");
+						updatedAlarm.setSeverity(clearSeverity);
 						
 						//Following should be moved to scheduler
 						List<Long> ids = new ArrayList<>();
