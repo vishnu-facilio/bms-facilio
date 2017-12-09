@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -42,6 +43,13 @@ public class AddWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
+			
+			List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+			if(tasks != null && !tasks.isEmpty()) {
+				for(TaskContext task : tasks) {
+					task.setParentTicketId(workOrderId);
+				}
+			}
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

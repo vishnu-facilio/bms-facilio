@@ -86,6 +86,7 @@ public class WorkOrderAction extends ActionSupport {
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();

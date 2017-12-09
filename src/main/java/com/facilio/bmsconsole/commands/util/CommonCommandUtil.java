@@ -88,7 +88,7 @@ public class CommonCommandUtil {
 							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
 							if(props != null && !props.isEmpty()) {
 								LookupField lookupField = (LookupField) field;
-								if(props.size() <= 2) {
+								if(props.size() <= 3) {
 									Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);
 									placeHolders.put(prefix+"."+field.getName(), lookupVal);
 									props = FieldUtil.getAsProperties(lookupVal);

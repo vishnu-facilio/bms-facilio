@@ -52,22 +52,14 @@ public class PMToWorkOrder extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				
-				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
-				addWOChain.execute(context);
-				
 				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
 				if(taskJson != null) {
 					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-					for(TaskContext task : tasks) {
-						task.setParentTicketId(wo.getId());
-					}
-					
-					context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
-					
-					Chain addTasksChain = FacilioChainFactory.getAddTasksChain();
-					addTasksChain.execute(context);
 				}
+				
+				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
+				addWOChain.execute(context);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

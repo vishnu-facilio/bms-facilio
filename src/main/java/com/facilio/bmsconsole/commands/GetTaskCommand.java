@@ -25,11 +25,10 @@ public class GetTaskCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(TaskContext.class)
 					.select(fields)
-					.andCustomWhere("ID = ?", taskId)
+					.andCustomWhere("Tasks.ID = ?", taskId)
 					.orderBy("ID");
 
 			List<TaskContext> tasks = builder.get();	

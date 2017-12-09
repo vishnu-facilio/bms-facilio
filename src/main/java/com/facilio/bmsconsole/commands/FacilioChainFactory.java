@@ -215,6 +215,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new AddTicketActivityCommand());
+		c.addCommand(getAddTasksChain());
 		addCleanUpCommand(c);
 		return c;
 	}

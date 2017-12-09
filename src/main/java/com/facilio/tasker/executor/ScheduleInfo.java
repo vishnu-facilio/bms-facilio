@@ -134,7 +134,11 @@ public class ScheduleInfo {
 		ZonedDateTime nextZdt = null;
 		switch(frequencyType) {	
 			case DO_NOT_REPEAT:
-				nextZdt = zdt;
+				zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
+				nextZdt = zdt.with(times.get(0));
+				if(zdt.isAfter(nextZdt)) {
+					nextZdt = nextZdt.plusDays(1);
+				}
 				break;
 			case DAILY:
 				if(values != null && !values.isEmpty() && !values.stream().allMatch(x -> x >= 1 && x <= 7)) {
