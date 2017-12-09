@@ -91,7 +91,7 @@ public class FacilioClientEndpoint
      */
     public void sendMessage(Message message) throws IOException, EncodeException 
     {
-    	FacilioServerEndpoint.sendMessage(message);
+    	SessionManager.getInstance().sendMessage(message);
     }
 
     /**

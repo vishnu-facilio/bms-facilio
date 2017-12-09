@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -87,16 +88,20 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 	
 	private ReadingContext evaluateChildExpression(EnergyMeterContext meter, List<Long> childIds, int period) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long endTime = System.currentTimeMillis();
+		long startTime = endTime - (period*1000);
 		SelectRecordsBuilder<ReadingContext> getReadings = new SelectRecordsBuilder<ReadingContext>()
 																.beanClass(ReadingContext.class)
 																.select(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
 																.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
-																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS));
+																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
+																;
 		
 		List<ReadingContext> readings = getReadings.get();
 		if(readings != null && !readings.isEmpty()) {
 			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
-			
+			List<Long> timestamps = new ArrayList<>();
 			for(ReadingContext reading : readings) {
 				List<ReadingContext> readingList = readingMap.get(reading.getParentId());
 				if(readingList == null) {
@@ -104,6 +109,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 					readingMap.put(reading.getParentId(), readingList);
 				}
 				readingList.add(reading);
+				timestamps.add(reading.getTtime());
 			}
 			
 			for(Long childId : childIds) {
@@ -114,7 +120,10 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			
 			EnergyDataEvaluator evluator = new EnergyDataEvaluator(readingMap);
 			String expression = meter.getChildMeterExpression();
-			return evluator.evaluateExpression(expression);
+			ReadingContext virtualMeterReading = evluator.evaluateExpression(expression);
+			virtualMeterReading.setTtime(((Double)StatUtils.mean(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
+			virtualMeterReading.setParentId(meter.getId());
+			return virtualMeterReading;
 		}
 		return null;
 	}
@@ -139,9 +148,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			
 			List<Double> totalConsumptions = new ArrayList<Double>();
 			for(ReadingContext reading : readings) {
-				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumption"));
+				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
-			aggregatedReading.addReading("totalEnergyConsumption", StatUtils.max(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
+			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.mean(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
 			return aggregatedReading;
 		}
 
@@ -150,11 +159,13 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			// TODO Auto-generated method stub
 			if(operator.equals("+")) {
 				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumption", ((Double)leftOperand.getReading("totalEnergyConsumption") + (Double)leftOperand.getReading("totalEnergyConsumption")));
+				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
+				return reading;
 			}
 			else if(operator.equals("-")) {
 				ReadingContext reading = new ReadingContext();
-				reading.addReading("totalEnergyConsumption", ((Double)leftOperand.getReading("totalEnergyConsumption") - (Double)leftOperand.getReading("totalEnergyConsumption")));
+				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") - (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
+				return reading;
 			}
 			return null;
 		}
