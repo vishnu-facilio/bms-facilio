@@ -746,13 +746,27 @@ public class ViewFactory {
 		condition.setOperator(NumberOperators.EQUALS);
 		condition.setValue(String.valueOf(type.getIntVal()));
 		
-		Criteria crtieria = new Criteria();
-		crtieria.addAndCondition(condition);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmsModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+		
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+		
+		criteria.addAndCondition(activeAlarm);
 		
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName(name);
 		typeAlarms.setDisplayName(displayName);
-		typeAlarms.setCriteria(crtieria);
+		typeAlarms.setCriteria(criteria);
 		
 		return typeAlarms;
 	}
@@ -769,14 +783,28 @@ public class ViewFactory {
 		emptyCondition.setFieldName("isAcknowledged");
 		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
 		
-		Criteria crtieria = new Criteria();
-		crtieria.addOrCondition(emptyCondition);
-		crtieria.addOrCondition(falseCondition);
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(emptyCondition);
+		criteria.addOrCondition(falseCondition);
+		
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmsModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+		
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+		
+		criteria.addAndCondition(activeAlarm);
 		
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledged");
 		typeAlarms.setDisplayName("Unacknowledged Alarms");
-		typeAlarms.setCriteria(crtieria);
+		typeAlarms.setCriteria(criteria);
 		
 		return typeAlarms;
 	}
