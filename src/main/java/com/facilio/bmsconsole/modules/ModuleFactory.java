@@ -324,6 +324,14 @@ public class ModuleFactory {
 		return alarmModule;
 	}
 	
+	public static FacilioModule getAlarmSeverityModule() {
+		FacilioModule alarmSeverityModule = new FacilioModule();
+		alarmSeverityModule.setName(FacilioConstants.ContextNames.ALARM_SEVERITY);
+		alarmSeverityModule.setDisplayName("Alarm Severiry");
+		alarmSeverityModule.setTableName("Alarm_Severity");
+		return alarmSeverityModule;
+	}
+	
 	public static FacilioModule getWorkorderTemplateModule() {
 		FacilioModule workorderTemplateModule = new FacilioModule();
 		workorderTemplateModule.setName("workordertemplate");

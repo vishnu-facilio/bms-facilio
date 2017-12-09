@@ -343,8 +343,8 @@
 				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
-		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="assignAlarm">
+		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="createWorkorder">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>

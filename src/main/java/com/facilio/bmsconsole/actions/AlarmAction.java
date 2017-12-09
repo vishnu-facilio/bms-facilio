@@ -142,10 +142,10 @@ public class AlarmAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 
-	public String assignAlarm() throws Exception {
+	public String createWorkorder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		//set Event
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+		//context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
 		return updateAlarm(context);
 	}
 

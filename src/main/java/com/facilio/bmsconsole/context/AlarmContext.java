@@ -207,6 +207,20 @@ public class AlarmContext extends TicketContext {
 	public void setNoOfEvents(long noOfEvents) {
 		this.noOfEvents = noOfEvents;
 	}
+	
+	private Boolean isWoCreated;
+	public Boolean getIsWoCreated() {
+		return isWoCreated;
+	}
+	public void setIsWoCreated(Boolean isWoCreated) {
+		this.isWoCreated = isWoCreated;
+	}
+	public boolean isWoCreated() {
+		if(isWoCreated != null) {
+			return isWoCreated.booleanValue();
+		}
+		return false;
+	}
 
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
