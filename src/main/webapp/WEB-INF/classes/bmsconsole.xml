@@ -307,6 +307,17 @@
 			</result>
 		</action>
 	</package>
+	<package name="taskSummaryApi" namespace="/api/task/summary"
+		extends="task">
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="viewTask">
+			<param name="permission">TASK_READ</param>
+			<param name="taskId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^task.*</param>
+			</result>
+		</action>
+	</package>
 	<package name="alarmApi" namespace="/api/alarm" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="newAlarm">
