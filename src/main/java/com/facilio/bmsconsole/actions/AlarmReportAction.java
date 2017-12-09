@@ -92,7 +92,7 @@ public class AlarmReportAction extends ActionSupport {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long spaceId=building.getId();
 			buildingData.put("activeCount", getActiveAlarms(spaceId));
-			buildingData.put("totalCount", getTotalAlarms(spaceId));
+			//buildingData.put("totalCount", getTotalAlarms(spaceId));
 			buildingArray.add(buildingData);
 		}
 		setAlarmTypeStats(buildingArray); 
@@ -313,11 +313,7 @@ public class AlarmReportAction extends ActionSupport {
 	
 	@SuppressWarnings("unchecked")
 	public String spaceResponse() throws Exception {
-		String requestType=getType();
-		if(requestType==null)
-		{
-			requestType="spaceResponse";
-		}
+		
 
 		alarmResponseStats = new JSONObject();
 		List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
@@ -329,43 +325,60 @@ public class AlarmReportAction extends ActionSupport {
 				buildingObj.put("name", building.getName());
 
 				List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
-				if(requestType.equals("spaceResponse"))
-				{
-					buildingObj.put("stats", getBuildingAlarmResolutionStats(allSpaces));
-				}
-				else
-				{
+				
 					buildingObj.put("stats", getBuildingAlarmResponseStats(allSpaces));
-				}
 
 				buildingArray.add(buildingObj);
 			}
 			alarmResponseStats.put("buildings", buildingArray);
 
-			JSONObject total  = new JSONObject();
-			total.put("buildings", buildings.size());
-			if(requestType.equals("spaceResponse"))
-			{
-				total.put("stats", getBuildingAlarmResolutionStats(null));
-			}
-			else
-			{
-				total.put("stats", getBuildingAlarmResponseStats(null));
-			}
-
-			alarmResponseStats.put("total", total);
+//			JSONObject total  = new JSONObject();
+//			total.put("buildings", buildings.size());
+//			if(requestType.equals("spaceResponse"))
+//			{
+//				total.put("stats", getBuildingAlarmResolutionStats(null));
+//			}
+//			else
+//			{
+//				total.put("stats", getBuildingAlarmResponseStats(null));
+//			}
+//
+//			alarmResponseStats.put("total", total);
 		}
 		return SUCCESS;
 		}
 		
+	@SuppressWarnings("unchecked")
+	public String topLocations() throws Exception {
+
+		alarmResponseStats = new JSONObject();
+		List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+		if(buildings != null && !buildings.isEmpty()) {
+			JSONArray buildingArray = new JSONArray();
+			for(BuildingContext building : buildings) {
+				JSONObject buildingObj = new JSONObject();
+				buildingObj.put("id", building.getId());
+				buildingObj.put("name", building.getName());
+				List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
+				buildingObj.put("stats", getBuildingAlarmStats(allSpaces));
+				buildingArray.add(buildingObj);
+			}
+			alarmResponseStats.put("buildings", buildingArray);
+
+		}
+		return SUCCESS;
+	}
+
+
 	
-	private JSONObject getBuildingAlarmResolutionStats(List<BaseSpaceContext> spaces) throws Exception {
+	
+	private JSONObject getBuildingAlarmStats(List<BaseSpaceContext> spaces) throws Exception {
 		JSONObject statsObj = new JSONObject();
 		
 		FacilioField countFld = new FacilioField();
-		countFld.setName("avg");
-		countFld.setColumnName("AVG(ACKNOWLEDGED_TIME-CREATED_TIME)");
-		countFld.setDataType(FieldType.DECIMAL);
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
 		
 		FacilioField typeField = new FacilioField();
 		typeField.setName("severity");
@@ -376,18 +389,15 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(countFld);
 		fields.add(typeField);
 		
-		FacilioField createdTimeFld = new FacilioField();
-		createdTimeFld.setName("createdTime");
-		createdTimeFld.setColumnName("CREATED_TIME");
-		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
-		createdTimeFld.setDataType(FieldType.DATE_TIME);
+		
 		
 		Condition createdTime = new Condition();
-		createdTime.setField(createdTimeFld);
+		createdTime.setFieldName("MODIFIED_TIME");
+		createdTime.setColumnName("MODIFIED_TIME");
 		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
+		where.append("Alarms.ORGID = ? ");
 		if(spaces != null && !spaces.isEmpty()) {
 			where.append(" AND Tickets.SPACE_ID IN (");
 			boolean isFirst = true;
@@ -422,7 +432,7 @@ public class AlarmReportAction extends ActionSupport {
 				if(type==null) {
 					continue;
 				}
-				double count = ((BigDecimal) stat.get("avg")).doubleValue();
+				long count = (long) stat.get("count");
 				
 				statsObj.put(type, count);
 			}
@@ -537,6 +547,7 @@ public class AlarmReportAction extends ActionSupport {
 		
 		Condition modTime = new Condition();
 		modTime.setFieldName("MODIFIED_TIME");
+		modTime.setColumnName("MODIFIED_TIME");
 		modTime.setOperator(DateOperators.valueOf(getPeriod()));
 
 		List<FacilioField> fields = new ArrayList<>();

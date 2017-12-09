@@ -1593,6 +1593,12 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="topLocations" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="topLocations">
+			<result name="success" type="json">
+				<param name="root">alarmResponseStats</param>
+			</result>
+		</action>
 
 		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="map">
