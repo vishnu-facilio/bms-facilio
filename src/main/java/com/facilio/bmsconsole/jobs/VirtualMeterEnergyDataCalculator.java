@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -87,11 +88,15 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 	
 	private ReadingContext evaluateChildExpression(EnergyMeterContext meter, List<Long> childIds, int period) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long endTime = System.currentTimeMillis();
+		long startTime = endTime - (period*1000);
 		SelectRecordsBuilder<ReadingContext> getReadings = new SelectRecordsBuilder<ReadingContext>()
 																.beanClass(ReadingContext.class)
 																.select(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
 																.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
-																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS));
+																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
+																;
 		
 		List<ReadingContext> readings = getReadings.get();
 		if(readings != null && !readings.isEmpty()) {
