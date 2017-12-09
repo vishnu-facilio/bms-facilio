@@ -4,14 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
-public class Criteria {
+import com.facilio.util.ExpressionEvaluator;
+
+public class Criteria extends ExpressionEvaluator<Predicate> {
+	
+	public Criteria() {
+		// TODO Auto-generated constructor stub
+		super.setRegEx(SPLIT_REG_EX);
+	}
+	
 	private long criteriaId = -1;
 
 	public long getCriteriaId() {
@@ -95,46 +102,23 @@ public class Criteria {
 	private Predicate predicate = null;
 	public Predicate computePredicate() {
 		if(predicate == null) {
-			Stack<Predicate> operands = new Stack<>();
-			Stack<String> operators = new Stack<>();
-			Matcher matcher = SPLIT_REG_EX.matcher(pattern);
-			while (matcher.find()) {
-				if(matcher.group(1) != null) {
-					Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
-					if (condition == null) {
-						throw new IllegalArgumentException("Pattern and conditions don't match");
-					}
-					operands.add(condition.getPredicate());
-				}
-				else if(matcher.group(2) != null) {
-					operators.add(matcher.group());
-				}
-				else if(matcher.group(3) != null) {
-					while (!operators.isEmpty() && !operators.peek().equals("(")) {
-						operands.push(applyOp(operators.pop(), operands.pop(), operands.pop()));
-					}
-					operators.pop();
-				}
-				else if(matcher.group(4) != null || matcher.group(5) != null) {
-					while (!operators.isEmpty() && !operators.peek().equals("(")) {
-						operands.push(applyOp(operators.pop(), operands.pop(), operands.pop()));
-					}
-					operators.add(matcher.group());
-				}
-			}
-			
-			while (!operators.isEmpty()) {
-				operands.push(applyOp(operators.pop(), operands.pop(), operands.pop()));
-			}
-			
-			if(!operands.isEmpty()) {
-				predicate = operands.pop();
-			}
+			predicate = evaluateExpression(pattern);
 		}
 		return predicate;
 	}
 	
-	private Predicate applyOp (String operator, Predicate rightOperand, Predicate leftOperand) {
+	@Override
+	public Predicate getOperand(String operand) {
+		// TODO Auto-generated method stub
+		Condition condition = conditions.get(Integer.parseInt(operand));
+		if(condition != null) {
+			return condition.getPredicate();
+		}
+		return null;
+	}
+	
+	@Override
+	public Predicate applyOp (String operator, Predicate rightOperand, Predicate leftOperand) {
 		if(operator.equalsIgnoreCase("and")) {
 			return PredicateUtils.andPredicate(leftOperand, rightOperand);
 		}
