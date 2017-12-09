@@ -133,6 +133,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.remove("id");
 			
 			WhereBuilder whereCondition = new WhereBuilder();
+			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 			
 			Condition orgCondition = new Condition();
 			orgCondition.setField(FieldFactory.getOrgIdField(module));
@@ -146,7 +147,6 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleCondition.setValue(String.valueOf(module.getModuleId()));
 			whereCondition.andCondition(moduleCondition);
 			
-			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 			where = whereCondition;
 			
 			updateLookupFields(moduleProps);
