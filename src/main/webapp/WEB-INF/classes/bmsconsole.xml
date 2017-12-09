@@ -1586,6 +1586,13 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		
+		<action name="severityStats" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="severityStats">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
 
 		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="map">
