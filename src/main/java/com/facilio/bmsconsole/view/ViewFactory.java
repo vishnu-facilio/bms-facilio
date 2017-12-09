@@ -68,14 +68,17 @@ public class ViewFactory {
 		viewMap.put("event-lastweek", getEvents("LastWeek"));
 		
 		viewMap.put("alarm-active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false));
-		viewMap.put("alarm-cleared", getSeverityAlarms("clear", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
+		viewMap.put("alarm-cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
+		viewMap.put("alarm-critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true));
+		viewMap.put("alarm-major", getSeverityAlarms("major", "Major Alarms", "Major", true));
+		viewMap.put("alarm-minor", getSeverityAlarms("minor", "Minor Alarms", "Minor", true));
+		viewMap.put("alarm-info", getSeverityAlarms("info", "Info Alarms", "Info", true));
 		viewMap.put("alarm-myalarms", getMyAlarms());
 		viewMap.put("alarm-unassigned", getUnassignedAlarms());
 		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
-		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.LIFE_SAFETY));
-		viewMap.put("alarm-critical", getTypeAlarms("critical", "Critical Alarms", AlarmType.CRITICAL));
-		viewMap.put("alarm-maintenance", getTypeAlarms("maintenance", "Maintenance Alarms", AlarmType.MAINTENANCE));
+		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.FIRE));
 		viewMap.put("alarm-energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY));
+		//viewMap.put("alarm-hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.ENERGY));
 		
 		
 		//Add module name in field objects
