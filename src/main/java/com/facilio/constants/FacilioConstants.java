@@ -269,6 +269,7 @@ public class FacilioConstants {
 		public static final String SEARCH = "search";
 		public static final String SEARCH_CRITERIA = "searchCriteria";
 		public static final String SORTING = "sorting";
+		public static final String MAX_LEVEL = "maxLevel";
 		public static final String SORTING_QUERY = "sortingQuery";
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
