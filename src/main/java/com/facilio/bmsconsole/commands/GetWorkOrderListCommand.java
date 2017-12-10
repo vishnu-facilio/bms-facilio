@@ -60,9 +60,6 @@ public class GetWorkOrderListCommand implements Command {
 			int perPage = (int) pagination.get("perPage");
 			
 			int offset = ((page-1) * perPage);
-			if (offset <= 0) {
-				offset = 1;
-			}
 			
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
