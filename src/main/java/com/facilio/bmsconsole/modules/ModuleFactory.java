@@ -459,4 +459,13 @@ public class ModuleFactory {
 		
 		return virtualMeterRelModule;
 	}
+	
+	public static FacilioModule getPmToWoRelModule() {
+		FacilioModule pmToWoRelModule = new FacilioModule();
+		pmToWoRelModule.setName("pmtoworel");
+		pmToWoRelModule.setDisplayName("PM To WO Rel");
+		pmToWoRelModule.setTableName("PM_To_WO");
+		
+		return pmToWoRelModule;
+	}
 }
