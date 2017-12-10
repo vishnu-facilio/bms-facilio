@@ -1,13 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -37,6 +44,45 @@ public class EnergyAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+public String addEnergyData() throws Exception { 
+		
+		FacilioContext context = new FacilioContext();
+		
+		System.out.println("EnergyDataProps payleoddd --- "+payload);
+		
+		Map<String, Object> EnergyDataProps = new HashMap<String, Object>();
+		EnergyDataProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+		EnergyDataProps.put("moduleId", 29);
+		EnergyDataProps.put("ttime", System.currentTimeMillis());
+		EnergyDataProps.put("parentId", payload.get("meterId"));
+		EnergyDataProps.put("totalEnergyConsumption",Double.parseDouble(payload.get("totalEnergyConsumption").toString()));
+		
+		ReadingContext reading = FieldUtil.getAsBeanFromMap(EnergyDataProps, ReadingContext.class);
+		
+		ModuleBaseWithCustomFields moduleBaseWithCustomFields = new ModuleBaseWithCustomFields();
+		
+		moduleBaseWithCustomFields.addData(EnergyDataProps);
+		
+		
+		context.put(FacilioConstants.ContextNames.RECORD, reading);
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "energydata");
+		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Data");
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		Chain getAddEnergyDataChain = FacilioChainFactory.getAddEnergyDataChain();
+		getAddEnergyDataChain.execute(context);
+		
+		return SUCCESS;
+	}
+	private JSONObject payload;
+	public JSONObject getPayload() {
+		return payload;
+	}
+	public void setPayload(JSONObject payload) {
+		this.payload = payload;
+	}
+
 	
 	public String getVirtualMeterChildren() throws Exception {
 		FacilioContext context = new FacilioContext();

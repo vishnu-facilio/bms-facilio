@@ -24,6 +24,16 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain getAddEnergyDataChain() {
+		Chain c = new TransactionChain();
+		//c.addCommand(SetTableNamesCommand.getForEner);
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+
 	
 	public static Chain getPickListChain() {
 		Chain c = new TransactionChain();

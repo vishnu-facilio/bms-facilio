@@ -359,6 +359,12 @@
 		</action>
 	</package>
 	<package name="energyMeterApi" namespace="/api/energymeter" extends="home">
+		<action name="addenergydata" class="com.facilio.bmsconsole.actions.EnergyAction" method="addEnergyData">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^event.*</param>
+			</result>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeter">
 			<param name="permission">WORKORDER_READ</param>
