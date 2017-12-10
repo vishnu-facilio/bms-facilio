@@ -1274,6 +1274,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateDefaultSpacePhotoChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateDefaultSpacePhotoCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getPhotosChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

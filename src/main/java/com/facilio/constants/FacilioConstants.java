@@ -152,6 +152,7 @@ public class FacilioConstants {
 		
 		public static final String READINGS = "readings";
 		public static final String PHOTOS = "photos";
+		public static final String PHOTO_ID = "photoId";
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
