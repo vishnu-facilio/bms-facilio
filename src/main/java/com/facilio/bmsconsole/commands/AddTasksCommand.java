@@ -38,7 +38,7 @@ public class AddTasksCommand implements Command {
 			builder.save();
 		}
 		else {
-			throw new IllegalArgumentException("Task list cannot be null/ empty");
+//			throw new IllegalArgumentException("Task list cannot be null/ empty");
 		}
 		return false;
 	}
