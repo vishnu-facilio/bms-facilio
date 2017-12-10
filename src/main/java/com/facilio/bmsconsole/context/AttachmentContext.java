@@ -70,11 +70,36 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		this.contentType = contentType;
 	}
 	
+	private AttachmentType type;
+	public int getType() {
+		if(type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = ATTACHMENT_TYPES[type - 1];
+	}
+	public void setType(AttachmentType type) {
+		this.type = type;
+	}
+	
 	public String getPreviewUrl() throws Exception {
 		if (this.fileId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			return fs.getPrivateUrl(this.fileId);
 		}
 		return null;
+	}
+	
+	private static final AttachmentType[] ATTACHMENT_TYPES = AttachmentType.values();
+	public static enum AttachmentType {
+		BEFORE,
+		AFTER
+		;
+		
+		public int getIntVal() {
+			return ordinal()+1;
+		}
 	}
 }
