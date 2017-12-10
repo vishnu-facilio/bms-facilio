@@ -521,7 +521,7 @@ public class WorkOrderAction extends ActionSupport {
 		return this.page;
 	}
 	
-	public int perPage;
+	public int perPage = 20;
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
