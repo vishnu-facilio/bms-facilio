@@ -175,8 +175,8 @@ public class WorkOrderAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 		
-		Chain editPM = FacilioChainFactory.getEditPreventiveMaintenanceChain();
-		editPM.execute(context);
+		Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
+		pmSummary.execute(context);
 		
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));

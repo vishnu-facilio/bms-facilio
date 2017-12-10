@@ -1066,6 +1066,13 @@ public class FieldFactory {
 		scheduleJson.setModule(module);
 		fields.add(scheduleJson);
 		
+		FacilioField nextExecutionTime = new FacilioField();
+		nextExecutionTime.setName("nextExecutionTime");
+		nextExecutionTime.setDataType(FieldType.NUMBER);
+		nextExecutionTime.setColumnName("NEXT_EXECUTION_TIME");
+		nextExecutionTime.setModule(module);
+		fields.add(nextExecutionTime);
+		
 		FacilioField endExecutionTime = new FacilioField();
 		endExecutionTime.setName("endExecutionTime");
 		endExecutionTime.setDataType(FieldType.NUMBER);
@@ -1675,6 +1682,27 @@ public class FieldFactory {
 		childMeterId.setColumnName("CHILD_METER_ID");
 		childMeterId.setModule(module);
 		fields.add(childMeterId);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getPmToWoRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPmToWoRelModule();
+		
+		FacilioField pmId = new FacilioField();
+		pmId.setName("pmId");
+		pmId.setDataType(FieldType.NUMBER);
+		pmId.setColumnName("PM_ID");
+		pmId.setModule(module);
+		fields.add(pmId);
+		
+		FacilioField woId = new FacilioField();
+		woId.setName("woId");
+		woId.setDataType(FieldType.NUMBER);
+		woId.setColumnName("WO_ID");
+		woId.setModule(module);
+		fields.add(woId);
 		
 		return fields;
 	}

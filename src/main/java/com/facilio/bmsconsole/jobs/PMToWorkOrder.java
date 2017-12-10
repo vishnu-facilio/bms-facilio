@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -60,14 +63,25 @@ public class PMToWorkOrder extends FacilioJob {
 				
 				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
+				
+				addToRelTable(pmId, wo.getId());
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void addToRelTable(long pmId, long woId) throws SQLException, RuntimeException {
+		Map<String, Object> relProp = new HashMap<>();
+		relProp.put("pmId", pmId);
+		relProp.put("woId", woId);
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getPmToWoRelFields())
+														.table(ModuleFactory.getPmToWoRelModule().getTableName())
+														.addRecord(relProp);
 		
-		
-		
+		insertBuilder.save();
 	}
 
 }
