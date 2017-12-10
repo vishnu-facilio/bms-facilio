@@ -228,7 +228,8 @@ public class AlarmContext extends TicketContext {
 		LIFE_SAFETY(3, "Life Safety"),
 		NORMAL(4, "Normal"),
 		ENERGY(5,"Energy"),
-		FIRE(6,"Fire");
+		FIRE(6,"Fire"),
+		HVAC(7,"Hvac");
 		
 		
 		private int intVal;

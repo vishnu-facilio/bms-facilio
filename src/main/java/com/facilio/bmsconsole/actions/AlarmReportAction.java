@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
@@ -441,7 +442,7 @@ public class AlarmReportAction extends ActionSupport {
 		return statsObj;
 	}
 	
-	private JSONObject getBuildingAlarmResponseStats(List<BaseSpaceContext> spaces) throws Exception {
+	private JSONObject getBuildingAlarmResolutionStats(List<BaseSpaceContext> spaces) throws Exception {
 		JSONObject statsObj = new JSONObject();
 		
 		FacilioField countFld = new FacilioField();
@@ -450,9 +451,9 @@ public class AlarmReportAction extends ActionSupport {
 		countFld.setDataType(FieldType.DECIMAL);
 		
 		FacilioField typeField = new FacilioField();
-		typeField.setName("severity");
-		typeField.setColumnName("Alarm_Severity.SEVERITY");
-		typeField.setDataType(FieldType.STRING);
+		typeField.setName("type");
+		typeField.setColumnName("ALARM_TYPE");
+		typeField.setDataType(FieldType.NUMBER);
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
@@ -469,12 +470,11 @@ public class AlarmReportAction extends ActionSupport {
 		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
 		
 		StringBuilder where = new StringBuilder();
-		where.append("Alarms.ORGID = ? AND Alarm_Severity.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
+		where.append("Alarms.ORGID = ? AND Alarms.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		if(spaces != null && !spaces.isEmpty()) {
 			where.append(" AND Tickets.SPACE_ID IN (");
 			boolean isFirst = true;
 			for(BaseSpaceContext space : spaces) {
-				
 				if(isFirst) {
 					isFirst = false;
 				}
@@ -492,23 +492,98 @@ public class AlarmReportAction extends ActionSupport {
 				.table("Alarms")
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
-				.innerJoin("Alarm_Severity")
-				.on("Alarms.SEVERITY=Alarm_Severity.ID")
-				.groupBy("Alarm_Severity.SEVERITY")
+				.groupBy("ALARM_TYPE")
 				.andCustomWhere(where.toString(), orgId,FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(createdTime);
 		List<Map<String, Object>> stats = builder.get();
 		
 		if(stats != null && !stats.isEmpty()) {
 			for(Map<String, Object> stat : stats) {
-				String severity = (String) stat.get("severity");
+				int type = (int) stat.get("type");
 				double count = ((BigDecimal) stat.get("avg")).doubleValue();
 				
-				statsObj.put(severity, count);
+				statsObj.put(AlarmType.getType(type).getStringVal(), count);
 			}
 		}
 		return statsObj;
 	}
+	
+	
+	
+	private JSONObject getBuildingAlarmResponseStats(List<BaseSpaceContext> spaces) throws Exception {
+		JSONObject statsObj = new JSONObject();
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("avg");
+		countFld.setColumnName("AVG(ACKNOWLEDGED_TIME-CREATED_TIME)");
+		countFld.setDataType(FieldType.DECIMAL);
+		
+		FacilioField typeField = new FacilioField();
+		typeField.setName("type");
+		typeField.setColumnName("ALARM_TYPE");
+		typeField.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		fields.add(typeField);
+		
+		FacilioField createdTimeFld = new FacilioField();
+		createdTimeFld.setName("createdTime");
+		createdTimeFld.setColumnName("CREATED_TIME");
+		createdTimeFld.setModule(ModuleFactory.getAlarmsModule());
+		createdTimeFld.setDataType(FieldType.DATE_TIME);
+		
+		Condition createdTime = new Condition();
+		createdTime.setField(createdTimeFld);
+		createdTime.setOperator(DateOperators.valueOf(getPeriod()));
+		
+		StringBuilder where = new StringBuilder();
+		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
+		if(spaces != null && !spaces.isEmpty()) {
+			where.append(" AND Tickets.SPACE_ID IN (");
+			boolean isFirst = true;
+			for(BaseSpaceContext space : spaces) {
+				if(isFirst) {
+					isFirst = false;
+				}
+				else {
+					where.append(", ");
+				}
+				where.append(space.getId());
+			}
+			where.append(")");
+		}
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Alarms")
+				.innerJoin("Tickets")
+				.on("Alarms.ID = Tickets.ID")
+				.groupBy("ALARM_TYPE")
+				.andCustomWhere(where.toString(), orgId)
+				.andCondition(createdTime);
+		List<Map<String, Object>> stats = builder.get();
+		
+		if(stats != null && !stats.isEmpty()) {
+			for(Map<String, Object> stat : stats) {
+				Object type= stat.get("type");
+				if(type==null) {
+					continue;
+				}
+				double count = ((BigDecimal) stat.get("avg")).doubleValue();
+				
+				statsObj.put(AlarmType.getType((int)type).getStringVal(), count);
+			}
+		}
+		
+		return statsObj;
+	}
+	
+	
+	
+	
+	
 	
 	private JSONObject alarmResponseStats;
 	public JSONObject getAlarmResponseStats() {
