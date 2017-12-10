@@ -399,7 +399,8 @@ public class WorkOrderAction extends ActionSupport {
  		JSONObject pagination = new JSONObject();
  		pagination.put("page", getPage());
  		pagination.put("perPage", getPerPage());
- 		context.put(FacilioConstants.ContextNames.PAGINATION, sorting);
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		System.out.println("PAGINATION ####### "+ pagination);
  		
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
