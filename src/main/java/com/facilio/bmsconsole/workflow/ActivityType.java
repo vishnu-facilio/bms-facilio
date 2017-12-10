@@ -23,7 +23,8 @@ public enum ActivityType {
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
-			return "created a new "+moduleName;
+			//return "created a new "+moduleName;
+			return "created a new Work Order";
 		}
 	},
 	EDIT(2) {
