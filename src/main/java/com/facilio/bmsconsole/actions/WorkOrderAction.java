@@ -170,7 +170,7 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String editPreventiveMaintenance() throws Exception {
+	public String preventiveMaintenanceSummary() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));

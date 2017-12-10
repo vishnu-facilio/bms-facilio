@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -20,7 +19,7 @@ import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class EditPreventiveMaintenanceCommand implements Command {
+public class PreventiveMaintenanceSummaryCommand implements Command {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -36,7 +35,7 @@ public class EditPreventiveMaintenanceCommand implements Command {
 				.table("Preventive_Maintenance")
 				.innerJoin("Jobs")
 				.on("Preventive_Maintenance.ID = Jobs.JOBID")
-				.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Preventive_Maintenance.ID = ?", AccountUtil.getCurrentOrg().getOrgId(), pmId);
+				.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ? AND Preventive_Maintenance.ID = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance", pmId);
 
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		Map<String, Object> pmProp = pmProps.get(0);
@@ -44,8 +43,7 @@ public class EditPreventiveMaintenanceCommand implements Command {
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
-		JSONParser parser = new JSONParser();
-		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
+		JSONObject content = (JSONObject) template.getTemplate(new HashMap<String, Object>()).get("workorder");
 		
 		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
 		

@@ -1078,7 +1078,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getEditPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new EditPreventiveMaintenanceCommand());
+		c.addCommand(new PreventiveMaintenanceSummaryCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
