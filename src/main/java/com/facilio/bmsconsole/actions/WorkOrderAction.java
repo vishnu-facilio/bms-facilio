@@ -396,6 +396,11 @@ public class WorkOrderAction extends ActionSupport {
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, sorting);
+ 		
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
  		workOrderListChain.execute(context);
@@ -504,6 +509,24 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String getSearch() {
 		return this.search;
+	}
+	
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	public int getPage() {
+		return this.page;
+	}
+	
+	public int perPage;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	
+	public int getPerPage() {
+		return this.perPage;
 	}
 	
 	public String getActivitiesList() throws Exception {
