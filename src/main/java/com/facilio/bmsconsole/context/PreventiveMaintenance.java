@@ -183,4 +183,11 @@ public class PreventiveMaintenance {
 		this.maxCount = maxCount;
 	}
 	
+	public String getScheduleMsg() {
+		if(schedule != null) {
+			return schedule.getDescription(startTime);
+		}
+		return null;
+	}
+	
 }
