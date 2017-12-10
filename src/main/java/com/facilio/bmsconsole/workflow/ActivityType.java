@@ -24,7 +24,7 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
 			//return "created a new "+moduleName;
-			return "created a new Work Order";
+			return "created Work Order";
 		}
 	},
 	EDIT(2) {
@@ -32,7 +32,8 @@ public enum ActivityType {
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
-			return "updated the "+moduleName;
+			//return "updated the "+moduleName;
+			return "updated Work Order";
 		}
 	},
 	DELETE(4) {
@@ -61,7 +62,8 @@ public enum ActivityType {
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
-			return "assigned the "+moduleName+" to ";
+			//return "assigned the "+moduleName+" to ";
+			return "assigned the Work Order to ";
 		}
 	},
 	ADD_TICKET_NOTE(32) {
@@ -83,14 +85,14 @@ public enum ActivityType {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return "added the following file(s).";
+			return "attached";
 		}
 	},
 	ADD_TICKET_TASKS(256) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return "added the following task.";
+			return "added the task.";
 		}
 	},
 	ADD_TASK_READING_VALUE(512) {
