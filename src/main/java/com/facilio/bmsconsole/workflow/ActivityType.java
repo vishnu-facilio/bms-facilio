@@ -91,6 +91,13 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			return "added the following task.";
 		}
+	},
+	ADD_TASK_READING_VALUE(512) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "added the reading value";
+		}
 	}
 	;
 

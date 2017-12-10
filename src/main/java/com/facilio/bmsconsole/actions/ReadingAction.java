@@ -168,7 +168,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		
-		Chain addCurrentOccupancy = FacilioChainFactory.getAddReadingValuesChain();
+		Chain addCurrentOccupancy = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
 	}

@@ -37,4 +37,44 @@ public class TaskContext extends TicketContext {
 		this.createdTime = createdTime;
 	}
 	
+	private Boolean isReadingTask;
+	public Boolean getIsReadingTask() {
+		return isReadingTask;
+	}
+	public void setIsReadingTask(Boolean isReadingTask) {
+		this.isReadingTask = isReadingTask;
+	}
+	public boolean isReadingTask() {
+		if(isReadingTask != null) {
+			return isReadingTask.booleanValue();
+		}
+		return false;
+	}
+	
+	private long readingId = -1;
+	public long getReadingId() {
+		return readingId;
+	}
+	public void setReadingId(long readingId) {
+		this.readingId = readingId;
+	}
+	
+	private ReadingContext readingData;
+	public ReadingContext getReadingData() {
+		return readingData;
+	}
+	public void setReadingData(ReadingContext readingData) {
+		this.readingData = readingData;
+	}
+
+	private long readingDataId = -1;
+	public long getReadingDataId() {
+		if(readingDataId == -1 && readingData != null && readingData.getId() != -1) {
+			return readingData.getId();
+		}
+		return readingDataId;
+	}
+	public void setReadingDataId(long readingDataId) {
+		this.readingDataId = readingDataId;
+	}
 }

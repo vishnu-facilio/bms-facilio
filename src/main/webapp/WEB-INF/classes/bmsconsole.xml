@@ -290,6 +290,14 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		
+		<action name="addorupdatetaskreadingdata" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTaskReadingData">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="updateTask">
