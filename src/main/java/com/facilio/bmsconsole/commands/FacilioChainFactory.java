@@ -486,6 +486,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new GetRelatedTasksCommand());
+		c.addCommand(new GetTaskReadingDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
