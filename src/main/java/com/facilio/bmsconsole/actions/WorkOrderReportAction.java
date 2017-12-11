@@ -21,12 +21,14 @@ import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.SetOrderByCommand;
 import com.facilio.bmsconsole.commands.SetTopNReportCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
@@ -237,11 +239,16 @@ public class WorkOrderReportAction extends ActionSupport {
 					buildingObj.put("id", building.getId());
 					buildingObj.put("name", building.getName());
 					buildingObj.put("avatarUrl", building.getAvatarUrl());
-					
-					if(building.getLocation() != null) {
+
+					LocationContext locationCtxt=building.getLocation();
+					if(locationCtxt!=null)
+					{
+						locationCtxt=SpaceAPI.getLocationSpace(building.getLocation().getId());
 						JSONObject location = new JSONObject();
-						location.put("lat", building.getLocation().getLat());
-						location.put("lng", building.getLocation().getLng());
+						location.put("city", locationCtxt.getCity());
+						location.put("street",locationCtxt.getStreet());
+						location.put("lat",locationCtxt.getLat());
+						location.put("lng",locationCtxt.getLng());
 						buildingObj.put("location", location);
 					}
 //					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
