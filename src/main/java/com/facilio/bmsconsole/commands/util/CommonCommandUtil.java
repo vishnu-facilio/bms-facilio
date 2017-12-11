@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -17,7 +20,10 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -125,5 +131,33 @@ public class CommonCommandUtil {
 				}
 			}
 		}
+	}
+	
+	public static Map<Long,Object> getPickList(String moduleName) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(moduleName);
+		if( primaryField == null) {
+			return null;
+		}
+
+		try {
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(primaryField);				
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.moduleName(moduleName)
+					.select(fields);
+			List<Map<String, Object>> records = builder.getAsProps();
+			Map<Long,Object> pickList = new HashMap<Long,Object>();
+
+			for(Map<String, Object> record : records) {
+				pickList.put((Long) record.get("id"), record.get(primaryField.getName()));
+			}
+			return pickList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;	
 	}
 }
