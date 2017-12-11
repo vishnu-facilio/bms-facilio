@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +83,8 @@ public class ReportActions extends ActionSupport {
 		Map <Long,Long> meterVsPurpose= ReportsUtil.getMeterVsPurpose(energyMeters);
 		String deviceList=StringUtils.join(meterVsPurpose.keySet(),",");
 		String duration = getPeriod();
-		long startTime=DateTimeUtil.getMonthStartTime();
-		long endTime=DateTimeUtil.getCurrenTime();
+		long startTime=DateTimeUtil.getDayStartTime(-30);
+		long endTime=DateTimeUtil.getDayStartTime()-1;//Last 30 days excluding today..
 
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		if(duration.equals("week"))
