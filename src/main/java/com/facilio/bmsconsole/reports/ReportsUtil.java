@@ -66,6 +66,10 @@ public class ReportsUtil
 	
 	public static String[] getCost(Double kWh)
 	{
+		if(kWh==null || kWh==0)
+		{
+			return null;
+		}
 		//later we need to calculate based on slab..
 		return costConverter(kWh*unitCost);
 	}

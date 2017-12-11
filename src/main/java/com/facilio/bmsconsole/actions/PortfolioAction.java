@@ -191,8 +191,11 @@ public class PortfolioAction extends ActionSupport {
 			JSONObject currentData = new JSONObject();
 			currentData.put("consumption",currentKwh);
 			String [] costArray=ReportsUtil.getCost(currentKwh);
-			currentData.put("cost", costArray[0]);
-			currentData.put("costUnits", costArray[1]);
+			if(costArray!=null)
+			{
+				currentData.put("cost", costArray[0]);
+				currentData.put("costUnits", costArray[1]);
+			}
 			buildingData.put("currentVal", currentData);
 			buildingArray.add(buildingData);
 		}
