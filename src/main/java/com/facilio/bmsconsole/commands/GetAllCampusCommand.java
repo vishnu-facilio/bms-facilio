@@ -27,6 +27,7 @@ public class GetAllCampusCommand implements Command{
 				.moduleName(moduleName)
 				.beanClass(SiteContext.class)
 				.select(fields)
+				.maxLevel(2)
 				.orderBy("ID");
 
 		List<SiteContext> campuses = builder.get();
