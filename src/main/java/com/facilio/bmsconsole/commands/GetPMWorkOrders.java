@@ -25,6 +25,7 @@ public class GetPMWorkOrders implements Command {
 																		.innerJoin("PM_To_WO")
 																		.on("WorkOrders.ID = PM_To_WO.WO_ID")
 																		.andCustomWhere("PM_To_WO.PM_ID = ?", pm.getId())
+																		.orderBy("WorkOrders.CREATED_TIME DESC")
 																		;
 			
 			pm.setWorkorders(selectBuilder.get());
