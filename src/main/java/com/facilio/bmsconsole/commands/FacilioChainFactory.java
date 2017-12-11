@@ -1238,6 +1238,7 @@ public class FacilioChainFactory {
 	public static Chain getCategoryReadingsChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetCategoryReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
