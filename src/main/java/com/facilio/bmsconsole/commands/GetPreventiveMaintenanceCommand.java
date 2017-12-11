@@ -20,7 +20,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STATUS);
+		Boolean status = null;
+		if(context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STATUS) != null)
+		{
+			status = (Boolean) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STATUS);
+		}
 		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		fields.addAll(FieldFactory.getPMJobFields());

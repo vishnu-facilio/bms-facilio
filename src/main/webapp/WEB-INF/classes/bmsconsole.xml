@@ -1242,6 +1242,14 @@
 			</result>
 		</action>
 
+		<action name="getAllPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getAllPreventiveMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">pms</param>
+			</result>
+		</action>
+
 		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getActivePreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
