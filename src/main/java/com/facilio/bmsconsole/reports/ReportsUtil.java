@@ -256,6 +256,26 @@ public class ReportsUtil
 	}
 	
 	
+	@SuppressWarnings("unchecked")
+	public static JSONObject getBuildingMap() 
+	{
+		
+		try {
+			List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
+			JSONObject result = new JSONObject();
+			for(BuildingContext building:buildings) {
+				long spaceId=building.getId();
+				String name=building.getName();
+				result.put(spaceId,name);
+			}
+			return result;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static Map<Long, Long> getBuildingVsMeter(List<EnergyMeterContext> energyMeters)
 	{
 	

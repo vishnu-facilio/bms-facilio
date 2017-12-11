@@ -521,6 +521,7 @@ public class LoginAction extends ActionSupport{
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
+		data.put("buildingList", ReportsUtil.getBuildingMap());
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));

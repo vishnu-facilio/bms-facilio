@@ -244,7 +244,10 @@ public class AlarmReportAction extends ActionSupport {
 					
 					JSONObject buildingObj = ReportsUtil.getBuildingData(building);
 					List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(building.getId());
-					buildingObj.put("stats", getBuildingAlarmTypeStats(allSpaces));
+					if(allSpaces!=null)
+					{
+						buildingObj.put("stats", getBuildingAlarmTypeStats(allSpaces));
+					}
 					alarmTypeStats.add(buildingObj);
 				}
 			}
