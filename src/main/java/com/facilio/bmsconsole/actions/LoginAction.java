@@ -53,10 +53,12 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -522,6 +524,7 @@ public class LoginAction extends ActionSupport{
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
+		data.put("ticketStatus", getTicketStatus());
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
@@ -669,5 +672,23 @@ public class LoginAction extends ActionSupport{
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	@SuppressWarnings({"unchecked" })
+	private JSONObject getTicketStatus()
+	{
+		try
+		{
+			JSONObject result = new JSONObject();
+			List<TicketStatusContext> ticketStatusList =TicketAPI.getAllStatus();
+			for(TicketStatusContext tsc:ticketStatusList) {
+				result.put(tsc.getId(),tsc.getStatus());
+			}
+			return result;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

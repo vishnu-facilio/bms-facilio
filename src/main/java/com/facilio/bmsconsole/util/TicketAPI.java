@@ -125,6 +125,25 @@ public class TicketAPI {
 		}
 	}
 	
+	public static List<TicketStatusContext> getAllStatus() throws Exception
+	{
+		try
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+																.table("TicketStatus")
+																.moduleName("ticketstatus")
+																.beanClass(TicketStatusContext.class)
+																.select(modBean.getAllFields("ticketstatus"));
+			 return builder.get();
+		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
