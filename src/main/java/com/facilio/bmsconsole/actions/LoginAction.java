@@ -523,7 +523,7 @@ public class LoginAction extends ActionSupport{
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		
 		Map<String, Object> config = new HashMap<>();
-		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getUid()));
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
 		
 		account.put("data", data);
 		account.put("config", config);
