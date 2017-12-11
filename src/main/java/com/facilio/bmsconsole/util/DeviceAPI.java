@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -14,14 +12,11 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -177,5 +172,18 @@ public class DeviceAPI
 				.maxLevel(0);
 		return selectBuilder.get();
 	}
+	
+	//for org..
+		public static List<EnergyMeterPurposeContext> getAllPurposes() throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+			SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = 
+					new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+					.select(modBean.getAllFields(module.getName()))
+					.module(module)
+					.beanClass(EnergyMeterPurposeContext.class)
+					.maxLevel(0);
+			return selectBuilder.get();
+		}
 
 }

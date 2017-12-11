@@ -100,6 +100,19 @@ public class AlarmReportAction extends ActionSupport {
         return SUCCESS;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public String getBuildingMap() throws Exception
+	{
+		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
+		JSONObject result = new JSONObject();
+		for(BuildingContext building:buildings) {
+			long spaceId=building.getId();
+			String name=building.getName();
+			result.put(spaceId,name);
+		}
+		setAlarmResponseStats(result); 
+        return SUCCESS;
+	}
 	
 	private Long getActiveAlarms(long spaceId) throws Exception
 	{

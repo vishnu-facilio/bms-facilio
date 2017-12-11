@@ -15,12 +15,14 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -269,6 +271,22 @@ public class ReportsUtil
 		return buildingVsMeter;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static JSONObject getPurposeMapping() 
+	{
+		JSONObject result = new JSONObject();
+		try {
+		List<EnergyMeterPurposeContext> purposeList= DeviceAPI.getAllPurposes();
+		for(EnergyMeterPurposeContext emc:purposeList) {
+			result.put(emc.getId(),emc.getName());
+		}
+		return result;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static Map<Long, Long> getMeterVsPurpose(List<EnergyMeterContext> energyMeters)
 	{
