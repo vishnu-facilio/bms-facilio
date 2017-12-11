@@ -10,6 +10,7 @@ import org.apache.tiles.request.collection.CollectionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -30,7 +31,8 @@ public class CreateReadingForTaskCommand implements Command {
 						TaskContext completeRecord = getTask(recordIds.get(0));
 						if(completeRecord != null && completeRecord.isReadingTask()) {
 							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							FacilioModule readingModule = modBean.getModule(completeRecord.getReadingId());
+							FacilioField field = modBean.getField(completeRecord.getReadingFieldId());
+							FacilioModule readingModule = field.getModule();
 							task.getReadingData().setParentId(completeRecord.getAsset().getId());
 							context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 							context.put(FacilioConstants.ContextNames.READINGS, Collections.singletonList(task.getReadingData()));

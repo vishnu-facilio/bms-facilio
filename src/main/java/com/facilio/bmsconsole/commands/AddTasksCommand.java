@@ -32,7 +32,7 @@ public class AddTasksCommand implements Command {
 					throw new IllegalArgumentException("Asset cannot be null when reading is enabled for task");
 				}
 				
-				if(task.isReadingTask() && task.getReadingId() == -1) {
+				if(task.isReadingTask() && task.getReadingFieldId() == -1) {
 					throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
 				}
 			}

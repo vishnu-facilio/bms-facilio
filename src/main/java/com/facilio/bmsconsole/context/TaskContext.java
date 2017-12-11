@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
 
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -51,14 +52,22 @@ public class TaskContext extends TicketContext {
 		return false;
 	}
 	
-	private long readingId = -1;
-	public long getReadingId() {
-		return readingId;
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
 	}
-	public void setReadingId(long readingId) {
-		this.readingId = readingId;
+	public void setReadingFieldId(long readingId) {
+		this.readingFieldId = readingId;
 	}
 	
+	private FacilioField readingField;
+	public FacilioField getReadingField() {
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
+	}
+
 	private ReadingContext readingData;
 	public ReadingContext getReadingData() {
 		return readingData;
