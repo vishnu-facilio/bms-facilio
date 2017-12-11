@@ -208,7 +208,7 @@ public class AlarmReportAction extends ActionSupport {
 	private List<Map<String, Object>> getUnAssigned() throws Exception {
 
 		FacilioField countFld = new FacilioField();
-		countFld.setName("unassigned");
+		countFld.setName("active");
 		countFld.setColumnName("COUNT(*)");
 		countFld.setDataType(FieldType.NUMBER);
 
@@ -225,8 +225,7 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.SEVERITY=Alarm_Severity.ID")
 				.andCustomWhere("Alarms.ORGID=? ",orgId)
 				.andCustomWhere("Alarm_Severity.SEVERITY!=?",FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCustomWhere("Tickets.ORGID=?",orgId)
-				.andCustomWhere("Tickets.ASSIGNED_TO_ID IS NULL");
+				.andCustomWhere("Tickets.ORGID=?",orgId);
 		if(buildingId!=-1) {
 			builder.andCondition(getSpaceCondition(buildingId));
 		}
