@@ -467,6 +467,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskListCommand());
+		c.addCommand(new GetTaskReadingDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
