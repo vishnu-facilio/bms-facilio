@@ -6,7 +6,11 @@ export BMS_DIR="$APP_HOME/webapps/bms"
 export CONF_DIR="$BMS_DIR/WEB-INF/classes/conf"
 export META_INF_DIR="$BMS_DIR/META-INF"
 
-echo "copying $DEPLOYMENT_GROUP_NAME context file"
+echo "Deployment group is : $DEPLOYMENT_GROUP_NAME" >> /home/ubuntu/deployment.log
+echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
+echo "======" >> /home/ubuntu/deployment.log
+printenv >> /home/ubuntu/deployment.log
+echo "======" >> /home/ubuntu/deployment.log
 
 if [ "$DEPLOYMENT_GROUP_NAME" == "pre_production" ]; then
     sudo cp $META_INF_DIR/context-stage.xml $META_INF_DIR/context.xml
