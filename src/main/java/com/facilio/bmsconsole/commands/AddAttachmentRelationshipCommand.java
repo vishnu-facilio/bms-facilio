@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
@@ -32,6 +33,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
 		
+		AttachmentType type = (AttachmentType) context.get(FacilioConstants.ContextNames.ATTACHMENT_TYPE);
 		if(attachmentIdList != null && !attachmentIdList.isEmpty()) {
 			List<AttachmentContext> attachments = new ArrayList<>();
 			for(long attachmentId : attachmentIdList) {
@@ -39,6 +41,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 				attachment.setFileId(attachmentId);
 				attachment.setParentId(recordId);
 				attachment.setCreatedTime(System.currentTimeMillis());
+				attachment.setType(type);
 				
 				attachments.add(attachment);
 			}

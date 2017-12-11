@@ -133,6 +133,7 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String ATTACHMENT_FILE_LIST = "attachmentFiles";
 		public static final String ATTACHMENT_CONTENT_TYPE = "attachmentContentType";
+		public static final String ATTACHMENT_TYPE = "attachmentType";
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		
@@ -152,6 +153,7 @@ public class FacilioConstants {
 		
 		public static final String READINGS = "readings";
 		public static final String PHOTOS = "photos";
+		public static final String PHOTO_ID = "photoId";
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
@@ -269,6 +271,7 @@ public class FacilioConstants {
 		public static final String SEARCH = "search";
 		public static final String SEARCH_CRITERIA = "searchCriteria";
 		public static final String SORTING = "sorting";
+		public static final String MAX_LEVEL = "maxLevel";
 		public static final String SORTING_QUERY = "sortingQuery";
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";

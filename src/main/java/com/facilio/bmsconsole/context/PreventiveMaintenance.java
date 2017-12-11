@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -146,13 +147,21 @@ public class PreventiveMaintenance {
 		this.startTime = startTime;
 	}
 	
+	private long nextExecutionTime = -1;
+	public long getNextExecutionTime() {
+		return nextExecutionTime;
+	}
+	public void setNextExecutionTime(long nextExecutionTime) {
+		this.nextExecutionTime = nextExecutionTime*1000;
+	}
+
 	private long endTime = -1;
 	public long getEndTime() {
 		return endTime;
 	}
 	@JsonSetter("endExecutionTime")
 	public void setEndTime(long endTime) {
-		this.endTime = endTime;
+		this.endTime = endTime*1000;
 	}
 
 	private ScheduleInfo schedule;
@@ -183,4 +192,18 @@ public class PreventiveMaintenance {
 		this.maxCount = maxCount;
 	}
 	
+	public String getScheduleMsg() {
+		if(schedule != null) {
+			return schedule.getDescription(startTime);
+		}
+		return null;
+	}
+	
+	private List<WorkOrderContext> workorders;
+	public List<WorkOrderContext> getWorkorders() {
+		return workorders;
+	}
+	public void setWorkorders(List<WorkOrderContext> workorders) {
+		this.workorders = workorders;
+	}	
 }

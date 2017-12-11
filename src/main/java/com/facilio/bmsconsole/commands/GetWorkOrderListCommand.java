@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -51,6 +52,20 @@ public class GetWorkOrderListCommand implements Command {
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			selectBuilder.orderBy(orderBy);
+		}
+		
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
 		}
 		
 		List<WorkOrderContext> workOrders = selectBuilder.get();

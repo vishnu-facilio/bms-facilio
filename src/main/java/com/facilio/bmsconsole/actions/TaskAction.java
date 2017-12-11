@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -99,16 +100,25 @@ public class TaskAction extends ActionSupport {
 	
 	public String assignTask() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
 		return updateTask(context);
 	}
 	
 	public String updateStatus() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		return updateTask(context);
 	}
 	
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		return updateTask(context);
+	}
+	
+	public String addTaskReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_READING_VALUE);
 		return updateTask(context);
 	}
 	

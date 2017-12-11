@@ -86,6 +86,7 @@ public class WorkOrderAction extends ActionSupport {
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
@@ -169,16 +170,18 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String editPreventiveMaintenance() throws Exception {
+	@SuppressWarnings("unchecked")
+	public String preventiveMaintenanceSummary() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 		
-		Chain editPM = FacilioChainFactory.getEditPreventiveMaintenanceChain();
-		editPM.execute(context);
+		Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
+		pmSummary.execute(context);
 		
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		
 		return SUCCESS;
 	}
@@ -197,11 +200,22 @@ public class WorkOrderAction extends ActionSupport {
 	public String changePreventiveMaintenanceStatus() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		
 		Chain addTemplate = FacilioChainFactory.getChangePreventiveMaintenanceStatusChain();
 		addTemplate.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String getAllPreventiveMaintenance() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
+		getPmchain.execute(context);
+		
+		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
 		
 		return SUCCESS;
 	}
@@ -395,6 +409,12 @@ public class WorkOrderAction extends ActionSupport {
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		System.out.println("PAGINATION ####### "+ pagination);
+ 		
  		System.out.println("View Name : "+getViewName());
  		Chain workOrderListChain = FacilioChainFactory.getWorkOrderListChain();
  		workOrderListChain.execute(context);
@@ -503,6 +523,24 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String getSearch() {
 		return this.search;
+	}
+	
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	public int getPage() {
+		return this.page;
+	}
+	
+	public int perPage = 40;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	
+	public int getPerPage() {
+		return this.perPage;
 	}
 	
 	public String getActivitiesList() throws Exception {

@@ -9,6 +9,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
@@ -80,6 +81,17 @@ public class AttachmentAction  extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private AttachmentType attachmentType;
+	public int getAttachmentType() {
+		if(attachmentType != null) {
+			return attachmentType.getIntVal();
+		}
+		return -1;
+	}
+	public void setAttachmentType(int attachmentType) {
+		this.attachmentType = AttachmentType.getType(attachmentType);
+	}
+
 	public String addAttachment() {
 		
 		try {
@@ -90,6 +102,7 @@ public class AttachmentAction  extends ActionSupport {
 	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachment);
 	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
 	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
+	 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 	 		
 			Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 			addAttachmentChain.execute(context);

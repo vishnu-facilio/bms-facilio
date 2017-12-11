@@ -1,10 +1,6 @@
 package com.facilio.wms.endpoints;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
@@ -37,7 +33,6 @@ public class FacilioServerEndpoint
 
     private Session session;
     private static final Set<FacilioServerEndpoint> endpoints = new CopyOnWriteArraySet<FacilioServerEndpoint>();
-    private static HashMap<String,List<String>> users = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("uid") long uid) throws IOException, EncodeException 
@@ -45,26 +40,35 @@ public class FacilioServerEndpoint
     	System.out.println("Session started uid ::" +uid + ":::sessionid" + session.getId());
         this.session = session;
         endpoints.add(this);
-        if (!users.containsKey(String.valueOf(uid))) {
-        	users.put(String.valueOf(uid), new ArrayList<String>());
-        }
-        users.get(String.valueOf(uid)).add(session.getId());
+        
+        SessionManager.UserSession us = new SessionManager.UserSession().setUid(uid).setSession(session).setCreatedTime(System.currentTimeMillis());
+        SessionManager.getInstance().addUserSession(us);
     }
 
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
-    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId());
-//        message.setFrom(users.get(session.getId()));
-//        sendMessage(message);
+    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
+    	if (message.getContent() != null && message.getContent().get("ping") != null) {
+    		message.getContent().put("ping", "pong");
+    		session.getBasicRemote().sendObject(message);
+    	}
     }
+    
+//    @OnMessage
+//    public void onMessage(Session session, String message) throws IOException {
+//    	System.out.println("Session started message: ::sessionid" + session.getId()+"  msg: "+message);
+//    	if ("ping".equalsIgnoreCase(message)) {
+//    		session.getBasicRemote().sendText("pong");
+//    	}
+//    }
 
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
     	System.out.println("Session started closed" +session.getId());
-    	removeSession(session.getId());
     	endpoints.remove(this);
+    	SessionManager.getInstance().removeUserSession(session.getId());
     	session.close();
     }
 
@@ -87,36 +91,32 @@ public class FacilioServerEndpoint
         }
     }
 
-    public static void sendMessage(Message message) throws IOException, EncodeException 
-    {
-    	System.out.println("Sending message ::" +message.getContent());
-        for (FacilioServerEndpoint endpoint : endpoints) 
-        {
-            synchronized(endpoint) 
-            {
-            	List<String> sessions = getSessions(message.getTo());
-            	System.out.println("Sending message2 :: " + endpoint.session.getId());
-            	System.out.println("Sending message3 ::" + sessions);
-                if (sessions.contains(endpoint.session.getId())) {
-                    endpoint.session.getBasicRemote().sendObject(message);
-                }
-            }
-        }
-    }
-
-    private static List<String> getSessions(long to) 
-    {
-    	return users.get(String.valueOf(to));
-    }
-    
-    private static void removeSession(String sessionId) 
-    {
-    	Iterator<String> keys = users.keySet().iterator();
-    	while (keys.hasNext()) {
-    		String key = keys.next();
-    		if (users.get(key).indexOf(sessionId) != -1) {
-    			users.get(key).remove(sessionId);
-    		}
-    	}
-    }
+//    public static void sendMessage(Message message) throws IOException, EncodeException 
+//    {
+//    	System.out.println("Sending message TO:: "+message.getTo()+"  MSG:: "+message.getContent());
+//    	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
+//    	if (sessions != null) {
+//    		for (FacilioServerEndpoint endpoint : sessions) 
+//        	{
+//        		synchronized(endpoint) {
+//        			endpoint.session.getBasicRemote().sendObject(message);
+//        		}
+//        	}
+//    	}
+//    	else {
+//    		System.out.println("SESSIONS IS NULL :: "+message.getTo()+"  MSG:: "+message.getContent());
+//    	}
+////        for (FacilioServerEndpoint endpoint : endpoints) 
+////        {
+////            synchronized(endpoint) 
+////            {
+////            	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
+////            	System.out.println("Sending message2 :: " + endpoint.session.getId());
+////            	System.out.println("Sending message3 ::" + sessions);
+////                if (sessions.contains(endpoint.session.getId())) {
+////                    endpoint.session.getBasicRemote().sendObject(message);
+////                }
+////            }
+////        }
+//    }
 }

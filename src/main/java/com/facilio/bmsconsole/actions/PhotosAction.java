@@ -7,7 +7,9 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -110,6 +112,24 @@ public class PhotosAction extends ActionSupport {
 		addPhotosChain.execute(context);
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
+		
+		if (FacilioConstants.ContextNames.BASE_SPACE_PHOTOS.equalsIgnoreCase(moduleName)) {
+			try {
+				BaseSpaceContext bscontext = SpaceAPI.getBaseSpace(parentId);
+				if (bscontext != null && bscontext.getPhotoId() <= 0) {
+					
+					FacilioContext updateContext = new FacilioContext();
+					updateContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
+					updateContext.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
+					
+					Chain updateDefaultPhotoChain = FacilioChainFactory.getUpdateDefaultSpacePhotoChain();
+					updateDefaultPhotoChain.execute(updateContext);
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		return SUCCESS;
 	}

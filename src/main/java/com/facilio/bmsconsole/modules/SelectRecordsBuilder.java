@@ -313,6 +313,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
+		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 		
 		Condition orgCondition = new Condition();
 		orgCondition.setField(orgIdField);
@@ -325,8 +326,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		moduleCondition.setOperator(NumberOperators.EQUALS);
 		moduleCondition.setValue(String.valueOf(module.getModuleId()));
 		whereCondition.andCondition(moduleCondition);
-		
-		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 		
 		builder.table(module.getTableName());
 		

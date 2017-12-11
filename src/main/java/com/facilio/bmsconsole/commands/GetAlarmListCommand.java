@@ -23,32 +23,41 @@ public class GetAlarmListCommand implements Command {
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		
+
 		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
-														.table(dataTableName)
-														.moduleName(moduleName)
-														.beanClass(AlarmContext.class)
-														.select(fields)
-														.orderBy("CREATED_TIME desc")
-														.maxLevel(0);
+				.table(dataTableName)
+				.moduleName(moduleName)
+				.beanClass(AlarmContext.class)
+				.select(fields)
+				.orderBy("MODIFIED_TIME desc")
+				.maxLevel(0);
 
 		if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
 		}
-		
+
 		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {
 			for(Condition condition : conditionList) {
 				builder.andCondition(condition);
 			}
 		}
-		
+
+		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+		if (searchCriteria != null) {
+			builder.andCriteria(searchCriteria);
+		}
+
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		if (orderBy != null && !orderBy.isEmpty()) {
+			builder.orderBy(orderBy);
+		}
+
 		List<AlarmContext> alarms = builder.get();
 		TicketAPI.loadTicketLookups(alarms);
 		context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
-		
+
 		return false;
 	}
-
 }

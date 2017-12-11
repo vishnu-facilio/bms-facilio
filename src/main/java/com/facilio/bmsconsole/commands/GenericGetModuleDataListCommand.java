@@ -6,7 +6,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -32,11 +31,15 @@ public class GenericGetModuleDataListCommand implements Command {
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
-															//.maxLevel(0)
 															;
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
+		}
+		
+		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
+		if(maxLevel != null && maxLevel != -1) {
+			builder.maxLevel(maxLevel);
 		}
 		
 		if(view != null) {

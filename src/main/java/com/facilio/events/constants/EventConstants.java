@@ -34,6 +34,7 @@ public class EventConstants {
 		public static final String EVENT_RULE_LIST = "eventRules";
 		public static final String NODE = "node";
 		public static final String ASSET_ID = "assetId";
+		public static final String ALARM_ID = "alarmId";
 	
 	}
 	
@@ -202,13 +203,13 @@ public class EventConstants {
 			createdTime.setModule(module);
 			fields.add(createdTime);
 			
-			FacilioField state = new FacilioField();
-			state.setName("eventState");
-			state.setDataType(FieldType.NUMBER);
-			state.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-			state.setColumnName("EVENT_STATE");
-			state.setModule(module);
-			fields.add(state);
+			FacilioField eventState = new FacilioField();
+			eventState.setName("eventState");
+			eventState.setDataType(FieldType.NUMBER);
+			eventState.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+			eventState.setColumnName("EVENT_STATE");
+			eventState.setModule(module);
+			fields.add(eventState);
 			
 			FacilioField internalState = new FacilioField();
 			internalState.setName("internalState");
@@ -233,6 +234,30 @@ public class EventConstants {
 			alarmId.setColumnName("ALARM_ID");
 			alarmId.setModule(module);
 			fields.add(alarmId);
+			
+			FacilioField priority = new FacilioField();
+			priority.setName("priority");
+			priority.setDataType(FieldType.STRING);
+			priority.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+			priority.setColumnName("PRIORITY");
+			priority.setModule(module);
+			fields.add(priority);
+			
+			FacilioField alarmClass = new FacilioField();
+			alarmClass.setName("alarmClass");
+			alarmClass.setDataType(FieldType.STRING);
+			alarmClass.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+			alarmClass.setColumnName("ALARM_CLASS");
+			alarmClass.setModule(module);
+			fields.add(alarmClass);
+			
+			FacilioField state = new FacilioField();
+			state.setName("state");
+			state.setDataType(FieldType.STRING);
+			state.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+			state.setColumnName("STATE");
+			state.setModule(module);
+			fields.add(state);
 			
 			FacilioField description = new FacilioField();
 			description.setName("description");

@@ -188,11 +188,21 @@ public class PortfolioAction extends ActionSupport {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building,false);
 			long meterId=buildingVsMeter.get(buildingId);
 			Double currentKwh=meterVsConsumption.get(meterId);
-			JSONObject currentData = ReportsUtil.getEnergyData(currentKwh,-1);
+			JSONObject currentData = new JSONObject();
+			currentData.put("consumption",currentKwh);
+			String [] costArray=ReportsUtil.getCost(currentKwh);
+			if(costArray!=null)
+			{
+				currentData.put("cost", costArray[0]);
+				currentData.put("costUnits", costArray[1]);
+			}
 			buildingData.put("currentVal", currentData);
 			buildingArray.add(buildingData);
 		}
+		result.put("units","kWh");
+		result.put("currency","$");
 		result.put("buildingDetails", buildingArray);
+		
 		setReportData(result);
 		return SUCCESS;
 	}

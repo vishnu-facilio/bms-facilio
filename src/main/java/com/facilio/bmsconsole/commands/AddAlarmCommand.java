@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -13,6 +17,8 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.util.WmsApi;
 
 public class AddAlarmCommand implements Command {
 
@@ -48,6 +54,22 @@ public class AddAlarmCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			
+			JSONObject record = new JSONObject();
+			record.put("id", alarmId);
+			
+			WmsEvent event = new WmsEvent();
+			event.setNamespace("alarm");
+			event.setAction("newAlarm");
+			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+			event.addData("record", record);
+			
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
+			List<Long> recipients = new ArrayList<>();
+			for (User user : users) {
+				recipients.add(user.getId());
+			}
+			WmsApi.sendEvent(recipients, event);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

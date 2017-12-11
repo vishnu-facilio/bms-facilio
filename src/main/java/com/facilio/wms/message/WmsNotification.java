@@ -6,8 +6,8 @@ public class WmsNotification extends Message {
 
 	public WmsNotification() {
 		super.setMessageType(MessageType.NOTIFICATION);
-		super.addData("namespace", "notification");
-		super.addData("action", "newNotification");
+		super.setNamespace("notification");
+		super.setAction("newNotification");
 	}
 	
 	public WmsNotification setFrom(long from) {

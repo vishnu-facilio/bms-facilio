@@ -324,6 +324,14 @@ public class ModuleFactory {
 		return alarmModule;
 	}
 	
+	public static FacilioModule getAlarmSeverityModule() {
+		FacilioModule alarmSeverityModule = new FacilioModule();
+		alarmSeverityModule.setName(FacilioConstants.ContextNames.ALARM_SEVERITY);
+		alarmSeverityModule.setDisplayName("Alarm Severiry");
+		alarmSeverityModule.setTableName("Alarm_Severity");
+		return alarmSeverityModule;
+	}
+	
 	public static FacilioModule getWorkorderTemplateModule() {
 		FacilioModule workorderTemplateModule = new FacilioModule();
 		workorderTemplateModule.setName("workordertemplate");
@@ -450,5 +458,14 @@ public class ModuleFactory {
 		virtualMeterRelModule.setTableName("Virtual_Energy_Meter_Rel");
 		
 		return virtualMeterRelModule;
+	}
+	
+	public static FacilioModule getPmToWoRelModule() {
+		FacilioModule pmToWoRelModule = new FacilioModule();
+		pmToWoRelModule.setName("pmtoworel");
+		pmToWoRelModule.setDisplayName("PM To WO Rel");
+		pmToWoRelModule.setTableName("PM_To_WO");
+		
+		return pmToWoRelModule;
 	}
 }

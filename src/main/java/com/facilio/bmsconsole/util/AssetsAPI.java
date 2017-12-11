@@ -164,7 +164,8 @@ public class AssetsAPI {
 		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
 																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
-																		.beanClass(AssetCategoryContext.class);
+																		.beanClass(AssetCategoryContext.class)
+																		.andCustomWhere("NAME = ?", name);
 		
 		List<AssetCategoryContext> categories = selectBuilder.get();
 		
@@ -172,5 +173,15 @@ public class AssetsAPI {
 			return categories.get(0);
 		}
 		return null;
+	}
+	
+	public static List<AssetCategoryContext> getCategoryList() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.beanClass(AssetCategoryContext.class);
+		return selectBuilder.get();
 	}
 }

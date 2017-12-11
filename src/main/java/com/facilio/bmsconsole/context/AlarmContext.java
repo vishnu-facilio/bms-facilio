@@ -29,7 +29,7 @@ public class AlarmContext extends TicketContext {
 		}
 		return false;
 	}
-	public void setIsAcknowledged(boolean isAcknowledged) {
+	public void setIsAcknowledged(Boolean isAcknowledged) {
 		this.isAcknowledged = isAcknowledged;
 	}
 	public Boolean getIsAcknowledged() {
@@ -207,13 +207,29 @@ public class AlarmContext extends TicketContext {
 	public void setNoOfEvents(long noOfEvents) {
 		this.noOfEvents = noOfEvents;
 	}
+	
+	private Boolean isWoCreated;
+	public Boolean getIsWoCreated() {
+		return isWoCreated;
+	}
+	public void setIsWoCreated(Boolean isWoCreated) {
+		this.isWoCreated = isWoCreated;
+	}
+	public boolean isWoCreated() {
+		if(isWoCreated != null) {
+			return isWoCreated.booleanValue();
+		}
+		return false;
+	}
 
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
 		CRITICAL(2, "Critical"),
 		LIFE_SAFETY(3, "Life Safety"),
 		NORMAL(4, "Normal"),
-		ENERGY(5,"Energy");
+		ENERGY(5,"Energy"),
+		FIRE(6,"Fire"),
+		HVAC(7,"Hvac");
 		
 		
 		private int intVal;

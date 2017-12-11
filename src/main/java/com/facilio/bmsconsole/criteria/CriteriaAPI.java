@@ -120,14 +120,22 @@ public class CriteriaAPI {
 	}
 	
 	public static Condition getIdCondition(long id, FacilioModule module) {
-		FacilioField idField = FieldFactory.getIdField(module);
-		return getCondition(idField.getColumnName(), idField.getName(), String.valueOf(id), NumberOperators.EQUALS);
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(id));
+		
+		return idCondition;
 	}
 	
 	public static Condition getIdCondition(List<Long> ids, FacilioModule module) {
 		String id = StringUtils.join(ids, ",");
-		FacilioField idField = FieldFactory.getIdField(module);
-		return getCondition(idField.getColumnName(), idField.getName(), id, NumberOperators.EQUALS);
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(id);
+		
+		return idCondition;
 	}
 	
 	

@@ -1,6 +1,7 @@
 	package com.facilio.bmsconsole.modules;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class FacilioModule implements Serializable {
 	
@@ -52,6 +53,14 @@ public class FacilioModule implements Serializable {
 		this.extendModule = extendModule;
 	}
 	
+	private List<FacilioField> fields;
+	public List<FacilioField> getFields() {
+		return fields;
+	}
+	public void setFields(List<FacilioField> fields) {
+		this.fields = fields;
+	}
+
 	public static enum SubModuleType {
 		MISC(1),
 		READING(2),

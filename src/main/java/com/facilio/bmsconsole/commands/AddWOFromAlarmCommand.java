@@ -27,8 +27,9 @@ public class AddWOFromAlarmCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		AlarmContext oldalarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if(ActivityType.ASSIGN_TICKET == eventType && recordIds != null && !recordIds.isEmpty()) {
+		if(oldalarm.isWoCreated() && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			

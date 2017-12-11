@@ -3,6 +3,7 @@ package com.facilio.tasker.executor;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -134,7 +136,11 @@ public class ScheduleInfo {
 		ZonedDateTime nextZdt = null;
 		switch(frequencyType) {	
 			case DO_NOT_REPEAT:
-				nextZdt = zdt;
+				zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
+				nextZdt = zdt.with(times.get(0));
+				if(zdt.isAfter(nextZdt)) {
+					nextZdt = nextZdt.plusDays(1);
+				}
 				break;
 			case DAILY:
 				if(values != null && !values.isEmpty() && !values.stream().allMatch(x -> x >= 1 && x <= 7)) {
@@ -377,5 +383,154 @@ public class ScheduleInfo {
 		MONTHLY_DAY,
 		MONTHLY_WEEK,
 		YEARLY;
+	}
+	
+	public String getDescription(long startTime) {
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime);
+		StringBuilder builder = new StringBuilder();
+		switch(frequencyType) {
+			case DO_NOT_REPEAT:
+				return "Only Once";
+			case DAILY:
+				if(frequency == 1 && (values == null || values.isEmpty())) {
+					return "Daily";
+				}
+				else {
+					if(frequency == 1) {
+						builder.append("Everyday");
+					}
+					else {
+						builder.append("Every ")
+								.append(frequency)
+								.append(" days");
+					}
+					updateWeeklyDesc(builder, values, " only if it is ");
+					return builder.toString();
+				}
+			case WEEKLY:
+				if(frequency == 1 && (values == null || values.isEmpty())) {
+					return "Every "+zdt.getDayOfWeek().name();
+				}
+				else {
+					if(frequency == 1) {
+						builder.append("Everyweek");
+					}
+					else {
+						builder.append("Every ")
+								.append(frequency)
+								.append(" weeks");
+					}
+					if(values != null && !values.isEmpty()) {
+						updateWeeklyDesc(builder, values, " on ");
+					}
+					else {
+						updateWeeklyDesc(builder, Collections.singletonList(zdt.getDayOfWeek().getValue()), " on ");
+					}
+					return builder.toString();
+				}
+			case MONTHLY_DAY:
+				if(frequency == 1) {
+					builder.append("Every month");
+				}
+				else {
+					builder.append("Every ")
+							.append(frequency)
+							.append(" months");
+				}
+				builder.append(" on ");
+				if(values != null && !values.isEmpty()) {
+					for(int itr = 0; itr<values.size(); itr++) {
+						if(itr != 0) {
+							if(itr == values.size() - 1) {
+								builder.append(" or ");
+							}
+							else {
+								builder.append(", ");
+							}
+						}
+						builder.append(CommonCommandUtil.getNumberWithSuffix(values.get(itr)));
+					}
+				}
+				else {
+					builder.append(CommonCommandUtil.getNumberWithSuffix(zdt.getDayOfMonth()));
+				}
+				return builder.toString();
+			case MONTHLY_WEEK:
+				if(frequency == 1) {
+					builder.append("Every month");
+				}
+				else {
+					builder.append("Every ")
+							.append(frequency)
+							.append(" months");
+				}
+				if(values != null && !values.isEmpty()) {
+					updateWeeklyDesc(builder, values, " on "+getWeekFrequencyInWords()+" ");
+				}
+				else {
+					updateWeeklyDesc(builder, Collections.singletonList(zdt.getDayOfWeek().getValue()), " on "+getWeekFrequencyInWords()+" ");
+				}
+				return builder.toString();
+			case YEARLY:
+				if(frequency == 1) {
+					builder.append("Every year");
+				}
+				else {
+					builder.append("Every ")
+							.append(frequency)
+							.append(" years");
+				}
+				builder.append(" on ")
+						.append(CommonCommandUtil.getNumberWithSuffix(zdt.getDayOfMonth()))
+						.append(" of ");
+				if(values != null && !values.isEmpty()) {
+					for(int itr = 0; itr<values.size(); itr++) {
+						if(itr != 0) {
+							if(itr == values.size() - 1) {
+								builder.append(" or ");
+							}
+							else {
+								builder.append(", ");
+							}
+						}
+						builder.append(Month.of(values.get(itr)).name());
+					}
+				}
+				else {
+					builder.append(zdt.getMonth().name());
+				}
+				return builder.toString();
+		}
+		return null;
+	}
+	
+	private String getWeekFrequencyInWords() {
+		switch(weekFrequency) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				return CommonCommandUtil.getNumberWithSuffix(weekFrequency);
+			case 5:
+				return "Last";
+		}
+		return null;
+	}
+	
+	private void updateWeeklyDesc(StringBuilder builder, List<Integer> values, String msg) {
+		if(values != null && !values.isEmpty()) {
+			builder.append(msg);
+			for(int itr = 0; itr<values.size(); itr++) {
+				if(itr != 0) {
+					if(itr == values.size() - 1) {
+						builder.append(" or ");
+					}
+					else {
+						builder.append(", ");
+					}
+				}
+				builder.append(DayOfWeek.of(values.get(itr)).name());
+			}
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -52,30 +55,33 @@ public class PMToWorkOrder extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				
-				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
-				addWOChain.execute(context);
-				
 				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
 				if(taskJson != null) {
 					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-					for(TaskContext task : tasks) {
-						task.setParentTicketId(wo.getId());
-					}
-					
-					context = new FacilioContext();
 					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
-					
-					Chain addTasksChain = FacilioChainFactory.getAddTasksChain();
-					addTasksChain.execute(context);
 				}
+				
+				Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
+				addWOChain.execute(context);
+				
+				addToRelTable(pmId, wo.getId());
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void addToRelTable(long pmId, long woId) throws SQLException, RuntimeException {
+		Map<String, Object> relProp = new HashMap<>();
+		relProp.put("pmId", pmId);
+		relProp.put("woId", woId);
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getPmToWoRelFields())
+														.table(ModuleFactory.getPmToWoRelModule().getTableName())
+														.addRecord(relProp);
 		
-		
-		
+		insertBuilder.save();
 	}
 
 }

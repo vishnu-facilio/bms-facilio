@@ -36,10 +36,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 			// Step 1: Validating ID Token
 			HttpServletRequest request = ServletActionContext.getRequest();
 			
+			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
+			String headerToken = request.getHeader("Authorization");
+			
 			// skiping signup url from authorization check
-			if (request.getRequestURI().indexOf("signup") == -1 && request.getRequestURI().indexOf("validateInviteLink") == -1 && request.getRequestURI().indexOf("acceptInvite") == -1) {
+			if (idToken != null || headerToken != null) {
 				
-				String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
 				boolean isAPI = false;
 				if (idToken == null) {
 					// api requests

@@ -35,7 +35,7 @@
 		user="faciliouser" 
 		password="zxcv1212" 
 		explicitUrl="true"
-        url="jdbc:mysql://facilioserver2.cawlzpaoeevi.us-west-2.rds.amazonaws.com:3306/bms"
+        url="jdbc:mysql://production.cawlzpaoeevi.us-west-2.rds.amazonaws.com:3306/bms"
 		/>
     
     <!-- Transaction Configuration -->

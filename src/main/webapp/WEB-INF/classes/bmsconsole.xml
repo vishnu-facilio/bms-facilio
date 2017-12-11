@@ -290,6 +290,14 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		
+		<action name="addorupdatetaskreadingdata" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTaskReadingData">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="updateTask">
@@ -304,6 +312,17 @@
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+	</package>
+	<package name="taskSummaryApi" namespace="/api/task/summary"
+		extends="task">
+		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="viewTask">
+			<param name="permission">TASK_READ</param>
+			<param name="taskId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^task.*</param>
 			</result>
 		</action>
 	</package>
@@ -329,6 +348,13 @@
 				<param name="includeProperties">workorderId</param>
 			</result>
 		</action>
+		<action name="viewAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="viewAlarm">
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="addAlarm">
 			<param name="permission">WORKORDER_READ</param>
@@ -336,8 +362,8 @@
 				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
-		<action name="assign" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="assignAlarm">
+		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="createWorkorder">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
@@ -355,6 +381,14 @@
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="alarmList">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
 	</package>
@@ -988,48 +1022,48 @@
 		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addCurrentOccupancyReading">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addAssignedOccupancyReading">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addEnergyData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceLatestReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
 
 		<action name="getassetlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAssetLatestReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
 	</package>
@@ -1198,11 +1232,11 @@
 			</result>
 		</action>
 
-		<action name="editPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="editPreventiveMaintenance">
+		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="preventiveMaintenanceSummary">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,tasks,tasks\[\d+\],tasks\[\d+\].*</param>
 			</result>
 		</action>
 
@@ -1211,6 +1245,14 @@
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">preventivemaintenance</param>
+			</result>
+		</action>
+
+		<action name="getAllPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getAllPreventiveMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">pms</param>
 			</result>
 		</action>
 
@@ -1577,6 +1619,27 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		
+		<action name="severityStats" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="severityStats">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="topLocations" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="topLocations">
+			<result name="success" type="json">
+				<param name="root">alarmResponseStats</param>
+			</result>
+		</action>
+		
+		<action name="getBuildingMap" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="getBuildingMap">
+			<result name="success" type="json">
+				<param name="root">alarmResponseStats</param>
+			</result>
+		</action>
+		
 
 		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="map">

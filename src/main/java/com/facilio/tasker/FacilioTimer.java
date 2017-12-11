@@ -135,7 +135,7 @@ public class FacilioTimer {
 	
 	private static long getStartTimeInSecond(long startTime) {
 		long startTimeInSecond = startTime/1000;
-		startTimeInSecond--; //for calculating next execution time
+		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
 		
 		return startTimeInSecond;
 	}

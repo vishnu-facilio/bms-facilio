@@ -13,4 +13,5 @@
 	 <job name='EventThreshold' classname='com.facilio.events.tasker.tasks.EventThresholdJob' />
 	 <job name='EventToAlarm' classname='com.facilio.events.tasker.tasks.EventToAlarmJob' />
 	 <job name='EventToAlarm' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
+	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 </scheduler>

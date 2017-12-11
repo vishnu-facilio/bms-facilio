@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -21,15 +20,13 @@ public class GetTaskCommand implements Command {
 		
 		if(taskId > 0) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(TaskContext.class)
 					.select(fields)
-					.andCustomWhere("ID = ?", taskId)
+					.andCustomWhere("Tasks.ID = ?", taskId)
 					.orderBy("ID");
 
 			List<TaskContext> tasks = builder.get();	

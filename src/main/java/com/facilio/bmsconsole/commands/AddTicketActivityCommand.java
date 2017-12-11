@@ -93,6 +93,12 @@ public class AddTicketActivityCommand implements Command {
 		Map<Long, ? extends TicketContext> newTickets = getNewTickets(ids, module);
 		List<? extends TicketContext> oldTickets = (List<? extends TicketContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
 		
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldsMap = new HashMap<>();
+		for(FacilioField field : fields)
+		{
+			fieldsMap.put(field.getName(), field);
+		}
 		Map<String, LookupField> lookupFields = getLookupFields(moduleName);
 		
 		boolean isUpdate = false;
@@ -154,8 +160,12 @@ public class AddTicketActivityCommand implements Command {
 				else {
 					for(Map.Entry<String, Object> entry : newTicketProps.entrySet()) {
 						if(!"orgId".equals(entry.getKey()) && !"id".equals(entry.getKey()) && !"moduleId".equals(entry.getKey())) {
+							if(!fieldsMap.containsKey(entry.getKey()))
+							{
+								continue;
+							}
 							JSONObject fieldProp = new JSONObject();
-							fieldProp.put("fieldName", entry.getKey());
+							fieldProp.put("fieldName", fieldsMap.get(entry.getKey()).getDisplayName());
 							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue()));
 							updatedFields.add(fieldProp);
 						}

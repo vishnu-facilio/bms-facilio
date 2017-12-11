@@ -28,7 +28,14 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
-	
+
+	public String getOriginalUrl() throws Exception {
+		if (this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.photoId);
+		}
+		return null;
+	}
 	private long ttime = -1;
 	public long getTtime() {
 		return ttime;

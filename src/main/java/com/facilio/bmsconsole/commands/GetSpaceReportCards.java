@@ -38,17 +38,17 @@ public class GetSpaceReportCards implements Command {
 			assetCount.put("label", "Assets");
 			assetCount.put("data", SpaceAPI.getAssetsCount(spaceId));
 			
-			JSONObject energyUsage= new JSONObject();
-			energyUsage.put("type", "count");
-			energyUsage.put("name", "energy");
-			energyUsage.put("label", "ENERGY CONSUMED");
-			energyUsage.put("data", "20000 Kwh");
+//			JSONObject energyUsage= new JSONObject();
+//			energyUsage.put("type", "count");
+//			energyUsage.put("name", "energy");
+//			energyUsage.put("label", "ENERGY CONSUMED");
+//			energyUsage.put("data", "20000 Kwh");
 			
 			JSONArray reportCards = new JSONArray();
 			reportCards.add(woCount);
 			reportCards.add(faCount);
 			reportCards.add(assetCount);
-			reportCards.add(energyUsage);
+//			reportCards.add(energyUsage);
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);

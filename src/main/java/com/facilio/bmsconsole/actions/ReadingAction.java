@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -168,7 +169,7 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		
-		Chain addCurrentOccupancy = FacilioChainFactory.getAddReadingValuesChain();
+		Chain addCurrentOccupancy = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
 	}
@@ -201,9 +202,22 @@ public class ReadingAction extends ActionSupport {
 		addCurrentOccupancy.execute(context);
 		
 		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		
+		readingAndValue = new JSONObject();
+		readingAndValue.put("readingData", readingData);
+		readingAndValue.put("readings", readings);
 		return SUCCESS;
 	}
-	
+  	
+  	private JSONObject readingAndValue;
+	public JSONObject getReadingAndValue() {
+		return readingAndValue;
+	}
+	public void setReadingAndValue(JSONObject readingAndValue) {
+		this.readingAndValue = readingAndValue;
+	}
+
 	private long parentId = -1;
 	public long getParentId() {
 		return parentId;

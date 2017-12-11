@@ -68,14 +68,16 @@ public class ViewFactory {
 		viewMap.put("event-lastweek", getEvents("LastWeek"));
 		
 		viewMap.put("alarm-active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false));
-		viewMap.put("alarm-clear", getSeverityAlarms("clear", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
+		viewMap.put("alarm-cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
+		viewMap.put("alarm-critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true));
+		viewMap.put("alarm-major", getSeverityAlarms("major", "Major Alarms", "Major", true));
+		viewMap.put("alarm-minor", getSeverityAlarms("minor", "Minor Alarms", "Minor", true));
 		viewMap.put("alarm-myalarms", getMyAlarms());
 		viewMap.put("alarm-unassigned", getUnassignedAlarms());
 		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
-		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.LIFE_SAFETY));
-		viewMap.put("alarm-critical", getTypeAlarms("critical", "Critical Alarms", AlarmType.CRITICAL));
-		viewMap.put("alarm-maintenance", getTypeAlarms("maintenance", "Maintenance Alarms", AlarmType.MAINTENANCE));
+		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.FIRE));
 		viewMap.put("alarm-energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY));
+		viewMap.put("alarm-hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC));
 		
 		
 		//Add module name in field objects
@@ -676,25 +678,51 @@ public class ViewFactory {
 	
 	private static FacilioView getSeverityAlarms(String name, String displayName, String severity, boolean equals) {
 		
-		Condition condition = new Condition();
-		condition.setColumnName("Alarms.SEVERITY");
-		condition.setFieldName("severity");
-		if(equals) {
-			condition.setOperator(StringOperators.IS);
-		}
-		else {
-			condition.setOperator(StringOperators.ISN_T);
-		}
-		condition.setValue(severity);
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmsModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
 		
-		Criteria crtieria = new Criteria();
-		crtieria.addAndCondition(condition);
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
 		
-		FacilioView activeAlarms = new FacilioView();
-		activeAlarms.setName(name);
-		activeAlarms.setDisplayName(displayName);
-		activeAlarms.setCriteria(crtieria);
-		return activeAlarms;
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(activeAlarm);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		return view;
+	}
+	
+	private static Criteria getSeverityAlarmCriteria(String severity, boolean equals) {
+		FacilioField severityField = new FacilioField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.STRING);
+		severityField.setModule(ModuleFactory.getAlarmSeverityModule());
+		
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		if(equals)
+		{
+			activeAlarm.setOperator(StringOperators.IS);
+		}
+		else
+		{
+			activeAlarm.setOperator(StringOperators.ISN_T);
+		}
+		activeAlarm.setValue(severity);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(activeAlarm);
+		
+		return criteria;
 	}
 	
 	private static FacilioView getMyAlarms() {
@@ -717,13 +745,27 @@ public class ViewFactory {
 		condition.setOperator(NumberOperators.EQUALS);
 		condition.setValue(String.valueOf(type.getIntVal()));
 		
-		Criteria crtieria = new Criteria();
-		crtieria.addAndCondition(condition);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmsModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+		
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+		
+		criteria.addAndCondition(activeAlarm);
 		
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName(name);
 		typeAlarms.setDisplayName(displayName);
-		typeAlarms.setCriteria(crtieria);
+		typeAlarms.setCriteria(criteria);
 		
 		return typeAlarms;
 	}
@@ -740,14 +782,28 @@ public class ViewFactory {
 		emptyCondition.setFieldName("isAcknowledged");
 		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
 		
-		Criteria crtieria = new Criteria();
-		crtieria.addOrCondition(emptyCondition);
-		crtieria.addOrCondition(falseCondition);
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(emptyCondition);
+		criteria.addOrCondition(falseCondition);
+		
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmsModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+		
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+		
+		criteria.addAndCondition(activeAlarm);
 		
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledged");
 		typeAlarms.setDisplayName("Unacknowledged Alarms");
-		typeAlarms.setCriteria(crtieria);
+		typeAlarms.setCriteria(criteria);
 		
 		return typeAlarms;
 	}
