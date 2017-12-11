@@ -48,9 +48,10 @@ public class FacilioServerEndpoint
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
-    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId());
+    	System.out.println("Session started message to ::" +message.getTo()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
     	if (message.getContent() != null && message.getContent().get("ping") != null) {
     		message.getContent().put("ping", "pong");
+    		session.getBasicRemote().sendObject(message);
     	}
     }
     
