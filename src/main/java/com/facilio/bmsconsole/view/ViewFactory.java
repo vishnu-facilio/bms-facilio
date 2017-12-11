@@ -72,13 +72,12 @@ public class ViewFactory {
 		viewMap.put("alarm-critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true));
 		viewMap.put("alarm-major", getSeverityAlarms("major", "Major Alarms", "Major", true));
 		viewMap.put("alarm-minor", getSeverityAlarms("minor", "Minor Alarms", "Minor", true));
-		viewMap.put("alarm-info", getSeverityAlarms("info", "Info Alarms", "Info", true));
 		viewMap.put("alarm-myalarms", getMyAlarms());
 		viewMap.put("alarm-unassigned", getUnassignedAlarms());
 		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
 		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.FIRE));
 		viewMap.put("alarm-energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY));
-		//viewMap.put("alarm-hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.ENERGY));
+		viewMap.put("alarm-hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC));
 		
 		
 		//Add module name in field objects
