@@ -78,7 +78,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		return -1;
 	}
 	public void setType(int type) {
-		this.type = ATTACHMENT_TYPES[type - 1];
+		this.type = AttachmentType.getType(type);
 	}
 	public void setType(AttachmentType type) {
 		this.type = type;
@@ -92,7 +92,6 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	
-	private static final AttachmentType[] ATTACHMENT_TYPES = AttachmentType.values();
 	public static enum AttachmentType {
 		BEFORE,
 		AFTER
@@ -101,5 +100,11 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		public int getIntVal() {
 			return ordinal()+1;
 		}
+		
+		public static AttachmentType getType(int type) {
+			return ATTACHMENT_TYPES[type -1];
+		}
+		
+		private static final AttachmentType[] ATTACHMENT_TYPES = AttachmentType.values();
 	}
 }

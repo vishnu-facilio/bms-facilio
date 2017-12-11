@@ -133,6 +133,7 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String ATTACHMENT_FILE_LIST = "attachmentFiles";
 		public static final String ATTACHMENT_CONTENT_TYPE = "attachmentContentType";
+		public static final String ATTACHMENT_TYPE = "attachmentType";
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		
