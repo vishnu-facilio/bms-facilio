@@ -1016,48 +1016,48 @@
 		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addCurrentOccupancyReading">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addAssignedOccupancyReading">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addEnergyData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="adddata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingValues.*</param>
 			</result>
 		</action>
 
 		<action name="getspacelatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceLatestReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
 
 		<action name="getassetlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAssetLatestReadingData">
 			<result name="success" type="json">
-				<param name="excludeProperties">readingData.*\.orgId,readingData.*\.moduleId,readingData.*\.data,readingData.*\.readings.*\.(date|week|hour|month|day)</param>
-				<param name="includeProperties">readingData.*</param>
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
 	</package>

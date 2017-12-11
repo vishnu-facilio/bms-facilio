@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -32,24 +35,36 @@ public class GetLatestCategoryReadingValuesCommand implements Command {
 					count = 1;
 				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fields = modBean.getAllFields(module.getName());
+				List<FacilioField> fields = new ArrayList<>();
+				FacilioField ttime = new FacilioField();
+				ttime.setName("ttime");
+				ttime.setDisplayName("Timestamp");
+				ttime.setDataType(FieldType.DATE_TIME);
+				ttime.setColumnName("TTIME");
+				ttime.setModule(module);
+				fields.add(ttime);
 				
 				Condition idCondition = new Condition();
 				idCondition.setField(modBean.getField("parentId", module.getName()));
 				idCondition.setOperator(NumberOperators.EQUALS);
 				idCondition.setValue(String.valueOf(parentId));
 				
-				SelectRecordsBuilder<ReadingContext> readingBuilder = new SelectRecordsBuilder<ReadingContext>()
-																			.module(module)
-																			.beanClass(ReadingContext.class)
-																			.select(fields)
-																			.andCondition(idCondition)
-																			.orderBy("TTIME DESC")
-																			.limit(count);
-				
-				List<ReadingContext> readings = readingBuilder.get();
-				if(readings != null && !readings.isEmpty()) {
-					readingData.put(module.getName(), readings);
+				for(FacilioField field : module.getFields()) {
+					fields.add(field);
+					SelectRecordsBuilder<ReadingContext> readingBuilder = new SelectRecordsBuilder<ReadingContext>()
+																				.module(module)
+																				.beanClass(ReadingContext.class)
+																				.select(fields)
+																				.andCondition(idCondition)
+																				.andCustomWhere(field.getColumnName()+" IS NOT NULL")
+																				.orderBy("TTIME DESC")
+																				.limit(count);
+					
+					List<ReadingContext> readings = readingBuilder.get();
+					if(readings != null && !readings.isEmpty()) {
+						readingData.put(field.getName(), readings);
+					}
+					fields.remove(field);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.READINGS, readingData);
