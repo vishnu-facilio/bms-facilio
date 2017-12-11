@@ -72,93 +72,98 @@ public class EventToAlarmJob extends FacilioJob{
 						}
 					}
 					event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
-					GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
-																.select(EventConstants.EventFieldFactory.getEventFields())
-																.table("Event")
-																.limit(1)
-																.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND ALARM_ID IS NOT NULL", orgId, event.getMessageKey())
-																.orderBy("CREATED_TIME DESC");
-
-					List<Map<String, Object>> props1 = eventSelectBuilder.get();
-					if(props1 != null && !props1.isEmpty())
-					{
-						//TODO update alarm
-						long alarmId = (long) props1.get(0).get("alarmId");
-						JSONObject alarm = new JSONObject();
-						JSONArray ids = new JSONArray();
-						ids.add(alarmId);
-						alarm.put("severityString", event.getSeverity());
-						alarm.put("orgId", event.getOrgId());
-						
-						JSONObject content = new JSONObject();
-						content.put("alarm", alarm);
-						content.put("id", ids);
-						
-						Map<String, String> headers = new HashMap<>();
-						headers.put("Content-Type","application/json");
-						String server = AwsUtil.getConfig("servername");
-						String url = "http://" + server + "/internal/updateAlarmFromEvent";
-						AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
-						
-						event.setAlarmId(alarmId);
-						event.setEventState(EventState.ALARM_UPDATED);
+					if(event.getSeverity().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
+						event.setEventState(EventState.IGNORED);
 					}
-					else
-					{
-						JSONObject json = new JSONObject();
-						json.put("orgId", event.getOrgId());
-						json.put("source", event.getSource());
-						json.put("node", event.getNode());
-						json.put("subject", event.getEventMessage());
-						json.put("description", event.getDescription());
-						json.put("severityString", event.getSeverity());
-						json.put("alarmPriority", event.getPriority());
-						json.put("alarmClass", event.getAlarmClass());
-						json.put("state", event.getState());
-						json.put("type", 6);
-						
-						if(event.getAssetId() != -1) {
-							JSONObject asset = new JSONObject();
-							asset.put("id", event.getAssetId());
-							json.put("asset", asset);
-						}
-						
-						JSONObject additionalInfo = event.getAdditionInfo();
-						if(additionalInfo != null && additionalInfo.size() > 0) {
-							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+					else {
+						GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
+																	.select(EventConstants.EventFieldFactory.getEventFields())
+																	.table("Event")
+																	.limit(1)
+																	.andCustomWhere("ORGID = ? AND MESSAGE_KEY = ? AND ALARM_ID IS NOT NULL", orgId, event.getMessageKey())
+																	.orderBy("CREATED_TIME DESC");
+	
+						List<Map<String, Object>> props1 = eventSelectBuilder.get();
+						if(props1 != null && !props1.isEmpty())
+						{
+							//TODO update alarm
+							long alarmId = (long) props1.get(0).get("alarmId");
+							JSONObject alarm = new JSONObject();
+							JSONArray ids = new JSONArray();
+							ids.add(alarmId);
+							alarm.put("severityString", event.getSeverity());
+							alarm.put("orgId", event.getOrgId());
 							
-							JSONObject data = new JSONObject();
-							for(FacilioField field : alarmFields) {
-								if(additionalInfo.containsKey(field.getName())) {
-									if(field.isDefault()) {
-										json.put(field.getName(), additionalInfo.remove(field.getName()));
-									}
-									else {
-										data.put(field.getName(), additionalInfo.remove(field.getName()));
+							JSONObject content = new JSONObject();
+							content.put("alarm", alarm);
+							content.put("id", ids);
+							
+							Map<String, String> headers = new HashMap<>();
+							headers.put("Content-Type","application/json");
+							String server = AwsUtil.getConfig("servername");
+							String url = "http://" + server + "/internal/updateAlarmFromEvent";
+							AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+							
+							event.setAlarmId(alarmId);
+							event.setEventState(EventState.ALARM_UPDATED);
+						}
+						else
+						{
+							JSONObject json = new JSONObject();
+							json.put("orgId", event.getOrgId());
+							json.put("source", event.getSource());
+							json.put("node", event.getNode());
+							json.put("subject", event.getEventMessage());
+							json.put("description", event.getDescription());
+							json.put("severityString", event.getSeverity());
+							json.put("alarmPriority", event.getPriority());
+							json.put("alarmClass", event.getAlarmClass());
+							json.put("state", event.getState());
+							json.put("type", 6);
+							
+							if(event.getAssetId() != -1) {
+								JSONObject asset = new JSONObject();
+								asset.put("id", event.getAssetId());
+								json.put("asset", asset);
+							}
+							
+							JSONObject additionalInfo = event.getAdditionInfo();
+							if(additionalInfo != null && additionalInfo.size() > 0) {
+								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+								List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+								
+								JSONObject data = new JSONObject();
+								for(FacilioField field : alarmFields) {
+									if(additionalInfo.containsKey(field.getName())) {
+										if(field.isDefault()) {
+											json.put(field.getName(), additionalInfo.remove(field.getName()));
+										}
+										else {
+											data.put(field.getName(), additionalInfo.remove(field.getName()));
+										}
 									}
 								}
+								if(data.size() > 0) {
+									json.put("data", data);
+								}
 							}
-							if(data.size() > 0) {
-								json.put("data", data);
-							}
+							json.put("additionInfo", additionalInfo);
+							
+							JSONObject content = new JSONObject();
+							content.put("alarm", json);
+							
+							Map<String, String> headers = new HashMap<>();
+							headers.put("Content-Type","application/json");
+							String server = AwsUtil.getConfig("servername");
+							String url = "http://" + server + "/internal/addAlarm";
+							
+							JSONParser parser = new JSONParser();
+							String response = AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+							System.out.println(response);
+							JSONObject res = (JSONObject) parser.parse(response); 
+							event.setAlarmId((long) res.get("alarmId"));
+							event.setEventState(EventState.ALARM_CREATED);
 						}
-						json.put("additionInfo", additionalInfo);
-						
-						JSONObject content = new JSONObject();
-						content.put("alarm", json);
-						
-						Map<String, String> headers = new HashMap<>();
-						headers.put("Content-Type","application/json");
-						String server = AwsUtil.getConfig("servername");
-						String url = "http://" + server + "/internal/addAlarm";
-						
-						JSONParser parser = new JSONParser();
-						String response = AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
-						System.out.println(response);
-						JSONObject res = (JSONObject) parser.parse(response); 
-						event.setAlarmId((long) res.get("alarmId"));
-						event.setEventState(EventState.ALARM_CREATED);
 					}
 					
 					event.setInternalState(EventInternalState.COMPLETED);
