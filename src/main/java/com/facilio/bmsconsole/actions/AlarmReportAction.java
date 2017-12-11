@@ -182,7 +182,7 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.SEVERITY=Alarm_Severity.ID")
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarm_Severity.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCustomWhere("Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?",false);
+				.andCustomWhere("(Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)",false);
 		if(buildingId!=-1) {
 			builder.innerJoin("Tickets")
 			.on("Alarms.ID = Tickets.ID")
