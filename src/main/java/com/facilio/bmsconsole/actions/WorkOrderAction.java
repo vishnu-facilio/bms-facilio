@@ -170,6 +170,7 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public String preventiveMaintenanceSummary() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -180,6 +181,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		
 		return SUCCESS;
 	}

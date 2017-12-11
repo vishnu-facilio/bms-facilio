@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -43,12 +46,25 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
-		JSONObject content = (JSONObject) template.getTemplate(new HashMap<String, Object>()).get("workorder");
+		JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
+		JSONObject wocontent = (JSONObject) templateContent.get("workorder");
 		
-		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
+		List<TaskContext> taskList = new ArrayList<>();
+		if(templateContent.containsKey("tasks"))
+		{
+			JSONArray tasks = (JSONArray) templateContent.get("tasks");
+			for(int i=0; i<tasks.size(); i++)
+			{
+				TaskContext task = FieldUtil.getAsBeanFromJson((JSONObject) tasks.get(i), TaskContext.class);
+				taskList.add(task);
+			}
+		}
+		
+		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(wocontent, WorkOrderContext.class);
 		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, taskList);
 		
 		return false;
 	}

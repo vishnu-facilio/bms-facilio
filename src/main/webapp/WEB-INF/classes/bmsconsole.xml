@@ -1230,7 +1230,7 @@
 			method="preventiveMaintenanceSummary">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,tasks,tasks\[\d+\],tasks\[\d+\].*</param>
 			</result>
 		</action>
 
