@@ -24,10 +24,7 @@ public class ValidateWorkOrderFieldsCommand implements Command {
 				woContext.setSubject(woContext.getSubject().trim());
 			}
 
-			if(woContext.getDescription() == null || woContext.getDescription().isEmpty()) {
-				throw new IllegalArgumentException("Description is invalid");
-			}
-			else {
+			if(woContext.getDescription() != null && !woContext.getDescription().isEmpty()) {
 				woContext.setDescription(woContext.getDescription().trim());
 			}
 
