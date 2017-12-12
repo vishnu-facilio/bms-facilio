@@ -512,8 +512,7 @@ public class LoginAction extends ActionSupport{
 		account.put("user", AccountUtil.getCurrentUser());
 		
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
-//		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
-		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentUser().getId(), true);
+		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
 		
 		Map<String, Object> data = new HashMap<>();
