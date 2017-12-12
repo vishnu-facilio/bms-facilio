@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 	
 	<!-- Facilio Internal Maven Repository -->
-	<repositories>
+	<!-- <repositories>
         <repository>
             <id>facilio-s3-release-repo</id>
 			<name>Facilio Release Repository</name>
@@ -20,7 +20,7 @@
 			<name>Facilio Snapshot Repository</name>
 			<url>s3://repo.facilstack.com/snapshots</url>
         </repository>
-    </repositories>
+    </repositories> -->
 	
 	<dependencies>
 		<dependency>
@@ -195,11 +195,11 @@
 		    <artifactId>nimbus-jose-jwt</artifactId>
 		    <version>4.23</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
             <groupId>com.facilio</groupId>
             <artifactId>fedge</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        </dependency> -->
         <dependency>
 			<groupId>redis.clients</groupId>
 		    <artifactId>jedis</artifactId>
