@@ -198,6 +198,7 @@ public class FacilioConstants {
 		public static final String BASE_SPACE = "basespace";
 		
 		public static final String ASSET = "asset";
+		public static final String ASSET_ID = "assetId";
 		public static final String ASSET_LIST = "assets";
 		public static final String ASSET_TYPE = "assettype";
 		public static final String ASSET_CATEGORY = "assetcategory";

@@ -209,9 +209,19 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long assetId = -1;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
 	public String getAllPreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		
 		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		

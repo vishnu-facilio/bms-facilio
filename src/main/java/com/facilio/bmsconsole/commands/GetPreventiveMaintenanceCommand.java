@@ -46,6 +46,10 @@ public class GetPreventiveMaintenanceCommand implements Command {
 				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ?", status);
 			}
 		}
+		if((long) context.get(FacilioConstants.ContextNames.ASSET_ID) != -1)
+		{
+			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.ASSET_ID = ?", (long) context.get(FacilioConstants.ContextNames.ASSET_ID));
+		}
 		
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		
