@@ -42,7 +42,7 @@ public class GetFloorReportCards implements Command {
 			energyUsage.put("type", "count");
 			energyUsage.put("name", "energy");
 			energyUsage.put("label", "ENERGY CONSUMED");
-			energyUsage.put("data", "20000 Kwh");
+			energyUsage.put("data", "--");
 			
 			JSONArray reportCards = new JSONArray();
 			reportCards.add(woCount);
