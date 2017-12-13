@@ -1,7 +1,7 @@
 echo "starting the server..."
 
 export APP_HOME="/home/ubuntu/apache-tomcat-9.0.0.M21"
-export CONF_DIR="$APP_HOME/webapps/bms/WEB-INF/classes/conf"
+export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 cd /home/ubuntu
 

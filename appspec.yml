@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /bms.war
+  - source: /ROOT.war
     destination: /home/ubuntu/apache-tomcat-9.0.0.M21/webapps
   - source: /kill_server.sh
     destination: /home/ubuntu/

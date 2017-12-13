@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export APP_HOME="/home/ubuntu/apache-tomcat-9.0.0.M21"
-export BMS_DIR="$APP_HOME/webapps/bms"
+export BMS_DIR="$APP_HOME/webapps/ROOT"
 export META_INF_DIR="$BMS_DIR/META-INF"
 
 echo "Deployment group is : $DEPLOYMENT_GROUP_NAME" >> /home/ubuntu/deployment.log
@@ -9,7 +9,7 @@ echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.lo
 echo "======" >> /home/ubuntu/deployment.log
 printenv >> /home/ubuntu/deployment.log
 
-unzip $APP_HOME/webapps/bms.war -d $APP_HOME/webapps/bms
+unzip $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     cp $META_INF_DIR/context-stage.xml $META_INF_DIR/context.xml

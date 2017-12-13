@@ -62,11 +62,7 @@
 			<artifactId>aws-java-sdk-rds</artifactId>
 			<version>1.11.123</version>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.43</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-core</artifactId>
@@ -196,11 +192,6 @@
 		    <version>4.23</version>
 		</dependency>
 		<dependency>
-            <groupId>com.facilio</groupId>
-            <artifactId>fedge</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
 			<groupId>redis.clients</groupId>
 		    <artifactId>jedis</artifactId>
 		    <version>2.9.0</version>
@@ -232,7 +223,25 @@
     <artifactId>jackson-annotations</artifactId>
     <version>2.9.1</version>
 </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-streams -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20171018</version>
+		</dependency>
    <!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
@@ -296,7 +305,7 @@
                 <version>5.0.0.RELEASE</version>
             </extension>
 	    </extensions>
-		<finalName>bms</finalName>
+		<finalName>ROOT</finalName>
 	</build>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
