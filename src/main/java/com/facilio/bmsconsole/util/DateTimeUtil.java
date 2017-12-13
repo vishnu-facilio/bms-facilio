@@ -11,7 +11,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -47,6 +46,11 @@ public class DateTimeUtil
 	private static LocalDate getMonthFirst(ZoneId zoneId)
 	{
 		return LocalDate.now(zoneId).with(TemporalAdjusters.firstDayOfMonth());
+	}
+	
+	private static LocalDate getMonthLast(ZoneId zoneId)
+	{
+		return LocalDate.now(zoneId).with(TemporalAdjusters.lastDayOfMonth());
 	}
 	
 	private static LocalDate getYearFirst(ZoneId zoneId)
@@ -187,14 +191,46 @@ public class DateTimeUtil
 		return getMonthStartTime(getZoneId(), seconds);
 	}
 	
+	public static long getAnyYearThisMonthStartTime(int interval, Boolean... seconds)
+	{
+		return getAnyYearThisMonthStartTime(getZoneId(), interval, seconds);
+	}
+	
+	public static long getAnyYearThisMonthStartTime(ZoneId zoneId, int interval, Boolean... seconds)
+	{
+		ZonedDateTime zdt=ZonedDateTime.of(getAnyYearThisMonthFirst(zoneId,interval),LocalTime.MIDNIGHT,zoneId);
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
+			return getSeconds(zdt);
+		}
+		return getMillis(zdt,true);
+	}
+	
+	private static LocalDate getAnyYearThisMonthFirst(ZoneId zoneId, int interval)
+	{
+		return getMonthFirst(zoneId).plusYears(interval);
+	}
+	
+	public static long getAnyYearThisMonthEndTime(int interval, Boolean... seconds)
+	{
+		return getAnyYearThisMonthEndTime(getZoneId(),interval,seconds);
+	}
+	
+	public static long getAnyYearThisMonthEndTime(ZoneId zoneId, int interval, Boolean... seconds)
+	{
+		ZonedDateTime zdt=ZonedDateTime.of(getAnyYearThisMonthEnd(zoneId,interval),LocalTime.MAX,zoneId);
+		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
+			return getSeconds(zdt);
+		}
+		return getMillis(zdt,true);
+	}
+	
+	private static LocalDate getAnyYearThisMonthEnd(ZoneId zoneId, int interval)
+	{
+		return getMonthLast(zoneId).plusYears(interval);
+	}
 	public static long getMonthStartTime(ZoneId zoneId,Boolean... seconds)
 	{
-		//this can also be used as the end range with less than operator
-		//for the previous month
-		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
-			return getSeconds(ZonedDateTime.of(getMonthFirst(zoneId),LocalTime.MIDNIGHT,zoneId));
-		}
-		return getMillis(ZonedDateTime.of(getMonthFirst(zoneId),LocalTime.MIDNIGHT,zoneId),true);
+		return getMonthStartTime(zoneId,0,seconds);
 	}
 
 	public static long getMonthStartTime(int interval, Boolean... seconds)
@@ -226,12 +262,7 @@ public class DateTimeUtil
 	
 	public static long getWeekStartTime(ZoneId zoneId,Locale locale,Boolean... seconds)
 	{
-		//this can also be used as the end range with less than operator 
-		//for the previous week
-		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
-			return getSeconds(ZonedDateTime.of(getWeekFirst(zoneId,locale),LocalTime.MIDNIGHT,zoneId))	;
-		}
-		return getMillis(ZonedDateTime.of(getWeekFirst(zoneId,locale),LocalTime.MIDNIGHT,zoneId),true)	;
+		return getWeekStartTime(zoneId,locale,0,seconds);
 	}
 	
 	public static long getWeekStartTime(int interval,Boolean... seconds)
@@ -262,12 +293,8 @@ public class DateTimeUtil
 	
 	public static long getYearStartTime(ZoneId zoneId,Boolean... seconds)
 	{
-		//this can also be used as the end range with less than operator
-		//for the previous year
-		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
-			return getSeconds(ZonedDateTime.of(getYearFirst(zoneId),LocalTime.MIDNIGHT,zoneId));
-		}
-		return getMillis(ZonedDateTime.of(getYearFirst(zoneId),LocalTime.MIDNIGHT,zoneId),true);
+		
+		return getYearStartTime(zoneId,0,seconds);
 	}
 
 	public static long getYearStartTime(int interval, Boolean... seconds)
@@ -294,12 +321,7 @@ public class DateTimeUtil
 	
 	public static long getHourStartTime(ZoneId zoneId,Boolean... seconds)
 	{
-		//this can also be used as the end range with less than operator
-		//for the previous hour.
-		if(seconds!=null && seconds.length>0 && seconds[0]==true) {
-			return getSeconds(getHourFirst(zoneId));
-		}
-		return getMillis(getHourFirst(zoneId),true);	
+		return getHourStartTime(zoneId,0,seconds);
 	}
 
 	public static long getHourStartTime(int interval,Boolean... seconds)

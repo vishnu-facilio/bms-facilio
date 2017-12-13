@@ -22,6 +22,24 @@ public class PortfolioAction extends ActionSupport {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unchecked")
+	public String getBuildingMap() throws Exception
+	{
+		JSONObject result = new JSONObject();
+		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
+		
+		for(BuildingContext building:buildings) {
+
+			long buildingId=building.getId();
+			String name =building.getName();
+			result.put(buildingId,name);
+		}
+		setReportData(result);
+		return SUCCESS;
+	}
 	
 	
 	@SuppressWarnings("unchecked")
@@ -150,9 +168,10 @@ public class PortfolioAction extends ActionSupport {
 	public String getConsumptionDetails() throws Exception
 	{
 		JSONObject result = new JSONObject();
-		List<BuildingContext> buildings=SpaceAPI.getAllBuildings();
 		List<EnergyMeterContext> energyMeters= DeviceAPI.getAllMainEnergyMeters();
-		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);;
+		Map <Long, Long> buildingVsMeter= ReportsUtil.getBuildingVsMeter(energyMeters);
+		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
+		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
 		
 		String deviceList= StringUtils.join(buildingVsMeter.values(),",");
 		Long[] timeInterval=ReportsUtil.getTimeInterval(getPeriod());
@@ -209,6 +228,7 @@ public class PortfolioAction extends ActionSupport {
 
 		List<Map<String, Object>> resultData= ReportsUtil.fetchMeterData(deviceList,startTime,endTime,true);
 		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData);
+		Map<Long,Double> purposeVsConsumption= new HashMap<Long,Double>();
 		
 		for (Map.Entry<Long,ArrayList<Long>> entry:purposeVsMeter.entrySet())
 		{
@@ -223,8 +243,9 @@ public class PortfolioAction extends ActionSupport {
 					totalKwh+=value;
 				}
 			}
-			result.put(purposeId, ReportsUtil.roundOff(totalKwh,2));
+			purposeVsConsumption.put(purposeId, ReportsUtil.roundOff(totalKwh,2));
 		}
+		result.put("consumption", ReportsUtil.valueSort(purposeVsConsumption, true));
 		result.put("units", "kWh");
 		setReportData(result);
 		return SUCCESS;

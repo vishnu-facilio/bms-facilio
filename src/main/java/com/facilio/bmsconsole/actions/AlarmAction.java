@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -112,7 +113,6 @@ public class AlarmAction extends ActionSupport {
 			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
 			ticket.setDescription("Alarm Testing");
 		}
-		alarm.setAlarmStatus(AlarmContext.AlarmStatus.ACTIVE);
 		alarm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
@@ -350,7 +350,7 @@ public class AlarmAction extends ActionSupport {
 				AwsUtil.sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
-				value = CommonCommandUtil.sendAlarmSMS(alarm, value, message);
+				value = AlarmAPI.sendAlarmSMS(alarm, value, message);
 				to.put("value", value);
 			}
 			

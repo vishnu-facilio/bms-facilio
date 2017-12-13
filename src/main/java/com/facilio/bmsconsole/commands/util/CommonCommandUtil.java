@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,23 +12,15 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.twilio.sdk.Twilio;
 
 public class CommonCommandUtil {
 	public static void setFwdMail(SupportEmailContext supportEmail) {
@@ -122,129 +113,4 @@ public class CommonCommandUtil {
 			}
 		}
 	}
-	
-	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
-		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
-		{
-			TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
-			if(category != null) {
-				destinationAlarm.setCategory(category);
-			}
-		}
-		AssetContext asset = sourceAlarm.getAsset();
-		if(asset != null) {
-			String description;
-			BaseSpaceContext space = sourceAlarm.getSpace();
-			if(sourceAlarm.isAcknowledged()) {
-				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
-				}
-				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
-				}
-			}
-			else {
-				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
-				}
-				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
-				}
-			}
-			destinationAlarm.setDescription(description);
-		}
-		else if(sourceAlarm.getNode() != null) {
-			String description;
-			BaseSpaceContext space = sourceAlarm.getSpace();
-			if(sourceAlarm.isAcknowledged()) {
-				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),sourceAlarm.getNode(), space.getName());
-				}
-				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),sourceAlarm.getNode());
-				}
-			}
-			else {
-				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),sourceAlarm.getNode(), space.getName());
-				}
-				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),sourceAlarm.getNode());
-				}
-			}
-			destinationAlarm.setDescription(description);
-		}
-	}
-	
-	public static String sendAlarmSMS(AlarmContext alarm, String to, String message) throws Exception {
-		AssetContext asset = alarm.getAsset();
-		if(asset != null) {
-			asset = AssetsAPI.getAssetInfo(asset.getId());
-			BaseSpaceContext space = asset.getSpace();
-			String spaceName = null;
-			if(space != null) {
-				spaceName = space.getName();
-			}
-			
-			String sms = null;
-			if(message != null && !message.isEmpty()) {
-				if(spaceName != null) {
-					sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}, {3}", alarm.getTypeVal(), alarm.getSubject(), spaceName, message);
-				}
-				else {
-					sms = MessageFormat.format("[ALARM] [{0}] {1}, {2}", alarm.getTypeVal(), alarm.getSubject(), message);
-				}
-			}
-			else {
-				if(spaceName != null) {
-					sms = MessageFormat.format("[ALARM] [{0}] {1} @ {2}", alarm.getTypeVal(), alarm.getSubject(), spaceName);
-				}
-				else {
-					sms = MessageFormat.format("[ALARM] [{0}] {1}", alarm.getTypeVal(), alarm.getSubject());
-				}
-			}
-			return sendSMS(to, sms);
-		}
-		return null;
-	}
-	
-	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
-	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
-	public static String sendSMS(String to, String message) {
-
-		try {
-
-			Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
-
-			com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,
-					new com.twilio.sdk.type.PhoneNumber(to),  // To number
-					new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
-					message                    // SMS body
-					).execute();
-
-
-			//com.twilio.sdk.resource.lookups.v1.PhoneNumber
-			//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
-			System.out.println(tmessage.getSid());
-			System.out.println(tmessage.getTo());
-
-			return tmessage.getTo();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	private static BaseSpaceContext getSpace(long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			BaseSpaceContext space = SpaceAPI.getBaseSpace(id);
-			return space;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-	}
-	
 }

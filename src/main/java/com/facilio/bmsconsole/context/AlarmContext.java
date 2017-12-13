@@ -18,30 +18,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
-	private AlarmStatus alarmStatus;
-	public int getAlarmStatus() {
-		if(alarmStatus != null) {
-			return alarmStatus.getIntVal();
-		}
-		return -1;
-	}
-	public void setAlarmStatus(int alarmStatus) {
-		this.alarmStatus = AlarmStatus.STATUS_MAP.get(alarmStatus);
-	}
-	public void setAlarmStatus(AlarmStatus alarmStatus) {
-		this.alarmStatus = alarmStatus;
-	}
-	public String getAlarmStatusVal() {
-		if(alarmStatus != null) {
-			return alarmStatus.getStringVal();
-		}
-		return null;
-	}
 	
 	private Boolean isAcknowledged;
 	public boolean isAcknowledged() {
@@ -116,12 +95,28 @@ public class AlarmContext extends TicketContext {
 		this.createdTime = createdTime;
 	}
 	
-	private long clearedTime;
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
+	private long clearedTime = -1;
 	public long getClearedTime() {
 		return clearedTime;
 	}
 	public void setClearedTime(long clearedTime) {
 		this.clearedTime = clearedTime;
+	}
+	
+	private User clearedBy;
+	public User getClearedBy() {
+		return clearedBy;
+	}
+	public void setClearedBy(User clearedBy) {
+		this.clearedBy = clearedBy;
 	}
 
 	private String source;
@@ -140,14 +135,22 @@ public class AlarmContext extends TicketContext {
 		this.node = node;
 	}
 	
-	private String severity;
-	public String getSeverity() {
+	private String severityString;
+	public String getSeverityString() {
+		return severityString;
+	}
+	public void setSeverityString(String severityString) {
+		this.severityString = severityString;
+	}
+
+	private AlarmSeverityContext severity;
+	public AlarmSeverityContext getSeverity() {
 		return severity;
 	}
-	public void setSeverity(String severity) {
+	public void setSeverity(AlarmSeverityContext severity) {
 		this.severity = severity;
 	}
-	
+
 	private String alarmPriority;
 	public String getAlarmPriority() {
 		return alarmPriority;
@@ -196,41 +199,15 @@ public class AlarmContext extends TicketContext {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
-
-	public static enum AlarmStatus {
-		ACTIVE(1, "Active"),
-		SUPPRESS(2, "Suppressed"),
-		CLEAR(3, "Cleared");
-		
-		private int intVal;
-		private String strVal;
-		
-		private AlarmStatus(int intVal, String strVal) {
-			this.intVal = intVal;
-			this.strVal = strVal;
-		}
-		
-		public int getIntVal() {
-			return intVal;
-		}
-		public String getStringVal() {
-			return strVal;
-		}
-		
-		private static final Map<Integer, AlarmStatus> STATUS_MAP = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, AlarmStatus> initTypeMap() {
-			Map<Integer, AlarmStatus> typeMap = new HashMap<>();
-			
-			for(AlarmStatus type : values()) {
-				typeMap.put(type.getIntVal(), type);
-			}
-			return typeMap;
-		}
-		public Map<Integer, AlarmStatus> getAllTypes() {
-			return STATUS_MAP;
-		}
-	}
 	
+	private long noOfEvents = -1;
+	public long getNoOfEvents() {
+		return noOfEvents;
+	}
+	public void setNoOfEvents(long noOfEvents) {
+		this.noOfEvents = noOfEvents;
+	}
+
 	public static enum AlarmType {
 		MAINTENANCE(1, "Maintenance"),
 		CRITICAL(2, "Critical"),

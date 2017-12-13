@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -9,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -49,9 +49,23 @@ public class UpdateAlarmCommand implements Command {
 				alarm.setAcknowledgedBy(AccountUtil.getCurrentUser());
 			}
 			
-			if(alarm.getAlarmStatus() == AlarmContext.AlarmStatus.CLEAR.getIntVal()) {
-				alarm.setClearedTime(System.currentTimeMillis());
+			boolean isCleared = false;
+			if((alarm.getSeverity() == null || alarm.getSeverity().getId() == -1) && alarm.getSeverityString() != null && !alarm.getSeverityString().isEmpty()) {
+				AlarmSeverityContext severity = AlarmAPI.getAlarmSeverity(alarm.getSeverityString());
+				if(severity == null) {
+					severity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.INFO_SEVERITY);
+				}
+				alarm.setSeverity(severity);
+				if(alarm.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+					isCleared = true;
+				}
 			}
+			if(isCleared || (alarm.getSeverity() != null && alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY).getId())) {
+				alarm.setClearedTime(System.currentTimeMillis());
+				alarm.setClearedBy(AccountUtil.getCurrentUser());
+			}
+			
+			alarm.setModifiedTime(System.currentTimeMillis());
 			
 			if(recordIds.size() == 1) {
 				SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
@@ -64,7 +78,7 @@ public class UpdateAlarmCommand implements Command {
 				List<AlarmContext> alarms = builder.get();
 				if(alarms != null && !alarms.isEmpty()) {
 					AlarmContext alarmObj = alarms.get(0);
-					CommonCommandUtil.updateAlarmDetailsInTicket(alarmObj, alarm);
+					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
 				}
 			}
 			

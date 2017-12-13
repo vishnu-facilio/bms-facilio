@@ -1,15 +1,14 @@
 package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
@@ -123,6 +122,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		
+		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
 		public static final String ALARM_LIST = "alarms";
 		
@@ -289,6 +289,7 @@ public class FacilioConstants {
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
+			classMap.put(ALARM_SEVERITY, AlarmSeverityContext.class);
 			classMap.put(ALARM, AlarmContext.class);
 			classMap.put(BASE_SPACE, BaseSpaceContext.class);
 			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);
@@ -317,6 +318,11 @@ public class FacilioConstants {
 		public static Class getClassFromModuleName(String moduleName) {
 			return classMap.get(moduleName);
 		}
+	}
+	
+	public static class Alarm {
+		public static final String CLEAR_SEVERITY = "Clear";
+		public static final String INFO_SEVERITY = "Info";
 	}
 	
 	public static class Criteria {

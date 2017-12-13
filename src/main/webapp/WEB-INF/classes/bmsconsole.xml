@@ -21,6 +21,7 @@
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />				
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
@@ -358,6 +359,12 @@
 		</action>
 	</package>
 	<package name="energyMeterApi" namespace="/api/energymeter" extends="home">
+		<action name="addenergydata" class="com.facilio.bmsconsole.actions.EnergyAction" method="addEnergyData">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^event.*</param>
+			</result>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeter">
 			<param name="permission">WORKORDER_READ</param>
@@ -1486,6 +1493,13 @@
 	
 	
 	<package name="energyPorfolioReportsApi" namespace="/api/report/energy/portfolio" extends="home">
+			<action name="getBuildingMap" class="com.facilio.bmsconsole.actions.PortfolioAction"
+					method="getBuildingMap">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+	
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildings">
 			<result name="success" type="json">
@@ -1566,6 +1580,13 @@
 
 		<action name="map" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="map">
+			<result name="success" type="json">
+				<param name="root">alarmTypeStats</param>
+			</result>
+		</action>
+		
+		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.AlarmReportAction"
+			method="getAllBuildings">
 			<result name="success" type="json">
 				<param name="root">alarmTypeStats</param>
 			</result>

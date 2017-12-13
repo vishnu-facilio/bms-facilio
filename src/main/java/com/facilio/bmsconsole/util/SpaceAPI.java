@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmStatus;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -657,7 +656,7 @@ public static long getSitesCount() throws Exception {
 				.table("Alarms")
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
-				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.STATUS=?", orgId, orgId, AlarmStatus.ACTIVE.getIntVal())
+				.andCustomWhere("Alarms.ORGID=? AND Tickets.ORGID = ? AND Alarms.SEVERITY!=?", orgId, orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = builder.get();

@@ -59,6 +59,7 @@ public class SQLScriptRunner {
 		try {
 			LineNumberReader lineReader = new LineNumberReader(reader);
 			String line;
+			String delimiter = DELIMITER;
 			while ((line = lineReader.readLine()) != null) {
 				if (command == null) {
 					command = new StringBuilder();
@@ -72,9 +73,15 @@ public class SQLScriptRunner {
 					else if(trimmedLine.startsWith("#")) {
 						System.out.println(trimmedLine.substring(1));
 					}
+					else if(trimmedLine.toUpperCase().startsWith("DELIMITER")) {
+						String[] delimiters = trimmedLine.toUpperCase().split("DELIMITER");
+						if(delimiters != null && delimiters.length > 1) {
+							delimiter = delimiters[1].trim();
+						}
+					}
 					else  {
-						if(trimmedLine.endsWith(DELIMITER)) {
-							command.append(trimmedLine.substring(0, trimmedLine.lastIndexOf(DELIMITER)));
+						if(trimmedLine.endsWith(delimiter)) {
+							command.append(trimmedLine.substring(0, trimmedLine.lastIndexOf(delimiter)));
 							command.append(" ");
 							execCommand(conn, command, lineReader.getLineNumber());
 							command = null;

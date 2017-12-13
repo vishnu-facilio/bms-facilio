@@ -39,6 +39,11 @@ public class AddActionsForWorkflowRule implements Command {
 				emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 				String toAdresses = action.getTemplateJson().get("to").toString();
 				toAdresses = toAdresses.substring(1, toAdresses.length()-1);
+				
+				if(toAdresses.contains(",")) {
+					action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
+				}
+				
 				emailTemplate.setTo(toAdresses);
 				emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 				emailTemplate.setBody((String) action.getTemplateJson().get("body"));
@@ -47,10 +52,14 @@ public class AddActionsForWorkflowRule implements Command {
 			}
 			else if(action.getActionType().equals(ActionType.SMS_NOTIFICATION)) {
 				SMSTemplate smsTemplate = new SMSTemplate();
-				String toAdresses = action.getTemplateJson().get("to").toString();
-				toAdresses = toAdresses.substring(1, toAdresses.length()-1);
-				User user = AccountUtil.getUserBean().getUser(toAdresses);
-				smsTemplate.setTo(user.getPhone());
+				String toPhones = action.getTemplateJson().get("to").toString();
+				toPhones = toPhones.substring(1, toPhones.length()-1);
+				
+				if(toPhones.contains(",")) {
+					action.setActionType(ActionType.BULK_SMS_NOTIFICATION);
+				}
+				
+				smsTemplate.setTo(toPhones);
 				smsTemplate.setMsg((String) action.getTemplateJson().get("body"));
 				smsTemplate.setType(Type.SMS);
 				action.setTemplate(smsTemplate);	
