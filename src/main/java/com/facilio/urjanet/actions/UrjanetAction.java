@@ -10,7 +10,7 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class UrjanetAction extends ActionSupport{
 
-	public String userLogin() throws Exception
+	public String UserAdd() throws Exception
 	{
 		   FacilioContext context = new FacilioContext();    
 		   context.put(UrjanetConstants.ContextNames.CREDENTIAL, getUtilityProviderCredentials());			
