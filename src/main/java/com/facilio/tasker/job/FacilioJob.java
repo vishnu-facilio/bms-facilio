@@ -25,8 +25,6 @@ public abstract class FacilioJob implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		long nextExecutionTime = getNextExecutionTime();
-		
 		try {
 			AccountUtil.cleanCurrentAccount();
 			retryExecutionCount++;
@@ -36,7 +34,10 @@ public abstract class FacilioJob implements Runnable {
 			}
 			
 			long orgId = jc.getOrgId();
-			AccountUtil.setCurrentAccount(orgId);
+			if(orgId != -1) {
+				AccountUtil.setCurrentAccount(orgId);
+			}
+			long nextExecutionTime = getNextExecutionTime();
 			
 			execute(jc);
 			

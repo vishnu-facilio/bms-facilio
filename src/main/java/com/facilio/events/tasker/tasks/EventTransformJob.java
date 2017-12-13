@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
@@ -57,7 +57,7 @@ public class EventTransformJob extends FacilioJob{
 						if(isMatched)
 						{
 							logger.log(Level.INFO, event.getMessageKey()+" matched transform critiera of "+event.getEventRuleId());
-							AlarmTemplate template = (AlarmTemplate) TemplateAPI.getTemplate(orgId, rule.getTransformAlertTemplateId());
+							JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, rule.getTransformAlertTemplateId());
 							JSONObject content = template.getTemplate(prop);
 							logger.log(Level.INFO, "template val : "+content);
 							prop.putAll(FieldUtil.getAsProperties(content));

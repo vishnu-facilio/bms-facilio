@@ -7,7 +7,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
@@ -76,9 +76,9 @@ public class EventRulesAPI {
 		}
 		
 		if(eventRule.getTransformTemplate() != null) {
-			AlarmTemplate alarmTemplate = new AlarmTemplate();
+			JSONTemplate alarmTemplate = new JSONTemplate();
 			alarmTemplate.setContent(eventRule.getTransformTemplate().toJSONString());
-			long alarmTemplateId = TemplateAPI.addAlarmTemplate(orgId, alarmTemplate);
+			long alarmTemplateId = TemplateAPI.addJsonTemplate(orgId, alarmTemplate);
 			eventRule.setTransformAlertTemplateId(alarmTemplateId);
 		}
 		

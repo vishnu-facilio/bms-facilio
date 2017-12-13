@@ -9,14 +9,13 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate.Type;
@@ -71,7 +70,7 @@ public class AddActionsForWorkflowRule implements Command {
 				for(Map alarmField:alarmFieldMatcher) {
 					content.addProperty(alarmField.get("field").toString(), alarmField.get("regex").toString());
 				}
-				AlarmTemplate alarmTemplate = new AlarmTemplate();
+				JSONTemplate alarmTemplate = new JSONTemplate();
 				alarmTemplate.setContent(content.toString());
 				action.setTemplate(alarmTemplate);
 			}
