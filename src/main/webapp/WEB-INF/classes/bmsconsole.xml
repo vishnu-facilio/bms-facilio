@@ -39,6 +39,11 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
+		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
+			<result name="success" type="json">
+				<param name="includeProperties">response</param>
+			</result>
+		</action>
 		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="signup">
 			<result name="success" type="json">
