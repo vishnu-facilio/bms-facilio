@@ -7,9 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.constants.FacilioConstants;
-
-public class WorkorderTemplate extends UserTemplate {
+public class JSONTemplate extends UserTemplate {
 
 	private long contentId = -1;
 	public long getContentId() {

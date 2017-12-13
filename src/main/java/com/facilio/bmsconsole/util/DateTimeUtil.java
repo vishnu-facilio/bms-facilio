@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 
 
@@ -24,13 +25,14 @@ public class DateTimeUtil
 	private static ZoneId getZoneId()
 	{
 		//TODO TimeZone related changes to be done.
-		String zone = AccountUtil.getCurrentOrg().getTimezone();
-		if(zone != null && !zone.isEmpty()) {
-			return ZoneId.of(zone);
+		Organization org = AccountUtil.getCurrentOrg();
+		if(org != null) {
+			String zone = org.getTimezone();
+			if(zone != null && !zone.isEmpty()) {
+				return ZoneId.of(zone);
+			}
 		}
-		else {
-			return ZoneId.of("Z");
-		}
+		return ZoneId.of("Z");
 	}
 	
 	private static Locale getLocale()

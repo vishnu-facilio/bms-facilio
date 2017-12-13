@@ -25,8 +25,8 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.TicketActivity;
-import com.facilio.bmsconsole.workflow.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -105,7 +105,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrderFromTemplate() throws Exception {
 		
-		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), getTemplateId());
+		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), getTemplateId());
 		JSONParser parser = new JSONParser();
 		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
 		

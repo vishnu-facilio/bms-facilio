@@ -10,12 +10,10 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.bmsconsole.workflow.WorkorderTemplate;
-import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -57,28 +55,16 @@ public class TemplateAPI {
 					return getSMSTemplateFromMap(templateMap);
 				}
 			}
-			else if(type == UserTemplate.Type.WORKORDER.getIntVal()) {
+			else if(type == UserTemplate.Type.JSON.getIntVal()) {
 				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getWorkorderTemplateFields())
-						.table("Workorder_Template")
-						.andCustomWhere("Workorder_Template.ID = ?", id);
+						.select(FieldFactory.getJSONTemplateFields())
+						.table("JSON_Template")
+						.andCustomWhere("JSON_Template.ID = ?", id);
 				
 				templates = selectBuider.get();
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
-					return getWorkorderTemplateFromMap(templateMap);
-				}
-			}
-			else if(type == UserTemplate.Type.ALARM.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getAlarmTemplateFields())
-						.table("Alarm_Template")
-						.andCustomWhere("Alarm_Template.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getAlarmTemplateFromMap(templateMap);
+					return getJSONTemplateFromMap(templateMap);
 				}
 			}
 		}
@@ -211,8 +197,8 @@ public class TemplateAPI {
 		return template;
 	}
 	
-	private static WorkorderTemplate getWorkorderTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WorkorderTemplate.class);
+	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
 		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -226,29 +212,13 @@ public class TemplateAPI {
 		return template;
 	}
 	
-	private static AlarmTemplate getAlarmTemplateFromMap(Map<String, Object> templateMap) throws Exception {
-		
-		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		
-		AlarmTemplate template = FieldUtil.getAsBeanFromMap(templateMap, AlarmTemplate.class);
-		
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
-			template.setContent(IOUtils.toString(body));
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-		return template;
-	}
-	
-	public static long addWorkorderTemplate(long orgId, WorkorderTemplate template) throws Exception {
+	public static long addJsonTemplate(long orgId, JSONTemplate template) throws Exception {
 		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
-		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Workorder_Template_"+template.getName(), template.getContent(), "text/plain")));
-		template.setType(UserTemplate.Type.WORKORDER);
+		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
+		template.setType(UserTemplate.Type.JSON);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -259,38 +229,10 @@ public class TemplateAPI {
 		userTemplateBuilder.save();
 		
 		GenericInsertRecordBuilder workorderTemplateBuilder = new GenericInsertRecordBuilder()
-																.table("Workorder_Template")
-																.fields(FieldFactory.getWorkorderTemplateFields())
+																.table("JSON_Template")
+																.fields(FieldFactory.getJSONTemplateFields())
 																.addRecord(templateProps);
 		workorderTemplateBuilder.save();
-		return (long) templateProps.get("id"); 
-	}
-	
-	public static long addAlarmTemplate(long orgId, AlarmTemplate template) throws Exception {
-		
-		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		
-		template.setOrgId(orgId);
-		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore(superAdmin.getId());
-		long contentId = fs.addFile("Alarm_Template_"+template.getName(), template.getContent(), "text/plain");
-		template.setContentId(contentId);
-		template.setType(UserTemplate.Type.ALARM);
-		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
-		
-		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
-															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
-															.addRecord(templateProps);
-		
-		userTemplateBuilder.save();
-		
-		GenericInsertRecordBuilder alarmTemplateBuilder = new GenericInsertRecordBuilder()
-																.table("Alarm_Template")
-																.fields(FieldFactory.getAlarmTemplateFields())
-																.addRecord(templateProps);
-		alarmTemplateBuilder.save();
-		
 		return (long) templateProps.get("id"); 
 	}
 }

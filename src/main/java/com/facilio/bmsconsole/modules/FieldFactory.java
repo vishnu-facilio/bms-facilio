@@ -933,25 +933,8 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getWorkorderTemplateFields() {
-		FacilioModule module = ModuleFactory.getWorkorderTemplateModule();
-		
-		List<FacilioField> fields = new ArrayList<>();
-		
-		fields.add(getIdField(module));
-		
-		FacilioField content = new FacilioField();
-		content.setName("contentId");
-		content.setDataType(FieldType.STRING);
-		content.setColumnName("CONTENT_ID");
-		content.setModule(module);
-		fields.add(content);
-		
-		return fields;
-	}
-	
-	public static List<FacilioField> getAlarmTemplateFields() {
-		FacilioModule module = ModuleFactory.getAlarmTemplateModule();
+	public static List<FacilioField> getJSONTemplateFields() {
+		FacilioModule module = ModuleFactory.getJSONTemplateModule();
 		
 		List<FacilioField> fields = new ArrayList<>();
 		

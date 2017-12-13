@@ -33,7 +33,7 @@ public class User {
 		this.uid = uid;
 	}
 	public String getName() {
-		if (this.name == null && this.email != null) {
+		if (this.name == null && this.email != null && !this.email.isEmpty()) {
 			return this.email.substring(0, this.email.indexOf("@"));
 		}
 		return this.name;

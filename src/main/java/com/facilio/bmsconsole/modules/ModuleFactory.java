@@ -44,7 +44,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWorkOrderRequestsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TASK, getTasksModule());
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
-		moduleMap.put("workordertemplate", getWorkorderTemplateModule());
+		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
 		moduleMap.put("connectedapp", getConnectedAppModule());
 		moduleMap.put("tabwidget", getTabWidgetModule());
@@ -332,20 +332,12 @@ public class ModuleFactory {
 		return alarmSeverityModule;
 	}
 	
-	public static FacilioModule getWorkorderTemplateModule() {
-		FacilioModule workorderTemplateModule = new FacilioModule();
-		workorderTemplateModule.setName("workordertemplate");
-		workorderTemplateModule.setDisplayName("Workorder Template");
-		workorderTemplateModule.setTableName("Workorder_Template");
-		return workorderTemplateModule;
-	}
-	
-	public static FacilioModule getAlarmTemplateModule() {
-		FacilioModule alarmTemplateModule = new FacilioModule();
-		alarmTemplateModule.setName("alarmtemplate");
-		alarmTemplateModule.setDisplayName("Alarm Template");
-		alarmTemplateModule.setTableName("Alarm_Template");
-		return alarmTemplateModule;
+	public static FacilioModule getJSONTemplateModule() {
+		FacilioModule jsonTemplateModule = new FacilioModule();
+		jsonTemplateModule.setName("jsontemplate");
+		jsonTemplateModule.setDisplayName("JSON Template");
+		jsonTemplateModule.setTableName("JSON_Template");
+		return jsonTemplateModule;
 	}
 	
 	public static FacilioModule getPreventiveMaintenancetModule() {

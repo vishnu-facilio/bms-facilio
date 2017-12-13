@@ -8,8 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAlarmTemplateCommand implements Command {
@@ -19,14 +18,13 @@ public class AddAlarmTemplateCommand implements Command {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		
-		AlarmTemplate alarmTemplate = new AlarmTemplate();
+		JSONTemplate alarmTemplate = new JSONTemplate();
 		JSONObject content = FieldUtil.getAsJSON(alarm);
 		alarmTemplate.setContent(content.toString());
 		
 		alarmTemplate.setName(alarm.getSubject());
-		alarmTemplate.setType(UserTemplate.Type.ALARM);
 
-		long templateId = TemplateAPI.addAlarmTemplate(AccountUtil.getCurrentOrg().getOrgId(), alarmTemplate);
+		long templateId = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getOrgId(), alarmTemplate);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID, templateId);
 		return false;

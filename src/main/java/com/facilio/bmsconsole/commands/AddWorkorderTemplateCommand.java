@@ -11,8 +11,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.bmsconsole.workflow.WorkorderTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 
 public class AddWorkorderTemplateCommand implements Command {
@@ -23,7 +22,7 @@ public class AddWorkorderTemplateCommand implements Command {
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 		
-		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
+		JSONTemplate workorderTemplate = new JSONTemplate();
 		JSONObject content = new JSONObject();
 		content.put(FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsJSON(workorder));
 		if(tasks != null) {
@@ -32,9 +31,8 @@ public class AddWorkorderTemplateCommand implements Command {
 		workorderTemplate.setContent(content.toJSONString());
 		
 		workorderTemplate.setName(workorder.getSubject());
-		workorderTemplate.setType(UserTemplate.Type.WORKORDER);
 
-		long templateId = TemplateAPI.addWorkorderTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
+		long templateId = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID, templateId);
 		return false;

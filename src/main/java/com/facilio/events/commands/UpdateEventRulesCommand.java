@@ -4,10 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.AlarmTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventRulesAPI;
