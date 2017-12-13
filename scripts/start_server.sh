@@ -6,8 +6,6 @@ export CONF_DIR="$APP_HOME/webapps/bms/WEB-INF/classes/conf"
 cd /home/ubuntu
 
 sudo killall -9 java
-
-sudo unzip $APP_HOME/webapps/bms.war -d $APP_HOME/webapps/bms
 sudo sh replace_conf.sh
 sudo sh $APP_HOME/bin/catalina.sh start
 
