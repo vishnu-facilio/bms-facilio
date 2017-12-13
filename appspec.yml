@@ -18,7 +18,6 @@ hooks:
   AfterInstall:
     - location: /change_conf.sh
       timeout: 3600
-      runas: root
   ApplicationStart:
     - location: /start_server.sh
       timeout: 3600
