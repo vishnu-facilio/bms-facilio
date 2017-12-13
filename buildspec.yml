@@ -12,5 +12,6 @@ artifacts:
     - scripts/kill_server.sh
     - scripts/start_server.sh
     - scripts/replace_conf.sh
+    - scripts/change_conf.sh
   discard-paths: yes
 

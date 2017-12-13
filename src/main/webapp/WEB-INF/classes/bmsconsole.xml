@@ -436,8 +436,8 @@
 	</package>
 	
 	<package name="urjanetApi" namespace="/api/unet" extends="home">
-		<action name="" class="com.facilio.urjanet.actions.UrjanetAction"
-			method="userLogin">
+		<action name="addnewuser" class="com.facilio.urjanet.actions.UrjanetAction"
+			method="UserAdd">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>

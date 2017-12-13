@@ -9,10 +9,16 @@ files:
     destination: /home/ubuntu/
   - source: /start_server.sh
     destination: /home/ubuntu/
+  - source: /change_conf.sh
+    destination: /home/ubuntu/
 hooks:
-  BeforeInstall:
+  ApplicationStop:
     - location: /kill_server.sh
       timeout: 3600
+  AfterInstall:
+    - location: /change_conf.sh
+      timeout: 3600
+      runas: root
   ApplicationStart:
     - location: /start_server.sh
       timeout: 3600
