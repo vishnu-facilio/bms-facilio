@@ -12,16 +12,25 @@ files:
   - source: /change_conf.sh
     destination: /home/ubuntu
 
+permissions:
+  - object: /home/ubuntu/tomcat/webapps
+    pattern: "ROOT.war"
+    mode: 644
+
+  - object: /home/ubuntu
+    pattern: "*.sh"
+    mode: 755
+
 hooks:
   ApplicationStop:
-    - location: /home/ubuntu/kill_server.sh
+    - location: /kill_server.sh
       timeout: 3600
       runas: ubuntu
   AfterInstall:
-    - location: /home/ubuntu/change_conf.sh
+    - location: /change_conf.sh
       timeout: 3600
       runas: ubuntu
   ApplicationStart:
-    - location: /home/ubuntu/start_server.sh
+    - location: /start_server.sh
       timeout: 3600
       runas: ubuntu
