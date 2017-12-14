@@ -217,7 +217,19 @@
 			<result name="success" type="json">
 			</result>
 		</action>
-				
+		
+		<action name="controllersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showControllerSettings">
+		<param name="permission">ORG_ACCESS_ADMINISTER</param>
+		<result name="success" type="json">
+				<param name="includeProperties">controllerSettings.*</param>
+			</result>
+			</action>
+		<action name="addcontrollersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addControllerSettings">
+		<param name="permission">ORG_ACCESS_ADMINISTER</param>
+		<result name="success" type="json">
+				<param name="includeProperties">controllerSettingsId</param>
+			</result>
+		</action>		
 	</package>
 
 </struts>
