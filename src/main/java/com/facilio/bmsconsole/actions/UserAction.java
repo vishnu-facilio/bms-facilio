@@ -178,7 +178,7 @@ public class UserAction extends ActionSupport {
 		this.userMobileSetting = userMobileSetting;
 	}
 	
-	public String updateMobileSetting() throws Exception {
+	public String addMobileSetting() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);

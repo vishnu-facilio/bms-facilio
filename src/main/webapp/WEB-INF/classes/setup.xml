@@ -118,10 +118,10 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
-		<action name="updatemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="updateMobileSetting">
+		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="addMobileSetting">
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">userId</param>
+				<param name="includeProperties">^userMobileSetting.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
