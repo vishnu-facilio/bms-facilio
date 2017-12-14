@@ -117,6 +117,11 @@ public class DateTimeUtil
 		return getTimeData(getZoneId(),addedTime, seconds);
 	}
 	
+	public static ZonedDateTime getZonedDateTime(long addedTime, Boolean... seconds)
+	{
+		return getDateTime(getZoneId(),addedTime,seconds);
+	}
+	
 	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime, Boolean... seconds)
 	{
 		ZonedDateTime zdt = getDateTime(zoneId,addedTime,seconds);
