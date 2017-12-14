@@ -120,6 +120,10 @@ public class FacilioConstants {
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
 		
+		public static final String CONTROLLER = "controller";
+		public static final String CONTROLLER_LIST = "controllerSetting";
+		public static final String CONTROLLER_SETTINGS = "controllerSettings";
+		
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";
 		
@@ -293,6 +297,7 @@ public class FacilioConstants {
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(WORK_ORDER, WorkOrderContext.class);
+//     		classMap.put(CONTROLLER, ControllerSettingsContext.class);
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM_SEVERITY, AlarmSeverityContext.class);
 			classMap.put(ALARM, AlarmContext.class);

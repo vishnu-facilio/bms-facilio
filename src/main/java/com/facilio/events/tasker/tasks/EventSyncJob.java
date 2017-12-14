@@ -22,7 +22,8 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.events.constants.EventConstants;
@@ -54,11 +55,11 @@ public class EventSyncJob extends FacilioJob{
 				RangeKeyCondition rkc = new RangeKeyCondition("LogTime");
 				rkc.gt(String.valueOf(System.currentTimeMillis() - ((1 * 30 * 1000) + 1))); // One Minute
 				
-				List<ControllerContext> controllers = DeviceAPI.getAllControllers();
+				List<ControllerSettingsContext> controllercontext = DeviceAPI.getAllControllers();
 				
-				if(controllers != null && !controllers.isEmpty()) {
-					for(ControllerContext controller : controllers) {
-						QuerySpec spec = new QuerySpec().withHashKey("DeviceId", controller.getMacAddr()).withRangeKeyCondition(rkc);	// Device Mac ID
+				if(controllercontext != null && !controllercontext.isEmpty()) {
+					for(ControllerSettingsContext controllerSettings : controllercontext) {
+						QuerySpec spec = new QuerySpec().withHashKey("DeviceId", controllerSettings.getMacAddr()).withRangeKeyCondition(rkc);	// Device Mac ID
 						ItemCollection<QueryOutcome> items = table.query(spec);
 						if(items.iterator().hasNext())
 						{

@@ -7,7 +7,8 @@ import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.ControllerSettingsContext;
+import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -25,7 +26,7 @@ public class DeviceAPI
 {
 	private static Logger logger = Logger.getLogger(DeviceAPI.class.getName());
 
-	public static List<ControllerContext> getAllControllers() throws Exception {
+	public static List<ControllerSettingsContext> getAllControllers() throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getControllerModule().getTableName())
 				.select(FieldFactory.getControllerFields())
@@ -33,9 +34,9 @@ public class DeviceAPI
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			List<ControllerContext> controllers = new ArrayList<>();
+			List<ControllerSettingsContext> controllers = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
+				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerSettingsContext.class));
 			}
 			return controllers;
 		}

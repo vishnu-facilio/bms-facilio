@@ -1562,7 +1562,13 @@ public class FieldFactory {
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
-		fields.add(getNameField(module));
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
 		
 		FacilioField spaceId = new FacilioField();
 		spaceId.setName("spaceId");

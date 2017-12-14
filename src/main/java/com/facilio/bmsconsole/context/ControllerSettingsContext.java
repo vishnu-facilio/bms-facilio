@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-public class ControllerContext {
+public class ControllerSettingsContext {
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -40,4 +40,15 @@ public class ControllerContext {
 	public void setMacAddr(String macAddr) {
 		this.macAddr = macAddr;
 	}
+	
+	@Override
+	 public String toString() {
+		return "ControllerSettingsContext [id=" + id + ", orgId=" + orgId + ", name=" + name + ","
+				+ " spaceId =" +spaceId+",macAddr=" + macAddr +"]";
+	}
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 }

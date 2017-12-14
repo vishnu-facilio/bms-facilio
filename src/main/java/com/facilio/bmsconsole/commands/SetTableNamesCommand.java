@@ -98,4 +98,7 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForEnergyMeterPurpose(){
 		return new SetTableNamesCommand("energymeterpurpose","Energy_Meter_Purpose");
 	}
+	public static SetTableNamesCommand getForController(){
+		return new SetTableNamesCommand("controller","Controller");
+	}
 }

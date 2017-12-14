@@ -185,8 +185,30 @@ public class SetupLayout<T> {
 		sl.setSettingTitle("Settings");
 		sl.setSettingGroupTitle("Work Order");
 		sl.setSettingViewTitle("Email Settings");
-		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn editSupportBtn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("New Helpdesk Email").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
 		
+		return sl;
+	}
+	
+	
+   public static SetupLayout getControllerSettingsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Controller");
+		sl.setSettingViewTitle("Add Controller");
+		sl.addActionButton(new ActionButton().setName("New Add Controller").setIconClass("fa-plus").setClassName("new-btn").setType(ActionButton.Type.SAVE));
+		return sl;
+	}
+	
+   public static SetupLayout getAddControllerSettingsLayout() {
+		
+		SetupLayout sl = new SetupLayout();
+		sl.setSettingTitle("Settings");
+		sl.setSettingGroupTitle("Controller");
+		sl.setSettingViewTitle("New Add Controller");
+		sl.addActionButton(new ActionButton().setName("Save").setIconClass("fa-check").setClassName("save-btn").setType(ActionButton.Type.SAVE));
+		sl.addActionButton(new ActionButton().setName("Cancel").setIconClass("fa-times").setClassName("cancel-btn").setType(ActionButton.Type.CANCEL));
 		return sl;
 	}
 

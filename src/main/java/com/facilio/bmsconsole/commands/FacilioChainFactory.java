@@ -1051,6 +1051,19 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddControllerChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddControllerCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getControllerSettingsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadControllerSettingsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 	public static Chain getUpdateSupportEmailChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());

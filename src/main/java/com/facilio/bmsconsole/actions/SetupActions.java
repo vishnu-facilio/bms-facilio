@@ -12,10 +12,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -206,6 +208,18 @@ public String importData() throws Exception {
 		return SUCCESS;
 	}
 	
+    public String showControllerSettings() throws Exception {
+    	FacilioContext context  = new FacilioContext();
+		Chain controllerSettings = FacilioChainFactory.getControllerSettingsChain();
+		controllerSettings.execute(context);
+		
+    	setSetup(SetupLayout.getControllerSettingsLayout());
+    	
+    	List<ControllerSettingsContext> rules= ControllerAPI.getControllerSettings(AccountUtil.getCurrentOrg().getOrgId());
+		ActionContext.getContext().getValueStack().set("controllerSettings", rules);
+//    	setControllerSettings((ControllerSettingsContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS));
+		return SUCCESS;    	
+    }
 	
 	public String showNotificationSettings() throws Exception {
 		
@@ -253,6 +267,15 @@ public String importData() throws Exception {
 		return result;
 	}
 	
+	private ControllerSettingsContext controllerSettings;
+	public ControllerSettingsContext getcontrollerSettings() {
+		return controllerSettings;
+	}
+	public void setControllerSettings(ControllerSettingsContext controllerSettings) {
+		this.controllerSettings = controllerSettings;
+	}
+	
+	
 	private EmailSettingContext emailSetting;
 	public EmailSettingContext getEmailSetting() {
 		return emailSetting;
@@ -297,6 +320,17 @@ public String importData() throws Exception {
 		return SUCCESS;
 	}
 	
+	public String addControllerSettings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controllerSettings);
+		
+		Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+		addcontrollerSettings.execute(context);
+		
+		controllerSettingsId = controllerSettings.getId();
+		return SUCCESS;	
+	}
+	
 	public String updateSupportEmailSetting() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
@@ -330,6 +364,15 @@ public String importData() throws Exception {
 	public String getOrgDomain() {
 		return orgDomain;
 	}
+	
+	private long controllerSettingsId = -1;
+	public long getcontrollerSettingsId() {
+		return controllerSettingsId;
+	}
+	public void setcontrollerSettingsId(long controllerSettingsId) {
+		this.controllerSettingsId = controllerSettingsId;
+	}
+	
 	
 	private long supportEmailId = -1;
 	public long getSupportEmailId() {
