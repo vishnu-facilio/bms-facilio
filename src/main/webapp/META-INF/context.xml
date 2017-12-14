@@ -32,8 +32,7 @@
 		auth="Container"
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
-		user="faciliouser" 
-		password="zxcv1212" 
+		user="root" 
 		explicitUrl="true"
         url="jdbc:mysql://localhost:3306/bms"
 		/>
