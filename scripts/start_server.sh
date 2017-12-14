@@ -5,8 +5,9 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 cd /home/ubuntu
 
-killall -9 java
+sudo killall -9 java
 sh replace_conf.sh
-sh $APP_HOME/bin/catalina.sh start
+sudo sh $APP_HOME/bin/catalina.sh start
+sudo chmod 644 $APP_HOME/logs/*
 
 echo "server started..."
