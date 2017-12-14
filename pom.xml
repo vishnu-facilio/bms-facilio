@@ -236,12 +236,6 @@
 			<artifactId>kafka-streams</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20171018</version>
-		</dependency>
    <!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>

@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "replacing conf files..."
 
-export APP_HOME="/home/ubuntu/apache-tomcat-9.0.0.M21"
+export APP_HOME="/home/ubuntu/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 CURRENT_HOSTNAME=$(hostname)

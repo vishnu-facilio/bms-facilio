@@ -2,22 +2,42 @@ version: 0.0
 os: linux
 files:
   - source: /ROOT.war
-    destination: /home/ubuntu/apache-tomcat-9.0.0.M21/webapps
+    destination: /home/ubuntu/tomcat/webapps
   - source: /kill_server.sh
-    destination: /home/ubuntu/
+    destination: /home/ubuntu
   - source: /replace_conf.sh
-    destination: /home/ubuntu/
+    destination: /home/ubuntu
   - source: /start_server.sh
-    destination: /home/ubuntu/
+    destination: /home/ubuntu
   - source: /change_conf.sh
-    destination: /home/ubuntu/
+    destination: /home/ubuntu
+
+permissions:
+
+  -object: /home/ubuntu/tomcat/webapps
+  pattern: ROOT.war
+  owner: ubuntu
+  mode: 644
+  type:
+    - file
+
+  -object: /home/ubuntu
+  pattern: *.sh
+  owner: ubuntu
+  mode: 755
+  type:
+    - file
+
 hooks:
   ApplicationStop:
-    - location: /kill_server.sh
+    - location: /home/ubuntu/kill_server.sh
       timeout: 3600
+      runas: ubuntu
   AfterInstall:
-    - location: /change_conf.sh
+    - location: /home/ubuntu/change_conf.sh
       timeout: 3600
+      runas: ubuntu
   ApplicationStart:
-    - location: /start_server.sh
+    - location: /home/ubuntu/start_server.sh
       timeout: 3600
+      runas: ubuntu

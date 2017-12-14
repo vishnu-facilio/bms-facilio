@@ -1,13 +1,13 @@
-echo "stoping the server..."
+echo "stopping the server..."
 
-export APP_HOME="/home/ubuntu/apache-tomcat-9.0.0.M21"
+export APP_HOME="/home/ubuntu/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 cd $APP_HOME
 
-sudo sh bin/shutdown.sh
+sh bin/shutdown.sh
 
-sudo rm -rf webapps/ROOT
-sudo rm -rf webapps/ROOT.war
+rm -rf webapps/ROOT
+rm -rf webapps/ROOT.war
 
 echo "server stopped..."
