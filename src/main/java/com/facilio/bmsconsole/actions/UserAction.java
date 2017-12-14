@@ -10,6 +10,7 @@ import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -164,6 +165,26 @@ public class UserAction extends ActionSupport {
 
 		Command addUser = FacilioChainFactory.getUpdateUserCommand();
 		addUser.execute(context);
+				
+		return SUCCESS;
+	}
+	
+	private UserMobileSetting userMobileSetting;
+	public UserMobileSetting getUserMobileSetting() {
+		return userMobileSetting;
+	}
+
+	public void setUserMobileSetting(UserMobileSetting userMobileSetting) {
+		this.userMobileSetting = userMobileSetting;
+	}
+	
+	public String updateMobileSetting() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.USER_MOBILE_SETTING, userMobileSetting);
+
+		Command addUserMobileSettingCommand = FacilioChainFactory.getAddUserMobileSettingCommand();
+		addUserMobileSettingCommand.execute(context);
 				
 		return SUCCESS;
 	}

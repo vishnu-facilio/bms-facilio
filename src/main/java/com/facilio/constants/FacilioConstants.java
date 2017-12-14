@@ -88,6 +88,7 @@ public class FacilioConstants {
 		
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
+		public static final String USER_MOBILE_SETTING = "userMobileSetting";
 		
 		public static final String GROUP_ID = "groupId";
 		public static final String GROUP = "group";

@@ -168,6 +168,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getAddUserMobileSettingCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddUserMobileSettingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getAddGroupCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateWorkOrderFieldsCommand());

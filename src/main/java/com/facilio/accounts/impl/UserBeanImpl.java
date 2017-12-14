@@ -8,6 +8,7 @@ import java.util.Map;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountEmailTemplate;
@@ -248,6 +249,22 @@ public class UserBeanImpl implements UserBean {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
+		
+		if(userMobileSetting.getUserId() == -1)
+		{
+			userMobileSetting.setUserId(getUid(userMobileSetting.getEmail()));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserMobileSettingModule().getTableName())
+				.fields(AccountConstants.getUserMobileSettingFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(userMobileSetting);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
 	}
 
 	@Override

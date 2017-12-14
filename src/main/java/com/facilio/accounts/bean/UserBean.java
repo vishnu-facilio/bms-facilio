@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.UserMobileSetting;
 
 public interface UserBean {
 	
@@ -16,6 +17,8 @@ public interface UserBean {
 	public boolean acceptInvite(long ouid, String cognitoId) throws Exception;
 	
 	public boolean updateUser(long ouid, User user) throws Exception;
+	
+	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public boolean deleteUser(long ouid) throws Exception;
 	

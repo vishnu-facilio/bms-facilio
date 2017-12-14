@@ -118,6 +118,17 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="updatemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="updateMobileSetting">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">userId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 		<action name="addgroup" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
