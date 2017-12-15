@@ -2,6 +2,7 @@
 
 export APP_HOME="/home/ubuntu/tomcat"
 export BMS_DIR="$APP_HOME/webapps/ROOT"
+export CONF_DIR="$BMS_DIR/WEB-INF/classes/conf"
 export META_INF_DIR="$BMS_DIR/META-INF"
 
 echo "Deployment group is : $DEPLOYMENT_GROUP_NAME" >> /home/ubuntu/deployment.log
@@ -19,5 +20,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
+    cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
 	sed -i'' "s%schedulerServer=.*%schedulerServer=true%g" $CONF_DIR/awsprops.properties
 fi
