@@ -142,6 +142,14 @@ public class AlarmContext extends TicketContext {
 	public void setSeverityString(String severityString) {
 		this.severityString = severityString;
 	}
+	
+	private AlarmSeverityContext previousSeverity;
+	public AlarmSeverityContext getPreviousSeverity() {
+		return previousSeverity;
+	}
+	public void setPreviousSeverity(AlarmSeverityContext previousSeverity) {
+		this.previousSeverity = previousSeverity;
+	}
 
 	private AlarmSeverityContext severity;
 	public AlarmSeverityContext getSeverity() {

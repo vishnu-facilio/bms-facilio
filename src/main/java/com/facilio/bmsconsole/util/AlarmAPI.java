@@ -25,24 +25,27 @@ public class AlarmAPI {
 				destinationAlarm.setCategory(category);
 			}
 		}
+		if(sourceAlarm != destinationAlarm && destinationAlarm.getSeverity() != null) {
+			destinationAlarm.setPreviousSeverity(sourceAlarm.getSeverity());
+		}
 		AssetContext asset = sourceAlarm.getAsset();
 		if(asset != null) {
 			String description;
 			BaseSpaceContext space = sourceAlarm.getSpace();
 			if(sourceAlarm.isAcknowledged()) {
 				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
+					description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal() != null? " "+sourceAlarm.getTypeVal():"n",asset.getName(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
+					description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal() != null? " "+sourceAlarm.getTypeVal():"n",asset.getName());
 				}
 			}
 			else {
 				if(space != null) {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal(),asset.getName(), space.getName());
+					description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal() != null? " "+sourceAlarm.getTypeVal():"n",asset.getName(), space.getName());
 				}
 				else {
-					description = MessageFormat.format("A {0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal(),asset.getName());
+					description = MessageFormat.format("A{0} alarm raised from {1} is waiting for acknowledgement.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}",sourceAlarm.getTypeVal() != null? " "+sourceAlarm.getTypeVal():"n",asset.getName());
 				}
 			}
 			destinationAlarm.setDescription(description);
