@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -134,7 +136,7 @@ public enum ActionType {
 		}
 		
 	},
-	PUSH_NOTIFICATION(5) {
+	WEB_NOTIFICATION(5) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context) {
@@ -167,6 +169,40 @@ public enum ActionType {
 				catch(Exception e) {
 					e.printStackTrace();
 				}
+			}
+		}
+	},
+	PUSH_NOTIFICATION(7) {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+			// TODO Auto-generated method stub
+			try {
+				if(obj != null) {
+					JSONObject content = new JSONObject();
+					content.put("to", "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
+					
+					JSONObject notification = new JSONObject();
+					notification.put("body", "Test");
+					notification.put("title", "Test");
+					notification.put("content_available", true);
+					notification.put("priority", "high");
+					content.put("notification", notification);
+					
+					JSONObject data = new JSONObject();
+					data.put("id", 1253);
+					content.put("data", data);
+					
+					Map<String, String> headers = new HashMap<>();
+					headers.put("Content-Type","application/json");
+					String url = "https://fcm.googleapis.com/fcm/send";
+					
+					AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
 			}
 		}
 	};
