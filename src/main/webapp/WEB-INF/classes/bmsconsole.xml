@@ -1593,6 +1593,12 @@
 				<param name="includeProperties">^reportData.*,^exportUrl.*</param>
 			</result>
 		</action>
+		<action name="getAllWorkOrderReports"
+			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="getAllWorkOrderReports">
+			<result name="success" type="json">
+				<param name="includeProperties">^allWorkOrderJsonReports.*</param>
+			</result>
+		</action>
 		<action name="technician"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
 			<result name="success" type="json">

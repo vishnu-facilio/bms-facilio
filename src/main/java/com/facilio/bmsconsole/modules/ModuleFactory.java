@@ -460,4 +460,24 @@ public class ModuleFactory {
 		
 		return pmToWoRelModule;
 	}
+	public static FacilioModule getDashboardModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Dashboard");
+		return dashboardWigetModule;
+	}
+	public static FacilioModule getWidgetModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget");
+		return dashboardWigetModule;
+	}
+	public static FacilioModule getDashboardVsWidgetModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
+		return dashboardWigetModule;
+	}
+	public static FacilioModule getWidgetPeriodModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Period");
+		return dashboardWigetModule;
+	}
 }

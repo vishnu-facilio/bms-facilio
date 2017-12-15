@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.FacilioReportContext;
@@ -21,16 +22,26 @@ import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.SetOrderByCommand;
 import com.facilio.bmsconsole.commands.SetTopNReportCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.util.DashboardUtil;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderReportAction extends ActionSupport {
@@ -106,7 +117,44 @@ public class WorkOrderReportAction extends ActionSupport {
 	public void setPms(List<PreventiveMaintenance> pms) {
 		this.pms = pms;
 	}
+	private JSONArray allWorkOrderJsonReports;
+	
+	public JSONArray getAllWorkOrderJsonReports() {
+		return allWorkOrderJsonReports;
+	}
 
+	public void setAllWorkOrderJsonReports(JSONArray allWorkOrderJsonReports) {
+		this.allWorkOrderJsonReports = allWorkOrderJsonReports;
+	}
+
+	public String getAllWorkOrderReports() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORG_ID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULE_ID = ?", module.getModuleId())
+				.orderBy("ID");
+			
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		Multimap<DashboardContext, DashboardWidgetContext> dashboardWidgets = ArrayListMultimap.create();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop:props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+				dashboardWidgets.putAll(dashboard, dashbaordWidgets);
+			}
+		}
+		
+		setAllWorkOrderJsonReports(DashboardUtil.getReportJson(dashboardWidgets));
+	
+		return SUCCESS;
+	}
 	public String summary() throws Exception {
 		String technicianGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
 		String technicianNotNull = "\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";

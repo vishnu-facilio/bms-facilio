@@ -1692,6 +1692,172 @@ public class FieldFactory {
 		woId.setColumnName("WO_ID");
 		woId.setModule(module);
 		fields.add(woId);
+		return fields;
+	}
+	public static List<FacilioField> getDashboardFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDashboardModule();
+		
+		FacilioField dashboardId = getIdField();
+		dashboardId.setModule(module);
+		fields.add(dashboardId);
+		
+		FacilioField dashboardName = new FacilioField();
+		dashboardName.setName("dashboardName");
+		dashboardName.setDataType(FieldType.STRING);
+		dashboardName.setColumnName("DASHBOARD_NAME");
+		dashboardName.setModule(module);
+		fields.add(dashboardName);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getDashbaordVsWidgetFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDashboardVsWidgetModule();
+		
+		FacilioField dashboardWidgetDashboardId = new FacilioField();
+		dashboardWidgetDashboardId.setName("dashboardId");
+		dashboardWidgetDashboardId.setDataType(FieldType.NUMBER);
+		dashboardWidgetDashboardId.setColumnName("DASHBOARD_ID");
+		dashboardWidgetDashboardId.setModule(module);
+		fields.add(dashboardWidgetDashboardId);
+		
+		FacilioField widgetId = new FacilioField();
+		widgetId.setName("widgetId");
+		widgetId.setDataType(FieldType.NUMBER);
+		widgetId.setColumnName("WIDGET_ID");
+		widgetId.setModule(module);
+		fields.add(widgetId);
+		
+		FacilioField dashboardWidgetLayoutWidth = new FacilioField();
+		dashboardWidgetLayoutWidth.setName("layoutWidth");
+		dashboardWidgetLayoutWidth.setDataType(FieldType.NUMBER);
+		dashboardWidgetLayoutWidth.setColumnName("LAYOUT_WIDTH");
+		dashboardWidgetLayoutWidth.setModule(module);
+		fields.add(dashboardWidgetLayoutWidth);
+		
+		FacilioField dashboardWidgetLayoutHeight = new FacilioField();
+		dashboardWidgetLayoutHeight.setName("layoutHeight");
+		dashboardWidgetLayoutHeight.setDataType(FieldType.NUMBER);
+		dashboardWidgetLayoutHeight.setColumnName("LAYOUT_HEIGHT");
+		dashboardWidgetLayoutHeight.setModule(module);
+		fields.add(dashboardWidgetLayoutHeight);
+		
+		FacilioField dashboardWidgetLayoutPosition = new FacilioField();
+		dashboardWidgetLayoutPosition.setName("layoutPosition");
+		dashboardWidgetLayoutPosition.setDataType(FieldType.NUMBER);
+		dashboardWidgetLayoutPosition.setColumnName("LAYOUT_POSITION");
+		dashboardWidgetLayoutPosition.setModule(module);
+		fields.add(dashboardWidgetLayoutPosition);
+		
+		return fields;
+	}
+	public static List<FacilioField> getWidgetFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetModule();
+		
+		FacilioField dashboardWidgetId = new FacilioField();
+		dashboardWidgetId.setName("widgetId");
+		dashboardWidgetId.setDataType(FieldType.NUMBER);
+		dashboardWidgetId.setColumnName("WIDGET_ID");
+		dashboardWidgetId.setModule(module);
+		fields.add(dashboardWidgetId);
+		
+		FacilioField dashboardWidgetName = new FacilioField();
+		dashboardWidgetName.setName("widgetName");
+		dashboardWidgetName.setDataType(FieldType.STRING);
+		dashboardWidgetName.setColumnName("WIDGET_NAME");
+		dashboardWidgetName.setModule(module);
+		fields.add(dashboardWidgetName);
+		
+		FacilioField dashboardWidgetType = new FacilioField();
+		dashboardWidgetType.setName("type");
+		dashboardWidgetType.setDataType(FieldType.STRING);
+		dashboardWidgetType.setColumnName("TYPE");
+		dashboardWidgetType.setModule(module);
+		fields.add(dashboardWidgetType);
+		
+		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
+		dashboardWidgetHeaderTitle.setName("headerTitle");
+		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderTitle.setColumnName("HEADER_TITLE");
+		dashboardWidgetHeaderTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderTitle);
+		
+		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
+		dashboardWidgetHeaderSubTitle.setName("headerSubTitle");
+		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUBTITLE");
+		dashboardWidgetHeaderSubTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderSubTitle);
+		
+		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
+		dashboardWidgetHeaderIsExport.setName("headerIsExport");
+		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
+		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
+		dashboardWidgetHeaderIsExport.setModule(module);
+		fields.add(dashboardWidgetHeaderIsExport);
+		
+		FacilioField dashboardWidgetDataOptionType = new FacilioField();
+		dashboardWidgetDataOptionType.setName("dataOptionType");
+		dashboardWidgetDataOptionType.setDataType(FieldType.STRING);
+		dashboardWidgetDataOptionType.setColumnName("DATA_OPTION_TYPE");
+		dashboardWidgetDataOptionType.setModule(module);
+		fields.add(dashboardWidgetDataOptionType);
+		
+		FacilioField dashboardWidgetDataOptionName = new FacilioField();
+		dashboardWidgetDataOptionName.setName("dataOptionName");
+		dashboardWidgetDataOptionName.setDataType(FieldType.STRING);
+		dashboardWidgetDataOptionName.setColumnName("DATA_OPTION_NAME");
+		dashboardWidgetDataOptionName.setModule(module);
+		fields.add(dashboardWidgetDataOptionName);
+		
+		FacilioField dashboardWidgetDataOptionDataUrl = new FacilioField();
+		dashboardWidgetDataOptionDataUrl.setName("dataOptionDataUrl");
+		dashboardWidgetDataOptionDataUrl.setDataType(FieldType.STRING);
+		dashboardWidgetDataOptionDataUrl.setColumnName("DATA_OPTION_DATA_URL");
+		dashboardWidgetDataOptionDataUrl.setModule(module);
+		fields.add(dashboardWidgetDataOptionDataUrl);
+		
+		FacilioField dashboardWidgetDataOptionRefreshIntervel = new FacilioField();
+		dashboardWidgetDataOptionRefreshIntervel.setName("dataOptionRefreshIntervel");
+		dashboardWidgetDataOptionRefreshIntervel.setDataType(FieldType.NUMBER);
+		dashboardWidgetDataOptionRefreshIntervel.setColumnName("DATA_OPTION_REFRESH_INTERVAL");
+		dashboardWidgetDataOptionRefreshIntervel.setModule(module);
+		fields.add(dashboardWidgetDataOptionRefreshIntervel);
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getDashboardWidgetPeriodFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetPeriodModule();
+		
+		FacilioField dashboardId = getIdField();
+		dashboardId.setModule(module);
+		fields.add(dashboardId);
+		
+		FacilioField widgetId = new FacilioField();
+		widgetId.setName("widgetId");
+		widgetId.setDataType(FieldType.STRING);
+		widgetId.setColumnName("WIDGET_ID");
+		widgetId.setModule(module);
+		fields.add(widgetId);
+		
+		FacilioField periodLabel = new FacilioField();
+		periodLabel.setName("periodLabel");
+		periodLabel.setDataType(FieldType.STRING);
+		periodLabel.setColumnName("PERIOD_LABEL");
+		periodLabel.setModule(module);
+		fields.add(periodLabel);
+		
+		FacilioField periodValue = new FacilioField();
+		periodValue.setName("periodValue");
+		periodValue.setDataType(FieldType.STRING);
+		periodValue.setColumnName("PERIOD_VALUE");
+		periodValue.setModule(module);
+		fields.add(periodValue);
 		
 		return fields;
 	}
