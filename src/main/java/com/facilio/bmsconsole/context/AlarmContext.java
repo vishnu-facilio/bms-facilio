@@ -1,13 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -15,9 +9,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class AlarmContext extends TicketContext {
@@ -101,6 +94,12 @@ public class AlarmContext extends TicketContext {
 	}
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
+	}
+	public String getModifiedTimeString() {
+		if(modifiedTime != -1) {
+			return DateTimeUtil.getZonedDateTime(modifiedTime).format(FacilioConstants.READABLE_DATE_FORMAT);
+		}
+		return null;
 	}
 
 	private long clearedTime = -1;
@@ -273,41 +272,41 @@ public class AlarmContext extends TicketContext {
 		}
 	}
 	
-	public List<HashMap<String, Object>> getFollowers() throws Exception {
-		if(getId() == -1) {
-			return null;
-		}
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try
-		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM AlarmFollowers WHERE ALARM_ID=?");
-			pstmt.setLong(1, this.getId());
-			
-			List<HashMap<String, Object>> followers = new ArrayList<>();
-			
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				HashMap<String, Object> hm = new HashMap<String, Object>();
-				hm.put("id", rs.getLong("ID"));
-				hm.put("type", rs.getString("FOLLOWER_TYPE"));
-				hm.put("value", rs.getString("FOLLOWER"));
-				
-				followers.add(hm);
-			}
-			return followers;
-		}
-		catch(SQLException | RuntimeException e) 
-		{
-			throw e;
-		}
-		finally 
-		{
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
-	}
+//	public List<HashMap<String, Object>> getFollowers() throws Exception {
+//		if(getId() == -1) {
+//			return null;
+//		}
+//		Connection conn = null;
+//		PreparedStatement pstmt = null;
+//		ResultSet rs = null;
+//		try
+//		{
+//			conn = FacilioConnectionPool.INSTANCE.getConnection();
+//			pstmt = conn.prepareStatement("SELECT * FROM AlarmFollowers WHERE ALARM_ID=?");
+//			pstmt.setLong(1, this.getId());
+//			
+//			List<HashMap<String, Object>> followers = new ArrayList<>();
+//			
+//			rs = pstmt.executeQuery();
+//			while (rs.next()) {
+//				HashMap<String, Object> hm = new HashMap<String, Object>();
+//				hm.put("id", rs.getLong("ID"));
+//				hm.put("type", rs.getString("FOLLOWER_TYPE"));
+//				hm.put("value", rs.getString("FOLLOWER"));
+//				
+//				followers.add(hm);
+//			}
+//			return followers;
+//		}
+//		catch(SQLException | RuntimeException e) 
+//		{
+//			throw e;
+//		}
+//		finally 
+//		{
+//			DBUtil.closeAll(conn, pstmt, rs);
+//		}
+//	}
 	
 	public String getUrl() {
 		if(super.getId() == -1) {

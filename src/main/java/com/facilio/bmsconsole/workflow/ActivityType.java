@@ -101,6 +101,15 @@ public enum ActivityType {
 			// TODO Auto-generated method stub
 			return "added the reading value";
 		}
+	},
+	UPDATED_ALARM_SEVERITY(1024) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "updated the alarm severity";
+		}
+		
 	}
 	;
 

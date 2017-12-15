@@ -17,6 +17,7 @@ public enum DefaultTemplates implements ActionTemplate {
 	TASK_COMMENT_EMAIL(4),
 	ALARM_CREATION_EMAIL(5),
 	ALARM_CREATION_SMS(6),
+	ALARM_UPDATION_SMS(7)
 	;
 	
 	private int val;
@@ -102,10 +103,17 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 6:
 				JSONArray smsList = new JSONArray();
-				smsList.add("${org.superAdmin.phone:-}");
+				smsList.add("${user.phone:-}");
 				json.put("to", smsList);
 				//json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.subject} @ ${alarm.space.name}");
-				json.put("message", "[${alarm.modifiedTime}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity}\" alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				json.put("message", "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				break;
+			case 7:
+				smsList = new JSONArray();
+				smsList.add("${user.phone:-}");
+				json.put("to", smsList);
+				//json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.subject} @ ${alarm.space.name}");
+				json.put("message", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
 				break;
 				
 		}

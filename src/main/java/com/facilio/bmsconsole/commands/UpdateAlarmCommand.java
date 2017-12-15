@@ -70,22 +70,13 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(alarm.getSeverity() != null)
 			{
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.UPDATED_ALARM_SEVERITY);
 			}
 			if(recordIds.size() == 1) {
-				SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
-																	.table(dataTableName)
-																	.moduleName(moduleName)
-																	.beanClass(AlarmContext.class)
-																	.select(fields)
-																	.andCondition(idCondition);
-
-				List<AlarmContext> alarms = builder.get();
-				if(alarms != null && !alarms.isEmpty()) {
-					AlarmContext alarmObj = alarms.get(0);
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				if(alarmObj != null) {
 					AlarmAPI.updateAlarmDetailsInTicket(alarmObj, alarm);
 				}
-				context.put(FacilioConstants.ContextNames.RECORD, alarms.get(0));
 			}
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
@@ -94,8 +85,28 @@ public class UpdateAlarmCommand implements Command {
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
+			if(recordIds.size() == 1) {
+				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
+				if(alarmObj != null) {
+					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
+				}
+			}
 		}
 		return false;
+	}
+	
+	private AlarmContext getAlarmObj(Condition idCondition, String moduleName, List<FacilioField> fields) throws Exception {
+		SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+																.moduleName(moduleName)
+																.beanClass(AlarmContext.class)
+																.select(fields)
+																.andCondition(idCondition);
+		
+		List<AlarmContext> alarms = builder.get();
+		if(alarms != null && !alarms.isEmpty()) {
+			return alarms.get(0);
+		}
+		return null;
 	}
 
 }
