@@ -294,6 +294,7 @@ public class PortfolioAction extends ActionSupport {
 			}
 		}
 		result.put("units", "%");
+		result.put("totalKwh", totalKwh);
 		setReportData(result);
 		return SUCCESS;
 	}
