@@ -188,32 +188,27 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context) {
 			// TODO Auto-generated method stub
 			try {
-				if(obj != null) {
+				if (obj != null) {
+					List<String> mobileInstanceIds = getMobileInstanceIDs(AccountUtil.getCurrentOrg().getId());
 					
-					List<String> emails = getEmailAddresses();
-					
-					if(emails != null && !emails.isEmpty()) {
-						Map<String, String> emailToMobileId = getMobileInstanceIDs(emails);
-						
-						for(String email : emails) {
-							String mobileId = emailToMobileId.get(email);
-							if(mobileId != null) {
+					if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
+						for(String mobileInstanceId : mobileInstanceIds) {
+							if(mobileInstanceId != null) {
 								JSONObject content = new JSONObject();
 //								content.put("to", "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-								content.put("to", mobileId);
+								content.put("to", mobileInstanceId);
 								JSONObject notification = new JSONObject();
 								notification.put("body", obj.get("message"));
 								notification.put("title", "New Alarm");
 								notification.put("content_available", true);
 								notification.put("priority", "high");
 								content.put("notification", notification);
-								
-								JSONObject data = new JSONObject();
-								data.put("id", 1253);
-								content.put("data", data);
+								content.put("data", notification);
 								
 								Map<String, String> headers = new HashMap<>();
 								headers.put("Content-Type","application/json");
+								headers.put("Authorization","key=AAAA7I5dN-o:APA91bE70uJ4z21h9jh3A3TfExeHmtsESVYR0W79qbgcW8iyJZ1hKFzTkqV9xXJU-KPqpO1TstbqufHBp8tTCJRjiRAHP2ghNN49T6W0e13pYvtLd_qfPn_dhiKkTpE_BrpVg0WrxxVG");
+								
 								String url = "https://fcm.googleapis.com/fcm/send";
 								
 								AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
@@ -229,8 +224,8 @@ public enum ActionType {
 			}
 		}
 		
-		private Map<String, String> getMobileInstanceIDs(List<String> emails) throws Exception {
-			Map<String, String> emailToMobileId = new HashMap<>();
+		private List<String> getMobileInstanceIDs(long orgId) throws Exception {
+			List<String> mobileInstanceIds = new ArrayList<String>();
 			List<FacilioField> fields = new ArrayList<>();
 			
 			FacilioField email = new FacilioField();
@@ -247,24 +242,26 @@ public enum ActionType {
 			mobileInstanceId.setModule(AccountConstants.getUserMobileSettingModule());
 			fields.add(mobileInstanceId);
 			
-			Condition condition = CriteriaAPI.getCondition("EMAIL", "email", StringUtils.join(emails, ","), StringOperators.IS);
+//			Condition condition = CriteriaAPI.getCondition("EMAIL", "email", StringUtils.join(emails, ","), StringOperators.IS);
 			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table("Users")
+															.innerJoin("ORG_Users")
+															.on("Users.USERID = ORG_Users.USERID")
 															.innerJoin("User_Mobile_Setting")
-															.on("Users.USERID = User_Mobile_Setting.USERID")
-															.andCondition(condition)
-															.orderBy("USER_MOBILE_SETTING_ID")
-															;
+															.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
+															.andCustomWhere("ORG_Users.ORGID = ? and ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1", orgId)
+															.orderBy("USER_MOBILE_SETTING_ID");
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			if(props != null && !props.isEmpty()) {
 				for(Map<String, Object> prop : props) {
-					emailToMobileId.put((String) prop.get("email"), (String) prop.get("mobileInstanceId"));
+					mobileInstanceIds.add((String) prop.get("mobileInstanceId"));
+//					emailToMobileId.put((String) prop.get("email"), (String) prop.get("mobileInstanceId"));
 				}
 			}
-			return emailToMobileId;
+			return mobileInstanceIds;
 		}
 		
 		private List<String> getEmailAddresses() throws Exception {

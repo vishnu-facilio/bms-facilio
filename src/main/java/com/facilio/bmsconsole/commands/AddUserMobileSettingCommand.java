@@ -15,7 +15,12 @@ public class AddUserMobileSettingCommand implements Command {
 		UserMobileSetting userMobileSetting = (UserMobileSetting) context.get(FacilioConstants.ContextNames.USER_MOBILE_SETTING);
 		if (userMobileSetting != null) 
 		{
-			AccountUtil.getUserBean().addUserMobileSetting(userMobileSetting);
+			if (userMobileSetting.getMobileInstanceId() != null && !"".equalsIgnoreCase(userMobileSetting.getMobileInstanceId().trim())) {
+				AccountUtil.getUserBean().addUserMobileSetting(userMobileSetting);
+			}
+			else {
+				throw new IllegalArgumentException("Mobile Instance ID cannot be null or empty");
+			}
 		}
 		else 
 		{
