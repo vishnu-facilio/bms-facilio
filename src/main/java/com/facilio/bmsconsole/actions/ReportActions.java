@@ -88,7 +88,7 @@ public class ReportActions extends ActionSupport {
 
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
 		if(duration.equals("week"))
-		{
+		{//By days..
 			FacilioField dayFld = ReportsUtil.getField("DAY","TTIME_DAY",FieldType.NUMBER);
 			fields.add(dayFld);
 		}
@@ -220,6 +220,42 @@ public class ReportActions extends ActionSupport {
 			startTime=DateTimeUtil.getMonthStartTime();
 			previousStartTime=DateTimeUtil.getAnyYearThisMonthStartTime(-1);
 			previousEndTime=DateTimeUtil.getAnyYearThisMonthEndTime(-1);
+		}
+		else if(duration.equals("custom_date"))
+		{//colName=hour
+			//dd-MM-yyyy format
+			String fromDate=getFromVal();
+			List<Integer> value= ReportsUtil.getDateList(fromDate);
+			int day= value.get(0);
+			int month=value.get(1);
+			int year=value.get(2);
+			startTime=DateTimeUtil.getStartTime(day,month,year);
+			endTime=DateTimeUtil.getEndTime(day,month,year);
+			long currentTime=DateTimeUtil.getCurrenTime();
+			if(currentTime<endTime) {
+				endTime=currentTime;
+			}
+			previousStartTime=DateTimeUtil.getStartTime(day-1,month,year);
+			previousEndTime=DateTimeUtil.getEndTime(day,month,year);
+		}
+		else if(duration.equals("custom_month"))
+		{//colName=Date.
+			//MM-YYYY format
+			String fromVl=getFromVal();
+			List<Integer> value= ReportsUtil.getDateList(fromVal);
+			int month=value.get(1);
+			int year=value.get(2);
+			
+			startTime=DateTimeUtil.getMonthStartTime(month,year);
+			endTime=DateTimeUtil.getMonthEndTime(month,year);
+			long currentTime=DateTimeUtil.getCurrenTime();
+			if(currentTime<endTime) {
+				endTime=currentTime;
+			}
+			previousStartTime=DateTimeUtil.getMonthStartTime(month-1,year);
+			previousEndTime=DateTimeUtil.getMonthEndTime(month-1,year);
+			displayName="DATE";
+			colName="TTIME_DATE";
 		}
 		FacilioField periodFld = ReportsUtil.getField(displayName,colName, FieldType.NUMBER);
 		periodFld.setName(displayName);
@@ -429,6 +465,22 @@ public class ReportActions extends ActionSupport {
 	public String getPeriod()
 	{
 		return this.period;
+	}
+	
+	private String fromVal="";
+	public void setFromVal(String from)
+	{
+		this.fromVal=from;
+	}
+	
+	public String getFromVal()
+	{
+		return fromVal;
+	}
+	private String toVal="";
+	public String getToVal()
+	{
+		return this.toVal;
 	}
 	private JSONObject reportData = null;
 

@@ -92,6 +92,28 @@ public class ReportsUtil
 	}
 	
 	
+	public static List<Integer> getDateList(String dateString) {
+		
+		String[] value= dateString.split("-");
+		int length=value.length;
+		int day=01;int month=01; int year=2018;
+		try {
+		//if the input format is dd-mm-yyyy the day will be the first value
+		//if the input format is mm-yyyy the day will be the same as month to avoid ArrayIndexOB exception.
+		day=Integer.parseInt(value[0]);
+		month=Integer.parseInt(value[length-2]);
+		year=Integer.parseInt(value[length-1]);
+		}
+		catch(Exception e) {
+			//if the input format is invalid.. setting the default value to 1-1-2018
+			e.printStackTrace();
+		}
+		List<Integer> dateList=new ArrayList<Integer>();
+		dateList.add(day);
+		dateList.add(month);
+		dateList.add(year);
+		return dateList;
+	}
 	
 	public static Long[] getTimeInterval(String duration)
 	{
