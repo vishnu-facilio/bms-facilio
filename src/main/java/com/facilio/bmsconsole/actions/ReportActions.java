@@ -87,7 +87,7 @@ public class ReportActions extends ActionSupport {
 		long endTime=DateTimeUtil.getDayStartTime()-1;//Last 30 days excluding today..
 
 		List<FacilioField> fields = new ArrayList<FacilioField>() ;
-		if(duration.equals("week"))
+		if(duration.equalsIgnoreCase("week"))
 		{//By days..
 			FacilioField dayFld = ReportsUtil.getField("DAY","TTIME_DAY",FieldType.NUMBER);
 			fields.add(dayFld);
@@ -182,13 +182,13 @@ public class ReportActions extends ActionSupport {
 		String displayName="HOUR";
 		String colName="TTIME_HOUR";
 
-		if(duration.equals("day"))
+		if(duration.equalsIgnoreCase("day"))
 		{
 			startTime=DateTimeUtil.getDayStartTime();
 			previousStartTime=DateTimeUtil.getDayStartTime(-1);
 			previousEndTime=startTime-1;
 		}
-		else if (duration.equals("week"))
+		else if (duration.equalsIgnoreCase("week"))
 		{
 			displayName="DATE";
 			colName="TTIME_DATE";
@@ -197,7 +197,7 @@ public class ReportActions extends ActionSupport {
 			previousEndTime=startTime-1;
 
 		}
-		else if (duration.equals("month"))
+		else if (duration.equalsIgnoreCase("month"))
 		{
 			displayName="DATE";
 			colName="TTIME_DATE";
@@ -205,7 +205,7 @@ public class ReportActions extends ActionSupport {
 			previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 			previousEndTime=startTime-1;
 		}
-		else if (duration.equals("year"))
+		else if (duration.equalsIgnoreCase("year"))
 		{
 			displayName="YEAR";
 			colName="TTIME_MONTH";
@@ -213,7 +213,7 @@ public class ReportActions extends ActionSupport {
 			previousStartTime=DateTimeUtil.getYearStartTime(-1);
 			previousEndTime=startTime-1;
 		}
-		else if (duration.equals("yearonyear"))
+		else if (duration.equalsIgnoreCase("yearonyear"))
 		{
 			displayName="DATE";
 			colName="TTIME_DATE";
@@ -221,7 +221,7 @@ public class ReportActions extends ActionSupport {
 			previousStartTime=DateTimeUtil.getAnyYearThisMonthStartTime(-1);
 			previousEndTime=DateTimeUtil.getAnyYearThisMonthEndTime(-1);
 		}
-		else if(duration.equals("custom_date"))
+		else if(duration.equalsIgnoreCase("custom_date"))
 		{//colName=hour
 			//dd-MM-yyyy format
 			String fromDate=getFromVal();
@@ -235,10 +235,18 @@ public class ReportActions extends ActionSupport {
 			if(currentTime<endTime) {
 				endTime=currentTime;
 			}
-			previousStartTime=DateTimeUtil.getStartTime(day-1,month,year);
+			String previous=getPrevious();
+			if(previous.equalsIgnoreCase("lastyear")) {
+				year=year-1;
+			}
+			else {
+				day=day-1;
+			}
+				
+			previousStartTime=DateTimeUtil.getStartTime(day,month,year);
 			previousEndTime=DateTimeUtil.getEndTime(day,month,year);
 		}
-		else if(duration.equals("custom_month"))
+		else if(duration.equalsIgnoreCase("custom_month"))
 		{//colName=Date.
 			//MM-YYYY format
 			String fromVl=getFromVal();
@@ -252,8 +260,15 @@ public class ReportActions extends ActionSupport {
 			if(currentTime<endTime) {
 				endTime=currentTime;
 			}
-			previousStartTime=DateTimeUtil.getMonthStartTime(month-1,year);
-			previousEndTime=DateTimeUtil.getMonthEndTime(month-1,year);
+			String previous=getPrevious();
+			if(previous.equalsIgnoreCase("lastyear")) {
+				year=year-1;
+			}
+			else {
+				month=month-1;
+			}
+			previousStartTime=DateTimeUtil.getMonthStartTime(month,year);
+			previousEndTime=DateTimeUtil.getMonthEndTime(month,year);
 			displayName="DATE";
 			colName="TTIME_DATE";
 		}
@@ -481,6 +496,17 @@ public class ReportActions extends ActionSupport {
 	public String getToVal()
 	{
 		return this.toVal;
+	}
+	
+	private String previous="";
+	public void setPrevious(String val)
+	{
+		this.previous=val;
+	}
+	
+	public String getPrevious()
+	{
+		return this.previous;
 	}
 	private JSONObject reportData = null;
 

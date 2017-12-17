@@ -121,34 +121,34 @@ public class ReportsUtil
 		long startTime=DateTimeUtil.getDayStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 
-		if (duration.equals("yesterday"))
+		if (duration.equalsIgnoreCase("yesterday"))
 		{
 			startTime=DateTimeUtil.getDayStartTime(-1);
 			endTime=DateTimeUtil.getDayStartTime() -1;
 		}
-		else if (duration.equals("week"))
+		else if (duration.equalsIgnoreCase("week"))
 		{
 			startTime=DateTimeUtil.getWeekStartTime();	
 		}
-		else if (duration.equals("lastWeek"))
+		else if (duration.equalsIgnoreCase("lastWeek"))
 		{
 			startTime=DateTimeUtil.getWeekStartTime(-1);	
 			endTime=DateTimeUtil.getWeekStartTime() -1;	
 		}
-		else if (duration.equals("month"))
+		else if (duration.equalsIgnoreCase("month"))
 		{
 			startTime=DateTimeUtil.getMonthStartTime();
 		}
-		else if (duration.equals("lastMonth"))
+		else if (duration.equalsIgnoreCase("lastMonth"))
 		{
 			startTime=DateTimeUtil.getMonthStartTime(-1);
 			endTime=DateTimeUtil.getMonthStartTime()-1;
 		}
-		else if (duration.equals("year"))
+		else if (duration.equalsIgnoreCase("year"))
 		{
 			startTime=DateTimeUtil.getYearStartTime();
 		}
-		else if (duration.equals("lastYear"))
+		else if (duration.equalsIgnoreCase("lastYear"))
 		{
 			startTime=DateTimeUtil.getYearStartTime(-1);
 			endTime=DateTimeUtil.getYearStartTime()-1;
