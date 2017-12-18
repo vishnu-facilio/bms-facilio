@@ -6,9 +6,10 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class DashboardWidgetContext extends DashboardContext{
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-	private Long widgetId;
+public class DashboardWidgetContext extends ModuleBaseWithCustomFields{
+
 	private String widgetName;
 	private String type;
 	private Integer layoutWidth;
@@ -94,12 +95,6 @@ public class DashboardWidgetContext extends DashboardContext{
 	}
 	public void setWidgetName(String widgetName) {
 		this.widgetName = widgetName;
-	}
-	public Long getWidgetId() {
-		return widgetId;
-	}
-	public void setWidgetId(Long widgetId) {
-		this.widgetId = widgetId;
 	}
 	public Integer getLayoutWidth() {
 		return layoutWidth;

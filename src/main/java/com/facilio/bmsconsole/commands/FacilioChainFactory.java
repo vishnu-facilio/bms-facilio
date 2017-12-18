@@ -1341,6 +1341,26 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getAddDashboardChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddDashboardCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getAddWidgetChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddWidgetCommand());
+		c.addCommand(new AddDashboardVsWidgetCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	public static Chain getAddDashboardVsWidgetChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddDashboardVsWidgetCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 }
 
 class TransactionChain extends ChainBase

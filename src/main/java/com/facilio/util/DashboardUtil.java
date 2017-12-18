@@ -1,5 +1,6 @@
 package com.facilio.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetPeriodContext;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
@@ -46,12 +49,25 @@ public class DashboardUtil {
 		}
 		return dashboardWidgetContexts;
 	}
+	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere("ID = ?", dashboard.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
 	public static void addWidgetPeriods(DashboardWidgetContext dashboardWidget) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardWidgetPeriodFields())
 				.table(ModuleFactory.getWidgetPeriodModule().getTableName())
-				.andCustomWhere("WIDGET_ID = ?", dashboardWidget.getWidgetId());
+				.andCustomWhere("WIDGET_ID = ?", dashboardWidget.getId());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

@@ -1698,9 +1698,10 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getDashboardModule();
 		
-		FacilioField dashboardId = getIdField();
-		dashboardId.setModule(module);
-		fields.add(dashboardId);
+//		fields.add(getIdField(module));
+//		fields.add(getOrgIdField(module));
+//		fields.add(getModuleIdField(module));
+		
 		
 		FacilioField dashboardName = new FacilioField();
 		dashboardName.setName("dashboardName");
@@ -1708,6 +1709,20 @@ public class FieldFactory {
 		dashboardName.setColumnName("DASHBOARD_NAME");
 		dashboardName.setModule(module);
 		fields.add(dashboardName);
+
+		FacilioField createdByUser = new FacilioField();
+		createdByUser.setName("createdByUserId");
+		createdByUser.setDataType(FieldType.NUMBER);
+		createdByUser.setColumnName("CREATED_BY_USER_ID");
+		createdByUser.setModule(module);
+		fields.add(createdByUser);
+		
+		FacilioField publishStatus = new FacilioField();
+		publishStatus.setName("publishStatus");
+		publishStatus.setDataType(FieldType.NUMBER);
+		publishStatus.setColumnName("PUBLISH_STATUS");
+		publishStatus.setModule(module);
+		fields.add(publishStatus);
 		
 		return fields;
 	}
@@ -1757,12 +1772,9 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWidgetModule();
 		
-		FacilioField dashboardWidgetId = new FacilioField();
-		dashboardWidgetId.setName("widgetId");
-		dashboardWidgetId.setDataType(FieldType.NUMBER);
-		dashboardWidgetId.setColumnName("WIDGET_ID");
-		dashboardWidgetId.setModule(module);
-		fields.add(dashboardWidgetId);
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
 		
 		FacilioField dashboardWidgetName = new FacilioField();
 		dashboardWidgetName.setName("widgetName");
