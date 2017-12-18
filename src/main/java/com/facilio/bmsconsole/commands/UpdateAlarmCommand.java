@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -21,6 +24,8 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.util.WmsApi;
 
 public class UpdateAlarmCommand implements Command {
 
@@ -91,6 +96,22 @@ public class UpdateAlarmCommand implements Command {
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
 				}
 			}
+			
+			JSONObject record = new JSONObject();
+			record.put("id", recordIds.get(0));
+			
+			WmsEvent event = new WmsEvent();
+			event.setNamespace("alarm");
+			event.setAction("newAlarm");
+			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+			event.addData("record", record);
+			
+			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
+			List<Long> recipients = new ArrayList<>();
+			for (User user : users) {
+				recipients.add(user.getId());
+			}
+			WmsApi.sendEvent(recipients, event);
 		}
 		return false;
 	}
