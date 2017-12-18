@@ -253,7 +253,7 @@ public class AlarmAction extends ActionSupport {
  			sorting.put("orderType", getOrderType());
  		}
  		else {
- 			sorting.put("orderBy", "createdTime");
+ 			sorting.put("orderBy", "modifiedTime");
  			sorting.put("orderType", "desc");
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
