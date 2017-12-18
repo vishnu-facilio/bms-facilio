@@ -30,12 +30,16 @@ public class AlarmAPI {
 		}
 		AssetContext asset = sourceAlarm.getAsset();
 		if(asset != null) {
+			asset = AssetsAPI.getAssetInfo(asset.getId());
 			String description;
 			BaseSpaceContext space = sourceAlarm.getSpace();
-			
 			if(space == null && asset.getSpace() != null) {
 				space = asset.getSpace();
 				destinationAlarm.setSpace(space);
+			}
+			
+			if(space != null) {
+				space = SpaceAPI.getBaseSpace(space.getId());
 			}
 			
 			if(sourceAlarm.isAcknowledged()) {
