@@ -40,6 +40,11 @@ public class WorkOrderContext extends TicketContext {
 	
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
-		return "https://fazilio.com/app/wo/orders/all/summary/"+getId();
+		if(super.getId() != -1) {
+			return "https://fazilio.com/app/wo/orders/all/summary/"+getId();
+		}
+		else {
+			return null;
+		}
 	}
 }

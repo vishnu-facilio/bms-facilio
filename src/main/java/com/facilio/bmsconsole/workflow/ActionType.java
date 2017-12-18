@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,9 +15,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -194,26 +190,17 @@ public enum ActionType {
 					if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
 						for(String mobileInstanceId : mobileInstanceIds) {
 							if(mobileInstanceId != null) {
-								JSONObject content = new JSONObject();
 //								content.put("to", "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-								content.put("to", mobileInstanceId);
-								JSONObject notification = new JSONObject();
-								notification.put("body", obj.get("message"));
-								notification.put("title", "New Alarm");
-								notification.put("content_available", true);
-								notification.put("priority", "high");
-								content.put("notification", notification);
-								content.put("data", notification);
-								
+								obj.put("to", mobileInstanceId);
 								Map<String, String> headers = new HashMap<>();
 								headers.put("Content-Type","application/json");
 								headers.put("Authorization","key=AAAA7I5dN-o:APA91bE70uJ4z21h9jh3A3TfExeHmtsESVYR0W79qbgcW8iyJZ1hKFzTkqV9xXJU-KPqpO1TstbqufHBp8tTCJRjiRAHP2ghNN49T6W0e13pYvtLd_qfPn_dhiKkTpE_BrpVg0WrxxVG");
 								
 								String url = "https://fcm.googleapis.com/fcm/send";
 								
-								AwsUtil.doHttpPost(url, headers, null, content.toJSONString());
+								AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
 								System.out.println("Push notification sent");
-								System.out.println(content.toJSONString());
+								System.out.println(obj.toJSONString());
 							}
 						}
 					}

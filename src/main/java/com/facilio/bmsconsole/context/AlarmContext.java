@@ -316,4 +316,13 @@ public class AlarmContext extends TicketContext {
 			return "http://fazilio.com/app/firealarm/alarms";
 		}
 	}
+	
+	public String getMobileUrl() {
+		if(super.getId() != -1) {
+			return "http://app.fazilio.com/mobile/firealarm/summary/"+getId();
+		}
+		else {
+			return null;
+		}
+	}
 }

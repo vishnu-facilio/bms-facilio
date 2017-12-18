@@ -77,6 +77,7 @@ public class EventRulesAPI {
 		
 		if(eventRule.getTransformTemplate() != null) {
 			JSONTemplate alarmTemplate = new JSONTemplate();
+			alarmTemplate.setName(eventRule.getName());
 			alarmTemplate.setContent(eventRule.getTransformTemplate().toJSONString());
 			long alarmTemplateId = TemplateAPI.addJsonTemplate(orgId, alarmTemplate);
 			eventRule.setTransformAlertTemplateId(alarmTemplateId);

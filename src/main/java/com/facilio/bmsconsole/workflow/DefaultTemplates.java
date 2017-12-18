@@ -17,7 +17,9 @@ public enum DefaultTemplates implements ActionTemplate {
 	TASK_COMMENT_EMAIL(4),
 	ALARM_CREATION_EMAIL(5),
 	ALARM_CREATION_SMS(6),
-	ALARM_UPDATION_SMS(7)
+	ALARM_UPDATION_SMS(7),
+	ALARM_CREATION_PUSH(8),
+	ALARM_UPDATION_PUSH(9)
 	;
 	
 	private int val;
@@ -114,6 +116,34 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", smsList);
 				//json.put("message", "[ALARM] [${alarm.typeVal}] ${alarm.subject} @ ${alarm.space.name}");
 				json.put("message", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				break;
+			case 8:
+				JSONObject notification = new JSONObject();
+				notification.put("body", "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				notification.put("title", "New Alarm");
+				notification.put("content_available", true);
+				notification.put("priority", "high");
+				notification.put("sound", "default");
+				notification.put("icon", "default");
+				json.put("notification", notification);
+				
+				JSONObject data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				json.put("data", data);
+				break;
+			case 9:
+				notification = new JSONObject();
+				notification.put("body", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				notification.put("title", "New Alarm");
+				notification.put("content_available", true);
+				notification.put("priority", "high");
+				notification.put("sound", "default");
+				notification.put("icon", "default");
+				json.put("notification", notification);
+				
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				json.put("data", data);
 				break;
 				
 		}

@@ -32,6 +32,12 @@ public class AlarmAPI {
 		if(asset != null) {
 			String description;
 			BaseSpaceContext space = sourceAlarm.getSpace();
+			
+			if(space == null && asset.getSpace() != null) {
+				space = asset.getSpace();
+				destinationAlarm.setSpace(space);
+			}
+			
 			if(sourceAlarm.isAcknowledged()) {
 				if(space != null) {
 					description = MessageFormat.format("A{0} alarm raised from {1} has been acknowledged.\n\nAlarm details : \nAlarm Type - {0}\nSensor - {1}\nLocation - {2}",sourceAlarm.getTypeVal() != null? " "+sourceAlarm.getTypeVal():"n",asset.getName(), space.getName());
