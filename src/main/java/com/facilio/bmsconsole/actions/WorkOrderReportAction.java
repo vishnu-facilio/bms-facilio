@@ -135,9 +135,8 @@ public class WorkOrderReportAction extends ActionSupport {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
-				.andCustomWhere("ORG_ID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("MODULE_ID = ?", module.getModuleId())
-				.orderBy("ID");
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
 			
 		
 		List<Map<String, Object>> props = selectBuilder.get();
