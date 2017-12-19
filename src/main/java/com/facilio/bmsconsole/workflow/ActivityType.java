@@ -110,7 +110,16 @@ public enum ActivityType {
 			return "updated the alarm severity";
 		}
 		
-	}
+	},
+	ALARM_CLEARED(2048) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "cleared the alarm";
+		}
+		
+	},
 	;
 
     private int eventType;

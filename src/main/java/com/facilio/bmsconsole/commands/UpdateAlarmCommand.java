@@ -69,13 +69,19 @@ public class UpdateAlarmCommand implements Command {
 			if(isCleared || (alarm.getSeverity() != null && alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY).getId())) {
 				alarm.setClearedTime(System.currentTimeMillis());
 				alarm.setClearedBy(AccountUtil.getCurrentUser());
+				isCleared = true;
 			}
 			
 			alarm.setModifiedTime(System.currentTimeMillis());
 			
 			if(alarm.getSeverity() != null)
 			{
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.UPDATED_ALARM_SEVERITY);
+				if(isCleared) {
+					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ALARM_CLEARED);
+				}
+				else {
+					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.UPDATED_ALARM_SEVERITY);
+				}
 			}
 			if(recordIds.size() == 1) {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields);
