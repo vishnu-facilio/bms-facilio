@@ -77,7 +77,6 @@ public class AssetAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
- 		context.put(FacilioConstants.ContextNames.MAX_LEVEL, 2);
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();
