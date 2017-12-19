@@ -1,6 +1,8 @@
 
 package com.facilio.bmsconsole.criteria;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.Predicate;
@@ -104,7 +106,7 @@ public class Condition {
 	
 	private String computedWhereClause;
 	public String getComputedWhereClause() {
-		if(computedWhereClause == null && operator != null) {
+		if(operator != null && (computedWhereClause == null || DYNAMIC_OPERATORS.contains(operator))) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
@@ -149,5 +151,24 @@ public class Condition {
 			fieldName = field.getModule().getName()+"."+fieldName;
 			field = null;
 		}
+	}
+	
+	private static List<Operator> DYNAMIC_OPERATORS = Collections.unmodifiableList(getDynamicOperators());
+	private static List<Operator> getDynamicOperators() {
+		List<Operator> dynamicOperators = new ArrayList<>();
+		dynamicOperators.add(PickListOperators.IS);
+		dynamicOperators.add(PickListOperators.ISN_T);
+		dynamicOperators.add(DateOperators.TODAY);
+		dynamicOperators.add(DateOperators.TOMORROW);
+		dynamicOperators.add(DateOperators.STARTING_TOMORROW);
+		dynamicOperators.add(DateOperators.YESTERDAY);
+		dynamicOperators.add(DateOperators.TILL_YESTERDAY);
+		dynamicOperators.add(DateOperators.LAST_MONTH);
+		dynamicOperators.add(DateOperators.CURRENT_MONTH);
+		dynamicOperators.add(DateOperators.NEXT_MONTH);
+		dynamicOperators.add(DateOperators.LAST_WEEK);
+		dynamicOperators.add(DateOperators.CURRENT_WEEK);
+		dynamicOperators.add(DateOperators.NEXT_WEEK);
+		return dynamicOperators;
 	}
 }

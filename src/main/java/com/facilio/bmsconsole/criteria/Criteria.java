@@ -42,8 +42,6 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	public void setConditions(Map<Integer, Condition> conditions) {
 		this.conditions = conditions;
-		whereClause = null;
-		predicate = null;
 	}
 
 	private String pattern = null;
@@ -54,33 +52,28 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
-		whereClause = null;
-		predicate = null;
 	}
 
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
-	private String whereClause;
 	public String computeWhereClause() {
-		if(whereClause == null || whereClause.isEmpty()) {
-			if(conditions != null && !conditions.isEmpty()) {
-				Matcher matcher = REG_EX.matcher(pattern);
-				StringBuilder builder = new StringBuilder();
-				int i = 0;
-				while (matcher.find()) {
-					Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
-					if (condition == null) {
-						throw new IllegalArgumentException("Pattern and conditions don't match");
-					}
-					String computedCondition = condition.getComputedWhereClause();
-					builder.append(pattern.substring(i, matcher.start()));
-					builder.append(computedCondition);
-					i = matcher.end();
+		if(conditions != null && !conditions.isEmpty()) {
+			Matcher matcher = REG_EX.matcher(pattern);
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			while (matcher.find()) {
+				Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
+				if (condition == null) {
+					throw new IllegalArgumentException("Pattern and conditions don't match");
 				}
-				builder.append(pattern.substring(i, pattern.length()));
-				whereClause =  builder.toString();
+				String computedCondition = condition.getComputedWhereClause();
+				builder.append(pattern.substring(i, matcher.start()));
+				builder.append(computedCondition);
+				i = matcher.end();
 			}
+			builder.append(pattern.substring(i, pattern.length()));
+			return  builder.toString();
 		}
-		return whereClause;
+		return null;
 	}
 	
 	public List<Object> getComputedValues() {
@@ -99,12 +92,8 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	
 	private static final Pattern SPLIT_REG_EX = Pattern.compile("([1-9]\\d*)|(\\()|(\\))|(and)|(or)", Pattern.CASE_INSENSITIVE);
-	private Predicate predicate = null;
 	public Predicate computePredicate() {
-		if(predicate == null) {
-			predicate = evaluateExpression(pattern);
-		}
-		return predicate;
+		return evaluateExpression(pattern);
 	}
 	
 	@Override
