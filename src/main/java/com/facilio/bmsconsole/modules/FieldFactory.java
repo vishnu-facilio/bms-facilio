@@ -1698,9 +1698,9 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getDashboardModule();
 		
-//		fields.add(getIdField(module));
-//		fields.add(getOrgIdField(module));
-//		fields.add(getModuleIdField(module));
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
 		
 		
 		FacilioField dashboardName = new FacilioField();

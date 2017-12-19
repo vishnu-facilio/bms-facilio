@@ -35,7 +35,7 @@ public class DashboardUtil {
 				.select(fields)
 				.table(ModuleFactory.getWidgetModule().getTableName())
 				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-				.on(ModuleFactory.getWidgetModule().getTableName()+".WIDGET_ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
