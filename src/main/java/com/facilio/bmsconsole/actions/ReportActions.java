@@ -277,8 +277,8 @@ public class ReportActions extends ActionSupport {
 		fields.add(periodFld);
 
 
-		double currentKwh=-1;
-		double previousKwh=-1;
+		double currentKwh=0;
+		double previousKwh=0;
 		List<Map<String, Object>> current=getData(deviceId,startTime, endTime, fields,true);
 		List<Map<String, Object>> previous=getData(deviceId,previousStartTime, previousEndTime, fields, true);
 
@@ -409,7 +409,7 @@ public class ReportActions extends ActionSupport {
 		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1);
 		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime);
 		
-		double lastMonthKwh=-1;double thisMonthKwh=-1;
+		double lastMonthKwh=0;double thisMonthKwh=0;
 
 		if(previousResult!=null && !previousResult.isEmpty()){
 			
