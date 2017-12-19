@@ -523,6 +523,9 @@ public class LoginAction extends ActionSupport{
 		
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
+		data.put("assetType", AssetsAPI.getTypeList());
+		data.put("assetDepartment", AssetsAPI.getDepartmentList());
+		
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", getTicketStatus());

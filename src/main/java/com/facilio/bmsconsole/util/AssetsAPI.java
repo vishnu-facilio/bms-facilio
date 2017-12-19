@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -182,6 +184,26 @@ public class AssetsAPI {
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
 																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
 																		.beanClass(AssetCategoryContext.class);
+		return selectBuilder.get();
+	}
+	
+	public static List<AssetTypeContext> getTypeList() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetTypeContext> selectBuilder = new SelectRecordsBuilder<AssetTypeContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_TYPE))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_TYPE)
+																		.beanClass(AssetTypeContext.class);
+		return selectBuilder.get();
+	}
+	
+	public static List<AssetDepartmentContext> getDepartmentList() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetDepartmentContext> selectBuilder = new SelectRecordsBuilder<AssetDepartmentContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_DEPARTMENT))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_DEPARTMENT)
+																		.beanClass(AssetDepartmentContext.class);
 		return selectBuilder.get();
 	}
 }
