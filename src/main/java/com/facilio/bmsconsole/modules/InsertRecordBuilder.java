@@ -165,9 +165,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-				Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName()); 
-				if(lookupProps != null) {
-					moduleProps.put(field.getName(), lookupProps.get("id"));
+				Object val = moduleProps.get(field.getName());
+				if(val != null && val instanceof Map) {
+					Map<String, Object> lookupProps = (Map<String, Object>) val; 
+					if(lookupProps != null) {
+						moduleProps.put(field.getName(), lookupProps.get("id"));
+					}
 				}
 			}
 		}
