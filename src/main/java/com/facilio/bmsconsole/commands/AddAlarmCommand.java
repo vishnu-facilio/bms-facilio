@@ -63,6 +63,7 @@ public class AddAlarmCommand implements Command {
 			event.setAction("newAlarm");
 			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
 			event.addData("record", record);
+			event.addData("sound", true);
 			
 			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
 			List<Long> recipients = new ArrayList<>();
