@@ -32,6 +32,10 @@ public class AddWorkOrderCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedTime(System.currentTimeMillis());
 			
+			if(workOrder.getDuration() != -1) {
+				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
+			}
+			
 			TicketAPI.updateTicketStatus(workOrder);
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
