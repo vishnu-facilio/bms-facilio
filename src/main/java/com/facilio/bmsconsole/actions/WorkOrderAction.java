@@ -147,6 +147,27 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long pmId = -1;
+	public long getPmId() {
+		return pmId;
+	}
+	public void setPmId(long pmId) {
+		this.pmId = pmId;
+	}
+	
+	public String executePM() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+		
+		Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
+		executePm.execute(context);
+		
+		workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		
+		return SUCCESS;
+	}
+	
 	public String updatePreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

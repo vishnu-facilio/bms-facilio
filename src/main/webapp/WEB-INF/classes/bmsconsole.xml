@@ -1236,6 +1236,14 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
+		
+		<action name="executePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="executePM">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
 
 		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="preventiveMaintenanceSummary">
