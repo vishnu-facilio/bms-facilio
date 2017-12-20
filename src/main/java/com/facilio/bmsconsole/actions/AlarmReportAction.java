@@ -717,9 +717,16 @@ public class AlarmReportAction extends ActionSupport {
 					}
 				builder.andCustomWhere(where.toString(), orgId)
 				.andCondition(createdTime)
-				.groupBy("ACKNOWLEDGED_BY")
-				.orderBy(average);
+				.groupBy("ACKNOWLEDGED_BY WITH ROLLUP");
 		List<Map<String, Object>> stats = builder.get();
+		double totalAvg=0;
+		int totalCount=0;
+		if(stats!=null && !stats.isEmpty()) {
+			totalCount=stats.size()-1;
+			Map<String,Object> avgTotal=stats.remove(totalCount);
+			totalAvg = avgTotal.get("average") != null ? ((BigDecimal) avgTotal.get("average")).doubleValue() : 0d;
+			totalAvg *=totalCount;
+		}
 			for(Map<String, Object> stat : stats) {
 				
 				JSONObject statsObj = new JSONObject();
@@ -730,10 +737,11 @@ public class AlarmReportAction extends ActionSupport {
 				double avg = ((BigDecimal) stat.get("average")).doubleValue();
 				statsObj.put("average", avg);
 				statsObj.put("total", total);
+				double percent=ReportsUtil.getPercentage(avg, totalAvg);
+				statsObj.put("percentage", roundToMinLevel(percent));
 				jsonArray.add(statsObj);
 			}
-		
-		
+			
 		return jsonArray;
 	}
 	
@@ -791,9 +799,17 @@ public class AlarmReportAction extends ActionSupport {
 				 if(buildingId!=-1) {
 						builder.andCondition(getSpaceCondition(buildingId));
 					}
-				builder.groupBy("Tickets.ASSIGNED_TO_ID")
-				.orderBy(average);
+				builder.groupBy("Tickets.ASSIGNED_TO_ID WITH ROLLUP");
+				
 		List<Map<String, Object>> stats = builder.get();
+		double totalAvg=0;
+		int totalCount=0;
+		if(stats!=null && !stats.isEmpty()) {
+			totalCount=stats.size()-1;
+			Map<String,Object> avgTotal=stats.remove(totalCount);
+			totalAvg = avgTotal.get("average") != null ? ((BigDecimal) avgTotal.get("average")).doubleValue() : 0d;
+			totalAvg *=totalCount;
+		}
 		for(Map<String, Object> stat : stats) {
 
 			JSONObject statsObj = new JSONObject();
@@ -804,9 +820,17 @@ public class AlarmReportAction extends ActionSupport {
 			double avg = stat.get("average") != null ? ((BigDecimal) stat.get("average")).doubleValue() : 0d;
 			statsObj.put("average", avg);
 			statsObj.put("total", total);
+			double percent=ReportsUtil.getPercentage(avg, totalAvg);
+			statsObj.put("percentage", roundToMinLevel(percent));
 			jsonArray.add(statsObj);
 		}
 		
 		return jsonArray;
+	}
+	
+	private double roundToMinLevel(double percent)
+	{
+		int minVal=3;
+		return (percent<minVal)?minVal:percent;
 	}
 }
