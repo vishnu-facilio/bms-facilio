@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -313,13 +314,13 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return "http://fazilio.com/app/firealarm/alarms";
+			return AwsUtil.getConfig("clientapp.url")+"/app/firealarm/alarms";
 		}
 	}
 	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
-			return "http://app.fazilio.com/mobile/firealarm/summary/"+getId();
+			return AwsUtil.getConfig("clientapp.url")+"/mobile/firealarm/summary/"+getId();
 		}
 		else {
 			return null;

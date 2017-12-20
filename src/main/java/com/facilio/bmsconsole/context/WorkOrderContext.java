@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -41,7 +42,7 @@ public class WorkOrderContext extends TicketContext {
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {
-			return "https://fazilio.com/app/wo/orders/all/summary/"+getId();
+			return AwsUtil.getConfig("clientapp.url")+"/app/wo/orders/all/summary/"+getId();
 		}
 		else {
 			return null;

@@ -118,31 +118,23 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("message", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
 				break;
 			case 8:
-				JSONObject notification = new JSONObject();
-				notification.put("body", "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
-				notification.put("title", "New Alarm");
-				notification.put("content_available", true);
-				notification.put("priority", "high");
-				notification.put("sound", "default");
-				notification.put("icon", "default");
-				json.put("notification", notification);
-				
 				JSONObject data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "[${alarm.modifiedTimeString}] [NEW Alarm:#ID${alarm.id}] \"${alarm.severity.severity}\" alarm reported for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				data.put("title", "New Alarm");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
 				json.put("data", data);
 				break;
 			case 9:
-				notification = new JSONObject();
-				notification.put("body", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
-				notification.put("title", "New Alarm");
-				notification.put("content_available", true);
-				notification.put("priority", "high");
-				notification.put("sound", "default");
-				notification.put("icon", "default");
-				json.put("notification", notification);
-				
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
+				data.put("title", "New Alarm");
+				data.put("body", "[${alarm.modifiedTimeString}] [UPDATED Alarm:#ID${alarm.id}] \"${alarm.previousSeverity.severity}\" alarm updated to \"${alarm.severity.severity}\" for source \"${alarm.source}\". Alarm message: \"${alarm.subject}\". State: ${alarm.state}.");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
 				json.put("data", data);
 				break;
 				

@@ -111,6 +111,9 @@ public class UpdateAlarmCommand implements Command {
 			event.setAction("newAlarm");
 			event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
 			event.addData("record", record);
+			if(ActivityType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE))) {
+				event.addData("sound", true);
+			}
 			
 			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getId(), true);
 			List<Long> recipients = new ArrayList<>();
