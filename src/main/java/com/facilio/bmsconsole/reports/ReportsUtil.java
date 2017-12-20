@@ -39,6 +39,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.ExpressionEvaluator;
+import com.google.gson.JsonArray;
 
 public class ReportsUtil 
 {
@@ -501,15 +502,18 @@ public class ReportsUtil
 		return keyVsValue;
 	}
 	
-	public static Map<Long,Double> getMeterVsConsumptionPercentage(List<Map<String, Object>> result, double totalKwh)
+	public static Map<Long,List<Double>> getMeterVsConsumption(List<Map<String, Object>> result, double totalKwh)
 	{
-		Map<Long,Double> meterConsumption = new HashMap<Long,Double>();
+		Map<Long,List<Double>> meterConsumption = new HashMap<Long,List<Double>>();
 		for(Map<String,Object> rowData: result)
 		{
 			Long meterId=(Long)	rowData.get("Meter_ID");
 			Double consumption=(Double) rowData.get("CONSUMPTION");
 			Double percentage=getPercentage(consumption,totalKwh);
-			meterConsumption.put(meterId, percentage);
+			List<Double> vals= new ArrayList<Double>();
+			vals.add(roundOff(consumption, 2));
+			vals.add(roundOff(percentage,2));
+			meterConsumption.put(meterId, vals);
 		}
 		return meterConsumption;
 	}

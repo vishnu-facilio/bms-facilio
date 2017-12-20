@@ -282,18 +282,18 @@ public class PortfolioAction extends ActionSupport {
 			totalKwh = (double)currentTotal.get("CONSUMPTION");
 		}
 		
-		Map<Long,Double> meterVsConsumption=ReportsUtil.getMeterVsConsumptionPercentage(resultData,totalKwh);
+		Map<Long,List<Double>> meterVsConsumption=ReportsUtil.getMeterVsConsumption(resultData,totalKwh);
 		for(Map.Entry<Long, Long> entry:buildingVsMeter.entrySet()) {
 			
 			long meterId=entry.getValue();
 			long buildingId=entry.getKey();
-			Double percentage=meterVsConsumption.get(meterId);
-			if(percentage!=null)
+			List<Double> consumption=meterVsConsumption.get(meterId);
+			if(consumption!=null)
 			{
-				result.put(buildingId,ReportsUtil.roundOff(percentage, 2));
+				result.put(buildingId,consumption);
 			}
 		}
-		result.put("units", "%");
+		result.put("units", "kWh");
 		result.put("totalKwh", totalKwh);
 		setReportData(result);
 		return SUCCESS;
