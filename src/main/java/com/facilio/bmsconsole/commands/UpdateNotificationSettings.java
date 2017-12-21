@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ public class UpdateNotificationSettings implements Command {
 
 			workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 			Map<String, Object> workflowProps= FieldUtil.getAsProperties(workflow);
-			Connection con = FacilioConnectionPool.getInstance().getConnection();
 			try{
 				List<FacilioField> fields= FieldFactory.getWorkflowRuleFields();
 				GenericUpdateRecordBuilder builder=new GenericUpdateRecordBuilder().table("Workflow_Rule").fields(fields).andCustomWhere("ID = ?", workflow.getId());
@@ -40,9 +38,7 @@ public class UpdateNotificationSettings implements Command {
 				e.printStackTrace();
 				throw e;
 			}
-			finally{
-				con.close();
-			}
+			
 		}
 		return false;
 	}

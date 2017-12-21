@@ -41,9 +41,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		System.out.println("Workorder Request Email Parser");
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-															.connection(conn)
 															.select(FieldFactory.getWorkorderEmailFields())
 															.table("WorkOrderRequest_EMail")
 															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false");
@@ -73,7 +72,6 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			if(!isEmpty) {
 				idsToBeRemoved.append(")");
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-																.connection(conn)
 																.fields(FieldFactory.getWorkorderEmailFields())
 																.table("WorkOrderRequest_EMail")
 																.andCustomWhere(idsToBeRemoved.toString());

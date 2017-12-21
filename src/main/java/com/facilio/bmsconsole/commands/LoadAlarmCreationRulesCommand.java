@@ -22,9 +22,8 @@ public class LoadAlarmCreationRulesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder workflowBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.select(FieldFactory.getWorkflowRuleFields())
 					.table("Workflow_Rule")
 					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Rule.NAME IN ('Create Alarm - EMail', 'Create Alarm - SMS')", AccountUtil.getCurrentOrg().getOrgId());

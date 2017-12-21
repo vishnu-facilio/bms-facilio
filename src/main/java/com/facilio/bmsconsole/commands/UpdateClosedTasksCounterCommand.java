@@ -37,9 +37,8 @@ public class UpdateClosedTasksCounterCommand implements Command {
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(field);
 				
-				try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+				try {
 					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-																			.connection(conn)
 																			.moduleName(FacilioConstants.ContextNames.TICKET)
 																			.table("Tickets")
 																			.fields(fields)

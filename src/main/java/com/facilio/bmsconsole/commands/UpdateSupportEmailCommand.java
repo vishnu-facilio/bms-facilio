@@ -36,11 +36,10 @@ public class UpdateSupportEmailCommand implements Command {
 				emailProps.put("autoAssignGroup", ((Map<String, Object>)emailProps.get("autoAssignGroup")).get("id"));
 			}
 			emailProps.remove("id");
-			Connection con = FacilioConnectionPool.getInstance().getConnection();
+		//	Connection con = FacilioConnectionPool.getInstance().getConnection();
 			try {
 				List<FacilioField> fields = FieldFactory.getSupportEmailFields();
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-														.connection(con)
 														.table("SupportEmails")
 														.fields(fields)
 														.andCustomWhere("ID = ?", supportEmail.getId());
@@ -53,7 +52,6 @@ public class UpdateSupportEmailCommand implements Command {
 			}
 			finally
 			{
-				con.close();
 			}
 		}
 		return false;

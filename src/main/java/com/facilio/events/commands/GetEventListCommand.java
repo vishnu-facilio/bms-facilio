@@ -35,9 +35,8 @@ public class GetEventListCommand implements Command {
 		long alarmId = (long) context.get(EventConstants.EventContextNames.ALARM_ID);
 		
 		List<EventContext> events = new ArrayList<>();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.select(EventConstants.EventFieldFactory.getEventFields())
 					.table("Event")
 					.andCustomWhere("Event.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
