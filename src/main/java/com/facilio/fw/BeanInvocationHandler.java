@@ -16,6 +16,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 
 	private static final Logger LOGGER = Logger.getLogger( BeanInvocationHandler.class.getName() );
 
+	private static boolean ENABLE_JTA = false;
 	private Object delegate;
 	long orgid = 0;
 //	private Connection conn;
@@ -45,37 +46,37 @@ public class BeanInvocationHandler implements InvocationHandler {
 				}
 			}
 
-			// TODO switch context to orgid
-		LOGGER.info("calling method "+method.getName());
-		TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
-		Transaction currenttrans = tm.getTransaction();
-		if (currenttrans == null) {
-			tm.begin();
-			LOGGER.info("begin transaction for "+method.getName() );
-			
-			istransaction = true;
-		}
-		else
-		{
-			LOGGER.info("joining parent transaction for "+method.getName() );
+		
+		if (ENABLE_JTA) {
+			TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+			Transaction currenttrans = tm.getTransaction();
+			if (currenttrans == null) {
+				tm.begin();
+				LOGGER.info("begin transaction for " + method.getName());
+				istransaction = true;
+			} else {
+				LOGGER.info("joining parent transaction for " + method.getName());
+			} 
 		}
 			result = method.invoke(delegate, args);
 			LOGGER.info("finish method "+method.getName());
 
-			if(istransaction)
-			{
-				LOGGER.info("commit transaction for "+method.getName());
-				FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+			if (ENABLE_JTA) {
+				if (istransaction) {
+					LOGGER.info("commit transaction for " + method.getName());
+					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+				} 
 			}
 			if (orgid != 0 && oldAccount != null) {
 				AccountUtil.setCurrentAccount(oldAccount);
 			}
 		
 		}  catch (Exception e) {
-			if(istransaction)
-			{
-				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-				LOGGER.info("rollback transaction for "+method.getName());
+			if (ENABLE_JTA) {
+				if (istransaction) {
+					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+					LOGGER.info("rollback transaction for " + method.getName());
+				} 
 			}
 			throw e;
 		}
