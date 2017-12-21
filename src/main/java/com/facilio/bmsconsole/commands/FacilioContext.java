@@ -22,7 +22,7 @@ public class FacilioContext extends ContextBase {
 	}
 
 	boolean transstarted=false;
-	public Connection getConnectionWithTransaction() throws SQLException, NotSupportedException, SystemException {
+	/*public Connection getConnectionWithTransaction() throws SQLException, NotSupportedException, SystemException {
 		if(conn == null)
 		{
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
@@ -35,7 +35,7 @@ public class FacilioContext extends ContextBase {
 		return conn;
 	}
 	
-	
+	*/
 	
 	public void commit() throws Exception {
 		cleanup();
