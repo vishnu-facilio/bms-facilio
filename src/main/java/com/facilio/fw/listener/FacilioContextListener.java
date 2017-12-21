@@ -57,10 +57,10 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
-			Connection c = FacilioConnectionPool.getInstance().getConnection();
+			//Connection c = FacilioConnectionPool.getInstance().getConnection();
 			try
 			{
-			scriptRunner.runScript(c);
+			scriptRunner.runScript();
 			}
 			catch(Exception e)
 			{
@@ -68,23 +68,20 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			finally
 			{
-				c.close();
+				
 			}
 			file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/eventconsole.sql").getFile());
 			scriptRunner = new SQLScriptRunner(file, true, null);
-			c = FacilioConnectionPool.getInstance().getConnection();
+		//	c = FacilioConnectionPool.getInstance().getConnection();
 			try
 			{
-			scriptRunner.runScript(c);
+			scriptRunner.runScript();
 			}
 			catch(Exception e)
 			{
 				
 			}
-			finally
-			{
-				c.close();
-			}
+			
 			
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			

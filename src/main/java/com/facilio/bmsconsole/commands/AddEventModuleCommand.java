@@ -22,7 +22,7 @@ public class AddEventModuleCommand implements Command {
 		paramValues.put("orgId", String.valueOf(orgId));
 		
 		SQLScriptRunner scriptRunner2 = new SQLScriptRunner(EVENT_MODULE_SQL, true, paramValues);
-		scriptRunner2.runScript(((FacilioContext) context).getConnectionWithTransaction());
+		scriptRunner2.runScript();
 		
 		return false;
 	}

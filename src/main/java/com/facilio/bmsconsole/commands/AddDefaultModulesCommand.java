@@ -22,7 +22,7 @@ public class AddDefaultModulesCommand implements Command {
 		paramValues.put("orgId", String.valueOf(orgId));
 		
 		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
-		scriptRunner.runScript(((FacilioContext) context).getConnectionWithTransaction());
+		scriptRunner.runScript();
 		
 		return false;
 	}

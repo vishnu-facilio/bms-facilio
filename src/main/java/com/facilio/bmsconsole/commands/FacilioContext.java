@@ -35,9 +35,7 @@ public class FacilioContext extends ContextBase {
 		return conn;
 	}
 	
-	public Connection getConnectionWithoutTransaction() throws SQLException, NotSupportedException, SystemException {
-		return getConnectionWithTransaction();
-	}
+	
 	
 	public void commit() throws Exception {
 		cleanup();

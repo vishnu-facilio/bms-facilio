@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
+import com.facilio.transaction.FacilioConnectionPool;
+
 public class SQLScriptRunner {
 
 	private static final String DELIMITER = ";";
@@ -33,11 +35,12 @@ public class SQLScriptRunner {
 		}
 	}
 
-	public void runScript(Connection conn) throws SQLException, IOException {
+	public void runScript() throws SQLException, IOException {
+	//	Connection conn =FacilioConnectionPool.getInstance().getConnection();
 		Reader fileReader = null;
 		try {
 			fileReader = new FileReader(file);
-			runScript(conn, fileReader);
+			runScript( fileReader);
 		} 
 		catch (SQLException | FileNotFoundException e) {
 			throw e;
@@ -54,7 +57,8 @@ public class SQLScriptRunner {
 		}
 	}
 
-	private void runScript(Connection conn, Reader reader) throws SQLException, IOException {
+	private void runScript( Reader reader) throws SQLException, IOException {
+		Connection conn = FacilioConnectionPool.getInstance().getConnection();
 		StringBuilder command = null;
 		try {
 			LineNumberReader lineReader = new LineNumberReader(reader);
@@ -99,6 +103,9 @@ public class SQLScriptRunner {
 		}
 		catch (SQLException e) {
 			throw e;
+		}finally
+		{
+			conn.close();
 		}
 	}
 
