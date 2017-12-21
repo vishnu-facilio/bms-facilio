@@ -1108,6 +1108,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getExecutePMsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ExecutePMsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdatePreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new DeletePreventiveMaintenanceCommand());

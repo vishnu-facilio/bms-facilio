@@ -168,6 +168,19 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String executePMs() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain executePm = FacilioChainFactory.getExecutePMsChain();
+		executePm.execute(context);
+
+		id = (List<Long>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
+		
+		return SUCCESS;
+	}
+	
 	public String updatePreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

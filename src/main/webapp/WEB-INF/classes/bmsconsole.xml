@@ -1244,6 +1244,14 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
+		
+		<action name="bulkExecutePM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="executePMs">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="root">id</param>
+			</result>
+		</action>
 
 		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="preventiveMaintenanceSummary">

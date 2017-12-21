@@ -56,6 +56,12 @@ public class PreventiveMaintenance {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
+	public boolean isActive() {
+		if(status != null) {
+			return status.booleanValue();
+		}
+		return false;
+	}
 	
 	private User createdBy;
 	public User getCreatedBy() {
