@@ -138,15 +138,15 @@ public class ServicePortalInfo {
 		DBUtil.closeAll(conn, pstmt, rs);
 	}
 	}
-	public static Object updatePortalInfo (ServicePortalInfo data, Connection conn) throws Exception{
+	public static Object updatePortalInfo (ServicePortalInfo data) throws Exception{
 		
 	
 		boolean isLocalConn = false;
 		PreparedStatement psmt = null;
+		Connection conn=null;
 		try {
 			if (conn == null) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				isLocalConn = true;
 			}
 			
 			String updatequery = "update PortalInfo set SIGNUP_ALLOWED=? , GMAILLOGIN_ALLOWED=? ,IS_PUBLIC_CREATE_ALLOWED=?, IS_ANYDOMAIN_ALLOWED=? where ORGID=?";
@@ -183,7 +183,7 @@ public class ServicePortalInfo {
 			throw e;
 		}
 		finally {
-			if (isLocalConn) {
+			if (conn!=null) {
 				DBUtil.closeAll(conn, null);
 			}
 			if (psmt != null) {

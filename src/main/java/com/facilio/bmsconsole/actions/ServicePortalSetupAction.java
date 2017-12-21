@@ -27,7 +27,7 @@ public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> im
 //		System.out.println("inside the update service portal"+set.getData().getAnyDomain());
 //		
 		System.out.println("incoming data is "+data);;
-		ServicePortalInfo.updatePortalInfo(data, null);
+		ServicePortalInfo.updatePortalInfo(data);
 		
 		return SUCCESS;
 	}
