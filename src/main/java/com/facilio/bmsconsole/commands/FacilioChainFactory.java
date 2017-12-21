@@ -1375,32 +1375,9 @@ class TransactionChain extends ChainBase
 	public boolean execute(Context context)
             throws Exception
             {
-		boolean status =  false;
-		Transaction currenttrans = null;
-		try {
-			javax.transaction.TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
 		
-			 currenttrans = tm.getTransaction();
-			if (currenttrans != null) {
-				tm.begin();
-				System.out.println("Transaction beginned");
-				((FacilioContext) context).setTransstarted(true);
-			}
-			status = super.execute(context);
-			if (currenttrans != null) {
-				tm.commit();
-				((FacilioContext) context).setTransstarted(false);
-				System.out.println("Transaction commit");
-			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if (currenttrans != null) {
-			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-			}
-			e.printStackTrace();
-			throw e;
-		}
+			boolean status = super.execute(context);
+			
 return status;
             }
 }

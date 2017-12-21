@@ -60,7 +60,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 			LOGGER.info("joining parent transaction for "+method.getName() );
 		}
 			result = method.invoke(delegate, args);
-			LOGGER.info("finish method"+method.getName());
+			LOGGER.info("finish method "+method.getName());
 
 			if(istransaction)
 			{

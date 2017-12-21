@@ -11,7 +11,7 @@ import org.apache.commons.chain.impl.ContextBase;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContext extends ContextBase {
-	private Connection conn = null;
+//	private Connection conn = null;
 	
 	public boolean isTransstarted() {
 		return transstarted;
@@ -55,11 +55,8 @@ public class FacilioContext extends ContextBase {
 	
 	private void cleanup() throws Exception
 	{
-		System.out.println("Closing connection ....");
-		if(conn != null) {
-			conn.close();
-			conn = null;
-		}
+		//System.out.println("Closing connection ....");
+		
 	}
 }
 

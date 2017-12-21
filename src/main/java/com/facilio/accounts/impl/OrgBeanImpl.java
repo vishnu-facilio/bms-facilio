@@ -216,10 +216,10 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 	
-	public void testTransaction() throws Exception
+	public void testTransaction(String prefix) throws Exception
 	{
 		Organization org = new Organization();
-		String prefix = "abi";
+	//	String prefix = "abi";
 		org.setDomain(prefix+1);
 		createOrg(org);
 		org = new Organization();
@@ -231,7 +231,7 @@ public class OrgBeanImpl implements OrgBean {
 		org = new Organization();
 		org.setDomain(prefix+4);
 		createOrg(org);
-		if(true)
+		if(false)
 		{
 		throw new Exception();
 		}
