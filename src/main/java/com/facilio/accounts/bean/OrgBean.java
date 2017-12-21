@@ -24,4 +24,6 @@ public interface OrgBean {
 	public List<User> getRequesters(long orgId) throws Exception;
 	
 	public User getSuperAdmin(long orgId) throws Exception;
+	
+	public void testTransaction() throws Exception;
 }

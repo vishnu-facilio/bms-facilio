@@ -215,4 +215,33 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
+	
+	public void testTransaction() throws Exception
+	{
+		Organization org = new Organization();
+		String prefix = "abi";
+		org.setDomain(prefix+1);
+		createOrg(org);
+		org = new Organization();
+		org.setDomain(prefix+2);
+		createOrg(org);
+		org = new Organization();
+		org.setDomain(prefix+3);
+		createOrg(org);
+		org = new Organization();
+		org.setDomain(prefix+4);
+		createOrg(org);
+		if(true)
+		{
+		throw new Exception();
+		}
+		org = new Organization();
+		org.setDomain(prefix+5);
+		createOrg(org);
+		org = new Organization();
+		org.setDomain(prefix+6);
+		createOrg(org);
+		
+		return;
+	}
 }

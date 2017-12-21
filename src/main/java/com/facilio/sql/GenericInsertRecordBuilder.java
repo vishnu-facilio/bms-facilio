@@ -84,7 +84,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 					props.put("id", id);
 				}
 			}
-			System.out.println("Added records with IDs : "+ids);
+			//System.out.println("Added records with IDs : "+ids);
 		}
 		catch(SQLException | RuntimeException e) {
 			e.printStackTrace();
