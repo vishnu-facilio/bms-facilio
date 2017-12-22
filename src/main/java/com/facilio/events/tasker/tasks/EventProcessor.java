@@ -83,49 +83,53 @@ public class EventProcessor implements IRecordProcessor {
             EventContext event = EventAPI.processPayload(timestamp, object, orgId);
             Map<String, Object> prop = FieldUtil.getAsProperties(event);
             EventAPI.insertObject(prop);
+            if(eventRules.isEmpty()){
+                triggerAlarm(prop);
+                return true;
+            } else {
+                for(EventRule rule : eventRules) {
 
-            for(EventRule rule : eventRules) {
+                    Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId());
+                    boolean isRuleMatched = criteria.computePredicate().evaluate(prop);
 
-                Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId());
-                boolean isRuleMatched = criteria.computePredicate().evaluate(prop);
+                    if (isRuleMatched) {
+                        boolean ignoreEvent = rule.isIgnoreEvent();
 
-                if(isRuleMatched) {
-                    boolean ignoreEvent = rule.isIgnoreEvent();
+                        event.setEventRuleId(rule.getEventRuleId());
+                        event.setInternalState(EventContext.EventInternalState.FILTERED);
 
-                    event.setEventRuleId(rule.getEventRuleId());
-                    event.setInternalState(EventContext.EventInternalState.FILTERED);
+                        if (!ignoreEvent) {
 
-                    if(!ignoreEvent ) {
+                            event = EventTransformJob.transform(orgId, event, prop, rule);
 
-                        event = EventTransformJob.transform(orgId, event, prop, rule);
-
-                        if (rule.getThresholdCriteriaId() != -1) {
-                            Criteria thresholdCriteria = CriteriaAPI.getCriteria(orgId, rule.getThresholdCriteriaId());
-                            boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(event);
-                            if (isThresholdMatched) {
-                                long currentEventTime = event.getCreatedTime();
-                                boolean skipEvent = (currentEventTime - lastEventTime) < rule.getThresholdOverSeconds();
-                                lastEventTime = currentEventTime;
-                                if( ! skipEvent) {
-                                    int thresholdOccurs = rule.getThresholdOccurs();
-                                    int numberOfEvents = eventCountMap.getOrDefault(event.getMessageKey(), 0);
-                                    int numberOfEventsOccurred = numberOfEvents + 1;
-                                    eventCountMap.put(event.getMessageKey(), numberOfEventsOccurred);
-                                    if (thresholdOccurs <= (numberOfEventsOccurred)) {
-                                        eventCountMap.put(event.getMessageKey(), 0);
-                                        triggerAlarm(FieldUtil.getAsProperties(event));
-                                        return true;
+                            if (rule.getThresholdCriteriaId() != -1) {
+                                Criteria thresholdCriteria = CriteriaAPI.getCriteria(orgId, rule.getThresholdCriteriaId());
+                                boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(event);
+                                if (isThresholdMatched) {
+                                    long currentEventTime = event.getCreatedTime();
+                                    boolean skipEvent = (currentEventTime - lastEventTime) < rule.getThresholdOverSeconds();
+                                    lastEventTime = currentEventTime;
+                                    if (!skipEvent) {
+                                        int thresholdOccurs = rule.getThresholdOccurs();
+                                        int numberOfEvents = eventCountMap.getOrDefault(event.getMessageKey(), 0);
+                                        int numberOfEventsOccurred = numberOfEvents + 1;
+                                        eventCountMap.put(event.getMessageKey(), numberOfEventsOccurred);
+                                        if (thresholdOccurs <= (numberOfEventsOccurred)) {
+                                            eventCountMap.put(event.getMessageKey(), 0);
+                                            triggerAlarm(FieldUtil.getAsProperties(event));
+                                            return true;
+                                        }
                                     }
                                 }
+                                event.setInternalState(EventContext.EventInternalState.THRESHOLD_DONE);
                             }
-                            event.setInternalState(EventContext.EventInternalState.THRESHOLD_DONE);
                         }
+                        EventAPI.updateEvent(event, orgId);
+                        return true;
+                    } else {
+                        triggerAlarm(prop);
+                        return true;
                     }
-                    EventAPI.updateEvent(event, orgId);
-                    return true;
-                } else {
-                    triggerAlarm(prop);
-                    return true;
                 }
             }
         } catch (Exception e) {
@@ -136,6 +140,5 @@ public class EventProcessor implements IRecordProcessor {
 
     private void triggerAlarm(Map<String, Object> prop) throws Exception {
         EventToAlarmJob.alarm(orgId, prop);
-
     }
 }

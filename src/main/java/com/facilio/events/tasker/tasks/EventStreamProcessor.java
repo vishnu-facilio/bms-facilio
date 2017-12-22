@@ -7,6 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 
 import java.net.InetAddress;
@@ -18,7 +19,7 @@ public class EventStreamProcessor {
     public static void run(long orgId, String streamName) {
 
         try {
-
+            AccountUtil.setCurrentAccount(orgId);
             String clientName = AwsUtil.getConfig("clientName") + '-' + AwsUtil.getConfig("environment");
             //String streamName = AwsUtil.getConfig("streamName");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
