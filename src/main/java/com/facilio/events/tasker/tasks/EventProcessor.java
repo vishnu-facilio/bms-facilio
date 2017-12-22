@@ -79,6 +79,7 @@ public class EventProcessor implements IRecordProcessor {
         try {
             EventContext event = EventAPI.processPayload(timestamp, object, orgId);
             Map<String, Object> prop = FieldUtil.getAsProperties(event);
+            EventAPI.insertObject(prop);
 
             for(EventRule rule : eventRules) {
 
@@ -89,6 +90,7 @@ public class EventProcessor implements IRecordProcessor {
                     boolean ignoreEvent = rule.isIgnoreEvent();
 
                     event.setEventRuleId(rule.getEventRuleId());
+                    event.setInternalState(EventContext.EventInternalState.FILTERED);
 
                     if(!ignoreEvent ) {
 
@@ -113,9 +115,11 @@ public class EventProcessor implements IRecordProcessor {
                                     }
                                 }
                             }
+                            event.setInternalState(EventContext.EventInternalState.THRESHOLD_DONE);
                         }
-                        return true;
                     }
+                    EventAPI.updateEvent(event, orgId);
+                    return true;
                 } else {
                     triggerAlarm(prop);
                     return true;

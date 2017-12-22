@@ -117,6 +117,19 @@ public class EventAPI {
 		}
 		return -1;
 	}
+
+	public static void insertEvent(EventContext event, long orgId) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, SQLException {
+		Map<String, Object> props = FieldUtil.getAsProperties(event);
+		insertObject(props);
+	}
+
+	public static void insertObject(Map<String, Object> props) throws SQLException {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table("Event")
+				.fields(EventConstants.EventFieldFactory.getEventFields());
+		builder.addRecord(props);
+		builder.save();
+	}
 	
 	public static long addNodeToAssetMapping(String node, long orgId) throws SQLException, RuntimeException {
 		Map<String, Object> prop = new HashMap<>();
