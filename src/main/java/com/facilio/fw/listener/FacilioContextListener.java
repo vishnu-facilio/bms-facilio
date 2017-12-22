@@ -86,11 +86,13 @@ public class FacilioContextListener implements ServletContextListener {
 			try {
 				if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
 					String streamName = AwsUtil.getConfig("streamName");
-					EventStreamProcessor.run(Long.parseLong(AwsUtil.getConfig("orgId")), streamName);
+					new Thread(() -> EventStreamProcessor.run(Long.parseLong(AwsUtil.getConfig("orgId")), streamName)).start();
 				}
 			} catch (Exception e){
 				e.printStackTrace();
 			}
+
+
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
 //			ScheduleInfo schedule = new ScheduleInfo();

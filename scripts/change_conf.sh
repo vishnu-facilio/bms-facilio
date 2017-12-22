@@ -14,17 +14,17 @@ unzip $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
 if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     cp $META_INF_DIR/context-stage.xml $META_INF_DIR/context.xml
     sed -i -e 's/localhost:9090/app.facilio.in/g' $CONF_DIR/awsprops.properties
-    sed -i'' "s%senvironment=.*%senvironment=stage%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
     sed -i'' "s%schedulerServer=.*%schedulerServer=false%g" $CONF_DIR/awsprops.properties
     sed -i -e 's/localhost:9090/app.fazilio.com/g' $CONF_DIR/awsprops.properties
-    sed -i'' "s%senvironment=.*%senvironment=production%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
-    sed -i'' "s%senvironment=.*%senvironment=scheduler%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%environment=.*%environment=scheduler%g" $CONF_DIR/awsprops.properties
 fi

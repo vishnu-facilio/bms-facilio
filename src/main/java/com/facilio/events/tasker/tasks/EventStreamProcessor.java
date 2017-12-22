@@ -15,32 +15,37 @@ import java.util.UUID;
 
 public class EventStreamProcessor {
 
-    public static void run(long orgId, String streamName) throws UnknownHostException {
+    public static void run(long orgId, String streamName) {
 
-        String clientName = AwsUtil.getConfig("clientName")+'-' + AwsUtil.getConfig("environment");
-        //String streamName = AwsUtil.getConfig("streamName");
-        java.security.Security.setProperty("networkaddress.cache.ttl", "60");
+        try {
 
-        AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-        AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
+            String clientName = AwsUtil.getConfig("clientName") + '-' + AwsUtil.getConfig("environment");
+            //String streamName = AwsUtil.getConfig("streamName");
+            java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
-        String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID();
+            AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+            AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
 
-        KinesisClientLibConfiguration kinesisClientLibConfiguration =
-                new KinesisClientLibConfiguration(clientName, streamName, provider, workerId)
-                        .withRegionName(AwsUtil.getConfig("region"))
-                        .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
+            String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID();
 
-        IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId);
+            KinesisClientLibConfiguration kinesisClientLibConfiguration =
+                    new KinesisClientLibConfiguration(clientName, streamName, provider, workerId)
+                            .withRegionName(AwsUtil.getConfig("region"))
+                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
 
-        Worker worker = new Worker.Builder()
-                .recordProcessorFactory(recordProcessorFactory)
-                .config(kinesisClientLibConfiguration)
-                .build();
+            IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId);
 
-        System.out.printf("Running %s to process stream %s as worker %s...\n", clientName, streamName, workerId);
+            Worker worker = new Worker.Builder()
+                    .recordProcessorFactory(recordProcessorFactory)
+                    .config(kinesisClientLibConfiguration)
+                    .build();
 
-        worker.run();
+            System.out.printf("Running %s to process stream %s as worker %s...\n", clientName, streamName, workerId);
+
+            worker.run();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 }
