@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,10 +50,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
-	@Deprecated
-	public InsertRecordBuilder<E> connection(Connection conn) {
-		return this;
-	}
+
 	
 	@Override
 	public InsertRecordBuilder<E> addRecord(E bean) {

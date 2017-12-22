@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.modules;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +44,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
-	@Deprecated
-	public UpdateRecordBuilder<E> connection(Connection conn) {
-		builder.connection(conn);
-		return this;
-	}
+
 
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName) {

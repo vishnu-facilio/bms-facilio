@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.modules;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -147,12 +146,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	@Deprecated
-	public SelectRecordsBuilder<E> connection(Connection conn) {
-		builder.connection(conn);
-		return this;
-	}
-	
+
 	public SelectRecordsBuilder<E> moduleName(String moduleName) {
 		this.moduleName = moduleName;
 		return this;

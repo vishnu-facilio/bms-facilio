@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class GetPickListCommand implements Command {
 
@@ -24,14 +22,13 @@ public class GetPickListCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
-		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+		//Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
 		
 		try {
 			if(dataTableName != null && !dataTableName.isEmpty() && defaultField != null) {
 				List<FacilioField> fields = new ArrayList<>();
 				fields.add(defaultField);				
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-																	.connection(conn)
 																	.table(dataTableName)
 																	.moduleName(moduleName)
 																	.select(fields)
@@ -52,7 +49,7 @@ public class GetPickListCommand implements Command {
 		}
 		finally
 		{
-			conn.close();
+			//conn.close();
 		}
 		
 		return false;
