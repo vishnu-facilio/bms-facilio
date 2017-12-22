@@ -17,6 +17,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enableeventjob=.*%enableeventjob=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=pre-production-1766931799.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.fazilio.in/websocket%g" $CONF_DIR/awsprops.properties
 
 fi
 
@@ -26,10 +27,12 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i -e 's/localhost:9090/app.fazilio.com/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=stage-1555618498.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.fazilio.com/websocket%g" $CONF_DIR/awsprops.properties
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
     sed -i'' "s%environment=.*%environment=scheduler%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=stage-1555618498.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.fazilio.com/websocket%g" $CONF_DIR/awsprops.properties
 fi

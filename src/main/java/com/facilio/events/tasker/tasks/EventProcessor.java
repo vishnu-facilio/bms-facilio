@@ -104,7 +104,9 @@ public class EventProcessor implements IRecordProcessor {
                         event.setEventRuleId(rule.getEventRuleId());
                         event.setInternalState(EventContext.EventInternalState.FILTERED);
 
-                        if (!ignoreEvent) {
+                        if (ignoreEvent) {
+                            event.setEventState(EventContext.EventState.IGNORED);
+                        } else {
 
                             event = EventTransformJob.transform(orgId, event, prop, rule);
 
@@ -115,7 +117,9 @@ public class EventProcessor implements IRecordProcessor {
                                     long currentEventTime = event.getCreatedTime();
                                     boolean skipEvent = (currentEventTime - lastEventTime) < rule.getThresholdOverSeconds();
                                     lastEventTime = currentEventTime;
-                                    if (!skipEvent) {
+                                    if (skipEvent) {
+                                        event.setEventState(EventContext.EventState.IGNORED);
+                                    } else {
                                         int thresholdOccurs = rule.getThresholdOccurs();
                                         int numberOfEvents = eventCountMap.getOrDefault(event.getMessageKey(), 0);
                                         int numberOfEventsOccurred = numberOfEvents + 1;
@@ -128,6 +132,8 @@ public class EventProcessor implements IRecordProcessor {
                                     }
                                 }
                                 event.setInternalState(EventContext.EventInternalState.THRESHOLD_DONE);
+                            } else {
+                                triggerAlarm(FieldUtil.getAsProperties(event));
                             }
                         }
                         EventAPI.updateEvent(event, orgId);
