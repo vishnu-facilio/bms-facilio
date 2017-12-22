@@ -734,6 +734,129 @@ public enum DateOperators implements Operator<String> {
 			}
 			return null;
 		}
+	},
+	
+	LAST_MONTHS(39, "Last Months") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getMonthStartTime(-Integer.parseInt(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${LASTMONTHS}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime(-Integer.parseInt(value)) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
+	
+	WITHIN_HOURS(40, "Within Hours") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getHourStartTime(-Integer.parseInt(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getHourStartTime(1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${WITHINHOURS}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getHourStartTime(-Integer.parseInt(value)) <= currentVal && currentVal < DateTimeUtil.getHourStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
+	
+	NEXT_HOURS(41, "Next Hours") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getHourStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getHourStartTime(Integer.parseInt(value)+1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${NEXTHOURS}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getHourStartTime() <= currentVal && currentVal < DateTimeUtil.getHourStartTime(Integer.parseInt(value)+1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	}
 	;
 	
