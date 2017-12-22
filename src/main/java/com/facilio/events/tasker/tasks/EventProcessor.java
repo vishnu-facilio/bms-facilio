@@ -89,6 +89,7 @@ public class EventProcessor implements IRecordProcessor {
             EventContext event = EventAPI.processPayload(timestamp, object, orgId);
             Map<String, Object> prop = FieldUtil.getAsProperties(event);
             EventAPI.insertObject(prop);
+            event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
             if(eventRules.isEmpty()){
                 triggerAlarm(prop);
                 return true;
@@ -105,9 +106,7 @@ public class EventProcessor implements IRecordProcessor {
                         event.setInternalState(EventContext.EventInternalState.FILTERED);
 
                         if (ignoreEvent) {
-                            System.out.print("event ignored " + event.getSeverity() + " : " + event.getEventStateEnum() +" : ");
                             event.setEventState(EventContext.EventState.IGNORED);
-                            System.out.println("event ignored " + event.getSeverity() + " : " + event.getEventStateEnum() +" : " + event.getEventState());
                         } else {
 
                             event = EventTransformJob.transform(orgId, event, prop, rule);
@@ -138,7 +137,6 @@ public class EventProcessor implements IRecordProcessor {
                                 triggerAlarm(FieldUtil.getAsProperties(event));
                             }
                         }
-                        System.out.println("event " + event.getSeverity() + " : " + event.getEventStateEnum() +" : " + event.getEventState());
                         EventAPI.updateEvent(event, orgId);
                         return true;
                     } else {
@@ -154,7 +152,6 @@ public class EventProcessor implements IRecordProcessor {
     }
 
     private void triggerAlarm(Map<String, Object> prop) throws Exception {
-        System.out.println("Triggered Alarm");
         EventToAlarmJob.alarm(orgId, prop);
     }
 }

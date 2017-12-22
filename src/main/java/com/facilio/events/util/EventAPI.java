@@ -96,9 +96,7 @@ public class EventAPI {
 				.table("Event")
 				.fields(EventConstants.EventFieldFactory.getEventFields())
 				.andCustomWhere("ORGID = ? AND ID = ?", orgId, event.getId());
-		Map<String, Object> prop = FieldUtil.getAsProperties(event);
-		System.out.println(prop);
-		updatebuilder.update(prop);
+		updatebuilder.update(FieldUtil.getAsProperties(event));
 	}
 	
 	public static long getAssetFromNode(String node, long orgId) throws Exception {
