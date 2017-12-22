@@ -99,12 +99,14 @@ public class EventProcessor implements IRecordProcessor {
                     boolean isRuleMatched = criteria.computePredicate().evaluate(prop);
 
                     if (isRuleMatched) {
+                        System.out.println("rule matched" + event.getMessageKey());
                         boolean ignoreEvent = rule.isIgnoreEvent();
 
                         event.setEventRuleId(rule.getEventRuleId());
                         event.setInternalState(EventContext.EventInternalState.FILTERED);
 
                         if (ignoreEvent) {
+                            System.out.println("event ignored");
                             event.setEventState(EventContext.EventState.IGNORED);
                         } else {
 
