@@ -12,6 +12,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
+import com.facilio.events.tasker.tasks.EventStreamProcessor;
 import org.flywaydb.core.Flyway;
 
 import com.facilio.aws.util.AwsUtil;
@@ -82,7 +83,14 @@ public class FacilioContextListener implements ServletContextListener {
 				
 			}
 			
-			
+			try {
+				if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+					String streamName = AwsUtil.getConfig("streamName");
+					EventStreamProcessor.run(Long.parseLong(AwsUtil.getConfig("orgId")), streamName);
+				}
+			} catch (Exception e){
+				e.printStackTrace();
+			}
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
 //			ScheduleInfo schedule = new ScheduleInfo();

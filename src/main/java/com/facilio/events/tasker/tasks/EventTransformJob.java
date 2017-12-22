@@ -1,5 +1,6 @@
 package com.facilio.events.tasker.tasks;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -32,48 +33,46 @@ public class EventTransformJob extends FacilioJob{
 	@Override
 	public void execute(JobContext jc) 
 	{
-		if(AwsUtil.getConfig("enableeventjob").equals("true"))
-		{
-			try 
-			{
+		if(AwsUtil.getConfig("enableeventjob").equals("true")) {
+			try {
 				long orgId = AccountUtil.getCurrentOrg().getOrgId();
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(EventConstants.EventFieldFactory.getEventFields())
 														.table("Event")
 														.andCustomWhere("ORGID = ? AND EVENT_STATE = ? AND INTERNAL_STATE = ? AND EVENT_RULE_ID IS NOT NULL", orgId, EventState.READY.getIntVal(), EventInternalState.FILTERED.getIntVal());
 				List<Map<String, Object>> props = builder.get();
-				for(Map<String, Object> prop : props)
-				{
+				for(Map<String, Object> prop : props) {
 					EventContext event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
 					logger.log(Level.SEVERE, event.getEventRuleId()+"");
-					logger.log(Level.INFO, event.getEventRuleId()+" INfo");
 					EventRule rule = EventRulesAPI.getEventRule(orgId, event.getEventRuleId());
-					logger.log(Level.INFO, "Transform criteria : "+rule.getTransformCriteriaId());
-					if(rule.getTransformCriteriaId() != -1)
-					{
-						Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId());
-						logger.log(Level.INFO, prop.toString());
-						boolean isMatched = criteria.computePredicate().evaluate(prop);
-						if(isMatched)
-						{
-							logger.log(Level.INFO, event.getMessageKey()+" matched transform critiera of "+event.getEventRuleId());
-							JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, rule.getTransformAlertTemplateId());
-							JSONObject content = template.getTemplate(prop);
-							logger.log(Level.INFO, "template val : "+content);
-							prop.putAll(FieldUtil.getAsProperties(content));
-							logger.log(Level.INFO, "Transformed prop : "+prop);
-							event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
-						}
-					}
-					event.setInternalState(EventInternalState.TRANSFORMED);
-					event.getMessageKey();
+					event = transform(orgId, event, prop, rule);
 					EventAPI.updateEvent(event, orgId);
 				}
-			} 
-			catch (Exception e) 
-			{
+			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Exception while executing EventTransformJob :::"+e.getMessage(), e);
 			}
 		}
+	}
+
+	public static EventContext transform(long orgId, EventContext event, Map<String, Object> prop, EventRule rule) throws Exception {
+
+		logger.log(Level.INFO, "Transform criteria : "+rule.getTransformCriteriaId());
+		if(rule.getTransformCriteriaId() != -1)	{
+			Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getTransformCriteriaId());
+			logger.log(Level.INFO, prop.toString());
+			boolean isMatched = criteria.computePredicate().evaluate(prop);
+			if(isMatched) {
+				logger.log(Level.INFO, event.getMessageKey()+" matched transform critiera of "+event.getEventRuleId());
+				JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, rule.getTransformAlertTemplateId());
+				JSONObject content = template.getTemplate(prop);
+				logger.log(Level.INFO, "template val : "+content);
+				prop.putAll(FieldUtil.getAsProperties(content));
+				logger.log(Level.INFO, "Transformed prop : "+prop);
+				event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
+			}
+		}
+		event.setInternalState(EventInternalState.TRANSFORMED);
+		event.getMessageKey();
+		return event;
 	}
 }
