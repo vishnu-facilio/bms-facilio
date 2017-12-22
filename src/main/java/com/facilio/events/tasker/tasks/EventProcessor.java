@@ -50,7 +50,10 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void processRecords(ProcessRecordsInput processRecordsInput) {
         try {
-            eventRules = EventRulesAPI.getEventRules(orgId);
+            List<EventRule> ruleList = EventRulesAPI.getEventRules(orgId);
+            if(ruleList != null){
+                eventRules = ruleList;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
