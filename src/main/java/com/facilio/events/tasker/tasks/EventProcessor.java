@@ -1,6 +1,5 @@
 package com.facilio.events.tasker.tasks;
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -60,7 +59,7 @@ public class EventProcessor implements IRecordProcessor {
                 String data = decoder.decode(record.getData()).toString();
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(data);
-                boolean alarmCreated = process(record.getApproximateArrivalTimestamp().getTime(),  object, record.getSequenceNumber());
+                boolean alarmCreated = process(record.getApproximateArrivalTimestamp().getTime(),  object);
                 if(alarmCreated) {
                     processRecordsInput.getCheckpointer().checkpoint(record);
                 }
@@ -76,9 +75,9 @@ public class EventProcessor implements IRecordProcessor {
     }
 
 
-    private boolean process(long timestamp, JSONObject object, String sequenceNumber) {
+    private boolean process(long timestamp, JSONObject object) {
         try {
-            EventContext event = EventAPI.processPayload(timestamp, object, (Long)object.get("orgId"));
+            EventContext event = EventAPI.processPayload(timestamp, object, orgId);
             Map<String, Object> prop = FieldUtil.getAsProperties(event);
 
             for(EventRule rule : eventRules) {
