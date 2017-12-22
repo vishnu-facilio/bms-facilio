@@ -1,5 +1,6 @@
 package com.facilio.events.tasker.tasks;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -44,6 +45,11 @@ public class EventProcessor implements IRecordProcessor {
     @Override
     public void initialize(InitializationInput initializationInput) {
         this.shardId = initializationInput.getShardId();
+        try {
+            AccountUtil.setCurrentAccount(orgId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Initializing record processor for shard: " + shardId);
     }
 
@@ -139,6 +145,7 @@ public class EventProcessor implements IRecordProcessor {
     }
 
     private void triggerAlarm(Map<String, Object> prop) throws Exception {
+        System.out.println("Triggered Alarm");
         EventToAlarmJob.alarm(orgId, prop);
     }
 }
