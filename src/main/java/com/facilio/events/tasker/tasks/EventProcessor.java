@@ -107,7 +107,7 @@ public class EventProcessor implements IRecordProcessor {
                         if (ignoreEvent) {
                             System.out.print("event ignored " + event.getSeverity() + " : " + event.getEventStateEnum() +" : ");
                             event.setEventState(EventContext.EventState.IGNORED);
-                            System.out.println("event ignored " + event.getSeverity() + " : " + event.getEventStateEnum());
+                            System.out.println("event ignored " + event.getSeverity() + " : " + event.getEventStateEnum() +" : " + event.getEventState());
                         } else {
 
                             event = EventTransformJob.transform(orgId, event, prop, rule);
@@ -138,6 +138,7 @@ public class EventProcessor implements IRecordProcessor {
                                 triggerAlarm(FieldUtil.getAsProperties(event));
                             }
                         }
+                        System.out.println("event " + event.getSeverity() + " : " + event.getEventStateEnum() +" : " + event.getEventState());
                         EventAPI.updateEvent(event, orgId);
                         return true;
                     } else {
