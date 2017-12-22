@@ -21,7 +21,7 @@ public class EventStreamProcessor {
         //String streamName = AwsUtil.getConfig("streamName");
         java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
-        AWSCredentials credentials = new BasicAWSCredentials("AKIAID24IU7XN4ECH6WQ", "knoJS3Och3B4Qt53cOlI2vskfvZQbvGUz78G2Hs2");
+        AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
         AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
 
         String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID();

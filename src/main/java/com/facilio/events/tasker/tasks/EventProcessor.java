@@ -1,5 +1,6 @@
 package com.facilio.events.tasker.tasks;
 
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -59,8 +60,10 @@ public class EventProcessor implements IRecordProcessor {
                 String data = decoder.decode(record.getData()).toString();
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(data);
-                process(record.getApproximateArrivalTimestamp().getTime(),  object);
-                processRecordsInput.getCheckpointer().checkpoint(record);
+                boolean alarmCreated = process(record.getApproximateArrivalTimestamp().getTime(),  object, record.getSequenceNumber());
+                if(alarmCreated) {
+                    processRecordsInput.getCheckpointer().checkpoint(record);
+                }
             } catch (InvalidStateException | ShutdownException | CharacterCodingException | ParseException e) {
                 e.printStackTrace();
             }
@@ -73,7 +76,7 @@ public class EventProcessor implements IRecordProcessor {
     }
 
 
-    private void process(long timestamp, JSONObject object) {
+    private boolean process(long timestamp, JSONObject object, String sequenceNumber) {
         try {
             EventContext event = EventAPI.processPayload(timestamp, object, (Long)object.get("orgId"));
             Map<String, Object> prop = FieldUtil.getAsProperties(event);
@@ -107,22 +110,26 @@ public class EventProcessor implements IRecordProcessor {
                                     if (thresholdOccurs <= (numberOfEventsOccurred)) {
                                         eventCountMap.put(event.getMessageKey(), 0);
                                         triggerAlarm(FieldUtil.getAsProperties(event));
+                                        return true;
                                     }
                                 }
                             }
                         }
-                        break;
+                        return true;
                     }
                 } else {
                     triggerAlarm(prop);
+                    return true;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private void triggerAlarm(Map<String, Object> prop) throws Exception {
         EventToAlarmJob.alarm(orgId, prop);
+
     }
 }
