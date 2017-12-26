@@ -68,20 +68,20 @@ public class DashboardUtil {
 		}
 		return dashboardWidgetContexts;
 	}
-	public static WidgetReportContext getReportContext(Long reportId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getReportFields())
-				.table(ModuleFactory.getReportModule().getTableName())
-				.andCustomWhere(ModuleFactory.getReportModule().getTableName()+".ID = ?", reportId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			WidgetReportContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetReportContext.class);
-			return widgetReportContext;
-		}
-		return null;
-	}
+//	public static WidgetReportContext getReportContext(Long reportId) throws Exception {
+//		
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getReportFields())
+//				.table(ModuleFactory.getReportModule().getTableName())
+//				.andCustomWhere(ModuleFactory.getReportModule().getTableName()+".ID = ?", reportId);
+//		
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			WidgetReportContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetReportContext.class);
+//			return widgetReportContext;
+//		}
+//		return null;
+//	}
 	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getDashboardModule().getTableName())
