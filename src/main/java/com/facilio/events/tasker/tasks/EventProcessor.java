@@ -103,7 +103,6 @@ public class EventProcessor implements IRecordProcessor {
                         boolean ignoreEvent = rule.isIgnoreEvent();
 
                         event.setEventRuleId(rule.getEventRuleId());
-                        event.setInternalState(EventContext.EventInternalState.FILTERED);
 
                         if (ignoreEvent) {
                             event.setEventState(EventContext.EventState.IGNORED);
@@ -130,14 +129,17 @@ public class EventProcessor implements IRecordProcessor {
                                             eventCountMap.put(event.getMessageKey(), 0);
                                             triggerAlarm(FieldUtil.getAsProperties(event));
                                             return true;
+                                        } else {
+                                            event.setEventState(EventContext.EventState.IGNORED);
                                         }
                                     }
                                 }
-                                event.setInternalState(EventContext.EventInternalState.THRESHOLD_DONE);
                             } else {
                                 triggerAlarm(FieldUtil.getAsProperties(event));
+                                return true;
                             }
                         }
+                        event.setInternalState(EventContext.EventInternalState.COMPLETED);
                         EventAPI.updateEvent(event, orgId);
                         return true;
                     } else {
