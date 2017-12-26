@@ -17,7 +17,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enableeventjob=.*%enableeventjob=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=pre-production-1766931799.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
-    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.fazilio.in/websocket%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.in/websocket%g" $CONF_DIR/awsprops.properties
 
 fi
 
