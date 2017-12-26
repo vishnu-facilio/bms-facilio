@@ -169,6 +169,9 @@ public class Condition {
 		dynamicOperators.add(DateOperators.LAST_WEEK);
 		dynamicOperators.add(DateOperators.CURRENT_WEEK);
 		dynamicOperators.add(DateOperators.NEXT_WEEK);
+		dynamicOperators.add(DateOperators.LAST_MONTHS);
+		dynamicOperators.add(DateOperators.WITHIN_HOURS);
+		dynamicOperators.add(DateOperators.NEXT_HOURS);
 		return dynamicOperators;
 	}
 }
