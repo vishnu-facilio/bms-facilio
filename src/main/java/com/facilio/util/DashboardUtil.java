@@ -17,7 +17,6 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetPeriodContext;
 import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.context.WidgetReportContext;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
