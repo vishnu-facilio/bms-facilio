@@ -117,7 +117,7 @@ public class EventProcessor implements IRecordProcessor {
                                 boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(FieldUtil.getAsProperties(event));
                                 if (isThresholdMatched) {
                                     long currentEventTime = event.getCreatedTime();
-                                    boolean skipEvent = (currentEventTime - lastEventTime) > rule.getThresholdOverSeconds();
+                                    boolean skipEvent = (currentEventTime - lastEventTime) > (rule.getThresholdOverSeconds()*1000);
                                     lastEventTime = currentEventTime;
                                     if (skipEvent) {
                                         event.setEventState(EventContext.EventState.IGNORED);
