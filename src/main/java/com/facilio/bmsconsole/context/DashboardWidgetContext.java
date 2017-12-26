@@ -22,6 +22,13 @@ public class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String dataOptionName;
 	private String dataOptionDataUrl;
 	private int dataOptionRefreshIntervel;
+	private Long reportId;
+	public Long getReportId() {
+		return reportId;
+	}
+	public void setReportId(Long reportId) {
+		this.reportId = reportId;
+	}
 	private List<DashboardWidgetPeriodContext> periods = new ArrayList<>(); 
 	
 	public JSONObject getWidgetJsonObject() {
@@ -45,6 +52,7 @@ public class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 			for(DashboardWidgetPeriodContext period:this.getPeriods()) {
 				JSONObject periodJson = new JSONObject();
 				periodJson.put("label", period.getPeriodLabel());
+//				periodJson.put("value", period.getDataOperator());
 				periodJson.put("value", period.getPeriodValue());
 				periods.add(periodJson);
 			}
@@ -57,6 +65,7 @@ public class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		dataOptionsJson.put("type", getDataOptionType());
 		dataOptionsJson.put("name", getDataOptionName());
 		dataOptionsJson.put("dataurl", getDataOptionDataUrl());
+		dataOptionsJson.put("reportId", getReportId());
 		dataOptionsJson.put("refresh_interval", getDataOptionRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);

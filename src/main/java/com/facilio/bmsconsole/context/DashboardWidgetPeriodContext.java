@@ -6,6 +6,13 @@ public class DashboardWidgetPeriodContext {
 	Long widgetId;
 	String periodLabel;
 	String periodValue;
+	Integer dataOperator;
+	public Integer getDataOperator() {
+		return dataOperator;
+	}
+	public void setDataOperator(Integer dataOperator) {
+		this.dataOperator = dataOperator;
+	}
 	public Long getId() {
 		return id;
 	}

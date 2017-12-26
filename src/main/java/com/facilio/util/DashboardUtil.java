@@ -16,15 +16,34 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetPeriodContext;
+import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.WidgetReportContext;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
+	
+	
+	public static String getTimeFrameFloorValue(Operator dateOperator,String value) {
+		
+		switch(dateOperator.getOperatorId()) {
+		
+		case 30: 
+		case 31:
+		case 32:
+			return "FLOOR("+value+"/(1000*60*60*24))";
+		default:
+			return null;
+		}
+ 	}
 	
 	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
 		
@@ -48,6 +67,20 @@ public class DashboardUtil {
 			}
 		}
 		return dashboardWidgetContexts;
+	}
+	public static WidgetReportContext getReportContext(Long reportId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportFields())
+				.table(ModuleFactory.getReportModule().getTableName())
+				.andCustomWhere(ModuleFactory.getReportModule().getTableName()+".ID = ?", reportId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			WidgetReportContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetReportContext.class);
+			return widgetReportContext;
+		}
+		return null;
 	}
 	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

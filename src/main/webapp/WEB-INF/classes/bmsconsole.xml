@@ -2779,6 +2779,11 @@
 				<param name="includeProperties">^dashboardWidget.*</param>
 			</result>
 		</action>
+		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
