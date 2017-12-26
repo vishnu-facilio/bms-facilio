@@ -110,6 +110,7 @@ public class EventProcessor implements IRecordProcessor {
                         } else {
 
                             event = EventTransformJob.transform(orgId, event, prop, rule);
+                            event.setEventRuleId(rule.getEventRuleId());
 
                             if (rule.getThresholdCriteriaId() != -1) {
                                 Criteria thresholdCriteria = CriteriaAPI.getCriteria(orgId, rule.getThresholdCriteriaId());
