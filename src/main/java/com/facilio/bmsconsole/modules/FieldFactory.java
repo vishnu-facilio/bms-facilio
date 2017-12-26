@@ -222,6 +222,20 @@ public class FieldFactory {
 		}
 		return field;
 	}
+
+	public static FacilioField getKinesisField() {
+		return getKinesisField(null);
+	}
+	public static FacilioField getKinesisField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("kinesisTopic");
+		field.setDataType(FieldType.STRING);
+		field.setColumnName("KINESIS_TOPIC");
+		if(module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
 	
 	public static FacilioField getUserIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();

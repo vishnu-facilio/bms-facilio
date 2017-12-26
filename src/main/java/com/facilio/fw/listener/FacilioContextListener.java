@@ -7,12 +7,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.events.tasker.tasks.EventStreamProcessor;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import org.flywaydb.core.Flyway;
 
 import com.facilio.aws.util.AwsUtil;
@@ -84,9 +91,24 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			
 			try {
-				if("stage".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
-					String streamName = AwsUtil.getConfig("streamName");
-					new Thread(() -> EventStreamProcessor.run(Long.parseLong(AwsUtil.getConfig("orgId")), streamName)).start();
+				if(! "production".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
+					List<FacilioField> columnList = new ArrayList<>();
+					columnList.add(FieldFactory.getOrgIdField());
+					columnList.add(FieldFactory.getKinesisField());
+
+					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
+							.select(columnList);
+					List<Map<String, Object>> props = builder.get();
+					for(Map<String, Object> prop : props) {
+						String streamName = (String)prop.get("kinesisTopic");
+						Long orgId = (Long)prop.get("orgId");
+						if(streamName != null && streamName.length() > 0 ) {
+							System.out.println("Starting kinesis processor for : " + orgId + " : " + streamName);
+							new Thread(() -> EventStreamProcessor.run(orgId, streamName)).start();
+						} else {
+							System.out.println("No Stream found for : " + orgId );
+						}
+					}
 				}
 			} catch (Exception e){
 				e.printStackTrace();
