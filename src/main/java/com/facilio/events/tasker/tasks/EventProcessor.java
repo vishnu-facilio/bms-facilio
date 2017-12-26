@@ -114,10 +114,10 @@ public class EventProcessor implements IRecordProcessor {
 
                             if (rule.getThresholdCriteriaId() != -1) {
                                 Criteria thresholdCriteria = CriteriaAPI.getCriteria(orgId, rule.getThresholdCriteriaId());
-                                boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(event);
+                                boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(FieldUtil.getAsProperties(event));
                                 if (isThresholdMatched) {
                                     long currentEventTime = event.getCreatedTime();
-                                    boolean skipEvent = (currentEventTime - lastEventTime) < rule.getThresholdOverSeconds();
+                                    boolean skipEvent = (currentEventTime - lastEventTime) > rule.getThresholdOverSeconds();
                                     lastEventTime = currentEventTime;
                                     if (skipEvent) {
                                         event.setEventState(EventContext.EventState.IGNORED);
