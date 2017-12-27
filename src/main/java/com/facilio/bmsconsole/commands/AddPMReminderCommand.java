@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -29,33 +31,54 @@ public class AddPMReminderCommand implements Command {
 			if(pm != null && pm.getId() != -1) {
 				List<ActionContext> actions = new ArrayList<>();
 				for(PMReminder reminder : reminders) {
-					reminder.setPmId(pm.getId());
-					ActionContext action = reminder.getAction();
-					if(action == null) {
-						action = new ActionContext();
-						action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
-						
-						switch(reminder.getTypeEnum()) {
-							case BEFORE: action.setDefaultTemplateId(10);break;
-							case AFTER: action.setDefaultTemplateId(11);break;
+					if(reminder.getDuration() != -1) {
+						reminder.setPmId(pm.getId());
+						ActionContext action = reminder.getAction();
+						if(action == null) {
+							action = new ActionContext();
+							action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
+							
+							switch(reminder.getTypeEnum()) {
+								case BEFORE: action.setDefaultTemplateId(10);break;
+								case AFTER: action.setDefaultTemplateId(11);break;
+							}
+							reminder.setAction(action);
 						}
-						reminder.setAction(action);
+						actions.add(action);
 					}
-					actions.add(action);
 				}
 				ActionAPI.addActions(actions);
 				
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 																.fields(FieldFactory.getPMReminderFields())
 																.table(ModuleFactory.getPMReminderModule().getTableName());
+				List<Map<String, Object>> reminderProps = new ArrayList<>();
 				for(PMReminder reminder : reminders) {
 					reminder.setOrgId(AccountUtil.getCurrentOrg().getId());
 					reminder.setActionId(reminder.getAction().getId());
-					insertBuilder.addRecord(FieldUtil.getAsProperties(reminder));
+					Map<String, Object> reminderProp = FieldUtil.getAsProperties(reminder);
+					insertBuilder.addRecord(reminderProp);
+					reminderProps.add(reminderProp);
 				}
 				insertBuilder.save();
+				
+				long nextExecutionTime = pm.getSchedule().nextExecutionTime(getStartTimeInSecond(pm.getStartTime()));
+				
+				for(int i=0; i<reminders.size(); i++) {
+					long schedulerId = (long) reminderProps.get(i).get("id");
+					PMReminder reminder = reminders.get(i);
+					reminder.setId(schedulerId);
+					CommonCommandUtil.schedulePMRemainder(reminder, -1l, nextExecutionTime);
+				}
 			}
 		}
 		return false;
+	}
+	
+	private static long getStartTimeInSecond(long startTime) {
+		long startTimeInSecond = startTime/1000;
+		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
+		
+		return startTimeInSecond;
 	}
 }

@@ -9,12 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -23,9 +22,9 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class CommonCommandUtil {
@@ -159,5 +158,21 @@ public class CommonCommandUtil {
 			e.printStackTrace();
 		}
 		return null;	
+	}
+	
+	public static void schedulePMRemainder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime) throws Exception {
+		FacilioTimer.deleteJob(reminder.getId(), "PMReminder");
+		switch(reminder.getTypeEnum()) {
+			case BEFORE:
+				if(nextExecutionTime != -1) {
+					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
+				}
+				break;
+			case AFTER:
+				if(currentExecutionTime != -1) {
+					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
+				}
+				break;
+		}
 	}
 }

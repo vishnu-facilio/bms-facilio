@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -46,17 +47,7 @@ public class PMToWorkOrder extends FacilioJob {
 		if(reminderProps != null && !reminderProps.isEmpty()) {
 			for(Map<String, Object> reminderProp : reminderProps) {
 				PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
-				
-				switch(reminder.getTypeEnum()) {
-					case BEFORE:
-						if(jc.getNextExecutionTime() != -1) {
-							FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", (jc.getNextExecutionTime()-reminder.getDuration()), "facilio");
-						}
-						break;
-					case AFTER:
-						FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", (jc.getExecutionTime()+reminder.getDuration()), "facilio");
-						break;
-				}
+				CommonCommandUtil.schedulePMRemainder(reminder, jc.getExecutionTime(), jc.getNextExecutionTime());
 			}
 		}
 	}

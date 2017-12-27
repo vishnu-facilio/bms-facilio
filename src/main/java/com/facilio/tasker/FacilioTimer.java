@@ -137,6 +137,10 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
+	public static void deleteJob(long jobId, String jobName) throws Exception {
+		JobStore.deleteJob(jobId, jobName);
+	}
+	
 	private static long getCurrentOrgId() {
 		long orgId = -1;
 		if(AccountUtil.getCurrentOrg() != null) {

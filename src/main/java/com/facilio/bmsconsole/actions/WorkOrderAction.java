@@ -137,7 +137,7 @@ public class WorkOrderAction extends ActionSupport {
 			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
 		}
 		preventivemaintenance.setStatus(true);
-		
+		workorder.setRequester(null);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
@@ -150,6 +150,12 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	
 	private List<PMReminder> reminders;
+	public List<PMReminder> getReminders() {
+		return reminders;
+	}
+	public void setReminders(List<PMReminder> reminders) {
+		this.reminders = reminders;
+	}
 
 	private long pmId = -1;
 	public long getPmId() {
