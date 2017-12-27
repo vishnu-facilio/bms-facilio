@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.PMRemainder;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -27,34 +27,34 @@ public class PMToWorkOrder extends FacilioJob {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			bean.addWorkOrderFromPM(pmId);
 			
-			scheduleRemainders(pmId, jc);
+			scheduleReminders(pmId, jc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	private void scheduleRemainders(long pmId, JobContext jc) throws Exception {
-		FacilioModule module = ModuleFactory.getPMRemainderModule();
+	private void scheduleReminders(long pmId, JobContext jc) throws Exception {
+		FacilioModule module = ModuleFactory.getPMReminderModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
-														.select(FieldFactory.getPMRemainderFields())
+														.select(FieldFactory.getPMReminderFields())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCustomWhere("PM_ID = ?", pmId);
 		
-		List<Map<String, Object>> remainderProps = selectBuilder.get();
-		if(remainderProps != null && !remainderProps.isEmpty()) {
-			for(Map<String, Object> remainderProp : remainderProps) {
-				PMRemainder remainder = FieldUtil.getAsBeanFromMap(remainderProp, PMRemainder.class);
+		List<Map<String, Object>> reminderProps = selectBuilder.get();
+		if(reminderProps != null && !reminderProps.isEmpty()) {
+			for(Map<String, Object> reminderProp : reminderProps) {
+				PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
 				
-				switch(remainder.getTypeEnum()) {
+				switch(reminder.getTypeEnum()) {
 					case BEFORE:
 						if(jc.getNextExecutionTime() != -1) {
-							FacilioTimer.scheduleOneTimeJob(remainder.getId(), "PMRemainder", (jc.getNextExecutionTime()-remainder.getDuration()), "facilio");
+							FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", (jc.getNextExecutionTime()-reminder.getDuration()), "facilio");
 						}
 						break;
 					case AFTER:
-						FacilioTimer.scheduleOneTimeJob(remainder.getId(), "PMRemainder", (jc.getExecutionTime()+remainder.getDuration()), "facilio");
+						FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", (jc.getExecutionTime()+reminder.getDuration()), "facilio");
 						break;
 				}
 			}

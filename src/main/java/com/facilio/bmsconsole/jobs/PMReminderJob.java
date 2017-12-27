@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.PMRemainder;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -35,48 +35,48 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
 
-public class PMRemainderJob extends FacilioJob {
+public class PMReminderJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			long remainderId = jc.getJobId();
-			List<FacilioField> fields = FieldFactory.getPMRemainderFields();
+			long reminderId = jc.getJobId();
+			List<FacilioField> fields = FieldFactory.getPMReminderFields();
 			fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
-			FacilioModule module = ModuleFactory.getPMRemainderModule();
+			FacilioModule module = ModuleFactory.getPMReminderModule();
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table(module.getTableName())
 															.innerJoin("Preventive_Maintenance")
-															.on("PM_Remainders.PM_ID = Preventive_Maintenance.ID")
+															.on("PM_Reminders.PM_ID = Preventive_Maintenance.ID")
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-															.andCondition(CriteriaAPI.getIdCondition(remainderId, module));
+															.andCondition(CriteriaAPI.getIdCondition(reminderId, module));
 			
-			List<Map<String, Object>> remainderProps = selectBuilder.get();
-			if(remainderProps != null && !remainderProps.isEmpty()) {
-				//Do not use ID field of both PM and remainder. It'll be wrong id
-				PMRemainder remainder = FieldUtil.getAsBeanFromMap(remainderProps.get(0), PMRemainder.class);
-				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(remainderProps.get(0), PreventiveMaintenance.class);
+			List<Map<String, Object>> reminderProps = selectBuilder.get();
+			if(reminderProps != null && !reminderProps.isEmpty()) {
+				//Do not use ID field of both PM and reminder. It'll be wrong id
+				PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProps.get(0), PMReminder.class);
+				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(reminderProps.get(0), PreventiveMaintenance.class);
 				
 				WorkOrderContext wo = null;
-				switch(remainder.getTypeEnum()) {
+				switch(reminder.getTypeEnum()) {
 					case BEFORE:
 								long templateId = pm.getTemplateId();
 								JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), templateId);
 								JSONObject content = template.getTemplate(null);
 								wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
 								wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-								wo.setCreatedTime((jc.getExecutionTime()+remainder.getDuration())*1000);
+								wo.setCreatedTime((jc.getExecutionTime()+reminder.getDuration())*1000);
 								break;
 					case AFTER:
-								wo = getLatestWO(remainder.getPmId());
+								wo = getLatestWO(reminder.getPmId());
 								break;
 				}
 				
-				if(remainder.getTypeEnum() == PMRemainder.RemainderType.BEFORE || !isClosed(wo)) {
-					ActionContext action = ActionAPI.getAction(remainder.getActionId());
+				if(reminder.getTypeEnum() == PMReminder.ReminderType.BEFORE || !isClosed(wo)) {
+					ActionContext action = ActionAPI.getAction(reminder.getActionId());
 					if(action != null) {
 						Map<String, Object> placeHolders = new HashMap<>();
 						CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsProperties(wo), placeHolders);

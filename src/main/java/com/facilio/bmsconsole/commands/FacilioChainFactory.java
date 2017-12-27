@@ -1094,7 +1094,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new AddWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
-		c.addCommand(new AddPMRemainderCommand());
+		c.addCommand(new AddPMReminderCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -20,8 +20,8 @@ public enum DefaultTemplates implements ActionTemplate {
 	ALARM_UPDATION_SMS(7),
 	ALARM_CREATION_PUSH(8),
 	ALARM_UPDATION_PUSH(9),
-	PM_EMAIL_REMAINDER(10),
-	PM_EMAIL_DUE_REMAINDER(11)
+	PM_EMAIL_REMINDER(10),
+	PM_EMAIL_DUE_REMINDER(11)
 	;
 	
 	private int val;

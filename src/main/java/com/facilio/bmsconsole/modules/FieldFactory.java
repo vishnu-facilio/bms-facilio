@@ -1961,9 +1961,9 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getPMRemainderFields() {
+	public static List<FacilioField> getPMReminderFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getPMRemainderModule();
+		FacilioModule module = ModuleFactory.getPMReminderModule();
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
@@ -1978,7 +1978,7 @@ public class FieldFactory {
 		FacilioField type = new FacilioField();
 		type.setName("type");
 		type.setDataType(FieldType.NUMBER);
-		type.setColumnName("REMAINDER_TYPE");
+		type.setColumnName("REMINDER_TYPE");
 		type.setModule(module);
 		fields.add(type);
 		

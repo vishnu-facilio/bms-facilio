@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.workflow.ActionContext;
 
-public class PMRemainder {
+public class PMReminder {
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -27,20 +27,20 @@ public class PMRemainder {
 		this.pmId = pmId;
 	}
 	
-	private RemainderType type;
+	private ReminderType type;
 	public int getType() {
 		if(type != null) {
 			return type.getIntVal();
 		}
 		return -1;
 	}
-	public RemainderType getTypeEnum() {
+	public ReminderType getTypeEnum() {
 		return type;
 	}
 	public void setType(int type) {
-		this.type = REMAINDER_TYPES[type - 1];
+		this.type = REMINDER_TYPES[type - 1];
 	}
-	public void setType(RemainderType type) {
+	public void setType(ReminderType type) {
 		this.type = type;
 	}
 	
@@ -68,8 +68,8 @@ public class PMRemainder {
 		this.action = action;
 	}
 
-	private RemainderType[] REMAINDER_TYPES = RemainderType.values();
-	public static enum RemainderType {
+	private ReminderType[] REMINDER_TYPES = ReminderType.values();
+	public static enum ReminderType {
 		BEFORE,
 		AFTER
 		;

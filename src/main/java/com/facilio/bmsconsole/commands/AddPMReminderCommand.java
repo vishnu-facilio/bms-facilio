@@ -7,7 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.PMRemainder;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -18,40 +18,40 @@ import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
-public class AddPMRemainderCommand implements Command {
+public class AddPMReminderCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<PMRemainder> remainders = (List<PMRemainder>) context.get(FacilioConstants.ContextNames.PM_REMAINDERS);
-		if(remainders != null && !remainders.isEmpty()) {
+		List<PMReminder> reminders = (List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS);
+		if(reminders != null && !reminders.isEmpty()) {
 			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 			if(pm != null && pm.getId() != -1) {
 				List<ActionContext> actions = new ArrayList<>();
-				for(PMRemainder remainder : remainders) {
-					remainder.setPmId(pm.getId());
-					ActionContext action = remainder.getAction();
+				for(PMReminder reminder : reminders) {
+					reminder.setPmId(pm.getId());
+					ActionContext action = reminder.getAction();
 					if(action == null) {
 						action = new ActionContext();
 						action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
 						
-						switch(remainder.getTypeEnum()) {
+						switch(reminder.getTypeEnum()) {
 							case BEFORE: action.setDefaultTemplateId(10);break;
 							case AFTER: action.setDefaultTemplateId(11);break;
 						}
-						remainder.setAction(action);
+						reminder.setAction(action);
 					}
 					actions.add(action);
 				}
 				ActionAPI.addActions(actions);
 				
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-																.fields(FieldFactory.getPMRemainderFields())
-																.table(ModuleFactory.getPMRemainderModule().getTableName());
-				for(PMRemainder remainder : remainders) {
-					remainder.setOrgId(AccountUtil.getCurrentOrg().getId());
-					remainder.setActionId(remainder.getAction().getId());
-					insertBuilder.addRecord(FieldUtil.getAsProperties(remainder));
+																.fields(FieldFactory.getPMReminderFields())
+																.table(ModuleFactory.getPMReminderModule().getTableName());
+				for(PMReminder reminder : reminders) {
+					reminder.setOrgId(AccountUtil.getCurrentOrg().getId());
+					reminder.setActionId(reminder.getAction().getId());
+					insertBuilder.addRecord(FieldUtil.getAsProperties(reminder));
 				}
 				insertBuilder.save();
 			}

@@ -271,7 +271,7 @@ public class FacilioConstants {
 		public static final String METERTYPE = "METERTYPE";
 		
 		public static final String PREVENTIVE_MAINTENANCE = "preventivemaintenance";
-		public static final String PM_REMAINDERS = "pmremainders";
+		public static final String PM_REMINDERS = "pmreminders";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
