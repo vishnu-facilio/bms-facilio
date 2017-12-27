@@ -58,11 +58,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							if(actions != null) {
 								for(ActionContext action : actions)
 								{
-									ActionTemplate template = action.getTemplate();
-									if(template != null) {
-										JSONObject actionObj = template.getTemplate(placeHolders);
-										action.getActionType().performAction(actionObj, context);
-									}
+									action.executeAction(placeHolders, context);
 								}
 							}
 						}

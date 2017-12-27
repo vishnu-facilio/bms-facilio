@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.PMRemainder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -138,6 +139,7 @@ public class WorkOrderAction extends ActionSupport {
 		preventivemaintenance.setStatus(true);
 		
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
+		context.put(FacilioConstants.ContextNames.PM_REMAINDERS, remainders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		
@@ -147,6 +149,14 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<PMRemainder> remainders;
+	public List<PMRemainder> getRemainders() {
+		return remainders;
+	}
+	public void setRemainders(List<PMRemainder> remainders) {
+		this.remainders = remainders;
+	}
+
 	private long pmId = -1;
 	public long getPmId() {
 		return pmId;
@@ -342,7 +352,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
 		
 		workorder = new WorkOrderContext();
-		workorder.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Closed")); //We shouldn't allow close to be edited
+		workorder.setStatus(TicketAPI.getStatus("Closed")); //We shouldn't allow close to be edited
 		
 		return updateWorkOrder(context);
 	}

@@ -485,4 +485,12 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Report");
 		return dashboardWigetModule;
 	}
+	public static FacilioModule getPMRemainderModule() {
+		FacilioModule remainderModule = new FacilioModule();
+		remainderModule.setName("pmremainder");
+		remainderModule.setDisplayName("Preventive Maintenance Remainder");
+		remainderModule.setTableName("PM_Remainders");
+		
+		return remainderModule;
+	}
 }

@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -37,6 +38,12 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
+	}
+	public String getCreatedTimeString() {
+		if(createdTime != -1) {
+			return DateTimeUtil.getZonedDateTime(createdTime).format(FacilioConstants.READABLE_DATE_FORMAT);
+		}
+		return null;
 	}
 	
 	private long duration = -1; //In Seconds

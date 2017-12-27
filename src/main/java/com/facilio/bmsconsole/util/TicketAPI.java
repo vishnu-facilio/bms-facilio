@@ -41,7 +41,7 @@ public class TicketAPI {
 		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
 	}
 	
-	public static TicketStatusContext getStatus(long orgId, String status) throws Exception
+	public static TicketStatusContext getStatus(String status) throws Exception
 	{
 		try
 		{
@@ -51,7 +51,7 @@ public class TicketAPI {
 																.moduleName("ticketstatus")
 																.beanClass(TicketStatusContext.class)
 																.select(modBean.getAllFields("ticketstatus"))
-																.andCustomWhere("ORGID = ? AND STATUS = ?", orgId, status)
+																.andCustomWhere("STATUS = ?", status)
 																.orderBy("ID");
 			List<TicketStatusContext> statuses = builder.get();
 			return statuses.get(0);
@@ -221,11 +221,11 @@ public class TicketAPI {
 			status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), status.getId());
 		}
 		else {
-			ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Submitted"));
+			ticket.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
 		if(ticket.getAssignedTo() != null && (status == null || status.getStatus().equals("Submitted"))) {
-			ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Assigned"));
+			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
 	}
 	

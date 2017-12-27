@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -11,7 +9,6 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
-import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
 
@@ -1097,6 +1094,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new AddWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new AddPMRemainderCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

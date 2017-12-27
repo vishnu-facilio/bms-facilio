@@ -124,6 +124,19 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
+	public static void scheduleOneTimeJob(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
+		
+		JobContext jc = new JobContext();
+		jc.setJobId(jobId);
+		jc.setOrgId(getCurrentOrgId());
+		jc.setJobName(jobName);
+		jc.setIsPeriodic(false);
+		jc.setActive(true);
+		jc.setExecutionTime(nextExecutionTime);
+		jc.setExecutorName(executorName);
+		JobStore.addJob(jc);
+	}
+	
 	private static long getCurrentOrgId() {
 		long orgId = -1;
 		if(AccountUtil.getCurrentOrg() != null) {

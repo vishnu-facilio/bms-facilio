@@ -36,11 +36,11 @@ public class UpdateWorkOrderCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
-				workOrder.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Assigned"));
+				workOrder.setStatus(TicketAPI.getStatus("Assigned"));
 			}
 			
 			if(workOrder.getStatus() != null) {
-				if(workOrder.getStatus().getId() == TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Closed").getId()) {
+				if(workOrder.getStatus().getId() == TicketAPI.getStatus("Closed").getId()) {
 					workOrder.setActualWorkEnd(System.currentTimeMillis());
 				}
 			}

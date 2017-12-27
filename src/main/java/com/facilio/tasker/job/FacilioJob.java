@@ -38,6 +38,7 @@ public abstract class FacilioJob implements Runnable {
 				AccountUtil.setCurrentAccount(orgId);
 			}
 			long nextExecutionTime = getNextExecutionTime();
+			jc.setNextExecutionTime(nextExecutionTime);
 			
 			execute(jc);
 			

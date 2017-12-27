@@ -109,6 +109,14 @@ public class JobContext {
 		this.executionTime = executionTime;
 	}
 	
+	private long nextExecutionTime = -1;
+	public long getNextExecutionTime() {
+		return nextExecutionTime;
+	}
+	public void setNextExecutionTime(long nextExecutionTime) {
+		this.nextExecutionTime = nextExecutionTime;
+	}
+
 	private String executorName;
 	public String getExecutorName() {
 		return executorName;

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.workflow;
 
-import org.json.simple.JSONArray;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 public class ActionContext {
@@ -78,5 +80,14 @@ public class ActionContext {
 	}
 	public void setTemplateJson(JSONObject templateJson) {
 		this.templateJson = templateJson;
+	}
+	
+	public boolean executeAction(Map<String, Object> placeHolders, Context context) {
+		if(template != null) {
+			JSONObject actionObj = template.getTemplate(placeHolders);
+			actionType.performAction(actionObj, context);
+			return true;
+		}
+		return false;
 	}
 }

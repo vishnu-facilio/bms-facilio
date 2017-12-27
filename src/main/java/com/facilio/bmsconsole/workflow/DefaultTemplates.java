@@ -19,7 +19,9 @@ public enum DefaultTemplates implements ActionTemplate {
 	ALARM_CREATION_SMS(6),
 	ALARM_UPDATION_SMS(7),
 	ALARM_CREATION_PUSH(8),
-	ALARM_UPDATION_PUSH(9)
+	ALARM_UPDATION_PUSH(9),
+	PM_EMAIL_REMAINDER(10),
+	PM_EMAIL_DUE_REMAINDER(11)
 	;
 	
 	private int val;
@@ -136,6 +138,18 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				break;
+			case 10:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "New WorkOrder will be created on ${workorder.createdTimeString}");
+				json.put("message", "A new work order will be created on ${workorder.createdTimeString} and will be assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nRegards,\nTeam Facilio");
+				break;
+			case 11:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Workorder in due");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 				
 		}

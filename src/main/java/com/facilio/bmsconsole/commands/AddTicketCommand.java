@@ -32,7 +32,7 @@ public class AddTicketCommand implements Command {
 			
 			if(ticket.getStatus() == null)
 			{
-				ticket.setStatus(TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), "Submitted"));
+				ticket.setStatus(TicketAPI.getStatus("Submitted"));
 			}
 			
 			InsertRecordBuilder<TicketContext> builder = new InsertRecordBuilder<TicketContext>()

@@ -37,7 +37,9 @@ public enum ActionType {
 						AwsUtil.sendEmail(obj);
 						
 						emails.add(to);
-						context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
+						if(context != null) {
+							context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
+						}
 					}
 				}
 				catch(Exception e) {
@@ -59,7 +61,9 @@ public enum ActionType {
 						SMSUtil.sendSMS(obj);
 						
 						sms.add(to);
-						context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
+						if(context != null) {
+							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
+						}
 					}
 				}
 				catch(Exception e) {
@@ -95,7 +99,9 @@ public enum ActionType {
 								emails.add(to);
 							}
 						}
-						context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
+						if(context != null) {
+							context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
+						}
 					}
 				}
 				catch(Exception e) {
@@ -131,7 +137,9 @@ public enum ActionType {
 								sms.add(to);
 							}
 						}
-						context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
+						if(context != null) {
+							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
+						}
 					}
 				}
 				catch(Exception e) {

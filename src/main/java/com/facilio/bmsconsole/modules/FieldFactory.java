@@ -1960,4 +1960,42 @@ public class FieldFactory {
 		fields.add(isComparisionReport);
 		return fields;
 	}
+	
+	public static List<FacilioField> getPMRemainderFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMRemainderModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		FacilioField pmId = new FacilioField();
+		pmId.setName("pmId");
+		pmId.setDataType(FieldType.NUMBER);
+		pmId.setColumnName("PM_ID");
+		pmId.setModule(module);
+		fields.add(pmId);
+		
+		FacilioField type = new FacilioField();
+		type.setName("type");
+		type.setDataType(FieldType.NUMBER);
+		type.setColumnName("REMAINDER_TYPE");
+		type.setModule(module);
+		fields.add(type);
+		
+		FacilioField duration = new FacilioField();
+		duration.setName("duration");
+		duration.setDataType(FieldType.NUMBER);
+		duration.setColumnName("DURATION");
+		duration.setModule(module);
+		fields.add(duration);
+		
+		FacilioField actionId = new FacilioField();
+		actionId.setName("actionId");
+		actionId.setDataType(FieldType.NUMBER);
+		actionId.setColumnName("ACTION_ID");
+		actionId.setModule(module);
+		fields.add(actionId);
+		
+		return fields;
+	}
 }	

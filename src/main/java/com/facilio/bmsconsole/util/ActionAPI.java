@@ -1,13 +1,16 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -16,54 +19,61 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class ActionAPI {
 	public static List<ActionContext> getActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(FieldFactory.getActionFields())
-					.table("Action")
-					.innerJoin("Workflow_Rule_Action")
-					.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
-					.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ?", orgId, workflowRuleId);
-			return getActionsFromPropList(actionBuilder.get());
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getActionFields())
+				.table("Action")
+				.innerJoin("Workflow_Rule_Action")
+				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
+				.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ?", orgId, workflowRuleId);
+		return getActionsFromPropList(actionBuilder.get());
 	}
+	
+	public static ActionContext getAction(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getActionModule();
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getActionFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
+		if(actions != null && !actions.isEmpty()) {
+			return actions.get(0);
+		}
+		return null;
+	}
+	
 	public static List<Long> addActions(List<ActionContext> actions) throws Exception {
 		List<Long> actionIds = new ArrayList<>();
-		
+		List<Map<String, Object>> actionProps = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
 		for(ActionContext action:actions) {
-			Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+			action.setOrgId(orgId);
+			actionProps.add(FieldUtil.getAsProperties(action));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table("Action")
 														.fields(FieldFactory.getActionFields())
-														.addRecord(actionProps);
-			insertBuilder.save();
-			actionIds.add((Long) actionProps.get("id"));
-			action.setId((Long) actionProps.get("id"));
+														.addRecords(actionProps);
+		insertBuilder.save();
+		for(int i=0; i<actionProps.size(); i++) {
+			long actionId = (long) actionProps.get(i).get("id");
+			actionIds.add(actionId);
+			actions.get(i).setId(actionId);
 		}
 		return actionIds;
-		
 	}
+	
 	public static List<ActionContext> getActionsFromWorkflowRuleName(long orgId, String workflowName) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
-					.select(FieldFactory.getActionFields())
-					.table("Action")
-					.innerJoin("Workflow_Rule_Action")
-					.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
-					.innerJoin("Workflow_Rule")
-					.on("Workflow_Rule_Action.WORKFLOW_RULE_ID = Workflow_Rule.ID")
-					.andCustomWhere("Action.ORGID = ? AND Workflow_Rule.NAME = ?", orgId, workflowName);
-			return getActionsFromPropList(actionBuilder.get());
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getActionFields())
+				.table("Action")
+				.innerJoin("Workflow_Rule_Action")
+				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
+				.innerJoin("Workflow_Rule")
+				.on("Workflow_Rule_Action.WORKFLOW_RULE_ID = Workflow_Rule.ID")
+				.andCustomWhere("Action.ORGID = ? AND Workflow_Rule.NAME = ?", orgId, workflowName);
+		return getActionsFromPropList(actionBuilder.get());
 	}
 	
 	public static int updateAction(long orgId, ActionContext action, long id) throws Exception {
