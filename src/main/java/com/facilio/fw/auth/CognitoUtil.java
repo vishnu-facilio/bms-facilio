@@ -1,6 +1,7 @@
 package com.facilio.fw.auth;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,6 +25,12 @@ import com.amazonaws.services.cognitoidp.model.AdminGetUserResult;
 import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
 import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -36,11 +43,58 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
+
+
+
+
 public class CognitoUtil {
 
 	private static AWSCognitoIdentityProvider IDP_PROVIDER = null;
 	
 	private static AmazonCognitoIdentity IDENTITY_CLIENT = null;
+	
+	public static void main(String args[]) {
+		String s = createJWT("id", "auth0", "Hello world", System.currentTimeMillis());
+		System.out.println("Encoded JWT \n"+s);
+		
+		validateJWT(s);
+	}
+	public  static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+		 
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    String token = JWT.create().withSubject(subject)
+		        .withIssuer(issuer)
+		        .sign(algorithm);
+		    return token;
+		} catch (UnsupportedEncodingException exception){
+		    //UTF-8 encoding not supported
+		} catch (JWTCreationException exception){
+		    //Invalid Signing configuration / Couldn't convert Claims.
+		}
+		return null;
+	}
+	
+	public static String  validateJWT(String token )
+	{
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    JWTVerifier verifier = JWT.require(algorithm)
+		        .withIssuer("auth0")
+		        .build(); //Reusable verifier instance
+		    DecodedJWT jwt = verifier.verify(token);
+		    System.out.println("decoded "+jwt.getSubject());
+		    return jwt.getSubject();
+		} catch (UnsupportedEncodingException exception){
+		    //UTF-8 encoding not supported
+			return null;
+
+		} catch (JWTVerificationException exception){
+		    //Invalid signature/claims
+			return null;
+
+		}
+	}
 	
 	public static AWSCognitoIdentityProvider getIdpProvider() {
 		if (IDP_PROVIDER == null) {
