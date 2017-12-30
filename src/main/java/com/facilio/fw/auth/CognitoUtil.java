@@ -57,7 +57,7 @@ public class CognitoUtil {
 		String s = createJWT("id", "auth0", "Hello world", System.currentTimeMillis());
 		System.out.println("Encoded JWT \n"+s);
 		
-		validateJWT(s);
+		validateJWT(s,"auth0");
 	}
 	public  static String createJWT(String id, String issuer, String subject, long ttlMillis) {
 		 
@@ -75,15 +75,16 @@ public class CognitoUtil {
 		return null;
 	}
 	
-	public static String  validateJWT(String token )
+	public static String  validateJWT(String token ,String issuer)
 	{
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    JWTVerifier verifier = JWT.require(algorithm)
-		        .withIssuer("auth0")
+		        .withIssuer(issuer)
 		        .build(); //Reusable verifier instance
+
 		    DecodedJWT jwt = verifier.verify(token);
-		    System.out.println("decoded "+jwt.getSubject());
+		    System.out.println("\ndecoded "+jwt.getSubject());
 		    return jwt.getSubject();
 		} catch (UnsupportedEncodingException exception){
 		    //UTF-8 encoding not supported

@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS Users (
 	CONSTRAINT UNIQUE_EMAIL UNIQUE(EMAIL)
 );
 
+CREATE TABLE `faciliousers` (
+`id` int( 11 ) NOT NULL AUTO_INCREMENT ,
+`username` varchar( 30 ) NOT NULL ,
+`email` varchar( 50 ) NOT NULL ,
+`password` varchar( 128 ) NOT NULL ,
+PRIMARY KEY ( `id` ) ,
+UNIQUE KEY `username` ( `username` ) ,
+UNIQUE KEY `email` ( `email` )
+)  DEFAULT CHARSET = utf8;
+
 CREATE TABLE IF NOT EXISTS User_Mobile_Setting (
 	USER_MOBILE_SETTING_ID BIGINT AUTO_INCREMENT PRIMARY KEY,
 	USERID BIGINT,
