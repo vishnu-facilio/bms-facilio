@@ -46,10 +46,12 @@ state = PORTAL-yogendrababu
 	private Map jsonresponse = new HashMap();
 	public String validatelogin()
 	{
-		System.out.println(username + state + password);
+		System.out.println(username );
 		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("token",jwt);
+		setJsonresponse("username",username);
+
 		return SUCCESS;
 	}
 	

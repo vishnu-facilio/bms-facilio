@@ -224,12 +224,31 @@ public class CognitoUtil {
 		return jobj;
 	}
 	
+	public static CognitoUser verifiyFacilioToken(String idToken)
+	{
+		try {
+			String decodedtoken = validateJWT(idToken, "auth0");
+			CognitoUser faciliouser = new CognitoUser();
+			faciliouser.setEmail(decodedtoken);
+			// faciliouser.setCognitoId("145c6962-75cc-4908-8a7f-d038571c7dd4");
+			return faciliouser;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		//faciliouser.set
+	}
 	public static CognitoUser verifyIDToken(String idToken) throws Exception {
-		
 		if (idToken == null || "".equals(idToken.trim())) {
 			return null;
 		}
-		
+
+		if (idToken.startsWith("facilio ")) {
+
+			return verifiyFacilioToken(idToken.replace("facilio ", ""));
+		}
+
 		ConfigurableJWTProcessor jwtProcessor = new DefaultJWTProcessor();
 		
 		JWKSet jwkSet = JWKSet.load(new File(CognitoUtil.class.getClassLoader().getResource("conf/jwks.json").getFile()));
