@@ -1952,6 +1952,39 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getFormulaFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormulaModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		
+		FacilioField selectFieldId = new FacilioField();
+		selectFieldId.setName("selectFieldId");
+		selectFieldId.setDataType(FieldType.NUMBER);
+		selectFieldId.setColumnName("SELECT_FIELD_ID");
+		selectFieldId.setModule(module);
+		fields.add(selectFieldId);
+		
+		FacilioField aggregateOperation = new FacilioField();
+		aggregateOperation.setName("aggregateOperationValue");
+		aggregateOperation.setDataType(FieldType.NUMBER);
+		aggregateOperation.setColumnName("AGGREGATE_OPERATION");
+		aggregateOperation.setModule(module);
+		fields.add(aggregateOperation);
+		
+		FacilioField criteriaId = new FacilioField();
+		criteriaId.setName("criteriaId");
+		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setColumnName("CRITERIA_ID");
+		criteriaId.setModule(module);
+		fields.add(criteriaId);
+		
+		return fields;
+		
+	}
+	
 	public static List<FacilioField> getPMReminderFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getPMReminderModule();

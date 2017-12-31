@@ -15,7 +15,6 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	String headerSubText;
 	Boolean headerIsExport;
 	Integer chartDisplayType;
-	WidgetChartType widgetChartType;
 	Long xAxis;
 	String y1Axis;
 	Long y2Axis;
@@ -25,9 +24,6 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	
 	public WidgetChartType getWidgetChartType() {
 		return WidgetChartType.getWidgetChartType(getChartDisplayType());
-	}
-	public void setWidgetChartType(WidgetChartType widgetChartType) {
-		this.widgetChartType = widgetChartType;
 	}
 	public boolean getIsComparisionReport() {
 		return isComparisionReport;

@@ -485,6 +485,11 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Widget_Chart");
 		return dashboardWigetModule;
 	}
+	public static FacilioModule getFormulaModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Formula");
+		return dashboardWigetModule;
+	}
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");

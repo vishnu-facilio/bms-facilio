@@ -9,21 +9,67 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
 	
+	
+	public static Object getFormulaValue(Long formulaId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormulaFields())
+				.table(ModuleFactory.getFormulaModule().getTableName())
+				.andCustomWhere(ModuleFactory.getFormulaModule().getTableName()+".ID = ?", formulaId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		FormulaContext formulaContext = null;
+		if (props != null && !props.isEmpty()) {
+			formulaContext = FieldUtil.getAsBeanFromMap(props.get(0), FormulaContext.class);
+		}
+		
+		if(formulaContext != null) {
+			
+			FacilioField selectField = formulaContext.getAggrigateOperator().getSelectField(formulaContext.getSelectFieldId());
+			
+			List<FacilioField> selectFields = new ArrayList<>();
+			selectFields.add(selectField);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			GenericSelectRecordBuilder selectValueBuilder = new GenericSelectRecordBuilder()
+					.select(selectFields)
+					.table(modBean.getModule(formulaContext.getModuleId()).getTableName());
+			
+			if(formulaContext.getCriteriaId() != null) {
+				Criteria criteria = CriteriaAPI.getCriteria(formulaContext.getOrgId(), formulaContext.getCriteriaId());
+				if(criteria != null) {
+					selectValueBuilder.andCriteria(criteria);
+				}
+			}
+			List<Map<String, Object>> rs = selectValueBuilder.get();
+			if (rs != null && !rs.isEmpty()) {
+				Object result = rs.get(0).get("value");
+				return result;
+			}
+		}
+		return null;
+	}
 	
 	public static String getTimeFrameFloorValue(Operator dateOperator,String value) {
 		
