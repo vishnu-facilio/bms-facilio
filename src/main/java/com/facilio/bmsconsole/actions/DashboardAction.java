@@ -13,7 +13,8 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.WidgetReportContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -83,17 +84,17 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String getData() throws Exception {
 		
-		WidgetReportContext reportContext = DashboardUtil.getReportContext(reportId);
+		WidgetChartContext widgetChartContext = DashboardUtil.getWidgetChartContext(reportId);
 			
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(reportContext.getModuleId());
+		FacilioModule module = modBean.getModule(widgetChartContext.getModuleId());
 				
-		FacilioField xAxisField = modBean.getField(reportContext.getXAxis());
+		FacilioField xAxisField = modBean.getField(widgetChartContext.getXAxis());
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
 		FacilioField yaxisField = new FacilioField();
 		yaxisField.setName("value");
-		yaxisField.setColumnName(reportContext.getY1Axis());
+		yaxisField.setColumnName(widgetChartContext.getY1Axis());
 		yaxisField.setDataType(FieldType.NUMBER);
 		
 		List<FacilioField> fields = new ArrayList<>();
@@ -106,7 +107,8 @@ public class DashboardAction extends ActionSupport {
 		FacilioField groupByField = new FacilioField();
 		if(getPeriod() != null) {
 			Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
-			FacilioField timeSeriesfield = modBean.getField(reportContext.getTimeSeriesField());
+			WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), getPeriod());
+			FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
 			String timePeriodWhereCondition = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
 			builder.andCustomWhere(timePeriodWhereCondition);
 			groupByField.setName("label");
@@ -132,13 +134,22 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
-		if(reportContext.getCriteriaId() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getCriteriaId());
+		if(widgetChartContext.getCriteriaId() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), widgetChartContext.getCriteriaId());
 			builder.andCriteria(criteria);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
-		if(reportContext.getIsComparisionReport()) {
+		for(int i=0;i<rs.size();i++) {
+	 			Map<String, Object> thisMap = rs.get(i);
+	 			if(thisMap!=null) {
+	 				if(thisMap.get("label") == null) {
+	 					thisMap.put("label", null);
+	 				}
+	 			}
+	 		}
+		System.out.println("rs after -- "+rs);
+		if(widgetChartContext.getIsComparisionReport()) {
 			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
@@ -148,7 +159,7 @@ public class DashboardAction extends ActionSupport {
 				builder1.innerJoin(fieldModule.getTableName())
 					.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 			}
-			if(reportContext.getCriteriaId() != null) {
+			if(widgetChartContext.getCriteriaId() != null) {
 				builder1.andCriteria(criteria);
 			}
 			if(getPeriod() != null) {
@@ -156,7 +167,8 @@ public class DashboardAction extends ActionSupport {
 				if (dateOperator.getOperatorId() == DateOperators.CURRENT_WEEK.getOperatorId()) {
 					dateOperator = DateOperators.LAST_WEEK;
 				}
-				FacilioField timeSeriesfield = modBean.getField(reportContext.getTimeSeriesField());
+				WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), dateOperator.getOperator());
+				FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
 				String timePeriodWhereCondition1 = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
 				builder1.andCustomWhere(timePeriodWhereCondition1);
 			}

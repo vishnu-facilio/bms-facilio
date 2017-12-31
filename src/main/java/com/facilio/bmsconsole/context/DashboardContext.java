@@ -10,7 +10,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	private String dashboardName;
 	private Long createdByUserId;
 	private Integer publishStatus;
+	private String dashboardUrl;
 
+	public String getDashboardUrl() {
+		return dashboardUrl;
+	}
+	public void setDashboardUrl(String dashboardUrl) {
+		this.dashboardUrl = dashboardUrl;
+	}
 	public Long getCreatedByUserId() {
 		return createdByUserId;
 	}

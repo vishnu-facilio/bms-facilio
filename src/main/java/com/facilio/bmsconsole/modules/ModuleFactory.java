@@ -480,9 +480,9 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Widget_Period");
 		return dashboardWigetModule;
 	}
-	public static FacilioModule getReportModule() {
+	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Report");
+		dashboardWigetModule.setTableName("Widget_Chart");
 		return dashboardWigetModule;
 	}
 	public static FacilioModule getPMReminderModule() {

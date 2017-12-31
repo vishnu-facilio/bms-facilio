@@ -1,12 +1,19 @@
 package com.facilio.bmsconsole.context;
 
-public class DashboardWidgetPeriodContext {
+public class WidgetPeriodContext {
 	
 	Long id;
 	Long widgetId;
 	String periodLabel;
 	String periodValue;
 	Integer dataOperator;
+	Long timeSeriesField;
+	public Long getTimeSeriesField() {
+		return timeSeriesField;
+	}
+	public void setTimeSeriesField(Long timeSeriesField) {
+		this.timeSeriesField = timeSeriesField;
+	}
 	public Integer getDataOperator() {
 		return dataOperator;
 	}

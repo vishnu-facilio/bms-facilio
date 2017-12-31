@@ -11,8 +11,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.DashboardWidgetPeriodContext;
-import com.facilio.bmsconsole.context.WidgetReportContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -41,6 +41,7 @@ public class DashboardUtil {
 	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetFields();
+		fields.addAll(FieldFactory.getWidgetChartFields());
 		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -48,32 +49,57 @@ public class DashboardUtil {
 				.table(ModuleFactory.getWidgetModule().getTableName())
 				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
+				.innerJoin(ModuleFactory.getWidgetChartModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
-				DashboardWidgetContext dashboardWidgetContext = FieldUtil.getAsBeanFromMap(prop, DashboardWidgetContext.class);
-				addWidgetPeriods(dashboardWidgetContext);
-				dashboardWidgetContexts.add(dashboardWidgetContext);
+				if(prop.get("type").equals("chart")) {
+					WidgetChartContext dashboardWidgetContext = FieldUtil.getAsBeanFromMap(prop, WidgetChartContext.class);
+					addWidgetPeriods(dashboardWidgetContext);
+					dashboardWidgetContexts.add(dashboardWidgetContext);
+				}
 			}
 		}
 		return dashboardWidgetContexts;
 	}
-	public static WidgetReportContext getReportContext(Long reportId) throws Exception {
+	
+	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
 		
+		List<FacilioField> fields = FieldFactory.getWidgetChartFields();
+		fields.addAll(FieldFactory.getWidgetFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getReportFields())
-				.table(ModuleFactory.getReportModule().getTableName())
-				.andCustomWhere(ModuleFactory.getReportModule().getTableName()+".ID = ?", reportId);
+				.select(fields)
+				.table(ModuleFactory.getWidgetChartModule().getTableName())
+				.innerJoin(ModuleFactory.getWidgetModule().getTableName())
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
+				.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID = ?", reportId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		System.out.println("111."+props);
 		if (props != null && !props.isEmpty()) {
-			WidgetReportContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetReportContext.class);
+			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
 			return widgetReportContext;
 		}
 		return null;
+	}
+	public static WidgetPeriodContext getWidgetPeriod(Long widgetId,String periodValue) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardWidgetPeriodFields())
+				.table(ModuleFactory.getWidgetPeriodModule().getTableName())
+				.andCustomWhere(ModuleFactory.getWidgetPeriodModule().getTableName()+".WIDGET_ID = ?", widgetId)
+				.andCustomWhere(ModuleFactory.getWidgetPeriodModule().getTableName()+".PERIOD_VALUE = ?", periodValue);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			WidgetPeriodContext widgetperiodContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetPeriodContext.class);
+			return widgetperiodContext;
+		}
+		return null;
+		
 	}
 	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -99,7 +125,7 @@ public class DashboardUtil {
 		
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
-				DashboardWidgetPeriodContext dashboardWidgetPeriod = FieldUtil.getAsBeanFromMap(prop, DashboardWidgetPeriodContext.class);
+				WidgetPeriodContext dashboardWidgetPeriod = FieldUtil.getAsBeanFromMap(prop, WidgetPeriodContext.class);
 				dashboardWidget.addPeriod(dashboardWidgetPeriod);
 			}
 		}
