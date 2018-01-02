@@ -59,7 +59,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 			} 
 		}
 			result = method.invoke(delegate, args);
-			LOGGER.info("finish method "+method.getName());
+			//LOGGER.info("finish method "+method.getName());
 
 			if (ENABLE_JTA) {
 				if (istransaction) {

@@ -3,6 +3,11 @@ package com.facilio.integration.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.fw.auth.CognitoUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -51,6 +56,20 @@ state = PORTAL-yogendrababu
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("token",jwt);
 		setJsonresponse("username",username);
+		
+		
+		HttpServletResponse response = ServletActionContext.getResponse();	
+
+		Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+		cookie.setMaxAge(60*60*24*2); // Make the cookie last a year
+		cookie.setHttpOnly(true);
+		response.addCookie(cookie);
+
+		Cookie authmodel = new Cookie("fc.authtype", "facilio");
+		authmodel.setMaxAge(60*60*24*2); // Make the cookie last a year
+		authmodel.setHttpOnly(false);
+		//authmodel.setDomain(domain);
+		response.addCookie(authmodel);
 
 		return SUCCESS;
 	}
