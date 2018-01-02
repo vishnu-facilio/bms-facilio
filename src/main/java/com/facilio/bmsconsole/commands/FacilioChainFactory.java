@@ -158,6 +158,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getChangeTeamStatusCommand(){
+		Chain c =new ChainBase();
+		c.addCommand(new ChangeTeamStatusCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getUpdateUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateUserCommand());
@@ -1373,6 +1380,7 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
 }
 
 class TransactionChain extends ChainBase

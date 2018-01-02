@@ -1,5 +1,9 @@
 package com.facilio.accounts.dto;
 
+import java.util.List;
+
+import com.facilio.accounts.util.AccountUtil;
+
 public class Group {
 	
 	private long groupId;
@@ -7,7 +11,7 @@ public class Group {
 	private String name;
 	private String email;
 	private String description;
-	private boolean isActive;
+//	private boolean isActive;
 	private long createdTime;
 	private long createdBy;
 	private long parent;
@@ -48,11 +52,25 @@ public class Group {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public boolean isActive() {
+//	public boolean isActive() {
+//		return isActive;
+//	}
+//	public void setActive(boolean isActive) {
+//		this.isActive = isActive;
+//	}
+//	
+	private Boolean isActive;
+	public Boolean getIsActive() {
 		return isActive;
 	}
-	public void setActive(boolean isActive) {
+	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+	public boolean isActive() {
+		if(isActive != null) {
+			return isActive.booleanValue();
+		}
+		return false;
 	}
 	public long getCreatedTime() {
 		return createdTime;
@@ -71,5 +89,8 @@ public class Group {
 	}
 	public void setParent(long parent) {
 		this.parent = parent;
+	}
+	public List<GroupMember> getMembers() throws Exception {
+		return AccountUtil.getGroupBean().getGroupMembers(groupId);
 	}
 }

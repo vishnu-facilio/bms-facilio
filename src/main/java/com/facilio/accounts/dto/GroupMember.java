@@ -21,6 +21,12 @@ public class GroupMember extends User {
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
+	public long getId() {
+		return ouid;
+	}
+	public void setId(long id) {
+		this.ouid = id;
+	}
 	public long getOuid() {
 		return ouid;
 	}

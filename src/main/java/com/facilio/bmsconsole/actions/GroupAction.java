@@ -137,4 +137,16 @@ public class GroupAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	public String changeTeamStatus() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.GROUP, getGroup());
+		Map params = ActionContext.getContext().getParameters();
+		
+		System.out.println("Group object is "+params+"\n"+ getGroup());
+		Command addGroup = FacilioChainFactory.getChangeTeamStatusCommand();
+		addGroup.execute(context);
+		
+		return SUCCESS;
+	}
 }

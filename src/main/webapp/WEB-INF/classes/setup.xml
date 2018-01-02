@@ -139,6 +139,28 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
+		</action>
+		<action name="deletegroup" class="com.facilio.bmsconsole.actions.GroupAction" method="deleteGroup">
+			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		<action name="changeTeamStatus" class="com.facilio.bmsconsole.actions.GroupAction" method="changeTeamStatus">
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">group.groupId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
 		</action>	
 		<action name="addalarmemail" class="com.facilio.bmsconsole.actions.NotificationAction" method="addAlarmEMailNotifier">
             <result name="success" type="json">

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -28,7 +29,8 @@ public class GroupBeanImpl implements GroupBean {
 	public long createGroup(long orgId, Group group) throws Exception {
 		
 		group.setOrgId(orgId);
-		
+		group.setCreatedTime(System.currentTimeMillis());
+		group.setIsActive(true);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupModule().getTableName())
 				.fields(AccountConstants.getGroupFields());
@@ -207,6 +209,8 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(AccountConstants.getGroupModule().getTableName())
+				.innerJoin("GroupMembers")
+				.on("Groups.GROUPID = GroupMembers.GROUPID")
 				.andCustomWhere("ORGID = ?", orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -259,5 +263,19 @@ public class GroupBeanImpl implements GroupBean {
 			return groups;
 		}
 		return groups;
+	}
+
+	@Override
+	public boolean changeGroupStatus(long groupId, Group group) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(AccountConstants.getGroupModule().getTableName()).fields(AccountConstants.getGroupFields())
+				.andCustomWhere("GROUPID = ?", group.getGroupId());
+		Map<String, Object> props = FieldUtil.getAsProperties(group);
+		updateBuilder.update(props);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
 	}
 }

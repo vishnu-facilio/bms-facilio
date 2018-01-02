@@ -2,6 +2,8 @@ package com.facilio.accounts.bean;
 
 import java.util.List;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
@@ -21,6 +23,8 @@ public interface GroupBean {
 	public boolean removeGroupMember(long groupId, List<Long> ouidList) throws Exception;
 	
 	public boolean updateGroupMemberRole(long groupId, long ouid, GroupMemberRole memberRole) throws Exception;
+	
+	public boolean changeGroupStatus(long groupId, Group group) throws Exception;
 	
 	public List<GroupMember> getGroupMembers(long groupId) throws Exception;
 

@@ -80,6 +80,7 @@ public class UserBeanImpl implements UserBean {
 	public long createUser(long orgId, User user) throws Exception {
 		
 		User orgUser = getUser(orgId, user.getEmail());
+		orgUser.setUserStatus(true);
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
