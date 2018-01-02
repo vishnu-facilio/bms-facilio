@@ -5,13 +5,15 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 
 public class EventProcessorFactory implements IRecordProcessorFactory {
     private long orgId;
+    private String orgName;
 
-    EventProcessorFactory(long orgId){
+    EventProcessorFactory(long orgId, String orgName){
         this.orgId = orgId;
+        this.orgName = orgName;
     }
 
     @Override
     public IRecordProcessor createProcessor() {
-        return new EventProcessor(orgId);
+        return new EventProcessor(orgId, orgName);
     }
 }

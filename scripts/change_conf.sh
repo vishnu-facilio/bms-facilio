@@ -32,7 +32,7 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     cp $META_INF_DIR/context-production.xml $META_INF_DIR/context.xml
-    sed -i'' "s%environment=.*%environment=scheduler%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%environment=.*%environment=production%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=stage-1555618498.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
 fi

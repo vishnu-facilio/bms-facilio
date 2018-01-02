@@ -21,17 +21,28 @@ import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
+import com.amazonaws.services.identitymanagement.model.GetUserResult;
+import com.amazonaws.services.identitymanagement.model.User;
+import com.amazonaws.services.iot.model.*;
+import com.amazonaws.services.kinesis.AmazonKinesis;
+import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
+import com.amazonaws.services.kinesis.model.CreateStreamResult;
+import com.amazonaws.services.kinesis.model.ResourceInUseException;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -41,9 +52,6 @@ import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
@@ -65,10 +73,23 @@ public class AwsUtil
 	
 	public static final String AWS_IOT_SERVICE_NAME = "iotdata";
 	public static final String AWS_IOT_DYNAMODB_TABLE_NAME = "IotData";
+
+	private static final String KINESIS_PARTITION_KEY = "${clientid()}";
+	private static final String IAM_ARN_PREFIX = "arn:aws:iam::";
+	private static final String KINESIS_PUT_ROLE_SUFFIX = ":role/service-role/kinesisput";
+	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
 	
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 	
 	private static AmazonS3 AWS_S3_CLIENT = null;
+
+	private static AWSCredentials basicCredentials = null;
+	private static AWSCredentialsProvider credentialsProvider = null;
+	private static AWSIot awsIot = null;
+	private static User user = null;
+	private static AmazonKinesis kinesis = null;
+	private static String region = null;
+	private static final Object LOCK = new Object();
 
     public static String getConfig(String name) 
     {
@@ -275,5 +296,174 @@ public class AwsUtil
             System.out.println("Error message: " + ex.getMessage());
             throw ex;
         }
+	}
+
+	private static AWSCredentials getBasicAwsCredentials() {
+    	if(basicCredentials == null) {
+    		synchronized (LOCK) {
+				if (basicCredentials == null) {
+					basicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(AWS_ACCESS_KEY_ID), AwsUtil.getConfig(AWS_SECRET_KEY_ID));
+				}
+			}
+		}
+		return basicCredentials;
+	}
+
+	private static AWSCredentialsProvider getAWSCredentialsProvider() {
+    	if(credentialsProvider == null){
+    		synchronized (LOCK) {
+    			if(credentialsProvider == null){
+					credentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+				}
+			}
+		}
+		return credentialsProvider;
+	}
+
+	private static String getRegion() {
+    	if(region == null) {
+    		synchronized (LOCK) {
+    			if(region == null) {
+    				region = AwsUtil.getConfig("region");
+				}
+			}
+		}
+    	return region;
+	}
+
+	private static AWSIot getIotClient() {
+    	if(awsIot == null) {
+    		synchronized (LOCK) {
+    			if(awsIot == null) {
+    				awsIot = AWSIotClientBuilder.standard()
+							.withCredentials(getAWSCredentialsProvider())
+							.withRegion(getRegion()).build();
+				}
+			}
+		}
+		return awsIot;
+	}
+
+	private static String getUserId() {
+    	if(user == null) {
+    		synchronized (LOCK) {
+    			if(user == null) {
+					AmazonIdentityManagement iam = AmazonIdentityManagementClientBuilder.standard()
+							.withCredentials(getAWSCredentialsProvider())
+							.withRegion(getRegion()).build();
+
+					GetUserResult result = iam.getUser();
+    				user =  result.getUser();
+				}
+			}
+		}
+		return user.getUserId();
+	}
+
+	private static JSONObject getPolicyInJson(String action, String resource){
+		JSONObject object = new JSONObject();
+		object.put("Effect", "Allow");
+		object.put("Action", action);
+		object.put("Resource", "arn:aws:iot:"+ getRegion()+":"+getUserId() + resource);
+		return object;
+	}
+
+	private static JSONObject getPolicyDoc(String name){
+
+		JSONArray statements = new JSONArray();
+		statements.add(getPolicyInJson("iot:Connect", ":client/"+name));
+		statements.add(getPolicyInJson("iot:Publish", ":topic/"+name));
+
+		JSONObject policyDocument = new JSONObject();
+		policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
+		policyDocument.put("Statement", statements);
+
+		return policyDocument;
+	}
+
+	private static void createIotPolicy(AWSIot iotClient, String name) {
+    	try {
+			CreatePolicyRequest policyRequest = new CreatePolicyRequest().withPolicyName(name).withPolicyDocument(getPolicyDoc(name).toString());
+			CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
+			logger.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
+		} catch (ResourceAlreadyExistsException resourceExists){
+    		logger.info("Policy already exists for name : " + name);
+		}
+	}
+
+	private static CreateKeysAndCertificateResult createCertificate(AWSIot iotClient){
+		CreateKeysAndCertificateRequest certificateRequest = new CreateKeysAndCertificateRequest().withSetAsActive(true);
+		return iotClient.createKeysAndCertificate(certificateRequest);
+	}
+
+	private static void attachPolicy(AWSIot iotClient, CreateKeysAndCertificateResult certificateResult, String policyName){
+		AttachPolicyRequest attachPolicyRequest = new AttachPolicyRequest().withPolicyName(policyName).withTarget(certificateResult.getCertificateArn());
+		AttachPolicyResult attachPolicyResult = iotClient.attachPolicy(attachPolicyRequest);
+		logger.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
+	}
+
+	private static AmazonKinesis getKinesisClient() {
+    	if(kinesis == null) {
+    		synchronized (LOCK) {
+    			if(kinesis == null) {
+    				kinesis = AmazonKinesisClientBuilder.standard()
+							.withCredentials(getAWSCredentialsProvider())
+							.withRegion(getRegion())
+							.build();
+				}
+			}
+		}
+		return kinesis;
+	}
+
+	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
+    	try {
+			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
+			logger.info("Stream created : " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
+		} catch (ResourceInUseException resourceInUse){
+    		logger.info("Stream exists for name : " + streamName);
+		}
+	}
+
+	private static void createIotTopicRule(AWSIot iotClient, String topicName) {
+    	try {
+			KinesisAction kinesisAction = new KinesisAction().withStreamName(topicName)
+					.withPartitionKey(KINESIS_PARTITION_KEY)
+					.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
+
+			Action action = new Action().withKinesis(kinesisAction);
+
+			TopicRulePayload rulePayload = new TopicRulePayload()
+					.withActions(action)
+					.withSql("SELECT * FROM '" + topicName + "'")
+					.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
+
+			CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topicName).withTopicRulePayload(rulePayload);
+
+			CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
+
+			logger.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+		} catch (ResourceAlreadyExistsException resourceExists ){
+    		logger.info("Topic Rule already exists for name : " + topicName);
+		}
+	}
+
+	private static CreateKeysAndCertificateResult createIotToKinesis(String name){
+    	AWSIot iotClient = getIotClient();
+    	createIotPolicy(iotClient, name);
+    	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
+    	attachPolicy(iotClient, certificateResult, name);
+    	createKinesisStream(getKinesisClient(), name);
+    	createIotTopicRule(iotClient, name);
+    	return certificateResult;
+	}
+
+	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgName){
+		String name = getIotKinesisTopic(orgName);
+		return AwsUtil.createIotToKinesis(name);
+	}
+
+	public static String getIotKinesisTopic(String orgName){
+    	return orgName;
 	}
 }

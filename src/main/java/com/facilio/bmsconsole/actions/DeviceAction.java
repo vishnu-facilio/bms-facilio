@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +15,12 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.events.tasker.tasks.EventStreamProcessor;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,6 +41,55 @@ import com.opensymphony.xwork2.util.ValueStack;
 public class DeviceAction extends ActionSupport
 {
 	private static Logger logger = Logger.getLogger(DeviceAction.class.getName());
+
+	private String url;
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String configureOrg() {
+	    long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
+		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
+		String fileName = AwsUtil.getIotKinesisTopic(orgName);
+		String directoryName = "facilio/";
+
+		File file = new File(System.getProperty("user.home")+"/"+ fileName + ".zip");
+		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+
+			addToZip(out,directoryName + fileName+".crt", certificateResult.getCertificatePem());
+			addToZip(out,directoryName + fileName+"-private.key", certificateResult.getKeyPair().getPrivateKey());
+			addToZip(out,directoryName + fileName+"-public.key", certificateResult.getKeyPair().getPublicKey());
+			out.finish();
+			out.flush();
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			long id = fs.addFile(file.getName(), file, "application/octet-stream");
+			url = fs.getPrivateUrl(id);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
+
+		logger.info("Stared event processor for org : " + orgId);
+		return SUCCESS;
+	}
+
+	private void addToZip(ZipOutputStream out, String fileName, String content){
+		try {
+			out.putNextEntry(new ZipEntry(fileName));
+			out.write(content.getBytes("UTF-8"));
+			out.closeEntry();
+		} catch (IOException e){
+			logger.log(Level.INFO, "Exception while creating zip", e);
+		}
+	}
 	
 //	public String show()
 //	{
@@ -545,4 +598,7 @@ public class DeviceAction extends ActionSupport
 //		//System.out.println(FieldUtil.<Energy>getAsProperties(Energy));
 //    		return Reports.DateFilter;
 //    }
+
+
 }
+

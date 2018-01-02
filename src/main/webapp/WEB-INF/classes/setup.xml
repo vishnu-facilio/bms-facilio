@@ -40,7 +40,13 @@
 		<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
-		</action>		
+		</action>
+		<action name="configureOrg" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureOrg">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">url</param>
+			</result>
+		</action>
 		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="deviceList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

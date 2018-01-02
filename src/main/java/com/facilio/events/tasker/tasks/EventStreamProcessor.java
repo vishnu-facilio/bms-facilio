@@ -16,25 +16,25 @@ import java.util.UUID;
 
 public class EventStreamProcessor {
 
-    public static void run(long orgId, String streamName) {
+    public static void run(long orgId, String orgName) {
 
         try {
             AccountUtil.setCurrentAccount(orgId);
+            String streamName = AwsUtil.getIotKinesisTopic(orgName);
             String clientName = AwsUtil.getConfig("clientName") + '-' + AwsUtil.getConfig("environment");
-            //String streamName = AwsUtil.getConfig("streamName");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
             AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
 
-            String workerId = InetAddress.getLocalHost().getCanonicalHostName() + ":" + UUID.randomUUID();
+            String workerId = InetAddress.getLocalHost().getCanonicalHostName();
 
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(clientName, streamName, provider, workerId)
                             .withRegionName(AwsUtil.getConfig("region"))
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
 
-            IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId);
+            IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgName);
 
             Worker worker = new Worker.Builder()
                     .recordProcessorFactory(recordProcessorFactory)

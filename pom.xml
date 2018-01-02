@@ -64,11 +64,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-core</artifactId>
-			<version>3.0.7</version>
-		</dependency>
-		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 			<version>5.1</version>
@@ -157,7 +152,7 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-iot</artifactId>
-			<version>1.11.136</version>
+			<version>1.11.255</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.amazonaws</groupId>
@@ -237,7 +232,14 @@
 			<version>1.8.8</version>
 		</dependency>
 
-   <!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-iam</artifactId>
+			<version>1.11.255</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
     <artifactId>narayana-jta</artifactId>

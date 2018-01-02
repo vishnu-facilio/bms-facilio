@@ -16,6 +16,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.events.tasker.tasks.EventStreamProcessor;
@@ -92,22 +93,17 @@ public class FacilioContextListener implements ServletContextListener {
 			
 			try {
 				if(! "production".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
-					List<FacilioField> columnList = new ArrayList<>();
-					columnList.add(FieldFactory.getOrgIdField());
-					columnList.add(FieldFactory.getKinesisField());
+					List<FacilioField> columnList = AccountConstants.getOrgFields();
 
 					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
 							.select(columnList);
+
 					List<Map<String, Object>> props = builder.get();
 					for(Map<String, Object> prop : props) {
-						String streamName = (String)prop.get("kinesisTopic");
 						Long orgId = (Long)prop.get("orgId");
-						if(streamName != null && streamName.length() > 0 ) {
-							System.out.println("Starting kinesis processor for : " + orgId + " : " + streamName);
-							new Thread(() -> EventStreamProcessor.run(orgId, streamName)).start();
-						} else {
-							System.out.println("No Stream found for : " + orgId );
-						}
+						String orgName = (String) prop.get("domain");
+						System.out.println("Starting kinesis processor for : " +                                                                                     orgId);
+						new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
 					}
 				}
 			} catch (Exception e){

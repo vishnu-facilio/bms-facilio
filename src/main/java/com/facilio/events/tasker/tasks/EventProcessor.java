@@ -35,11 +35,13 @@ public class EventProcessor implements IRecordProcessor {
     private long orgId;
     private long lastEventTime = System.currentTimeMillis();
     private String shardId;
+    private String orgName;
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
-    EventProcessor(long orgId){
-        this.orgId =orgId;
+    EventProcessor(long orgId, String orgName){
+        this.orgId = orgId;
+        this.orgName = orgName;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class EventProcessor implements IRecordProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Initializing record processor for shard: " + shardId);
+        System.out.println("Initializing record processor for stream : " + orgName + " and shard : " + shardId);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class EventProcessor implements IRecordProcessor {
 
     @Override
     public void shutdown(ShutdownInput shutdownInput) {
-        System.out.println("Shutting down record processor for shard: " + shardId);
+        System.out.println("Shutting down record processor for stream: "+ orgName +" and shard: " + shardId);
     }
 
 
