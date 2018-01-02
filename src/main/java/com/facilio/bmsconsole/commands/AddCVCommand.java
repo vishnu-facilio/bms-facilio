@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -24,19 +27,7 @@ public class AddCVCommand implements Command {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.NEW_CV);
 		
 		if(view != null) {
-			FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-			Criteria viewCriteria = null;
-			List<Condition> conditions = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
-			if(parentView != null && parentView.getCriteria() != null) {
-				viewCriteria = new Criteria();
-				viewCriteria.setPattern(parentView.getCriteria().getPattern());
-				viewCriteria.setConditions(parentView.getCriteria().getConditions());
-				viewCriteria.addAndConditions(conditions);
-			}
-			else if(conditions != null && !conditions.isEmpty()) {
-				viewCriteria = new Criteria();
-				viewCriteria.addAndConditions(conditions);
-			}
+			Criteria viewCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 			view.setCriteria(viewCriteria);
 			if(view.getTypeEnum() == null)
 			{

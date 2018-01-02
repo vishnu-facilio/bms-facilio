@@ -754,11 +754,6 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${LASTMONTHS}";
-		}
-		
-		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			if(fieldName != null && !fieldName.isEmpty()) {
 				return new FacilioModulePredicate(fieldName, new Predicate() {
@@ -795,11 +790,6 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${WITHINHOURS}";
-		}
-		
-		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			if(fieldName != null && !fieldName.isEmpty()) {
 				return new FacilioModulePredicate(fieldName, new Predicate() {
@@ -833,11 +823,6 @@ public enum DateOperators implements Operator<String> {
 				return builder.toString();
 			}
 			return null;
-		}
-		
-		@Override
-		public String getDynamicParameter() {
-			return "${NEXTHOURS}";
 		}
 		
 		@Override

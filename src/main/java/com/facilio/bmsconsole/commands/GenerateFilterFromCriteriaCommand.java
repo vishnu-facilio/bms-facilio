@@ -1,0 +1,85 @@
+package com.facilio.bmsconsole.commands;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.constants.FacilioConstants;
+
+public class GenerateFilterFromCriteriaCommand implements Command{
+
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		if(view != null) {
+			Criteria criteria = view.getCriteria();
+			if(criteria != null) {
+				JSONObject filters = new JSONObject();
+				setFilters(criteria,filters);
+				view.setFilters(filters);
+			}
+		}
+		
+		return false;
+	}
+	
+	private void setFilters(Criteria criteria, JSONObject filters) throws Exception {
+		Map<Integer, Condition> conditions = criteria.getConditions();
+		for(Map.Entry<Integer, Condition> entry : conditions.entrySet()) {
+			Condition condition = entry.getValue();
+			String[] name = condition.getFieldName().split("\\.");
+			String fieldName = name.length > 1 ? name[1] : name[0];
+			JSONObject filter = new JSONObject();
+			filter.put("operatorId", condition.getOperatorId());
+			String conditionValue = condition.getValue();
+			Object value = null;
+			if(conditionValue != null) {
+				value = new JSONArray();
+				String[] values = conditionValue.trim().split("\\s*,\\s*");
+				for(String val : values) {
+					if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+						val = String.valueOf(AccountUtil.getCurrentUser().getId());
+					}
+					((JSONArray) value).add(val);
+				}
+			}
+			else if(condition.getOperatorId() == LookupOperator.LOOKUP.getOperatorId()) {
+				if(condition.getCriteriaValue() != null) {
+					value = new JSONObject();
+					setFilters(condition.getCriteriaValue(),(JSONObject)value);
+				}
+				else if(condition.getCriteriaValueId() != -1) {
+					value = new JSONObject();
+					Criteria criteriaValue = CriteriaAPI.getCriteria(criteria.getOrgId(),condition.getCriteriaValueId());
+					setFilters(criteriaValue,(JSONObject)value);
+				}
+			}
+			filter.put("value",value);
+			if(filters.containsKey(fieldName)) {
+				Object fieldFilter = filters.get(fieldName);
+				if(!(fieldFilter instanceof JSONArray)) {
+					fieldFilter = new JSONArray();
+					((JSONArray)fieldFilter).add(filters.get(fieldName));
+				}
+				((JSONArray)fieldFilter).add(filter);
+				filters.put(fieldName, fieldFilter);
+			}
+			else {
+				filters.put(fieldName, filter);
+			}
+		}
+	}
+
+}

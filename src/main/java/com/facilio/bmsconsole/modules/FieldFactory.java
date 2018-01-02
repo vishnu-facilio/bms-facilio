@@ -2022,4 +2022,26 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getViewColumnFields() {
+		FacilioModule module = ModuleFactory.getViewColumnsModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField view = new FacilioField();
+		view.setName("viewId");
+		view.setDataType(FieldType.NUMBER);
+		view.setColumnName("VIEWID");
+		view.setModule(module);
+		fields.add(view);
+		
+		FacilioField field = new FacilioField();
+		field.setName("fieldId");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("FIELDID");
+		field.setModule(module);
+		fields.add(field);
+
+		return fields;
+	}
 }	

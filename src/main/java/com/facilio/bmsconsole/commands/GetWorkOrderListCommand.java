@@ -37,11 +37,16 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(criteria);
 		}
 		
-		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
+		/*List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
 		if(conditionList != null && !conditionList.isEmpty()) {
 			for(Condition condition : conditionList) {
 				selectBuilder.andCondition(condition);
 			}
+		}*/
+		
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if(filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

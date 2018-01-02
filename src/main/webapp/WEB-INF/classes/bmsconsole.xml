@@ -979,6 +979,21 @@
 				<param name="root">view</param>
 			</result>
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="getViewDetail">
+			<param name="viewName">{1}</param>
+			<param name="permission">WORKORDER_READ</param>
+			<result name="success" type="json">
+				<param name="root">view</param>
+			</result>
+		</action>
+		<action name="addFields" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="addViewFields">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">viewId</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="readingApi" namespace="/api/reading" extends="home">

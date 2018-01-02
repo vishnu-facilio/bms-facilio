@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -31,6 +33,24 @@ public class ViewAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getViewDetail() throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (moduleName == null) {
+			moduleName = "workorder";
+		}
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
+		getViewChain.execute(context);
+		
+		setView((FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW));
+		
+		return SUCCESS;
+	}
+	
 	public String addView() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -49,6 +69,17 @@ public class ViewAction extends ActionSupport {
 		
 		this.viewId = view.getId();
 		
+		return SUCCESS;
+	}
+	
+	public String addViewFields() throws Exception
+	{
+		JSONArray fields = null;
+		if(getFields() != null) {	
+	 		JSONParser parser = new JSONParser();
+	 		fields = (JSONArray) parser.parse(getFields());
+	 		ViewAPI.addViewFields(viewId, fields);
+ 		}
 		return SUCCESS;
 	}
 	
@@ -99,4 +130,21 @@ public class ViewAction extends ActionSupport {
 	public void setFilters(String filters) {
 		this.filters = filters;
 	}
+	
+	private String viewName;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
+	private String fields;
+	public String getFields() {
+		return fields;
+	}
+	public void setFields(String fields) {
+		this.fields = fields;
+	}
+	
 }

@@ -1,14 +1,23 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -82,6 +91,32 @@ public class ViewAPI {
 			insertBuilder.save();
 			
 			return (long) viewProp.get("id");
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public static void addViewFields(long viewId, JSONArray fields) throws Exception {
+		try {
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table(ModuleFactory.getViewColumnsModule().getTableName())
+															.fields(FieldFactory.getViewColumnFields());
+			
+			Iterator ids = fields.iterator();
+			while(ids.hasNext())
+			{
+				Long id = (Long)ids.next();
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("viewId", viewId);
+				prop.put("fieldId", id);
+				insertBuilder.addRecord(prop);
+			}
+			
+			insertBuilder.save();
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

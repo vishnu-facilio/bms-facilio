@@ -498,4 +498,10 @@ public class ModuleFactory {
 		
 		return reminderModule;
 	}
+	
+	public static FacilioModule getViewColumnsModule() {
+		FacilioModule viewFieldsModule = new FacilioModule();
+		viewFieldsModule.setTableName("ViewColumns");
+		return viewFieldsModule;
+	}
 }

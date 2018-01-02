@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -197,4 +198,66 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 			setPattern(newPattern.toString());
 		}
 	}
+	
+	public void groupOrConditions(List<Condition> newConditions) {
+		if(newConditions != null && !newConditions.isEmpty()) {
+			int sequence = 1;
+			StringBuilder newPattern = new StringBuilder();
+			if(pattern != null && !pattern.isEmpty()) {
+				sequence = conditions.size() + 1;
+				newPattern.append(pattern).append(" and ");
+			}
+			else {
+				conditions = new HashMap<>();
+			}
+			
+			boolean isFirst = true;
+			for(Condition condition : newConditions) {
+				if(isFirst) {
+					isFirst = false;
+					newPattern.append("(");
+				}
+				else {
+					newPattern.append(" or ");
+				}
+				newPattern.append(sequence);
+				condition.setSequence(sequence);
+				conditions.put(sequence++, condition);
+			}
+			newPattern.append(")");
+			setPattern(newPattern.toString());
+		}
+	}
+	
+	public void andCriteria(Criteria newCriteria) {
+		Map<Integer, Condition> newConditions = newCriteria.getConditions();
+		String newPattern = newCriteria.getPattern();
+		int sequence = 1;
+		StringBuilder finalPattern = new StringBuilder();
+		if(newConditions != null && !newConditions.isEmpty()) {
+			if(pattern != null && !pattern.isEmpty()) {
+				sequence = conditions.size() + 1;
+				finalPattern.append("(")
+							.append(pattern)
+							.append(")")
+							.append(" and ");
+			}
+			else {
+				conditions = new HashMap<>();
+			}
+			Matcher matcher = REG_EX.matcher(newPattern);
+			int i = 0;
+			while (matcher.find()) {
+				Condition condition = newConditions.get(Integer.parseInt(matcher.group(1)));
+				finalPattern.append(newPattern.substring(i, matcher.start()));
+				condition.setSequence(sequence);
+				conditions.put(sequence, condition);
+				finalPattern.append(sequence++);
+				i = matcher.end();
+			}
+			finalPattern.append(newPattern.substring(i, newPattern.length()));
+			setPattern(finalPattern.toString());
+		}
+	}
+	
 }

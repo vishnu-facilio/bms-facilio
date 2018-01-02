@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 
@@ -88,6 +90,14 @@ public class FacilioView {
 	}
 	public void setFields(List<FacilioField> fields) {
 		this.fields = fields;
+	}
+	
+	private JSONObject filters;
+	public JSONObject getFilters() {
+		return filters;
+	}
+	public void setFilters(JSONObject filters) {
+		this.filters = filters;
 	}
 	
 	public static enum ViewType {
