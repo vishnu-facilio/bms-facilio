@@ -77,7 +77,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							if(flag)
 							{
 								long workflowRuleId = workflowRule.getId();
-								List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
+								List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(orgId, workflowRuleId);
 								if(actions != null) {
 									for(ActionContext action : actions)
 									{

@@ -82,6 +82,20 @@ public class ActionContext {
 		this.templateJson = templateJson;
 	}
 	
+	private Boolean status;
+	public Boolean getStatus() {
+		return status;
+	}
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+	public boolean isActive() {
+		if(status != null) {
+			return status.booleanValue();
+		}
+		return false;
+	}
+	
 	public boolean executeAction(Map<String, Object> placeHolders, Context context) {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);

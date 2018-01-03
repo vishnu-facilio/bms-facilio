@@ -51,7 +51,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 						TicketContext ticket = getParentTicket(note);
 						if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != note.getCreatedBy().getId()) {
 							long workflowRuleId = workflowRule.getId();
-							List<ActionContext> actions = ActionAPI.getActionsFromWorkflowRule(orgId, workflowRuleId);
+							List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(orgId, workflowRuleId);
 							if(actions != null) {
 								Map<String, Object> placeHolders = new HashMap<>();
 								CommonCommandUtil.appendModuleNameInKey(FacilioConstants.ContextNames.TICKET, FacilioConstants.ContextNames.TICKET, FieldUtil.getAsProperties(ticket), placeHolders);

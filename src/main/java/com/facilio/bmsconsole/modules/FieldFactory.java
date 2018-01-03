@@ -462,6 +462,13 @@ public class FieldFactory {
 		lastValue.setModule(module);
 		fields.add(lastValue);
 		
+		FacilioField status = new FacilioField();
+		status.setName("status");
+		status.setDataType(FieldType.BOOLEAN);
+		status.setColumnName("STATUS");
+		status.setModule(module);
+		fields.add(status);
+		
 		return fields;
 	}
 	

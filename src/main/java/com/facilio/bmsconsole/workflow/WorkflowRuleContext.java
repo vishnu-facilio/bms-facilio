@@ -75,6 +75,12 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
+	public boolean isActive() {
+		if(status != null) {
+			return status.booleanValue();
+		}
+		return false;
+	}
 	
 	private RuleType ruleType;
 	public int getRuleType() {

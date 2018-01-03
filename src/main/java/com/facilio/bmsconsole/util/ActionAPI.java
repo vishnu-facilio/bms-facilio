@@ -18,13 +18,23 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ActionAPI {
-	public static List<ActionContext> getActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
+	public static List<ActionContext> getAllActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getActionFields())
 				.table("Action")
 				.innerJoin("Workflow_Rule_Action")
 				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
 				.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ?", orgId, workflowRuleId);
+		return getActionsFromPropList(actionBuilder.get());
+	}
+	
+	public static List<ActionContext> getActiveActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getActionFields())
+				.table("Action")
+				.innerJoin("Workflow_Rule_Action")
+				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
+				.andCustomWhere("Action.ORGID = ? AND Workflow_Rule_Action.WORKFLOW_RULE_ID = ? AND Action.STATUS = ?", orgId, workflowRuleId, true);
 		return getActionsFromPropList(actionBuilder.get());
 	}
 	
@@ -49,6 +59,7 @@ public class ActionAPI {
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		for(ActionContext action:actions) {
 			action.setOrgId(orgId);
+			action.setStatus(true);
 			actionProps.add(FieldUtil.getAsProperties(action));
 		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
