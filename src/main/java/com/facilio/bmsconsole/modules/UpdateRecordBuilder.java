@@ -9,7 +9,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
@@ -179,7 +178,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					if(lookupProps.get("id") != null) {
 						moduleProps.put(field.getName(), lookupProps.get("id"));
 					}
-					else {
+					//Lookup fields should not be updated while updating the parent field. This was the behaviour when ticket was a lookup in workorder/ alarm. It's no longer required and so I'm commenting it out
+					/*else {
 						LookupField lookupField = (LookupField) field;
 						if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
 							//Not sure if we are handling update of special fields like this
@@ -196,7 +196,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 							lookupUpdateBuilder.update(lookupProps);
 						}
 						moduleProps.remove(field.getName());
-					}
+					}*/
 				}
 			}
 		}

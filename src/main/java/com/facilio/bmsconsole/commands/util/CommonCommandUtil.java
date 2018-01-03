@@ -106,11 +106,12 @@ public class CommonCommandUtil {
 							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
 							if(props != null && !props.isEmpty()) {
 								LookupField lookupField = (LookupField) field;
-								if(props.size() <= 3) {
+								//Commenting out because max level is set as 0 by default and anyway we need this. And also because of the change in library of mapper
+//								if(props.size() <= 3) {
 									Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);
 									placeHolders.put(prefix+"."+field.getName(), lookupVal);
 									props = FieldUtil.getAsProperties(lookupVal);
-								}
+//								}
 								String childModuleName = lookupField.getLookupModule() == null?lookupField.getSpecialType():lookupField.getLookupModule().getName();
 								appendModuleNameInKey(childModuleName, prefix+"."+field.getName(), props, placeHolders);
 							}

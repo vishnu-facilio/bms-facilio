@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -83,11 +84,8 @@ public class FieldUtil {
 					if(value instanceof Long) {
 						val = (long) value;
 					}
-					else if(value instanceof Double) {
-						val = new Double((double) value).longValue();
-					}
 					else {
-						val = Long.parseLong(value.toString());
+						val = new Double(value.toString()).longValue();
 					}
 					if(val != -1) {
 						pstmt.setLong(paramIndex, val);
@@ -107,29 +105,32 @@ public class FieldUtil {
 		}
 	}
 	
-	private static ObjectMapper getMapper() {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_DEFAULT);
-		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+	private static ObjectMapper getMapper(Class<?> beanClass) {
+		ObjectMapper mapper =  new ObjectMapper()
+					.setSerializationInclusion(Include.NON_DEFAULT)
+					.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		
+		mapper.configOverride(beanClass)
+				.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
 		
 		return mapper;
 	}
 	
 	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
-		ObjectMapper mapper = getMapper();
+		ObjectMapper mapper = getMapper(classObj);
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
 	public static <E> E getAsBeanFromMap(Map<String, Object> props, Class<E> classObj)
 	{
-		ObjectMapper mapper = getMapper();
+		ObjectMapper mapper = getMapper(classObj);
 		return mapper.convertValue(props, classObj);
 	}
 	public static <E> List<E> getAsBeanListFromJsonArray(JSONArray content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
-		ObjectMapper mapper = getMapper();
+		ObjectMapper mapper = getMapper(classObj);
 		return mapper.readValue(content.toJSONString(), mapper.getTypeFactory().constructCollectionType(List.class, classObj));
 	}
 	
@@ -139,31 +140,29 @@ public class FieldUtil {
 		Map<String, Object> properties = null;
 		if(bean != null) 
 		{
-			ObjectMapper mapper = getMapper();
+			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
 		return properties;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
 	{
 		JSONObject properties = null;
 		if(bean != null) 
 		{
-			ObjectMapper mapper = getMapper();
+			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, JSONObject.class);
 		}
 		return properties;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static JSONArray getAsJSONArray(List<? extends Object> beans) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
+	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
 	{
 		JSONArray array = null;
 		if(beans != null) 
 		{
-			ObjectMapper mapper = getMapper();
+			ObjectMapper mapper = getMapper(beanClass);
 			array = mapper.convertValue(beans, JSONArray.class);
 		}
 		return array;
