@@ -135,22 +135,23 @@ public class WorkOrderReportAction extends ActionSupport {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("MODULEID = ?", module.getModuleId());
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
+				//.andCustomWhere("MODULEID = ?", module.getModuleId());
 			
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		Multimap<DashboardContext, DashboardWidgetContext> dashboardWidgets = ArrayListMultimap.create();
+		List<DashboardContext> dashboards = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
-				dashboardWidgets.putAll(dashboard, dashbaordWidgets);
+				dashboard.setDashboardWidgets(dashbaordWidgets);
+				dashboards.add(dashboard);
 			}
 		}
 		
-		setAllWorkOrderJsonReports(DashboardUtil.getReportJson(dashboardWidgets));
+		setAllWorkOrderJsonReports(DashboardUtil.getDashboardResponseJson(dashboards));
 	
 		return SUCCESS;
 	}

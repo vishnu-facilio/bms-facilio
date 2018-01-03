@@ -1,15 +1,22 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
@@ -20,6 +27,32 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TemplateAPI {
+	
+	public static List<ExcelTemplate> getAllExcelTemplates() throws Exception {
+		List<FacilioField> fields = FieldFactory.getUserTemplateFields();
+		fields.addAll(FieldFactory.getExcelTemplateFields());
+		
+		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
+		FacilioModule excelTemplateModule = ModuleFactory.getExcelTemplatesModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													  .select(fields)
+													  .table(userTemplateModule.getTableName())
+													  .innerJoin(excelTemplateModule.getTableName())
+													  .on(userTemplateModule.getTableName()+".ID = "+excelTemplateModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(userTemplateModule));
+		
+		List<Map<String, Object>> templatePropList = selectBuilder.get();
+		List<ExcelTemplate> excelTemplates = new ArrayList();
+		for(int i=0;i<templatePropList.size();i++)
+		{
+			Map<String,Object> templateProps = templatePropList.get(i);
+			excelTemplates.add(getExcelTemplateFromMap(templateProps));
+			
+		}
+		return excelTemplates;
+	}
+ 	
 	public static UserTemplate getTemplate(long orgId, long id) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getUserTemplateFields())
@@ -67,6 +100,18 @@ public class TemplateAPI {
 					return getJSONTemplateFromMap(templateMap);
 				}
 			}
+			else if(type == UserTemplate.Type.EXCEL.getIntVal()) {
+				selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getExcelTemplateFields())
+						.table("Excel_Templates")
+						.andCustomWhere("Excel_Templates.ID = ?", id);
+				
+				templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getExcelTemplateFromMap(templateMap);
+				}
+			}
 		}
 		return null;
 	}
@@ -105,6 +150,18 @@ public class TemplateAPI {
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getSMSTemplateFromMap(templateMap);
+				}
+			}
+			else if(templateType == UserTemplate.Type.EXCEL.getIntVal()) {
+				selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getExcelTemplateFields())
+						.table("Excel_Templates")
+						.andCustomWhere("Excel_Templates.ID = ?", id);
+				
+				templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getExcelTemplateFromMap(templateMap);
 				}
 			}
 		}
@@ -197,6 +254,15 @@ public class TemplateAPI {
 		return template;
 	}
 	
+	private static ExcelTemplate getExcelTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		ExcelTemplate template = FieldUtil.getAsBeanFromMap(templateMap, ExcelTemplate.class);
+		
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
+		//template.setWorkbook(WorkbookFactory.create(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
+		return template;
+	}
+	
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
 		
@@ -234,5 +300,29 @@ public class TemplateAPI {
 																.addRecord(templateProps);
 		workorderTemplateBuilder.save();
 		return (long) templateProps.get("id"); 
+	}
+	
+	public static long addExcelTemplate(long orgId, ExcelTemplate template, String fileName) throws Exception {
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
+		template.setOrgId(orgId);
+		template.setExcelFileId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), ""));
+		
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder excelTemplateBuilder = new GenericInsertRecordBuilder()
+																.table(ModuleFactory.getExcelTemplatesModule().getTableName())
+																.fields(FieldFactory.getExcelTemplateFields())
+																.addRecord(templateProps);
+		excelTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
 	}
 }

@@ -402,7 +402,7 @@ public class AwsUtil
 		logger.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
 	}
 
-	private static AmazonKinesis getKinesisClient() {
+	public static AmazonKinesis getKinesisClient() {
     	if(kinesis == null) {
     		synchronized (LOCK) {
     			if(kinesis == null) {

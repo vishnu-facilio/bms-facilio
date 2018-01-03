@@ -984,6 +984,22 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getExcelTemplateFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getExcelTemplatesModule();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField excelFileId = new FacilioField();
+		excelFileId.setName("excelFileId");
+		excelFileId.setDataType(FieldType.NUMBER);
+		excelFileId.setColumnName("EXCEL_FILE_ID");
+		excelFileId.setModule(module);
+		fields.add(excelFileId);
+	
+		return fields;
+	}
+	
 	public static List<FacilioField> getJSONTemplateFields() {
 		FacilioModule module = ModuleFactory.getJSONTemplateModule();
 		
@@ -998,6 +1014,52 @@ public class FieldFactory {
 		content.setModule(module);
 		fields.add(content);
 		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTenantFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getTenantModule();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField nameField = new FacilioField();
+		nameField.setName("name");
+		nameField.setDataType(FieldType.STRING);
+		nameField.setColumnName("NAME");
+		nameField.setModule(module);
+		fields.add(nameField);
+		
+		fields.add(getOrgIdField());
+		
+		FacilioField addressField = new FacilioField();
+		addressField.setName("address");
+		addressField.setDataType(FieldType.STRING);
+		addressField.setColumnName("ADDRESS");
+		addressField.setModule(module);
+		fields.add(addressField);
+		
+		FacilioField contactemailField = new FacilioField();
+		contactemailField.setName("contactEmail");
+		contactemailField.setDataType(FieldType.STRING);
+		contactemailField.setColumnName("CONTACTEMAIL");
+		contactemailField.setModule(module);
+		fields.add(contactemailField);
+		
+		FacilioField contactNumberField = new FacilioField();
+		contactNumberField.setName("contactNumber");
+		contactNumberField.setDataType(FieldType.STRING);
+		contactNumberField.setColumnName("CONTACTNUMBER");
+		contactNumberField.setModule(module);
+		fields.add(contactNumberField);
+		
+		FacilioField templateIdField = new FacilioField();
+		templateIdField.setName("templateId");
+		templateIdField.setDataType(FieldType.STRING);
+		templateIdField.setColumnName("TEMPLATEID");
+		templateIdField.setModule(module);
+		fields.add(templateIdField);
+				
 		return fields;
 	}
 	
@@ -1993,6 +2055,29 @@ public class FieldFactory {
 		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
 		isComparisionReport.setModule(module);
 		fields.add(isComparisionReport);
+		return fields;
+	}
+	
+	public static List<FacilioField> getWidgetConditionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetCondition();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField widgetId = new FacilioField();
+		widgetId.setName("widgetId");
+		widgetId.setDataType(FieldType.NUMBER);
+		widgetId.setColumnName("WIDGET_ID");
+		widgetId.setModule(module);
+		fields.add(widgetId);
+		
+		FacilioField criteriaId = new FacilioField();
+		criteriaId.setName("criteriaId");
+		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setColumnName("CRITERIA_ID");
+		criteriaId.setModule(module);
+		fields.add(criteriaId);
+		
 		return fields;
 	}
 	

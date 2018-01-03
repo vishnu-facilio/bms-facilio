@@ -242,6 +242,24 @@ public class ModuleFactory {
 		return smsTemplatesModule;
 	}
 	
+	public static FacilioModule getExcelTemplatesModule() {
+		FacilioModule excelTemplatesModule = new FacilioModule();
+		excelTemplatesModule.setName("exceltemplates");
+		excelTemplatesModule.setDisplayName("Excel Templates");
+		excelTemplatesModule.setTableName("Excel_Templates");
+		excelTemplatesModule.setExtendModule(getTemplatesModule());
+		return excelTemplatesModule;
+	}
+	
+		public static FacilioModule getTenantModule() {
+		FacilioModule tenantModule = new FacilioModule();
+		tenantModule.setName("tenant");
+		tenantModule.setDisplayName("Tenant");
+		tenantModule.setTableName("Tenant");
+		return tenantModule;
+	}
+	
+	
 	public static FacilioModule getCriteriaModule() {
 		FacilioModule criteriaModule = new FacilioModule();
 		criteriaModule.setName("criteria");
@@ -509,9 +527,15 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
+	public static FacilioModule getWidgetCondition() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Condition");
+		return dashboardWigetModule;
+	}
+	
 	public static FacilioModule getViewColumnsModule() {
 		FacilioModule viewFieldsModule = new FacilioModule();
-		viewFieldsModule.setTableName("ViewColumns");
+		viewFieldsModule.setTableName("View_Column");
 		return viewFieldsModule;
 	}
 }

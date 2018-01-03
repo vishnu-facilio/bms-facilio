@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -84,6 +85,7 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String getData() throws Exception {
 		
+		//System.out.println(DashboardUtil.getFormulaValue(1l));
 		WidgetChartContext widgetChartContext = DashboardUtil.getWidgetChartContext(reportId);
 			
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -134,46 +136,47 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
-		if(widgetChartContext.getCriteriaId() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), widgetChartContext.getCriteriaId());
+		if(widgetChartContext.getWidgetConditions() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), widgetChartContext.getWidgetConditions().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
 		for(int i=0;i<rs.size();i++) {
-	 			Map<String, Object> thisMap = rs.get(i);
-	 			if(thisMap!=null) {
-	 				if(thisMap.get("label") == null) {
-	 					thisMap.put("label", null);
-	 				}
-	 			}
-	 		}
+ 			Map<String, Object> thisMap = rs.get(i);
+ 			if(thisMap!=null) {
+ 				if(thisMap.get("label") == null) {
+ 					thisMap.put("label", null);
+ 				}
+ 			}
+	 	}
 		System.out.println("rs after -- "+rs);
-		if(widgetChartContext.getIsComparisionReport()) {
-			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-					.groupBy("label")
-					.select(fields);
-			if(!module.getName().equals(fieldModule.getName())) {
-				builder1.innerJoin(fieldModule.getTableName())
-					.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
-			}
-			if(widgetChartContext.getCriteriaId() != null) {
-				builder1.andCriteria(criteria);
-			}
-			if(getPeriod() != null) {
-				Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
-				if (dateOperator.getOperatorId() == DateOperators.CURRENT_WEEK.getOperatorId()) {
-					dateOperator = DateOperators.LAST_WEEK;
-				}
-				WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), dateOperator.getOperator());
-				FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
-				String timePeriodWhereCondition1 = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
-				builder1.andCustomWhere(timePeriodWhereCondition1);
-			}
-			System.out.println(builder1.get());
-		}
+		
+//		if(widgetChartContext.getIsComparisionReport()) {
+//			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+//					.table(module.getTableName())
+//					.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+//					.groupBy("label")
+//					.select(fields);
+//			if(!module.getName().equals(fieldModule.getName())) {
+//				builder1.innerJoin(fieldModule.getTableName())
+//					.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
+//			}
+//			if(widgetChartContext.getCriteriaId() != null) {
+//				builder1.andCriteria(criteria);
+//			}
+//			if(getPeriod() != null) {
+//				Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
+//				if (dateOperator.getOperatorId() == DateOperators.CURRENT_WEEK.getOperatorId()) {
+//					dateOperator = DateOperators.LAST_WEEK;
+//				}
+//				WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), dateOperator.getOperator());
+//				FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
+//				String timePeriodWhereCondition1 = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
+//				builder1.andCustomWhere(timePeriodWhereCondition1);
+//			}
+//			System.out.println(builder1.get());
+//		}
 		
  		setReportData(rs);
 		return SUCCESS;
@@ -205,6 +208,12 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	public String getDashboardString() throws Exception {
+		dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+		return SUCCESS;
+	}
+	
 	public String updateDashboardPublishStatus() throws Exception {
 		dashboard = new DashboardContext();
 		dashboard.setPublishStatus(dashboardPublishStatus);
@@ -213,6 +222,14 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private JSONArray dashboardJson;
+	
+	public void setDashboardJson(JSONArray dashboardJson) {
+		this.dashboardJson = dashboardJson;
+	}
+	public JSONArray getDashboardJson() {
+		return dashboardJson;
+	}
 	public String getWidget() {
 		
 		return SUCCESS;

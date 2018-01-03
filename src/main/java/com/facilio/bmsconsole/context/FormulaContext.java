@@ -16,7 +16,7 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	private int aggregateOperationValue;
 	private Long criteriaId;
 	
-	public AggregateOperator getAggrigateOperator() {
+	public AggregateOperator getAggregateOperator() {
 		return AggregateOperator.getAggregateOperator(getAggregateOperationValue());
 	}
 	public Long getSelectFieldId() {
@@ -39,19 +39,9 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public enum AggregateOperator {
-		COUNT(1,"count") {
-			public FacilioField getSelectField(Long fieldId) throws Exception {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField(fieldId);
-				String selectFieldString = this.getStringValue() + "(" +field.getModule().getTableName() +"." +field.getColumnName()+ ")";
-				
-				FacilioField selectField = new FacilioField();
-				selectField.setName("value");
-				selectField.setColumnName(selectFieldString);
-				
-				return selectField;
-			}
-		};
+		
+		COUNT(1,"count");
+		
 		private int value;
 		private String stringValue;
 		public int getValue() {
@@ -73,7 +63,17 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 		public static AggregateOperator getAggregateOperator(int value) {
 			return AGGREGATE_OPERATOR_MAP.get(value);
 		}
-
+		public FacilioField getSelectField(Long fieldId) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField field = modBean.getField(fieldId);
+			String selectFieldString = this.getStringValue() + "(" +field.getModule().getTableName() +"." +field.getColumnName()+ ")";
+			
+			FacilioField selectField = new FacilioField();
+			selectField.setName("value");
+			selectField.setColumnName(selectFieldString);
+			
+			return selectField;
+		}
 		private static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, AggregateOperator> initTypeMap() {
 			Map<Integer, AggregateOperator> typeMap = new HashMap<>();
@@ -82,8 +82,6 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 			}
 			return typeMap;
 		}
-		
-		public abstract FacilioField getSelectField(Long fieldId) throws Exception;
 	}
 }
 

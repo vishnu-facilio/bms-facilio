@@ -30,6 +30,7 @@ import java.util.Map;
 
 public class EventProcessor implements IRecordProcessor {
 
+    private static final String DATA_TYPE = "facilioDataType";
     private List<EventRule> eventRules = new ArrayList<>();
     private Map<String, Integer> eventCountMap = new HashMap<>();
     private long orgId;
@@ -70,9 +71,23 @@ public class EventProcessor implements IRecordProcessor {
                 String data = decoder.decode(record.getData()).toString();
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(data);
-                boolean alarmCreated = process(record.getApproximateArrivalTimestamp().getTime(),  object);
-                if(alarmCreated) {
-                    processRecordsInput.getCheckpointer().checkpoint(record);
+                if(object.containsKey(DATA_TYPE)){
+                    String dataType = (String)object.get(DATA_TYPE);
+                    if("timeseries".equalsIgnoreCase(dataType)){
+
+                    } else if("cov".equalsIgnoreCase(dataType)){
+
+                    } else {
+                        boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);
+                        if (alarmCreated) {
+                            processRecordsInput.getCheckpointer().checkpoint(record);
+                        }
+                    }
+                } else {
+                    boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);
+                    if (alarmCreated) {
+                        processRecordsInput.getCheckpointer().checkpoint(record);
+                    }
                 }
             } catch (InvalidStateException | ShutdownException | CharacterCodingException | ParseException e) {
                 e.printStackTrace();
@@ -86,7 +101,7 @@ public class EventProcessor implements IRecordProcessor {
     }
 
 
-    private boolean process(long timestamp, JSONObject object) {
+    private boolean processEvents(long timestamp, JSONObject object) {
         try {
             EventContext event = EventAPI.processPayload(timestamp, object, orgId);
             Map<String, Object> prop = FieldUtil.getAsProperties(event);

@@ -9,16 +9,19 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetConditionContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -26,6 +29,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
@@ -47,7 +51,7 @@ public class DashboardUtil {
 		
 		if(formulaContext != null) {
 			
-			FacilioField selectField = formulaContext.getAggrigateOperator().getSelectField(formulaContext.getSelectFieldId());
+			FacilioField selectField = formulaContext.getAggregateOperator().getSelectField(formulaContext.getSelectFieldId());
 			
 			List<FacilioField> selectFields = new ArrayList<>();
 			selectFields.add(selectField);
@@ -106,6 +110,7 @@ public class DashboardUtil {
 				if(prop.get("type").equals("chart")) {
 					WidgetChartContext dashboardWidgetContext = FieldUtil.getAsBeanFromMap(prop, WidgetChartContext.class);
 					addWidgetPeriods(dashboardWidgetContext);
+					addWidgetConditiontoWidget(dashboardWidgetContext);
 					dashboardWidgetContexts.add(dashboardWidgetContext);
 				}
 			}
@@ -128,6 +133,7 @@ public class DashboardUtil {
 		System.out.println("111."+props);
 		if (props != null && !props.isEmpty()) {
 			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
+			addWidgetConditiontoWidget(widgetReportContext);
 			return widgetReportContext;
 		}
 		return null;
@@ -178,26 +184,62 @@ public class DashboardUtil {
 		
 	}
 	
-	public static JSONArray getReportJson(Multimap<DashboardContext, DashboardWidgetContext> dashboardWidgets) {
+	public static void addWidgetConditiontoWidget(WidgetChartContext widgetChartContext) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWidgetConditionFields())
+				.table(ModuleFactory.getWidgetCondition().getTableName())
+				.andCustomWhere("WIDGET_ID = ?", widgetChartContext.getId());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop:props) {
+				WidgetConditionContext widgetConditionContext = FieldUtil.getAsBeanFromMap(prop, WidgetConditionContext.class);
+				widgetChartContext.addWidgetCondition(widgetConditionContext);
+			}
+		}
+	}
+	public static JSONArray getDashboardResponseJson(DashboardContext dashboard) {
+		List dashboards = new ArrayList<>();
+		dashboards.add(dashboard);
+		return getDashboardResponseJson(dashboards);
+	}
+	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards) {
 		
 		JSONArray result = new JSONArray();
 		
-		List<DashboardContext> dashboards = new ArrayList(dashboardWidgets.keySet());
-		 
 		Collections.sort(dashboards);
 		 for(DashboardContext dashboard:dashboards) {
 			 String dashboardName = dashboard.getDashboardName();
-			 System.out.println("after ---"+dashboardName);
-				Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboardWidgets.get(dashboard);
-				JSONArray childrenArray = new JSONArray();
-				for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-					childrenArray.add(dashboardWidgetContext.getWidgetJsonObject());
-				}
-				JSONObject dashboardJson = new JSONObject();
-				dashboardJson.put("label", dashboardName);
-				dashboardJson.put("children", childrenArray);
-				result.add(dashboardJson);
+			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
+			JSONArray childrenArray = new JSONArray();
+			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
+				childrenArray.add(dashboardWidgetContext.getWidgetJsonObject());
+			}
+			JSONObject dashboardJson = new JSONObject();
+			dashboardJson.put("label", dashboardName);
+			dashboardJson.put("children", childrenArray);
+			result.add(dashboardJson);
 		 }
 		return result;
+	}
+	
+	public static DashboardContext getDashboardWithWidgets(Long dashboardId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("ID = ?", dashboardId);
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			dashboard.setDashboardWidgets(dashbaordWidgets);
+			return dashboard;
+		}
+		return null;
 	}
 }

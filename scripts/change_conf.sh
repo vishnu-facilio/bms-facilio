@@ -15,6 +15,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     cp $META_INF_DIR/context-stage.xml $META_INF_DIR/context.xml
     sed -i -e 's/localhost:9090/app.facilio.in/g' $CONF_DIR/awsprops.properties
     sed -i'' "s%environment=.*%environment=stage%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%s3.bucket.name=.*%s3.bucket.name=facilio-in-data%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%enableeventjob=.*%enableeventjob=false%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%servername=.*%servername=pre-production-1766931799.us-west-2.elb.amazonaws.com%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.in/websocket%g" $CONF_DIR/awsprops.properties
