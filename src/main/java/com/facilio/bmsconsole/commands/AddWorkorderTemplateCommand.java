@@ -26,7 +26,7 @@ public class AddWorkorderTemplateCommand implements Command {
 		JSONObject content = new JSONObject();
 		content.put(FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsJSON(workorder));
 		if(tasks != null) {
-			content.put(FacilioConstants.ContextNames.TASK_LIST, FieldUtil.getAsJSONArray(tasks));
+			content.put(FacilioConstants.ContextNames.TASK_LIST, FieldUtil.getAsJSONArray(tasks, TaskContext.class));
 		}
 		workorderTemplate.setContent(content.toJSONString());
 		
