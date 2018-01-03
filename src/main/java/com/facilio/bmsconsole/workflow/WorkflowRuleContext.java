@@ -76,11 +76,40 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 		this.status = status;
 	}
 	
-	private int ruleType = -1;
+	private RuleType ruleType;
 	public int getRuleType() {
-		return ruleType;
+		if(ruleType != null) {
+			return ruleType.getIntVal();
+		}
+		return -1;
 	}
 	public void setRuleType(int ruleType) {
+		this.ruleType = RULE_TYPES[ruleType - 1];
+	}
+	public void setRuleType(RuleType ruleType) {
 		this.ruleType = ruleType;
+	}
+	public RuleType getRuleTypeEnum() {
+		return ruleType;
+	}
+	
+	private static final RuleType[] RULE_TYPES = RuleType.values();
+	public static enum RuleType {
+		READING_RULE,
+		WORKORDER_NOTIFICATION_RULE
+		;
+		
+		public int getIntVal() {
+			return ordinal()+1;
+		}
+		
+		public static RuleType getRuleType(int val) {
+			try {
+				return RULE_TYPES[val - 1];
+			}
+			catch(ArrayIndexOutOfBoundsException e) {
+				return null;
+			}
+		}
 	}
 }
