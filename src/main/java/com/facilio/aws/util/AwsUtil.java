@@ -61,6 +61,7 @@ import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import org.json.simple.parser.JSONParser;
 
 public class AwsUtil 
 {
@@ -360,20 +361,62 @@ public class AwsUtil
 		return user.getUserId();
 	}
 
-	private static JSONObject getPolicyInJson(String action, String resource){
+	public static void addIotClient(String policyName, String clientId) {
+    	try {
+			AWSIot client = getIotClient();
+			GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);
+			GetPolicyResult result = client.getPolicy(request);
+			JSONParser parser = new JSONParser();
+			JSONObject object = (JSONObject) parser.parse(result.getPolicyDocument());
+
+			JSONArray array = (JSONArray) object.get("Statement");
+			List<String> clients = new ArrayList<>();
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject stat = (JSONObject) array.get(i);
+				String action = (String) stat.get("Action");
+				if ("iot:Connect".equalsIgnoreCase(action)) {
+					JSONArray resourceArray = (JSONArray) stat.get("Resource");
+					for (int j = 0; j < resourceArray.size(); j++) {
+						clients.add((String) resourceArray.get(j));
+					}
+					break;
+				}
+			}
+			clients.add(getIotArnClientId(clientId));
+			CreatePolicyVersionRequest versionRequest = new CreatePolicyVersionRequest().withPolicyName(policyName)
+					.withPolicyDocument(getPolicyDoc(policyName, clients.toArray(new String[]{})).toString())
+					.withSetAsDefault(true);
+			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
+			logger.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
+		} catch (Exception e){
+    		e.printStackTrace();
+		}
+	}
+
+	private static String getIotArnClientId(String clientId){
+    	return getIotArn() + ":client/" + clientId;
+	}
+
+	private static String getIotArnTopic(String topic) {
+    	return getIotArn() +":topic/"+ topic;
+	}
+
+	private static JSONObject getPolicyInJson(String action, String[] resource){
 		JSONObject object = new JSONObject();
 		object.put("Effect", "Allow");
 		object.put("Action", action);
-		object.put("Resource", "arn:aws:iot:"+ getRegion()+":"+getUserId() + resource);
+		JSONArray array = new JSONArray();
+		for(String str : resource) {
+			array.add(str);
+		}
+		object.put("Resource", array);
 		return object;
 	}
 
-	private static JSONObject getPolicyDoc(String name){
-
+	private static JSONObject getPolicyDoc(String name, String[] clientIds ){
 		JSONArray statements = new JSONArray();
-		statements.add(getPolicyInJson("iot:Connect", ":client/"+name));
-		statements.add(getPolicyInJson("iot:Publish", ":topic/"+name));
-
+		statements.add(getPolicyInJson("iot:Connect", clientIds));
+		statements.add(getPolicyInJson("iot:Publish", new String[] {getIotArnTopic(name)}));
 		JSONObject policyDocument = new JSONObject();
 		policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
 		policyDocument.put("Statement", statements);
@@ -381,9 +424,13 @@ public class AwsUtil
 		return policyDocument;
 	}
 
+	private static  String getIotArn(){
+		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
+	}
+
 	private static void createIotPolicy(AWSIot iotClient, String name) {
     	try {
-			CreatePolicyRequest policyRequest = new CreatePolicyRequest().withPolicyName(name).withPolicyDocument(getPolicyDoc(name).toString());
+			CreatePolicyRequest policyRequest = new CreatePolicyRequest().withPolicyName(name).withPolicyDocument(getPolicyDoc(name, new String[] { getIotArnClientId(name)}).toString());
 			CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
 			logger.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
 		} catch (ResourceAlreadyExistsException resourceExists){
