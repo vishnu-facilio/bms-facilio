@@ -23,13 +23,12 @@ public class FileStoreFactory {
 		
 		FileStore fs = null;
 		
-		if ("production".equalsIgnoreCase(environment)) {
-			// S3 store
-			fs = new S3FileStore(AccountUtil.getCurrentOrg().getOrgId(), ouid);
-		}
-		else {
+		if ("development".equalsIgnoreCase(environment)) {
 			// local store
 			fs = new LocalFileStore(AccountUtil.getCurrentOrg().getOrgId(), ouid);
+		} else {
+			// S3 store
+			fs = new S3FileStore(AccountUtil.getCurrentOrg().getOrgId(), ouid);
 		}
 		return fs;
 	}
