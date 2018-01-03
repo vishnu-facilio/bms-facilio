@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,10 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -22,10 +28,19 @@ public class WorkflowAPI {
 		updateWorkflowRuleChildIds(rule,rule.getOrgId());
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-													.table("Workflow_Rule")
+													.table(ModuleFactory.getWorkflowRuleModule().getTableName())
 													.fields(FieldFactory.getWorkflowRuleFields())
 													.addRecord(ruleProps);
 		insertBuilder.save();
+		
+		if(rule.getRuleTypeEnum() == RuleType.READING_RULE) {
+			insertBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getReadingRuleModule().getTableName())
+														.fields(FieldFactory.getReadingRuleFields())
+														.addRecord(ruleProps);
+			insertBuilder.save();
+		}
+		
 		return (long) ruleProps.get("id");
 	}
 	
@@ -86,26 +101,68 @@ public class WorkflowAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivity(long orgId, long moduleId, int activityType) throws Exception {
-		try {
-			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-					.table("Workflow_Rule")
-					.select(FieldFactory.getWorkflowRuleFields())
-					.innerJoin("Workflow_Event")
-					.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-					.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.ACTIVITY_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, activityType, activityType)
-					.orderBy("EXECUTION_ORDER");
-			return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.table("Workflow_Rule")
+				.select(FieldFactory.getWorkflowRuleFields())
+				.innerJoin("Workflow_Event")
+				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
+				.andCustomWhere("Workflow_Rule.ORGID = ? AND Workflow_Event.MODULEID = ? AND ? & Workflow_Event.ACTIVITY_TYPE = ? AND Workflow_Rule.STATUS = true", orgId, moduleId, activityType, activityType)
+				.orderBy("EXECUTION_ORDER");
+		return getWorkFlowsFromMapList(ruleBuilder.get(), orgId);
+	}
+	
+	public static int updateLastValueInReadingRule(long ruleId, long value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		ReadingRuleContext rule = new ReadingRuleContext();
+		rule.setLastValue(value);
+		
+		return updateReadingRule(rule, ruleId);
+	}
+	
+	public static int updateReadingRule(ReadingRuleContext readingRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getReadingRuleFields());
+		
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(fields)
+														.table(readingRuleModule.getTableName())
+														.innerJoin(workflowModule.getTableName())
+														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
+														.andCondition(CriteriaAPI.getIdCondition(ruleId, readingRuleModule));
+		
+		return updateBuilder.update(FieldUtil.getAsProperties(readingRule));
+	}
+	
+	private static Map<String, Object> getReadingRuleProp(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getReadingRuleModule();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(module.getTableName())
+																.select(FieldFactory.getReadingRuleFields())
+																.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<Map<String, Object>> readingRuleProps = selectRecordBuilder.get();
+		if(readingRuleProps != null && !readingRuleProps.isEmpty()) {
+			return readingRuleProps.get(0);
 		}
-		catch(SQLException e) {
-			throw e;
-		}
+		return null;
 	}
 	
 	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, long orgId) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				WorkflowRuleContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
+				WorkflowRuleContext workflow = null;
+				Integer ruleTye = (Integer) prop.get("ruleType");
+				if(ruleTye != null && RuleType.READING_RULE == RuleType.getRuleType(ruleTye)) {
+					prop.putAll(getReadingRuleProp((long) prop.get("id")));
+					workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+				}
+				else {
+					workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
+				}
 				long criteriaId = workflow.getCriteriaId();
 				workflow.setCriteria(CriteriaAPI.getCriteria(orgId, criteriaId));
 				workflows.add(workflow);

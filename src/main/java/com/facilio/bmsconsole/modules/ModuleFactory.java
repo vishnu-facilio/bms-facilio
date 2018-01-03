@@ -69,7 +69,7 @@ public class ModuleFactory {
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
-		
+		fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
 	
@@ -131,6 +131,16 @@ public class ModuleFactory {
 		workflowRuleModule.setDisplayName("Workflow Rule");
 		workflowRuleModule.setTableName("Workflow_Rule");
 		return workflowRuleModule;
+	}
+	
+	public static FacilioModule getReadingRuleModule() {
+		FacilioModule readingRuleModule = new FacilioModule();
+		readingRuleModule.setName("readingrule");
+		readingRuleModule.setDisplayName("Reading Rule");
+		readingRuleModule.setTableName("Reading_Rule");
+		readingRuleModule.setExtendModule(getWorkflowRuleModule());
+		
+		return readingRuleModule;
 	}
 	
 	public static FacilioModule getWorkflowRuleActionModule() {

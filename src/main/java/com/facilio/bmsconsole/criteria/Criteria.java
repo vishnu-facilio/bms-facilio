@@ -94,6 +94,12 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	
 	private static final Pattern SPLIT_REG_EX = Pattern.compile("([1-9]\\d*)|(\\()|(\\))|(and)|(or)", Pattern.CASE_INSENSITIVE);
 	public Predicate computePredicate() {
+		return computePredicate(null);
+	}
+	
+	private Map<String, Object> variables = null;
+	public Predicate computePredicate(Map<String, Object> variables) {
+		this.variables = variables;
 		return evaluateExpression(pattern);
 	}
 	
@@ -102,7 +108,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		// TODO Auto-generated method stub
 		Condition condition = conditions.get(Integer.parseInt(operand));
 		if(condition != null) {
-			return condition.getPredicate();
+			return condition.getPredicate(variables);
 		}
 		return null;
 	}

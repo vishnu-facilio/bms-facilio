@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.workflow.ActionType;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -47,6 +49,8 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				}
 			}
 			addReadings(module, fields, readingsToBeAdded);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, readingsToBeAdded);
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		}
 		return false;
 	}

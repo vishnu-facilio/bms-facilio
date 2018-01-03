@@ -1,13 +1,17 @@
 
 package com.facilio.bmsconsole.criteria;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.util.FacilioExpressionWrapper;
 
 public class Condition {
 	
@@ -106,10 +110,17 @@ public class Condition {
 	
 	private String computedWhereClause;
 	public String getComputedWhereClause() {
-		if(operator != null && (computedWhereClause == null || DYNAMIC_OPERATORS.contains(operator))) {
+		return getComputedWhereClause(null);
+	}
+	
+	public String getComputedWhereClause(Map<String, Object> placeHolders) {
+		if(operator != null && (computedWhereClause == null || DYNAMIC_OPERATORS.contains(operator) || isExpressionValue())) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
+			}
+			else if (placeHolders != null && !placeHolders.isEmpty() && isExpressionValue() && Arrays.asList(NumberOperators.values()).contains(operator)) {
+				computedWhereClause = operator.getWhereClause(columnName, evaluateExpression(placeHolders));									
 			}
 			else {
 				computedWhereClause = operator.getWhereClause(columnName, value);
@@ -119,6 +130,27 @@ public class Condition {
 	}
 	public void setComputedWhereClause(String computedWhereClause) {
 		this.computedWhereClause = computedWhereClause;
+	}
+	
+	private String evaluateExpression(Map<String, Object> placeHolders) {
+		FacilioExpressionWrapper exp = new FacilioExpressionWrapper(value)
+											.setVariablesInObject(placeHolders);
+		BigDecimal val = exp.evaluate();
+		return String.valueOf(val);
+	}
+	
+	private Boolean isExpressionValue;
+	public Boolean getIsExpressionValue() {
+		return isExpressionValue;
+	}
+	public void setIsExpressionValue(Boolean isExpressionValue) {
+		this.isExpressionValue = isExpressionValue;
+	}
+	public boolean isExpressionValue() {
+		if(isExpressionValue != null) {
+			return isExpressionValue.booleanValue();
+		}
+		return false;
 	}
 	
 	public List<Object> getComputedValues() {
@@ -134,10 +166,16 @@ public class Condition {
 	}
 	
 	public Predicate getPredicate() {
+		return getPredicate(null);
+	}
+	public Predicate getPredicate(Map<String, Object> placeHolders) {
 		if(operator != null) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, criteriaValue);
+			}
+			else if (placeHolders != null && !placeHolders.isEmpty() && isExpressionValue() && Arrays.asList(NumberOperators.values()).contains(operator)) {
+				return operator.getPredicate(fieldName, evaluateExpression(placeHolders));
 			}
 			else {
 				return operator.getPredicate(fieldName, value);

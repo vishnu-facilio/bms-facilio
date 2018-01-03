@@ -1309,6 +1309,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -435,6 +435,36 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getReadingRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingRuleModule();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField startValue =  new FacilioField();
+		startValue.setName("startValue");
+		startValue.setDataType(FieldType.NUMBER);
+		startValue.setColumnName("START_VALUE");
+		startValue.setModule(module);
+		fields.add(startValue);
+		
+		FacilioField interval = new FacilioField();
+		interval.setName("interval");
+		interval.setDataType(FieldType.NUMBER);
+		interval.setColumnName("INTERVAL_VALUE");
+		interval.setModule(module);
+		fields.add(interval);
+		
+		FacilioField lastValue = new FacilioField();
+		lastValue.setName("lastValue");
+		lastValue.setDataType(FieldType.NUMBER);
+		lastValue.setColumnName("LAST_VALUE");
+		lastValue.setModule(module);
+		fields.add(lastValue);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getActionFields() 
 	{
 		List<FacilioField> fields = new ArrayList<>();
@@ -1243,6 +1273,13 @@ public class FieldFactory {
 		criteriaValueId.setColumnName("CRITERIA_VAL_ID");
 		criteriaValueId.setModule(module);
 		fields.add(criteriaValueId);
+		
+		FacilioField isExpressionValue = new FacilioField();
+		isExpressionValue.setName("isExpressionValue");
+		isExpressionValue.setDataType(FieldType.BOOLEAN);
+		isExpressionValue.setColumnName("IS_EXPRESSION_VALUE");
+		isExpressionValue.setModule(module);
+		fields.add(isExpressionValue);
 		
 		FacilioField computedWhereClause = new FacilioField();
 		computedWhereClause.setName("computedWhereClause");

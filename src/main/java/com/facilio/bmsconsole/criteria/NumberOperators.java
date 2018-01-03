@@ -78,20 +78,10 @@ public enum NumberOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
-						if(object instanceof Short) {
-							return ((short) object) < Short.parseShort(value);
-						}
-						else if(object instanceof Integer) {
-							return ((int) object) < Integer.parseInt(value);
-						}
-						else if(object instanceof Long) {
-							return ((long) object) < Long.parseLong(value);
-						}
-						else if(object instanceof Float) {
-							return ((float) object) < Float.parseFloat(value);
-						}
-						else if(object instanceof Double) {
-							return ((double) object) < Double.parseDouble(value);
+						if(object != null) {
+							double doubleVal = Double.parseDouble(value);
+							double currentVal = Double.parseDouble(object.toString());
+							return currentVal < doubleVal;
 						}
 						return false;
 					}
@@ -109,20 +99,10 @@ public enum NumberOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
-						if(object instanceof Short) {
-							return ((short) object) <= Short.parseShort(value);
-						}
-						else if(object instanceof Integer) {
-							return ((int) object) <= Integer.parseInt(value);
-						}
-						else if(object instanceof Long) {
-							return ((long) object) <= Long.parseLong(value);
-						}
-						else if(object instanceof Float) {
-							return ((float) object) <= Float.parseFloat(value);
-						}
-						else if(object instanceof Double) {
-							return ((double) object) <= Double.parseDouble(value);
+						if(object != null) {
+							double doubleVal = Double.parseDouble(value);
+							double currentVal = Double.parseDouble(object.toString());
+							return currentVal <= doubleVal;
 						}
 						return false;
 					}
@@ -140,20 +120,10 @@ public enum NumberOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
-						if(object instanceof Short) {
-							return ((short) object) > Short.parseShort(value);
-						}
-						else if(object instanceof Integer) {
-							return ((int) object) > Integer.parseInt(value);
-						}
-						else if(object instanceof Long) {
-							return ((long) object) > Long.parseLong(value);
-						}
-						else if(object instanceof Float) {
-							return ((float) object) > Float.parseFloat(value);
-						}
-						else if(object instanceof Double) {
-							return ((double) object) > Double.parseDouble(value);
+						if(object != null) {
+							double doubleVal = Double.parseDouble(value);
+							double currentVal = Double.parseDouble(object.toString());
+							return currentVal > doubleVal;
 						}
 						return false;
 					}
@@ -171,20 +141,10 @@ public enum NumberOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
-						if(object instanceof Short) {
-							return ((short) object) >= Short.parseShort(value);
-						}
-						else if(object instanceof Integer) {
-							return ((int) object) >= Integer.parseInt(value);
-						}
-						else if(object instanceof Long) {
-							return ((long) object) >= Long.parseLong(value);
-						}
-						else if(object instanceof Float) {
-							return ((float) object) >= Float.parseFloat(value);
-						}
-						else if(object instanceof Double) {
-							return ((double) object) >= Double.parseDouble(value);
+						if(object != null) {
+							double doubleVal = Double.parseDouble(value);
+							double currentVal = Double.parseDouble(object.toString());
+							return currentVal >= doubleVal;
 						}
 						return false;
 					}
@@ -254,21 +214,9 @@ public enum NumberOperators implements Operator<String> {
 			public boolean evaluate(Object object) {
 				// TODO Auto-generated method stub
 				if(object != null) {
-					if(object instanceof Short) {
-						return ((short) object) == Short.parseShort(value);
-					}
-					else if(object instanceof Integer) {
-						return ((int) object) == Integer.parseInt(value);
-					}
-					else if(object instanceof Long) {
-						return ((long) object) == Long.parseLong(value);
-					}
-					else if(object instanceof Float) {
-						return ((float) object) == Float.parseFloat(value);
-					}
-					else if(object instanceof Double) {
-						return ((double) object) == Double.parseDouble(value);
-					}
+					double doubleVal = Double.parseDouble(value);
+					double currentVal = Double.parseDouble(object.toString());
+					return currentVal == doubleVal;
 				}
 				return false;
 			}
