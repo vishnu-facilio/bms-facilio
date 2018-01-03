@@ -21,7 +21,7 @@ public class EventStreamProcessor {
         try {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgName);
-            String clientName = AwsUtil.getConfig("clientName") + '-' + AwsUtil.getConfig("environment");
+            String clientName = AwsUtil.getConfig("environment");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));

@@ -20,6 +20,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.events.tasker.tasks.EventStreamProcessor;
+import com.facilio.events.tasker.tasks.KinesisProcessor;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import org.flywaydb.core.Flyway;
 
@@ -92,20 +93,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			
 			try {
-				if(! "production".equalsIgnoreCase(AwsUtil.getConfig("environment"))) {
-					List<FacilioField> columnList = AccountConstants.getOrgFields();
-
-					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
-							.select(columnList);
-
-					List<Map<String, Object>> props = builder.get();
-					for(Map<String, Object> prop : props) {
-						Long orgId = (Long)prop.get("orgId");
-						String orgName = (String) prop.get("domain");
-						System.out.println("Starting kinesis processor for : " +                                                                                     orgId);
-						new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
-					}
-				}
+				KinesisProcessor.startProcessor();
 			} catch (Exception e){
 				e.printStackTrace();
 			}
