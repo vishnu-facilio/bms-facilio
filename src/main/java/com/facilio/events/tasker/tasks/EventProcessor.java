@@ -75,7 +75,7 @@ public class EventProcessor implements IRecordProcessor {
                     String dataType = (String)object.get(DATA_TYPE);
                     if("timeseries".equalsIgnoreCase(dataType)){
 
-                    } else if("dso".equalsIgnoreCase(dataType)){
+                    } else if("cov".equalsIgnoreCase(dataType)){
 
                     } else {
                         boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);

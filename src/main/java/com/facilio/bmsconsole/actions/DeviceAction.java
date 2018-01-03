@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.events.tasker.tasks.EventStreamProcessor;
+import com.facilio.events.tasker.tasks.KinesisProcessor;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -75,7 +76,7 @@ public class DeviceAction extends ActionSupport
 			e.printStackTrace();
 		}
 
-		new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
+		KinesisProcessor.startProcessor(orgId, orgName);
 
 		logger.info("Stared event processor for org : " + orgId);
 		return SUCCESS;
