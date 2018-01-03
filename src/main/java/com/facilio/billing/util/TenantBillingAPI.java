@@ -1,0 +1,295 @@
+package com.facilio.billing.util;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.billing.context.Tenant;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
+
+public class TenantBillingAPI {
+
+	public static List<Tenant> getTenantsForOrgIdOLD(long orgId) throws SQLException, RuntimeException
+	{
+		List<Tenant> tenants = new ArrayList();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Tenants where OrgId = ?");
+			pstmt.setLong(1, orgId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				Tenant tenant = new Tenant();
+				tenant.setId(rs.getLong("ID"));
+				tenant.setName(rs.getString("NAME"));
+				tenant.setAddress(rs.getString("ADDRESS"));
+				tenant.setOrgId(rs.getLong("ORGID"));
+				tenant.setContactEmail(rs.getString("CONTACTEMAIL"));
+				tenant.setContactNumber(rs.getString("CONTACTNUMBER"));
+				tenant.setTemplateId(rs.getLong("TEMPLATEID"));
+				tenants.add(tenant);
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return tenants;
+	}
+	
+	public static List<Map<String, Object>> getTenant(long tenantId) throws Exception
+	{
+		List<FacilioField> fields = FieldFactory.getTenantFields();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Tenant")
+				.andCustomWhere("Tenant.ID = ?", tenantId);
+		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
+		System.out.println(">>>>>>>>>>>>> pmProps :"+pmProps);
+		return pmProps;
+		
+	}
+	
+	public static void addTenant() throws Exception
+	{
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", 1);
+		prop.put("name","Facilio");
+		prop.put("address", "MGR Salai, Perungudi, Chennai");
+		
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getTenantModule().getTableName())
+				.fields(FieldFactory.getTenantFields())
+				.addRecord(prop);															
+		
+		insertRecordBuilder.save();
+	}
+	
+	public static Map<String,String> FetchPlaceHolders(long templateId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Map<String,String> placeHolders = new HashMap();
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Excel_PlaceHolders WHERE TEMPLATEID = ?");
+			pstmt.setLong(1, templateId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				String cellId = rs.getString("CELLDATA");
+				String placeHolder = rs.getString("PLACEHOLDERNAME");
+				placeHolders.put(cellId, placeHolder);
+			}
+			
+		}catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return placeHolders;
+	}
+	
+	public static long GetMeterId(String meterName) throws SQLException, RuntimeException
+	{
+		long meterId = -1;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Assets where NAME = ?");
+			pstmt.setString(1, meterName);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				meterId = rs.getLong("ID");
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return meterId;
+		
+	}
+	
+	public static double GetMeterRun(long meterId, String paramName, long startTime, long endTime ) throws SQLException, RuntimeException
+	{
+		double kwhsum = 0.0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sqlStr = "";
+		if(paramName.equalsIgnoreCase("kwh"))
+		{
+			sqlStr = "select SUM(TOTAL_ENERGY_CONSUMPTION_DELTA) from Energy_Data where PARENT_METER_ID = ? and TTIME >= ? and TTIME < ?";
+		}
+		else
+		{
+			sqlStr = "select SUM("+paramName+") from Energy_Data where PARENT_METER_ID = ? and TTIME >= ? and TTIME < ?";
+		}
+		try {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement(sqlStr);
+				pstmt.setLong(1, meterId);
+				pstmt.setLong(2,startTime);
+				pstmt.setLong(3,endTime);
+				rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				kwhsum = rs.getDouble(1);
+			}
+			
+		}catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}	
+		return kwhsum;
+	}
+	
+	public static void InsertPlaceHolders( Map<String,String> placeHolders, long templateId) throws SQLException, RuntimeException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Excel_PlaceHolders(TEMPLATEID,PLACEHOLDERNAME,CELLDATA) VALUES(?,?,?)");
+			for(String key: placeHolders.keySet())
+			{
+				String celldata = placeHolders.get(key);
+				pstmt.setLong(1, templateId);
+				pstmt.setString(2,key);
+				pstmt.setString(3,celldata);
+				pstmt.addBatch();
+			}
+			pstmt.executeBatch();
+			
+		}catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
+	public static void main(String args[])
+	{
+		try {
+			addTenant();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static Tenant getTenantOLD(long tenantId) throws SQLException, RuntimeException
+	{
+		Tenant tenant = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Tenants where Id = ?");
+			pstmt.setLong(1, tenantId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				tenant = new Tenant();
+				tenant.setId(rs.getLong("ID"));
+				tenant.setName(rs.getString("NAME"));
+				tenant.setAddress(rs.getString("ADDRESS"));
+				tenant.setOrgId(rs.getLong("ORGID"));
+				tenant.setContactEmail(rs.getString("CONTACTEMAIL"));
+				tenant.setContactNumber(rs.getString("CONTACTNUMBER"));
+				tenant.setTemplateId(rs.getLong("TEMPLATEID"));
+			}			
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		
+		return tenant;
+	}
+	
+	public static ExcelTemplate getBillTemplate(long templateId) throws SQLException, RuntimeException
+	{
+		ExcelTemplate excelTemplate = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT * FROM Excel_Templates where Id = ?");
+			pstmt.setLong(1, templateId);
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				excelTemplate = new ExcelTemplate();
+				excelTemplate.setId(rs.getLong("ID"));
+				excelTemplate.setExcelFileId(rs.getLong("EXCEL_FILE_ID"));
+			}
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+		return excelTemplate;
+	}
+	
+//	public static ZoneContext getTenantZone() throws SQLException, RuntimeException
+//	{
+//		ZoneContext tenantZone = null;
+//		
+//		
+//		
+//		return tenantZone;
+//	}
+	
+}

@@ -5,6 +5,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.util.LeedAPI;
@@ -18,6 +19,7 @@ public class FetchLeedListCommand implements Command {
 		List<LeedConfigurationContext> leedList = null;
 		long orgId = (long)context.get(LeedConstants.ContextNames.ORGID);
 		
+		TenantBillingAPI.getTenant(1);
 		if(LeedAPI.checkIfLoginPresent(orgId))
 		{
 			isLoginRequired = true;

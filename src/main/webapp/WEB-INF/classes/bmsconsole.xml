@@ -1952,6 +1952,25 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="tenantBillingApi" namespace="/api/tenantbilling" extends="home">
+		<action name="upload" class="com.facilio.billing.action.BillingAction" method="GenerateTemplate">
+			<result name="success" type="json">
+			</result>
+		</action>
+		
+		<action name="loadtemplates" class="com.facilio.billing.action.BillingAction" method="LoadTemplates">
+			<result name="success" type="json">
+				<param name="includeProperties">excelTemplates,excelTemplates\[\d+\],excelTemplates\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="generatebill" class="com.facilio.billing.action.BillingAction" method="GenerateBill">
+			<result name="success" type="json">
+			<param name="includeProperties">downloadURL</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="leed" namespace="/app/leed" extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -2161,7 +2180,7 @@
 			<allowed-methods>assignmentRules,newAssignmentRule,addAssignmentRule,businessRules</allowed-methods>
 		</action>
 	</package>
-
+		
 	<package name="location" namespace="/app/setup/locations"
 		extends="home">
 		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions"
