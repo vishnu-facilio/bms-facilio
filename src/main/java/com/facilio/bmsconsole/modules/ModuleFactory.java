@@ -511,7 +511,7 @@ public class ModuleFactory {
 	
 	public static FacilioModule getViewColumnsModule() {
 		FacilioModule viewFieldsModule = new FacilioModule();
-		viewFieldsModule.setTableName("ViewColumns");
+		viewFieldsModule.setTableName("View_Column");
 		return viewFieldsModule;
 	}
 }
