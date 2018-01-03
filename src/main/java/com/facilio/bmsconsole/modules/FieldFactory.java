@@ -2051,6 +2051,29 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getWidgetConditionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetCondition();
+		
+		fields.add(getIdField(module));
+		
+		FacilioField widgetId = new FacilioField();
+		widgetId.setName("widgetId");
+		widgetId.setDataType(FieldType.NUMBER);
+		widgetId.setColumnName("WIDGET_ID");
+		widgetId.setModule(module);
+		fields.add(widgetId);
+		
+		FacilioField criteriaId = new FacilioField();
+		criteriaId.setName("criteriaId");
+		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setColumnName("CRITERIA_ID");
+		criteriaId.setModule(module);
+		fields.add(criteriaId);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getFormulaFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFormulaModule();

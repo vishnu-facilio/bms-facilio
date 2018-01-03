@@ -527,6 +527,12 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
+	public static FacilioModule getWidgetCondition() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Condition");
+		return dashboardWigetModule;
+	}
+	
 	public static FacilioModule getViewColumnsModule() {
 		FacilioModule viewFieldsModule = new FacilioModule();
 		viewFieldsModule.setTableName("View_Column");

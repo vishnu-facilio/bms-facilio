@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -20,7 +22,21 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	Long y2Axis;
 	Long y3Axis;
 	boolean isComparisionReport;
-	Long criteriaId;
+	private List<WidgetConditionContext> widgetConditions;
+	
+	public List<WidgetConditionContext> getWidgetConditions() {
+		return widgetConditions;
+	}
+	public void setWidgetConditions(List<WidgetConditionContext> widgetConditions) {
+		this.widgetConditions = widgetConditions;
+	}
+	
+	public void addWidgetCondition(WidgetConditionContext widgetCondition) {
+		if(widgetConditions == null) {
+			widgetConditions = new ArrayList<>();
+		}
+		widgetConditions.add(widgetCondition);
+	}
 	
 	public WidgetChartType getWidgetChartType() {
 		return WidgetChartType.getWidgetChartType(getChartDisplayType());
@@ -78,12 +94,6 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	}
 	public void setY3Axis(Long y3Axis) {
 		this.y3Axis = y3Axis;
-	}
-	public Long getCriteriaId() {
-		return criteriaId;
-	}
-	public void setCriteriaId(Long criteriaId) {
-		this.criteriaId = criteriaId;
 	}
 	public boolean isXaxisOnlyReport() {
 		if(y1Axis == null && y2Axis == null && y3Axis == null) {

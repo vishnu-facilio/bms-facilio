@@ -11,7 +11,20 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	private Long createdByUserId;
 	private Integer publishStatus;
 	private String dashboardUrl;
+	List<DashboardWidgetContext> dashboardWidgets;
 
+	public List<DashboardWidgetContext> getDashboardWidgets() {
+		return dashboardWidgets;
+	}
+	public void setDashboardWidgets(List<DashboardWidgetContext> dashboardWidgets) {
+		this.dashboardWidgets = dashboardWidgets;
+	}
+	public void addDashboardWidget(DashboardWidgetContext dashboardWidgetContext) {
+		if(this.dashboardWidgets == null) {
+			this.dashboardWidgets = new ArrayList<>();
+		}
+		dashboardWidgets.add(dashboardWidgetContext);
+	}
 	public String getDashboardUrl() {
 		return dashboardUrl;
 	}
