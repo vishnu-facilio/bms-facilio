@@ -11,8 +11,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.UUID;
 
 public class EventStreamProcessor {
 
