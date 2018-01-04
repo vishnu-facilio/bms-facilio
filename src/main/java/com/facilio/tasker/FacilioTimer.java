@@ -11,17 +11,17 @@ public class FacilioTimer {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void scheduleJob(JobContext jc, long delay) throws Exception {
+	public static long scheduleJob(JobContext jc, long delay) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		jc.setExecutionTime(nextExecutionTime);
 		
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName) throws Exception {
+	public static long scheduleCalendarJob(long recordId, String jobName, long startTime, ScheduleInfo schedule, String executorName) throws Exception {
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -29,13 +29,13 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
+	public static long scheduleCalendarJob(long recordId, String jobName, long startTime, ScheduleInfo schedule, String executorName, int maxExecution) throws Exception {
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -44,13 +44,13 @@ public class FacilioTimer {
 		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
 		jc.setMaxExecution(maxExecution);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void scheduleCalendarJob(long jobId, String jobName, long startTime, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
+	public static long scheduleCalendarJob(long recordId, String jobName, long startTime, ScheduleInfo schedule, String executorName, long endTime) throws Exception {
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -59,14 +59,14 @@ public class FacilioTimer {
 		jc.setExecutionTime(schedule.nextExecutionTime(getStartTimeInSecond(startTime)));
 		jc.setExecutorName(executorName);
 		jc.setEndExecutionTime(endTime/1000);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName) throws Exception {
+	public static long schedulePeriodicJob(long recordId, String jobName, long delay, int period, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -74,14 +74,14 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, int maxExecution) throws Exception {
+	public static long schedulePeriodicJob(long recordId, String jobName, long delay, int period, String executorName, int maxExecution) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -90,14 +90,14 @@ public class FacilioTimer {
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
 		jc.setMaxExecution(maxExecution);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void schedulePeriodicJob(long jobId, String jobName, long delay, int period, String executorName, long endTime) throws Exception {
+	public static long schedulePeriodicJob(long recordId, String jobName, long delay, int period, String executorName, long endTime) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(true);
@@ -106,14 +106,14 @@ public class FacilioTimer {
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
 		jc.setEndExecutionTime(endTime/1000);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, int delay, String executorName) throws Exception {
+	public static long scheduleOneTimeJob(long recordId, String jobName, int delay, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delay;
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(false);
@@ -121,24 +121,24 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
+	public static long scheduleOneTimeJob(long recordId, String jobName, long nextExecutionTime, String executorName) throws Exception {
 		
 		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
+		jc.setRecordId(recordId);
 		jc.setOrgId(getCurrentOrgId());
 		jc.setJobName(jobName);
 		jc.setIsPeriodic(false);
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
-		JobStore.addJob(jc);
+		return JobStore.addJob(jc);
 	}
 	
-	public static void deleteJob(long jobId, String jobName) throws Exception {
-		JobStore.deleteJob(jobId, jobName);
+	public static void deleteJob(long jobId) throws Exception {
+		JobStore.deleteJob(jobId);
 	}
 	
 	private static long getCurrentOrgId() {

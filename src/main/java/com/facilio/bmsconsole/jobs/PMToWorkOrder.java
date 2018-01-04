@@ -22,7 +22,7 @@ public class PMToWorkOrder extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			long pmId = jc.getJobId();
+			long pmId = jc.getRecordId();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			bean.addWorkOrderFromPM(pmId);
 			

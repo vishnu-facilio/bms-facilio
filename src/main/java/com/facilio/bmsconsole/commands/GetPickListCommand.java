@@ -45,6 +45,7 @@ public class GetPickListCommand implements Command {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			System.out.println("Exception occurred during retrieval of pick list for "+moduleName);
 			e.printStackTrace();
 		}
 		finally

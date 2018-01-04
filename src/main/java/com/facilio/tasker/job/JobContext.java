@@ -21,6 +21,14 @@ public class JobContext {
 	public void setJobId(long jobId) {
 		this.jobId = jobId;
 	}
+
+	private long recordId = -1;
+	public long getRecordId() {
+		return recordId;
+	}
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
+	}
 	
 	private long orgId = -1;
 	public long getOrgId() {
@@ -151,6 +159,6 @@ public class JobContext {
 	
 	@Override
 	public String toString() {
-		return jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;
+		return jobId+"::"+recordId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;
 	}
 }

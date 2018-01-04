@@ -37,7 +37,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 				.select(fields)
 				.table("Preventive_Maintenance")
 				.innerJoin("Jobs")
-				.on("Preventive_Maintenance.ID = Jobs.JOBID")
+				.on("Preventive_Maintenance.ID = Jobs.RECORD_ID")
 				.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ? AND Preventive_Maintenance.ID = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance", pmId);
 
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();

@@ -162,7 +162,6 @@ public class CommonCommandUtil {
 	}
 	
 	public static void schedulePMRemainder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime) throws Exception {
-		FacilioTimer.deleteJob(reminder.getId(), "PMReminder");
 		switch(reminder.getTypeEnum()) {
 			case BEFORE:
 				if(nextExecutionTime != -1) {

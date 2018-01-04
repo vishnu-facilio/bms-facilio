@@ -42,7 +42,7 @@ public class PMReminderJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			long reminderId = jc.getJobId();
+			long reminderId = jc.getRecordId();
 			List<FacilioField> fields = FieldFactory.getPMReminderFields();
 			fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
 			FacilioModule module = ModuleFactory.getPMReminderModule();

@@ -33,7 +33,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 															.select(fields)
 															.table("Preventive_Maintenance")
 															.innerJoin("Jobs")
-															.on("Preventive_Maintenance.ID = Jobs.JOBID")
+															.on("Preventive_Maintenance.ID = Jobs.RECORD_ID")
 															.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance")
 															.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 															;

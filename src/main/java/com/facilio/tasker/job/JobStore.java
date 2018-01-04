@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class JobStore {
 	
-	public static void addJob(JobContext job) throws Exception {
+	public static long addJob(JobContext job) throws Exception {
 		if(job != null) {
 			
 			checkForNull(job);
@@ -30,9 +30,14 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (RECORD_ID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 				
-				pstmt.setLong(1, job.getJobId());
+				if(job.getRecordId() != -1) {
+					pstmt.setLong(1, job.getRecordId());
+				}
+				else {
+					pstmt.setNull(1, Types.BIGINT);
+				}
 				
 				if(job.getOrgId() != -1) {
 					pstmt.setLong(2, job.getOrgId());
@@ -88,7 +93,12 @@ public class JobStore {
 					throw new Exception("Unable to schedule");
 				}
 				else {
+					rs = pstmt.getGeneratedKeys();
+					rs.next();
+					long jobid = rs.getLong(1);
+					job.setJobId(jobid);
 					System.out.println("Added job : "+job);
+					return jobid;
 				}
 			}
 			catch(SQLException e) {
@@ -104,7 +114,7 @@ public class JobStore {
 	}
 	
 	private static void checkForNull(JobContext job) {
-		if(job.getJobId() == -1) {
+		if(job.getRecordId() == -1) {
 			throw new IllegalArgumentException("Job ID cannot be null");
 		}
 		
@@ -125,19 +135,18 @@ public class JobStore {
 		}
 	}
 	
-	public static long updateNextExecutionTimeAndCount(long jobId, String jobName, long nextExecutionTime, int executionCount) throws SQLException {
+	public static long updateNextExecutionTimeAndCount(long jobId, long nextExecutionTime, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ?");
 			
 			pstmt.setLong(1, nextExecutionTime);
 			pstmt.setInt(2, executionCount);
 			pstmt.setLong(3, jobId);
-			pstmt.setString(4, jobName);
 			
 			return pstmt.executeUpdate();
 		}
@@ -150,19 +159,18 @@ public class JobStore {
 		
 	}
 	
-	public static long setInActiveAndUpdateCount(long jobId, String jobName, int executionCount) throws SQLException {
+	public static long setInActiveAndUpdateCount(long jobId, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ? where JOBID = ?");
 			
 			pstmt.setBoolean(1, false);
 			pstmt.setInt(2, executionCount);
 			pstmt.setLong(3, jobId);
-			pstmt.setString(4, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -174,18 +182,17 @@ public class JobStore {
 		
 	}
 	
-	public static long setInActive(long jobId, String jobName) throws SQLException {
+	public static long setInActive(long jobId) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ?");
 			
 			pstmt.setBoolean(1, false);
 			pstmt.setLong(2, jobId);
-			pstmt.setString(3, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -231,6 +238,10 @@ public class JobStore {
 		
 		jc.setJobId(rs.getLong("JOBID"));
 		
+		if(rs.getObject("RECORD_ID") != null) {
+			jc.setRecordId(rs.getLong("RECORD_ID"));
+		}
+		
 		if(rs.getObject("ORGID") != null) {
 			jc.setOrgId(rs.getLong("ORGID"));
 		}
@@ -272,16 +283,15 @@ public class JobStore {
 		return jc;
 	}
 	
-	public static void deleteJob(long jobId, String jobName) throws SQLException {
-		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
+	public static void deleteJob(long jobId) throws SQLException {
+		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ?";
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
 			pstmt.setLong(1, jobId);
-			pstmt.setString(2, jobName);
 			if(pstmt.executeUpdate() < 1) {
-				System.out.println("Deletion failed with Job ID : "+jobId+" and Jobname : "+jobName);
+				System.out.println("Deletion failed with Job ID : "+jobId);
 			}
 			else {
-				System.out.println("Successfully job with Job ID : "+jobId+" and Jobname : "+jobName);
+				System.out.println("Successfully job with Job ID : "+jobId);
 			}
 			
 			
