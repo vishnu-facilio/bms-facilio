@@ -56,7 +56,7 @@ public class ReportsUtil
 		return roundOff(variance, 2);
 	}
 	
-	private static double unitCost=0.65;
+	private static double unitCost=0.09;
 
 	
 	public static String[] energyUnitConverter(Double value)

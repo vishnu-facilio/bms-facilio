@@ -59,8 +59,9 @@ public class PortfolioAction extends ActionSupport {
 		long prevStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
-
-		List<Map<String, Object>> prevResult= ReportsUtil.fetchMeterData(deviceList,prevStartTime,currentStartTime-1,true);
+		long previousEndTime=prevStartTime+(endTime-currentStartTime);
+		
+		List<Map<String, Object>> prevResult= ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMeterVsConsumption(prevResult);
 		//going for two queries.. so that it will be easy while going for separate queries in case of caching url..
 		List<Map<String, Object>> currentResult= ReportsUtil.fetchMeterData(deviceList,currentStartTime,endTime,true);

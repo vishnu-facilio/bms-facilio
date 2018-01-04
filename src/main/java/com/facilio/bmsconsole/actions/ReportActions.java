@@ -249,7 +249,7 @@ public class ReportActions extends ActionSupport {
 		else if(duration.equalsIgnoreCase("custom_month"))
 		{//colName=Date.
 			//MM-YYYY format
-			String fromVl=getFromVal();
+			String fromVal=getFromVal();
 			List<Integer> value= ReportsUtil.getDateList(fromVal);
 			int month=value.get(1);
 			int year=value.get(2);
@@ -298,6 +298,13 @@ public class ReportActions extends ActionSupport {
 		consumptionArray=ReportsUtil.energyUnitConverter(previousKwh);
 		consumptionData.put("previousTotal", consumptionArray[0]);
 		consumptionData.put("previousUnits",consumptionArray[1]);
+		previousEndTime=previousStartTime+(endTime-startTime);
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(deviceId,previousStartTime,previousEndTime);
+		if(previousResult!=null && !previousResult.isEmpty()){
+			
+			Map<String,Object> map = previousResult.get(0);
+			previousKwh = (double)map.get("CONSUMPTION");
+		}
 		consumptionData.put("variance",ReportsUtil.getVariance(currentKwh, previousKwh));
 		setReportData(consumptionData);
 	}
@@ -405,8 +412,9 @@ public class ReportActions extends ActionSupport {
 		long previousStartTime=DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
+		long previousEndTime=previousStartTime+(endTime-currentStartTime);
 
-		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1);
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,previousEndTime);
 		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime);
 		
 		double lastMonthKwh=0;double thisMonthKwh=0;
