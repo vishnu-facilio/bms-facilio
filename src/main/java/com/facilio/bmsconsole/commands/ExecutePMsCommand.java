@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -20,9 +21,9 @@ public class ExecutePMsCommand implements Command {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
 			for(long pmId : pmIds) {
-				long woId = bean.addWorkOrderFromPM(pmId);
-				if(woId != -1) {
-					woIds.add(woId);
+				WorkOrderContext wo = bean.addWorkOrderFromPM(pmId);
+				if(wo != null) {
+					woIds.add(wo.getId());
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woIds);

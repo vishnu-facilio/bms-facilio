@@ -151,7 +151,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public long addWorkOrderFromPM(long pmId) throws Exception {
+	public WorkOrderContext addWorkOrderFromPM(long pmId) throws Exception {
 		// TODO Auto-generated method stub
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getPreventiveMaintenanceFields())
@@ -184,9 +184,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			addWOChain.execute(context);
 
 			addToRelTable(pmId, wo.getId());
-			return wo.getId();
+			return wo;
 		}
-		return -1;
+		return null;
 	}
 	
 	private void addToRelTable(long pmId, long woId) throws SQLException, RuntimeException {
