@@ -80,7 +80,6 @@ public class UserBeanImpl implements UserBean {
 	public long createUser(long orgId, User user) throws Exception {
 		
 		User orgUser = getUser(orgId, user.getEmail());
-		orgUser.setUserStatus(true);
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -99,7 +98,7 @@ public class UserBeanImpl implements UserBean {
 		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
-		
+		user.setUserStatus(true);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
 				.fields(AccountConstants.getOrgUserFields());

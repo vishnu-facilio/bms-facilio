@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -14,10 +15,12 @@ import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -245,6 +248,44 @@ public class NotificationAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
+	
+	private ActionContext action;
+	public ActionContext getAction() {
+		return action;
+	}
+	public void setAction(ActionContext action) {
+		this.action = action;
+	}
+	
+	public String updateWorkFlowRuleAction() throws Exception { 
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, action);
+
+		Command updateAction = FacilioChainFactory.getUpdateWorkflowRuleAction();
+		updateAction.execute(context);
+				
+		return SUCCESS;
+	}
+	
+	private List<WorkflowRuleContext> workFlowNotifications;
+	
+	public List<WorkflowRuleContext> getWorkFlowNotifications() {
+		return workFlowNotifications;
+	}
+	public void setWorkFlowNotifications(List<WorkflowRuleContext> workFlowNotifications) {
+		this.workFlowNotifications = workFlowNotifications;
+	}
+	
+	public String getWONotificationRules() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.WORKORDER_NOTIFICATION_RULE);
+		
+		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
+		workflowRuleType.execute(context);
+		workFlowNotifications = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		return SUCCESS;
+	}
+	
 	
 	private long workflowId = -1;
 	public long getWorkflowId() {

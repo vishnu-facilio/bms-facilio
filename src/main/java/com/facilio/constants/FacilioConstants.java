@@ -293,6 +293,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
 		public static final String WORKFLOW_RULE="workflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
+		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION="workflowAction";
 		public static final String NODE = "node";
 		public static final String PAGINATION = "pagination";

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.criteria.Criteria;
 
 public class WorkflowRuleContext extends WorkflowEventContext {
@@ -82,6 +84,15 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 		return false;
 	}
 	
+	private List<ActionContext> actions;
+	
+	public List<ActionContext> getActions() {
+		return actions;
+	}
+	public void setActions(List<ActionContext> actions) {
+		this.actions = actions;
+	}
+
 	private RuleType ruleType;
 	public int getRuleType() {
 		if(ruleType != null) {

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -98,6 +99,15 @@ public class WorkflowAPI {
 		catch(SQLException e) {
 			throw e;
 		}
+	}
+	
+	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type) throws Exception{
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleFields())
+				.table("Workflow_Rule")
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()))
+				.andCustomWhere("RULE_TYPE = ?", type.getIntVal());
+		return getWorkFlowsFromMapList(builder.get(), AccountUtil.getCurrentOrg().getOrgId());
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivity(long orgId, long moduleId, int activityType) throws Exception {

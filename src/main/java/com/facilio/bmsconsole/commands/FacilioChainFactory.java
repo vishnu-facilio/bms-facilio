@@ -892,7 +892,21 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
-
+	
+	public static Chain getWorkflowRuleOfTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
+		c.addCommand(new GetActionListForWorkflowRulesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getUpdateWorkflowRuleAction() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateWorkFlowRuleAction());
+		addCleanUpCommand(c);
+		return c;
+	}
 	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();

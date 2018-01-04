@@ -28,6 +28,10 @@ public class ActionAPI {
 		return getActionsFromPropList(actionBuilder.get());
 	}
 	
+//	public static int updateActionOfRule(long orgId,  long workflowRuleId) throws Exception{
+//		GenericUpdateRecordBuilder
+//	}
+	
 	public static List<ActionContext> getActiveActionsFromWorkflowRule(long orgId, long workflowRuleId) throws Exception {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getActionFields())
@@ -92,7 +96,6 @@ public class ActionAPI {
 			Map<String, Object> actionProps = FieldUtil.getAsProperties(action);
 			
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-																.connection(conn)
 																.table("Action")
 																.fields(FieldFactory.getActionFields())
 																.andCustomWhere("ORGID = ? AND ID = ?", orgId, id);

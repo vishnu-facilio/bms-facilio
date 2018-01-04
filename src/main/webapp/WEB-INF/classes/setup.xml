@@ -183,6 +183,16 @@
 				<param name="includeProperties">alarmCreationRules.*,emails.*,phoneNumbers.*</param>
 			</result>
 		</action>
+		<action name="workflowRuleType" class="com.facilio.bmsconsole.actions.NotificationAction" method="getWONotificationRules">
+			<result name="success" type="json">
+				<param name="root">workFlowNotifications</param>
+			</result>
+		</action>
+		<action name="updateworkflowaction" class="com.facilio.bmsconsole.actions.NotificationAction" method="updateWorkFlowRuleAction">
+			<result name="success" type="json">
+				<param name="root">action</param>
+			</result>
+		</action>
 		<action name="turnonrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOnWorkflow">
             <result name="success" type="json">
 				<param name="includeProperties">result</param>
