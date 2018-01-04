@@ -40,30 +40,35 @@
 			</result>
 		</global-results>
 		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
+			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
 		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="signup">
+			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
 		<action name="validateInviteLink" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="validateInviteLink">
+			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
 		<action name="acceptInvite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="acceptInvite">
+			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogin">
+			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>

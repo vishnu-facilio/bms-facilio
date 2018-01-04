@@ -36,20 +36,19 @@ public class AuthInterceptor extends AbstractInterceptor {
 			// Step 1: Validating ID Token
 			HttpServletRequest request = ServletActionContext.getRequest();
 			
-			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
+//			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
+			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
 			String headerToken = request.getHeader("Authorization");
 			
 			// skiping signup url from authorization check
-			if (idToken != null || headerToken != null) {
+			if (facilioToken != null || headerToken != null) {
 				
-				boolean isAPI = false;
-				if (idToken == null) {
-					// api requests
-					idToken = request.getHeader("Authorization").replace("Bearer ", "");
-					isAPI = true;
+				boolean isAPI = true;
+				if (headerToken != null) {
+					headerToken = request.getHeader("Authorization").replace("Bearer ", "");
 				}
 
-				CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
+				CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);
 				if (cognitoUser == null) {
 					return Action.LOGIN;
 				}
@@ -98,6 +97,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 
 				// Step 4: Setting threadlocal variables
+				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
 				// Setting ORGID & USERID in attributes for using in access log
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
@@ -130,6 +130,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 					timezoneObj = TimeZone.getTimeZone(timezone);
 				}
 				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
+			}
+			else {
+				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
+					return Action.LOGIN;
+				}
 			}
 		}
 		catch (Exception e) {

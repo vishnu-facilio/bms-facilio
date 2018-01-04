@@ -194,9 +194,13 @@ public class LoginAction extends ActionSupport{
 	public String apiLogout() throws Exception {
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 		HttpSession session = request.getSession();
 		
 		session.invalidate();
+		
+		LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+		LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
 		
 		return SUCCESS;
 	}

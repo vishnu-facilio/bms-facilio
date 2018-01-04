@@ -117,7 +117,9 @@ public class LoginUtil {
 				if (cookie.getName().equalsIgnoreCase(key)) {
 					cookie.setValue("");
 					cookie.setPath("/");
-					cookie.setDomain(domain.substring(1));
+					if (domain != null) {
+						cookie.setDomain(domain.substring(1));
+					}
 					cookie.setMaxAge(0);
 					response.addCookie(cookie);
 					return true;

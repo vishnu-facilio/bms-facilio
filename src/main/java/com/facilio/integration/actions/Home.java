@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
@@ -57,18 +58,22 @@ state = PORTAL-yogendrababu
 		setJsonresponse("token",jwt);
 		setJsonresponse("username",username);
 		
-		
+		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();	
 
 		Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
 		cookie.setMaxAge(60*60*24*2); // Make the cookie last a year
+		cookie.setPath("/");
 		cookie.setHttpOnly(true);
+//		cookie.setDomain(request.getServerName());
 		response.addCookie(cookie);
 
 		Cookie authmodel = new Cookie("fc.authtype", "facilio");
 		authmodel.setMaxAge(60*60*24*2); // Make the cookie last a year
+		authmodel.setPath("/");
 		authmodel.setHttpOnly(false);
-		//authmodel.setDomain(domain);
+//		authmodel.setDomain(request.getServerName());
+		System.out.println("#################### facilio.in:::; "+ request.getServerName());
 		response.addCookie(authmodel);
 
 		return SUCCESS;
