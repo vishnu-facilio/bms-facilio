@@ -218,6 +218,7 @@ public class DashboardUtil {
 			}
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("label", dashboardName);
+			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
 			result.add(dashboardJson);
 		 }
@@ -231,6 +232,24 @@ public class DashboardUtil {
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("ID = ?", dashboardId);
+			
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			dashboard.setDashboardWidgets(dashbaordWidgets);
+			return dashboard;
+		}
+		return null;
+	}
+public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
 			
 		List<Map<String, Object>> props = selectBuilder.get();
 		

@@ -209,7 +209,12 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	public String getDashboardString() throws Exception {
-		dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+		if(dashboardId != null && !dashboardId.equals(0l)) {
+			dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+		}
+		else {
+			dashboard = DashboardUtil.getDashboardWithWidgets(linkName);
+		}
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
 	}
@@ -235,4 +240,12 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private String linkName;
+
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
 }

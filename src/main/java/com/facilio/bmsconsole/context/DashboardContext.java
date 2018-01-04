@@ -8,6 +8,13 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 public class DashboardContext extends ModuleBaseWithCustomFields implements Comparable<DashboardContext> {
 
 	private String dashboardName;
+	private String linkName;
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
 	private Long createdByUserId;
 	private Integer publishStatus;
 	private String dashboardUrl;

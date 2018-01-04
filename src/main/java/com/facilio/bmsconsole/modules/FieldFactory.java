@@ -1831,6 +1831,13 @@ public class FieldFactory {
 		dashboardName.setColumnName("DASHBOARD_NAME");
 		dashboardName.setModule(module);
 		fields.add(dashboardName);
+		
+		FacilioField dashboardLinkName = new FacilioField();
+		dashboardLinkName.setName("linkName");
+		dashboardLinkName.setDataType(FieldType.STRING);
+		dashboardLinkName.setColumnName("LINK_NAME");
+		dashboardLinkName.setModule(module);
+		fields.add(dashboardLinkName);
 
 		FacilioField createdByUser = new FacilioField();
 		createdByUser.setName("createdByUserId");
