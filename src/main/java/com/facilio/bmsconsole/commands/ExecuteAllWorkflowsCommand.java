@@ -55,18 +55,18 @@ public class ExecuteAllWorkflowsCommand implements Command
 					
 					for(WorkflowRuleContext workflowRule : workflowRules)
 					{
+						Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
 						Criteria criteria = workflowRule.getCriteria();
 						for(Object record : records) {
+							Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
+							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							boolean flag = true;
 							if(criteria != null) {
 								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE) {
-									ReadingRuleContext readingRule = (ReadingRuleContext) workflowRule;
-									Map<String, Object> variables = new HashMap<>(placeHolders);
-									CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(readingRule), variables);
-									flag = criteria.computePredicate(variables).evaluate(record);
-									
+									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
 									if(flag) {
-										updateLastValueorReadingRule(readingRule, (ModuleBaseWithCustomFields) record);
+										updateLastValueorReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);
 									}
 								}
 								else {
@@ -81,7 +81,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 								if(actions != null) {
 									for(ActionContext action : actions)
 									{
-										action.executeAction(placeHolders, context);
+										action.executeAction(recordPlaceHolders, context);
 									}
 								}
 							}
