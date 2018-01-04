@@ -45,11 +45,15 @@ public class KinesisProcessor {
     public static void startProcessor(long orgId, String orgName) {
         AmazonKinesis kinesis = AwsUtil.getKinesisClient();
         try {
-            kinesis.describeStream(orgName);
-            System.out.println("Starting kinesis processor for org : " + orgName + " id " + orgId);
-            new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
+            if(orgName != null) {
+                kinesis.describeStream(orgName);
+                System.out.println("Starting kinesis processor for org : " + orgName + " id " + orgId);
+                new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
+            }
         } catch (ResourceNotFoundException e){
             System.out.println("Kinesis stream not found for org : " + orgName +" id "+ orgId);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
