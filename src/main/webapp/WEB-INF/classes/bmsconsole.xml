@@ -2835,7 +2835,7 @@
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
-			<param name="dashboardId">{1}</param>
+			<param name="linkName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardJson.*</param>
 			</result>

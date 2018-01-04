@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.DashboardUtil;
 
 public class DashboardContext extends ModuleBaseWithCustomFields implements Comparable<DashboardContext> {
 
@@ -12,6 +13,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	public String getLinkName() {
 		if (linkName == null) {
 			linkName = dashboardName.replaceAll("[^\\p{IsAlphabetic}]+", "").toLowerCase();
+			
+			if (this.getId() > 0) {
+				try {
+					DashboardUtil.updateDashboardLinkName(this.getId(), linkName);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return linkName;
 	}

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -160,6 +161,21 @@ public class DashboardUtil {
 				.andCustomWhere("ID = ?", dashboard.getId());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+	public static boolean updateDashboardLinkName(long dashboardId, String linkName) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere("ID = ?", dashboardId);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("linkName", linkName);
+		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return true;
