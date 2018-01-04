@@ -232,7 +232,8 @@ public class DashboardUtil {
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("ID = ?", dashboardId);
-			
+		
+		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		if (props != null && !props.isEmpty()) {
@@ -243,14 +244,15 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
+
+	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
-			
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		if (props != null && !props.isEmpty()) {
@@ -258,6 +260,30 @@ public static DashboardContext getDashboardWithWidgets(String dashboardLinkName)
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			dashboard.setDashboardWidgets(dashbaordWidgets);
 			return dashboard;
+		}
+		return null;
+	}
+
+	public static List<DashboardContext> getDashboardList(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				dashboardList.add(dashboard);
+			}
+			return dashboardList;
 		}
 		return null;
 	}

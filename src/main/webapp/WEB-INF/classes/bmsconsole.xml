@@ -203,6 +203,12 @@
 				<param name="includeProperties">tasks,tasks\[\d+\],tasks\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
+			method="getDashboardList">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"
 		extends="home">
@@ -2807,15 +2813,10 @@
 			<result name="success">/jsps/baseSpaceListPopup.jsp</result>
 		</action>
 	</package>
-	<package name="dashboard" namespace="/api/app/dashboard" extends="home">
+	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
-			</result>
-		</action>
-		<action name="getDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardString">
-			<result name="success" type="json">
-				<param name="includeProperties">^dashboardJson.*</param>
 			</result>
 		</action>
 		<action name="addWidget" class="com.facilio.bmsconsole.actions.DashboardAction" method="addWidget">
@@ -2831,6 +2832,12 @@
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
+			<param name="dashboardId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardJson.*</param>
 			</result>
 		</action>
 	</package>

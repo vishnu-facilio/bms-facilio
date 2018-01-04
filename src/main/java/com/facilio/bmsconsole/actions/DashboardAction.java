@@ -44,7 +44,15 @@ public class DashboardAction extends ActionSupport {
 		this.dashboardWidget = dashboardWidgetContext;
 	}
 	private DashboardContext dashboard;
+	private List<DashboardContext> dashboards;
 	private DashboardWidgetContext dashboardWidget;
+	
+	public List<DashboardContext> getDashboards() {
+		return dashboards;
+	}
+	public void setDashboards(List<DashboardContext> dashboards) {
+		this.dashboards = dashboards;
+	}
 	
 	private Long dashboardId;
 	private int dashboardPublishStatus;
@@ -61,6 +69,15 @@ public class DashboardAction extends ActionSupport {
 	public void setDashboardId(Long dashboardId) {
 		this.dashboardId = dashboardId;
 	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	private List<Map<String, Object>> reportData;
 	public List<Map<String, Object>> getReportData() {
 		return this.reportData;
@@ -208,13 +225,16 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	public String getDashboardString() throws Exception {
-		if(dashboardId != null && !dashboardId.equals(0l)) {
-			dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+	
+	public String getDashboardList() throws Exception {
+		if (moduleName != null) {
+			dashboards = DashboardUtil.getDashboardList(moduleName);
 		}
-		else {
-			dashboard = DashboardUtil.getDashboardWithWidgets(linkName);
-		}
+		return SUCCESS;
+	}
+	
+	public String viewDashboard() throws Exception {
+		dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
 	}

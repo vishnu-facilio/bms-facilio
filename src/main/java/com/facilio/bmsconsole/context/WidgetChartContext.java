@@ -140,7 +140,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		
 		JSONObject dataOptionsJson = new JSONObject();
 		dataOptionsJson.put("type", getWidgetChartType().getName());
-		dataOptionsJson.put("dataurl", "/app/dashboard/getData?reportId="+getId());
+		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getId());
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getId());
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());

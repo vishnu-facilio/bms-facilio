@@ -10,6 +10,9 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	private String dashboardName;
 	private String linkName;
 	public String getLinkName() {
+		if (linkName == null) {
+			linkName = dashboardName.replaceAll("[^\\p{IsAlphabetic}]+", "").toLowerCase();
+		}
 		return linkName;
 	}
 	public void setLinkName(String linkName) {
