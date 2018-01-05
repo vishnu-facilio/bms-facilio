@@ -1922,7 +1922,7 @@ public class FieldFactory {
 
 		FacilioField dashboardWidgetType = new FacilioField();
 		dashboardWidgetType.setName("type");
-		dashboardWidgetType.setDataType(FieldType.STRING);
+		dashboardWidgetType.setDataType(FieldType.NUMBER);
 		dashboardWidgetType.setColumnName("TYPE");
 		dashboardWidgetType.setModule(module);
 		fields.add(dashboardWidgetType);
@@ -2065,6 +2065,42 @@ public class FieldFactory {
 		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
 		isComparisionReport.setModule(module);
 		fields.add(isComparisionReport);
+		return fields;
+	}
+	public static List<FacilioField> getWidgetListViewFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetListViewModule();
+
+		fields.add(getIdField(module));
+
+		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
+		dashboardWidgetHeaderTitle.setName("headerText");
+		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
+		dashboardWidgetHeaderTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderTitle);
+
+		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
+		dashboardWidgetHeaderSubTitle.setName("headerSubText");
+		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
+		dashboardWidgetHeaderSubTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderSubTitle);
+
+		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
+		dashboardWidgetHeaderIsExport.setName("headerIsExport");
+		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
+		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
+		dashboardWidgetHeaderIsExport.setModule(module);
+		fields.add(dashboardWidgetHeaderIsExport);
+		
+		FacilioField dashboardWidgetListViewId = new FacilioField();
+		dashboardWidgetListViewId.setName("viewId");
+		dashboardWidgetListViewId.setDataType(FieldType.NUMBER);
+		dashboardWidgetListViewId.setColumnName("VIEW_ID");
+		dashboardWidgetListViewId.setModule(module);
+		fields.add(dashboardWidgetListViewId);
+
 		return fields;
 	}
 

@@ -14,6 +14,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetConditionContext;
@@ -24,14 +25,11 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class DashboardUtil {
 	
@@ -108,12 +106,14 @@ public class DashboardUtil {
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
-				if(prop.get("type").equals("chart")) {
-					WidgetChartContext dashboardWidgetContext = FieldUtil.getAsBeanFromMap(prop, WidgetChartContext.class);
-					addWidgetPeriods(dashboardWidgetContext);
-					addWidgetConditiontoWidget(dashboardWidgetContext);
-					dashboardWidgetContexts.add(dashboardWidgetContext);
+				WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
+				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
+				addWidgetPeriods(dashboardWidgetContext);
+				if(widgetType.equals(WidgetType.CHART)) {
+					addWidgetConditiontoWidget((WidgetChartContext) dashboardWidgetContext);
 				}
+				dashboardWidgetContexts.add(dashboardWidgetContext);
+
 			}
 		}
 		return dashboardWidgetContexts;

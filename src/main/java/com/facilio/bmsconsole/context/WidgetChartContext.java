@@ -105,7 +105,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public JSONObject getWidgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
-		resultJson.put("type", getType());
+		resultJson.put("type", getWidgetType().getName());
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());

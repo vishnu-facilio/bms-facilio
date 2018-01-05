@@ -513,6 +513,12 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Widget_Chart");
 		return dashboardWigetModule;
 	}
+	public static FacilioModule getWidgetListViewModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_List_View");
+		return dashboardWigetModule;
+	}
+
 	public static FacilioModule getFormulaModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Formula");
