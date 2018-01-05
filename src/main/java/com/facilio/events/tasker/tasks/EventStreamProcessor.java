@@ -19,13 +19,13 @@ public class EventStreamProcessor {
         try {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgName);
-            String clientName = orgId + AwsUtil.getConfig("environment");
+            String clientName = orgId +"-" + AwsUtil.getConfig("environment");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
             AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
 
-            String workerId = orgId + InetAddress.getLocalHost().getCanonicalHostName();
+            String workerId = orgId+"-" + InetAddress.getLocalHost().getCanonicalHostName();
 
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(clientName, streamName, provider, workerId)
