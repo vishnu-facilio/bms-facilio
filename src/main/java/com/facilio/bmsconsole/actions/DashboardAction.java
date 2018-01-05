@@ -31,6 +31,13 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
 
+	public String xaxisLegent;
+	public String getXaxisLegent() {
+		return xaxisLegent;
+	}
+	public void setXaxisLegent(String xaxisLegent) {
+		this.xaxisLegent = xaxisLegent;
+	}
 	public DashboardContext getDashboard() {
 		return dashboard;
 	}
@@ -169,6 +176,9 @@ public class DashboardAction extends ActionSupport {
 	 	}
 		System.out.println("rs after -- "+rs);
 		
+		if(true) {
+			setXaxisLegent(fieldModule.getName()+xAxisField.getName());
+		}
 //		if(widgetChartContext.getIsComparisionReport()) {
 //			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 //					.table(module.getTableName())
