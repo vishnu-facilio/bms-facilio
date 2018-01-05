@@ -272,11 +272,13 @@ public class FacilioConstants {
 		
 		public static final String PREVENTIVE_MAINTENANCE = "preventivemaintenance";
 		public static final String PM_REMINDERS = "pmreminders";
+		public static final String PM_REMINDER_TYPE = "pmremindertype";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
+		public static final String PM_TO_WO = "pmtowo";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
@@ -297,6 +299,8 @@ public class FacilioConstants {
 		public static final String WORKFLOW_ACTION="workflowAction";
 		public static final String NODE = "node";
 		public static final String PAGINATION = "pagination";
+		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
+		public static final String NEXT_EXECUTION_TIME = "nextexecutiontime";
 		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

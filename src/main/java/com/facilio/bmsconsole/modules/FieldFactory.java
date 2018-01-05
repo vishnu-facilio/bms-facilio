@@ -2164,7 +2164,6 @@ public class FieldFactory {
 
 	public static List<FacilioField> getViewColumnFields() {
 		FacilioModule module = ModuleFactory.getViewColumnsModule();
-
 		List<FacilioField> fields = new ArrayList<>();
 
 		FacilioField view = new FacilioField();
@@ -2181,6 +2180,27 @@ public class FieldFactory {
 		field.setModule(module);
 		fields.add(field);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMReminderJobWORelFields() {
+		FacilioModule module = ModuleFactory.getViewColumnsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField pmJobId = new FacilioField();
+		pmJobId.setName("pmJobId");
+		pmJobId.setDataType(FieldType.NUMBER);
+		pmJobId.setColumnName("PM_REMINDER_JOBID");
+		pmJobId.setModule(module);
+		fields.add(pmJobId);
+		
+		FacilioField woId = new FacilioField();
+		woId.setName("woId");
+		woId.setDataType(FieldType.NUMBER);
+		woId.setColumnName("WO_ID");
+		woId.setModule(module);
+		fields.add(woId);
+		
 		return fields;
 	}
 }

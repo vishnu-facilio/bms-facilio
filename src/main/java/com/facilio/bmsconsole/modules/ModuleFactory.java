@@ -527,6 +527,15 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
+	public static FacilioModule getPMReminderJobWORelModule() {
+		FacilioModule pmReminderJobWORel = new FacilioModule();
+		pmReminderJobWORel.setName("pmreminderjobworel");
+		pmReminderJobWORel.setDisplayName("PM Reminder WO Rel");
+		pmReminderJobWORel.setTableName("PM_Reminders_WO_Rel");
+		
+		return pmReminderJobWORel;
+	}
+	
 	public static FacilioModule getWidgetCondition() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Condition");

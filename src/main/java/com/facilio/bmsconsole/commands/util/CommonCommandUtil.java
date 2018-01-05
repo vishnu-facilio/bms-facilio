@@ -16,14 +16,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -161,7 +164,7 @@ public class CommonCommandUtil {
 		return null;	
 	}
 	
-	public static void schedulePMRemainder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime) throws Exception {
+	public static void schedulePMRemainder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime, long woId) throws Exception {
 		switch(reminder.getTypeEnum()) {
 			case BEFORE:
 				if(nextExecutionTime != -1) {
@@ -169,10 +172,24 @@ public class CommonCommandUtil {
 				}
 				break;
 			case AFTER:
-				if(currentExecutionTime != -1) {
-					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
+				if(currentExecutionTime != -1 && woId != -1) {
+					long jobId = FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
+					addPMReminderJobWOToRel(jobId, woId);
 				}
 				break;
 		}
+	}
+	
+	private static void addPMReminderJobWOToRel(long jobId, long woId) throws SQLException, RuntimeException {
+		Map<String, Object> props = new HashMap<>();
+		props.put("pmJobId", jobId);
+		props.put("woId", woId);
+		
+		GenericInsertRecordBuilder recordBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getPMReminderJobWORelFields())
+														.table(ModuleFactory.getPMReminderJobWORelModule().getTableName())
+														.addRecord(props);
+		
+		recordBuilder.save();
 	}
 }

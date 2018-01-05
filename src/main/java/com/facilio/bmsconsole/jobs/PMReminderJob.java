@@ -71,11 +71,11 @@ public class PMReminderJob extends FacilioJob {
 								wo.setCreatedTime((jc.getExecutionTime()+reminder.getDuration())*1000);
 								break;
 					case AFTER:
-								wo = getLatestWO(reminder.getPmId());
+								wo = getWO(jc.getJobId());
 								break;
 				}
 				
-				if(reminder.getTypeEnum() == PMReminder.ReminderType.BEFORE || !isClosed(wo)) {
+				if(wo != null && (reminder.getTypeEnum() == PMReminder.ReminderType.BEFORE || !isClosed(wo))) {
 					ActionContext action = ActionAPI.getAction(reminder.getActionId());
 					if(action != null) {
 						Map<String, Object> placeHolders = new HashMap<>();
@@ -93,16 +93,15 @@ public class PMReminderJob extends FacilioJob {
 		}
 	}
 	
-	private WorkOrderContext getLatestWO(long pmId) throws Exception {
+	private WorkOrderContext getWO(long jobId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
 																.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
 																.beanClass(WorkOrderContext.class)
-																.innerJoin("PM_To_WO")
-																.on("WorkOrders.ID = PM_To_WO.WO_ID")
-																.andCustomWhere("PM_To_WO.PM_ID = ?", pmId)
-																.orderBy("CREATED_TIME desc")
+																.innerJoin("PM_Reminders_WO_Rel")
+																.on("WorkOrders.ID = PM_Reminders_WO_Rel.WO_ID")
+																.andCustomWhere("PM_Reminders_WO_Rel.PM_REMINDER_JOBID = ?", jobId)
 																;
 		
 		List<WorkOrderContext> woList = woBuilder.get();

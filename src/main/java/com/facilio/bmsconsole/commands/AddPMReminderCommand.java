@@ -68,7 +68,7 @@ public class AddPMReminderCommand implements Command {
 					long schedulerId = (long) reminderProps.get(i).get("id");
 					PMReminder reminder = reminders.get(i);
 					reminder.setId(schedulerId);
-					CommonCommandUtil.schedulePMRemainder(reminder, -1l, nextExecutionTime);
+					CommonCommandUtil.schedulePMRemainder(reminder, -1l, nextExecutionTime, -1l);
 				}
 			}
 		}

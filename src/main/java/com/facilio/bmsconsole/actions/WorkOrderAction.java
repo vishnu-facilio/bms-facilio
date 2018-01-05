@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
@@ -169,6 +170,8 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+		context.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, PMReminder.ReminderType.AFTER);
 		
 		Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 		executePm.execute(context);
@@ -182,6 +185,8 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+		context.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, PMReminder.ReminderType.AFTER);
 		
 		Chain executePm = FacilioChainFactory.getExecutePMsChain();
 		executePm.execute(context);
