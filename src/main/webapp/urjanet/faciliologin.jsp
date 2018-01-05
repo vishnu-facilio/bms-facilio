@@ -138,7 +138,7 @@ body {
     	});
     
     $( "#target" ).submit(function( event ) {
-    	  alert( "Handler for .submit() called." );
+    	 // alert( "Handler for .submit() called." );
     	  $.ajax({
     		  type: "POST",
     		  url: 'faciliosubmit',
@@ -150,7 +150,8 @@ body {
     
   var handlelogin =   function handleloginsubmit(response)
     {
-    		alert(JSON.stringify(response))
+    		//alert(JSON.stringify(response))
+    		location.href = '<%= com.facilio.aws.util.AwsUtil.getConfig("clientapp.url")%>/app/wo';
     		
     }
 </script>
