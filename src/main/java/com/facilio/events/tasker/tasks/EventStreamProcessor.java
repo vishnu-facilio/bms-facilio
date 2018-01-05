@@ -14,32 +14,33 @@ import java.net.InetAddress;
 
 public class EventStreamProcessor {
 
-    public static void run(long orgId, String orgName) {
+    public static void run(long orgId, String orgName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
 
         try {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgName);
-            String clientName = orgId +"-" + AwsUtil.getConfig("environment");
+            String clientName = orgName +"-" + eventType + "-";
+            String applicationName = clientName + AwsUtil.getConfig("environment");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
             AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
 
-            String workerId = orgId+"-" + InetAddress.getLocalHost().getCanonicalHostName();
+            String workerId = clientName + InetAddress.getLocalHost().getCanonicalHostName();
 
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
-                    new KinesisClientLibConfiguration(clientName, streamName, provider, workerId)
+                    new KinesisClientLibConfiguration(applicationName, streamName, provider, workerId)
                             .withRegionName(AwsUtil.getConfig("region"))
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
 
-            IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgName);
+            //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgName);
 
             Worker worker = new Worker.Builder()
                     .recordProcessorFactory(recordProcessorFactory)
                     .config(kinesisClientLibConfiguration)
                     .build();
 
-            System.out.printf("Running %s to process stream %s as worker %s...\n", clientName, streamName, workerId);
+            System.out.printf("Running %s to process stream %s as worker %s...\n", applicationName, streamName, workerId);
 
             worker.run();
         } catch (Exception e){

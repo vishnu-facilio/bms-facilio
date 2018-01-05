@@ -48,7 +48,7 @@ public class KinesisProcessor {
             if(orgName != null) {
                 kinesis.describeStream(orgName);
                 System.out.println("Starting kinesis processor for org : " + orgName + " id " + orgId);
-                new Thread(() -> EventStreamProcessor.run(orgId, orgName)).start();
+                new Thread(() -> EventStreamProcessor.run(orgId, orgName, "event", new EventProcessorFactory(orgId, orgName))).start();
             }
         } catch (ResourceNotFoundException e){
             System.out.println("Kinesis stream not found for org : " + orgName +" id "+ orgId);
