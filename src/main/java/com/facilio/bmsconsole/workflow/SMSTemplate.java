@@ -6,6 +6,10 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.workflow.UserTemplate.Type;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class SMSTemplate extends UserTemplate {
 
 	private String from;
@@ -59,5 +63,14 @@ public class SMSTemplate extends UserTemplate {
 		return null;
 	}
 
-
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public int getType() {
+		return Type.SMS.getIntVal();
+	}
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public Type getTypeEnum() {
+		return Type.SMS;
+	}
 }

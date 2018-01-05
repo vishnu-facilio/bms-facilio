@@ -7,6 +7,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.workflow.UserTemplate.Type;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class JSONTemplate extends UserTemplate {
 
 	private long contentId = -1;
@@ -37,5 +41,16 @@ public class JSONTemplate extends UserTemplate {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public int getType() {
+		return Type.JSON.getIntVal();
+	}
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public Type getTypeEnum() {
+		return Type.JSON;
 	}
 }
