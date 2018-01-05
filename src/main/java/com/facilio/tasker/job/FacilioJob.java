@@ -43,10 +43,10 @@ public abstract class FacilioJob implements Runnable {
 			execute(jc);
 			
 			if(nextExecutionTime != -1) {
-				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(),  nextExecutionTime, jc.getCurrentExecutionCount()+1);
+				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(),  nextExecutionTime, jc.getCurrentExecutionCount()+1);
 			}
 			else {
-				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getCurrentExecutionCount()+1);
+				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 			}
 		}
 		catch(Exception e) {
@@ -80,13 +80,13 @@ public abstract class FacilioJob implements Runnable {
 	
 	private void reschedule() {
 		if(retryExecutionCount <= executor.getMaxRetry()) {
-			System.out.println("Rescheduling : "+jc.getRecordId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
+			System.out.println("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
 			executor.schedule(this, 1);
 		}
 		else {
 			System.out.println("Max retry exceeded for : "+jc+".\nSo making it inactive");
 			try {
-				JobStore.setInActive(jc.getJobId());
+				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

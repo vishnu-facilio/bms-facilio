@@ -22,7 +22,7 @@ public class BeforePMReminderJob extends FacilioJob {
 		try {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, ReminderType.BEFORE);
-			context.put(FacilioConstants.ContextNames.ID, jc.getRecordId());
+			context.put(FacilioConstants.ContextNames.ID, jc.getJobId());
 			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
 			
 			Chain executePMReminderChain = FacilioChainFactory.getExecutePMReminderChain();

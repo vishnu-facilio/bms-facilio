@@ -167,13 +167,14 @@ public class CommonCommandUtil {
 	public static void schedulePMRemainder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime, long woId) throws Exception {
 		switch(reminder.getTypeEnum()) {
 			case BEFORE:
+				FacilioTimer.deleteJob(reminder.getId(), "BeforePMReminder");
 				if(nextExecutionTime != -1) {
 					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "BeforePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
 				}
 				break;
 			case AFTER:
 				if(currentExecutionTime != -1 && woId != -1) {
-					long jobId = FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "AfterPMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
+					FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "AfterPMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
 				}
 				break;
 		}

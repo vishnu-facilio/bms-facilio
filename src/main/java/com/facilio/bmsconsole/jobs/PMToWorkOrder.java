@@ -14,7 +14,7 @@ public class PMToWorkOrder extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			long pmId = jc.getRecordId();
+			long pmId = jc.getJobId();
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
 			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
