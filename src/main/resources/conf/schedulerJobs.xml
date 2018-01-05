@@ -14,5 +14,6 @@
 	 <job name='EventToAlarm' classname='com.facilio.events.tasker.tasks.EventToAlarmJob' />
 	 <job name='EventToAlarm' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
-	 <job name='PMReminder' classname = 'com.facilio.bmsconsole.jobs.PMReminderJob' />
+	 <job name='BeforePMReminder' classname = 'com.facilio.bmsconsole.jobs.BeforePMReminderJob' />
+	 <job name='AfterPMReminder' classname = 'com.facilio.bmsconsole.jobs.AfterPMReminderJob' />
 </scheduler>

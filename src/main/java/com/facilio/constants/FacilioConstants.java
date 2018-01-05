@@ -272,6 +272,7 @@ public class FacilioConstants {
 		
 		public static final String PREVENTIVE_MAINTENANCE = "preventivemaintenance";
 		public static final String PM_REMINDERS = "pmreminders";
+		public static final String PM_REMINDER = "pmreminder";
 		public static final String PM_REMINDER_TYPE = "pmremindertype";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";

@@ -533,11 +533,11 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
-	public static FacilioModule getPMReminderJobWORelModule() {
+	public static FacilioModule getAfterPMRemindersWORelModule() {
 		FacilioModule pmReminderJobWORel = new FacilioModule();
-		pmReminderJobWORel.setName("pmreminderjobworel");
-		pmReminderJobWORel.setDisplayName("PM Reminder WO Rel");
-		pmReminderJobWORel.setTableName("PM_Reminders_WO_Rel");
+		pmReminderJobWORel.setName("afterpmreminderworel");
+		pmReminderJobWORel.setDisplayName("After PM Reminder WO Rel");
+		pmReminderJobWORel.setTableName("After_PM_Reminder_WO_Rel");
 		
 		return pmReminderJobWORel;
 	}

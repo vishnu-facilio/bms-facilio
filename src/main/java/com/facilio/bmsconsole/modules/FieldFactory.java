@@ -2219,14 +2219,16 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getPMReminderJobWORelFields() {
-		FacilioModule module = ModuleFactory.getViewColumnsModule();
+	public static List<FacilioField> getAfterPMReminderWORelFields() {
+		FacilioModule module = ModuleFactory.getAfterPMRemindersWORelModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
+		fields.add(getIdField(module));
+		
 		FacilioField pmJobId = new FacilioField();
-		pmJobId.setName("pmJobId");
+		pmJobId.setName("pmReminderId");
 		pmJobId.setDataType(FieldType.NUMBER);
-		pmJobId.setColumnName("PM_REMINDER_JOBID");
+		pmJobId.setColumnName("PM_REMINDER_ID");
 		pmJobId.setModule(module);
 		fields.add(pmJobId);
 		

@@ -168,28 +168,28 @@ public class CommonCommandUtil {
 		switch(reminder.getTypeEnum()) {
 			case BEFORE:
 				if(nextExecutionTime != -1) {
-					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
+					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "BeforePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
 				}
 				break;
 			case AFTER:
 				if(currentExecutionTime != -1 && woId != -1) {
-					long jobId = FacilioTimer.scheduleOneTimeJob(reminder.getId(), "PMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
-					addPMReminderJobWOToRel(jobId, woId);
+					long jobId = FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "AfterPMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
 				}
 				break;
 		}
 	}
 	
-	private static void addPMReminderJobWOToRel(long jobId, long woId) throws SQLException, RuntimeException {
+	private static long addPMReminderToWORel(long pmReminderId, long woId) throws SQLException, RuntimeException {
 		Map<String, Object> props = new HashMap<>();
-		props.put("pmJobId", jobId);
+		props.put("pmReminderId", pmReminderId);
 		props.put("woId", woId);
 		
 		GenericInsertRecordBuilder recordBuilder = new GenericInsertRecordBuilder()
-														.fields(FieldFactory.getPMReminderJobWORelFields())
-														.table(ModuleFactory.getPMReminderJobWORelModule().getTableName())
+														.fields(FieldFactory.getAfterPMReminderWORelFields())
+														.table(ModuleFactory.getAfterPMRemindersWORelModule().getTableName())
 														.addRecord(props);
 		
 		recordBuilder.save();
+		return (long) props.get("id");
 	}
 }

@@ -1183,6 +1183,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getExecutePMReminderChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetPMAndPMReminderCommand());
+		c.addCommand(new GetWOForPMReminderCommand());
+		c.addCommand(new ExecutePMReminderCommand());
+		return c;
+	}
+	
 	public static Chain getAddTemplateChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());
