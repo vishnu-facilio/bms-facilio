@@ -13,9 +13,9 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 
-	String headerText;
-	String headerSubText;
-	Boolean headerIsExport;
+	String chartHeaderText;
+	String chartHeaderSubText;
+	Boolean chartHeaderIsExport;
 	Integer chartDisplayType;
 	Long xAxis;
 	String y1Axis;
@@ -47,23 +47,23 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public void setIsComparisionReport(boolean isComparisionReport) {
 		this.isComparisionReport = isComparisionReport;
 	}
-	public String getHeaderText() {
-		return headerText;
+	public String getChartHeaderText() {
+		return chartHeaderText;
 	}
-	public void setHeaderText(String headerText) {
-		this.headerText = headerText;
+	public void setChartHeaderText(String headerText) {
+		this.chartHeaderText = headerText;
 	}
-	public String getHeaderSubText() {
-		return headerSubText;
+	public String getChartHeaderSubText() {
+		return chartHeaderSubText;
 	}
-	public void setHeaderSubText(String headerSubText) {
-		this.headerSubText = headerSubText;
+	public void setChartHeaderSubText(String headerSubText) {
+		this.chartHeaderSubText = headerSubText;
 	}
-	public Boolean getHeaderIsExport() {
-		return headerIsExport;
+	public Boolean getChartHeaderIsExport() {
+		return chartHeaderIsExport;
 	}
-	public void setHeaderIsExport(Boolean headerIsExport) {
-		this.headerIsExport = headerIsExport;
+	public void setChartHeaderIsExport(Boolean headerIsExport) {
+		this.chartHeaderIsExport = headerIsExport;
 	}
 	public Integer getChartDisplayType() {
 		return chartDisplayType;
@@ -114,16 +114,16 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		resultJson.put("layout", layoutJson);
 		
 		JSONObject headerJson = new JSONObject();
-		headerJson.put("title", getHeaderText());
+		headerJson.put("title", getChartHeaderText());
 		// Temprovery 
-		if(getHeaderSubText().equals("{today}")) {
+		if(getChartHeaderSubText().equals("{today}")) {
 			headerJson.put("subtitle", "today");
 		}
 		else {
-			headerJson.put("subtitle", getHeaderSubText());
+			headerJson.put("subtitle", getChartHeaderSubText());
 		}
 		
-		headerJson.put("export", getHeaderIsExport());
+		headerJson.put("export", getChartHeaderIsExport());
 		
 		if(!this.getPeriods().isEmpty()) {
 			JSONArray periods = new JSONArray();

@@ -91,6 +91,7 @@ public class DashboardUtil {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetFields();
 		fields.addAll(FieldFactory.getWidgetChartFields());
+		fields.addAll(FieldFactory.getWidgetListViewFields());
 		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -98,8 +99,10 @@ public class DashboardUtil {
 				.table(ModuleFactory.getWidgetModule().getTableName())
 				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
-				.innerJoin(ModuleFactory.getWidgetChartModule().getTableName())		
+				.leftJoin(ModuleFactory.getWidgetChartModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();

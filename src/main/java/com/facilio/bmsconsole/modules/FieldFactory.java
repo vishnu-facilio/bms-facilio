@@ -1997,21 +1997,21 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 
 		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
-		dashboardWidgetHeaderTitle.setName("headerText");
+		dashboardWidgetHeaderTitle.setName("chartHeaderText");
 		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
 		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
 		dashboardWidgetHeaderTitle.setModule(module);
 		fields.add(dashboardWidgetHeaderTitle);
 
 		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
-		dashboardWidgetHeaderSubTitle.setName("headerSubText");
+		dashboardWidgetHeaderSubTitle.setName("chartHeaderSubText");
 		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
 		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
 		dashboardWidgetHeaderSubTitle.setModule(module);
 		fields.add(dashboardWidgetHeaderSubTitle);
 
 		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
-		dashboardWidgetHeaderIsExport.setName("headerIsExport");
+		dashboardWidgetHeaderIsExport.setName("chartHeaderIsExport");
 		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
 		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
 		dashboardWidgetHeaderIsExport.setModule(module);
@@ -2074,21 +2074,21 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 
 		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
-		dashboardWidgetHeaderTitle.setName("headerText");
+		dashboardWidgetHeaderTitle.setName("viewHeaderText");
 		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
 		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
 		dashboardWidgetHeaderTitle.setModule(module);
 		fields.add(dashboardWidgetHeaderTitle);
 
 		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
-		dashboardWidgetHeaderSubTitle.setName("headerSubText");
+		dashboardWidgetHeaderSubTitle.setName("viewHeaderSubText");
 		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
 		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
 		dashboardWidgetHeaderSubTitle.setModule(module);
 		fields.add(dashboardWidgetHeaderSubTitle);
 
 		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
-		dashboardWidgetHeaderIsExport.setName("headerIsExport");
+		dashboardWidgetHeaderIsExport.setName("viewHeaderIsExport");
 		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
 		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
 		dashboardWidgetHeaderIsExport.setModule(module);
