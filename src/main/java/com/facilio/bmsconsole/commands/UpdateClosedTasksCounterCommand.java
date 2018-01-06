@@ -64,9 +64,8 @@ public class UpdateClosedTasksCounterCommand implements Command {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(field);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.connection(conn)
 														.select(fields)
 														.table("Tasks")
 														.innerJoin("Tickets")

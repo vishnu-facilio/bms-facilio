@@ -517,9 +517,8 @@ public class AlarmAction extends ActionSupport {
 		fields.add(idFld);
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.select(fields)
 					.table("WorkOrders")
 					.innerJoin("Tickets")
