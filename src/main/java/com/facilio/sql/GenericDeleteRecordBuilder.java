@@ -18,10 +18,7 @@ public class GenericDeleteRecordBuilder {
 		return this;
 	}
 	
-	@Deprecated
-	public GenericDeleteRecordBuilder connection(Connection conn) {
-		return this;
-	}
+	
 	
 	public GenericDeleteRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);

@@ -42,10 +42,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		return this;
 	}
 
-	@Deprecated
-	public GenericInsertRecordBuilder connection(Connection conn) {
-		return this;
-	}
+	
 
 	@Override
 	public void save() throws SQLException, RuntimeException {

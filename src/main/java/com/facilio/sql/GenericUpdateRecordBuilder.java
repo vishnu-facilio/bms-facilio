@@ -32,10 +32,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		return this;
 	}
 	
-	@Deprecated
-	public GenericUpdateRecordBuilder connection(Connection conn) {
-		return this;
-	}
+	
 	
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {

@@ -16,9 +16,8 @@ public class TabWidgetAPI {
 	
 	@SuppressWarnings({ "deprecation" })
 	public static TabWidgetContext getTabWidget(String tabLinkName) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.select(FieldFactory.getTabWidgetFields())
 					.table("Tab_Widget")
 					.andCustomWhere("Tab_Widget.ORGID = ? AND Tab_Widget.TAB_LINK_NAME = ?", AccountUtil.getCurrentOrg().getOrgId(), tabLinkName);
@@ -27,7 +26,6 @@ public class TabWidgetAPI {
 			TabWidgetContext tabWidget = FieldUtil.getAsBeanFromMap(tabWidgets.get(0), TabWidgetContext.class);
 			
 			GenericSelectRecordBuilder connectedAppSelectBuider = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.select(FieldFactory.getConnectedAppFields())
 					.table("Connected_App")
 					.andCustomWhere("Connected_App.ORGID = ? AND Connected_App.CONNECTED_APP_ID = ?", AccountUtil.getCurrentOrg().getOrgId(), tabWidget.getConnectedAppId());

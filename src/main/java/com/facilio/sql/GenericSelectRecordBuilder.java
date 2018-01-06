@@ -140,10 +140,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return this;
 	}
 	
-	@Deprecated
-	public GenericSelectRecordBuilder connection(Connection conn) {
-		return this;
-	}
+	
 	
 	private void checkForNull(boolean checkBean) {
 		if(tableName == null || tableName.isEmpty()) {
@@ -160,9 +157,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		checkForNull(false);
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+		try {
 			
 			String sql = constructSelectStatement();
+			if(tableName.equals("Preventive_Maintenance"))
+			{
+				System.out.println("The sql "+ sql);
+
+			}
 			pstmt = conn.prepareStatement(sql);
 			
 			Object[] whereValues = where.getValues();
@@ -191,10 +194,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
+			
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			DBUtil.closeAll(conn,pstmt, rs);
 		}
 	}
 	

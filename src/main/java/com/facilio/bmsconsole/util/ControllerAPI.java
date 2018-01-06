@@ -36,9 +36,8 @@ public class ControllerAPI {
 
 	
 	public static ControllerSettingsContext getControllerSettingsFromId(long orgId, long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table("Controller")
 					.select(FieldFactory.getControllerFields())
 					.andCustomWhere("ORGID = ? AND ID = ?",orgId, id);

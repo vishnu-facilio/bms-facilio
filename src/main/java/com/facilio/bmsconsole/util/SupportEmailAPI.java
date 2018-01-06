@@ -19,9 +19,8 @@ public class SupportEmailAPI {
 	public static final String TABLE_NAME = "SupportEmails";
 	
 	public static SupportEmailContext getSupportEmailFromFwdEmail(String fwdMail) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table(TABLE_NAME)
 					.select(FieldFactory.getSupportEmailFields())
 					.andCustomWhere("FWD_EMAIL = ?", fwdMail);
@@ -40,9 +39,8 @@ public class SupportEmailAPI {
 	}
 	
 	public static SupportEmailContext getSupportEmailFromId(long orgId, long id) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table(TABLE_NAME)
 					.select(FieldFactory.getSupportEmailFields())
 					.andCustomWhere("ORGID = ? AND ID = ?",orgId, id);
@@ -62,9 +60,8 @@ public class SupportEmailAPI {
 	}
 	
 	public static List<SupportEmailContext> getSupportEmailsOfOrg(long orgId) throws Exception {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		try {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.connection(conn)
 					.table(TABLE_NAME)
 					.select(FieldFactory.getSupportEmailFields())
 					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
