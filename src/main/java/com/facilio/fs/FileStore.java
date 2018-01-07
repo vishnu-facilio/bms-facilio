@@ -92,6 +92,36 @@ public abstract class FileStore {
 		}
 	}
 	
+	
+	protected boolean updateFileEntry(ResizedFileInfo fileInfo) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
+			
+			pstmt.setString(1, fileInfo.getUrl());
+			pstmt.setLong(2, fileInfo.getExpiryTime());
+			pstmt.setLong(3, fileInfo.getFileId());
+			pstmt.setLong(4, getOrgId());
+			pstmt.setInt(5, fileInfo.getWidth());
+			pstmt.setInt(6, fileInfo.getHeight());
+			
+			if(pstmt.executeUpdate() < 1) {
+				throw new RuntimeException("Unable to update file");
+			}
+			return true;
+		}
+		catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	protected boolean deleteFileEntry(long fileId) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -174,6 +204,40 @@ public abstract class FileStore {
 		}
 	}
 	
+	
+	protected boolean addResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?, URL=?, EXPIRY_TIME=?");
+			
+			pstmt.setLong(1, fileInfo.getFileId());
+			pstmt.setLong(2, getOrgId());
+			pstmt.setInt(3, fileInfo.getWidth());
+			pstmt.setInt(4, fileInfo.getHeight());
+			pstmt.setString(5, fileInfo.getFilePath());
+			pstmt.setLong(6, fileInfo.getFileSize());
+			pstmt.setString(7, fileInfo.getContentType());
+			pstmt.setLong(8, System.currentTimeMillis());
+			pstmt.setString(9, fileInfo.getUrl());
+			pstmt.setLong(10, fileInfo.getExpiryTime());
+			
+			if(pstmt.executeUpdate() < 1) {
+				throw new RuntimeException("Unable to add resized file");
+			}
+			return true;
+		}
+		catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt, rs);
+		}
+	}
+	
 	protected abstract String getRootPath();
 	
 	public abstract long addFile(String fileName, File file, String contentType) throws Exception;
@@ -215,7 +279,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT File.FILE_ID, File.ORGID, File.FILE_NAME, File.UPLOADED_BY, File.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE FROM ResizedFile join File on ResizedFile.FILE_ID = File.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
+			pstmt = conn.prepareStatement("SELECT File.FILE_ID, File.ORGID, File.FILE_NAME, File.UPLOADED_BY, File.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE,ResizedFile.EXPIRY_TIME, ResizedFile.URL FROM ResizedFile join File on ResizedFile.FILE_ID = File.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
@@ -312,7 +376,7 @@ public abstract class FileStore {
 	
 	private FileInfo getFileInfoFromRS(ResultSet rs) throws Exception {
 		
-		FileInfo fileInfo = new FileInfo();
+		ResizedFileInfo fileInfo = new ResizedFileInfo();
 		fileInfo.setOrgId(rs.getLong("ORGID"));
 		fileInfo.setFileId(rs.getLong("FILE_ID"));
 		fileInfo.setFileName(rs.getString("FILE_NAME"));
@@ -321,6 +385,13 @@ public abstract class FileStore {
 		fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
 		fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
 		fileInfo.setUploadedTime(rs.getLong("UPLOADED_TIME"));
+		try {
+			fileInfo.setUrl(rs.getString("URL"));
+			fileInfo.setExpiryTime(rs.getLong("EXPIRY_TIME"));
+		}
+		catch(SQLException e) {
+			System.err.println("No such column :"+e.getMessage());
+		}
 		
 		return fileInfo;
 	}

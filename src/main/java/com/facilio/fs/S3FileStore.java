@@ -7,11 +7,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-
-import org.imgscalr.Scalr;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -182,20 +181,68 @@ public class S3FileStore extends FileStore {
 	
 	@Override
 	public String getPrivateUrl(long fileId) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
+		return getPrivateUrl(fileId,0);
+	}
+	
+	@Override
+	public String getPrivateUrl(long fileId, int width) throws Exception {
+		
+		FileInfo fileInfo = getResizedFileInfo(fileId, width, width);
+		long currentTime=System.currentTimeMillis();
+		long bufferTime=180000;
+		boolean insertEntry=false;
+		
 		if (fileInfo == null) {
-			return null;
+			 fileInfo = getFileInfo(fileId);
+			 if (fileInfo == null) {//invalid fileid scenario
+				 return null;
+			 }
+			 insertEntry=true;
+		}
+		else {
+			ResizedFileInfo rfi=	(ResizedFileInfo)fileInfo;
+			String url= rfi.getUrl();
+			long expiryTime= rfi.getExpiryTime();
+			
+			long thresholdTime=currentTime+bufferTime;//adding 3 minutes buffer time to avoid timing issues
+			if(thresholdTime<expiryTime && url!=null) {
+				return url;
+			}
+			//if here means... need to fetch url & update entry..
 		}
 		
-		java.util.Date expiration = new java.util.Date();
-		long msec = expiration.getTime();
-		msec += 24 * 60 * 60 * 1000; // 24 hour.
-		expiration.setTime(msec);
+		String url= fetchUrl(fileInfo,getExpiration());
+		if(url==null) {
+			return url;
+		}
+
+		ResizedFileInfo rfi=(ResizedFileInfo)fileInfo;
+		rfi.setUrl(url);
+		rfi.setExpiryTime(currentTime+getExpiration());
+		rfi.setWidth(width);
+		rfi.setHeight(width);
+		
+		if(insertEntry) {
+			addResizedFileEntry(rfi);
+		}
+		else {
+			updateFileEntry(rfi);
+		}
+		return url;
+	}
+
+	private String fetchUrl(FileInfo fileInfo, long expiration) {
+		
+		
 		             
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
 		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
 		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
-		generatePresignedUrlRequest.setExpiration(expiration);
+		
+		Date expiry = new Date();
+		expiry.setTime(expiry.getTime()+expiration);
+		generatePresignedUrlRequest.setExpiration(expiry);
+		
 		if (fileInfo.getContentType() != null) {
 			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
 			resHeaders.setContentType(fileInfo.getContentType());
@@ -206,29 +253,9 @@ public class S3FileStore extends FileStore {
 		return url.toString();
 	}
 	
-	@Override
-	public String getPrivateUrl(long fileId, int width) throws Exception {
-		FileInfo fileInfo = getResizedFileInfo(fileId, width, width);
-		if (fileInfo == null) {
-			return null;
-		}
-		
-		java.util.Date expiration = new java.util.Date();
-		long msec = expiration.getTime();
-		msec += 24 * 60 * 60 * 1000; // 24 hour.
-		expiration.setTime(msec);
-		             
-		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
-		              new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
-		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
-		generatePresignedUrlRequest.setExpiration(expiration);
-		if (fileInfo.getContentType() != null) {
-			ResponseHeaderOverrides resHeaders = new ResponseHeaderOverrides();
-			resHeaders.setContentType(fileInfo.getContentType());
-			generatePresignedUrlRequest.setResponseHeaders(resHeaders);
-		}
-		             
-		URL url = AwsUtil.getAmazonS3Client().generatePresignedUrl(generatePresignedUrlRequest);
-		return url.toString();
+	
+	private long getExpiration()
+	{
+		return 24 * 60* 60 * 1000;
 	}
 }
