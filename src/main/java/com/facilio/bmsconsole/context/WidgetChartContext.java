@@ -17,6 +17,12 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	String chartHeaderSubText;
 	Boolean chartHeaderIsExport;
 	Integer chartDisplayType;
+	public Long getxAxis() {
+		return xAxis;
+	}
+	public void setxAxis(Long xAxis) {
+		this.xAxis = xAxis;
+	}
 	Long xAxis;
 	String y1Axis;
 	Long y2Axis;
@@ -46,7 +52,10 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	}
 	
 	public WidgetChartType getWidgetChartType() {
-		return WidgetChartType.getWidgetChartType(getChartDisplayType());
+		if(getChartDisplayType() != null) {
+			return WidgetChartType.getWidgetChartType(getChartDisplayType());
+		}
+		return null;
 	}
 	public boolean getIsComparisionReport() {
 		return isComparisionReport;
@@ -77,12 +86,6 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	}
 	public void setChartDisplayType(Integer chartDisplayType) {
 		this.chartDisplayType = chartDisplayType;
-	}
-	public Long getXAxis() {
-		return xAxis;
-	}
-	public void setxAxis(Long xAxis) {
-		this.xAxis = xAxis;
 	}
 	public String getY1Axis() {
 		return y1Axis;

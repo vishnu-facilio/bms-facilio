@@ -130,7 +130,7 @@ public class DashboardAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(widgetChartContext.getModuleId());
 				
-		FacilioField xAxisField = modBean.getField(widgetChartContext.getXAxis());
+		FacilioField xAxisField = modBean.getField(widgetChartContext.getxAxis());
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
 		FacilioField yaxisField = new FacilioField();
