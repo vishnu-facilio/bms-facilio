@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -113,6 +114,15 @@ public class TemplateAPI {
 			}
 		}
 		return null;
+	}
+	
+	public static void deleteTemplate(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getTemplatesModule();
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(id, module));
+		builder.delete();
 	}
 	
 	public static UserTemplate getTemplate(long orgId, String templateName, UserTemplate.Type type) throws Exception {
