@@ -22,7 +22,7 @@ public class AddDashboardVsWidgetCommand implements Command {
 		// TODO Auto-generated method stub
 		DashboardWidgetContext widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
 		Long dashboardId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
-		if(widget != null) {			
+		if(widget != null && dashboardId != null) {			
 			List<FacilioField> fields = FieldFactory.getDashbaordVsWidgetFields();
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

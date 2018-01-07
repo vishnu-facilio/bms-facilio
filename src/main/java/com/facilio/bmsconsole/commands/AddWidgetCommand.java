@@ -8,6 +8,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -34,9 +37,30 @@ public class AddWidgetCommand implements Command {
 			insertBuilder.save();
 
 			widget.setId((Long) props.get("id"));
-			context.put(FacilioConstants.ContextNames.WIDGET, widget);
+			
+			if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CHART)) {
+				WidgetChartContext widgetChartContext = (WidgetChartContext) widget;
+						insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetChartModule().getTableName())
+						.fields(FieldFactory.getWidgetChartFields());
+
+				props = FieldUtil.getAsProperties(widgetChartContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
+			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.LIST_VIEW)) {
+				
+				WidgetListViewContext widgetListViewContext = (WidgetListViewContext) widget;
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetListViewModule().getTableName())
+						.fields(FieldFactory.getWidgetListViewFields());
+
+				props = FieldUtil.getAsProperties(widgetListViewContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
 		}
-		
+		context.put(FacilioConstants.ContextNames.WIDGET, widget);
 		return false;
 	}
 

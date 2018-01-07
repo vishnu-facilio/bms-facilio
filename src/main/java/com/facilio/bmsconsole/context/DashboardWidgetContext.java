@@ -30,7 +30,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	}
 	private List<WidgetPeriodContext> periods = new ArrayList<>(); 
 	
-	public abstract JSONObject getWidgetJsonObject();
+	public abstract JSONObject widgetJsonObject();
 	
 	public List<WidgetPeriodContext> getPeriods() {
 		return periods;
@@ -48,7 +48,10 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		periods.add(period);
 	}
 	public WidgetType getWidgetType() {
-		return WidgetType.getWidgetType(getType());
+		if(getType() != null) {
+			return WidgetType.getWidgetType(getType());
+		}
+		return null;
 	}
 	public Integer getType() {
 		return type;

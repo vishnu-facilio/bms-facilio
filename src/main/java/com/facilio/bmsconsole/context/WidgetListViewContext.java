@@ -35,7 +35,7 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		this.viewId = viewId;
 	}
 	@Override
-	public JSONObject getWidgetJsonObject() {
+	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
 		resultJson.put("type", getWidgetType().getName());

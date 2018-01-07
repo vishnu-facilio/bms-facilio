@@ -109,7 +109,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		return false;
 	}
 	@Override
-	public JSONObject getWidgetJsonObject() {
+	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
 		resultJson.put("type", getWidgetType().getName());

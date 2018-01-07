@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -51,8 +52,22 @@ public class DashboardAction extends ActionSupport {
 		this.dashboardWidget = dashboardWidgetContext;
 	}
 	private DashboardContext dashboard;
+	public WidgetChartContext getWidgetChartContext() {
+		return widgetChartContext;
+	}
+	public void setWidgetChartContext(WidgetChartContext widgetChartContext) {
+		this.widgetChartContext = widgetChartContext;
+	}
+	public WidgetListViewContext getWidgetListViewContext() {
+		return widgetListViewContext;
+	}
+	public void setWidgetListViewContext(WidgetListViewContext widgetListViewContext) {
+		this.widgetListViewContext = widgetListViewContext;
+	}
 	private List<DashboardContext> dashboards;
 	private DashboardWidgetContext dashboardWidget;
+	private WidgetChartContext widgetChartContext;
+	private WidgetListViewContext widgetListViewContext; 
 	
 	public List<DashboardContext> getDashboards() {
 		return dashboards;
@@ -221,11 +236,22 @@ public class DashboardAction extends ActionSupport {
 	public String addWidget() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		dashboardWidget.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		context.put(FacilioConstants.ContextNames.WIDGET, dashboardWidget);
-		context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
+		
+		if(widgetChartContext != null) {
+			context.put(FacilioConstants.ContextNames.WIDGET, widgetChartContext);
+			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.CHART);
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetChartContext.getDashboardId());
+			widgetChartContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		else if (widgetListViewContext != null) {
+			context.put(FacilioConstants.ContextNames.WIDGET, widgetListViewContext);
+			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.LIST_VIEW);
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetListViewContext.getDashboardId());
+			widgetListViewContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		
 		Chain addWidgetChain = null;
-		if(dashboardWidget.getId() != -1) {
+		if(dashboardWidget != null && dashboardWidget.getId() != -1) {
 			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
 		}
 		else {

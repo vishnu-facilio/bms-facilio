@@ -233,7 +233,7 @@ public class DashboardUtil {
 			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
 			JSONArray childrenArray = new JSONArray();
 			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-				childrenArray.add(dashboardWidgetContext.getWidgetJsonObject());
+				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
 			}
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("label", dashboardName);

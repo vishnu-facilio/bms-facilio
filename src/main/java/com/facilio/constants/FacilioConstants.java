@@ -167,6 +167,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD_ID = "dashboardId";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
 		public static final String WIDGET = "widget";
+		public static final String WIDGET_TYPE = "widgetType";
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
