@@ -23,7 +23,14 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	Long y3Axis;
 	boolean isComparisionReport;
 	private List<WidgetConditionContext> widgetConditions;
+	private String xAxisLegend;
 	
+	public String getxAxisLegend() {
+		return xAxisLegend;
+	}
+	public void setxAxisLegend(String xAxisLegend) {
+		this.xAxisLegend = xAxisLegend;
+	}
 	public List<WidgetConditionContext> getWidgetConditions() {
 		return widgetConditions;
 	}

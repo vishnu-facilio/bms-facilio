@@ -177,7 +177,7 @@ public class DashboardAction extends ActionSupport {
 		System.out.println("rs after -- "+rs);
 		
 		if(true) {
-			setXaxisLegent(fieldModule.getName()+xAxisField.getName());
+			setXaxisLegent(widgetChartContext.getxAxisLegend());
 		}
 //		if(widgetChartContext.getIsComparisionReport()) {
 //			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()

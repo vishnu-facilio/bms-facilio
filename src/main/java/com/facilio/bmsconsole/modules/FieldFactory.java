@@ -2065,6 +2065,14 @@ public class FieldFactory {
 		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
 		isComparisionReport.setModule(module);
 		fields.add(isComparisionReport);
+		
+		FacilioField xAxisLegend = new FacilioField();
+		xAxisLegend.setName("xAxisLegend");
+		xAxisLegend.setDataType(FieldType.STRING);
+		xAxisLegend.setColumnName("X_AXIS_LEGEND");
+		xAxisLegend.setModule(module);
+		fields.add(xAxisLegend);
+		
 		return fields;
 	}
 	public static List<FacilioField> getWidgetListViewFields() {
