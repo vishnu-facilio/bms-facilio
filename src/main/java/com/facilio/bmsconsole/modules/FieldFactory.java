@@ -977,7 +977,7 @@ public class FieldFactory {
 		fields.add(smsTo);
 
 		FacilioField smsMsg = new FacilioField();
-		smsMsg.setName("msg");
+		smsMsg.setName("message");
 		smsMsg.setDataType(FieldType.STRING);
 		smsMsg.setColumnName("MSG");
 		smsMsg.setModule(module);

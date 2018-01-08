@@ -44,12 +44,12 @@ public class EMailTemplate extends UserTemplate {
 		this.bodyId = bodyId;
 	}
 	
-	private String body;
-	public String getBody() {
-		return body;
+	private String message;
+	public String getMessage() {
+		return message;
 	}
-	public void setBody(String body) {
-		this.body = body;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -60,7 +60,7 @@ public class EMailTemplate extends UserTemplate {
 		obj.put("sender", StrSubstitutor.replace(from, placeHolders));
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
 		obj.put("subject", StrSubstitutor.replace(subject, placeHolders));
-		obj.put("message", StrSubstitutor.replace(body, placeHolders));
+		obj.put("message", StrSubstitutor.replace(message, placeHolders));
 		
 		return obj;
 	}

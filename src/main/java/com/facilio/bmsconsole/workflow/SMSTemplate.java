@@ -28,12 +28,12 @@ public class SMSTemplate extends UserTemplate {
 		this.to = to;
 	}
 	
-	private String msg;
-	public String getMsg() {
-		return msg;
+	private String message;
+	public String getMessage() {
+		return message;
 	}
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -42,7 +42,7 @@ public class SMSTemplate extends UserTemplate {
 		// TODO Auto-generated method stub
 		JSONObject obj = new JSONObject();
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("message", StrSubstitutor.replace(msg, placeHolders));
+		obj.put("message", StrSubstitutor.replace(message, placeHolders));
 		return obj;
 	}
 	
