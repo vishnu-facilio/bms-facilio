@@ -1,4 +1,4 @@
-package com.facilio.events.tasker.tasks;
+package com.facilio.kinesis;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -12,7 +12,7 @@ import com.facilio.aws.util.AwsUtil;
 
 import java.net.InetAddress;
 
-public class EventStreamProcessor {
+public class StreamProcessor {
 
     public static void run(long orgId, String orgName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
 

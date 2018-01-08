@@ -40,7 +40,7 @@ public class EventProcessor implements IRecordProcessor {
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
-    EventProcessor(long orgId, String orgName){
+    public EventProcessor(long orgId, String orgName){
         this.orgId = orgId;
         this.orgName = orgName;
     }

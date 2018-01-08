@@ -7,7 +7,7 @@ public class EventProcessorFactory implements IRecordProcessorFactory {
     private long orgId;
     private String orgName;
 
-    EventProcessorFactory(long orgId, String orgName){
+    public EventProcessorFactory(long orgId, String orgName){
         this.orgId = orgId;
         this.orgName = orgName;
     }

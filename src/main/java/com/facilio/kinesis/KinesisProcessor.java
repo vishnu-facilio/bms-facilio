@@ -1,15 +1,18 @@
-package com.facilio.events.tasker.tasks;
+package com.facilio.kinesis;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.timeseries.TimeSeriesProcessorFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 
 public class KinesisProcessor {
 
@@ -48,12 +51,43 @@ public class KinesisProcessor {
             if(orgName != null) {
                 kinesis.describeStream(orgName);
                 System.out.println("Starting kinesis processor for org : " + orgName + " id " + orgId);
-                new Thread(() -> EventStreamProcessor.run(orgId, orgName, "event", new EventProcessorFactory(orgId, orgName))).start();
-            }
+                initiateProcessFactory(orgId, orgName, "event");
+                initiateProcessFactory(orgId, orgName, "timeSeries");            }
         } catch (ResourceNotFoundException e){
             System.out.println("Kinesis stream not found for org : " + orgName +" id "+ orgId);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
+    
+    
+    private static void initiateProcessFactory(long orgId,String orgName,String type) {
+
+    	try {
+
+    		new Thread(() -> StreamProcessor.run(orgId, orgName, type, getProcessorFactory(orgId,orgName,type))).start();
+    	}
+    	catch (Exception e){
+    		e.printStackTrace();
+    	}
+
+    }
+
+    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgName,String type) {
+
+    	switch(type){
+
+    	case "event" :{
+    		return new EventProcessorFactory(orgId, orgName);
+    	}
+    	case "timeSeries" :{
+
+    		return new TimeSeriesProcessorFactory(orgId, orgName);
+    	}
+
+    	}
+    	return null;
+    }
+    
+    
 }

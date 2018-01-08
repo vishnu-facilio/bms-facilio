@@ -5,35 +5,21 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.events.tasker.tasks.EventStreamProcessor;
-import com.facilio.events.tasker.tasks.KinesisProcessor;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import org.flywaydb.core.Flyway;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
+import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.executor.ScheduleInfo;
-import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContextListener implements ServletContextListener {

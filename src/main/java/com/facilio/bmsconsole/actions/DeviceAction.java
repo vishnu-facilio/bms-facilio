@@ -17,11 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.events.tasker.tasks.EventStreamProcessor;
-import com.facilio.events.tasker.tasks.KinesisProcessor;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.kinesis.KinesisProcessor;
+import com.facilio.kinesis.StreamProcessor;
+
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
