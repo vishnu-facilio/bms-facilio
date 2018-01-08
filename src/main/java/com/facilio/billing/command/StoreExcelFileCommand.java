@@ -12,11 +12,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
@@ -43,17 +45,23 @@ public class StoreExcelFileCommand implements Command {
 		
 		ExcelTemplate template = new ExcelTemplate();
 		template.setExcelFile(excelFile);
-		template.setName(storeFileName);
+		//template.setName(storeFileName);
+		template.setName(fileName);
 		template.setType(UserTemplate.Type.EXCEL);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		long templateId = TemplateAPI.addExcelTemplate(orgId,template,storeFileName);
+		long templateId = TemplateAPI.addExcelTemplate(orgId,template,fileName);
 		HandlePlaceHolders(excelFile,templateId);
 		return false;
 	}
 
 	public void HandlePlaceHolders(File file, long templateId) throws InvalidFormatException, IOException, SQLException, RuntimeException
 	{
-		Workbook workbook = WorkbookFactory.create(file);
+		XSSFWorkbook workbook = new XSSFWorkbook(file);
+		
+//		Workbook workbook = WorkbookFactory.create(file);
+//		final OPCPackage pkg = OPCPackage.open(file);
+//		final XSSFWorkbook workbook = new XSSFWorkbook(pkg);
+		
 		Map<String,String> placeHolders = new HashMap();
 		ArrayList sheets = new ArrayList();
 		for(int i = 0; i<workbook.getNumberOfSheets();i++)
@@ -81,6 +89,7 @@ public class StoreExcelFileCommand implements Command {
 				}
 			}
 		}
+		workbook.close();
 		TenantBillingAPI.InsertPlaceHolders(placeHolders,templateId);
 	}
 }

@@ -144,6 +144,79 @@ public class TenantBillingAPI {
 		
 	}
 	
+	public static double GetMeterOpenReading(long meterId, String paramName, long startTime) throws SQLException, RuntimeException
+	{
+		double kwhOpenReading = 0.0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sqlStr = "";
+		if(paramName.equalsIgnoreCase("kwh"))
+		{
+			sqlStr = "select TOTAL_ENERGY_CONSUMPTION from Energy_Data where PARENT_METER_ID = ? and TTIME >= ? ORDER BY TTIME ASC LIMIT 1";
+		}
+		else
+		{
+			sqlStr = "select "+paramName+" from Energy_Data where PARENT_METER_ID = ? and TTIME >= ? ORDER BY TTIME ASC LIMIT 1";
+		}
+		try {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement(sqlStr);
+				pstmt.setLong(1, meterId);
+				pstmt.setLong(2,startTime);
+				rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				kwhOpenReading = rs.getDouble(1);
+			}
+			
+		}catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}	
+		return kwhOpenReading;
+	}
+
+	public static double GetMeterCloseReading(long meterId, String paramName, long endTime) throws SQLException, RuntimeException
+	{
+		double kwhOpenReading = 0.0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sqlStr = "";
+		if(paramName.equalsIgnoreCase("kwh"))
+		{
+			sqlStr = "select TOTAL_ENERGY_CONSUMPTION from Energy_Data where PARENT_METER_ID = ? and TTIME < ?  ORDER BY TTIME DESC LIMIT 1";
+		}
+		else
+		{
+			sqlStr = "select "+paramName+" from Energy_Data where PARENT_METER_ID = ? and TTIME < ?  ORDER BY TTIME DESC LIMIT 1";
+		}
+		try {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement(sqlStr);
+				pstmt.setLong(1, meterId);
+				pstmt.setLong(2,endTime);
+				rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				kwhOpenReading = rs.getDouble(1);
+			}
+			
+		}catch(SQLException | RuntimeException e) {
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}	
+		return kwhOpenReading;
+	}
+
+	
 	public static double GetMeterRun(long meterId, String paramName, long startTime, long endTime ) throws SQLException, RuntimeException
 	{
 		double kwhsum = 0.0;

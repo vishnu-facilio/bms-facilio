@@ -24,6 +24,7 @@ public class BillingAction extends ActionSupport {
 		context.put(BillContext.ContextNames.CONTENTTYPE, getExcelFileContentType());
 		Chain handleExcelFileUploadChain = BillContext.HandleExcelFileUploadChain();
 		handleExcelFileUploadChain.execute(context);
+		System.out.println("##### Generate Template End Request");
 		return SUCCESS;
 	}
 	
@@ -42,7 +43,7 @@ public class BillingAction extends ActionSupport {
 		context.put(BillContext.ContextNames.TEMPLATEID,getTemplateId());
 		Chain handleBillGenerationChain = BillContext.HandleBillGenerationChain();
 		handleBillGenerationChain.execute(context);
-		setDownloadURL((String)context.get(BillContext.ContextNames.EXCELFILEDOWNLOADURL));
+		setDownloadURL((String)context.get(BillContext.ContextNames.EXCEL_FILE_DOWNLOAD_URL));
 		return SUCCESS;
 	}
 	

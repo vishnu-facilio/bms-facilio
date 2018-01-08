@@ -18,7 +18,7 @@ public class BillContext {
 		public static final String STARTTIME = "starttime";
 		public static final String ENDTIME = "endtime";
 		public static final String TEMPLATEID = "templateId";
-		public static final String EXCELFILEDOWNLOADURL = "excelfiledownloadurl";
+		public static final String EXCEL_FILE_DOWNLOAD_URL = "excelfiledownloadurl";
 		
 		
 	}

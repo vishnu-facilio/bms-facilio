@@ -315,7 +315,7 @@ public class TemplateAPI {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
-		template.setExcelFileId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), ""));
+		template.setExcelFileId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), "application/xlsx"));
 		
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
