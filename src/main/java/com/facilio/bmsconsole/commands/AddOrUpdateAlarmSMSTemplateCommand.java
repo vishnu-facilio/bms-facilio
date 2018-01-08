@@ -52,7 +52,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 		smsTemplate.setType(UserTemplate.Type.SMS);
 //		emailTemplate.setFrom((String) alarmMailJson.get("sender"));
 		smsTemplate.setTo(phone);
-		smsTemplate.setMsg((String) alarmSmsJson.get("message"));
+		smsTemplate.setMessage((String) alarmSmsJson.get("message"));
 		
 		long id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), smsTemplate);
 		smsTemplate.setId(id);

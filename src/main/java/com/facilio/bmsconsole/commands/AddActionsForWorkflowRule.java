@@ -45,7 +45,7 @@ public class AddActionsForWorkflowRule implements Command {
 				
 				emailTemplate.setTo(toAdresses);
 				emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
-				emailTemplate.setBody((String) action.getTemplateJson().get("body"));
+				emailTemplate.setMessage((String) action.getTemplateJson().get("body"));
 				emailTemplate.setType(Type.EMAIL);
 				action.setTemplate(emailTemplate);
 			}
@@ -59,7 +59,7 @@ public class AddActionsForWorkflowRule implements Command {
 				}
 				
 				smsTemplate.setTo(toPhones);
-				smsTemplate.setMsg((String) action.getTemplateJson().get("body"));
+				smsTemplate.setMessage((String) action.getTemplateJson().get("body"));
 				smsTemplate.setType(Type.SMS);
 				action.setTemplate(smsTemplate);	
 			}

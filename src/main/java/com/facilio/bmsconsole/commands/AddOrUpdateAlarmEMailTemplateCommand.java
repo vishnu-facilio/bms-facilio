@@ -53,7 +53,7 @@ public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 		emailTemplate.setFrom((String) alarmMailJson.get("sender"));
 		emailTemplate.setTo(email);
 		emailTemplate.setSubject((String) alarmMailJson.get("subject"));
-		emailTemplate.setBody((String) alarmMailJson.get("message"));
+		emailTemplate.setMessage((String) alarmMailJson.get("message"));
 		
 		long id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), emailTemplate);
 		emailTemplate.setId(id);
