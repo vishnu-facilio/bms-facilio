@@ -45,7 +45,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 				
 				boolean isAPI = true;
 				if (headerToken != null) {
+					if(headerToken.startsWith("Bearer facilio "))
+					{
+						facilioToken = headerToken.replace("Bearer facilio ", "");
+					}
+					else
+					{
 					headerToken = request.getHeader("Authorization").replace("Bearer ", "");
+					}
 				}
 
 				CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);

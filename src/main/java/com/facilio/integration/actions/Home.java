@@ -78,7 +78,33 @@ state = PORTAL-yogendrababu
 
 		return SUCCESS;
 	}
-	
+/*
+ * HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Pragma: no-cache
+ 
+{
+  "access_token":"MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3",
+  "token_type":"bearer",
+  "expires_in":3600,
+  "refresh_token":"IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk",
+  "scope":"create",
+  "state":"12345678"
+}
+ */
+	public String generateAuthToken()
+	{
+		System.out.println(username );
+		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
+		System.out.println("Response token is "+ jwt);
+		setJsonresponse("authtoken",jwt);
+		setJsonresponse("username",username);
+		
+		
+		return SUCCESS;
+	}
+
 	public String getToken()
 	{
 		return SUCCESS;

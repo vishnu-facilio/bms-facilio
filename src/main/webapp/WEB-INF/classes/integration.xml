@@ -49,6 +49,12 @@
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
 	</action>
+	<action name="apilogin" class="com.facilio.integration.actions.Home"
+		method="generateAuthToken">
+		<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+	</action>
 	<action name="faciliologin" class="com.facilio.integration.actions.Home">
 		<result>/urjanet/faciliologin.jsp</result>
 	</action>
