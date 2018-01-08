@@ -54,4 +54,7 @@ public class WorkflowEventContext {
 	public void setActivityType(ActivityType activityType) {
 		this.activityType = activityType;
 	}
+	public ActivityType getActivityTypeEnum() {
+		return activityType;
+	}
 }

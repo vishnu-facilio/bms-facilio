@@ -19,6 +19,7 @@ public class PMToWorkOrder extends FacilioJob {
 			context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
 			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
 			context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIME, jc.getNextExecutionTime());
+			context.put(FacilioConstants.ContextNames.PM_RESET_READING, true);
 			
 			Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 			executePm.execute(context);

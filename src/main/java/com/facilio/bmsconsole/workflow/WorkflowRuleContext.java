@@ -46,6 +46,14 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 		this.eventId = eventId;
 	}
 	
+	private WorkflowEventContext event;
+	public WorkflowEventContext getEvent() {
+		return event;
+	}
+	public void setEvent(WorkflowEventContext event) {
+		this.event = event;
+	}
+
 	private long criteriaId = -1;
 	public long getCriteriaId() {
 		return criteriaId;

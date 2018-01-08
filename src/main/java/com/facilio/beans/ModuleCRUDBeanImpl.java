@@ -15,10 +15,13 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -151,17 +154,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public WorkOrderContext addWorkOrderFromPM(long pmId) throws Exception {
+	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
 		// TODO Auto-generated method stub
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getPreventiveMaintenanceFields())
-				.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName()).andCustomWhere("ID = ?", pmId);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-
-		if (props != null && !props.isEmpty()) {
-			Map<String, Object> prop = props.get(0);
-			long templateId = (long) prop.get("templateId");
+		if (pm != null) {
+			long templateId = pm.getTemplateId();
 			JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(),
 					templateId);
 
@@ -183,7 +179,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(context);
 
-			addToRelTable(pmId, wo.getId());
+			addToRelTable(pm.getId(), wo.getId());
 			return wo;
 		}
 		return null;

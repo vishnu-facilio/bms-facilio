@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,10 +15,17 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
@@ -258,39 +266,45 @@ public enum ActionType {
 			}
 			return mobileInstanceIds;
 		}
-		
-		private List<String> getEmailAddresses() throws Exception {
-			FacilioModule module = ModuleFactory.getEMailTemplatesModule();
-			FacilioField field = new FacilioField();
-			field.setName("toAddr");
-			field.setColumnName("TO_ADDR");
-			field.setDataType(FieldType.STRING);
-			field.setModule(module);
-			
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-															.select(Collections.singletonList(field))
-															.table(module.getTableName())
-															.innerJoin("Templates")
-															.on("EMail_Templates.ID = Templates.ID")
-															.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getId());
-			
-			List<Map<String, Object>> props = selectBuilder.get();
-			if(props != null && !props.isEmpty()) {
-				List<String> addresses = new ArrayList<>();
-				for(Map<String, Object> emailProp : props) {
-					String emails = (String) emailProp.get("toAddr");
-					String[] emailList = emails.trim().split("\\s*,\\s*");
-					if(emailList != null && emailList.length != 0) {
-						for(String email : emailList) {
-							addresses.add(email);
-						}
+	},
+	EXECUTE_PM(8) {
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+			// TODO Auto-generated method stub
+			try {
+				long ruleId = (long) obj.get("rule.id");
+				
+				FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																	.select(FieldFactory.getPreventiveMaintenanceFields())
+																	.table(pmModule.getTableName())
+																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmModule))
+																	.andCustomWhere("READING_RULE_ID = ?", ruleId);
+				List<Map<String, Object>> pmProps = selectRecordBuilder.get();
+				if(pmProps != null && pmProps.isEmpty()) {
+					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProps.get(0), PreventiveMaintenance.class);
+					
+					FacilioContext pmContext = new FacilioContext();
+					pmContext.put(FacilioConstants.ContextNames.RECORD_ID, pm.getId());
+					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
+					pmContext.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, PMReminder.ReminderType.AFTER);
+					pmContext.put(FacilioConstants.ContextNames.PM_RESET_SCHEDULE, true);
+					
+					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
+					executePm.execute(pmContext);
+					
+					if(context != null) {
+						context.put(FacilioConstants.ContextNames.WORK_ORDER, (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER));
 					}
 				}
-				return addresses;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return null;
+																
 		}
-	};
+	}
+	;
 	
 	private int val;
 	private ActionType(int val) {

@@ -1150,6 +1150,13 @@ public class FieldFactory {
 		startTime.setModule(module);
 		fields.add(startTime);
 
+		FacilioField readingRuleId = new FacilioField();
+		readingRuleId.setName("readingRuleId");
+		readingRuleId.setDataType(FieldType.NUMBER);
+		readingRuleId.setColumnName("READING_RULE_ID");
+		readingRuleId.setModule(module);
+		fields.add(readingRuleId);
+		
 		return fields;
 	}
 

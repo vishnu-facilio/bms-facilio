@@ -43,6 +43,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	@Override
+	@JsonInclude(Include.ALWAYS)
 	public RuleType getRuleTypeEnum() {
 		return RuleType.READING_RULE;
 	}

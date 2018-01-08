@@ -161,11 +161,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		try {
 			
 			String sql = constructSelectStatement();
-			if(tableName.equals("Preventive_Maintenance"))
-			{
-				System.out.println("The sql "+ sql);
-
-			}
 			pstmt = conn.prepareStatement(sql);
 			
 			Object[] whereValues = where.getValues();

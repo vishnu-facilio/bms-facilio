@@ -3,6 +3,7 @@ package com.facilio.beans;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 
@@ -21,5 +22,5 @@ public interface ModuleCRUDBean {
 	
 	public int updateAlarmAsset(long assetId, String node) throws Exception;
 	
-	public WorkOrderContext addWorkOrderFromPM(long pmId) throws Exception;
+	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
 }

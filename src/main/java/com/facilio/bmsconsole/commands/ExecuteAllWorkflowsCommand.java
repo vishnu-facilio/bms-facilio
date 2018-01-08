@@ -66,7 +66,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE) {
 									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
 									if(flag) {
-										updateLastValueorReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);
+										updateLastValueForReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);
 									}
 								}
 								else {
@@ -93,7 +93,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return false;
 	}
 	
-	private void updateLastValueorReadingRule(ReadingRuleContext readingRule, ModuleBaseWithCustomFields record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+	private void updateLastValueForReadingRule(ReadingRuleContext readingRule, ModuleBaseWithCustomFields record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		Criteria criteria = readingRule.getCriteria();
 		Condition condition = criteria.getConditions().get(1);
 		long lastValue = new Double(record.getDatum(condition.getFieldName()).toString()).longValue();

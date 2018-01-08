@@ -1136,6 +1136,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new ExecutePMCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
+		c.addCommand(new ResetPMReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1144,6 +1145,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new ExecutePMsCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
+		c.addCommand(new ResetPMReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

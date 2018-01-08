@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -205,6 +206,22 @@ public class PreventiveMaintenance {
 		return null;
 	}
 	
+	private ReadingRuleContext readingRule;
+	public ReadingRuleContext getReadingRule() {
+		return readingRule;
+	}
+	public void setReadingRule(ReadingRuleContext readingRule) {
+		this.readingRule = readingRule;
+	}
+	
+	private long readingRuleId = -1;
+	public long getReadingRuleId() {
+		return readingRuleId;
+	}
+	public void setReadingRuleId(long readingRuleId) {
+		this.readingRuleId = readingRuleId;
+	}
+
 	private List<WorkOrderContext> workorders;
 	public List<WorkOrderContext> getWorkorders() {
 		return workorders;

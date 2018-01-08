@@ -25,8 +25,8 @@ public class GetPMAndPMReminderCommand implements Command {
 		// TODO Auto-generated method stub
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		ReminderType type = (ReminderType) context.get(FacilioConstants.ContextNames.PM_REMINDER_TYPE);
-		List<FacilioField> fields = FieldFactory.getPMReminderFields();
-		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		fields.addAll(FieldFactory.getPMReminderFields());
 		FacilioModule module = ModuleFactory.getPMReminderModule();
 		List<Map<String, Object>> reminderProps = null;
 		switch (type) {
@@ -60,6 +60,7 @@ public class GetPMAndPMReminderCommand implements Command {
 			Map<String, Object> prop = reminderProps.get(0);
 			PMReminder reminder = FieldUtil.getAsBeanFromMap(prop, PMReminder.class);
 			PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
+			pm.setId(reminder.getPmId());
 			
 			context.put(FacilioConstants.ContextNames.PM_REMINDER, reminder);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);

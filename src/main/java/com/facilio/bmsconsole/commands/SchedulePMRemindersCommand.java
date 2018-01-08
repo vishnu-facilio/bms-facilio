@@ -63,7 +63,7 @@ public class SchedulePMRemindersCommand implements Command {
 			if(reminderProps != null && !reminderProps.isEmpty()) {
 				for(Map<String, Object> reminderProp : reminderProps) {
 					PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
-					CommonCommandUtil.schedulePMRemainder(reminder, currentExecutionTime, nextExecutionTime, pmToWo.get(pmId));
+					CommonCommandUtil.schedulePMReminder(reminder, currentExecutionTime, nextExecutionTime, pmToWo.get(pmId));
 				}
 			}
 		}
