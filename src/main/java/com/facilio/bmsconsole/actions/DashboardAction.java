@@ -262,6 +262,27 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioModule> modules;
+	public List<FacilioModule> getModules() {
+		return modules;
+	}
+	public void setModules(List<FacilioModule> modules) {
+		this.modules = modules;
+	}
+	
+	public String getSupportedModules() throws Exception {
+		List<FacilioModule> supportedModules = new ArrayList<>();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		String[] mods = new String[]{"workorder", "alarm", "energydata"};
+		for (String mod : mods) {
+			supportedModules.add(modBean.getModule(mod));
+		}
+		setModules(supportedModules);
+		return SUCCESS;
+	}
+	
 	public String getDashboardList() throws Exception {
 		if (moduleName != null) {
 			dashboards = DashboardUtil.getDashboardList(moduleName);

@@ -227,7 +227,7 @@ public class DashboardUtil {
 		
 		JSONArray result = new JSONArray();
 		
-		Collections.sort(dashboards);
+//		Collections.sort(dashboards);
 		 for(DashboardContext dashboard:dashboards) {
 			 String dashboardName = dashboard.getDashboardName();
 			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();

@@ -6,14 +6,23 @@ import java.util.List;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DashboardUtil;
 
-public class DashboardContext extends ModuleBaseWithCustomFields implements Comparable<DashboardContext> {
+public class DashboardContext extends ModuleBaseWithCustomFields {
 
 	private String dashboardName;
+	
+	public String getDashboardName() {
+		return dashboardName;
+	}
+	public void setDashboardName(String dashboardName) {
+		this.dashboardName = dashboardName;
+	}
+	
 	private String linkName;
+	
 	public String getLinkName() {
-		if (linkName == null) {
+		if (linkName == null && dashboardName != null) {
 			linkName = dashboardName.replaceAll("[^\\p{IsAlphabetic}]+", "").toLowerCase();
-			
+
 			if (this.getId() > 0) {
 				try {
 					DashboardUtil.updateDashboardLinkName(this.getId(), linkName);
@@ -27,9 +36,34 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
 	}
+	
 	private Long createdByUserId;
+	
+	public Long getCreatedByUserId() {
+		return createdByUserId;
+	}
+	public void setCreatedByUserId(Long createdByUser) {
+		this.createdByUserId = createdByUser;
+	}
+	
 	private Integer publishStatus;
+
+	public Integer getPublishStatus() {
+		return publishStatus;
+	}
+	public void setPublishStatus(Integer publishStatus) {
+		this.publishStatus = publishStatus;
+	}
+	
 	private String dashboardUrl;
+	
+	public String getDashboardUrl() {
+		return dashboardUrl;
+	}
+	public void setDashboardUrl(String dashboardUrl) {
+		this.dashboardUrl = dashboardUrl;
+	}
+	
 	List<DashboardWidgetContext> dashboardWidgets;
 
 	public List<DashboardWidgetContext> getDashboardWidgets() {
@@ -38,50 +72,28 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Comp
 	public void setDashboardWidgets(List<DashboardWidgetContext> dashboardWidgets) {
 		this.dashboardWidgets = dashboardWidgets;
 	}
+	
 	public void addDashboardWidget(DashboardWidgetContext dashboardWidgetContext) {
 		if(this.dashboardWidgets == null) {
 			this.dashboardWidgets = new ArrayList<>();
 		}
 		dashboardWidgets.add(dashboardWidgetContext);
 	}
-	public String getDashboardUrl() {
-		return dashboardUrl;
-	}
-	public void setDashboardUrl(String dashboardUrl) {
-		this.dashboardUrl = dashboardUrl;
-	}
-	public Long getCreatedByUserId() {
-		return createdByUserId;
-	}
-	public void setCreatedByUserId(Long createdByUser) {
-		this.createdByUserId = createdByUser;
-	}
-	public Integer getPublishStatus() {
-		return publishStatus;
-	}
-	public void setPublishStatus(Integer publishStatus) {
-		this.publishStatus = publishStatus;
-	}
-	public String getDashboardName() {
-		return dashboardName;
-	}
-	public void setDashboardName(String dashboardName) {
-		this.dashboardName = dashboardName;
-	}
-	public enum DashboardPublishStatus {
+	
+	public static enum DashboardPublishStatus {
 		NONE,
 		SUBMITTED,
 		REJECTED,
 		PUBLISHED
 	}
-	@Override
-	public int compareTo(DashboardContext o) {
-		if(this.getId() < o.getId()) {
-			return -1;
-		}
-		else if(this.getId() > o.getId()) {
-			return 1;
-		}
-		return 0;
-	}
+	//	@Override
+	//	public int compareTo(DashboardContext o) {
+	//		if(this.getId() < o.getId()) {
+	//			return -1;
+	//		}
+	//		else if(this.getId() > o.getId()) {
+	//			return 1;
+	//		}
+	//		return 0;
+	//	}
 }
