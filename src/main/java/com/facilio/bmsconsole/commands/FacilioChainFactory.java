@@ -908,6 +908,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddTemplateOfWorkflowRuleAction() {
+		Chain c = new TransactionChain();
+		c.addCommand(new CreateActionTemplateForWorkflowCommand());
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new UpdateTemplateInAction());
+		c.addCommand(new DeleteActionTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateAssetChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());

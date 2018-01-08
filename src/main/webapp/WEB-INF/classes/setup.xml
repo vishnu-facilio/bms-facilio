@@ -185,6 +185,7 @@
 		</action>
 		<action name="workflowRuleType" class="com.facilio.bmsconsole.actions.NotificationAction" method="getWONotificationRules">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="root">workFlowNotifications</param>
 			</result>
 		</action>
@@ -202,6 +203,11 @@
 		<action name="turnoffrule" class="com.facilio.bmsconsole.actions.NotificationAction" method="turnOffWorkflow">
             <result name="success" type="json">
 				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		<action name="createactiontemplate" class="com.facilio.bmsconsole.actions.NotificationAction" method="updateActionTemplateWorkFlowRule">
+            <result name="success" type="json">
+				<param name="includeProperties">template</param>
 			</result>
 		</action>
 	<!-- Work Order Actions -->		

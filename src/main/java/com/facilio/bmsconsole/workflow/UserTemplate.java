@@ -79,8 +79,12 @@ public abstract class UserTemplate implements ActionTemplate {
 			}
 			return typeMap;
 		}
-		public Map<Integer, Type> getAllTypes() {
+		public static Map<Integer, Type> getAllTypes() {
 			return typeMap;
+		}
+		
+		public static Type getType(int val) {
+			return typeMap.get(val);
 		}
 	}
 

@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.text.StrSubstitutor;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -23,6 +26,8 @@ import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+
+import freemarker.core.TemplateObject;
 
 public class NotificationAction extends ActionSupport {
 	
@@ -266,7 +271,45 @@ public class NotificationAction extends ActionSupport {
 				
 		return SUCCESS;
 	}
+//	public JSONObject getTemplate(Map<String, Object> placeHolders) {
+//		// TODO Auto-generated method stub
+//		JSONObject obj = new JSONObject();
+//		obj.put("sender", StrSubstitutor.replace(from, placeHolders));
+//		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
+//		obj.put("subject", StrSubstitutor.replace(subject, placeHolders));
+//		obj.put("message", StrSubstitutor.replace(body, placeHolders));
+//		
+//		return obj;
+//	}
 	
+	public JSONObject template;
+	public JSONObject getTemplate() {
+		return template;
+	}
+	public void setTemplate(JSONObject template) {
+		this.template = template;
+	}
+
+	public String updateActionTemplateWorkFlowRule() throws Exception { 
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.Workflow.TEMPLATE_ID, templateId);
+		context.put(FacilioConstants.Workflow.ACTION_TEMPLATE, template);				
+		Command templateUpdateAction = FacilioChainFactory.getAddTemplateOfWorkflowRuleAction();
+		templateUpdateAction.execute(context);
+		
+//		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);				
+		return SUCCESS;
+	}
+	
+	private long templateId = -1;
+	public long getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(long templateId) {
+		this.templateId = templateId;
+	}
+
 	private List<WorkflowRuleContext> workFlowNotifications;
 	
 	public List<WorkflowRuleContext> getWorkFlowNotifications() {
@@ -293,5 +336,13 @@ public class NotificationAction extends ActionSupport {
 	}
 	public void setWorkflowId(long workflowId) {
 		this.workflowId = workflowId;
+	}
+	
+	private int rowsUpdated;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
 	}
 }

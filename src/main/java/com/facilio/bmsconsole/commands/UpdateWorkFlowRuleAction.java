@@ -17,7 +17,7 @@ public class UpdateWorkFlowRuleAction implements Command {
 		
 		if (action != null) {
 			
-			ActionAPI.updateAction(action.getOrgId(), action, action.getId());
+			ActionAPI.updateAction(AccountUtil.getCurrentOrg().getId(), action, action.getId());
 		}
 		else {
 			throw new IllegalArgumentException("Action Object cannot be null");
