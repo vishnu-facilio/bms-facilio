@@ -1940,6 +1940,27 @@ public class FieldFactory {
 		dashboardWidgetDataOptionRefreshIntervel.setColumnName("DATA_REFRESH_INTERTVEL");
 		dashboardWidgetDataOptionRefreshIntervel.setModule(module);
 		fields.add(dashboardWidgetDataOptionRefreshIntervel);
+		
+		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
+		dashboardWidgetHeaderTitle.setName("headerText");
+		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
+		dashboardWidgetHeaderTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderTitle);
+
+		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
+		dashboardWidgetHeaderSubTitle.setName("headerSubText");
+		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
+		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
+		dashboardWidgetHeaderSubTitle.setModule(module);
+		fields.add(dashboardWidgetHeaderSubTitle);
+
+		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
+		dashboardWidgetHeaderIsExport.setName("headerIsExport");
+		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
+		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
+		dashboardWidgetHeaderIsExport.setModule(module);
+		fields.add(dashboardWidgetHeaderIsExport);
 
 		return fields;
 	}
@@ -1995,27 +2016,6 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getWidgetChartModule();
 
 		fields.add(getIdField(module));
-
-		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
-		dashboardWidgetHeaderTitle.setName("chartHeaderText");
-		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
-		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
-		dashboardWidgetHeaderTitle.setModule(module);
-		fields.add(dashboardWidgetHeaderTitle);
-
-		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
-		dashboardWidgetHeaderSubTitle.setName("chartHeaderSubText");
-		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
-		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
-		dashboardWidgetHeaderSubTitle.setModule(module);
-		fields.add(dashboardWidgetHeaderSubTitle);
-
-		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
-		dashboardWidgetHeaderIsExport.setName("chartHeaderIsExport");
-		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
-		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
-		dashboardWidgetHeaderIsExport.setModule(module);
-		fields.add(dashboardWidgetHeaderIsExport);
 
 		FacilioField dashboardWidgetDataOptionType = new FacilioField();
 		dashboardWidgetDataOptionType.setName("chartDisplayType");
@@ -2081,27 +2081,6 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 
-		FacilioField dashboardWidgetHeaderTitle = new FacilioField();
-		dashboardWidgetHeaderTitle.setName("viewHeaderText");
-		dashboardWidgetHeaderTitle.setDataType(FieldType.STRING);
-		dashboardWidgetHeaderTitle.setColumnName("HEADER_TEXT");
-		dashboardWidgetHeaderTitle.setModule(module);
-		fields.add(dashboardWidgetHeaderTitle);
-
-		FacilioField dashboardWidgetHeaderSubTitle = new FacilioField();
-		dashboardWidgetHeaderSubTitle.setName("viewHeaderSubText");
-		dashboardWidgetHeaderSubTitle.setDataType(FieldType.STRING);
-		dashboardWidgetHeaderSubTitle.setColumnName("HEADER_SUB_TEXT");
-		dashboardWidgetHeaderSubTitle.setModule(module);
-		fields.add(dashboardWidgetHeaderSubTitle);
-
-		FacilioField dashboardWidgetHeaderIsExport = new FacilioField();
-		dashboardWidgetHeaderIsExport.setName("viewHeaderIsExport");
-		dashboardWidgetHeaderIsExport.setDataType(FieldType.BOOLEAN);
-		dashboardWidgetHeaderIsExport.setColumnName("HEADER_IS_EXPORT");
-		dashboardWidgetHeaderIsExport.setModule(module);
-		fields.add(dashboardWidgetHeaderIsExport);
-		
 		FacilioField dashboardWidgetListViewId = new FacilioField();
 		dashboardWidgetListViewId.setName("viewId");
 		dashboardWidgetListViewId.setDataType(FieldType.NUMBER);

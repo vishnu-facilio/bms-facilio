@@ -21,7 +21,28 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private int layoutPosition;
 	private int dataRefreshIntervel;
 	private String widgetUrl;
+	private String headerText;
+	private String headerSubText;
+	private boolean headerIsExport;
 	
+	public String getHeaderText() {
+		return headerText;
+	}
+	public void setHeaderText(String headerText) {
+		this.headerText = headerText;
+	}
+	public String getHeaderSubText() {
+		return headerSubText;
+	}
+	public void setHeaderSubText(String headerSubText) {
+		this.headerSubText = headerSubText;
+	}
+	public boolean isHeaderIsExport() {
+		return headerIsExport;
+	}
+	public void setHeaderIsExport(boolean headerIsExport) {
+		this.headerIsExport = headerIsExport;
+	}
 	public String getWidgetUrl() {
 		return widgetUrl;
 	}
