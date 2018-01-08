@@ -5,29 +5,8 @@ import org.json.simple.JSONObject;
 
 public class WidgetListViewContext extends DashboardWidgetContext {
 
-	String viewHeaderText;
-	String viewHeaderSubText;
-	Boolean viewHeaderIsExport;
 	Long viewId;
 	
-	public String getViewHeaderText() {
-		return viewHeaderText;
-	}
-	public void setViewHeaderText(String headerText) {
-		this.viewHeaderText = headerText;
-	}
-	public String getViewHeaderSubText() {
-		return viewHeaderSubText;
-	}
-	public void setViewHeaderSubText(String headerSubText) {
-		this.viewHeaderSubText = headerSubText;
-	}
-	public Boolean getViewHeaderIsExport() {
-		return viewHeaderIsExport;
-	}
-	public void setViewHeaderIsExport(Boolean headerIsExport) {
-		this.viewHeaderIsExport = headerIsExport;
-	}
 	public Long getViewId() {
 		return viewId;
 	}
@@ -48,13 +27,13 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		resultJson.put("layout", layoutJson);
 		
 		JSONObject headerJson = new JSONObject();
-		headerJson.put("title", getViewHeaderText());
-		headerJson.put("export", getViewHeaderIsExport());
-		if(getViewHeaderSubText().equals("{today}")) {		// temprovery
+		headerJson.put("title", getHeaderText());
+		headerJson.put("export", isHeaderIsExport());
+		if(getHeaderSubText().equals("{today}")) {		// temprovery
 			headerJson.put("subtitle", "today");
 		}
 		else {
-			headerJson.put("subtitle", getViewHeaderSubText());
+			headerJson.put("subtitle", getHeaderSubText());
 		}
 		
 		resultJson.put("header", headerJson);

@@ -13,9 +13,6 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 
-	String chartHeaderText;
-	String chartHeaderSubText;
-	Boolean chartHeaderIsExport;
 	Integer chartDisplayType;
 	public Long getxAxis() {
 		return xAxis;
@@ -63,24 +60,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public void setIsComparisionReport(boolean isComparisionReport) {
 		this.isComparisionReport = isComparisionReport;
 	}
-	public String getChartHeaderText() {
-		return chartHeaderText;
-	}
-	public void setChartHeaderText(String headerText) {
-		this.chartHeaderText = headerText;
-	}
-	public String getChartHeaderSubText() {
-		return chartHeaderSubText;
-	}
-	public void setChartHeaderSubText(String headerSubText) {
-		this.chartHeaderSubText = headerSubText;
-	}
-	public Boolean getChartHeaderIsExport() {
-		return chartHeaderIsExport;
-	}
-	public void setChartHeaderIsExport(Boolean headerIsExport) {
-		this.chartHeaderIsExport = headerIsExport;
-	}
+
 	public Integer getChartDisplayType() {
 		return chartDisplayType;
 	}
@@ -124,16 +104,16 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		resultJson.put("layout", layoutJson);
 		
 		JSONObject headerJson = new JSONObject();
-		headerJson.put("title", getChartHeaderText());
+		headerJson.put("title", getHeaderText());
 		// Temprovery 
-		if(getChartHeaderSubText().equals("{today}")) {
+		if(getHeaderSubText().equals("{today}")) {
 			headerJson.put("subtitle", "today");
 		}
 		else {
-			headerJson.put("subtitle", getChartHeaderSubText());
+			headerJson.put("subtitle", getHeaderSubText());
 		}
 		
-		headerJson.put("export", getChartHeaderIsExport());
+		headerJson.put("export", isHeaderIsExport());
 		
 		if(!this.getPeriods().isEmpty()) {
 			JSONArray periods = new JSONArray();
