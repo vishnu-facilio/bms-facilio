@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-	<!-- This has to be tuned as per need. Manthosh just copy/ pasted it from tomcat site. -->
-	<Resource name="jdbc/BmsDB"
-		auth="Container"
-		type="javax.sql.XADataSource"
-		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
-		testWhileIdle="true"
-		testOnBorrow="true"
-		testOnReturn="false"
-		validationQuery="SELECT 1"
-		validationInterval="30000"
-		timeBetweenEvictionRunsMillis="30000"
-		maxActive="100"
-		minIdle="10"
-		maxWait="10000"
-		initialSize="10"
-		removeAbandonedTimeout="60"
-		removeAbandoned="true"
-		logAbandoned="true"
-		minEvictableIdleTimeMillis="30000"
-		jmxEnabled="true"
-		jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
-			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
-		defaultTransactionIsolation="READ_COMMITTED"           
-		driverClassName="com.arjuna.ats.jdbc.TransactionalDriver"
-		url="jdbc:arjuna:java:comp/env/jdbc/BmsXA"
-		/>
     
 	<Resource 
     	name="jdbc/BmsXA"
@@ -37,6 +11,31 @@
 		explicitUrl="true"
         url="jdbc:mysql://localhost:3306/bms"
 		/>
+    
+    
+    <Resource
+    	  name="jdbc/pcmDB"
+    	  auth="Container"
+    	  type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
+    	  factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
+    	  initialSize="10"
+    	  maxActive="100"
+    	  maxIdle="10"
+    	  minIdle="5"
+    	  timeBetweenEvictionRunsMillis="34000"
+    	  minEvictableIdleTimeMillis="55000"
+    	  validationQuery="SELECT 1"
+    	  validationInterval="34000"
+    	  testOnBorrow="true"
+    	  removeAbandoned="true"
+    	  removeAbandonedTimeout="55"
+    	  username="root"
+    	  user="root"
+    	  password=""
+    	  databaseName="bms"
+    	  driverClassName="com.mysql.jdbc.Driver"
+    	  url="jdbc:mysql://localhost:3306/bms"
+     />
     
     <!-- Transaction Configuration -->
 	<Transaction factory="org.jboss.narayana.tomcat.jta.UserTransactionFactory"/>
