@@ -16,8 +16,8 @@
     <Resource
     	  name="jdbc/pcmDB"
     	  auth="Container"
-    	  type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
-    	  factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
+    	  type="javax.sql.XADataSource"
+		  factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
     	  initialSize="10"
     	  maxActive="100"
     	  maxIdle="10"
@@ -34,7 +34,7 @@
     	  password=""
     	  databaseName="bms"
     	  driverClassName="com.mysql.jdbc.Driver"
-    	  url="jdbc:mysql://localhost:3306/bms"
+		  dataSourceJNDI="BmsXA"
      />
     
     <!-- Transaction Configuration -->
