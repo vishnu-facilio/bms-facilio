@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,19 +16,23 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportFieldContext;
+import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
-import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -119,64 +125,130 @@ public class DashboardAction extends ActionSupport {
 	public String getPeriod() {
 		return period;
 	}
+	public ReportFolderContext getReportFolderContext() {
+		return reportFolderContext;
+	}
+	public void setReportFolderContext(ReportFolderContext reportFolderContext) {
+		this.reportFolderContext = reportFolderContext;
+	}
+	public ReportContext1 getReportContext() {
+		return reportContext;
+	}
+	public void setReportContext(ReportContext1 reportContext) {
+		this.reportContext = reportContext;
+	}
 	public void setPeriod(String period) {
 		this.period = period;
 	}
+	private ReportFolderContext reportFolderContext;
+	private ReportContext1 reportContext;
+	
+	public String addReport() throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getReportFields();
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReport().getTableName())
+				.fields(fields);
+
+		reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		reportContext.setId((Long) props.get("id"));
+		if(reportContext.getReportCriteriaIds() != null) {
+			insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReportCriteria().getTableName())
+					.fields(FieldFactory.getReportCriteriaFields());
+			
+			List<Map<String, Object>> criteriaProps = new ArrayList<>();
+			for(Long criteriaId:reportContext.getReportCriteriaIds()) {
+
+				Map<String, Object> prop = new HashMap<String, Object>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("criteriaId", criteriaId);
+				criteriaProps.add(prop);
+			}
+			insertBuilder.addRecords(criteriaProps).save();
+		}
+		return SUCCESS;
+	}
+	public String addReportFolder() throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReportFolder().getTableName())
+				.fields(FieldFactory.getReportFolderFields());
+		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		return SUCCESS;
+	}
 	public String getData() throws Exception {
 		
-		//System.out.println(DashboardUtil.getFormulaValue(1l));
-		WidgetChartContext widgetChartContext = DashboardUtil.getWidgetChartContext(reportId);
-			
+		ReportContext1 reportContext = DashboardUtil.getReportContext(reportId);
+		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(widgetChartContext.getModuleId());
-				
-		FacilioField xAxisField = modBean.getField(widgetChartContext.getxAxis());
+		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
+		
+		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
+		FacilioField xAxisField = reportXAxisField.getField();
+		xAxisField.setName("label");
+		
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
-		FacilioField yaxisField = new FacilioField();
-		yaxisField.setName("value");
-		yaxisField.setColumnName(widgetChartContext.getY1Axis());
-		yaxisField.setDataType(FieldType.NUMBER);
+		FacilioField y1AxisField = null;
+		if(reportContext.getY1Axis() != null) {
+			
+		}
+		else {
+			AggregateOperator aggregateOpperator = reportXAxisField.getAggregateOpperator();
+			y1AxisField = aggregateOpperator.getSelectField(xAxisField);
+			y1AxisField.setName("value");
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(yaxisField);
-		
+		fields.add(y1AxisField);
+		fields.add(xAxisField);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 		
-		FacilioField groupByField = new FacilioField();
-		if(getPeriod() != null) {
-			Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
-			WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), getPeriod());
-			FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
-			String timePeriodWhereCondition = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
-			builder.andCustomWhere(timePeriodWhereCondition);
-			groupByField.setName("label");
-			
-			if(xAxisField.getModule().getName().equals(timeSeriesfield.getModule().getName()) && xAxisField.getColumnName().equals(timeSeriesfield.getColumnName())) {
-				groupByField.setColumnName(DashboardUtil.getTimeFrameFloorValue(dateOperator, fieldModule.getTableName()+"."+xAxisField.getColumnName()));
-			}
-			else {
-				groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
-			}
-			groupByField.setDataType(xAxisField.getDataType());
-		}
-		else {
-			groupByField.setName("label");
-			groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
-			groupByField.setDataType(xAxisField.getDataType());
-		}
+//		FacilioField groupByField = new FacilioField();
+//		if(getPeriod() != null) {
+//			Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
+//			WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), getPeriod());
+//			FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
+//			String timePeriodWhereCondition = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
+//			builder.andCustomWhere(timePeriodWhereCondition);
+//			groupByField.setName("label");
+//			
+//			if(xAxisField.getModule().getName().equals(timeSeriesfield.getModule().getName()) && xAxisField.getColumnName().equals(timeSeriesfield.getColumnName())) {
+//				groupByField.setColumnName(DashboardUtil.getTimeFrameFloorValue(dateOperator, fieldModule.getTableName()+"."+xAxisField.getColumnName()));
+//			}
+//			else {
+//				groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
+//			}
+//			groupByField.setDataType(xAxisField.getDataType());
+//		}
+//		else {
+//			groupByField.setName("label");
+//			groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
+//			groupByField.setDataType(xAxisField.getDataType());
+//		}
 		builder.groupBy("label");
-		fields.add(groupByField);
 		builder.select(fields);
 		if(!module.getName().equals(fieldModule.getName())) {
 			builder.innerJoin(fieldModule.getTableName())
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
-		if(widgetChartContext.getWidgetConditions() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), widgetChartContext.getWidgetConditions().get(0).getCriteriaId());
+		if(reportContext.getReportCriteriaContexts() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
 		}
 		List<Map<String, Object>> rs = builder.get();
@@ -190,10 +262,10 @@ public class DashboardAction extends ActionSupport {
  			}
 	 	}
 		System.out.println("rs after -- "+rs);
-		
-		if(true) {
-			setXaxisLegent(widgetChartContext.getxAxisLegend());
-		}
+//		
+//		if(true) {
+//			setXaxisLegent(widgetChartContext.getxAxisLegend());
+//		}
 //		if(widgetChartContext.getIsComparisionReport()) {
 //			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 //					.table(module.getTableName())

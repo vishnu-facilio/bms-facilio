@@ -26,6 +26,8 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -133,25 +135,27 @@ public class WorkOrderReportAction extends ActionSupport {
 		FacilioModule module = modBean.getModule("workorder");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getDashboardFields())
-				.table(ModuleFactory.getDashboardModule().getTableName())
+				.select(FieldFactory.getReportFolderFields())
+				.table(ModuleFactory.getReportFolder().getTableName())
+//				.innerJoin(ModuleFactory.getReport().getTableName())
+//				.on(ModuleFactory.getReportFolder().getTableName()+".ID = "+ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID")
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
 				//.andCustomWhere("MODULEID = ?", module.getModuleId());
 			
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<DashboardContext> dashboards = new ArrayList<>();
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
-				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
-				dashboard.setDashboardWidgets(dashbaordWidgets);
-				dashboards.add(dashboard);
+				ReportFolderContext reportFolder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+				List<ReportContext1> reports = DashboardUtil.getReportsFormReportFolderId(reportFolder.getId());
+				reportFolder.setReports(reports);
+				reportFolders.add(reportFolder);
 			}
 		}
 		
-		setAllWorkOrderJsonReports(DashboardUtil.getDashboardResponseJson(dashboards));
+		setAllWorkOrderJsonReports(DashboardUtil.getReportResponseJson(reportFolders));
 	
 		return SUCCESS;
 	}

@@ -1972,114 +1972,65 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getDashboardWidgetPeriodFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getWidgetPeriodModule();
-
-		FacilioField dashboardId = getIdField();
-		dashboardId.setModule(module);
-		fields.add(dashboardId);
-
-		FacilioField widgetId = new FacilioField();
-		widgetId.setName("widgetId");
-		widgetId.setDataType(FieldType.STRING);
-		widgetId.setColumnName("WIDGET_ID");
-		widgetId.setModule(module);
-		fields.add(widgetId);
-
-		FacilioField periodLabel = new FacilioField();
-		periodLabel.setName("periodLabel");
-		periodLabel.setDataType(FieldType.STRING);
-		periodLabel.setColumnName("PERIOD_LABEL");
-		periodLabel.setModule(module);
-		fields.add(periodLabel);
-
-		FacilioField periodValue = new FacilioField();
-		periodValue.setName("periodValue");
-		periodValue.setDataType(FieldType.STRING);
-		periodValue.setColumnName("PERIOD_VALUE");
-		periodValue.setModule(module);
-		fields.add(periodValue);
-
-		FacilioField dateOperator = new FacilioField();
-		dateOperator.setName("dateOperator");
-		dateOperator.setDataType(FieldType.NUMBER);
-		dateOperator.setColumnName("DATE_OPERATOR");
-		dateOperator.setModule(module);
-
-		FacilioField timeSeriesField = new FacilioField();
-		timeSeriesField.setName("timeSeriesField");
-		timeSeriesField.setDataType(FieldType.NUMBER);
-		timeSeriesField.setColumnName("TIME_SERIES_FIELD");
-		timeSeriesField.setModule(module);
-
-		fields.add(timeSeriesField);
-
-		return fields;
-	}
+//	public static List<FacilioField> getDashboardWidgetPeriodFields() {
+//		List<FacilioField> fields = new ArrayList<>();
+//		FacilioModule module = ModuleFactory.getWidgetPeriodModule();
+//
+//		FacilioField dashboardId = getIdField();
+//		dashboardId.setModule(module);
+//		fields.add(dashboardId);
+//
+//		FacilioField widgetId = new FacilioField();
+//		widgetId.setName("widgetId");
+//		widgetId.setDataType(FieldType.STRING);
+//		widgetId.setColumnName("WIDGET_ID");
+//		widgetId.setModule(module);
+//		fields.add(widgetId);
+//
+//		FacilioField periodLabel = new FacilioField();
+//		periodLabel.setName("periodLabel");
+//		periodLabel.setDataType(FieldType.STRING);
+//		periodLabel.setColumnName("PERIOD_LABEL");
+//		periodLabel.setModule(module);
+//		fields.add(periodLabel);
+//
+//		FacilioField periodValue = new FacilioField();
+//		periodValue.setName("periodValue");
+//		periodValue.setDataType(FieldType.STRING);
+//		periodValue.setColumnName("PERIOD_VALUE");
+//		periodValue.setModule(module);
+//		fields.add(periodValue);
+//
+//		FacilioField dateOperator = new FacilioField();
+//		dateOperator.setName("dateOperator");
+//		dateOperator.setDataType(FieldType.NUMBER);
+//		dateOperator.setColumnName("DATE_OPERATOR");
+//		dateOperator.setModule(module);
+//
+//		FacilioField timeSeriesField = new FacilioField();
+//		timeSeriesField.setName("timeSeriesField");
+//		timeSeriesField.setDataType(FieldType.NUMBER);
+//		timeSeriesField.setColumnName("TIME_SERIES_FIELD");
+//		timeSeriesField.setModule(module);
+//
+//		fields.add(timeSeriesField);
+//
+//		return fields;
+//	}
 
 	public static List<FacilioField> getWidgetChartFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWidgetChartModule();
 
 		fields.add(getIdField(module));
-
-		FacilioField dashboardWidgetDataOptionType = new FacilioField();
-		dashboardWidgetDataOptionType.setName("chartDisplayType");
-		dashboardWidgetDataOptionType.setDataType(FieldType.NUMBER);
-		dashboardWidgetDataOptionType.setColumnName("CHART_DISPLAY_TYPE");
-		dashboardWidgetDataOptionType.setModule(module);
-		fields.add(dashboardWidgetDataOptionType);
-
-		FacilioField xAxis = new FacilioField();
-		xAxis.setName("xAxis");
-		xAxis.setDataType(FieldType.NUMBER);
-		xAxis.setColumnName("X_AXIS");
-		xAxis.setModule(module);
-		fields.add(xAxis);
-
-		FacilioField y1Axis = new FacilioField();
-		y1Axis.setName("y1Axis");
-		y1Axis.setDataType(FieldType.STRING);
-		y1Axis.setColumnName("Y1_AXIS");
-		y1Axis.setModule(module);
-		fields.add(y1Axis);
-
-		FacilioField y2Axis = new FacilioField();
-		y2Axis.setName("y2Axis");
-		y2Axis.setDataType(FieldType.STRING);
-		y2Axis.setColumnName("Y2_AXIS");
-		y2Axis.setModule(module);
-		fields.add(y2Axis);
-
-		FacilioField y3Axis = new FacilioField();
-		y3Axis.setName("y3Axis");
-		y3Axis.setDataType(FieldType.STRING);
-		y3Axis.setColumnName("Y3_AXIS");
-		y3Axis.setModule(module);
-		fields.add(y3Axis);
-
-		FacilioField criteriaId = new FacilioField();
-		criteriaId.setName("criteriaId");
-		criteriaId.setDataType(FieldType.NUMBER);
-		criteriaId.setColumnName("CRITERIA_ID");
-		criteriaId.setModule(module);
-		fields.add(criteriaId);
-
-		FacilioField isComparisionReport = new FacilioField();
-		isComparisionReport.setName("isComparisionReport");
-		isComparisionReport.setDataType(FieldType.NUMBER);
-		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
-		isComparisionReport.setModule(module);
-		fields.add(isComparisionReport);
 		
-		FacilioField xAxisLegend = new FacilioField();
-		xAxisLegend.setName("xAxisLegend");
-		xAxisLegend.setDataType(FieldType.STRING);
-		xAxisLegend.setColumnName("X_AXIS_LEGEND");
-		xAxisLegend.setModule(module);
-		fields.add(xAxisLegend);
-		
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+
 		return fields;
 	}
 	public static List<FacilioField> getWidgetListViewFields() {
@@ -2097,19 +2048,175 @@ public class FieldFactory {
 
 		return fields;
 	}
-
-	public static List<FacilioField> getWidgetConditionFields() {
+	
+	public static List<FacilioField> getReportFolderFields() {
+		
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getWidgetCondition();
+		FacilioModule module = ModuleFactory.getReportFolder();
+
+		fields.add(getIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getOrgIdField(module));
+
+		FacilioField parentFolderId = new FacilioField();
+		parentFolderId.setName("parentFolderId");
+		parentFolderId.setDataType(FieldType.NUMBER);
+		parentFolderId.setColumnName("PARENT_FOLDER_ID");
+		parentFolderId.setModule(module);
+		fields.add(parentFolderId);
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportFields() {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReport();
+
+		fields.add(getIdField(module));
+		
+		FacilioField parentFolderId = new FacilioField();
+		parentFolderId.setName("parentFolderId");
+		parentFolderId.setDataType(FieldType.NUMBER);
+		parentFolderId.setColumnName("REPORT_FOLDER_ID");
+		parentFolderId.setModule(module);
+		fields.add(parentFolderId);
+		
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField chartType = new FacilioField();
+		chartType.setName("chartType");
+		chartType.setDataType(FieldType.NUMBER);
+		chartType.setColumnName("CHART_TYPE");
+		chartType.setModule(module);
+		fields.add(chartType);
+
+		FacilioField xAxis = new FacilioField();
+		xAxis.setName("xAxis");
+		xAxis.setDataType(FieldType.NUMBER);
+		xAxis.setColumnName("X_AXIS");
+		xAxis.setModule(module);
+		fields.add(xAxis);
+
+		FacilioField y1Axis = new FacilioField();
+		y1Axis.setName("y1Axis");
+		y1Axis.setDataType(FieldType.NUMBER);
+		y1Axis.setColumnName("Y1_AXIS");
+		y1Axis.setModule(module);
+		fields.add(y1Axis);
+
+		FacilioField y2Axis = new FacilioField();
+		y2Axis.setName("y2Axis");
+		y2Axis.setDataType(FieldType.NUMBER);
+		y2Axis.setColumnName("Y2_AXIS");
+		y2Axis.setModule(module);
+		fields.add(y2Axis);
+
+		FacilioField y3Axis = new FacilioField();
+		y3Axis.setName("y3Axis");
+		y3Axis.setDataType(FieldType.NUMBER);
+		y3Axis.setColumnName("Y3_AXIS");
+		y3Axis.setModule(module);
+		fields.add(y3Axis);
+
+		FacilioField isComparisionReport = new FacilioField();
+		isComparisionReport.setName("isComparisionReport");
+		isComparisionReport.setDataType(FieldType.NUMBER);
+		isComparisionReport.setColumnName("IS_COMPARISION_REPORT");
+		isComparisionReport.setModule(module);
+		fields.add(isComparisionReport);
+		
+		FacilioField xAxisLegend = new FacilioField();
+		xAxisLegend.setName("xAxisLegend");
+		xAxisLegend.setDataType(FieldType.STRING);
+		xAxisLegend.setColumnName("X_AXIS_LEGEND");
+		xAxisLegend.setModule(module);
+		fields.add(xAxisLegend);
+
+		return fields;
+	}
+	public static List<FacilioField> getReportFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportField();
 
 		fields.add(getIdField(module));
 
-		FacilioField widgetId = new FacilioField();
-		widgetId.setName("widgetId");
-		widgetId.setDataType(FieldType.NUMBER);
-		widgetId.setColumnName("WIDGET_ID");
-		widgetId.setModule(module);
-		fields.add(widgetId);
+		FacilioField moduleFieldId = new FacilioField();
+		moduleFieldId.setName("moduleFieldId");
+		moduleFieldId.setDataType(FieldType.NUMBER);
+		moduleFieldId.setColumnName("MODULE_FIELD_ID");
+		moduleFieldId.setModule(module);
+		fields.add(moduleFieldId);
+
+		FacilioField formulaFieldId = new FacilioField();
+		formulaFieldId.setName("formulaFieldId");
+		formulaFieldId.setDataType(FieldType.NUMBER);
+		formulaFieldId.setColumnName("FORMULA_FIELD_ID");
+		formulaFieldId.setModule(module);
+		fields.add(formulaFieldId);
+		
+		FacilioField aggregateFunction = new FacilioField();
+		aggregateFunction.setName("aggregateFunction");
+		aggregateFunction.setDataType(FieldType.NUMBER);
+		aggregateFunction.setColumnName("AGGREGATE_FUNCTION");
+		aggregateFunction.setModule(module);
+		fields.add(aggregateFunction);
+
+		return fields;
+	}
+	public static List<FacilioField> getReportFormulaFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportFormulaField();
+
+		fields.add(getIdField(module));
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+
+		FacilioField dataType = new FacilioField();
+		dataType.setName("dataType");
+		dataType.setDataType(FieldType.NUMBER);
+		dataType.setColumnName("DATA_TYPE");
+		dataType.setModule(module);
+		fields.add(dataType);
+		
+		FacilioField formula = new FacilioField();
+		formula.setName("formula");
+		formula.setDataType(FieldType.STRING);
+		formula.setColumnName("FORMULA");
+		formula.setModule(module);
+		fields.add(formula);
+
+		return fields;
+	}
+	public static List<FacilioField> getReportCriteriaFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportCriteria();
+
+		fields.add(getIdField(module));
+
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
 
 		FacilioField criteriaId = new FacilioField();
 		criteriaId.setName("criteriaId");

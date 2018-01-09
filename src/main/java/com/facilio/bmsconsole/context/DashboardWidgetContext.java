@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.WidgetChartContext.WidgetChartType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{

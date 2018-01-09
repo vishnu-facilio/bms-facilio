@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.WidgetChartContext.WidgetChartType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fw.BeanFactory;
@@ -40,7 +39,10 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	
 	public enum AggregateOperator {
 		
-		COUNT(1,"count");
+		COUNT(1,"count"),
+		AVERAGE(2,"avg"),
+		SUM(3,"sum")
+		;
 		
 		private int value;
 		private String stringValue;
@@ -63,10 +65,8 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 		public static AggregateOperator getAggregateOperator(int value) {
 			return AGGREGATE_OPERATOR_MAP.get(value);
 		}
-		public FacilioField getSelectField(Long fieldId) throws Exception {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField field = modBean.getField(fieldId);
-			String selectFieldString = this.getStringValue() + "(" +field.getModule().getTableName() +"." +field.getColumnName()+ ")";
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			String selectFieldString = this.getStringValue() + "(" +field.getColumnName()+ ")";
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setName("value");

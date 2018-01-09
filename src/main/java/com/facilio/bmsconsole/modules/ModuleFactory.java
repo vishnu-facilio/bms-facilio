@@ -503,11 +503,6 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
 		return dashboardWigetModule;
 	}
-	public static FacilioModule getWidgetPeriodModule() {
-		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Widget_Period");
-		return dashboardWigetModule;
-	}
 	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Chart");
@@ -524,6 +519,33 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Formula");
 		return dashboardWigetModule;
 	}
+	
+	public static FacilioModule getReportFolder() {
+		FacilioModule reportFolderModule = new FacilioModule();
+		reportFolderModule.setTableName("Report_Folder");
+		return reportFolderModule;
+	}
+	public static FacilioModule getReport() {
+		FacilioModule reportModule = new FacilioModule();
+		reportModule.setTableName("Report");
+		return reportModule;
+	}
+	public static FacilioModule getReportField() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_Field");
+		return reportFieldModule;
+	}
+	public static FacilioModule getReportCriteria() {
+		FacilioModule reportCriteriaModule = new FacilioModule();
+		reportCriteriaModule.setTableName("Report_Criteria");
+		return reportCriteriaModule;
+	}
+	public static FacilioModule getReportFormulaField() {
+		FacilioModule reportFormulaFieldModule = new FacilioModule();
+		reportFormulaFieldModule.setTableName("Report_Formula_Field");
+		return reportFormulaFieldModule;
+	}
+	
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");
@@ -540,12 +562,6 @@ public class ModuleFactory {
 		pmReminderJobWORel.setTableName("After_PM_Reminder_WO_Rel");
 		
 		return pmReminderJobWORel;
-	}
-	
-	public static FacilioModule getWidgetCondition() {
-		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Widget_Condition");
-		return dashboardWigetModule;
 	}
 	
 	public static FacilioModule getViewColumnsModule() {

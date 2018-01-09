@@ -13,83 +13,12 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 
-	Integer chartDisplayType;
-	public Long getxAxis() {
-		return xAxis;
+	Long reportId;
+	public Long getReportId() {
+		return reportId;
 	}
-	public void setxAxis(Long xAxis) {
-		this.xAxis = xAxis;
-	}
-	Long xAxis;
-	String y1Axis;
-	Long y2Axis;
-	Long y3Axis;
-	boolean isComparisionReport;
-	private List<WidgetConditionContext> widgetConditions;
-	private String xAxisLegend;
-	
-	public String getxAxisLegend() {
-		return xAxisLegend;
-	}
-	public void setxAxisLegend(String xAxisLegend) {
-		this.xAxisLegend = xAxisLegend;
-	}
-	public List<WidgetConditionContext> getWidgetConditions() {
-		return widgetConditions;
-	}
-	public void setWidgetConditions(List<WidgetConditionContext> widgetConditions) {
-		this.widgetConditions = widgetConditions;
-	}
-	
-	public void addWidgetCondition(WidgetConditionContext widgetCondition) {
-		if(widgetConditions == null) {
-			widgetConditions = new ArrayList<>();
-		}
-		widgetConditions.add(widgetCondition);
-	}
-	
-	public WidgetChartType getWidgetChartType() {
-		if(getChartDisplayType() != null) {
-			return WidgetChartType.getWidgetChartType(getChartDisplayType());
-		}
-		return null;
-	}
-	public boolean getIsComparisionReport() {
-		return isComparisionReport;
-	}
-	public void setIsComparisionReport(boolean isComparisionReport) {
-		this.isComparisionReport = isComparisionReport;
-	}
-
-	public Integer getChartDisplayType() {
-		return chartDisplayType;
-	}
-	public void setChartDisplayType(Integer chartDisplayType) {
-		this.chartDisplayType = chartDisplayType;
-	}
-	public String getY1Axis() {
-		return y1Axis;
-	}
-	public void setY1Axis(String y1Axis) {
-		this.y1Axis = y1Axis;
-	}
-	public Long getY2Axis() {
-		return y2Axis;
-	}
-	public void setY2Axis(Long y2Axis) {
-		this.y2Axis = y2Axis;
-	}
-	public Long getY3Axis() {
-		return y3Axis;
-	}
-	public void setY3Axis(Long y3Axis) {
-		this.y3Axis = y3Axis;
-	}
-	public boolean isXaxisOnlyReport() {
-		if(y1Axis == null && y2Axis == null && y3Axis == null) {
-			return true;
-		}
-		return false;
+	public void setReportId(Long reportId) {
+		this.reportId = reportId;
 	}
 	@Override
 	public JSONObject widgetJsonObject() {
@@ -129,7 +58,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		resultJson.put("header", headerJson);
 		
 		JSONObject dataOptionsJson = new JSONObject();
-		dataOptionsJson.put("type", getWidgetChartType().getName());
+//		dataOptionsJson.put("type", getWidgetChartType().getName());
 		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getId());
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getId());
@@ -143,65 +72,5 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		widgetJson.put("label", getWidgetName());
 		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
-	}
-	public enum WidgetChartType {
-		DOUGHNUT(1,"doughnut"),
-		STACKBAR(2,"stackbar"),
-		PROGRESS(3,"progress"),
-		BAR(4,"bar");
-		
-		private int value;
-		private String name;
-		private int minHeight;
-		private int minWidth;
-		
-		WidgetChartType(int value,String name) {
-			this.value = value;
-			this.name = name;
-		}
-		WidgetChartType(int value,String name,int minHeight,int minWidth) {
-			this.value = value;
-			this.name = name;
-			this.minHeight = minHeight;
-			this.minWidth = minWidth;
-		}
-		
-		public int getValue() {
-			return value;
-		}
-		public void setValue(int value) {
-			this.value = value;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
-		}
-		public int getMinHeight() {
-			return minHeight;
-		}
-		public void setMinHeight(int minHeight) {
-			this.minHeight = minHeight;
-		}
-		public int getMinWidth() {
-			return minWidth;
-		}
-		public void setMinWidth(int minWidth) {
-			this.minWidth = minWidth;
-		}
-		
-		public static WidgetChartType getWidgetChartType(int value) {
-			return WIDGET_CHART_TYPE_MAP.get(value);
-		}
-
-		private static final Map<Integer, WidgetChartType> WIDGET_CHART_TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, WidgetChartType> initTypeMap() {
-			Map<Integer, WidgetChartType> typeMap = new HashMap<>();
-			for(WidgetChartType type : values()) {
-				typeMap.put(type.getValue(), type);
-			}
-			return typeMap;
-		}
 	}
 }
