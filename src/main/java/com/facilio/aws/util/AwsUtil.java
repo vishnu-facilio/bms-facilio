@@ -310,7 +310,7 @@ public class AwsUtil
 		return basicCredentials;
 	}
 
-	private static AWSCredentialsProvider getAWSCredentialsProvider() {
+	public static AWSCredentialsProvider getAWSCredentialsProvider() {
     	if(credentialsProvider == null){
     		synchronized (LOCK) {
     			if(credentialsProvider == null){
@@ -321,7 +321,7 @@ public class AwsUtil
 		return credentialsProvider;
 	}
 
-	private static String getRegion() {
+	public static String getRegion() {
     	if(region == null) {
     		synchronized (LOCK) {
     			if(region == null) {

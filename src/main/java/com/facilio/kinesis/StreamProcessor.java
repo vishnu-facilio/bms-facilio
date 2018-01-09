@@ -23,14 +23,11 @@ public class StreamProcessor {
             String applicationName = clientName + AwsUtil.getConfig("environment");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
-            AWSCredentials credentials = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-            AWSCredentialsProvider provider = new AWSStaticCredentialsProvider(credentials);
-
             String workerId = clientName + InetAddress.getLocalHost().getCanonicalHostName();
 
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
-                    new KinesisClientLibConfiguration(applicationName, streamName, provider, workerId)
-                            .withRegionName(AwsUtil.getConfig("region"))
+                    new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
+                            .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
 
             //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgName);
