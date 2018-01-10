@@ -203,13 +203,16 @@ public class DashboardAction extends ActionSupport {
 		
 		FacilioField y1AxisField = null;
 		if(reportContext.getY1Axis() != null) {
-			
+			ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1Axis());
+			AggregateOperator aggregateOpperator = reportY1AxisField.getAggregateOpperator();
+			y1AxisField = reportY1AxisField.getField();
+			y1AxisField = aggregateOpperator.getSelectField(y1AxisField);
 		}
 		else {
 			AggregateOperator aggregateOpperator = reportXAxisField.getAggregateOpperator();
 			y1AxisField = aggregateOpperator.getSelectField(xAxisField);
-			y1AxisField.setName("value");
 		}
+		y1AxisField.setName("value");
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(y1AxisField);
@@ -262,10 +265,9 @@ public class DashboardAction extends ActionSupport {
  			}
 	 	}
 		System.out.println("rs after -- "+rs);
-//		
-//		if(true) {
-//			setXaxisLegent(widgetChartContext.getxAxisLegend());
-//		}
+		if(true) {
+			setXaxisLegent(reportContext.getxAxisLegend());
+		}
 //		if(widgetChartContext.getIsComparisionReport()) {
 //			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 //					.table(module.getTableName())

@@ -24,7 +24,7 @@ public class ReportFieldContext {
 		return formulaFieldId != null;
 	}
 	public FacilioField getField() throws Exception {
-		if(isFormulaField != null) {
+		if(getIsFormulaField()) {
 			FacilioField facilioField = new FacilioField();
 			facilioField.setName("value");
 			facilioField.setColumnName(reportFormulaContext.getFormula());

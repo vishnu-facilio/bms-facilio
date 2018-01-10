@@ -195,8 +195,10 @@ public class DashboardUtil {
 			ReportContext1 reportContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportContext1.class);
 			
 			for(Map<String, Object> prop:props) {
-				ReportCriteriaContext reportCriteriaContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
-				reportContext.addReportCriteriaContext(reportCriteriaContext);
+				if(prop.get("criteriaId") != null) {
+					ReportCriteriaContext reportCriteriaContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
+					reportContext.addReportCriteriaContext(reportCriteriaContext);
+				}
 			}
 			return reportContext;
 		}
@@ -381,13 +383,15 @@ public class DashboardUtil {
 			 String name = reportFolder.getName();
 			Collection<ReportContext1> reportContexts = reportFolder.getReports();
 			JSONArray childrenArray = new JSONArray();
-			for(ReportContext1 reportContext:reportContexts) {
-				childrenArray.add(reportContext.widgetJsonObject());
+			if(reportContexts != null) {
+				for(ReportContext1 reportContext:reportContexts) {
+					childrenArray.add(reportContext.widgetJsonObject());
+				}
+				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("label", name);
+				dashboardJson.put("children", childrenArray);
+				result.add(dashboardJson);
 			}
-			JSONObject dashboardJson = new JSONObject();
-			dashboardJson.put("label", name);
-			dashboardJson.put("children", childrenArray);
-			result.add(dashboardJson);
 		 }
 		return result;
 	}

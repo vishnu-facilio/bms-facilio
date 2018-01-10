@@ -24,7 +24,7 @@ public class ReportContext1 {
 	Long y3Axis;
 	ReportFieldContext y3AxisField;
 	Boolean isComparisionReport;
-	String xAxisLegent;
+	String xAxisLegend;
 	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<Long> reportCriteriaIds;
 	
@@ -152,13 +152,13 @@ public class ReportContext1 {
 	}
 
 
-	public String getxAxisLegent() {
-		return xAxisLegent;
+	public String getxAxisLegend() {
+		return xAxisLegend;
 	}
 
 
-	public void setxAxisLegent(String xAxisLegent) {
-		this.xAxisLegent = xAxisLegent;
+	public void setxAxisLegend(String xAxisLegend) {
+		this.xAxisLegend = xAxisLegend;
 	}
 
 
