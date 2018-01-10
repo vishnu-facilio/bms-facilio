@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -142,7 +142,27 @@ public class DashboardAction extends ActionSupport {
 	}
 	private ReportFolderContext reportFolderContext;
 	private ReportContext1 reportContext;
+	public ReportThreshold getReportThreshold() {
+		return reportThreshold;
+	}
+	public void setReportThreshold(ReportThreshold reportThreshold) {
+		this.reportThreshold = reportThreshold;
+	}
+	private ReportThreshold reportThreshold;
 	
+	public String addThreshold() throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReportThreshold().getTableName())
+				.fields(FieldFactory.getReportThresholdFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(reportThreshold);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		return SUCCESS;
+	}
+
 	public String addReport() throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getReportFields();
@@ -190,7 +210,7 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getData() throws Exception {
 		
-		ReportContext1 reportContext = DashboardUtil.getReportContext(reportId);
+		reportContext = DashboardUtil.getReportContext(reportId);
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -252,7 +272,7 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
-		if (reportContext.getReportCriteriaContexts() != null && reportContext.getReportCriteriaContexts().size() > 0) {
+		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
 		}
@@ -296,7 +316,6 @@ public class DashboardAction extends ActionSupport {
 //			System.out.println(builder1.get());
 //		}
 		
-		setReportContext(reportContext);
  		setReportData(rs);
 		return SUCCESS;
 	}

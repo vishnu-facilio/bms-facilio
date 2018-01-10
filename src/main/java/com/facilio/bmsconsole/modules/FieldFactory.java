@@ -2235,6 +2235,51 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getReportThresholdFields() {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportThreshold();
+
+		fields.add(getIdField(module));
+
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.NUMBER);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+		
+		FacilioField value = new FacilioField();
+		value.setName("value");
+		value.setDataType(FieldType.NUMBER);
+		value.setColumnName("VALUE");
+		value.setModule(module);
+		fields.add(value);
+		
+		FacilioField color = new FacilioField();
+		color.setName("color");
+		color.setDataType(FieldType.NUMBER);
+		color.setColumnName("COLOR");
+		color.setModule(module);
+		fields.add(color);
+		
+		FacilioField lineStyle = new FacilioField();
+		lineStyle.setName("lineStyle");
+		lineStyle.setDataType(FieldType.NUMBER);
+		lineStyle.setColumnName("LINE_STYLE");
+		lineStyle.setModule(module);
+		fields.add(lineStyle);
+
+		return fields;
+	}
 
 	public static List<FacilioField> getFormulaFields() {
 		List<FacilioField> fields = new ArrayList<>();

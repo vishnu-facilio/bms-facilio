@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
+import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -198,6 +199,18 @@ public class DashboardUtil {
 				if(prop.get("criteriaId") != null) {
 					ReportCriteriaContext reportCriteriaContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
 					reportContext.addReportCriteriaContext(reportCriteriaContext);
+				}
+			}
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportThresholdFields())
+					.table(ModuleFactory.getReportThreshold().getTableName())
+					.andCustomWhere(ModuleFactory.getReportThreshold().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> thresholdProps = selectBuilder.get();
+			if(thresholdProps != null && !thresholdProps.isEmpty()) {
+				for(Map<String, Object> thresholdProp:thresholdProps) {
+					ReportThreshold reportThreshold = FieldUtil.getAsBeanFromMap(thresholdProp, ReportThreshold.class);
+					reportContext.addReportThreshold(reportThreshold);
 				}
 			}
 			return reportContext;

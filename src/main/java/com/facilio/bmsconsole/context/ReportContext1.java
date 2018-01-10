@@ -28,7 +28,21 @@ public class ReportContext1 {
 	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<Long> reportCriteriaIds;
 	
+	List<ReportThreshold> reportThresholds;
 	
+	
+	public List<ReportThreshold> getReportThresholds() {
+		return reportThresholds;
+	}
+	public void setReportThresholds(List<ReportThreshold> reportThresholds) {
+		this.reportThresholds = reportThresholds;
+	}
+	public void addReportThreshold(ReportThreshold reportThreshold) {
+		if(this.reportThresholds == null) {
+			reportThresholds = new ArrayList<>();
+		}
+		reportThresholds.add(reportThreshold);
+	}
 	public ReportFieldContext getxAxisField() {
 		return xAxisField;
 	}
