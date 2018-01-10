@@ -51,14 +51,17 @@ public enum FacilioConnectionPool {
 	
 	public Connection getConnection() throws SQLException {
 		
+		if(true) {
+			return ds.getConnection();
+		}
+		
 		Properties info =new Properties();
 	//	info.setProperty(TransactionalDriver.userName, "root");
 	//	info.setProperty(TransactionalDriver.password, "");
 		info.put(TransactionalDriver.XADataSource, ds);
 		//info.getProperty(TransactionalDriver.dynamicClass);
 		//xaDataSource = info.get(TransactionalDriver.XADataSource);
-		
-		java.sql.Connection c = DriverManager.getConnection("jdbc:arjuna:java:comp/env/jdbc/pcmDB",info);
+		Connection c = DriverManager.getConnection("jdbc:arjuna:java:comp/env/jdbc/pcmDB",info);
 	//	print(c);
 		return c;
 	}
