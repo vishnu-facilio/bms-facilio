@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.ZoneContext;
@@ -115,6 +116,9 @@ public class FacilioConstants {
 		
 		public static final String TICKET_CATEGORY = "ticketcategory";
 		public static final String TICKET_CATEGORY_LIST = "ticketcategories";
+		
+		public static final String TICKET_TYPE = "tickettype";
+		public static final String TICKET_TYPE_LIST = "tickettypes";
 		
 		public static final String TICKET = "ticket";
 		public static final String TICKET_LIST = "tickets";
@@ -317,6 +321,7 @@ public class FacilioConstants {
 			classMap.put(TICKET_STATUS, TicketStatusContext.class);
 			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
 			classMap.put(TICKET_CATEGORY, TicketCategoryContext.class);
+			classMap.put(TICKET_TYPE, TicketTypeContext.class);
 			classMap.put(TICKET, TicketContext.class);
 			classMap.put(TASK, TaskContext.class);
 			classMap.put(WORK_ORDER, WorkOrderContext.class);

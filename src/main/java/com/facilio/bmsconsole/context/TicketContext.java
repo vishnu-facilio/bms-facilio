@@ -84,6 +84,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.category = category;
 	}
 	
+	private TicketTypeContext type;
+	public TicketTypeContext getType() {
+		return type;
+	}
+	public void setType(TicketTypeContext type) {
+		this.type = type;
+	}
+
 	private SourceType sourceType;
 	public int getSourceType() {
 		if(sourceType != null) {

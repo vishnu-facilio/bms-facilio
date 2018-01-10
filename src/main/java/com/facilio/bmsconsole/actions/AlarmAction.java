@@ -106,7 +106,7 @@ public class AlarmAction extends ActionSupport {
 		//Process alarm params
 		if (alarm == null) {
 			alarm = new AlarmContext();
-			alarm.setType(AlarmContext.AlarmType.MAINTENANCE);
+			alarm.setAlarmType(AlarmContext.AlarmType.MAINTENANCE);
 
 			TicketContext ticket = new TicketContext();
 			ticket.setSubject("Alarm "+Math.round(Math.random()*100));

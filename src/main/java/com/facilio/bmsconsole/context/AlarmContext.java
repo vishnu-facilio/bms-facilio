@@ -46,22 +46,22 @@ public class AlarmContext extends TicketContext {
 		this.acknowledgedTime = acknowledgedTime;
 	}
 
-	private AlarmType type;
-	public int getType() {
-		if(type != null) {
-			return type.getIntVal();
+	private AlarmType alarmType;
+	public int getAlarmType() {
+		if(alarmType != null) {
+			return alarmType.getIntVal();
 		}
 		return -1;
 	}
-	public void setType(int type) {
-		this.type = AlarmType.TYPE_MAP.get(type);
+	public void setAlarmType(int alarmType) {
+		this.alarmType = AlarmType.TYPE_MAP.get(alarmType);
 	}
-	public void setType(AlarmType type) {
-		this.type = type;
+	public void setAlarmType(AlarmType alarmType) {
+		this.alarmType = alarmType;
 	}
-	public String getTypeVal() {
-		if(type != null) {
-			return type.getStringVal();
+	public String getAlarmTypeVal() {
+		if(alarmType != null) {
+			return alarmType.getStringVal();
 		}
 		return null;
 	}
