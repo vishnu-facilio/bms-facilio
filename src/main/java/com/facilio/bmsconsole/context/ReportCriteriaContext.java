@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 public class ReportCriteriaContext {
 
 	private Long id;
 	private Long reportId;
 	private Long criteriaId;
+	private Criteria criteria;
+	
 	public Long getId() {
 		return id;
 	}
@@ -25,5 +26,11 @@ public class ReportCriteriaContext {
 	}
 	public void setCriteriaId(Long criteriaId) {
 		this.criteriaId = criteriaId;
+	}
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
 	}
 }

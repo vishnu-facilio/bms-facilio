@@ -83,6 +83,11 @@ public class ReportFieldContext {
 		this.aggregateFunction = aggregateFunction;
 	}
 	public AggregateOperator getAggregateOpperator() {
-		return AggregateOperator.getAggregateOperator(getAggregateFunction());
+		if (getAggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getAggregateFunction());
+		}
+		else {
+			return AggregateOperator.COUNT;
+		}
 	}
 }

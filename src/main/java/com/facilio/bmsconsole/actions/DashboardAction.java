@@ -187,6 +187,7 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
 	public String getData() throws Exception {
 		
 		ReportContext1 reportContext = DashboardUtil.getReportContext(reportId);
@@ -196,6 +197,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
 		
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
+		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		xAxisField.setName("label");
 		
@@ -250,7 +252,7 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
-		if(reportContext.getReportCriteriaContexts() != null) {
+		if (reportContext.getReportCriteriaContexts() != null && reportContext.getReportCriteriaContexts().size() > 0) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
 		}
@@ -294,9 +296,47 @@ public class DashboardAction extends ActionSupport {
 //			System.out.println(builder1.get());
 //		}
 		
+		setReportContext(reportContext);
  		setReportData(rs);
 		return SUCCESS;
 	}
+	
+	public String getUnderlyingData() throws Exception {
+		
+		ReportContext1 reportContext = DashboardUtil.getReportContext(reportId);
+		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
+		
+		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
+		reportContext.setxAxisField(reportXAxisField);
+		FacilioField xAxisField = reportXAxisField.getField();
+		xAxisField.setName("label");
+		
+		FacilioModule fieldModule = xAxisField.getExtendedModule();
+		
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+		
+		builder.select(fields);
+		if (!module.getName().equals(fieldModule.getName())) {
+			builder.innerJoin(fieldModule.getTableName())
+				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
+		}
+		Criteria criteria = null;
+		if (reportContext.getReportCriteriaContexts() != null && reportContext.getReportCriteriaContexts().size() > 0) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+			builder.andCriteria(criteria);
+		}
+		List<Map<String, Object>> rs = builder.get();
+		
+ 		setReportData(rs);
+		return SUCCESS;
+	}
+
 	public String addDashboard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
