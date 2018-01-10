@@ -46,7 +46,7 @@ public abstract class UserTemplate implements ActionTemplate {
 		this.type = type;
 	}
 	public void setType(int type) {
-		this.type = Type.typeMap.get(type);
+		this.type = Type.TYPE_MAP.get(type);
 	}
 	
 	@Override
@@ -56,7 +56,10 @@ public abstract class UserTemplate implements ActionTemplate {
 		EMAIL(1),
 		SMS(2),
 		JSON(3),
-		EXCEL(4)
+		EXCEL(4),
+		WORKORDER(5),
+		ALARM(6),
+		TASK_GROUP(7)
 		;
 
 		
@@ -70,7 +73,7 @@ public abstract class UserTemplate implements ActionTemplate {
 			return intVal;
 		}
 		
-		private static final Map<Integer, Type> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static final Map<Integer, Type> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, Type> initTypeMap() {
 			Map<Integer, Type> typeMap = new HashMap<>();
 			
@@ -80,11 +83,16 @@ public abstract class UserTemplate implements ActionTemplate {
 			return typeMap;
 		}
 		public static Map<Integer, Type> getAllTypes() {
-			return typeMap;
+			return TYPE_MAP;
 		}
 		
 		public static Type getType(int val) {
-			return typeMap.get(val);
+			if(TYPE_MAP.containsKey(val)) {
+				return TYPE_MAP.get(val);
+			}
+			else {
+				throw new IllegalArgumentException("Invalid Template Type val");
+			}
 		}
 	}
 

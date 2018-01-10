@@ -52,6 +52,66 @@ public class TemplateAPI {
 		}
 		return excelTemplates;
 	}
+	
+	private static UserTemplate getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
+		UserTemplate.Type type = UserTemplate.Type.getType((int) templateMap.get("type"));
+		long id = (long) templateMap.get("id");
+		switch (type) {
+			case EMAIL: {
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getEMailTemplateFields())
+						.table("EMail_Templates")
+						.andCustomWhere("EMail_Templates.ID = ?", id);
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getEMailTemplateFromMap(templateMap);
+				}
+			}break;
+			case SMS: {
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getSMSTemplateFields())
+						.table("SMS_Templates")
+						.andCustomWhere("SMS_Templates.ID = ?", id);
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getSMSTemplateFromMap(templateMap);
+				}
+			}break;
+			case EXCEL: {
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getExcelTemplateFields())
+						.table("Excel_Templates")
+						.andCustomWhere("Excel_Templates.ID = ?", id);
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getExcelTemplateFromMap(templateMap);
+				}
+			}break;
+			case JSON:
+			case WORKORDER:
+			case ALARM:
+			case TASK_GROUP:
+			{
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getJSONTemplateFields())
+						.table("JSON_Template")
+						.andCustomWhere("JSON_Template.ID = ?", id);
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getJSONTemplateFromMap(templateMap);
+				}
+			}break;
+		}
+		return null;
+	}
  	
 	public static UserTemplate getTemplate(long orgId, long id) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
@@ -63,55 +123,7 @@ public class TemplateAPI {
 		
 		if(templates != null && !templates.isEmpty()) {
 			Map<String, Object> templateMap = templates.get(0);
-			int type = (int) templateMap.get("type");
-			if(type == UserTemplate.Type.EMAIL.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getEMailTemplateFields())
-						.table("EMail_Templates")
-						.andCustomWhere("EMail_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getEMailTemplateFromMap(templateMap);
-				}
-			}
-			else if(type == UserTemplate.Type.SMS.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getSMSTemplateFields())
-						.table("SMS_Templates")
-						.andCustomWhere("SMS_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getSMSTemplateFromMap(templateMap);
-				}
-			}
-			else if(type == UserTemplate.Type.JSON.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getJSONTemplateFields())
-						.table("JSON_Template")
-						.andCustomWhere("JSON_Template.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getJSONTemplateFromMap(templateMap);
-				}
-			}
-			else if(type == UserTemplate.Type.EXCEL.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getExcelTemplateFields())
-						.table("Excel_Templates")
-						.andCustomWhere("Excel_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getExcelTemplateFromMap(templateMap);
-				}
-			}
+			return getExtendedTemplate(templateMap);
 		}
 		return null;
 	}
@@ -135,44 +147,7 @@ public class TemplateAPI {
 		
 		if(templates != null && !templates.isEmpty()) {
 			Map<String, Object> templateMap = templates.get(0);
-			int templateType = (int) templateMap.get("type");
-			long id = (long) templateMap.get("id");
-			if(templateType == UserTemplate.Type.EMAIL.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getEMailTemplateFields())
-						.table("EMail_Templates")
-						.andCustomWhere("EMail_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getEMailTemplateFromMap(templateMap);
-				}
-			}
-			else if(templateType == UserTemplate.Type.SMS.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getSMSTemplateFields())
-						.table("SMS_Templates")
-						.andCustomWhere("SMS_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getSMSTemplateFromMap(templateMap);
-				}
-			}
-			else if(templateType == UserTemplate.Type.EXCEL.getIntVal()) {
-				selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getExcelTemplateFields())
-						.table("Excel_Templates")
-						.andCustomWhere("Excel_Templates.ID = ?", id);
-				
-				templates = selectBuider.get();
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					return getExcelTemplateFromMap(templateMap);
-				}
-			}
+			return getExtendedTemplate(templateMap);
 		}
 		return null;
 	}
