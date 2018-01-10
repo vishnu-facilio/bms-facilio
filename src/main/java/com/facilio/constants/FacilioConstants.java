@@ -307,6 +307,9 @@ public class FacilioConstants {
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
 		public static final String NEXT_EXECUTION_TIME = "nextexecutiontime";
 		
+		public static final String VIEWID = "viewId";
+		public static final String VIEWCOLUMNS = "viewColumns";
+		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

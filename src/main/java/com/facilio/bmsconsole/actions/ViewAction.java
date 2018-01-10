@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -43,6 +44,7 @@ public class ViewAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		
 		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
 		
@@ -61,7 +63,7 @@ public class ViewAction extends ActionSupport {
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
  		}
-		
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
 		
 		Chain addView = FacilioChainFactory.getAddViewChain();
@@ -72,18 +74,24 @@ public class ViewAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String addViewFields() throws Exception
+	public String customizeColumns() throws Exception
 	{
-		JSONArray fields = null;
-		if(getFields() != null) {	
-	 		JSONParser parser = new JSONParser();
-	 		fields = (JSONArray) parser.parse(getFields());
-	 		ViewAPI.addViewFields(viewId, fields);
- 		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		if(viewId == -1) {
+			context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
+		}
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields);
+		Chain customizeColumnChain = FacilioChainFactory.getViewCustomizeColumnChain();
+		customizeColumnChain.execute(context);
+
 		return SUCCESS;
 	}
 	
-	private long viewId;
+	private long viewId = -1;
 	public long getViewId() {
 		return viewId;
 	}
@@ -139,12 +147,13 @@ public class ViewAction extends ActionSupport {
 		this.viewName = viewName;
 	}
 	
-	private String fields;
-	public String getFields() {
+	private List<ViewField> fields;
+	public List<ViewField> getFields() {
 		return fields;
 	}
-	public void setFields(String fields) {
+	public void setFields(List<ViewField> fields) {
 		this.fields = fields;
 	}
+	
 	
 }

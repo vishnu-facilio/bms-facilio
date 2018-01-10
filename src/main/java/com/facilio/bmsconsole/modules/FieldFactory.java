@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
@@ -1400,7 +1401,14 @@ public class FieldFactory {
 		criteria.setColumnName("CRITERIAID");
 		criteria.setModule(module);
 		fields.add(criteria);
-
+		
+		FacilioField isDefault = new FacilioField();
+		isDefault.setName("isDefault");
+		isDefault.setDataType(FieldType.BOOLEAN);
+		isDefault.setColumnName("ISDEFAULT");
+		isDefault.setModule(module);
+		fields.add(isDefault);
+		
 		return fields;
 
 	}
@@ -2302,7 +2310,14 @@ public class FieldFactory {
 	public static List<FacilioField> getViewColumnFields() {
 		FacilioModule module = ModuleFactory.getViewColumnsModule();
 		List<FacilioField> fields = new ArrayList<>();
-
+		
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.NUMBER);
+		id.setColumnName("ID");
+		id.setModule(module);
+		fields.add(id);
+		
 		FacilioField view = new FacilioField();
 		view.setName("viewId");
 		view.setDataType(FieldType.NUMBER);
@@ -2316,6 +2331,13 @@ public class FieldFactory {
 		field.setColumnName("FIELDID");
 		field.setModule(module);
 		fields.add(field);
+		
+		FacilioField displayName = new FacilioField();
+		displayName.setName("columnDisplayName");
+		displayName.setDataType(FieldType.STRING);
+		displayName.setColumnName("DISPLAY_NAME");
+		displayName.setModule(module);
+		fields.add(displayName);
 
 		return fields;
 	}

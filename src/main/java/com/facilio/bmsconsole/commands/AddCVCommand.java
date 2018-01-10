@@ -42,8 +42,10 @@ public class AddCVCommand implements Command {
 			{
 				view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			}
+			view.setDefault(false);
 			
 			long viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());
+			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			view.setId(viewId);
 		}
 		return false;

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 
@@ -84,11 +85,25 @@ public class FacilioView {
 		this.criteria = criteria;
 	}
 	
-	private List<FacilioField> fields;
-	public List<FacilioField> getFields() {
+	private Boolean isDefault;
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+	public void setDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+	public boolean isDefault() {
+		if(isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
+	
+	private List<ViewField> fields;
+	public List<ViewField> getFields() {
 		return fields;
 	}
-	public void setFields(List<FacilioField> fields) {
+	public void setFields(List<ViewField> fields) {
 		this.fields = fields;
 	}
 	

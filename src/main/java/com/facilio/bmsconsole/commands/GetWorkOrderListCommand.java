@@ -32,21 +32,14 @@ public class GetWorkOrderListCommand implements Command {
 														.select(fields)
 														.maxLevel(0);
 
-		if(view != null) {
+
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
+		} else if (filters == null && view != null) {
 			Criteria criteria = view.getCriteria();
 			selectBuilder.andCriteria(criteria);
-		}
-		
-		/*List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
-		if(conditionList != null && !conditionList.isEmpty()) {
-			for(Condition condition : conditionList) {
-				selectBuilder.andCondition(condition);
-			}
-		}*/
-		
-		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-		if(filterCriteria != null) {
-			selectBuilder.andCriteria(filterCriteria);
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

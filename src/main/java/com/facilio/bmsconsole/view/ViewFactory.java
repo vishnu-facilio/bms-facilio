@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
@@ -34,6 +35,11 @@ public class ViewFactory {
 	
 	private static Map<String, FacilioView> views = Collections.unmodifiableMap(initViews());
 	public static FacilioView getView (String viewName) {
+		FacilioView view = views.get(viewName);
+		if(view != null) {
+			List<ViewField> columns = ColumnFactory.getColumns(viewName);
+			view.setFields(columns);
+		}
 		return views.get(viewName);
 	}
 	
@@ -51,6 +57,7 @@ public class ViewFactory {
 		viewMap.put("workorder-unassigned", getUnassignedWorkorders());
 		viewMap.put("workorder-closed", getAllClosedWorkOrders());
 		viewMap.put("workorder-openfirealarms", getFireSafetyWOs());
+		viewMap.put("workorder-all", getAllWorkOrders());
 		
 		viewMap.put("workorder-myoverdue", getMyOverdueWorkOrders());
 		viewMap.put("workorder-myduetoday", getMyDueTodayWorkOrders());
@@ -81,8 +88,6 @@ public class ViewFactory {
 		
 		
 		//Add module name in field objects
-		
-		//viewMap.put("workorder-all", getAllWorkorders());
 		
 		return viewMap;
 	}
@@ -831,5 +836,14 @@ public class ViewFactory {
 		unassignedWOView.setCriteria(unassignedWOCriteria);
 		
 		return unassignedWOView;
+	}
+	
+	private static FacilioView getAllWorkOrders() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Orders");
+		
+		return allView;
 	}
 }

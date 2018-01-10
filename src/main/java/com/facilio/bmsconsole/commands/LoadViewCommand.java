@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +32,8 @@ public class LoadViewCommand implements Command {
 			
 			if(view == null) {
 				view = ViewFactory.getView(moduleName + "-" +viewName);
+			} else if(view.getFields() == null || view.getFields().isEmpty()) {
+				view.setFields(ColumnFactory.getColumns(moduleName + "-" +viewName));
 			}
 			
 			if(view != null) {

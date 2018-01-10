@@ -1261,15 +1261,22 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new AddCVCommand());
+		c.addCommand(new CustomizeViewColumnCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getViewDetailsChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateFilterFromCriteriaCommand());		
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getViewCustomizeColumnChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CustomizeViewColumnCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
