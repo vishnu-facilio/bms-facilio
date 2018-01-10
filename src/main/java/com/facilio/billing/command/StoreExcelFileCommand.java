@@ -46,7 +46,8 @@ public class StoreExcelFileCommand implements Command {
 		ExcelTemplate template = new ExcelTemplate();
 		template.setExcelFile(excelFile);
 		//template.setName(storeFileName);
-		template.setName(fileName);
+		//template.setName(fileName);
+		template.setName(templateName);
 		template.setType(UserTemplate.Type.EXCEL);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		long templateId = TemplateAPI.addExcelTemplate(orgId,template,fileName);

@@ -31,6 +31,7 @@ import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.UserTemplate;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -56,10 +57,12 @@ public class GenerateUsageRecordCommand implements Command {
 		String excelName = excelobject.getName();
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		String fileURL = null;
-		try(InputStream ins = fs.readFile(excelobject.getExcelFileId())) {
+		long fileId = excelobject.getExcelFileId();
+		try(InputStream ins = fs.readFile(fileId)) {
 			System.out.println("##### file read stream #####");
 			//Workbook workbook = WorkbookFactory.create(ins);
 			XSSFWorkbook workbook = new XSSFWorkbook(ins);
+			
 			System.out.println("##### workbook created #####");
 			for(String key : placeHolders.keySet())
 			{
@@ -101,24 +104,22 @@ public class GenerateUsageRecordCommand implements Command {
 			HashMap<String, Object> timeData = DateTimeUtil.getTimeData(endTime); 	
 			String monthstr = Month.of((int)timeData.get("month")).name();
 			int yearStr = (int)timeData.get("year");
+			FileInfo fileInfo = fs.getFileInfo(fileId);
+			String fileName = fileInfo.getFileName();
+			String namePrefix = fileName.substring(0,fileName.indexOf("."));
+			String namesufix = fileName.substring(fileName.indexOf("."),fileName.length());
 			
-			String namePrefix = excelName.substring(0,excelName.indexOf("."));
-			String namesufix = excelName.substring(excelName.indexOf("."),excelName.length());
-			
-			String fileName = namePrefix+"_"+monthstr+"_"+yearStr+namesufix;
-			System.out.println("##### ouput file name  #####"+fileName);
-			FileOutputStream fileOut = new FileOutputStream(fileName);
+			String generatedFileName = namePrefix+"_"+monthstr+"_"+yearStr+namesufix;
+			System.out.println("##### ouput file name  #####"+generatedFileName);
+			FileOutputStream fileOut = new FileOutputStream(generatedFileName);
 			workbook.write(fileOut);
 			fileOut.close();	    
-			File file = new File(fileName);
+			File file = new File(generatedFileName);
 			//File file = new File(excelName);
 			System.out.println("##### ouput file created #####");
-			long fileId = fs.addFile(file.getPath(), file, "application/xlsx");
-			System.out.println("##### output file Id : "+fileId);
-			fileURL = fs.getPrivateUrl(fileId);
-			
-			
-			
+			long generatedFileId = fs.addFile(file.getPath(), file, "application/xlsx");
+			System.out.println("##### output file Id : "+generatedFileId);
+			fileURL = fs.getPrivateUrl(generatedFileId);		
 		}
 		System.out.println(">>>>> fileURL :"+fileURL);
 		return fileURL;

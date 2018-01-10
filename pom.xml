@@ -9,7 +9,7 @@
 	<url>http://maven.apache.org</url>
 	
 	<!-- Facilio Internal Maven Repository -->
-	<!-- <repositories>
+<!-- 	<repositories>
         <repository>
             <id>facilio-s3-release-repo</id>
 			<name>Facilio Release Repository</name>
@@ -77,6 +77,12 @@
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-tiles-plugin</artifactId>
 			<version>2.5.10</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+		<dependency>
+ 		   <groupId>org.glassfish.jaxb</groupId>
+   			 <artifactId>jaxb-runtime</artifactId>
+    			<version>2.3.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-json-plugin -->
 		<dependency>
@@ -191,7 +197,12 @@
 		    <artifactId>nimbus-jose-jwt</artifactId>
 		    <version>4.23</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
+            <groupId>com.facilio</groupId>
+            <artifactId>fedge</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency> -->
+        <dependency>
 			<groupId>redis.clients</groupId>
 		    <artifactId>jedis</artifactId>
 		    <version>2.9.0</version>
@@ -314,12 +325,23 @@
     <artifactId>commons-net</artifactId>
     <version>2.0</version>
 </dependency>
-
  <dependency>
         <groupId>com.udojava</groupId>
         <artifactId>EvalEx</artifactId>
         <version>1.18</version>
  </dependency>
+<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
+<dependency>
+    <groupId>com.sun.xml.bind</groupId>
+    <artifactId>jaxb-impl</artifactId>
+    <version>2.3.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+<dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>2.3.0</version>
+</dependency>
 	</dependencies>
 	<build>
 		<extensions>
