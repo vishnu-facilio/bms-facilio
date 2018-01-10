@@ -31,7 +31,7 @@
     	  removeAbandonedTimeout="55"
     	  username="root"
     	  user="root"
-    	  password=""
+    	  password="zxcv1212"
     	  databaseName="bms"
     	  driverClassName="com.mysql.jdbc.Driver"
 		  dataSourceJNDI="BmsXA"
