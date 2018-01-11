@@ -131,13 +131,6 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		
-		if(workorder.getAsset() != null) {
-			preventivemaintenance.setAssetId(workorder.getAsset().getId());
-		}
-		if(workorder.getSpace() != null) {
-			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
-		}
-		preventivemaintenance.setStatus(true);
 		workorder.setRequester(null);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);

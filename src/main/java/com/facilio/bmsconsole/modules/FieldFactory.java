@@ -1110,13 +1110,6 @@ public class FieldFactory {
 		title.setModule(module);
 		fields.add(title);
 
-		FacilioField pmType = new FacilioField();
-		pmType.setName("pmType");
-		pmType.setDataType(FieldType.NUMBER);
-		pmType.setColumnName("PM_TYPE");
-		pmType.setModule(module);
-		fields.add(pmType);
-
 		FacilioField status = new FacilioField();
 		status.setName("status");
 		status.setDataType(FieldType.BOOLEAN);
@@ -1172,6 +1165,27 @@ public class FieldFactory {
 		assetId.setColumnName("ASSET_ID");
 		assetId.setModule(module);
 		fields.add(assetId);
+		
+		FacilioField assignedToId = new FacilioField();
+		assignedToId.setName("assignedToid");
+		assignedToId.setDataType(FieldType.NUMBER);
+		assignedToId.setColumnName("ASSIGNED_TO_ID");
+		assignedToId.setModule(module);
+		fields.add(assignedToId);
+		
+		FacilioField assignmentGroupId = new FacilioField();
+		assignmentGroupId.setName("assignmentGroupId");
+		assignmentGroupId.setDataType(FieldType.NUMBER);
+		assignmentGroupId.setColumnName("ASSIGNMENT_GROUP_ID");
+		assignmentGroupId.setModule(module);
+		fields.add(assignmentGroupId);
+		
+		FacilioField typeId = new FacilioField();
+		typeId.setName("typeId");
+		typeId.setDataType(FieldType.NUMBER);
+		typeId.setColumnName("TYPE_ID");
+		typeId.setModule(module);
+		fields.add(typeId);
 
 		FacilioField startTime = new FacilioField();
 		startTime.setName("startTime");

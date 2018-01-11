@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -20,6 +21,7 @@ public class AddPreventiveMaintenanceCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		long templateId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		pm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
@@ -27,6 +29,20 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		
 		pm.setCreatedById(AccountUtil.getCurrentUser().getId());
 		pm.setCreatedTime(System.currentTimeMillis());
+		pm.setStatus(true);
+		
+		if(workorder.getAsset() != null) {
+			pm.setAssetId(workorder.getAsset().getId());
+		}
+		if(workorder.getSpace() != null) {
+			pm.setSpaceId(workorder.getSpace().getId());
+		}
+		if(workorder.getAssignedTo() != null) {
+			pm.setAssignedToid(workorder.getAssignedTo().getId());
+		}
+		if(workorder.getType() != null) {
+			pm.setTypeId(workorder.getType().getId());
+		}
 		
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
 		

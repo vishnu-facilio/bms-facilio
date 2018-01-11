@@ -42,14 +42,6 @@ public class PreventiveMaintenance {
 		this.title = title;
 	}
 	
-	private int pmType = -1;
-	public Integer getPmType() {
-		return pmType;
-	}
-	public void setPmType(Integer pmType) {
-		this.pmType = pmType;
-	}
-	
 	private Boolean status;
 	public Boolean getStatus() {
 		return status;
@@ -144,6 +136,30 @@ public class PreventiveMaintenance {
 	}
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
+	}
+	
+	private long assignedToid = -1;
+	public long getAssignedToid() {
+		return assignedToid;
+	}
+	public void setAssignedToid(long assignedToid) {
+		this.assignedToid = assignedToid;
+	}
+	
+	private long assignmentGroupId = -1;
+	public long getAssignmentGroupId() {
+		return assignmentGroupId;
+	}
+	public void setAssignmentGroupId(long assignmentGroupId) {
+		this.assignmentGroupId = assignmentGroupId;
+	}
+
+	private long typeId = -1;
+	public long getTypeId() {
+		return typeId;
+	}
+	public void setTypeId(long typeId) {
+		this.typeId = typeId;
 	}
 
 	private long startTime = -1;
