@@ -87,7 +87,7 @@ public class ReportFieldContext {
 			return AggregateOperator.getAggregateOperator(getAggregateFunction());
 		}
 		else {
-			return AggregateOperator.COUNT;
+			return AggregateOperator.getAggregateOperator(1);
 		}
 	}
 }

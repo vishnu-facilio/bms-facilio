@@ -37,50 +37,128 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 		this.criteriaId = criteriaId;
 	}
 	
-	public enum AggregateOperator {
+	public interface AggregateOperator {
 		
-		COUNT(1,"count"),
-		AVERAGE(2,"avg"),
-		SUM(3,"sum")
-		;
-		
-		private int value;
-		private String stringValue;
-		public int getValue() {
-			return value;
+		public static AggregateOperator getAggregateOperator(int value) {
+			return AGGREGATE_OPERATOR_MAP.get(value);
 		}
-		public void setValue(int value) {
-			this.value = value;
+		public FacilioField getSelectField(FacilioField field) throws Exception;
+		static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
+		static Map<Integer, AggregateOperator> initTypeMap() {
+			Map<Integer, AggregateOperator> typeMap = new HashMap<>();
+			for(AggregateOperator type : NumberAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			for(AggregateOperator type : StringAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			for(AggregateOperator type : DateAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Integer getValue();
+		public String getStringValue();
+	}
+	
+	public enum NumberAggregateOperator implements AggregateOperator {
+		
+		COUNT(1,"count({$place_holder$})"),
+		AVERAGE(2,"avg({$place_holder$})"),
+		SUM(3,"sum({$place_holder$})"),
+		MIN(4,"min({$place_holder$})"),
+		MAX(5,"max({$place_holder$})");
+		
+		private Integer value;
+		private String stringValue;
+		public Integer getValue() {
+			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		public void setStringValue(String stringValue) {
-			this.stringValue = stringValue;
-		}
-		AggregateOperator(int value,String stringValue) {
+		NumberAggregateOperator(Integer value,String stringValue) {
 			this.value = value;
 			this.stringValue = stringValue;
 		}
-		public static AggregateOperator getAggregateOperator(int value) {
-			return AGGREGATE_OPERATOR_MAP.get(value);
-		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString = this.getStringValue() + "(" +field.getColumnName()+ ")";
+			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
-			selectField.setName("value");
 			selectField.setColumnName(selectFieldString);
 			
 			return selectField;
 		}
-		private static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
-		private static Map<Integer, AggregateOperator> initTypeMap() {
-			Map<Integer, AggregateOperator> typeMap = new HashMap<>();
-			for(AggregateOperator type : values()) {
-				typeMap.put(type.getValue(), type);
-			}
-			return typeMap;
+	}
+	
+	public enum StringAggregateOperator implements AggregateOperator {
+		
+		COUNT(1,"count({$place_holder$})");
+		
+		private Integer value;
+		private String stringValue;
+		public Integer getValue() {
+			return value;
+		}
+		public String getStringValue() {
+			return stringValue;
+		}
+		StringAggregateOperator(Integer value,String stringValue) {
+			this.value = value;
+			this.stringValue = stringValue;
+		}
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			
+			FacilioField selectField = new FacilioField();
+			selectField.setColumnName(selectFieldString);
+			
+			return selectField;
+		}
+	}
+	
+	public enum DateAggregateOperator implements AggregateOperator {
+		
+		COUNT(1,"count","count({$place_holder$})"),
+		YEAR(8,"year","from_unixtime(floor({$place_holder$}/1000),'%Y')"),
+		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
+		MONTHANDYEAR(10,"monthAndYear","from_unixtime(floor({$place_holder$}/1000),'%Y %m')"),
+		WEEKANDYEAR(11,"weekAndYear","from_unixtime(floor({$place_holder$}/1000),'%Y %V')"),
+		FULLDATE(12,"fullDate","from_unixtime(floor({$place_holder$}/1000),'%Y %m %d')"),
+		DATEANDTIME(13,"dateAndTime","from_unixtime(floor({$place_holder$}/1000),'%Y %m %d %H:%i')"),
+		//QUARTER(14,"quarter"),
+		MONTH(15,"month","from_unixtime(floor({$place_holder$}/1000),'%m')"),
+		WEEK(16,"week","from_unixtime(floor({$place_holder$}/1000),'%V')"),
+		WEEKDAY(17,"weekDay","from_unixtime(floor({$place_holder$}/1000),'%w')"),
+		DAYSOFMONTH(18,"daysOfMonth","from_unixtime(floor({$place_holder$}/1000),'%d')"),
+		HOURSOFDAY(19,"hoursOfDay","from_unixtime(floor({$place_holder$}/1000),'%H')")
+		;
+		
+		private Integer value;
+		private String stringValue;
+		private String expr;
+		public Integer getValue() {
+			return value;
+		}
+		public String getStringValue() {
+			return stringValue;
+		}
+		DateAggregateOperator(Integer value,String stringValue) {
+			this.value = value;
+			this.stringValue = stringValue;
+		}
+		DateAggregateOperator(Integer value,String stringValue,String expr) {
+			this.value = value;
+			this.stringValue = stringValue;
+			this.expr = expr;
+		}
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			
+			FacilioField selectField = new FacilioField();
+			selectField.setColumnName(selectFieldString);
+			
+			return selectField;
 		}
 	}
 }

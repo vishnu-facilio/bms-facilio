@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
@@ -219,7 +220,6 @@ public class DashboardAction extends ActionSupport {
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
-		xAxisField.setName("label");
 		
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
@@ -232,8 +232,12 @@ public class DashboardAction extends ActionSupport {
 		}
 		else {
 			AggregateOperator aggregateOpperator = reportXAxisField.getAggregateOpperator();
-			y1AxisField = aggregateOpperator.getSelectField(xAxisField);
+			if(!reportXAxisField.getAggregateOpperator().getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+				xAxisField = aggregateOpperator.getSelectField(xAxisField);
+			}
+			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
 		}
+		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		
 		List<FacilioField> fields = new ArrayList<>();
