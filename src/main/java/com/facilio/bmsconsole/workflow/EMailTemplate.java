@@ -65,6 +65,17 @@ public class EMailTemplate extends UserTemplate {
 		return obj;
 	}
 	
+	@Override
+	public JSONObject getOriginalTemplate() {
+		JSONObject obj = new JSONObject();
+		obj.put("sender", from);
+		obj.put("to", to);
+		obj.put("subject", subject);
+		obj.put("message", message);
+		
+		return obj;
+	}
+	
 	private Object getTo(String to) {
 		if(to != null && !to.isEmpty()) {
 			if(to.contains(",")) {

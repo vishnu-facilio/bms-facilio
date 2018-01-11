@@ -19,6 +19,13 @@ public class ExcelTemplate extends UserTemplate{
 		return null;
 	}
 	
+	@Override
+	public JSONObject getOriginalTemplate() {
+		
+		return null;
+	}
+	
+	
 	private long excelFileId = -1;
 	public long getExcelFileId() {
 		return excelFileId;

@@ -902,6 +902,13 @@ public class FieldFactory {
 		typeField.setColumnName("TEMPLATE_TYPE");
 		typeField.setModule(module);
 		fields.add(typeField);
+		
+		FacilioField placeholder = new FacilioField();
+		placeholder.setName("placeholderStr");
+		placeholder.setDataType(FieldType.STRING);
+		placeholder.setColumnName("PLACEHOLDER");
+		placeholder.setModule(module);
+		fields.add(placeholder);
 
 		return fields;
 	}
@@ -1002,7 +1009,29 @@ public class FieldFactory {
 
 		return fields;
 	}
-
+	
+	public static List<FacilioField> getTemplatePlaceholder() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getTemplatePlaceholder();
+		
+		FacilioField templateId = new FacilioField();
+		templateId.setName("templateId");
+		templateId.setDataType(FieldType.NUMBER);
+		templateId.setColumnName("TEMPLATE_ID");
+		templateId.setModule(module);
+		fields.add(templateId);
+		
+		FacilioField placeholder = new FacilioField();
+		placeholder.setName("placeholder");
+		placeholder.setDataType(FieldType.STRING);
+		placeholder.setDisplayName("Placeholder");
+		placeholder.setColumnName("PLACEHOLDER");
+		placeholder.setModule(module);
+		fields.add(placeholder);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getJSONTemplateFields() {
 		FacilioModule module = ModuleFactory.getJSONTemplateModule();
 

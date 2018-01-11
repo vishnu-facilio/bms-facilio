@@ -44,6 +44,15 @@ public class JSONTemplate extends UserTemplate {
 	}
 	
 	@Override
+	public JSONObject getOriginalTemplate() {
+		JSONObject obj = new JSONObject();
+		obj.put("content", content);
+		
+		return obj;
+	}
+	
+	
+	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
 		return Type.JSON.getIntVal();

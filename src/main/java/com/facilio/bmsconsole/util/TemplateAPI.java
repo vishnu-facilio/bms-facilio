@@ -2,10 +2,15 @@ package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -158,7 +163,8 @@ public class TemplateAPI {
 		
 		template.setOrgId(orgId);
 		template.setBodyId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
-		
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
@@ -189,7 +195,8 @@ public class TemplateAPI {
 	public static long addSMSTemplate(long orgId, SMSTemplate template) throws Exception {
 		template.setOrgId(orgId);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
-		
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
 															.fields(FieldFactory.getUserTemplateFields())
@@ -269,6 +276,8 @@ public class TemplateAPI {
 		template.setOrgId(orgId);
 		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
 		template.setType(UserTemplate.Type.JSON);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -292,6 +301,8 @@ public class TemplateAPI {
 		template.setOrgId(orgId);
 		template.setExcelFileId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), "application/xlsx"));
 		
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
@@ -308,5 +319,18 @@ public class TemplateAPI {
 		excelTemplateBuilder.save();
 		
 		return (long) templateProps.get("id");
+	}
+	
+	private static JSONArray getPlaceholders(UserTemplate template) {
+		String formatSpecifier = "(\\$\\{([^\\:}]*))";
+		Pattern pattern = Pattern.compile(formatSpecifier);
+		JSONObject templateString = template.getOriginalTemplate();
+		Matcher matcher = pattern.matcher(templateString.toJSONString());
+		JSONArray templatePlaceholder = new JSONArray();
+		while (matcher.find()) {
+			templatePlaceholder.add(matcher.group(2));
+		}
+		return templatePlaceholder;
+		
 	}
 }

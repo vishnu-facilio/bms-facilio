@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.JSONParser;
+
+import org.json.simple.JSONArray;
 
 public abstract class UserTemplate implements ActionTemplate {
 
@@ -31,6 +35,26 @@ public abstract class UserTemplate implements ActionTemplate {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	private JSONArray placeholder;
+	
+	public JSONArray getPlaceholder() {
+		return placeholder;
+	}
+	public void setPlaceholder(JSONArray placeholder) {
+		this.placeholder = placeholder;
+	}
+	
+	public String getPlaceholderStr() {
+		if(placeholder != null) {
+			return placeholder.toJSONString();
+		}
+		return null;
+	}
+	public void setPlaceholderStr(String placeholderStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		placeholder = (JSONArray) parser.parse(placeholderStr);
+	}
 
 	private Type type;
 	public int getType() {
@@ -51,6 +75,9 @@ public abstract class UserTemplate implements ActionTemplate {
 	
 	@Override
 	public abstract JSONObject getTemplate(Map<String, Object> placeHolders);
+	
+	@Override
+	public abstract JSONObject getOriginalTemplate();
 	
 	public static enum Type {
 		EMAIL(1),
