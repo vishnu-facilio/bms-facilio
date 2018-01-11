@@ -2154,6 +2154,13 @@ public class FieldFactory {
 		chartType.setModule(module);
 		fields.add(chartType);
 
+		FacilioField secChartType = new FacilioField();
+		secChartType.setName("secChartType");
+		secChartType.setDataType(FieldType.NUMBER);
+		secChartType.setColumnName("SEC_CHART_TYPE");
+		secChartType.setModule(module);
+		fields.add(secChartType);
+
 		FacilioField xAxis = new FacilioField();
 		xAxis.setName("xAxis");
 		xAxis.setDataType(FieldType.NUMBER);

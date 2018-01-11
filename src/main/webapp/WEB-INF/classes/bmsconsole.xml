@@ -2841,6 +2841,7 @@
 		</action>
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportData.*,^reportContext.*</param>
 			</result>
 		</action>

@@ -130,8 +130,14 @@ public class DashboardUtil {
 	public static List<ReportContext1> getReportsFormReportFolderId(Long folderID) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFields())
-				.table(ModuleFactory.getReport().getTableName())
-				.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID = ?", folderID);
+				.table(ModuleFactory.getReport().getTableName());
+		
+		if (folderID != null && folderID > 0) {
+			selectBuilder.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID = ?", folderID);
+		}
+		else {
+			selectBuilder.andCustomWhere("(" + ModuleFactory.getReport().getTableName() + ".REPORT_FOLDER_ID IS NULL OR " + ModuleFactory.getReport().getTableName() + ".REPORT_FOLDER_ID = -1)");
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<ReportContext1> reps;
@@ -414,6 +420,12 @@ public class DashboardUtil {
 				for(ReportContext1 reportContext:reportContexts) {
 					childrenArray.add(reportContext.widgetJsonObject());
 				}
+				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("label", name);
+				dashboardJson.put("children", childrenArray);
+				result.add(dashboardJson);
+			}
+			else {
 				JSONObject dashboardJson = new JSONObject();
 				dashboardJson.put("label", name);
 				dashboardJson.put("children", childrenArray);
