@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.context.ReportContext1;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
+import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -149,6 +151,14 @@ public class DashboardAction extends ActionSupport {
 	public void setReportThreshold(ReportThreshold reportThreshold) {
 		this.reportThreshold = reportThreshold;
 	}
+	private JSONObject userFilterValues;
+	
+	public JSONObject getUserFilterValues() {
+		return userFilterValues;
+	}
+	public void setUserFilterValues(JSONObject userFilterValues) {
+		this.userFilterValues = userFilterValues;
+	}
 	private ReportThreshold reportThreshold;
 	
 	public String addThreshold() throws Exception {
@@ -247,6 +257,30 @@ public class DashboardAction extends ActionSupport {
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 		
+//		if(userFilterValues == null) {
+//			userFilterValues = new JSONObject();
+//			userFilterValues.put("1", "21");
+//			JSONArray secVall = new JSONArray();
+//			secVall.add("1512086400000");
+//			secVall.add("1514764799000");
+//			userFilterValues.put("2", secVall);
+//		}
+		
+		if(userFilterValues != null && reportContext.getReportUserFilters() != null) {
+			for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
+				if(userFilterValues.containsKey(userFilter.getId().toString())) {
+					Object userFilterValue = userFilterValues.get(userFilter.getId().toString());
+					if(userFilterValue instanceof JSONArray) {
+						JSONArray userFilterJsonValue = (JSONArray) userFilterValue;
+						builder.andCustomWhere(userFilter.getWhereClause(), userFilterJsonValue.get(0),userFilterJsonValue.get(1));
+					}
+					else {
+						builder.andCustomWhere(userFilter.getWhereClause(), userFilterValue);
+					}
+				}
+			}
+			
+		}
 //		FacilioField groupByField = new FacilioField();
 //		if(getPeriod() != null) {
 //			Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());

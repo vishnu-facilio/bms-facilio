@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
+import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -211,6 +212,19 @@ public class DashboardUtil {
 				for(Map<String, Object> thresholdProp:thresholdProps) {
 					ReportThreshold reportThreshold = FieldUtil.getAsBeanFromMap(thresholdProp, ReportThreshold.class);
 					reportContext.addReportThreshold(reportThreshold);
+				}
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportUserFilterFields())
+					.table(ModuleFactory.getReportUserFilter().getTableName())
+					.andCustomWhere(ModuleFactory.getReportUserFilter().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> userFilterProps = selectBuilder.get();
+			if(userFilterProps != null && !userFilterProps.isEmpty()) {
+				for(Map<String, Object> userFilterProp:userFilterProps) {
+					ReportUserFilterContext reportUserFilterContext = FieldUtil.getAsBeanFromMap(userFilterProp, ReportUserFilterContext.class);
+					reportContext.addReportUserFilter(reportUserFilterContext);
 				}
 			}
 			return reportContext;

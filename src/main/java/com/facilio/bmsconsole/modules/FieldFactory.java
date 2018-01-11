@@ -2330,7 +2330,35 @@ public class FieldFactory {
 
 		return fields;
 	}
+	public static List<FacilioField> getReportUserFilterFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportUserFilter();
 
+		fields.add(getIdField(module));
+
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+
+		FacilioField reportFieldId = new FacilioField();
+		reportFieldId.setName("reportFieldId");
+		reportFieldId.setDataType(FieldType.NUMBER);
+		reportFieldId.setColumnName("REPORT_FIELD_ID");
+		reportFieldId.setModule(module);
+		fields.add(reportFieldId);
+
+		FacilioField whereClause = new FacilioField();
+		whereClause.setName("whereClause");
+		whereClause.setDataType(FieldType.NUMBER);
+		whereClause.setColumnName("WHERE_CLAUSE");
+		whereClause.setModule(module);
+		fields.add(whereClause);
+
+		return fields;
+	}
 	public static List<FacilioField> getFormulaFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFormulaModule();

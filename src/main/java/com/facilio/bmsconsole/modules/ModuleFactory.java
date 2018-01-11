@@ -559,6 +559,11 @@ public class ModuleFactory {
 		reportThresholdModule.setTableName("Report_Threshold");
 		return reportThresholdModule;
 	}
+	public static FacilioModule getReportUserFilter() {
+		FacilioModule reportThresholdModule = new FacilioModule();
+		reportThresholdModule.setTableName("Report_User_Filter");
+		return reportThresholdModule;
+	}
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");

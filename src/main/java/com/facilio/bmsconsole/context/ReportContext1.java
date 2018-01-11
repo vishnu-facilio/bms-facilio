@@ -33,10 +33,26 @@ public class ReportContext1 {
 	Boolean isComparisionReport;
 	String xAxisLegend;
 	List<ReportCriteriaContext> reportCriteriaContexts;
+	List<ReportUserFilterContext> reportUserFilters;
 	List<Long> reportCriteriaIds;
 	
 	List<ReportThreshold> reportThresholds;
 	
+	public List<ReportUserFilterContext> getReportUserFilters() {
+		return reportUserFilters;
+	}
+
+	public void setReportUserFilters(List<ReportUserFilterContext> reportUserFilters) {
+		this.reportUserFilters = reportUserFilters;
+	}
+	
+	public void addReportUserFilter(ReportUserFilterContext reportUserFilterContext) {
+		if(this.reportUserFilters == null) {
+			reportUserFilters = new ArrayList<>();
+		}
+		reportUserFilters.add(reportUserFilterContext);
+	}
+
 	public AggregateOperator getXAxisAggregateOpperator() {
 		if (getxAxisaggregateFunction() != null) {
 			return AggregateOperator.getAggregateOperator(getxAxisaggregateFunction());
