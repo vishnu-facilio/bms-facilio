@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -234,6 +235,15 @@ public class DashboardAction extends ActionSupport {
 		
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
+		List<FacilioField> fields = new ArrayList<>();
+		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
+			FacilioField dummyField = new FacilioField();
+			dummyField.setColumnName(xAxisField.getColumnName());
+			dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
+			dummyField.setName("dummyField");
+			fields.add(dummyField);
+		}
+		
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		if(reportContext.getY1Axis() != null) {
@@ -254,7 +264,6 @@ public class DashboardAction extends ActionSupport {
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		reportContext.setY1AxisField(reportY1AxisField);
-		List<FacilioField> fields = new ArrayList<>();
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -363,7 +372,12 @@ public class DashboardAction extends ActionSupport {
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			JSONObject component = new JSONObject();
 	 			if(thisMap!=null) {
-	 				component.put("label", thisMap.get("label"));
+	 				if(thisMap.get("dummyField") != null) {
+	 					component.put("label", thisMap.get("dummyField"));
+	 				}
+	 				else {
+	 					component.put("label", thisMap.get("label"));
+	 				}
 	 				component.put("value", thisMap.get("value"));
 	 				res.add(component);
 	 			}
