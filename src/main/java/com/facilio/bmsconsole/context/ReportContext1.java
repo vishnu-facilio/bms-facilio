@@ -31,6 +31,35 @@ public class ReportContext1 {
 	ReportFieldContext y3AxisField;
 	Integer y3AxisaggregateFunction;
 	
+	Long groupBy;
+	ReportFieldContext groupByField;
+	Integer groupByFieldAggregateFunction;
+	
+	public Long getGroupBy() {
+		return groupBy;
+	}
+
+	public void setGroupBy(Long groupBy) {
+		this.groupBy = groupBy;
+	}
+
+	public ReportFieldContext getGroupByField() {
+		return groupByField;
+	}
+
+	public void setGroupByField(ReportFieldContext groupByField) {
+		this.groupByField = groupByField;
+	}
+
+	public Integer getGroupByFieldAggregateFunction() {
+		return groupByFieldAggregateFunction;
+	}
+
+	public void setGroupByFieldAggregateFunction(Integer groupByFieldAggregateFunction) {
+		this.groupByFieldAggregateFunction = groupByFieldAggregateFunction;
+	}
+
+
 	Boolean isComparisionReport;
 	String xAxisLegend;
 	List<ReportCriteriaContext> reportCriteriaContexts;
@@ -98,6 +127,14 @@ public class ReportContext1 {
 		}
 	}
 	
+	public AggregateOperator getGroupByAggregateOpperator() {
+		if (getGroupByFieldAggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getGroupByFieldAggregateFunction());
+		}
+		else {
+			return AggregateOperator.getAggregateOperator(1);
+		}
+	}
 	
 	public Integer getxAxisaggregateFunction() {
 		return xAxisaggregateFunction;

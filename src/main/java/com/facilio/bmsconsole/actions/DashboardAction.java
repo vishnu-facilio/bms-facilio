@@ -38,6 +38,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -110,12 +113,12 @@ public class DashboardAction extends ActionSupport {
 		this.moduleName = moduleName;
 	}
 	
-	private List<Map<String, Object>> reportData;
-	public List<Map<String, Object>> getReportData() {
+	private JSONArray reportData;
+	public JSONArray getReportData() {
 		return this.reportData;
 	}
 	
-	public void setReportData(List<Map<String, Object>> reportData) {
+	public void setReportData(JSONArray reportData) {
 		this.reportData = reportData;
 	}
 	Long reportId;
@@ -304,8 +307,20 @@ public class DashboardAction extends ActionSupport {
 //			groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
 //			groupByField.setDataType(xAxisField.getDataType());
 //		}
-		builder.groupBy("label");
+		String groupByString = "label";
+		if(reportContext.getGroupBy() != null) {
+			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupBy());
+			reportContext.setGroupByField(reportGroupByField);
+			FacilioField groupByField = reportGroupByField.getField();
+			groupByField.setName("groupBy");
+			fields.add(groupByField);
+			builder.groupBy("groupBy");
+			groupByString = groupByString + ",groupBy";
+		}
+			
 		builder.select(fields);
+		builder.groupBy(groupByString);
+		
 		if(!module.getName().equals(fieldModule.getName())) {
 			builder.innerJoin(fieldModule.getTableName())
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
@@ -317,18 +332,45 @@ public class DashboardAction extends ActionSupport {
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
-		for(int i=0;i<rs.size();i++) {
- 			Map<String, Object> thisMap = rs.get(i);
- 			if(thisMap!=null) {
- 				if(thisMap.get("label") == null) {
- 					thisMap.put("label", null);
- 				}
- 			}
-	 	}
-		System.out.println("rs after -- "+rs);
-		if(true) {
-			setXaxisLegent(reportContext.getxAxisLegend());
+		if(reportContext.getGroupBy() != null) {
+			
+			Multimap<String, JSONObject> res = ArrayListMultimap.create();
+			
+			for(int i=0;i<rs.size();i++) {
+	 			Map<String, Object> thisMap = rs.get(i);
+	 			if(thisMap!=null) {
+	 				
+	 				JSONObject value = new JSONObject();
+	 				value.put("label", thisMap.get("groupBy"));
+	 				value.put("value", thisMap.get("value"));
+	 				res.put(thisMap.get("label").toString(), value);
+	 			}
+		 	}
+			JSONArray finalres = new JSONArray();
+			for(String key : res.keySet()) {
+				JSONObject j1 = new JSONObject();
+				j1.put("label", key);
+				j1.put("value", res.get(key));
+				finalres.add(j1);
+			}
+			
+			System.out.println("finalres -- "+finalres);
+			setReportData(finalres);
 		}
+		else {
+			JSONArray res = new JSONArray();
+			for(int i=0;i<rs.size();i++) {
+	 			Map<String, Object> thisMap = rs.get(i);
+	 			JSONObject component = new JSONObject();
+	 			if(thisMap!=null) {
+	 				component.put("label", thisMap.get("label"));
+	 				component.put("value", thisMap.get("value"));
+	 				res.add(component);
+	 			}
+		 	}
+			setReportData(res);
+		}
+		System.out.println("rs after -- "+rs);
 //		if(widgetChartContext.getIsComparisionReport()) {
 //			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 //					.table(module.getTableName())
@@ -355,7 +397,7 @@ public class DashboardAction extends ActionSupport {
 //			System.out.println(builder1.get());
 //		}
 		
- 		setReportData(rs);
+// 		setReportData(rs);
 		return SUCCESS;
 	}
 	
@@ -391,7 +433,11 @@ public class DashboardAction extends ActionSupport {
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
- 		setReportData(rs);
+		JSONArray result = new JSONArray();
+		for(Map<String, Object> r:rs) {
+			result.add(r);
+		}
+		setReportData(result);
 		return SUCCESS;
 	}
 

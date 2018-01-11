@@ -2224,6 +2224,20 @@ public class FieldFactory {
 		xAxisLegend.setModule(module);
 		fields.add(xAxisLegend);
 
+		FacilioField groupBy = new FacilioField();
+		groupBy.setName("groupBy");
+		groupBy.setDataType(FieldType.NUMBER);
+		groupBy.setColumnName("GROUP_BY");
+		groupBy.setModule(module);
+		fields.add(groupBy);
+		
+		FacilioField groupByFieldAggregateFunction = new FacilioField();
+		groupByFieldAggregateFunction.setName("groupByFieldAggregateFunction");
+		groupByFieldAggregateFunction.setDataType(FieldType.NUMBER);
+		groupByFieldAggregateFunction.setColumnName("GROUP_BY_AGGREGATE_FUNCTION");
+		groupByFieldAggregateFunction.setModule(module);
+		fields.add(groupByFieldAggregateFunction);
+		
 		return fields;
 	}
 	public static List<FacilioField> getReportFieldFields() {
