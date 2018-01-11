@@ -226,14 +226,14 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		if(reportContext.getY1Axis() != null) {
 			ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1Axis());
-			AggregateOperator aggregateOpperator = reportY1AxisField.getAggregateOpperator();
+			AggregateOperator y1AggregateOpperator = reportContext.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();
-			y1AxisField = aggregateOpperator.getSelectField(y1AxisField);
+			y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
 		}
 		else {
-			AggregateOperator aggregateOpperator = reportXAxisField.getAggregateOpperator();
-			if(!reportXAxisField.getAggregateOpperator().getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
-				xAxisField = aggregateOpperator.getSelectField(xAxisField);
+			AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
+			if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 			}
 			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
 		}

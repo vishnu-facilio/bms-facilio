@@ -153,7 +153,7 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);

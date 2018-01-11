@@ -2117,6 +2117,13 @@ public class FieldFactory {
 		xAxis.setColumnName("X_AXIS");
 		xAxis.setModule(module);
 		fields.add(xAxis);
+		
+		FacilioField xAxisaggregateFunction = new FacilioField();
+		xAxisaggregateFunction.setName("xAxisaggregateFunction");
+		xAxisaggregateFunction.setDataType(FieldType.NUMBER);
+		xAxisaggregateFunction.setColumnName("X_AGGREGATE_FUNCTION");
+		xAxisaggregateFunction.setModule(module);
+		fields.add(xAxisaggregateFunction);
 
 		FacilioField y1Axis = new FacilioField();
 		y1Axis.setName("y1Axis");
@@ -2124,21 +2131,42 @@ public class FieldFactory {
 		y1Axis.setColumnName("Y1_AXIS");
 		y1Axis.setModule(module);
 		fields.add(y1Axis);
-
+		
+		FacilioField y1AxisaggregateFunction = new FacilioField();
+		y1AxisaggregateFunction.setName("y1AxisaggregateFunction");
+		y1AxisaggregateFunction.setDataType(FieldType.NUMBER);
+		y1AxisaggregateFunction.setColumnName("Y1_AGGREGATE_FUNCTION");
+		y1AxisaggregateFunction.setModule(module);
+		fields.add(y1AxisaggregateFunction);
+		
 		FacilioField y2Axis = new FacilioField();
 		y2Axis.setName("y2Axis");
 		y2Axis.setDataType(FieldType.NUMBER);
 		y2Axis.setColumnName("Y2_AXIS");
 		y2Axis.setModule(module);
 		fields.add(y2Axis);
-
+		
+		FacilioField y2AxisaggregateFunction = new FacilioField();
+		y2AxisaggregateFunction.setName("y2AxisaggregateFunction");
+		y2AxisaggregateFunction.setDataType(FieldType.NUMBER);
+		y2AxisaggregateFunction.setColumnName("Y2_AGGREGATE_FUNCTION");
+		y2AxisaggregateFunction.setModule(module);
+		fields.add(y2AxisaggregateFunction);
+		
 		FacilioField y3Axis = new FacilioField();
 		y3Axis.setName("y3Axis");
 		y3Axis.setDataType(FieldType.NUMBER);
 		y3Axis.setColumnName("Y3_AXIS");
 		y3Axis.setModule(module);
 		fields.add(y3Axis);
-
+		
+		FacilioField y3AxisaggregateFunction = new FacilioField();
+		y3AxisaggregateFunction.setName("y3AxisaggregateFunction");
+		y3AxisaggregateFunction.setDataType(FieldType.NUMBER);
+		y3AxisaggregateFunction.setColumnName("Y3_AGGREGATE_FUNCTION");
+		y3AxisaggregateFunction.setModule(module);
+		fields.add(y3AxisaggregateFunction);
+		
 		FacilioField isComparisionReport = new FacilioField();
 		isComparisionReport.setName("isComparisionReport");
 		isComparisionReport.setDataType(FieldType.NUMBER);
@@ -2175,13 +2203,6 @@ public class FieldFactory {
 		formulaFieldId.setModule(module);
 		fields.add(formulaFieldId);
 		
-		FacilioField aggregateFunction = new FacilioField();
-		aggregateFunction.setName("aggregateFunction");
-		aggregateFunction.setDataType(FieldType.NUMBER);
-		aggregateFunction.setColumnName("AGGREGATE_FUNCTION");
-		aggregateFunction.setModule(module);
-		fields.add(aggregateFunction);
-
 		return fields;
 	}
 	public static List<FacilioField> getReportFormulaFieldFields() {

@@ -12,7 +12,6 @@ public class ReportFieldContext {
 	Long id;
 	Long moduleFieldId;
 	Long formulaFieldId;
-	Integer aggregateFunction;
 	ReportFormulaFieldContext reportFormulaContext;
 	FacilioField moduleField;
 	Boolean isFormulaField;
@@ -75,19 +74,5 @@ public class ReportFieldContext {
 	}
 	public void setFormulaFieldId(Long formulaFieldId) {
 		this.formulaFieldId = formulaFieldId;
-	}
-	public Integer getAggregateFunction() {
-		return aggregateFunction;
-	}
-	public void setAggregateFunction(Integer aggregateFunction) {
-		this.aggregateFunction = aggregateFunction;
-	}
-	public AggregateOperator getAggregateOpperator() {
-		if (getAggregateFunction() != null) {
-			return AggregateOperator.getAggregateOperator(getAggregateFunction());
-		}
-		else {
-			return AggregateOperator.getAggregateOperator(1);
-		}
 	}
 }

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+
 
 public class ReportContext1 {
 	
@@ -17,12 +19,17 @@ public class ReportContext1 {
 	Integer chartType;
 	Long xAxis;
 	ReportFieldContext xAxisField;
+	Integer xAxisaggregateFunction;
 	Long y1Axis;
 	ReportFieldContext y1AxisField;
+	Integer y1AxisaggregateFunction;
 	Long y2Axis;
 	ReportFieldContext y2AxisField;
+	Integer y2AxisaggregateFunction;
 	Long y3Axis;
 	ReportFieldContext y3AxisField;
+	Integer y3AxisaggregateFunction;
+	
 	Boolean isComparisionReport;
 	String xAxisLegend;
 	List<ReportCriteriaContext> reportCriteriaContexts;
@@ -30,6 +37,65 @@ public class ReportContext1 {
 	
 	List<ReportThreshold> reportThresholds;
 	
+	public AggregateOperator getXAxisAggregateOpperator() {
+		if (getxAxisaggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getxAxisaggregateFunction());
+		}
+		else {
+			return AggregateOperator.getAggregateOperator(1);
+		}
+	}
+	
+	public AggregateOperator getY1AxisAggregateOpperator() {
+		if (getY1AxisaggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getY1AxisaggregateFunction());
+		}
+		else {
+			return AggregateOperator.getAggregateOperator(1);
+		}
+	}
+	public AggregateOperator getY2AxisAggregateOpperator() {
+		if (getY2AxisaggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getY2AxisaggregateFunction());
+		}
+		else {
+			return AggregateOperator.getAggregateOperator(1);
+		}
+	}
+	public AggregateOperator getY3AxisAggregateOpperator() {
+		if (getY3AxisaggregateFunction() != null) {
+			return AggregateOperator.getAggregateOperator(getY3AxisaggregateFunction());
+		}
+		else {
+			return AggregateOperator.getAggregateOperator(1);
+		}
+	}
+	
+	
+	public Integer getxAxisaggregateFunction() {
+		return xAxisaggregateFunction;
+	}
+	public void setxAxisaggregateFunction(Integer xAxisaggregateFunction) {
+		this.xAxisaggregateFunction = xAxisaggregateFunction;
+	}
+	public Integer getY1AxisaggregateFunction() {
+		return y1AxisaggregateFunction;
+	}
+	public void setY1AxisaggregateFunction(Integer y1AxisaggregateFunction) {
+		this.y1AxisaggregateFunction = y1AxisaggregateFunction;
+	}
+	public Integer getY2AxisaggregateFunction() {
+		return y2AxisaggregateFunction;
+	}
+	public void setY2AxisaggregateFunction(Integer y2AxisaggregateFunction) {
+		this.y2AxisaggregateFunction = y2AxisaggregateFunction;
+	}
+	public Integer getY3AxisaggregateFunction() {
+		return y3AxisaggregateFunction;
+	}
+	public void setY3AxisaggregateFunction(Integer y3AxisaggregateFunction) {
+		this.y3AxisaggregateFunction = y3AxisaggregateFunction;
+	}
 	
 	public List<ReportThreshold> getReportThresholds() {
 		return reportThresholds;
