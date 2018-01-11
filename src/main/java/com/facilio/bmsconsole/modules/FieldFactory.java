@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
@@ -12,6 +11,13 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getLookupFieldsModule();
 
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELDID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+		
 		FacilioField specialType = new FacilioField();
 		specialType.setName("specialType");
 		specialType.setDataType(FieldType.STRING);
@@ -26,6 +32,27 @@ public class FieldFactory {
 		lookupModuleId.setModule(module);
 		fields.add(lookupModuleId);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getNumberFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getNumberFieldModule();
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELDID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+		
+		FacilioField unit = new FacilioField();
+		unit.setName("unit");
+		unit.setDataType(FieldType.STRING);
+		unit.setColumnName("UNIT");
+		unit.setModule(module);
+		fields.add(unit);
+		
 		return fields;
 	}
 

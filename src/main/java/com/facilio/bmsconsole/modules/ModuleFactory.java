@@ -73,6 +73,15 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 	
+	public static FacilioModule getNumberFieldModule() {
+		FacilioModule numberModule = new FacilioModule();
+		numberModule.setName("numberField");
+		numberModule.setDisplayName("Number Fields");
+		numberModule.setTableName("NumberFields");
+		numberModule.setExtendModule(getFieldsModule());
+		return numberModule;
+	}
+	
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("spacecategoryreading");
