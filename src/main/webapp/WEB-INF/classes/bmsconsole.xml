@@ -1196,6 +1196,15 @@
 				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
+		
+		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="fields">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+			</result>
+		</action>
 
 		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="updateField">
