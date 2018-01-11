@@ -4,7 +4,3 @@ target/
 .classpath
 .project
 .settings/
-src/main/java/com/facilio/bmsconsole/modules/FieldFactory.java
-src/main/java/com/facilio/bmsconsole/modules/ModuleFactory.java
-src/main/resources/db/migration/V1__initial_version.sql
-src/main/resources/db/migration/V1__initial_version.sql
