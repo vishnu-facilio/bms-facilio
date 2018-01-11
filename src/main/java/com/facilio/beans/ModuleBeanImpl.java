@@ -20,6 +20,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -28,6 +29,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -272,51 +274,100 @@ public class ModuleBeanImpl implements ModuleBean {
 														.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ? AND IS_MAIN_FIELD = true", getOrgId(), module.getModuleId());
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		
-		if(fieldProps != null && !fieldProps.isEmpty()) {
-			Map<String, Object> fieldProp = fieldProps.get(0);
-			Map<Long, FacilioModule> moduleMap = splitModules(module);
-			return getFieldFromProps(fieldProp, moduleMap);
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		if(fields != null && !fields.isEmpty()) {
+			return fields.get(0);
 		}
 		return null;
 	}
 
-	private FacilioField getFieldFromProps(Map<String, Object> prop, Map<Long, FacilioModule> moduleMap) throws Exception {
-		Long extendedModuleId = (Long) prop.get("extendedModuleId");
-		if(extendedModuleId != null) {
-			FacilioModule extendedModule = moduleMap.get(extendedModuleId);
-			if(extendedModule == null) {
-				throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
-			}
-			prop.put("extendedModule", extendedModule);
-		}
-		prop.put("module", moduleMap.get(prop.get("moduleId")));
+	private ArrayList<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
 		
-		if((int)prop.get("dataType") == FieldType.LOOKUP.getTypeAsInt()) {
-			prop.putAll(getLookupField((long) prop.get("fieldId")));
-			return FieldUtil.getAsBeanFromMap(prop, LookupField.class);
-		}
-		else {
-			return FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
-		}
-	}
-	
-	private Map<String, Object> getLookupField(long fieldId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getLookupFieldFields())
-				.table("LookupFields")
-				.andCustomWhere("FIELDID = ?", fieldId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			Map<String, Object> prop = props.get(0);
-			Long lookupModuleId = (Long) prop.get("lookupModuleId");
-			if(lookupModuleId != null) {
-				FacilioModule lookupModule = getMod(lookupModuleId);
-				prop.put("lookupModule", lookupModule);
+			Map<FieldType, List<Long>> extendedIds = new HashMap<>();
+			for (Map<String, Object> prop : props) {
+				FieldType type = FieldType.getCFType((int) prop.get("dataType"));
+				List<Long> idList = extendedIds.get(type);
+				if(idList == null) {
+					idList = new ArrayList<>();
+					extendedIds.put(type, idList);
+				}
+				idList.add((Long) prop.get("fieldId"));
 			}
-			return prop;
+			Map<FieldType, Map<Long, Map<String, Object>>> extendedPropsMap = getTypeWiseExtendedProps(extendedIds);
+			
+			ArrayList<FacilioField> fields = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				Long extendedModuleId = (Long) prop.get("extendedModuleId");
+				if(extendedModuleId != null) {
+					FacilioModule extendedModule = moduleMap.get(extendedModuleId);
+					if(extendedModule == null) {
+						throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
+					}
+					prop.put("extendedModule", extendedModule);
+				}
+				prop.put("module", moduleMap.get(prop.get("moduleId")));
+				
+				FieldType type = FieldType.getCFType((int) prop.get("dataType"));
+				switch(type) {
+					case NUMBER:
+					case DECIMAL:
+						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
+						break;
+					case LOOKUP:
+						prop.putAll(extendedPropsMap.get(type).get((Long) prop.get("fieldId")));
+						Long lookupModuleId = (Long) prop.get("lookupModuleId");
+						if(lookupModuleId != null) {
+							FacilioModule lookupModule = getMod(lookupModuleId);
+							prop.put("lookupModule", lookupModule);
+						}
+						
+						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
+						break;
+					case MISC:
+					case STRING:
+					case BOOLEAN:
+					case DATE:
+					case DATE_TIME:
+						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
+						break;
+				}
+			}
+			return fields;
 		}
 		return null;
+	}
+	
+	private Map<FieldType, Map<Long, Map<String, Object>>> getTypeWiseExtendedProps(Map<FieldType, List<Long>> extendedIdList) throws Exception {
+		Map<FieldType, Map<Long, Map<String, Object>>> extendedProps = new HashMap<>();
+		for(Map.Entry<FieldType, List<Long>> entry : extendedIdList.entrySet()) {
+			switch(entry.getKey()) {
+				case NUMBER:
+				case DECIMAL:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), entry.getValue()));
+					break;
+				case LOOKUP:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
+					break;
+			}
+		}
+		return extendedProps;
+	}
+	
+	private Map<Long, Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, List<Long> fieldIds) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, Map<String, Object>> propsMap = new HashMap<>();
+		for (Map<String, Object> prop : props) {
+			propsMap.put((Long) prop.get("fieldId"), prop);
+		}
+		return propsMap;
 	}
 	
 	@Override
@@ -333,12 +384,7 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table("Fields")
 														.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
-		ArrayList<FacilioField> fields = new ArrayList<>();
-		if(fieldProps != null && !fieldProps.isEmpty()) {
-			for(Map<String, Object> fieldProp : fieldProps) {
-				fields.add(getFieldFromProps(fieldProp, moduleMap));
-			}
-		}
+		ArrayList<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
 	}
 	
@@ -354,7 +400,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<String, Object> fieldProp = fieldProps.get(0);
 			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
 			Map<Long, FacilioModule> moduleMap = splitModules(module);
-			return getFieldFromProps(fieldProp, moduleMap);
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			return fields.get(0);
 		}
 		return null;
 	}
@@ -367,11 +414,10 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table("Fields")
 														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ? AND Fields.MODULEID = ?", getOrgId(),fieldName, module.getModuleId());
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
-		
-		if(fieldProps != null && !fieldProps.isEmpty()) {
-			Map<String, Object> fieldProp = fieldProps.get(0);
-			Map<Long, FacilioModule> moduleMap = splitModules(module);
-			return getFieldFromProps(fieldProp, moduleMap);
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		if(fields != null && !fields.isEmpty()) {
+			return fields.get(0);
 		}
 		return null;
 	}
@@ -387,11 +433,33 @@ public class ModuleBeanImpl implements ModuleBean {
 															.addRecord(fieldProps);
 			
 			insertBuilder.save();
-			return (long) fieldProps.get("id");
+			long fieldId = (long) fieldProps.get("id"); 
+			fieldProps.put("fieldId", fieldId);
+			
+			switch(field.getDataTypeEnum()) {
+				case NUMBER:
+				case DECIMAL:
+					addExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), fieldProps);
+					break;
+				case LOOKUP:
+					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
+					break;
+			}
+			
+			return fieldId;
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
 		}
+	}
+	
+	private void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> props) throws SQLException, RuntimeException {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.addRecord(props);
+
+		insertBuilder.save();
 	}
 	
 	@Override
