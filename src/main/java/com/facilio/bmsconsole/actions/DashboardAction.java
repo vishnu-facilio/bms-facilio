@@ -232,8 +232,9 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
 		FacilioField y1AxisField = null;
+		ReportFieldContext reportY1AxisField;
 		if(reportContext.getY1Axis() != null) {
-			ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1Axis());
+			reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1Axis());
 			AggregateOperator y1AggregateOpperator = reportContext.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();
 			y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
@@ -244,10 +245,12 @@ public class DashboardAction extends ActionSupport {
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 			}
 			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
+			reportY1AxisField = new ReportFieldContext();
+			reportY1AxisField.setModuleField(y1AxisField);
 		}
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
-		
+		reportContext.setY1AxisField(reportY1AxisField);
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
