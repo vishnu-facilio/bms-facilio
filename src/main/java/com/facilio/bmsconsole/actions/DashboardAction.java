@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
@@ -189,20 +190,17 @@ public class DashboardAction extends ActionSupport {
 		insertBuilder.save();
 
 		reportContext.setId((Long) props.get("id"));
-		if(reportContext.getReportCriteriaIds() != null) {
+		if(reportContext.getCriteria() != null) {
+			
+			Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
 			insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReportCriteria().getTableName())
 					.fields(FieldFactory.getReportCriteriaFields());
 			
-			List<Map<String, Object>> criteriaProps = new ArrayList<>();
-			for(Long criteriaId:reportContext.getReportCriteriaIds()) {
-
-				Map<String, Object> prop = new HashMap<String, Object>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("criteriaId", criteriaId);
-				criteriaProps.add(prop);
-			}
-			insertBuilder.addRecords(criteriaProps).save();
+			Map<String, Object> prop = new HashMap<String, Object>();
+			prop.put("reportId", reportContext.getId());
+			prop.put("criteriaId", criteriaId);
+			insertBuilder.addRecord(prop).save();
 		}
 		return SUCCESS;
 	}

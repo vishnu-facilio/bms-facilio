@@ -9,6 +9,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 
 public class ReportContext1 {
@@ -35,6 +36,16 @@ public class ReportContext1 {
 	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<ReportUserFilterContext> reportUserFilters;
 	List<Long> reportCriteriaIds;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
+
+	Criteria criteria;
 	
 	List<ReportThreshold> reportThresholds;
 	
