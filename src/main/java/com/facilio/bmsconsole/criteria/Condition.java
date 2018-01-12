@@ -212,4 +212,10 @@ public class Condition {
 		dynamicOperators.add(DateOperators.NEXT_HOURS);
 		return dynamicOperators;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return fieldName+"::"+operator.getOperator()+"::"+value;
+	}
 }
