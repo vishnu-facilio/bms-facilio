@@ -197,10 +197,10 @@ public class DashboardAction extends ActionSupport {
 				.fields(fields);
 
 		reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
-		if(reportContext.getY1AxisField() != null) {
+		if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
 			reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
 		}
-		if(reportContext.getGroupByField() != null) {
+		if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
 			reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
 		}
 		
@@ -377,9 +377,9 @@ public class DashboardAction extends ActionSupport {
 		builder.select(fields);
 		builder.groupBy(groupByString);
 		
-		if(!module.getName().equals(fieldModule.getName())) {
-			builder.innerJoin(fieldModule.getTableName())
-				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
+		if(module.getExtendModule() != null) {
+			builder.innerJoin(module.getExtendModule().getTableName())
+				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 		}
 		Criteria criteria = null;
 		String energyMeterValue = "";
