@@ -10,14 +10,10 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -26,8 +22,6 @@ import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 
 public class StoreExcelFileCommand implements Command {
 
@@ -51,10 +45,13 @@ public class StoreExcelFileCommand implements Command {
 		template.setType(UserTemplate.Type.EXCEL);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		long templateId = TemplateAPI.addExcelTemplate(orgId,template,fileName);
+		template.setId(templateId);
+		context.put(BillContext.ContextNames.EXCELOBJECT, template);
 		HandlePlaceHolders(excelFile,templateId);
+		//HandlePlaceHoldersWithStream(excelFile,templateId);
 		return false;
 	}
-
+	
 	public void HandlePlaceHolders(File file, long templateId) throws InvalidFormatException, IOException, SQLException, RuntimeException
 	{
 		XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -83,8 +80,8 @@ public class StoreExcelFileCommand implements Command {
 						 if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
 				            {
 				            		String cellfinder = "S_"+sheet.getSheetName()+"_R_"+row.getRowNum()+"_C_"+cell.getColumnIndex();
-				            		String cellval = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
-				            		placeHolders.put(cellfinder, cellval);
+				            		String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
+				            		placeHolders.put(cellfinder, meterInfo);
 				            }
 					}
 				}

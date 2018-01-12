@@ -100,9 +100,9 @@ public class TenantBillingAPI {
 			rs = pstmt.executeQuery();
 			while(rs.next())
 			{
-				String cellId = rs.getString("CELLDATA");
-				String placeHolder = rs.getString("PLACEHOLDERNAME");
-				placeHolders.put(cellId, placeHolder);
+				String cellfinder = rs.getString("CELLDATA");
+				String meterInfo = rs.getString("PLACEHOLDERNAME");
+				placeHolders.put(cellfinder, meterInfo);
 			}
 			
 		}catch(SQLException | RuntimeException e) {
@@ -262,12 +262,12 @@ public class TenantBillingAPI {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO Excel_PlaceHolders(TEMPLATEID,PLACEHOLDERNAME,CELLDATA) VALUES(?,?,?)");
-			for(String key: placeHolders.keySet())
+			for(String cellfinder: placeHolders.keySet())
 			{
-				String celldata = placeHolders.get(key);
+				String meterInfo = placeHolders.get(cellfinder);
 				pstmt.setLong(1, templateId);
-				pstmt.setString(2,key);
-				pstmt.setString(3,celldata);
+				pstmt.setString(2,meterInfo);
+				pstmt.setString(3,cellfinder);
 				pstmt.addBatch();
 			}
 			pstmt.executeBatch();

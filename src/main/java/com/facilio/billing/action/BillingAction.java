@@ -24,6 +24,8 @@ public class BillingAction extends ActionSupport {
 		context.put(BillContext.ContextNames.CONTENTTYPE, getExcelFileContentType());
 		Chain handleExcelFileUploadChain = BillContext.HandleExcelFileUploadChain();
 		handleExcelFileUploadChain.execute(context);
+		ExcelTemplate excelTemplate = (ExcelTemplate) context.get(BillContext.ContextNames.EXCELOBJECT);
+		setExcelTemplate(excelTemplate);
 		System.out.println("##### Generate Template End Request");
 		return SUCCESS;
 	}
@@ -113,6 +115,17 @@ public class BillingAction extends ActionSupport {
 		this.excelFileContentType = excelFileContentType;
 	}
 	
+	ExcelTemplate excelTemplate;
+	
+	
+	public ExcelTemplate getExcelTemplate() {
+		return excelTemplate;
+	}
+
+	public void setExcelTemplate(ExcelTemplate excelTemplate) {
+		this.excelTemplate = excelTemplate;
+	}
+
 	List<ExcelTemplate> excelTemplates;
 
 	public List<ExcelTemplate> getExcelTemplates() {

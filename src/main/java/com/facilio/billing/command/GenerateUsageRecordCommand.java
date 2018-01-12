@@ -2,26 +2,16 @@ package com.facilio.billing.command;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.SQLException;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -30,7 +20,6 @@ import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -64,20 +53,20 @@ public class GenerateUsageRecordCommand implements Command {
 			XSSFWorkbook workbook = new XSSFWorkbook(ins);
 			
 			System.out.println("##### workbook created #####");
-			for(String key : placeHolders.keySet())
+			for(String cellfinder : placeHolders.keySet())
 			{
-				String placeHolder = placeHolders.get(key);
-				System.out.println("### PlaceHoder Key  : "+key +" : Value : "+placeHolder);
-				if(key.indexOf(".") != -1)
+				String meterInfo = placeHolders.get(cellfinder);
+				System.out.println("### PlaceHoder cellfinder  : "+cellfinder +" : meterInfo : "+meterInfo);
+				if(meterInfo.indexOf(".") != -1)
 				{
-					String meterName = key.substring(0,key.indexOf("."));
-					String paramName = key.substring(key.indexOf(".")+1, key.indexOf("#")); 
-					String dataRequired = key.substring(key.indexOf("#")+1, key.length());
+					String meterName = meterInfo.substring(0,meterInfo.indexOf("."));
+					String paramName = meterInfo.substring(meterInfo.indexOf(".")+1, meterInfo.indexOf("#")); 
+					String dataRequired = meterInfo.substring(meterInfo.indexOf("#")+1, meterInfo.length());
 					long meterId = TenantBillingAPI.GetMeterId(meterName);
 
-					String sheetName = placeHolder.substring(placeHolder.indexOf("S_")+2, placeHolder.indexOf("_R"));
-					String rowNumStr = placeHolder.substring(placeHolder.indexOf("_R_")+3, placeHolder.indexOf("_C"));
-					String colNumStr = placeHolder.substring(placeHolder.indexOf("_C_")+3, placeHolder.length());
+					String sheetName = cellfinder.substring(cellfinder.indexOf("S_")+2, cellfinder.indexOf("_R"));
+					String rowNumStr = cellfinder.substring(cellfinder.indexOf("_R_")+3, cellfinder.indexOf("_C"));
+					String colNumStr = cellfinder.substring(cellfinder.indexOf("_C_")+3, cellfinder.length());
 					
 					int rowN = Integer.parseInt(rowNumStr);
 					int cellN = Integer.parseInt(colNumStr);
