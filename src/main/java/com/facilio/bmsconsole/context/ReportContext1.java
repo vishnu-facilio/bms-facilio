@@ -18,6 +18,7 @@ public class ReportContext1 {
 	Long parentFolderId;
 	String name;
 	Integer chartType;
+	Integer secChartType;
 	Long xAxis;
 	ReportFieldContext xAxisField;
 	Integer xAxisaggregateFunction;
@@ -216,6 +217,14 @@ public class ReportContext1 {
 		}
 		return null;
 	}
+	
+	public ReportChartType getReportSecChartType() {
+		if(getSecChartType() != null) {
+			return ReportChartType.getWidgetChartType(getSecChartType());
+		}
+		return null;
+	}
+	
 	public Long getId() {
 		return Id;
 	}
@@ -243,6 +252,15 @@ public class ReportContext1 {
 
 	public void setChartType(Integer chartType) {
 		this.chartType = chartType;
+	}
+	
+	public Integer getSecChartType() {
+		return secChartType;
+	}
+
+
+	public void setSecChartType(Integer secChartType) {
+		this.secChartType = secChartType;
 	}
 
 
@@ -324,25 +342,29 @@ public class ReportContext1 {
 
 
 	public enum ReportChartType {
-		DOUGHNUT(1,"doughnut"),
-		STACKBAR(2,"stackbar"),
-		PROGRESS(3,"progress"),
-		BAR(4,"bar");
+		PIE (1, "pie", 1, 1),
+		DOUGHNUT (2, "doughnut", 1, 1),
+		BAR (3, "bar", 1, 1),
+		STACKED_BAR (4, "stackedbar", 1, 2),
+		GROUPED_BAR (5, "groupedbar", 1, 2),
+		LINE (6, "line", 1, 1),
+		AREA (7, "area", 1, 1),
+		FUNNEL (8, "funel", 1, 1),
+		PROGRESS (9, "progress", 1, 1),
+		GAUGE (10, "gauge", 1, 1);
 		
 		private int value;
 		private String name;
 		private int minHeight;
 		private int minWidth;
+		private int minXAxis = 1;
+		private int minYAxis = 1;
 		
-		ReportChartType(int value,String name) {
+		ReportChartType(int value,String name,int minXAxis,int minYAxis) {
 			this.value = value;
 			this.name = name;
-		}
-		ReportChartType(int value,String name,int minHeight,int minWidth) {
-			this.value = value;
-			this.name = name;
-			this.minHeight = minHeight;
-			this.minWidth = minWidth;
+			this.minXAxis = minXAxis;
+			this.minYAxis = minYAxis;
 		}
 		
 		public int getValue() {

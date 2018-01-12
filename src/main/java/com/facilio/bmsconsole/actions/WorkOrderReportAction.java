@@ -146,6 +146,15 @@ public class WorkOrderReportAction extends ActionSupport {
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		
+		ReportFolderContext rootFolder = new ReportFolderContext();
+		rootFolder.setName("Root");
+		rootFolder.setId(-1);
+		List<ReportContext1> rootReports = DashboardUtil.getReportsFormReportFolderId(-1L);
+		rootFolder.setReports(rootReports);
+		
+		reportFolders.add(rootFolder);
+		
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
 				ReportFolderContext reportFolder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
