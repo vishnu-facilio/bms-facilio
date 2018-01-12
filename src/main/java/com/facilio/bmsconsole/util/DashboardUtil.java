@@ -471,12 +471,14 @@ public class DashboardUtil {
 					childrenArray.add(reportContext.widgetJsonObject());
 				}
 				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("id", reportFolder.getId());
 				dashboardJson.put("label", name);
 				dashboardJson.put("children", childrenArray);
 				result.add(dashboardJson);
 			}
 			else {
 				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("id", reportFolder.getId());
 				dashboardJson.put("label", name);
 				dashboardJson.put("children", childrenArray);
 				result.add(dashboardJson);
