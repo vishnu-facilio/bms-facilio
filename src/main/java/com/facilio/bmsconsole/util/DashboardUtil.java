@@ -172,6 +172,41 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	public static ReportFolderContext getDefaultReportFolder(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportFolderFields())
+				.table(ModuleFactory.getReportFolder().getTableName())
+				.andCustomWhere("MODULEID = ?", module.getModuleId())
+				.andCustomWhere(ModuleFactory.getReportFolder().getTableName()+".NAME = ?", "Default");
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			ReportFolderContext reportFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFolderContext.class);
+			return reportFolderContext;
+		}
+		else {
+			ReportFolderContext reportFolderContext = new ReportFolderContext();
+			reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			reportFolderContext.setModuleId(module.getModuleId());
+			reportFolderContext.setName("Default");
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReportFolder().getTableName())
+					.fields(FieldFactory.getReportFolderFields());
+			
+			Map<String, Object> props1 = FieldUtil.getAsProperties(reportFolderContext);
+			insertBuilder.addRecord(props1);
+			insertBuilder.save();
+			
+			long folderId = (Long) props1.get("id");
+			reportFolderContext.setId(folderId);
+			return reportFolderContext;
+		}
+	}
 	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetChartFields();
@@ -245,30 +280,37 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-	public static ReportFieldContext getReportField(Long fieldId) throws Exception {
+	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		
-		List<FacilioField> fields = FieldFactory.getReportFieldFields();
-		fields.addAll(FieldFactory.getReportFormulaFieldFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(ModuleFactory.getReportField().getTableName())
-				.leftJoin(ModuleFactory.getReportFormulaField().getTableName())
-				.on(ModuleFactory.getReportField().getTableName()+".FORMULA_FIELD_ID="+ModuleFactory.getReportFormulaField().getTableName()+".ID")
-				.andCustomWhere(ModuleFactory.getReportField().getTableName()+".ID = ?", fieldId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class);
-			
-			if(reportFieldContext != null && reportFieldContext.getIsFormulaField()) {
-				ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFormulaFieldContext.class);
-				reportFieldContext.setReportFormulaContext(reportFormulaFieldContext);
-			}
-			return reportFieldContext;
+		if (reportField.getId() == null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField ff = modBean.getField(reportField.getModuleFieldId());
+			reportField.setModuleField(ff);
+			return reportField;
 		}
-		return null;
-		
+		else {
+			List<FacilioField> fields = FieldFactory.getReportFieldFields();
+			fields.addAll(FieldFactory.getReportFormulaFieldFields());
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table(ModuleFactory.getReportField().getTableName())
+					.leftJoin(ModuleFactory.getReportFormulaField().getTableName())
+					.on(ModuleFactory.getReportField().getTableName()+".FORMULA_FIELD_ID="+ModuleFactory.getReportFormulaField().getTableName()+".ID")
+					.andCustomWhere(ModuleFactory.getReportField().getTableName()+".ID = ?", reportField.getId());
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class);
+				
+				if(reportFieldContext != null && reportFieldContext.getIsFormulaField()) {
+					ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFormulaFieldContext.class);
+					reportFieldContext.setReportFormulaContext(reportFormulaFieldContext);
+				}
+				return reportFieldContext;
+			}
+			return null;
+		}
 	}
 	public static ReportFieldContext addOrGetReportfield(ReportFieldContext reportFieldContext) throws Exception {
 		

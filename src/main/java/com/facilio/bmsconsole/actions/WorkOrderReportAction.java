@@ -129,18 +129,26 @@ public class WorkOrderReportAction extends ActionSupport {
 		this.allWorkOrderJsonReports = allWorkOrderJsonReports;
 	}
 
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	public String getAllWorkOrderReports() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule("workorder");
+		FacilioModule module = modBean.getModule(moduleName);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFolderFields())
 				.table(ModuleFactory.getReportFolder().getTableName())
 //				.innerJoin(ModuleFactory.getReport().getTableName())
 //				.on(ModuleFactory.getReportFolder().getTableName()+".ID = "+ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID")
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId());
-				//.andCustomWhere("MODULEID = ?", module.getModuleId());
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
 			
 		
 		List<Map<String, Object>> props = selectBuilder.get();

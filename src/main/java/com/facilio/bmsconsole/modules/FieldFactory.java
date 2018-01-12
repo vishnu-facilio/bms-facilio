@@ -2128,6 +2128,13 @@ public class FieldFactory {
 		name.setModule(module);
 		fields.add(name);
 		
+		FacilioField description = new FacilioField();
+		description.setName("description");
+		description.setDataType(FieldType.STRING);
+		description.setColumnName("DESCRIPTION");
+		description.setModule(module);
+		fields.add(description);
+		
 		FacilioField chartType = new FacilioField();
 		chartType.setName("chartType");
 		chartType.setDataType(FieldType.NUMBER);

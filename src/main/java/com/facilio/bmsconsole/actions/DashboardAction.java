@@ -195,6 +195,12 @@ public class DashboardAction extends ActionSupport {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReport().getTableName())
 				.fields(fields);
+		
+		if (reportContext.getParentFolderId() == null || reportContext.getParentFolderId() < 0) {
+			// if report parent folder not exists, mapping to default folder 
+			ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
+			reportContext.setParentFolderId(defaultFolder.getId());
+		}
 
 		reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
 		if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
@@ -251,7 +257,13 @@ public class DashboardAction extends ActionSupport {
 		}
 		return SUCCESS;
 	}
+	
 	public String addReportFolder() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		reportFolderContext.setModuleId(module.getModuleId());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReportFolder().getTableName())
@@ -266,13 +278,17 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getData() throws Exception {
 		
-		reportContext = DashboardUtil.getReportContext(reportId);
+		if (reportContext == null) {
+			reportContext = DashboardUtil.getReportContext(reportId);
+			// generate preview report
+		}
+		
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
 		
-		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
+		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		
@@ -295,7 +311,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		if(reportContext.getY1Axis() != null) {
-			reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1Axis());
+			reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
 			AggregateOperator y1AggregateOpperator = reportContext.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();
 			y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
@@ -365,7 +381,7 @@ public class DashboardAction extends ActionSupport {
 //		}
 		String groupByString = "label";
 		if(reportContext.getGroupBy() != null) {
-			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupBy());
+			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupByField());
 			reportContext.setGroupByField(reportGroupByField);
 			FacilioField groupByField = reportGroupByField.getField();
 			groupByField.setName("groupBy");
@@ -513,7 +529,7 @@ public class DashboardAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
 		
-		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxis());
+		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		xAxisField.setName("label");

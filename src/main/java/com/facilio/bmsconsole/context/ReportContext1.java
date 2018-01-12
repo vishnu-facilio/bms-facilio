@@ -17,6 +17,7 @@ public class ReportContext1 {
 	Long Id;
 	Long parentFolderId;
 	String name;
+	String description;
 	Integer chartType;
 	Integer secChartType;
 	Long xAxis;
@@ -45,6 +46,10 @@ public class ReportContext1 {
 	}
 
 	public ReportFieldContext getGroupByField() {
+		if (groupByField == null && groupBy != null) {
+			groupByField = new ReportFieldContext();
+			groupByField.setId(groupBy);
+		}
 		return groupByField;
 	}
 
@@ -175,24 +180,40 @@ public class ReportContext1 {
 		reportThresholds.add(reportThreshold);
 	}
 	public ReportFieldContext getxAxisField() {
+		if (xAxisField == null && xAxis != null) {
+			xAxisField = new ReportFieldContext();
+			xAxisField.setId(xAxis);
+		}
 		return xAxisField;
 	}
 	public void setxAxisField(ReportFieldContext xAxisField) {
 		this.xAxisField = xAxisField;
 	}
 	public ReportFieldContext getY1AxisField() {
+		if (y1AxisField == null && y1Axis != null) {
+			y1AxisField = new ReportFieldContext();
+			y1AxisField.setId(y1Axis);
+		}
 		return y1AxisField;
 	}
 	public void setY1AxisField(ReportFieldContext y1AxisField) {
 		this.y1AxisField = y1AxisField;
 	}
 	public ReportFieldContext getY2AxisField() {
+		if (y2AxisField == null && y2Axis != null) {
+			y2AxisField = new ReportFieldContext();
+			y2AxisField.setId(y2Axis);
+		}
 		return y2AxisField;
 	}
 	public void setY2AxisField(ReportFieldContext y2AxisField) {
 		this.y2AxisField = y2AxisField;
 	}
 	public ReportFieldContext getY3AxisField() {
+		if (y3AxisField == null && y3Axis != null) {
+			y3AxisField = new ReportFieldContext();
+			y3AxisField.setId(y3Axis);
+		}
 		return y3AxisField;
 	}
 	public void setY3AxisField(ReportFieldContext y3AxisField) {
@@ -209,6 +230,12 @@ public class ReportContext1 {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public ReportChartType getReportChartType() {

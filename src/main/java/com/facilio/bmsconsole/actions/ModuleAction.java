@@ -10,6 +10,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -97,6 +98,11 @@ public class ModuleAction extends ActionSupport {
 			operators.put(ftype.name(), ftype.getOperators());
 		}
 		
+		JSONObject reportOperators = new JSONObject();
+		reportOperators.put("DateAggregateOperator", FormulaContext.DateAggregateOperator.values());
+		reportOperators.put("NumberAggregateOperator", FormulaContext.NumberAggregateOperator.values());
+		reportOperators.put("StringAggregateOperator", FormulaContext.StringAggregateOperator.values());
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioModule mod = modBean.getModule(getModuleName());
@@ -108,6 +114,7 @@ public class ModuleAction extends ActionSupport {
 		meta.put("displayName", displayName);
 		meta.put("fields", fields);
 		meta.put("operators", operators);
+		meta.put("reportOperators", reportOperators);
 		meta.put("workflowEvents", workflowEvents);
 		setMeta(meta);
 		
