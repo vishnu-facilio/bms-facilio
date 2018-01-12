@@ -505,12 +505,12 @@ public class AwsUtil
     	return certificateResult;
 	}
 
-	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgName){
-		String name = getIotKinesisTopic(orgName);
+	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName){
+		String name = getIotKinesisTopic(orgDomainName);
 		return AwsUtil.createIotToKinesis(name);
 	}
 
-	public static String getIotKinesisTopic(String orgName){
-    	return orgName;
+	public static String getIotKinesisTopic(String orgDomainName){
+    	return orgDomainName;
 	}
 }

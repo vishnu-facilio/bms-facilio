@@ -56,17 +56,18 @@ public class DeviceAction extends ActionSupport
 
 	public String configureOrg() {
 	    long orgId = AccountUtil.getCurrentOrg().getOrgId();
+
 		String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
 		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
 		String fileName = AwsUtil.getIotKinesisTopic(orgName);
 		String directoryName = "facilio/";
 
-		File file = new File(System.getProperty("user.home")+"/"+ fileName + ".zip");
+		File file = new File(System.getProperty("user.home")+"/fedge.zip");
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 
-			addToZip(out,directoryName + fileName+".crt", certificateResult.getCertificatePem());
-			addToZip(out,directoryName + fileName+"-private.key", certificateResult.getKeyPair().getPrivateKey());
-			addToZip(out,directoryName + fileName+"-public.key", certificateResult.getKeyPair().getPublicKey());
+			addToZip(out,directoryName + "facilio.crt", certificateResult.getCertificatePem());
+			addToZip(out,directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
+			addToZip(out,directoryName + "facilio-public.key", certificateResult.getKeyPair().getPublicKey());
 			out.finish();
 			out.flush();
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -79,7 +80,7 @@ public class DeviceAction extends ActionSupport
 
 		KinesisProcessor.startProcessor(orgId, orgName);
 
-		logger.info("Stared event processor for org : " + orgId);
+		logger.info("Started event processor for org : " + orgId);
 		return SUCCESS;
 	}
 

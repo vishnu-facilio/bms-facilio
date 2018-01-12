@@ -37,35 +37,35 @@ public class KinesisProcessor {
             List<Map<String, Object>> props = builder.get();
             for (Map<String, Object> prop : props) {
                 Long orgId = (Long) prop.get("orgId");
-                String orgName = (String) prop.get("domain");
-                startProcessor(orgId, orgName);
+                String orgDomainName = (String) prop.get("domain");
+                startProcessor(orgId, orgDomainName);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public static void startProcessor(long orgId, String orgName) {
+    public static void startProcessor(long orgId, String orgDomainName) {
         AmazonKinesis kinesis = AwsUtil.getKinesisClient();
         try {
-            if(orgName != null) {
-                kinesis.describeStream(orgName);
-                System.out.println("Starting kinesis processor for org : " + orgName + " id " + orgId);
-                initiateProcessFactory(orgId, orgName, "event");
-                initiateProcessFactory(orgId, orgName, "timeSeries");            }
+            if(orgDomainName != null) {
+                kinesis.describeStream(orgDomainName);
+                System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
+                initiateProcessFactory(orgId, orgDomainName, "event");
+                initiateProcessFactory(orgId, orgDomainName, "timeSeries");            }
         } catch (ResourceNotFoundException e){
-            System.out.println("Kinesis stream not found for org : " + orgName +" id "+ orgId);
+            System.out.println("Kinesis stream not found for org : " + orgDomainName +" id "+ orgId);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
     
     
-    private static void initiateProcessFactory(long orgId,String orgName,String type) {
+    private static void initiateProcessFactory(long orgId, String orgDomainName, String type) {
 
     	try {
 
-    		new Thread(() -> StreamProcessor.run(orgId, orgName, type, getProcessorFactory(orgId,orgName,type))).start();
+    		new Thread(() -> StreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId,orgDomainName,type))).start();
     	}
     	catch (Exception e){
     		e.printStackTrace();
@@ -73,16 +73,16 @@ public class KinesisProcessor {
 
     }
 
-    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgName,String type) {
+    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName,String type) {
 
     	switch(type){
 
     	case "event" :{
-    		return new EventProcessorFactory(orgId, orgName);
+    		return new EventProcessorFactory(orgId, orgDomainName);
     	}
     	case "timeSeries" :{
 
-    		return new TimeSeriesProcessorFactory(orgId, orgName);
+    		return new TimeSeriesProcessorFactory(orgId, orgDomainName);
     	}
 
     	}

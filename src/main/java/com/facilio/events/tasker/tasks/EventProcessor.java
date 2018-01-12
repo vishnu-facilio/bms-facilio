@@ -30,19 +30,19 @@ import java.util.Map;
 
 public class EventProcessor implements IRecordProcessor {
 
-    private static final String DATA_TYPE = "facilioDataType";
+    public static final String DATA_TYPE = "PUBLISH_TYPE";
     private List<EventRule> eventRules = new ArrayList<>();
     private Map<String, Integer> eventCountMap = new HashMap<>();
     private long orgId;
     private long lastEventTime = System.currentTimeMillis();
     private String shardId;
-    private String orgName;
+    private String orgDomainName;
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
-    public EventProcessor(long orgId, String orgName){
+    public EventProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
-        this.orgName = orgName;
+        this.orgDomainName = orgDomainName;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class EventProcessor implements IRecordProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Initializing record processor for stream : " + orgName + " and shard : " + shardId);
+        System.out.println("Initializing record processor for stream : " + orgDomainName + " and shard : " + shardId);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class EventProcessor implements IRecordProcessor {
 
     @Override
     public void shutdown(ShutdownInput shutdownInput) {
-        System.out.println("Shutting down record processor for stream: "+ orgName +" and shard: " + shardId);
+        System.out.println("Shutting down record processor for stream: "+ orgDomainName +" and shard: " + shardId);
     }
 
 

@@ -14,12 +14,12 @@ import java.net.InetAddress;
 
 public class StreamProcessor {
 
-    public static void run(long orgId, String orgName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
+    public static void run(long orgId, String orgDomainName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
 
         try {
             AccountUtil.setCurrentAccount(orgId);
-            String streamName = AwsUtil.getIotKinesisTopic(orgName);
-            String clientName = orgName +"-" + eventType + "-";
+            String streamName = AwsUtil.getIotKinesisTopic(orgDomainName);
+            String clientName = orgDomainName +"-" + eventType + "-";
             String applicationName = clientName + AwsUtil.getConfig("environment");
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
@@ -30,7 +30,7 @@ public class StreamProcessor {
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
 
-            //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgName);
+            //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgDomainName);
 
             Worker worker = new Worker.Builder()
                     .recordProcessorFactory(recordProcessorFactory)
