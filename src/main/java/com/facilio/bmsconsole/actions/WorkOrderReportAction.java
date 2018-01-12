@@ -142,6 +142,9 @@ public class WorkOrderReportAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
+		// calling this method to create default report folder if not already exists
+		DashboardUtil.getDefaultReportFolder(moduleName);
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFolderFields())
 				.table(ModuleFactory.getReportFolder().getTableName())
@@ -154,15 +157,6 @@ public class WorkOrderReportAction extends ActionSupport {
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
-		
-		ReportFolderContext rootFolder = new ReportFolderContext();
-		rootFolder.setName("Root");
-		rootFolder.setId(-1);
-		List<ReportContext1> rootReports = DashboardUtil.getReportsFormReportFolderId(-1L);
-		rootFolder.setReports(rootReports);
-		
-		reportFolders.add(rootFolder);
-		
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
 				ReportFolderContext reportFolder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
