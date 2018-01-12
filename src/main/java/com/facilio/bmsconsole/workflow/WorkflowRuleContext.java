@@ -122,7 +122,9 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 	public static enum RuleType {
 		READING_RULE,
 		WORKORDER_NOTIFICATION_RULE,
-		ALARM_NOTIFICATION_RULE
+		ALARM_NOTIFICATION_RULE,
+		SLA_RULE,
+		ASSIGNMENT_RULE
 		;
 		
 		public int getIntVal() {

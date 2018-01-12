@@ -25,7 +25,7 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	public String assignmentRules() throws Exception 
 	{
-		setRules(WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId()));
+		setRules(WorkflowAPI.getWorkflowRules());
 	    return "assignmentRules";
 	}
 	

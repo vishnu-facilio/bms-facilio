@@ -5,6 +5,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
@@ -235,7 +236,9 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
 		c.addCommand(new AddTicketActivityCommand());
 		c.addCommand(getAddTasksChain());
 		addCleanUpCommand(c);
@@ -247,7 +250,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
 		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
 		c.addCommand(new AddTicketActivityCommand());
@@ -258,7 +261,7 @@ public class FacilioChainFactory {
 	public static Chain getDeleteWorkOrderChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new DeleteWorkOrderCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;

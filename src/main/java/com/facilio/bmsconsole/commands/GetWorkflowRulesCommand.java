@@ -17,7 +17,7 @@ public class GetWorkflowRulesCommand implements Command {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE));
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId(), module.getModuleId()));
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowAPI.getWorkflowRules(module.getModuleId()));
 		return false;
 	}
 }

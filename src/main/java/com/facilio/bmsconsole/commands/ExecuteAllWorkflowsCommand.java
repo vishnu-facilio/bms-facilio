@@ -29,6 +29,12 @@ import com.facilio.fw.BeanFactory;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
+	RuleType[] ruleTypes;
+	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
+		// TODO Auto-generated constructor stub
+		this.ruleTypes = ruleTypes;
+	}
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -46,7 +52,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			if(activityType != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
-				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivity(orgId, moduleId, activityType.getValue());
+				List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(activityType), ruleTypes);
 				
 				if(workflowRules != null && workflowRules.size() > 0) {
 					Map<String, Object> placeHolders = new HashMap<>();

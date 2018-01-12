@@ -190,7 +190,7 @@ public String importData() throws Exception {
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId(), woModule.getModuleId());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(woModule.getModuleId());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
@@ -203,7 +203,7 @@ public String importData() throws Exception {
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId(), woModule.getModuleId());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(woModule.getModuleId());
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}
@@ -226,7 +226,7 @@ public String importData() throws Exception {
 		setSetup(SetupLayout.getEmailNotificationsLayout());
 		
 		//OrgContext org = OrgApi.getOrgContext();
-		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules(AccountUtil.getCurrentOrg().getOrgId());
+		List<WorkflowRuleContext> rules= WorkflowAPI.getWorkflowRules();
 		ActionContext.getContext().getValueStack().set("emailNotifications", rules);
 		return SUCCESS;
 	}

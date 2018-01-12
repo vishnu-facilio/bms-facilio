@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 				if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
-					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivity(orgId, moduleId, eventType.getValue());
+					List<WorkflowRuleContext> workflowRules = WorkflowAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(eventType));
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
 						TicketContext ticket = getParentTicket(note);

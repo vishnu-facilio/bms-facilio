@@ -30,7 +30,9 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 			}
 			
 			checkIfFirstAndAdd(isAND);
-			condition.append(where);
+			condition.append("(")
+					.append(where)
+					.append(")");
 			if(values != null) {
 				for(Object val : values) {
 					this.values.add(val);
@@ -74,7 +76,9 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	private WhereBuilder criteria(boolean isAND, Criteria criteria) {
 		if(criteria != null) {
 			checkIfFirstAndAdd(isAND);
-			this.condition.append(criteria.computeWhereClause());
+			this.condition.append("(")
+						.append(criteria.computeWhereClause())
+						.append(")");
 			if(criteria.getComputedValues() != null) {
 				values.addAll(criteria.getComputedValues());
 			}
