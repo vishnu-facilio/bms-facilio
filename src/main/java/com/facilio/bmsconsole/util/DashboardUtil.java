@@ -30,9 +30,9 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -40,6 +40,14 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
 	
+	public static String getWhereClauseForUserFilter(FacilioField field) {
+		if(field.getDataTypeEnum().equals(FieldType.STRING)) {
+			return field.getColumnName() +" = ?";
+		}
+		else {
+			return field.getColumnName() +" between ? and ?";
+		}
+	}
 	
 	public static Object getFormulaValue(Long formulaId) throws Exception {
 		
