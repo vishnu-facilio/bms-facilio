@@ -188,6 +188,12 @@ public class DashboardAction extends ActionSupport {
 				.fields(fields);
 
 		reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
+		if(reportContext.getY1AxisField() != null) {
+			reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
+		}
+		if(reportContext.getGroupByField() != null) {
+			reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
+		}
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
 		insertBuilder.addRecord(props);
@@ -205,6 +211,34 @@ public class DashboardAction extends ActionSupport {
 			prop.put("reportId", reportContext.getId());
 			prop.put("criteriaId", criteriaId);
 			insertBuilder.addRecord(prop).save();
+		}
+		if(reportContext.getReportUserFilters() != null) {
+			for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
+				ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext());
+				Map<String, Object> prop = new HashMap<String, Object>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("reportFieldId", userFilterField.getId());
+				prop.put("whereClause", DashboardUtil.getWhereClauseForUserFilter(userFilterField.getField()));
+				
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportUserFilter().getTableName())
+						.fields(FieldFactory.getReportUserFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
+		}
+		if(reportContext.getReportThresholds() != null) {
+			for(ReportThreshold threshhold : reportContext.getReportThresholds()) {
+				
+				Map<String, Object> prop = FieldUtil.getAsProperties(threshhold);
+				prop.put("reportId", reportContext.getId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportThreshold().getTableName())
+						.fields(FieldFactory.getReportThresholdFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
 		}
 		return SUCCESS;
 	}

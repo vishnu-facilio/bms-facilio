@@ -27,7 +27,10 @@ public class ReportThreshold {
 	}
 	
 	public ReportThresholdLineStyle getReportThresholdLineStyle() {
-		return ReportThresholdLineStyle.getReportThresholdLineStyleType(getLineStyle());
+		if(getLineStyle() != null) {
+			return ReportThresholdLineStyle.getReportThresholdLineStyleType(getLineStyle());
+		}
+		return null;
 	}
 
 	public Long getId() {

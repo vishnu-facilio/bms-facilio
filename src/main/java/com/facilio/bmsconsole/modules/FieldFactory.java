@@ -2364,7 +2364,7 @@ public class FieldFactory {
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
-		name.setDataType(FieldType.NUMBER);
+		name.setDataType(FieldType.STRING);
 		name.setColumnName("NAME");
 		name.setModule(module);
 		fields.add(name);
@@ -2378,7 +2378,7 @@ public class FieldFactory {
 		
 		FacilioField color = new FacilioField();
 		color.setName("color");
-		color.setDataType(FieldType.NUMBER);
+		color.setDataType(FieldType.STRING);
 		color.setColumnName("COLOR");
 		color.setModule(module);
 		fields.add(color);
@@ -2414,7 +2414,7 @@ public class FieldFactory {
 
 		FacilioField whereClause = new FacilioField();
 		whereClause.setName("whereClause");
-		whereClause.setDataType(FieldType.NUMBER);
+		whereClause.setDataType(FieldType.STRING);
 		whereClause.setColumnName("WHERE_CLAUSE");
 		whereClause.setModule(module);
 		fields.add(whereClause);
