@@ -1977,6 +1977,7 @@
 	<package name="tenantBillingApi" namespace="/api/tenantbilling" extends="home">
 		<action name="upload" class="com.facilio.billing.action.BillingAction" method="GenerateTemplate">
 			<result name="success" type="json">
+			<param name="includeProperties">excelTemplate,excelTemplate\[\d+\],excelTemplate\[\d+\].*</param>
 			</result>
 		</action>
 		

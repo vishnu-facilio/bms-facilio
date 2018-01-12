@@ -325,12 +325,15 @@ public class TemplateAPI {
 		String formatSpecifier = "(\\$\\{([^\\:}]*))";
 		Pattern pattern = Pattern.compile(formatSpecifier);
 		JSONObject templateString = template.getOriginalTemplate();
-		Matcher matcher = pattern.matcher(templateString.toJSONString());
-		JSONArray templatePlaceholder = new JSONArray();
-		while (matcher.find()) {
-			templatePlaceholder.add(matcher.group(2));
+		if (templateString != null) {
+			Matcher matcher = pattern.matcher(templateString.toJSONString());
+			JSONArray templatePlaceholder = new JSONArray();
+			while (matcher.find()) {
+				templatePlaceholder.add(matcher.group(2));
+			}
+			return templatePlaceholder;
 		}
-		return templatePlaceholder;
+		return null;
 		
 	}
 }
