@@ -573,6 +573,11 @@ public class ModuleFactory {
 		reportThresholdModule.setTableName("Report_User_Filter");
 		return reportThresholdModule;
 	}
+	public static FacilioModule getAlarmVsEnergyData() {
+		FacilioModule alarmVsEnergyData = new FacilioModule();
+		alarmVsEnergyData.setTableName("Alarm_vs_Energy_Data");
+		return alarmVsEnergyData;
+	}
 	public static FacilioModule getPMReminderModule() {
 		FacilioModule reminderModule = new FacilioModule();
 		reminderModule.setName("pmreminder");

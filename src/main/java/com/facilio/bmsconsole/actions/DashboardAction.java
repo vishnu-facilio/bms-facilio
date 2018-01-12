@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -121,6 +122,14 @@ public class DashboardAction extends ActionSupport {
 	
 	public void setReportData(JSONArray reportData) {
 		this.reportData = reportData;
+	}
+	private List<Map<String, Object>> relatedAlarms;
+	
+	public List<Map<String, Object>> getRelatedAlarms() {
+		return relatedAlarms;
+	}
+	public void setRelatedAlarms(List<Map<String, Object>> releatedAlarms) {
+		this.relatedAlarms = releatedAlarms;
 	}
 	Long reportId;
 	public Long getReportId() {
@@ -267,6 +276,11 @@ public class DashboardAction extends ActionSupport {
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		
+		boolean isEnergyDataWithTimeFrame = false;
+		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME) && module.getName().equals("energydata")) {
+			isEnergyDataWithTimeFrame = true;
+		}
+		
 		FacilioModule fieldModule = xAxisField.getExtendedModule();
 		
 		List<FacilioField> fields = new ArrayList<>();
@@ -326,7 +340,6 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 			}
-			
 		}
 //		FacilioField groupByField = new FacilioField();
 //		if(getPeriod() != null) {
@@ -369,9 +382,18 @@ public class DashboardAction extends ActionSupport {
 				.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
 		}
 		Criteria criteria = null;
+		String energyMeterValue = "";
 		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
+			if(module.getName().equals("energydata")) {
+				Map<Integer, Condition> conditions = criteria.getConditions();
+				for(Condition condition:conditions.values()) {
+					if(condition.getColumnName().equals("Energy_Data.PARENT_METER_ID")) {
+						energyMeterValue = energyMeterValue + condition.getValue() +",";
+					}
+				}
+			}
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
@@ -417,6 +439,40 @@ public class DashboardAction extends ActionSupport {
 	 			}
 		 	}
 			setReportData(res);
+		}
+		
+		if(energyMeterValue != null && isEnergyDataWithTimeFrame) {
+			
+			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
+			
+			FacilioField label = new FacilioField();
+			label.setName("label");
+			label.setDataType(FieldType.NUMBER);
+			label.setColumnName("CREATED_TIME");
+			label.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
+			
+			alarmVsEnergyFields.add(label);
+			
+			FacilioField value = new FacilioField();
+			value.setName("value");
+			value.setDataType(FieldType.NUMBER);
+			value.setColumnName("ALARM_ID");
+			value.setModule(ModuleFactory.getAlarmVsEnergyData());
+			
+			alarmVsEnergyFields.add(value);
+			
+			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getAlarmVsEnergyData().getTableName())
+					.innerJoin(ModuleFactory.getAlarmsModule().getTableName())
+					.on(ModuleFactory.getAlarmVsEnergyData().getTableName()+".ALARM_ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
+					.innerJoin(ModuleFactory.getTicketsModule().getTableName())
+					.on(ModuleFactory.getTicketsModule().getTableName()+".ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
+					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".ASSET_ID in ("+energyMeterValue.substring(0, energyMeterValue.length()-1)+")")
+					//.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".CREATED_TIME between ? and ?", values)
+					.select(alarmVsEnergyFields);
+			
+			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
+			setRelatedAlarms(alarmVsEnergyProps);
 		}
 		System.out.println("rs after -- "+rs);
 //		if(widgetChartContext.getIsComparisionReport()) {

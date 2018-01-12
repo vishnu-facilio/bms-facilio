@@ -2050,52 +2050,6 @@ public class FieldFactory {
 		return fields;
 	}
 
-//	public static List<FacilioField> getDashboardWidgetPeriodFields() {
-//		List<FacilioField> fields = new ArrayList<>();
-//		FacilioModule module = ModuleFactory.getWidgetPeriodModule();
-//
-//		FacilioField dashboardId = getIdField();
-//		dashboardId.setModule(module);
-//		fields.add(dashboardId);
-//
-//		FacilioField widgetId = new FacilioField();
-//		widgetId.setName("widgetId");
-//		widgetId.setDataType(FieldType.STRING);
-//		widgetId.setColumnName("WIDGET_ID");
-//		widgetId.setModule(module);
-//		fields.add(widgetId);
-//
-//		FacilioField periodLabel = new FacilioField();
-//		periodLabel.setName("periodLabel");
-//		periodLabel.setDataType(FieldType.STRING);
-//		periodLabel.setColumnName("PERIOD_LABEL");
-//		periodLabel.setModule(module);
-//		fields.add(periodLabel);
-//
-//		FacilioField periodValue = new FacilioField();
-//		periodValue.setName("periodValue");
-//		periodValue.setDataType(FieldType.STRING);
-//		periodValue.setColumnName("PERIOD_VALUE");
-//		periodValue.setModule(module);
-//		fields.add(periodValue);
-//
-//		FacilioField dateOperator = new FacilioField();
-//		dateOperator.setName("dateOperator");
-//		dateOperator.setDataType(FieldType.NUMBER);
-//		dateOperator.setColumnName("DATE_OPERATOR");
-//		dateOperator.setModule(module);
-//
-//		FacilioField timeSeriesField = new FacilioField();
-//		timeSeriesField.setName("timeSeriesField");
-//		timeSeriesField.setDataType(FieldType.NUMBER);
-//		timeSeriesField.setColumnName("TIME_SERIES_FIELD");
-//		timeSeriesField.setModule(module);
-//
-//		fields.add(timeSeriesField);
-//
-//		return fields;
-//	}
-
 	public static List<FacilioField> getWidgetChartFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWidgetChartModule();
