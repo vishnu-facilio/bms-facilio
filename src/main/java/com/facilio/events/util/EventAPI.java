@@ -2,6 +2,7 @@ package com.facilio.events.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,9 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -162,5 +166,39 @@ public class EventAPI {
 																.andCustomWhere("ORGID = ?", orgId);
 
 		return selectRecordBuilder.get();
+	}
+	
+	public static EventContext getEvent(long id) throws Exception {
+		FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(module.getTableName())
+																.select(EventConstants.EventFieldFactory.getEventFields())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), EventContext.class);
+		}
+		return null;
+	}
+	
+	public static List<EventContext> getEvent(Criteria criteria) throws Exception {
+		FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(module.getTableName())
+																.select(EventConstants.EventFieldFactory.getEventFields())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<EventContext> events = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				events.add(FieldUtil.getAsBeanFromMap(props.get(0), EventContext.class));
+			}
+			return events;
+		}
+		return null;
 	}
 }

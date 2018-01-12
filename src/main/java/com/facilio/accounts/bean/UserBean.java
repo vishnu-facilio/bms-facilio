@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 public interface UserBean {
 	
@@ -31,6 +32,8 @@ public interface UserBean {
 	public User getUser(long ouid) throws Exception;
 	
 	public User getUser(String email) throws Exception;
+	
+	public List<User> getUsers(Criteria criteria) throws Exception;
 	
 	public User getUser(long orgId, String email) throws Exception;
 	

@@ -13,8 +13,11 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
@@ -188,15 +191,36 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public Group getGroup(long groupId) throws Exception {
-		
+		FacilioModule module = AccountConstants.getGroupModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
-				.table(AccountConstants.getGroupModule().getTableName())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("GROUPID = ?", groupId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+		}
+		return null;
+	}
+	
+	@Override
+	public List<Group> getGroups(Criteria criteria) throws Exception {
+		FacilioModule module = AccountConstants.getGroupModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getGroupFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Group> groups = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				groups.add(FieldUtil.getAsBeanFromMap(props.get(0), Group.class));
+			}
+			return groups;
 		}
 		return null;
 	}

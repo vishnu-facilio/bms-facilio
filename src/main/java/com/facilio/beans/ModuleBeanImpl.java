@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -104,8 +105,8 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
-		if(moduleName.equals(EventConstants.EventContextNames.EVENT)) {
-			return EventConstants.EventModuleFactory.getEventModule();
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getModule(moduleName);
 		}
 		
 		PreparedStatement pstmt = null;
@@ -373,8 +374,8 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
 		
-		if(moduleName.equals(EventConstants.EventContextNames.EVENT)) {
-			return (ArrayList<FacilioField>) EventConstants.EventFieldFactory.getEventFields();
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return (ArrayList<FacilioField>) LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
 		
 		FacilioModule module = getMod(moduleName);

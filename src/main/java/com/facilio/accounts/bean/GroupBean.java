@@ -7,6 +7,7 @@ import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 public interface GroupBean {
 	
@@ -29,6 +30,8 @@ public interface GroupBean {
 	public List<GroupMember> getGroupMembers(long groupId) throws Exception;
 
 	public Group getGroup(long groupId) throws Exception;
+	
+	public List<Group> getGroups(Criteria criteria) throws Exception;
 
 	public List<Group> getAllOrgGroups(long orgId) throws Exception;
 	
