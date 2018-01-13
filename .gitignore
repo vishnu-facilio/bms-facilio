@@ -4,3 +4,4 @@ target/
 .classpath
 .project
 .settings/
+src/main/java/com/facilio/bmsconsole/util/DashboardUtil.java
