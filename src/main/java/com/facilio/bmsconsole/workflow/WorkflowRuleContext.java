@@ -124,14 +124,15 @@ public class WorkflowRuleContext extends WorkflowEventContext {
 		WORKORDER_NOTIFICATION_RULE,
 		ALARM_NOTIFICATION_RULE,
 		SLA_RULE,
-		ASSIGNMENT_RULE
+		ASSIGNMENT_RULE,
+		PM_READING_RULE
 		;
 		
 		public int getIntVal() {
 			return ordinal()+1;
 		}
 		
-		public static RuleType getRuleType(int val) {
+		public static RuleType valueOf(int val) {
 			try {
 				return RULE_TYPES[val - 1];
 			}

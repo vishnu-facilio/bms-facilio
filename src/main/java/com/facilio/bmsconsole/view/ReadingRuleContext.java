@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	private long startValue = -1;
@@ -34,17 +31,5 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	public void setLastValue(long lastValue) {
 		this.lastValue = lastValue;
-	}
-	
-	@Override
-	@JsonInclude(Include.ALWAYS)
-	public int getRuleType() {
-		return RuleType.READING_RULE.getIntVal();
-	}
-	
-	@Override
-	@JsonInclude(Include.ALWAYS)
-	public RuleType getRuleTypeEnum() {
-		return RuleType.READING_RULE;
 	}
 }
