@@ -79,6 +79,7 @@ public class ViewAPI {
 	
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
+		view.setId(-1);
 		try {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {

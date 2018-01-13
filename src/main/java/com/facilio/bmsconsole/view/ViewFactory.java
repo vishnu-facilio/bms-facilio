@@ -47,7 +47,7 @@ public class ViewFactory {
 	}
 	
 	public static Map<String,FacilioView> getModuleViews (String moduleName) {
-		return views.get(moduleName);
+		return new LinkedHashMap<>(views.get(moduleName));
 	}
 	
 	/*private static Map<String, FacilioView> initViews() {
