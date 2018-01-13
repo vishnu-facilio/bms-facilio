@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS Node_To_Asset_Mapping (
 );
   
   DELIMITER $$
+  DROP TRIGGER IF EXISTS generateEventCount $$
   CREATE TRIGGER generateEventCount BEFORE UPDATE
   ON Event FOR EACH ROW
   BEGIN
