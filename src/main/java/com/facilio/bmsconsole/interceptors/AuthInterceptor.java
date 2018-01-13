@@ -32,7 +32,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 	
 		try {
-			System.out.println("AuthInterceptor");
+			System.out.println("intercept() : arg0 :"+arg0);
+			
+			boolean cognito_auth =true;
 			// Step 1: Validating ID Token
 			HttpServletRequest request = ServletActionContext.getRequest();
 			
@@ -41,6 +43,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 			String headerToken = request.getHeader("Authorization");
 			
 			// skiping signup url from authorization check
+			
+
 			if (facilioToken != null || headerToken != null) {
 				
 				boolean isAPI = true;
@@ -51,15 +55,18 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 					else
 					{
-					headerToken = request.getHeader("Authorization").replace("Bearer ", "");
+						headerToken = request.getHeader("Authorization").replace("Bearer ", "");
 					}
 				}
 
+				System.out.println("intercept() : The header authtoken is "+headerToken);
+				System.out.println("intercept() : The facilioToken authtoken is "+facilioToken);
+				
 				CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);
 				if (cognitoUser == null) {
 					return Action.LOGIN;
 				}
-
+				
 				// Step 2: Setting current user in session
 				Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_ACCOUNT");
 				if (currentAccount == null) {

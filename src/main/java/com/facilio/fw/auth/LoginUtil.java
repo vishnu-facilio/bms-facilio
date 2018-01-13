@@ -33,6 +33,7 @@ public class LoginUtil {
 		Organization org = null;
 		
 		if (user == null) {
+			System.out.println("Getting email from cognitouser "+cognitoUser.getEmail());
 			JSONObject userAttributes = CognitoUtil.getUserAttributes(cognitoUser.getEmail());
 			if (userAttributes == null) {
 				throw new Exception("This user not associated with any organization.");

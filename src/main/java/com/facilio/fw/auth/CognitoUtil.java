@@ -2,6 +2,10 @@ package com.facilio.fw.auth;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +37,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -163,9 +169,14 @@ public class CognitoUtil {
 	
 	public static AdminGetUserResult getUser(String username) {
 		
-		AdminGetUserRequest adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(username);
-		
-		return getIdpProvider().adminGetUser(adminGetReq);
+		try {
+			AdminGetUserRequest adminGetReq = null;
+			adminGetReq = new AdminGetUserRequest().withUserPoolId(FacilioConstants.CognitoUserPool.getUserPoolId()).withUsername(username);
+			return getIdpProvider().adminGetUser(adminGetReq);
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public static boolean isEmailExists(String email) {
@@ -212,10 +223,14 @@ public class CognitoUtil {
 		}
 		
 		AdminGetUserResult userResult = CognitoUtil.getUser(email);
-		List<AttributeType> li = userResult.getUserAttributes();
-		for (AttributeType attr : li) {
-			if (!jobj.containsKey(attr.getName())) {
-				jobj.put(attr.getName(), attr.getValue());
+		List<AttributeType> li = null;
+		if(userResult != null)
+		{
+			li = userResult.getUserAttributes();
+			for (AttributeType attr : li) {
+				if (!jobj.containsKey(attr.getName())) {
+					jobj.put(attr.getName(), attr.getValue());
+				}
 			}
 		}
 		if (!jobj.containsKey("custom:orgDomain") && emailDomain != null) {
@@ -224,13 +239,18 @@ public class CognitoUtil {
 		return jobj;
 	}
 	
+	
 	public static CognitoUser verifiyFacilioToken(String idToken)
 	{
+		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			String decodedtoken = validateJWT(idToken, "auth0");
+			System.out.println("verifiyFacilioToken() : decodedtoken : "+decodedtoken);
 			CognitoUser faciliouser = new CognitoUser();
 			faciliouser.setEmail(decodedtoken);
+			faciliouser.setFacilioauth(true);
 			// faciliouser.setCognitoId("145c6962-75cc-4908-8a7f-d038571c7dd4");
+			System.out.println("verifiyFacilioToken() : faciliouser  " +faciliouser);
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -311,6 +331,11 @@ public class CognitoUtil {
 	}
 	
 	public static class CognitoUser {
+		
+		public String toString()
+		{
+			return "CognitoUser() : userName = "+userName +" ; email = "+ email+" ; faciliouser = "+facilioauth;
+		}
 		private String cognitoId = "";
 		private String userName;
 		private String name;
@@ -321,6 +346,17 @@ public class CognitoUtil {
 		private String locale;
 		private String timezone;
 		private JSONObject additionalProps;
+		
+		public boolean isFacilioauth() {
+			return facilioauth;
+		}
+
+		public void setFacilioauth(boolean facilioauth) {
+			this.facilioauth = facilioauth;
+		}
+
+		private boolean facilioauth = false;
+		
 		
 		public String getCognitoId() {
 			return cognitoId;
@@ -411,5 +447,7 @@ public class CognitoUtil {
 			}
 			return null;
 		}
+		
+		
 	}
 }

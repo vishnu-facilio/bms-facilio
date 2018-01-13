@@ -1,5 +1,11 @@
 package com.facilio.integration.actions;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class Home extends ActionSupport {
@@ -50,9 +58,15 @@ state = PORTAL-yogendrababu
 		this.jsonresponse.put(key, value);
 	}
 	private Map jsonresponse = new HashMap();
-	public String validatelogin()
+	
+	public String validatelogin() throws Exception
 	{
-		System.out.println(username );
+		System.out.println("validatelogin() : username : "+username +"; password : "+password);
+		String encryptedPass = cryptWithMD5(password);
+		if(!verifyPassword(username, encryptedPass))
+		{
+			return ERROR;
+		}		
 		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("token",jwt);
@@ -93,9 +107,107 @@ Pragma: no-cache
   "state":"12345678"
 }
  */
+	public boolean verifyPassword(String emailaddress, String password) throws Exception
+	{
+		boolean userExists = false;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT password FROM faciliousers WHERE email = ?");
+			pstmt.setString(1, emailaddress);
+			
+			rs = pstmt.executeQuery();
+			while(rs.next())
+			{
+				String storedPass = rs.getString("password");
+				System.out.println("Stored : "+storedPass);
+				System.out.println("UserGiv: "+password);
+				if(storedPass.equalsIgnoreCase(password))
+				{
+					userExists = true;
+				}
+			}
+				
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}
+		
+		return userExists;
+	}
+	
+	
+	String emailaddress;
+	
+	
+	public String getEmailaddress() {
+		return emailaddress;
+	}
+	public void setEmailaddress(String emailaddress) {
+		this.emailaddress = emailaddress;
+	}
+	public String signupUser() throws Exception
+	{
+		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+emailaddress );
+		String encryptedPass = cryptWithMD5(password);
+		return AddNewUserDB(username,encryptedPass,emailaddress);
+		
+	//	return SUCCESS;
+	}
+	
+	public  String AddNewUserDB(String username, String password, String emailaddress) throws Exception
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try
+		{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password) VALUES(?,?,?)");
+			pstmt.setString(1, username);
+			pstmt.setString(2, emailaddress);
+			pstmt.setString(3, password);
+			pstmt.executeUpdate();
+				
+		}catch(SQLException | RuntimeException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt);
+		}
+		return generateAuthToken();
+	}
+	
+	   private static MessageDigest md;
+
+	   public static String cryptWithMD5(String pass){
+	    try {
+	        md = MessageDigest.getInstance("MD5");
+	        byte[] passBytes = pass.getBytes();
+	        md.reset();
+	        byte[] digested = md.digest(passBytes);
+	        StringBuffer sb = new StringBuffer();
+	        for(int i=0;i<digested.length;i++){
+	            sb.append(Integer.toHexString(0xff & digested[i]));
+	        }
+	        return sb.toString();
+	    } catch (NoSuchAlgorithmException ex) {
+	    		ex.printStackTrace();
+	    }
+	        return null;
+	   }
+	
 	public String generateAuthToken()
 	{
-		System.out.println(username );
+		System.out.println("generateAuthToken() : username :"+username);
 		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
@@ -137,4 +249,5 @@ Pragma: no-cache
 
 	private String response_type;
 	private String state ;
+	
 }
