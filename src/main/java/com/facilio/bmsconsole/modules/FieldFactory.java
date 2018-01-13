@@ -2538,4 +2538,22 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+
+	public static FacilioField getField(String name, String colName, FieldType type) {
+		FacilioField columnFld = new FacilioField();
+		columnFld.setName(name);
+		columnFld.setColumnName(colName);
+		columnFld.setDataType(type);
+		return columnFld;
+	}
+	
+	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
+		FacilioField columnFld = new FacilioField();
+		columnFld.setName(name);
+		columnFld.setColumnName(colName);
+		columnFld.setModule(module);
+		columnFld.setDataType(type);
+		return columnFld;
+	}
 }
