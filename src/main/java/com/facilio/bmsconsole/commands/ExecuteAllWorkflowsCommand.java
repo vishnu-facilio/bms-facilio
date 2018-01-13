@@ -69,7 +69,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							boolean flag = true;
 							if(criteria != null) {
-								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE) {
+								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE || workflowRule.getRuleTypeEnum() == RuleType.PM_READING_RULE) {
 									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
 									if(flag) {
 										updateLastValueForReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);

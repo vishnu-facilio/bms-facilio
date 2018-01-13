@@ -65,9 +65,17 @@ public class WorkflowRuleAction extends ActionSupport {
 	}
 
 	public String addReadingRule() throws Exception {
-		
-		FacilioContext facilioContext = new FacilioContext();
 		readingRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
+		return commonAddReadingRule();
+	}
+	
+	public String addPMReadingRule() throws Exception {
+		readingRule.setRuleType(WorkflowRuleContext.RuleType.PM_READING_RULE);
+		return commonAddReadingRule();
+	}
+	
+	private String commonAddReadingRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		
@@ -76,6 +84,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
 	public String getWorkflowRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
