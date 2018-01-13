@@ -272,6 +272,7 @@ public class DashboardAction extends ActionSupport {
 		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
+		reportFolderContext.setId((Long) props.get("id"));
 		
 		return SUCCESS;
 	}
