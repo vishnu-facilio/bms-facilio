@@ -2233,6 +2233,27 @@ public class FieldFactory {
 		groupByFieldAggregateFunction.setModule(module);
 		fields.add(groupByFieldAggregateFunction);
 		
+		FacilioField limit = new FacilioField();
+		limit.setName("limit");
+		limit.setDataType(FieldType.NUMBER);
+		limit.setColumnName("LIMIT");
+		limit.setModule(module);
+		fields.add(limit);
+		
+		FacilioField orderBy = new FacilioField();
+		orderBy.setName("orderBy");
+		orderBy.setDataType(FieldType.STRING);
+		orderBy.setColumnName("ORDER_BY");
+		orderBy.setModule(module);
+		fields.add(orderBy);
+		
+		FacilioField orderByFunction = new FacilioField();
+		orderByFunction.setName("orderByFunction");
+		orderByFunction.setDataType(FieldType.NUMBER);
+		orderByFunction.setColumnName("ORDER_BY_FUNCTION");
+		orderByFunction.setModule(module);
+		fields.add(orderByFunction);
+		
 		return fields;
 	}
 	public static List<FacilioField> getReportFieldFields() {
