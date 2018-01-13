@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -113,6 +115,21 @@ public class FacilioView {
 	}
 	public void setFilters(JSONObject filters) {
 		this.filters = filters;
+	}
+	public void setFiltersJson(String json) throws ParseException {
+		this.filters = (JSONObject) new JSONParser().parse(json);
+	}
+	
+	private int sequenceNumber = -1;
+	public int getSequenceNumber() {
+		return sequenceNumber;
+	}
+	public void setSequenceNumber(int sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
+	public FacilioView setOrder(int order) {
+		this.sequenceNumber = order;
+		return this;
 	}
 	
 	public static enum ViewType {

@@ -312,6 +312,7 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIME = "nextexecutiontime";
 		
 		public static final String VIEWID = "viewId";
+		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
 		
 		

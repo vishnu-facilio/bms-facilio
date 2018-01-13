@@ -1277,6 +1277,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getViewCustomizeChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CustomizeViewCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getViewCustomizeColumnChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CustomizeViewColumnCommand());

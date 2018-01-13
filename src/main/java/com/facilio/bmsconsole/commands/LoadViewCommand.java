@@ -31,7 +31,7 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				view = ViewFactory.getView(moduleName + "-" +viewName);
+				view = ViewFactory.getView(moduleName, viewName);
 			} else if(view.getFields() == null || view.getFields().isEmpty()) {
 				view.setFields(ColumnFactory.getColumns(moduleName + "-" +viewName));
 			}

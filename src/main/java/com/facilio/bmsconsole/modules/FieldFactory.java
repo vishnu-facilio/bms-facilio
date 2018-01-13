@@ -1479,6 +1479,13 @@ public class FieldFactory {
 		isDefault.setModule(module);
 		fields.add(isDefault);
 		
+		FacilioField viewOrder = new FacilioField();
+		viewOrder.setName("sequenceNumber");
+		viewOrder.setDataType(FieldType.NUMBER);
+		viewOrder.setColumnName("SEQUENCE_NUMBER");
+		viewOrder.setModule(module);
+		fields.add(viewOrder);
+		
 		return fields;
 
 	}

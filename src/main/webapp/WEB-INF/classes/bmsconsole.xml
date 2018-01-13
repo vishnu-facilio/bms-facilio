@@ -990,11 +990,18 @@
 				<param name="root">view</param>
 			</result>
 		</action>
+		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="customizeView">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">views.*</param>
+			</result>
+		</action>
 		<action name="customizeColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeColumns">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">viewId</param>
+				<param name="includeProperties">fields.*</param>
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
