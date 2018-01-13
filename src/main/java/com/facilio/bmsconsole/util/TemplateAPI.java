@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -270,12 +269,27 @@ public class TemplateAPI {
 	}
 	
 	public static long addJsonTemplate(long orgId, JSONTemplate template) throws Exception {
-		
+		return addJsonTemplate(orgId, template, UserTemplate.Type.JSON);
+	}
+	
+	public static long addWorkOrderTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.WORKORDER);
+	}
+	
+	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.ALARM);
+	}
+	
+	public static long addTaskGroupTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.TASK_GROUP);
+	}
+	
+	private static long addJsonTemplate(long orgId, JSONTemplate template, UserTemplate.Type type) throws Exception {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
 		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
-		template.setType(UserTemplate.Type.JSON);
+		template.setType(type);
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
