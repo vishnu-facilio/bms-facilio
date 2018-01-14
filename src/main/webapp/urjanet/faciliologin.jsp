@@ -137,7 +137,6 @@ body {
 function signup()
 {
 	var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
-	alert(jsonStr);
 	$.ajax({
 			  type: "POST",
 			  url: 'apisignup',

@@ -183,7 +183,7 @@ Pragma: no-cache
 		{
 			DBUtil.closeAll(conn, pstmt);
 		}
-		return generateAuthToken();
+		return validatelogin();
 	}
 	
 	   private static MessageDigest md;
