@@ -116,11 +116,11 @@ Pragma: no-cache
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT password FROM faciliousers WHERE email = ?");
+			pstmt = conn.prepareStatement("SELECT password FROM faciliousers WHERE email = ? and password=?");
 			pstmt.setString(1, emailaddress);
-			
+			pstmt.setString(2, password);			
 			rs = pstmt.executeQuery();
-			while(rs.next())
+			if(rs.next())
 			{
 				String storedPass = rs.getString("password");
 				System.out.println("Stored : "+storedPass);
