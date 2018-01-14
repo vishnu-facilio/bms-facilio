@@ -2243,7 +2243,7 @@ public class FieldFactory {
 		FacilioField limit = new FacilioField();
 		limit.setName("limit");
 		limit.setDataType(FieldType.NUMBER);
-		limit.setColumnName("LIMIT");
+		limit.setColumnName("LIMIT_VALUE");
 		limit.setModule(module);
 		fields.add(limit);
 		
