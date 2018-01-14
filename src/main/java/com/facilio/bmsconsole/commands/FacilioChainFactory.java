@@ -1263,6 +1263,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getViewListChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetViewListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddViewChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadViewCommand());
@@ -1281,9 +1288,10 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getViewCustomizeChain() {
+	public static Chain getViewsCustomizeChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new CustomizeViewCommand());
+		c.addCommand(new GetViewListCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
