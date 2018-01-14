@@ -238,7 +238,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddWorkOrderCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
 		c.addCommand(new AddTicketActivityCommand());
 		c.addCommand(getAddTasksChain());
 		addCleanUpCommand(c);
@@ -250,7 +250,9 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateWorkOrderCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
 		c.addCommand(new SendNotificationCommand());
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
 		c.addCommand(new AddTicketActivityCommand());
@@ -261,7 +263,9 @@ public class FacilioChainFactory {
 	public static Chain getDeleteWorkOrderChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_NOTIFICATION_RULE, RuleType.ALARM_NOTIFICATION_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_AGENT_NOTIFICATION_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1362,7 +1366,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_RULE, RuleType.PM_READING_RULE));
 		addCleanUpCommand(c);
 		return c;
 	}

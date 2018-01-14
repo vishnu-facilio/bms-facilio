@@ -2539,6 +2539,23 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMTriggerFields() {
+		FacilioModule module = ModuleFactory.getPMTriggersModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("readingRuleId", "READING_RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		FacilioField columnFld = new FacilioField();

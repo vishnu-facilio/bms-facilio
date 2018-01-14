@@ -1,20 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.tasker.executor.ScheduleInfo;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance {
 	
@@ -161,88 +150,66 @@ public class PreventiveMaintenance {
 	public void setTypeId(long typeId) {
 		this.typeId = typeId;
 	}
-
-	private long startTime = -1;
-	public long getStartTime() {
-		return startTime;
-	}
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
 	
-	private long nextExecutionTime = -1;
-	public long getNextExecutionTime() {
-		return nextExecutionTime;
-	}
-	public void setNextExecutionTime(long nextExecutionTime) {
-		this.nextExecutionTime = nextExecutionTime*1000;
-	}
-
-	private long endTime = -1;
-	public long getEndTime() {
-		return endTime;
-	}
-	@JsonSetter("endExecutionTime")
-	public void setEndTime(long endTime) {
-		this.endTime = endTime*1000;
-	}
-
-	private ScheduleInfo schedule;
-	public ScheduleInfo getSchedule() {
-		return schedule;
-	}
-	public void setSchedule(ScheduleInfo schedule) {
-		this.schedule = schedule;
-	}
-	
-	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if(schedule != null) {
-			return FieldUtil.getAsJSON(schedule).toJSONString();
-		}
-		return null;
-	}
-	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
-	}
-	
-	private int maxCount = -1;
-	public int getMaxCount() {
-		return maxCount;
-	}
-	@JsonSetter("maxExecution")
-	public void setMaxCount(int maxCount) {
-		this.maxCount = maxCount;
-	}
-	
-	public String getScheduleMsg() {
-		if(schedule != null) {
-			return schedule.getDescription(startTime);
-		}
-		return null;
-	}
-	
-	private ReadingRuleContext readingRule;
-	public ReadingRuleContext getReadingRule() {
-		return readingRule;
-	}
-	public void setReadingRule(ReadingRuleContext readingRule) {
-		this.readingRule = readingRule;
-	}
-	
-	private long readingRuleId = -1;
-	public long getReadingRuleId() {
-		return readingRuleId;
-	}
-	public void setReadingRuleId(long readingRuleId) {
-		this.readingRuleId = readingRuleId;
-	}
-
 	private List<WorkOrderContext> workorders;
 	public List<WorkOrderContext> getWorkorders() {
 		return workorders;
 	}
 	public void setWorkorders(List<WorkOrderContext> workorders) {
 		this.workorders = workorders;
+	}
+	
+	private Boolean waitForAllTriggers;
+	public Boolean getWaitForAllTriggers() {
+		return waitForAllTriggers;
+	}
+	public void setWaitForAllTriggers(Boolean waitForAllTriggers) {
+		this.waitForAllTriggers = waitForAllTriggers;
+	}
+	public boolean waitForAllTriggers() {
+		if(waitForAllTriggers != null) {
+			return waitForAllTriggers.booleanValue();
+		}
+		return false;
+	}
+	
+	private List<PMTriggerContext> triggers;
+	public List<PMTriggerContext> getTriggers() {
+		return triggers;
+	}
+	public void setTriggers(List<PMTriggerContext> triggers) {
+		this.triggers = triggers;
+	}
+
+	private TriggerType triggerType;
+	public int getTriggerType() {
+		if (triggerType != null) {
+			return triggerType.getVal();
+		}
+		return -1;
+	}
+	public void setTriggerType(int triggerType) {
+		this.triggerType = TriggerType.valueOf(triggerType);
+	}
+	public TriggerType getTriggerTypeEnum() {
+		return triggerType;
+	}
+	public void setTriggerType(TriggerType triggerType) {
+		this.triggerType = triggerType;
+	}
+
+	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
+	public static enum TriggerType {
+		ONLY_SCHEDULE_TRIGGER,
+		FLOATING,
+		FIXED;
+		
+		public int getVal() {
+			return ordinal()+1;
+		}
+		
+		public static TriggerType valueOf(int type) {
+			return TRIGGER_TYPES[type-1];
+		}
 	}
 }

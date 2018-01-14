@@ -587,12 +587,19 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
+	public static FacilioModule getPMTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("pmtrigger");
+		pmTriggers.setDisplayName("Preventive Maintenance Triggers");
+		pmTriggers.setTableName("PM_Triggers");
+		return pmTriggers;
+	}
+	
 	public static FacilioModule getAfterPMRemindersWORelModule() {
 		FacilioModule pmReminderJobWORel = new FacilioModule();
 		pmReminderJobWORel.setName("afterpmreminderworel");
 		pmReminderJobWORel.setDisplayName("After PM Reminder WO Rel");
 		pmReminderJobWORel.setTableName("After_PM_Reminder_WO_Rel");
-		
 		return pmReminderJobWORel;
 	}
 	
