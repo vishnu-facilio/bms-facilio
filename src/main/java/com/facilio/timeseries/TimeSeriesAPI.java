@@ -149,7 +149,7 @@ public class TimeSeriesAPI {
 		Long id =null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		List<FacilioField> instanceFields = new ArrayList<>();
-		instanceFields.add(FieldFactory.getField("id", "ID",FieldType.NUMBER ));
+		instanceFields.add(FieldFactory.getIdField());
 		GenericSelectRecordBuilder unmodeledBuilder = new GenericSelectRecordBuilder()
 				.select(instanceFields)
 				.table("Unmodeled_Instance")
