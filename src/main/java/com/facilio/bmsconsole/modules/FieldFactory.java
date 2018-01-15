@@ -1020,7 +1020,67 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getPushNotificationTemplateFields() {
+		return getPushNotificationTemplateFields(true);
+	}
 
+	private static List<FacilioField> getPushNotificationTemplateFields(boolean isIdNeeded) {
+		FacilioModule module = ModuleFactory.getPushNotificationTemplateModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		if (isIdNeeded) {
+			fields.add(getIdField(module));
+		}
+
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setColumnName("TO_UID");
+		smsTo.setModule(module);
+		fields.add(smsTo);
+
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("message");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModule(module);
+		fields.add(smsMsg);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getWebNotificationTemplateFields() {
+		return getWebNotificationTemplateFields(true);
+	}
+
+	private static List<FacilioField> getWebNotificationTemplateFields(boolean isIdNeeded) {
+		FacilioModule module = ModuleFactory.getWebNotificationTemplateModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		if (isIdNeeded) {
+			fields.add(getIdField(module));
+		}
+
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setColumnName("TO_UID");
+		smsTo.setModule(module);
+		fields.add(smsTo);
+
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("message");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModule(module);
+		fields.add(smsMsg);
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getExcelTemplateFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getExcelTemplatesModule();

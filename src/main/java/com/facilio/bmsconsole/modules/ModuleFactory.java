@@ -251,6 +251,24 @@ public class ModuleFactory {
 		return smsTemplatesModule;
 	}
 	
+	public static FacilioModule getPushNotificationTemplateModule() {
+		FacilioModule pushNotificationTemplatesModule = new FacilioModule();
+		pushNotificationTemplatesModule.setName("pushNotificationTemplates");
+		pushNotificationTemplatesModule.setDisplayName("Push Notification Templates");
+		pushNotificationTemplatesModule.setTableName("Push_Notification_Templates");
+		pushNotificationTemplatesModule.setExtendModule(getTemplatesModule());
+		return pushNotificationTemplatesModule;
+	}
+	
+	public static FacilioModule getWebNotificationTemplateModule() {
+		FacilioModule webNotificationTemplatesModule = new FacilioModule();
+		webNotificationTemplatesModule.setName("webNotificationTemplates");
+		webNotificationTemplatesModule.setDisplayName("Web Notification Templates");
+		webNotificationTemplatesModule.setTableName("Web_Notification_Templates");
+		webNotificationTemplatesModule.setExtendModule(getTemplatesModule());
+		return webNotificationTemplatesModule;
+	}
+	
 	public static FacilioModule getExcelTemplatesModule() {
 		FacilioModule excelTemplatesModule = new FacilioModule();
 		excelTemplatesModule.setName("exceltemplates");

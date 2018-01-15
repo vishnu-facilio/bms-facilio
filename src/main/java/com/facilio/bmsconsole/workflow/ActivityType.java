@@ -120,6 +120,21 @@ public enum ActivityType {
 		}
 		
 	},
+	REJECT_WORK_ORDER_REQUEST(4096) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "rejected the request";
+		}
+	},
+	SOLVE_WORK_ORDER(8192) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String moduleName = (String) json.get(FacilioConstants.ContextNames.MODULE_NAME);
+			return "solved the "+moduleName;
+		}
+	},
 	;
 
     private int eventType;

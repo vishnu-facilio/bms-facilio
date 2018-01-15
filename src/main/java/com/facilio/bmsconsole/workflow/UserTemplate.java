@@ -86,7 +86,9 @@ public abstract class UserTemplate implements ActionTemplate {
 		EXCEL(4),
 		WORKORDER(5),
 		ALARM(6),
-		TASK_GROUP(7)
+		TASK_GROUP(7),
+		PUSH_NOTIFICATION(8),
+		WEB_NOTIFICATION(9)
 		;
 
 		

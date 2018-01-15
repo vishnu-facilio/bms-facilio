@@ -22,8 +22,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
+import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
+import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -85,6 +87,28 @@ public class TemplateAPI {
 					return getSMSTemplateFromMap(templateMap);
 				}
 			}break;
+			case PUSH_NOTIFICATION: {
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getPushNotificationTemplateFields())
+						.table("Push_Notification_Templates")
+						.andCustomWhere("Push_Notification_Templates.ID = ?", id);
+				List<Map<String, Object>> templates = selectBuilder.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getPushNotificationTemplateFromMap(templateMap);
+				}
+			}break;
+			case WEB_NOTIFICATION: {
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getWebNotificationTemplateFields())
+						.table("Web_Notification_Templates")
+						.andCustomWhere("Web_Notification_Templates", id);
+				List<Map<String, Object>> templates = selectBuilder.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getWebNotificationTemplateFromMap(templateMap);
+				}
+			}
 			case EXCEL: {
 				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 						.select(FieldFactory.getExcelTemplateFields())
@@ -223,6 +247,70 @@ public class TemplateAPI {
 		return updateRecordBuilder.update(templateProps);
 	}
 	
+	public static long addPushNotificationTemplate(long orgId, PushNotificationTemplate template) throws Exception {
+		template.setOrgId(orgId);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder pushNotificationTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("Push_Notification_Templates")
+																.fields(FieldFactory.getPushNotificationTemplateFields())
+																.addRecord(templateProps);
+		pushNotificationTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static int updatePushNotificationTemplate(long orgId, PushNotificationTemplate template, long id) throws Exception {
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table("Push_Notification_Templates")
+																.fields(FieldFactory.getPushNotificationTemplateFields())
+																.andCustomWhere("ID = ?", id);
+		
+		return updateRecordBuilder.update(templateProps);
+	}
+	
+	public static long addWebNotificationTemplate(long orgId, WebNotificationTemplate template) throws Exception {
+		template.setOrgId(orgId);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder pushNotificationTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("Web_Notification_Templates")
+																.fields(FieldFactory.getWebNotificationTemplateFields())
+																.addRecord(templateProps);
+		pushNotificationTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static int updateWebNotificationTemplate(long orgId, WebNotificationTemplate template, long id) throws Exception {
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table("Web_Notification_Templates")
+																.fields(FieldFactory.getWebNotificationTemplateFields())
+																.andCustomWhere("ID = ?", id);
+		
+		return updateRecordBuilder.update(templateProps);
+	}
+	
 	private static EMailTemplate getEMailTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		EMailTemplate template = FieldUtil.getAsBeanFromMap(templateMap, EMailTemplate.class);
 		
@@ -241,6 +329,14 @@ public class TemplateAPI {
 	
 	private static SMSTemplate getSMSTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		SMSTemplate template = FieldUtil.getAsBeanFromMap(templateMap, SMSTemplate.class);
+		return template;
+	}
+	private static PushNotificationTemplate getPushNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		PushNotificationTemplate template = FieldUtil.getAsBeanFromMap(templateMap, PushNotificationTemplate.class);
+		return template;
+	}
+	private static WebNotificationTemplate getWebNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		WebNotificationTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WebNotificationTemplate.class);
 		return template;
 	}
 	
