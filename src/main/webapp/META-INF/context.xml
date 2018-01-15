@@ -9,7 +9,7 @@
 		user="root" 
 		password=""
 		explicitUrl="true"
-        url="jdbc:mysql://localhost:3306/bmstest"
+        url="jdbc:mysql://localhost:3306/bms"
 		/>
     
     
