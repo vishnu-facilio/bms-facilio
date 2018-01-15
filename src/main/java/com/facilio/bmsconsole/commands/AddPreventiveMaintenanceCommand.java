@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -12,10 +11,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
@@ -59,43 +55,15 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		long id = (long) pmProps.get("id");
 		pm.setId(id);
 		
-		addTriggersAndReadings(pm.getId(), pm.getTriggers());
-		
-		for (PMTriggerContext trigger : pm.getTriggers()) {
-			if(trigger.getSchedule() != null) {
-				long startTime = getStartTimeInSecond(trigger.getStartTime());
-				PreventiveMaintenanceAPI.schedulePM(trigger, startTime, PreventiveMaintenanceAPI.PM_CALCULATION_DAYS*3600);
-			}
+		if(pm.getMaxCount() != -1) {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority", pm.getMaxCount());
+		}
+		else if(pm.getEndTime() != -1) {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority", pm.getEndTime());
+		}
+		else {
+			FacilioTimer.scheduleCalendarJob(id, "PreventiveMaintenance", pm.getStartTime(), pm.getSchedule(), "priority");
 		}
 		return false;
-	}
-	
-	private static long getStartTimeInSecond(long startTime) {
-		long startTimeInSecond = startTime/1000;
-		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
-		
-		return startTimeInSecond;
-	}
-	
-	private void addTriggersAndReadings(long pmId, List<PMTriggerContext> triggers) throws Exception {
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.table(ModuleFactory.getPMTriggersModule().getTableName())
-														.fields(FieldFactory.getPMTriggerFields());
-		
-		for (PMTriggerContext trigger : triggers) {
-			trigger.setPmId(pmId);
-			if (trigger.getReadingRule() != null) {
-				long ruleId = WorkflowAPI.addWorkflowRule(trigger.getReadingRule());
-				trigger.setReadingRuleId(ruleId);
-			}
-			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
-		}
-		insertBuilder.save();
-		
-		List<Map<String, Object>> triggerProps = insertBuilder.getRecords();
-		for(int i = 0; i<triggerProps.size(); i++) {
-			Map<String, Object> triggerProp = triggerProps.get(i); 
-			triggers.get(i).setId((long) triggerProp.get("id"));
-		}
 	}
 }
