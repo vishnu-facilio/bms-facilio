@@ -26,18 +26,12 @@ public class ViewAction extends ActionSupport {
 	
 	public String viewList() throws Exception
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (moduleName == null) {
-			moduleName = "workorder";
-		}
-		FacilioModule moduleObj = modBean.getModule(moduleName);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain getViewListChain = FacilioChainFactory.getViewListChain();
+		getViewListChain.execute(context);
 		
-		Map<String,FacilioView> viewList = ViewFactory.getModuleViews(moduleName);
-		List<FacilioView> views = ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId());
-		for(FacilioView view: views) {
-			viewList.put(view.getName(), view);
-		}
-		setViews(new ArrayList<>(viewList.values()));
+		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
 		
 		return SUCCESS;
 	}
@@ -84,8 +78,10 @@ public class ViewAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
 		
-		Chain addView = FacilioChainFactory.getViewCustomizeChain();
+		Chain addView = FacilioChainFactory.getViewsCustomizeChain();
 		addView.execute(context);
+		
+		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
 		
 		return SUCCESS;
 	}

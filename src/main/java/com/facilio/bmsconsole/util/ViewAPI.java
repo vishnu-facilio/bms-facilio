@@ -105,8 +105,6 @@ public class ViewAPI {
 	
 	public static void customizeViews(List<FacilioView> views) throws Exception {
 		
-		List<FacilioField> fields = FieldFactory.getViewFields();
-		
 		for(FacilioView view: views)
 		{
 			int order = view.getSequenceNumber();
