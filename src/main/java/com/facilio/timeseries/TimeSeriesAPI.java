@@ -81,7 +81,7 @@ public class TimeSeriesAPI {
 					reading.addReading(field.getName(), instanceVal);
 					reading.setParentId(assetId);
 					//removing here to avoid going into unmodeled instance..
-					instanceRecord.remove(instanceName);
+					instanceList.remove();
 				}
 			}
 			catch(Exception e) {
