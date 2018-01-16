@@ -23,8 +23,7 @@ public class AddEventCommand implements Command {
 			try {
 				AmazonKinesis kinesis = AwsUtil.getKinesisClient();
 				String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-				payload.put("clientid", orgDomainName);
-				PutRecordRequest recordRequest = new PutRecordRequest().withStreamName(orgDomainName).withData(ByteBuffer.wrap(payload.toJSONString().getBytes(Charset.defaultCharset())));
+				PutRecordRequest recordRequest = new PutRecordRequest().withStreamName(orgDomainName).withData(ByteBuffer.wrap(payload.toJSONString().getBytes(Charset.defaultCharset()))).withPartitionKey(orgDomainName);
 				PutRecordResult result = kinesis.putRecord(recordRequest);
 				System.out.println(result.getSequenceNumber() + " is the sequence number for the record " + payload.toString());
 			} catch (Exception e) {
