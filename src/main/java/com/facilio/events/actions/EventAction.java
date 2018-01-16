@@ -28,7 +28,7 @@ public class EventAction extends ActionSupport {
 	}
 	
 	public String addEvent() throws Exception {
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
 		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();

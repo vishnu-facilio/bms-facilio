@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    
+
+	<!--https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html-->
+
 	<Resource 
     	name="jdbc/BmsXA"
 		auth="Container"
