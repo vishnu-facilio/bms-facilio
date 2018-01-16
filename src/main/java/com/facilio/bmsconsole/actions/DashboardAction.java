@@ -469,7 +469,9 @@ public class DashboardAction extends ActionSupport {
 		
 		if(reportContext.getGroupBy() != null) {
 			
-			Multimap<String, JSONObject> res = ArrayListMultimap.create();
+			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
+			
+			HashMap<String, Object> labelMapping = new HashMap<>();
 			
 			for(int i=0;i<rs.size();i++) {
 	 			Map<String, Object> thisMap = rs.get(i);
@@ -478,11 +480,22 @@ public class DashboardAction extends ActionSupport {
 	 				JSONObject value = new JSONObject();
 	 				value.put("label", thisMap.get("groupBy"));
 	 				value.put("value", thisMap.get("value"));
-	 				res.put(thisMap.get("label").toString(), value);
+	 				
+	 				Object xlabel = thisMap.get("label");
+	 				if(thisMap.get("dummyField") != null) {
+	 					xlabel = thisMap.get("dummyField");
+	 				}
+	 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
+	 					xlabel = labelMapping.get(thisMap.get("label").toString());
+	 				}
+	 				else {
+	 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+	 				}
+	 				res.put(xlabel, value);
 	 			}
 		 	}
 			JSONArray finalres = new JSONArray();
-			for(String key : res.keySet()) {
+			for(Object key : res.keySet()) {
 				JSONObject j1 = new JSONObject();
 				j1.put("label", key);
 				j1.put("value", res.get(key));
