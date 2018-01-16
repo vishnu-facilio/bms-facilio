@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.fw.BeanFactory;
 
 public class ReportFieldContext {
 
 	Long id;
+	String fieldLabel;
 	Long moduleFieldId;
 	Long formulaFieldId;
 	ReportFormulaFieldContext reportFormulaContext;
 	FacilioField moduleField;
 	Boolean isFormulaField;
+	String unit;
 	
 	public Boolean getIsFormulaField() {
 		if(isFormulaField != null) {
@@ -25,14 +24,34 @@ public class ReportFieldContext {
 	public FacilioField getField() throws Exception {
 		if(getIsFormulaField()) {
 			FacilioField facilioField = new FacilioField();
-			facilioField.setName("value");
+			facilioField.setName(reportFormulaContext.getName());
 			facilioField.setColumnName(reportFormulaContext.getFormula());
-			facilioField.setDataType(FieldType.NUMBER);
+			facilioField.setDataType(reportFormulaContext.getDataType());
 			
 			return facilioField;
 		}
 		return getModuleField();
 	}
+	
+	public void setFieldLabel(String fieldLabel) {
+		this.fieldLabel = fieldLabel;
+	}
+	
+	public String getFieldLabel() throws Exception {
+		if (this.fieldLabel == null && this.getField() != null) {
+			return this.getField().getDisplayName();
+		}
+		return this.fieldLabel;
+	}
+	
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+	
+	public String getUnit() {
+		return this.unit;
+	}
+	
 	public void setIsFormulaField(Boolean isFormulaField) {
 		this.isFormulaField = isFormulaField;
 	}

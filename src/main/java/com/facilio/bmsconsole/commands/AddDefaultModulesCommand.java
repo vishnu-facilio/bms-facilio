@@ -13,6 +13,8 @@ public class AddDefaultModulesCommand implements Command {
 	
 	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
 	
+	private static final File INSERT_REPORTS_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultReports.sql").getFile());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -20,9 +22,22 @@ public class AddDefaultModulesCommand implements Command {
 		
 		Map<String, String> paramValues = new HashMap<>(); 
 		paramValues.put("orgId", String.valueOf(orgId));
+	
+		try {
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
+			scriptRunner.runScript();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
-		scriptRunner.runScript();
+		try {
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
+			scriptRunner.runScript();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		return false;
 	}

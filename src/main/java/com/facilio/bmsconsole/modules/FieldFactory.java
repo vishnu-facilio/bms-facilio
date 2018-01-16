@@ -2293,6 +2293,20 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 
+		FacilioField fieldLabel = new FacilioField();
+		fieldLabel.setName("fieldLabel");
+		fieldLabel.setDataType(FieldType.STRING);
+		fieldLabel.setColumnName("FIELD_LABEL");
+		fieldLabel.setModule(module);
+		fields.add(fieldLabel);
+		
+		FacilioField unit = new FacilioField();
+		unit.setName("unit");
+		unit.setDataType(FieldType.STRING);
+		unit.setColumnName("UNIT");
+		unit.setModule(module);
+		fields.add(unit);
+		
 		FacilioField moduleFieldId = new FacilioField();
 		moduleFieldId.setName("moduleFieldId");
 		moduleFieldId.setDataType(FieldType.NUMBER);
