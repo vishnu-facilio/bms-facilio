@@ -19,7 +19,6 @@ public class FacilioChainFactory {
 		c.addCommand(new CreateAccountCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddEventModuleCommand());
-		c.addCommand(new LicenseCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
