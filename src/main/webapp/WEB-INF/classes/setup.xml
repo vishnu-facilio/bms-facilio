@@ -237,6 +237,13 @@
 			</result>
 		</action>	
 		
+		<action name="wotemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="getWOTemplates">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workorderTemplates.*</param>
+			</result>
+		</action>	
+		
 		<action name="alarmnotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showAlarmsNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

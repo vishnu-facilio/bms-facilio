@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
@@ -12,6 +15,27 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class TemplateAction extends ActionSupport {
+	
+
+	List<JSONTemplate> workorderTemplates;
+	public List<JSONTemplate> getWorkorderTemplates() {
+		return workorderTemplates;
+	}
+	public void setWorkorderTemplates(List<JSONTemplate> workorderTemplates) {
+		this.workorderTemplates = workorderTemplates;
+	}
+	
+	public String getWOTemplates() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain allWOTemplates = FacilioChainFactory.getAllWOTemplatesChain();
+		allWOTemplates.execute(context);
+		
+		setWorkorderTemplates((List<JSONTemplate>) context.get(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE_LIST));
+		
+		return SUCCESS;
+	}
+	
 	public String addEmail() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

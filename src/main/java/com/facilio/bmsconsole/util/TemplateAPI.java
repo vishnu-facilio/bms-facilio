@@ -59,6 +59,32 @@ public class TemplateAPI {
 		return excelTemplates;
 	}
 	
+	public static List<JSONTemplate> getAllWOTemplates() throws Exception {
+		List<FacilioField> fields = FieldFactory.getUserTemplateFields();
+		fields.addAll(FieldFactory.getJSONTemplateFields());
+		
+		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
+		FacilioModule woTemplateModule = ModuleFactory.getJSONTemplateModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													  .select(fields)
+													  .table(userTemplateModule.getTableName())
+													  .innerJoin(woTemplateModule.getTableName())
+													  .on(userTemplateModule.getTableName()+".ID = "+woTemplateModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(userTemplateModule));
+		
+		List<Map<String, Object>> templatePropList = selectBuilder.get();
+		List<JSONTemplate> woTemplates = new ArrayList<JSONTemplate>();
+		for(int i=0;i<templatePropList.size();i++)
+		{
+			Map<String,Object> templateProps = templatePropList.get(i);
+			JSONTemplate template = FieldUtil.getAsBeanFromMap(templateProps,JSONTemplate.class);
+			woTemplates.add(template);
+			
+		}
+		return woTemplates;
+	}
+	
 	private static UserTemplate getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
 		UserTemplate.Type type = UserTemplate.Type.getType((int) templateMap.get("type"));
 		long id = (long) templateMap.get("id");

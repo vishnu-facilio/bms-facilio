@@ -1210,6 +1210,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllWOTemplatesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetAllWOTemplatesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddTemplateChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());
