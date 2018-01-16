@@ -9,9 +9,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddTasksCommand implements Command {
 
@@ -27,14 +30,6 @@ public class AddTasksCommand implements Command {
 			
 			for(TaskContext task : tasks) {
 				task.setCreatedTime(System.currentTimeMillis());
-				
-				if(task.getAsset() == null && task.isReadingTask()) {
-					throw new IllegalArgumentException("Asset cannot be null when reading is enabled for task");
-				}
-				
-				if(task.isReadingTask() && task.getReadingFieldId() == -1) {
-					throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
-				}
 			}
 			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
@@ -50,5 +45,4 @@ public class AddTasksCommand implements Command {
 		}
 		return false;
 	}
-
 }

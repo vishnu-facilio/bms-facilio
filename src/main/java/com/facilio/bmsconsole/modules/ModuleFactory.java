@@ -644,4 +644,12 @@ public class ModuleFactory {
 		viewFieldsModule.setTableName("View_Column");
 		return viewFieldsModule;
 	}
+	
+	public static FacilioModule getTaskInputOoptionModule() {
+		FacilioModule taskInputOptionsModule = new FacilioModule();
+		taskInputOptionsModule.setName("taskInputOpyion");
+		taskInputOptionsModule.setDisplayName("Task Input Options");
+		taskInputOptionsModule.setTableName("Task_Input_Options");
+		return taskInputOptionsModule;
+	}
 }

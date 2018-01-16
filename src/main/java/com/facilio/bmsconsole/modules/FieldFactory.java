@@ -2613,6 +2613,17 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getTaskInputOptionsFields() {
+		FacilioModule module = ModuleFactory.getTaskInputOoptionModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("taskId", "TASK_ID", module, FieldType.STRING));
+		fields.add(getField("option", "OPTION_VALUE", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);

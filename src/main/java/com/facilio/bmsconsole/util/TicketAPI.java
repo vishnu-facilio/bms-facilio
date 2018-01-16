@@ -30,7 +30,6 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class TicketAPI {
 	
@@ -181,6 +180,22 @@ public class TicketAPI {
 			ticket.setNotes(getRelatedNotes(ticket.getId()));
 			ticket.setAttachments(getRelatedAttachments(ticket.getId()));
 		}
+	}
+	
+	public static List<String> getTaskInputOptions(long taskId) throws Exception {
+		FacilioModule module = ModuleFactory.getTaskInputOoptionModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getTaskInputOptionsFields())
+														.table(module.getTableName())
+														.andCustomWhere("TASK_ID = ?", taskId)
+														;
+		
+		List<Map<String, Object>> optionList = selectBuilder.get();
+		List<String> options = new ArrayList<>();
+		for(Map<String, Object> option : optionList) {
+			options.add((String) option.get("option"));
+		}
+		return options;
 	}
 	
 	private static List<FacilioField> maxSerialNumberField = null;

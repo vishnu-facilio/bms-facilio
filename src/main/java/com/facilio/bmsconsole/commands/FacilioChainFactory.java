@@ -442,8 +442,10 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		//c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTaskCommand());
+		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -452,8 +454,10 @@ public class FacilioChainFactory {
 	public static Chain getAddTasksChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTasksCommand());
+		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -461,7 +465,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getUpdateTaskChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new CreateReadingForTaskCommand());
+		c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 		c.addCommand(getAddOrUpdateReadingValuesChain());
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -485,7 +489,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskCommand());
-		c.addCommand(new GetTaskReadingDataCommand());
+		c.addCommand(new GetTaskInputDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -497,7 +501,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskListCommand());
-		c.addCommand(new GetTaskReadingDataCommand());
+		c.addCommand(new GetTaskInputDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -506,7 +510,7 @@ public class FacilioChainFactory {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new GetRelatedTasksCommand());
-		c.addCommand(new GetTaskReadingDataCommand());
+		c.addCommand(new GetTaskInputDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

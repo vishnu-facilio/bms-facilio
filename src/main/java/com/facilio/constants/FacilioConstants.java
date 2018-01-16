@@ -167,6 +167,7 @@ public class FacilioConstants {
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		
 		public static final String READINGS = "readings";
+		public static final String READING = "reading";
 		public static final String PHOTOS = "photos";
 		public static final String PHOTO_ID = "photoId";
 		

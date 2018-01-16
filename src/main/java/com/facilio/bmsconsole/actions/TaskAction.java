@@ -116,9 +116,9 @@ public class TaskAction extends ActionSupport {
 		return updateTask(context);
 	}
 	
-	public String addTaskReadingData() throws Exception {
+	public String addTaskInput() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_READING_VALUE);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_INPUT);
 		return updateTask(context);
 	}
 	
