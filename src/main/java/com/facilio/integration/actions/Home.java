@@ -61,10 +61,12 @@ state = PORTAL-yogendrababu
 	
 	public String validatelogin() throws Exception
 	{
+		try {
 		System.out.println("validatelogin() : username : "+username +"; password : "+password);
 		String encryptedPass = cryptWithMD5(password);
 		if(!verifyPassword(username, encryptedPass))
 		{
+			System.out.print(">>>>> verifyPassword :"+username);
 			return ERROR;
 		}		
 		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
@@ -87,9 +89,13 @@ state = PORTAL-yogendrababu
 		authmodel.setPath("/");
 		authmodel.setHttpOnly(false);
 //		authmodel.setDomain(request.getServerName());
-		System.out.println("#################### facilio.in:::; "+ request.getServerName());
+		System.out.println("#################### facilio.in::: "+ request.getServerName());
 		response.addCookie(authmodel);
-
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
 		return SUCCESS;
 	}
 /*
@@ -157,6 +163,7 @@ Pragma: no-cache
 	{
 		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+emailaddress );
 		String encryptedPass = cryptWithMD5(password);
+		
 		return AddNewUserDB(username,encryptedPass,emailaddress);
 		
 	//	return SUCCESS;
@@ -164,6 +171,7 @@ Pragma: no-cache
 	
 	public  String AddNewUserDB(String username, String password, String emailaddress) throws Exception
 	{
+		System.out.println("### AddNewUserDB() :"+emailaddress);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try
@@ -177,6 +185,7 @@ Pragma: no-cache
 				
 		}catch(SQLException | RuntimeException e)
 		{
+			e.printStackTrace();
 			throw e;
 		}
 		finally
@@ -212,8 +221,7 @@ Pragma: no-cache
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
 		setJsonresponse("username",username);
-		
-		
+			
 		return SUCCESS;
 	}
 

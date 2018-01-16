@@ -114,14 +114,17 @@ body {
 <body>
 <div class="login-page">
   <div class="form">
+  
     <form class="register-form">
     		<input type="text" id="emailaddress" placeholder="emailaddress"/>
       <input hidden type="text" id="username" placeholder="name"/>
       <input type="password" id="password" placeholder="password"/>
-      
+      <input type="password" id="confirmPassword" placeholder="confirmPassword"/>    
       <button onclick="signup()">create</button>
       <p class="message">Already registered? <a href="#">Sign In</a></p>
     </form>
+        
+    
     <form class="login-form" method="POST"  id="target">
       <input type="text" placeholder="username" name="username"/>
       <input type="password" placeholder="password" name="password"/>
@@ -136,6 +139,15 @@ body {
 <script>
 function signup()
 {
+	var pass = 	document.getElementById("password").value;
+	var confirmpass = document.getElementById("confirmPassword").value;
+	if(pass != confirmpass)
+		{
+			alert("Incorrect ConfirmPassword");
+			return false;
+		}
+	
+	
 	var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
 	$.ajax({
 			  type: "POST",
