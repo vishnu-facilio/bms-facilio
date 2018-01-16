@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddPMReminderCommand implements Command {
@@ -62,13 +64,20 @@ public class AddPMReminderCommand implements Command {
 				}
 				insertBuilder.save();
 				
-				long nextExecutionTime = pm.getSchedule().nextExecutionTime(getStartTimeInSecond(pm.getStartTime()));
-				
+				Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
 				for(int i=0; i<reminders.size(); i++) {
 					long schedulerId = (long) reminderProps.get(i).get("id");
 					PMReminder reminder = reminders.get(i);
 					reminder.setId(schedulerId);
-					CommonCommandUtil.schedulePMReminder(reminder, -1l, nextExecutionTime, -1l);
+					
+					if(reminder.getTypeEnum() == ReminderType.BEFORE) {
+						for(PMTriggerContext trigger : pm.getTriggers()) {
+							Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+							if(nextExecutionTime != null) {
+								CommonCommandUtil.scheduleBeforePMReminder(reminder, nextExecutionTime, trigger.getId());
+							}
+						}
+					}
 				}
 			}
 		}

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class SchedulePMRemindersCommand implements Command {
@@ -40,11 +41,6 @@ public class SchedulePMRemindersCommand implements Command {
 			currentExecutionTime = (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
 		}
 		
-		long nextExecutionTime = -1;
-		if(context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIME) != null) {
-			nextExecutionTime = (long) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIME);
-		}
-		
 		PMReminder.ReminderType reminderType = (ReminderType) context.get(FacilioConstants.ContextNames.PM_REMINDER_TYPE);
 		FacilioModule module = ModuleFactory.getPMReminderModule();
 		
@@ -61,9 +57,23 @@ public class SchedulePMRemindersCommand implements Command {
 			
 			List<Map<String, Object>> reminderProps = selectBuilder.get();
 			if(reminderProps != null && !reminderProps.isEmpty()) {
+				Map<Long, List<PMTriggerContext>> pmTriggersMap = (Map<Long, List<PMTriggerContext>>) context.get(FacilioConstants.ContextNames.PM_TRIGGERS);
+				Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
 				for(Map<String, Object> reminderProp : reminderProps) {
 					PMReminder reminder = FieldUtil.getAsBeanFromMap(reminderProp, PMReminder.class);
-					CommonCommandUtil.schedulePMReminder(reminder, currentExecutionTime, nextExecutionTime, pmToWo.get(pmId));
+					switch(reminder.getTypeEnum()) {
+						case BEFORE:
+							for(PMTriggerContext trigger : pmTriggersMap.get(pmId)) {
+								Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+								if(nextExecutionTime != null) {
+									CommonCommandUtil.scheduleBeforePMReminder(reminder, nextExecutionTime, trigger.getId());
+								}
+							}
+							break;
+						case AFTER:
+							CommonCommandUtil.scheduleAfterPMReminder(reminder, currentExecutionTime, pmToWo.get(pmId));
+							break;
+					}
 				}
 			}
 		}

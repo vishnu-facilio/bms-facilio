@@ -291,4 +291,27 @@ public class JobStore {
 			throw e;
 		}
 	}
+	
+	public static JobContext getJob(long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, jobId, jobName); ResultSet rs = pstmt.executeQuery()) {
+			if(rs.next()) {
+				return getJobFromRS(rs);
+			}
+			return null;
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	private static PreparedStatement getPStmt(Connection conn, long jobId, String jobName) throws SQLException {
+		String sql = "SELECT * FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setLong(1, jobId);
+		pstmt.setString(2, jobName);
+		
+		return pstmt;
+	}
 }

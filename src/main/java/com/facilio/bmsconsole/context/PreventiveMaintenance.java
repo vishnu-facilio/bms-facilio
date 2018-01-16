@@ -1,23 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.tasker.executor.ScheduleInfo;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance {
-	
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -33,7 +22,7 @@ public class PreventiveMaintenance {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-	
+
 	private String title;
 	public String getTitle() {
 		return title;
@@ -41,7 +30,7 @@ public class PreventiveMaintenance {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	private Boolean status;
 	public Boolean getStatus() {
 		return status;
@@ -49,13 +38,14 @@ public class PreventiveMaintenance {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
+
 	public boolean isActive() {
-		if(status != null) {
+		if (status != null) {
 			return status.booleanValue();
 		}
 		return false;
 	}
-	
+
 	private User createdBy;
 	public User getCreatedBy() {
 		return createdBy;
@@ -63,7 +53,7 @@ public class PreventiveMaintenance {
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
-	
+
 	private long createdById = -1;
 	public long getCreatedById() {
 		return createdById;
@@ -74,17 +64,16 @@ public class PreventiveMaintenance {
 
 	private User modifiedBy;
 	public User getModifiedBy() {
-		if(modifiedBy != null) {
+		if (modifiedBy != null) {
 			return modifiedBy;
-		}
-		else {
+		} else {
 			return createdBy;
 		}
 	}
 	public void setModifiedBy(User modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
-	
+
 	private long modifiedByid = -1;
 	public long getModifiedByid() {
 		return modifiedByid;
@@ -100,20 +89,19 @@ public class PreventiveMaintenance {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
-	
+
 	private long lastModifiedTime = -1;
 	public long getLastModifiedTime() {
-		if(lastModifiedTime != -1) {
+		if (lastModifiedTime != -1) {
 			return lastModifiedTime;
-		}
-		else {
+		} else {
 			return createdTime;
 		}
 	}
 	public void setLastModifiedTime(long lastModifiedTime) {
 		this.lastModifiedTime = lastModifiedTime;
 	}
-	
+
 	private long templateId = -1;
 	public long getTemplateId() {
 		return templateId;
@@ -121,7 +109,7 @@ public class PreventiveMaintenance {
 	public void setTemplateId(long templateId) {
 		this.templateId = templateId;
 	}
-	
+
 	private long spaceId = -1;
 	public long getSpaceId() {
 		return spaceId;
@@ -129,7 +117,7 @@ public class PreventiveMaintenance {
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
 	}
-	
+
 	private long assetId = -1;
 	public long getAssetId() {
 		return assetId;
@@ -137,7 +125,7 @@ public class PreventiveMaintenance {
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
 	}
-	
+
 	private long assignedToid = -1;
 	public long getAssignedToid() {
 		return assignedToid;
@@ -145,7 +133,7 @@ public class PreventiveMaintenance {
 	public void setAssignedToid(long assignedToid) {
 		this.assignedToid = assignedToid;
 	}
-	
+
 	private long assignmentGroupId = -1;
 	public long getAssignmentGroupId() {
 		return assignmentGroupId;
@@ -162,87 +150,89 @@ public class PreventiveMaintenance {
 		this.typeId = typeId;
 	}
 
-	private long startTime = -1;
-	public long getStartTime() {
-		return startTime;
-	}
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-	
-	private long nextExecutionTime = -1;
-	public long getNextExecutionTime() {
-		return nextExecutionTime;
-	}
-	public void setNextExecutionTime(long nextExecutionTime) {
-		this.nextExecutionTime = nextExecutionTime*1000;
-	}
-
-	private long endTime = -1;
-	public long getEndTime() {
-		return endTime;
-	}
-	@JsonSetter("endExecutionTime")
-	public void setEndTime(long endTime) {
-		this.endTime = endTime*1000;
-	}
-
-	private ScheduleInfo schedule;
-	public ScheduleInfo getSchedule() {
-		return schedule;
-	}
-	public void setSchedule(ScheduleInfo schedule) {
-		this.schedule = schedule;
-	}
-	
-	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if(schedule != null) {
-			return FieldUtil.getAsJSON(schedule).toJSONString();
-		}
-		return null;
-	}
-	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
-	}
-	
-	private int maxCount = -1;
-	public int getMaxCount() {
-		return maxCount;
-	}
-	@JsonSetter("maxExecution")
-	public void setMaxCount(int maxCount) {
-		this.maxCount = maxCount;
-	}
-	
-	public String getScheduleMsg() {
-		if(schedule != null) {
-			return schedule.getDescription(startTime);
-		}
-		return null;
-	}
-	
-	private ReadingRuleContext readingRule;
-	public ReadingRuleContext getReadingRule() {
-		return readingRule;
-	}
-	public void setReadingRule(ReadingRuleContext readingRule) {
-		this.readingRule = readingRule;
-	}
-	
-	private long readingRuleId = -1;
-	public long getReadingRuleId() {
-		return readingRuleId;
-	}
-	public void setReadingRuleId(long readingRuleId) {
-		this.readingRuleId = readingRuleId;
-	}
-
 	private List<WorkOrderContext> workorders;
 	public List<WorkOrderContext> getWorkorders() {
 		return workorders;
 	}
 	public void setWorkorders(List<WorkOrderContext> workorders) {
 		this.workorders = workorders;
+	}
+
+	private Boolean waitForAllTriggers;
+	public Boolean getWaitForAllTriggers() {
+		return waitForAllTriggers;
+	}
+	public void setWaitForAllTriggers(Boolean waitForAllTriggers) {
+		this.waitForAllTriggers = waitForAllTriggers;
+	}
+	public boolean waitForAllTriggers() {
+		if (waitForAllTriggers != null) {
+			return waitForAllTriggers.booleanValue();
+		}
+		return false;
+	}
+
+	private List<PMTriggerContext> triggers;
+	public List<PMTriggerContext> getTriggers() {
+		return triggers;
+	}
+	public void setTriggers(List<PMTriggerContext> triggers) {
+		this.triggers = triggers;
+	}
+
+	private TriggerType triggerType;
+	public int getTriggerType() {
+		if (triggerType != null) {
+			return triggerType.getVal();
+		}
+		return -1;
+	}
+	public void setTriggerType(int triggerType) {
+		this.triggerType = TriggerType.valueOf(triggerType);
+	}
+	public TriggerType getTriggerTypeEnum() {
+		return triggerType;
+	}
+	public void setTriggerType(TriggerType triggerType) {
+		this.triggerType = triggerType;
+	}
+
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	private int currentExecutionCount = 0;
+	public int getCurrentExecutionCount() {
+		return currentExecutionCount;
+	}
+	public void setCurrentExecutionCount(int currentExecutionCount) {
+		this.currentExecutionCount = currentExecutionCount;
+	}
+
+	private int maxCount = -1;
+	public int getMaxCount() {
+		return maxCount;
+	}
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
+
+	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
+	public static enum TriggerType {
+		ONLY_SCHEDULE_TRIGGER, 
+		FLOATING, 
+		FIXED;
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+
+		public static TriggerType valueOf(int type) {
+			return TRIGGER_TYPES[type - 1];
+		}
 	}
 }

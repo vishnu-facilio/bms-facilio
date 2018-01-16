@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,8 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -29,6 +32,7 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -177,9 +181,25 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			addWOChain.execute(context);
 
 			addToRelTable(pm.getId(), wo.getId());
+			incrementPMCount(pm);
 			return wo;
 		}
 		return null;
+	}
+	
+	private void incrementPMCount(PreventiveMaintenance pm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		PreventiveMaintenance updatePm = new PreventiveMaintenance();
+		updatePm.setCurrentExecutionCount(updatePm.getCurrentExecutionCount());
+		pm.setCurrentExecutionCount(pm.getCurrentExecutionCount()+1);
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(FieldFactory.getPreventiveMaintenanceFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(pm.getId(), module))
+														;
+		
+		updateBuilder.update(FieldUtil.getAsProperties(updatePm));
 	}
 	
 	private void addToRelTable(long pmId, long woId) throws SQLException, RuntimeException {

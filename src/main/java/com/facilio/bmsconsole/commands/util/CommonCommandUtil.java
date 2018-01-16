@@ -14,8 +14,12 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -27,6 +31,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -164,19 +169,55 @@ public class CommonCommandUtil {
 		return null;	
 	}
 	
-	public static void schedulePMReminder(PMReminder reminder, long currentExecutionTime, long nextExecutionTime, long woId) throws Exception {
-		switch(reminder.getTypeEnum()) {
-			case BEFORE:
-				if(nextExecutionTime != -1) {
-					FacilioTimer.deleteJob(reminder.getId(), "BeforePMReminder");
-					FacilioTimer.scheduleOneTimeJob(reminder.getId(), "BeforePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
-				}
-				break;
-			case AFTER:
-				if(currentExecutionTime != -1 && woId != -1) {
-					FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "AfterPMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
-				}
-				break;
+	public static void scheduleBeforePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId) throws Exception {
+		if(reminder.getTypeEnum() == ReminderType.BEFORE && nextExecutionTime != -1 && triggerId != -1) {
+			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId);
+			FacilioTimer.scheduleOneTimeJob(id, "BeforePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
+		}
+		else {
+			throw new IllegalArgumentException("Invalid parameters for scheduling Before PMReminder job"+reminder.getId());
+		}
+	}
+	
+	private static long deleteOrAddPreviousBeforeRemindersRel(long pmReminderId, long triggerId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getBeforePMRemindersTriggerRelFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule module = ModuleFactory.getBeforePMRemindersTriggerRelModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmReminderId"), String.valueOf(pmReminderId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmTriggerId"), String.valueOf(triggerId), NumberOperators.EQUALS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			Map<String, Object> relProp = props.get(0);
+			long id = (long) relProp.get("id");
+			FacilioTimer.deleteJob(id, "BeforePMReminder");
+			return id;
+		}
+		else {
+			Map<String, Object> relProp = new HashMap<>();
+			relProp.put("pmReminderId", pmReminderId);
+			relProp.put("pmTriggerId", triggerId);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table(module.getTableName())
+															.fields(fields)
+															.addRecord(relProp);
+			
+			insertBuilder.save();
+			return (long) relProp.get("id");
+		}
+	}
+	
+	public static void scheduleAfterPMReminder(PMReminder reminder, long currentExecutionTime, long woId) throws SQLException, RuntimeException, Exception {
+		if(reminder.getTypeEnum() == ReminderType.AFTER && currentExecutionTime != -1 && woId != -1) {
+			FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "AfterPMReminder", currentExecutionTime+reminder.getDuration(), "facilio");
+		}
+		else {
+			throw new IllegalArgumentException("Invalid parameters for scheduling After PMReminder job"+reminder.getId());
 		}
 	}
 	

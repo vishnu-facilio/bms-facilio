@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -31,17 +32,14 @@ public class GetAlarmListCommand implements Command {
 				.select(fields)
 				.orderBy("MODIFIED_TIME desc")
 				.maxLevel(0);
-
-		if(view != null) {
+		
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			builder.andCriteria(filterCriteria);
+		} else if (filters == null && view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
-		}
-
-		List<Condition> conditionList = (List<Condition>) context.get(FacilioConstants.ContextNames.FILTER_CONDITIONS);
-		if(conditionList != null && !conditionList.isEmpty()) {
-			for(Condition condition : conditionList) {
-				builder.andCondition(condition);
-			}
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
@@ -52,6 +50,20 @@ public class GetAlarmListCommand implements Command {
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
+		}
+		
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			builder.offset(offset);
+			builder.limit(perPage);
 		}
 
 		List<AlarmContext> alarms = builder.get();

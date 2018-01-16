@@ -2,6 +2,9 @@ package com.facilio.bmsconsole.modules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
 
@@ -1274,55 +1277,11 @@ public class FieldFactory {
 		typeId.setModule(module);
 		fields.add(typeId);
 
-		FacilioField startTime = new FacilioField();
-		startTime.setName("startTime");
-		startTime.setDataType(FieldType.NUMBER);
-		startTime.setColumnName("START_TIME");
-		startTime.setModule(module);
-		fields.add(startTime);
-
-		FacilioField readingRuleId = new FacilioField();
-		readingRuleId.setName("readingRuleId");
-		readingRuleId.setDataType(FieldType.NUMBER);
-		readingRuleId.setColumnName("READING_RULE_ID");
-		readingRuleId.setModule(module);
-		fields.add(readingRuleId);
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
 		
-		return fields;
-	}
-
-	public static List<FacilioField> getPMJobFields() {
-		FacilioModule module = ModuleFactory.getJobsModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		FacilioField scheduleJson = new FacilioField();
-		scheduleJson.setName("scheduleJson");
-		scheduleJson.setDataType(FieldType.STRING);
-		scheduleJson.setColumnName("SCHEDULE_INFO");
-		scheduleJson.setModule(module);
-		fields.add(scheduleJson);
-
-		FacilioField nextExecutionTime = new FacilioField();
-		nextExecutionTime.setName("nextExecutionTime");
-		nextExecutionTime.setDataType(FieldType.NUMBER);
-		nextExecutionTime.setColumnName("NEXT_EXECUTION_TIME");
-		nextExecutionTime.setModule(module);
-		fields.add(nextExecutionTime);
-
-		FacilioField endExecutionTime = new FacilioField();
-		endExecutionTime.setName("endExecutionTime");
-		endExecutionTime.setDataType(FieldType.NUMBER);
-		endExecutionTime.setColumnName("END_EXECUTION_TIME");
-		endExecutionTime.setModule(module);
-		fields.add(endExecutionTime);
-
-		FacilioField maxExecution = new FacilioField();
-		maxExecution.setName("maxExecution");
-		maxExecution.setDataType(FieldType.NUMBER);
-		maxExecution.setColumnName("MAX_EXECUTION");
-		maxExecution.setModule(module);
-		fields.add(maxExecution);
-
 		return fields;
 	}
 
@@ -1373,6 +1332,8 @@ public class FieldFactory {
 		period.setColumnName("PERIOD");
 		period.setModule(module);
 		fields.add(period);
+		
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 
 		FacilioField executionTime = new FacilioField();
 		executionTime.setName("executionTime");
@@ -1387,6 +1348,9 @@ public class FieldFactory {
 		executorName.setColumnName("EXECUTOR_NAME");
 		executorName.setModule(module);
 		fields.add(executorName);
+		
+		fields.add(getField("endExecutionTime", "END_EXECUTION_TIME", module, FieldType.NUMBER));
+		fields.add(getField("maxExecution", "MAX_EXECUTION", module, FieldType.NUMBER));
 
 		FacilioField currentExecutionCount = new FacilioField();
 		currentExecutionCount.setName("currentExecutionCount");
@@ -1395,7 +1359,7 @@ public class FieldFactory {
 		currentExecutionCount.setModule(module);
 		fields.add(currentExecutionCount);
 
-		fields.addAll(getPMJobFields());
+		
 
 		return fields;
 	}
@@ -2303,7 +2267,7 @@ public class FieldFactory {
 		FacilioField limit = new FacilioField();
 		limit.setName("limit");
 		limit.setDataType(FieldType.NUMBER);
-		limit.setColumnName("LIMIT_VALUE");
+		limit.setColumnName("LLIMIT");
 		limit.setModule(module);
 		fields.add(limit);
 		
@@ -2608,29 +2572,51 @@ public class FieldFactory {
 		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
-		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
-		fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
-		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("readingRuleId", "READING_RULE_ID", module, FieldType.NUMBER));
-		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMJobFields() {
+		FacilioModule module = ModuleFactory.getPMJobsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATE_ID",  module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getBeforePMRemindersTriggerRelFields() {
+		FacilioModule module = ModuleFactory.getBeforePMRemindersTriggerRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("pmReminderId", "PM_REMINDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
 		
 		return fields;
 	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
-		FacilioField columnFld = new FacilioField();
-		columnFld.setName(name);
-		columnFld.setColumnName(colName);
-		columnFld.setDataType(type);
-		return columnFld;
+		return getField(name, colName, null, type);
 	}
 	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		FacilioField columnFld = new FacilioField();
 		columnFld.setName(name);
 		columnFld.setColumnName(colName);
-		columnFld.setModule(module);
 		columnFld.setDataType(type);
+		if(module != null) {
+			columnFld.setModule(module);
+		}
 		return columnFld;
+	}
+	
+	public static Map<String, FacilioField> getAsMap(List<FacilioField> fields) {
+		return fields.stream()
+				.collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 	}
 }

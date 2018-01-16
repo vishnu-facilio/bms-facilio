@@ -288,7 +288,7 @@ public enum ActionType {
 					pmContext.put(FacilioConstants.ContextNames.RECORD_ID, pm.getId());
 					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
 					pmContext.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, PMReminder.ReminderType.AFTER);
-					pmContext.put(FacilioConstants.ContextNames.PM_RESET_SCHEDULE, true);
+					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
 					
 					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 					executePm.execute(pmContext);

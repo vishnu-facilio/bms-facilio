@@ -37,7 +37,7 @@ public class ScheduleInfo {
 		}
 		times.add(time);
 	}
-	public void addTim1e(String time) {
+	public void addTime(String time) {
 		addTime(LocalTime.parse(time));
 	}
 	
@@ -123,6 +123,11 @@ public class ScheduleInfo {
 		return nextExecutionTimes;
 	}
 	
+	private boolean isLastTime(ZonedDateTime zdt) {
+		LocalTime lastTime = times.get(times.size() - 1);
+		return zdt.toLocalTime().isAfter(lastTime) || zdt.toLocalTime().equals(lastTime);
+	}
+	
 	public long nextExecutionTime(long startTime) {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime, true);
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
@@ -147,7 +152,7 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Days of Week");
 				}
 				
-				if(zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(isLastTime(zdt)) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
 				}
 				
@@ -166,6 +171,10 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Days of Week");
 				}
 				addAndSortValue(zdt.getDayOfWeek().getValue());
+				
+				if(isLastTime(zdt)) {
+					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
+				}
 				
 				while(!values.contains(zdt.getDayOfWeek().getValue()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
@@ -193,6 +202,9 @@ public class ScheduleInfo {
 				}
 				addAndSortValue(zdt.getDayOfMonth());
 
+				if(isLastTime(zdt)) {
+					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
+				}
 				while(!values.contains(zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
 					zdt = zdt.with(LocalTime.of(0, 0)).plusDays(1);
 				}
@@ -242,7 +254,7 @@ public class ScheduleInfo {
 				}
 				
 				addAndSortValue(zdt.getDayOfWeek().getValue());
-				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(!values.contains(zdt.getDayOfWeek().getValue()) || !checkWeekOfMonth(zdt) || isLastTime(zdt)) {
 					zdt = firstMonthlyWeek(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -256,7 +268,7 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Months");
 				}
 				addAndSortValue(zdt.getMonthValue());
-				if(!values.contains(zdt.getMonthValue()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(!values.contains(zdt.getMonthValue()) || isLastTime(zdt)) {
 					zdt = incrementYear(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
@@ -368,7 +380,7 @@ public class ScheduleInfo {
 
 	private ZonedDateTime compareHourAndMinute(ZonedDateTime zdt) {
 		for(LocalTime time : times) {
-			if(time.isAfter(zdt.toLocalTime())) {
+			if(time.isAfter(zdt.toLocalTime()) || time.equals(zdt.toLocalTime())) {
 				return zdt.with(time);
 			}
 		}
