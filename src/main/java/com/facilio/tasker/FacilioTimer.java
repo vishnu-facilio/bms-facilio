@@ -1,9 +1,16 @@
 package com.facilio.tasker;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
+import org.json.simple.parser.ParseException;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class FacilioTimer {
 	
@@ -139,6 +146,10 @@ public class FacilioTimer {
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		JobStore.deleteJob(jobId, jobName);
+	}
+	
+	public static JobContext getJob(long jobId, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
+		return JobStore.getJob(jobId, jobName);
 	}
 	
 	private static long getCurrentOrgId() {

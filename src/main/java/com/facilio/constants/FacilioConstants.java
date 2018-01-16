@@ -282,13 +282,14 @@ public class FacilioConstants {
 		public static final String PM_REMINDERS = "pmreminders";
 		public static final String PM_REMINDER = "pmreminder";
 		public static final String PM_REMINDER_TYPE = "pmremindertype";
+		public static final String PM_TRIGGERS = "pmtriggers";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String INSERT_LEVEL = "insertLevel";
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
-		public static final String PM_RESET_READING = "pmResetReading";
-		public static final String PM_RESET_SCHEDULE = "pmResetSchedule";
+		public static final String PM_RESET_TRIGGERS = "pmResetTriggers";
+		public static final String PM_CURRENT_TROGGER = "pmCurrentTriggerId";
 		public static final String PM_TO_WO = "pmtowo";
 		
 		public static final String CV_NAME = "cvName";
@@ -312,7 +313,7 @@ public class FacilioConstants {
 		public static final String NODE = "node";
 		public static final String PAGINATION = "pagination";
 		public static final String CURRENT_EXECUTION_TIME = "currentexecutiontime";
-		public static final String NEXT_EXECUTION_TIME = "nextexecutiontime";
+		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";

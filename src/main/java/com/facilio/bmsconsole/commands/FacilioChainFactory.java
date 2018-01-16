@@ -1143,8 +1143,8 @@ public class FacilioChainFactory {
 	public static Chain getExecutePreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ExecutePMCommand());
+		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
-		c.addCommand(new ResetPMReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1152,8 +1152,8 @@ public class FacilioChainFactory {
 	public static Chain getExecutePMsChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ExecutePMsCommand());
+		c.addCommand(new ResetTriggersCommand());
 		c.addCommand(new SchedulePMRemindersCommand());
-		c.addCommand(new ResetPMReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

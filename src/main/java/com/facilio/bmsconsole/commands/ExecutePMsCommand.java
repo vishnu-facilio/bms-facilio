@@ -11,14 +11,9 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ExecutePMsCommand implements Command {
 
@@ -26,7 +21,7 @@ public class ExecutePMsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> pmIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		List<PreventiveMaintenance> pms = getPMs(pmIds);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds);
 		if(pms != null && !pms.isEmpty()) {
 			Map<Long, Long> pmToWo = new HashMap<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
@@ -43,25 +38,6 @@ public class ExecutePMsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.PM_TO_WO, pmToWo);
 		}
 		return false;
-	}
-	
-	private List<PreventiveMaintenance> getPMs (List<Long> ids) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getPreventiveMaintenanceFields())
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		if(props != null && !props.isEmpty()) {
-			List<PreventiveMaintenance> pms = new ArrayList<>();
-			for (Map<String, Object> prop : props) {
-				pms.add(FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class));
-			}
-		}
-		return null;
 	}
 
 }

@@ -25,19 +25,22 @@ public class GetPMAndPMReminderCommand implements Command {
 		// TODO Auto-generated method stub
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		ReminderType type = (ReminderType) context.get(FacilioConstants.ContextNames.PM_REMINDER_TYPE);
-		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		fields.addAll(FieldFactory.getPMReminderFields());
+		List<FacilioField> fields = FieldFactory.getPMReminderFields();
+		fields.addAll(FieldFactory.getPreventiveMaintenanceFields());
 		FacilioModule module = ModuleFactory.getPMReminderModule();
 		List<Map<String, Object>> reminderProps = null;
 		switch (type) {
 			case BEFORE:
+				FacilioModule beforeReminderTriggerRelModule = ModuleFactory.getBeforePMRemindersTriggerRelModule();
 				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 																.select(fields)
 																.table(module.getTableName())
 																.innerJoin("Preventive_Maintenance")
 																.on("PM_Reminders.PM_ID = Preventive_Maintenance.ID")
+																.innerJoin("Before_PM_Reminder_Trigger_Rel")
+																.on("PM_Reminders.ID = Before_PM_Reminder_Trigger_Rel.PM_REMINDER_ID")
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getIdCondition(recordId, module));
+																.andCondition(CriteriaAPI.getIdCondition(recordId, beforeReminderTriggerRelModule));
 				reminderProps = selectBuilder.get();
 				break;
 			case AFTER:

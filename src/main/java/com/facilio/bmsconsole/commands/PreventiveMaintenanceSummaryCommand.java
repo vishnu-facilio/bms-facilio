@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -31,19 +32,17 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		fields.addAll(FieldFactory.getPMJobFields());
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Preventive_Maintenance")
-				.innerJoin("Jobs")
-				.on("Preventive_Maintenance.ID = Jobs.JOBID")
-				.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Jobs.JOBNAME = ? AND Preventive_Maintenance.ID = ?", AccountUtil.getCurrentOrg().getOrgId(), "PreventiveMaintenance", pmId);
+				.andCustomWhere("Preventive_Maintenance.ORGID = ? AND Preventive_Maintenance.ID = ?", AccountUtil.getCurrentOrg().getOrgId(), pmId);
 
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		Map<String, Object> pmProp = pmProps.get(0);
 		
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
+		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 		
 		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
 		JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());

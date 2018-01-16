@@ -7,12 +7,16 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetPreventiveMaintenanceCommand implements Command {
@@ -27,14 +31,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		}
 		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		fields.addAll(FieldFactory.getPMJobFields());
-		
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
-															.table("Preventive_Maintenance")
-															.innerJoin("Jobs")
-															.on("Preventive_Maintenance.ID = Jobs.JOBID and Preventive_Maintenance.ORGID ="+AccountUtil.getCurrentOrg().getOrgId())
-															.andCustomWhere("Jobs.JOBNAME = ?",  "PreventiveMaintenance")
+															.table(module.getTableName())
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 															;
 		
@@ -63,6 +64,13 @@ public class GetPreventiveMaintenanceCommand implements Command {
 			for(Map<String, Object> prop : pmProps) {
 				pms.add(FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class));
 			}
+			
+			Map<Long, List<PMTriggerContext>> pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(pms);
+			
+			for(PreventiveMaintenance pm : pms) {
+				pm.setTriggers(pmTriggers.get(pm.getId()));
+			}
+			
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}
 		
