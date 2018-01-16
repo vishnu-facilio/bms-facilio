@@ -40,6 +40,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
@@ -273,6 +274,46 @@ public class DashboardAction extends ActionSupport {
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		reportFolderContext.setId((Long) props.get("id"));
+		
+		return SUCCESS;
+	}
+	
+	private String chartType;
+	
+	public void setChartType(String chartType) {
+		this.chartType = chartType;
+	}
+	
+	public String getChartType() {
+		return this.chartType;
+	}
+	
+	private String secChartType;
+	
+	public void setSecChartType(String secChartType) {
+		this.secChartType = secChartType;
+	}
+	
+	public String getSecChartType() {
+		return this.secChartType;
+	}
+	
+	public String updateChartType() throws Exception {
+		
+		if (reportId > 0) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getReport().getTableName())
+					.fields(FieldFactory.getReportFields())
+					.andCustomWhere("ID = ?", reportId);
+
+			Map<String, Object> props = new HashMap<String, Object>();
+			props.put("chartType", ReportContext1.ReportChartType.getWidgetChartType(chartType));
+			if (secChartType != null) {
+				props.put("secChartType", ReportContext1.ReportChartType.getWidgetChartType(secChartType));
+			}
+			
+			updateBuilder.update(props);
+		}
 		
 		return SUCCESS;
 	}
@@ -537,6 +578,46 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private List<FacilioField> getDisplayColumns(String module) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> allFields = modBean.getAllFields(module);
+		
+		String[] displayFieldNames = null;
+		
+		if ("workorder".equals(module)) {
+			displayFieldNames = new String[]{"subject", "category", "space", "assignedTo", "status", "priority", "createdTime", "dueDate"};
+		}
+		else if ("alarm".equals(module)) {
+			displayFieldNames = new String[]{"subject", "severity", "node", "modifiedTime", "acknowledgedBy", "state"};
+		}
+		else if ("energydata".equals(module)) {
+			displayFieldNames = new String[]{"subject", "category", "space", "assignedTo", "status", "priority", "createdTime", "dueDate"};
+		}
+		
+		List<FacilioField> displayColumns = new ArrayList<>();
+		
+		for (String fieldName : displayFieldNames) {
+			for (FacilioField field : allFields) {
+				if (field.getName().equalsIgnoreCase(fieldName)) {
+					displayColumns.add(field);
+				}
+			}
+		}
+		
+		return displayColumns;
+	}
+	
+	private List<FacilioField> displayFields;
+	
+	public void setDisplayFields(List<FacilioField> displayFields) {
+		this.displayFields = displayFields;
+	}
+	
+	public List<FacilioField> getDisplayFields() {
+		return this.displayFields;
+	}
+	
 	public String getUnderlyingData() throws Exception {
 		
 		reportContext = DashboardUtil.getReportContext(reportId);
@@ -567,6 +648,7 @@ public class DashboardAction extends ActionSupport {
 			result.add(r);
 		}
 		setReportData(result);
+		setDisplayFields(getDisplayColumns(module.getName()));
 		return SUCCESS;
 	}
 

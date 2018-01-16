@@ -273,6 +273,12 @@ public class DashboardUtil {
 			if(userFilterProps != null && !userFilterProps.isEmpty()) {
 				for(Map<String, Object> userFilterProp:userFilterProps) {
 					ReportUserFilterContext reportUserFilterContext = FieldUtil.getAsBeanFromMap(userFilterProp, ReportUserFilterContext.class);
+					
+					ReportFieldContext reportField = new ReportFieldContext();
+					reportField.setId(reportUserFilterContext.getReportFieldId());
+					
+					reportUserFilterContext.setReportFieldContext(getReportField(reportField));
+					
 					reportContext.addReportUserFilter(reportUserFilterContext);
 				}
 			}

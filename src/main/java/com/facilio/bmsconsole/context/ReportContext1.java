@@ -498,6 +498,15 @@ public class ReportContext1 {
 		public static ReportChartType getWidgetChartType(int value) {
 			return REPORT_CHART_TYPE_MAP.get(value);
 		}
+		
+		public static ReportChartType getWidgetChartType(String chartType) {
+			for (ReportChartType rtype : ReportChartType.values()) {
+				if (rtype.getName().equalsIgnoreCase(chartType)) {
+					return rtype;
+				}
+			}
+			return null;
+		}
 
 		private static final Map<Integer, ReportChartType> REPORT_CHART_TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, ReportChartType> initTypeMap() {

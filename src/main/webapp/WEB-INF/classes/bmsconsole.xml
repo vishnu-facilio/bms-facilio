@@ -2869,7 +2869,7 @@
 		</action>
 		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">
 			<result name="success" type="json">
-				<param name="includeProperties">^reportData.*</param>
+				<param name="includeProperties">^reportData.*,displayFields,displayFields\[\d+\],displayFields\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
@@ -2883,6 +2883,11 @@
 			</result>
 		</action>
 		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="updateChartType" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateChartType">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
