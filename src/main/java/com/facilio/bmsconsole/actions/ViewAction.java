@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -24,13 +26,13 @@ public class ViewAction extends ActionSupport {
 	
 	public String viewList() throws Exception
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (moduleName == null) {
-			moduleName = "workorder";
-		}
-		FacilioModule moduleObj = modBean.getModule(moduleName);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain getViewListChain = FacilioChainFactory.getViewListChain();
+		getViewListChain.execute(context);
 		
-		setViews(ViewAPI.getAllViews(moduleObj.getModuleId(), AccountUtil.getCurrentOrg().getOrgId()));
+		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
+		
 		return SUCCESS;
 	}
 	
@@ -58,11 +60,7 @@ public class ViewAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
-		if(getFilters() != null) {	
-	 		JSONParser parser = new JSONParser();
-	 		JSONObject json = (JSONObject) parser.parse(getFilters());
-	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
- 		}
+		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
 		
@@ -70,6 +68,20 @@ public class ViewAction extends ActionSupport {
 		addView.execute(context);
 		
 		this.viewId = view.getId();
+		
+		return SUCCESS;
+	}
+	
+	public String customizeView() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
+		
+		Chain addView = FacilioChainFactory.getViewsCustomizeChain();
+		addView.execute(context);
+		
+		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
 		
 		return SUCCESS;
 	}

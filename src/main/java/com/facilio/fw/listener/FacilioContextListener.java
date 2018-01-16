@@ -79,7 +79,9 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 			
 			try {
-				KinesisProcessor.startProcessor();
+				if(! ("development".equalsIgnoreCase(AwsUtil.getConfig("environment")))) {
+					KinesisProcessor.startProcessor();
+				}
 			} catch (Exception e){
 				e.printStackTrace();
 			}

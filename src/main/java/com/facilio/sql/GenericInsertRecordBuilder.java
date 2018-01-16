@@ -42,7 +42,10 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		return this;
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> getRecords() {
+		return values;
+	}
 
 	@Override
 	public void save() throws SQLException, RuntimeException {

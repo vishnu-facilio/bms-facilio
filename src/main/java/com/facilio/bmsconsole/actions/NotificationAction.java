@@ -321,7 +321,7 @@ public class NotificationAction extends ActionSupport {
 	
 	public String getWONotificationRules() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.WORKORDER_NOTIFICATION_RULE);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.WORKORDER_AGENT_NOTIFICATION_RULE);
 		
 		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
 		workflowRuleType.execute(context);

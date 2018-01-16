@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.view;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +34,23 @@ import com.facilio.events.constants.EventConstants;
 
 public class ViewFactory {
 	
-	private static Map<String, FacilioView> views = Collections.unmodifiableMap(initViews());
-	public static FacilioView getView (String viewName) {
-		FacilioView view = views.get(viewName);
+	//private static Map<String, FacilioView> views = Collections.unmodifiableMap(initViews());
+	private static Map<String,Map<String,FacilioView>> views = Collections.unmodifiableMap(initializeViews());
+	public static FacilioView getView (String moduleName, String viewName) {
+		FacilioView view = getModuleViews(moduleName).get(viewName);
 		if(view != null) {
-			List<ViewField> columns = ColumnFactory.getColumns(viewName);
+			List<ViewField> columns = ColumnFactory.getColumns(moduleName + "-" +viewName);
 			view.setFields(columns);
+			view.setDefault(true);
 		}
-		return views.get(viewName);
+		return view;
 	}
 	
-	private static Map<String, FacilioView> initViews() {
+	public static Map<String,FacilioView> getModuleViews (String moduleName) {
+		return new LinkedHashMap<>(views.get(moduleName));
+	}
+	
+	/*private static Map<String, FacilioView> initViews() {
 		
 		Map<String, FacilioView> viewMap = new HashMap<>();
 		viewMap.put("workorderrequest-open", getOpenWorkorderRequests());
@@ -90,6 +97,70 @@ public class ViewFactory {
 		//Add module name in field objects
 		
 		return viewMap;
+	}*/
+	
+	public static Map<String, Map<String, FacilioView>> initializeViews() {
+		Map<String, Map<String, FacilioView>> viewsMap = new HashMap<String, Map<String, FacilioView>>();
+		Map<String,FacilioView> views = new LinkedHashMap<>();
+		int order = 1;
+		
+		views.put("open", getOpenWorkorderRequests().setOrder(order++));
+		views.put("all", getAllWorkRequests().setOrder(order++));
+		views.put("rejected", getRejectedWorkorderRequests().setOrder(order++));
+		viewsMap.put("workorderrequest", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("open", getAllOpenWorkOrders().setOrder(order++));
+		views.put("overdue", getAllOverdueWorkOrders().setOrder(order++));
+		views.put("duetoday", getAllDueTodayWorkOrders().setOrder(order++));
+		views.put("unassigned", getUnassignedWorkorders().setOrder(order++));
+		views.put("myopen", getMyOpenWorkOrders().setOrder(order++));
+		views.put("myteamopen", getMyTeamOpenWorkOrders().setOrder(order++));
+		views.put("myoverdue", getMyOverdueWorkOrders().setOrder(order++));
+		views.put("myduetoday", getMyDueTodayWorkOrders().setOrder(order++));
+		views.put("openfirealarms", getFireSafetyWOs().setOrder(order++));
+		views.put("all", getAllWorkOrders().setOrder(order++));
+		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
+		viewsMap.put("workorder", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("my", getMyTasks().setOrder(order++));
+		viewsMap.put("task",views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("energy", getAssets("Energy").setOrder(order++));
+		views.put("hvac", getAssets("HVAC").setOrder(order++));
+		views.put("active", getAssetsByState("Active").setOrder(order++));
+		views.put("retired", getAssetsByState("Retired").setOrder(order++));
+		viewsMap.put("asset", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("today", getEvents("Today").setOrder(order++));
+		views.put("yesterday", getEvents("Yesterday").setOrder(order++));
+		views.put("thisweek", getEvents("ThisWeek").setOrder(order++));
+		views.put("lastweek", getEvents("LastWeek").setOrder(order++));
+		viewsMap.put("event", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledged", getUnacknowledgedAlarms().setOrder(order++));
+		views.put("critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("major", getSeverityAlarms("major", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("minor", getSeverityAlarms("minor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("fire",  getTypeAlarms("fire", "Fire Alarms", AlarmType.FIRE).setOrder(order++));
+		views.put("energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY).setOrder(order++));
+		views.put("hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC).setOrder(order++));
+		views.put("cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("myalarms", getMyAlarms().setOrder(order++));
+		views.put("unassigned", getUnassignedAlarms().setOrder(order++));
+		viewsMap.put("alarm", views);
+		
+		return viewsMap;
 	}
 	
 	private static FacilioView getEvents(String category) {
@@ -333,7 +404,7 @@ public class ViewFactory {
 		
 		FacilioView unassignedWOView = new FacilioView();
 		unassignedWOView.setName("unassigned");
-		unassignedWOView.setDisplayName("Unassigned Work Orders");
+		unassignedWOView.setDisplayName("Unassigned");
 		unassignedWOView.setCriteria(unassignedWOCriteria);
 		
 		return unassignedWOView;
@@ -357,7 +428,7 @@ public class ViewFactory {
 		
 		FacilioView allRequestsView = new FacilioView();
 		allRequestsView.setName("open");
-		allRequestsView.setDisplayName("Open Requests");
+		allRequestsView.setDisplayName("Work Requests");
 		allRequestsView.setCriteria(criteria);
 		return allRequestsView;
 	}
@@ -380,7 +451,7 @@ public class ViewFactory {
 		
 		FacilioView allRequestsView = new FacilioView();
 		allRequestsView.setName("rejected");
-		allRequestsView.setDisplayName("Rejected Requests");
+		allRequestsView.setDisplayName("Rejected Work Requests");
 		allRequestsView.setCriteria(criteria);
 		return allRequestsView;
 	}
@@ -393,7 +464,7 @@ public class ViewFactory {
 		
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("open");
-		openTicketsView.setDisplayName("Open Work Orders");
+		openTicketsView.setDisplayName("Open");
 		openTicketsView.setCriteria(criteria);
 		
 		return openTicketsView;
@@ -419,7 +490,7 @@ public class ViewFactory {
 		
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("closed");
-		openTicketsView.setDisplayName("Closed Work Orders");
+		openTicketsView.setDisplayName("Closed Workorders");
 		openTicketsView.setCriteria(criteria);
 		
 		return openTicketsView;
@@ -433,7 +504,7 @@ public class ViewFactory {
 		
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("myopen");
-		openTicketsView.setDisplayName("My Open Work Orders");
+		openTicketsView.setDisplayName("My Work Orders");
 		openTicketsView.setCriteria(criteria);
 		
 		return openTicketsView;
@@ -456,8 +527,8 @@ public class ViewFactory {
 		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView overdueView = new FacilioView();
-		overdueView.setName("overdue");
-		overdueView.setDisplayName("Overdue Work Orders");
+		overdueView.setName("duetoday");
+		overdueView.setDisplayName("Due Today");
 		overdueView.setCriteria(criteria);
 		return overdueView;
 	}
@@ -470,7 +541,7 @@ public class ViewFactory {
 	
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("myteamopen");
-		openTicketsView.setDisplayName("My Team Open Work Orders");
+		openTicketsView.setDisplayName("My Team Work Orders");
 		openTicketsView.setCriteria(criteria);
 	
 		return openTicketsView;
@@ -494,7 +565,7 @@ public class ViewFactory {
 		
 		FacilioView overdueView = new FacilioView();
 		overdueView.setName("overdue");
-		overdueView.setDisplayName("Overdue Work Orders");
+		overdueView.setDisplayName("Overdue");
 		overdueView.setCriteria(criteria);
 		return overdueView;
 	}
@@ -518,8 +589,8 @@ public class ViewFactory {
 		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView view = new FacilioView();
-		view.setName("myoverduetickets");
-		view.setDisplayName("My Overdue Tickets");
+		view.setName("myduetoday");
+		view.setDisplayName("My Due Today");
 		view.setCriteria(criteria);
 		return view;
 	}
@@ -543,8 +614,8 @@ public class ViewFactory {
 		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView view = new FacilioView();
-		view.setName("myoverduetickets");
-		view.setDisplayName("My Overdue Tickets");
+		view.setName("myoverdue");
+		view.setDisplayName("My Overdue");
 		view.setCriteria(criteria);
 		return view;
 	}
@@ -675,7 +746,7 @@ public class ViewFactory {
 		
 		FacilioView fireSafetyWOView = new FacilioView();
 		fireSafetyWOView.setName("openfirealarms");
-		fireSafetyWOView.setDisplayName("Fire Alarm Work Orders");
+		fireSafetyWOView.setDisplayName("Fire Alarm Workorders");
 		fireSafetyWOView.setCriteria(criteria);
 		
 		return fireSafetyWOView;
@@ -842,7 +913,16 @@ public class ViewFactory {
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Work Orders");
+		allView.setDisplayName("All Workorders");
+		
+		return allView;
+	}
+	
+	private static FacilioView getAllWorkRequests() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Requests");
 		
 		return allView;
 	}

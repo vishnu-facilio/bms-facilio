@@ -6,8 +6,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.workflow.EMailTemplate;
+import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
+import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
 import com.facilio.constants.FacilioConstants;
 
 public class CreateActionTemplateForWorkflowCommand implements Command {
@@ -36,6 +38,21 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 					smsTemplate.setMessage((String) templateContent.get("message"));
 					smsTemplate.setName((String) templateContent.get("name"));
 					context.put(FacilioConstants.Workflow.TEMPLATE, smsTemplate);
+					break;
+				case PUSH_NOTIFICATION:
+					PushNotificationTemplate pushNotificationTemplate = new PushNotificationTemplate();
+					pushNotificationTemplate.setTo((long) templateContent.get("to"));
+					pushNotificationTemplate.setMessage((String) templateContent.get("message"));
+					pushNotificationTemplate.setName((String) templateContent.get("name"));
+					context.put(FacilioConstants.Workflow.TEMPLATE, pushNotificationTemplate);
+					break;
+				case WEB_NOTIFICATION:
+					WebNotificationTemplate webNotificationTemplate = new WebNotificationTemplate();
+					webNotificationTemplate.setTo((long) templateContent.get("to"));
+					webNotificationTemplate.setMessage((String) templateContent.get("message"));
+					webNotificationTemplate.setName((String) templateContent.get("name"));
+					context.put(FacilioConstants.Workflow.TEMPLATE, webNotificationTemplate);
+					break;
 			}
 			
 		}

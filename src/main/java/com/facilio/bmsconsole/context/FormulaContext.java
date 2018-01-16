@@ -7,6 +7,7 @@ import java.util.Map;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fw.BeanFactory;
 
 public class FormulaContext extends ModuleBaseWithCustomFields {
@@ -120,18 +121,18 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	public enum DateAggregateOperator implements AggregateOperator {
 		
 		COUNT(1,"count","count({$place_holder$})"),
-		YEAR(8,"year","from_unixtime(floor({$place_holder$}/1000),'%Y')"),
+		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'+04:00'),'%Y')"),
 		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
-		MONTHANDYEAR(10,"monthAndYear","from_unixtime(floor({$place_holder$}/1000),'%Y %m')"),
-		WEEKANDYEAR(11,"weekAndYear","from_unixtime(floor({$place_holder$}/1000),'%Y %V')"),
-		FULLDATE(12,"fullDate","from_unixtime(floor({$place_holder$}/1000),'%Y %m %d')"),
-		DATEANDTIME(13,"dateAndTime","from_unixtime(floor({$place_holder$}/1000),'%Y %m %d %H:%i')"),
+		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')"),
+		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')"),
+		FULLDATE(12,"fullDate","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d'"),
+		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),,'%Y %m %d %H:%i'"),
 		//QUARTER(14,"quarter"),
-		MONTH(15,"month","from_unixtime(floor({$place_holder$}/1000),'%m')"),
-		WEEK(16,"week","from_unixtime(floor({$place_holder$}/1000),'%V')"),
-		WEEKDAY(17,"weekDay","from_unixtime(floor({$place_holder$}/1000),'%w')"),
-		DAYSOFMONTH(18,"daysOfMonth","from_unixtime(floor({$place_holder$}/1000),'%d')"),
-		HOURSOFDAY(19,"hoursOfDay","from_unixtime(floor({$place_holder$}/1000),'%H')")
+		MONTH(15,"month","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')"),
+		WEEK(16,"week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')"),
+		WEEKDAY(17,"weekDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')"),
+		DAYSOFMONTH(18,"daysOfMonth","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d'"),
+		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H'")
 		;
 		
 		private Integer value;
@@ -153,7 +154,9 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
+			System.out.println("SSSsss -- "+DateTimeUtil.getDateTime().getOffset().toString());
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
+			selectFieldString = selectFieldString.replace("{$place_holder1$}", DateTimeUtil.getDateTime().getOffset().toString());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);

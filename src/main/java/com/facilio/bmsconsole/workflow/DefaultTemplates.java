@@ -21,7 +21,52 @@ public enum DefaultTemplates implements ActionTemplate {
 	ALARM_CREATION_PUSH(8),
 	ALARM_UPDATION_PUSH(9),
 	PM_EMAIL_REMINDER(10),
-	PM_EMAIL_DUE_REMINDER(11)
+	PM_EMAIL_DUE_REMINDER(11),
+	NEW_WORK_REQUEST_EMAIL(12),
+	NEW_WORK_REQUEST_SMS(13),
+	NEW_WORK_REQUEST_PUSH(14),
+	NEW_WORK_REQUEST_WEB(15),
+	APPROVE_WOREQ_EMAIL(16),
+	APPROVE_WOREQ_SMS(17),
+	APPROVE_WO_PUSH(18),
+	APPROVE_WO_WEB(19),
+	REJECT_WOREQ_EMAIL(20),
+	REJECT_WOREQ_SMS(21),
+	REJECT_WOREQ_PUSH(22),
+	REJECT_WOREQ_WEB(23),
+	TECH_SOLVE_WO_EMAIL(24),
+	TECH_SOLVE_WO_SMS(25),
+	TECH_SOLVE_WO_PUSH(26),
+	TECH_SOLVE_WO_WEB(27),
+	TECH_CLOSE_WO_EMAIL(28),
+	TECH_CLOSE_WO_SMS(29),
+	TECH_CLOSE_WO_PUSH(30),
+	TECH_CLOSE_WO_WEB(31),
+	NEW_WORKORDER_EMAIL(32),
+	NEW_WORKORDER_SMS(33),
+	NEW_WORKORDER_PUSH(34),
+	NEW_WORKORDER_WEB(35),
+	WORKORDER_ASSIGN_PUSH(36),
+	WORKORDER_ASSIGN_WEB(37),
+	WORKORDER_ASSIGN_GROUP_EMAIL(38),
+	WORKORDER_ASSIGN_GROUP_SMS(39),
+	WORKORDER_ASSIGN_GROUP_PUSH(40),
+	WORKORDER_ASSIGN_GROUP_WEB(41),
+	TASK_COMMENT_SMS(42),
+	TASK_COMMENT_PUSH(43),
+	TASK_COMMENT_WEB(44),
+	ADD_TASK_EMAIL(45),
+	ADD_TASK_SMS(46),
+	ADD_TASK_PUSH(47),
+	ADD_TASK_WEB(48),
+	UPDATE_TASK_EMAIL(49),
+	UPDATE_TASK_SMS(50),
+	UPDATE_TASK_PUSH(51),
+	UPDATE_TASK_WEB(52),
+	TASK_RESOLVED_EMAIL(53),
+	TASK_RESOLVED_SMS(54),
+	TASK_RESOLVED_PUSH(55),
+	TASK_RESOLVED_WEBL(56),
 	;
 	
 	private int val;
@@ -151,7 +196,254 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("subject", "Workorder in due");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
-				
+			case 12: 
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.requester.email:-}");
+				json.put("subject", "New Workrequest");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 13:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 14:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "New Workrequest");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 15:
+				break;
+			case 16:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Approve Workrequest");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 17:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 18:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Approve Workrequest");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 19:
+				break;
+			case 20:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Reject Workrequest");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 21:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 22:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Reject Workrequest");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 23:
+				break;
+			case 24:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Work order completed");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 25:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 26:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Work order completed");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 27:
+				break;
+			case 28:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Work order closed");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 29:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 30:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Work order closed");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 31:
+				break;
+			case 32:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "New Workorder");
+				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 33:
+				json.put("to", "${workorder.requester.phone:-}");
+				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
+				break;
+			case 34:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "New Workorder");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 35:
+				break;
+			case 36:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Assign Workorder");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 37:
+				break;
+			case 38:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "New Workorder Assigned");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 39:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
+				break;
+			case 40:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Assign Workorder");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 41:
+				break;
+			case 42:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A new comment has been added in your WorkOrder.");
+				break;
+			case 43:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "A new comment has been added in your WorkOrder.");
+				data.put("title", "New Comment");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 44:
+				break;
+			case 45:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${ticket.assignedTo.email:-}");
+				json.put("subject", "New Task added");
+				json.put("message", "A new Task has been added in your WorkOrder.");
+				break;
+			case 46:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A new Task has been added in your WorkOrder.");
+				break;
+			case 47:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "A new Task has been added in your WorkOrder.");
+				data.put("title", "New Task added");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 48:
+				break;
+			case 49:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${ticket.assignedTo.email:-}");
+				json.put("subject", "Task Updated");
+				json.put("message", "A Task has been Updated in your WorkOrder.");
+				break;
+			case 50:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A Task has been Updated in your WorkOrder.");
+				break;
+			case 51:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "A Task has been Updated in your WorkOrder.");
+				data.put("title", "New Task added");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 52:
+				break;
+			case 53:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${ticket.assignedTo.email:-}");
+				json.put("subject", "Task closed");
+				json.put("message", "A Task has been closed in your WorkOrder.");
+				break;
+			case 54:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A Task has been closed in your WorkOrder.");
+				break;
+			case 55:
+				data = new JSONObject();
+				data.put("URL", "${alarm.mobileUrl}");
+				data.put("body", "A Task has been closed in your WorkOrder.");
+				data.put("title", "Task closed");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+			case 56:
+				break;
 		}
 		return json;
 	}

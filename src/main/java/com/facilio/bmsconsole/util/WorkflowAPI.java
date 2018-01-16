@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,10 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.amazonaws.services.dynamodbv2.xspec.M;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -29,7 +26,6 @@ import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class WorkflowAPI {
 	
@@ -42,15 +38,24 @@ public class WorkflowAPI {
 													.addRecord(ruleProps);
 		insertBuilder.save();
 		
-		if(rule.getRuleTypeEnum() == RuleType.READING_RULE) {
-			insertBuilder = new GenericInsertRecordBuilder()
-														.table(ModuleFactory.getReadingRuleModule().getTableName())
-														.fields(FieldFactory.getReadingRuleFields())
-														.addRecord(ruleProps);
-			insertBuilder.save();
+		switch(rule.getRuleTypeEnum()) {
+			case READING_RULE:
+			case PM_READING_RULE:
+				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				break;
+			default:
+				break;
 		}
 		
 		return (long) ruleProps.get("id");
+	}
+	
+	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.addRecord(ruleProps);
+		insertBuilder.save();
 	}
 	
 	public static final void updateWorkflowRuleChildIds(WorkflowRuleContext workflowRuleContext, long orgId) throws Exception {
@@ -192,56 +197,78 @@ public class WorkflowAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(readingRule));
 	}
 	
-	private static Map<Long, Map<String, Object>> getReadingRuleProps(List<Long> ids) throws Exception {
+	private static Map<Long, Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, List<Long> ids) throws Exception {
 		Map<Long, Map<String, Object>> propsMap = new HashMap<>();
 		
-		FacilioModule module = ModuleFactory.getReadingRuleModule();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
-																.select(FieldFactory.getReadingRuleFields())
+																.select(fields)
 																.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
-		List<Map<String, Object>> readingRuleProps = selectRecordBuilder.get();
+		List<Map<String, Object>> extendedProps = selectRecordBuilder.get();
 		
-		if (readingRuleProps != null && !readingRuleProps.isEmpty()) {
-			for(Map<String, Object> prop : readingRuleProps) {
+		if (extendedProps != null && !extendedProps.isEmpty()) {
+			for(Map<String, Object> prop : extendedProps) {
 				propsMap.put((Long) prop.get("id"), prop);
 			}
 		}
 		return propsMap;
 	}
 	
+	private static Map<RuleType, Map<Long, Map<String, Object>>> getTypeWiseExtendedProps(Map<RuleType, List<Long>> typeWiseIds) throws Exception {
+		Map<RuleType, Map<Long, Map<String, Object>>> typeWiseProps = new HashMap<>();
+		for(Map.Entry<RuleType, List<Long>> entry : typeWiseIds.entrySet()) {
+			switch (entry.getKey()) {
+				case READING_RULE:
+				case PM_READING_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
+					break;
+				default:
+					break;
+			}
+		}
+		return typeWiseProps;
+	}
+	
 	private static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean isEvent) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			
-			List<Long> readingRuleIds = new ArrayList<>();
+			Map<RuleType, List<Long>> typeWiseIds = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				Integer ruleType = (Integer) prop.get("ruleType");
-				if(ruleType != null && RuleType.READING_RULE == RuleType.getRuleType(ruleType)) {
-					readingRuleIds.add((Long) prop.get("id"));
+				RuleType ruleType = RuleType.valueOf((int) prop.get("ruleType"));
+				List<Long> idList = typeWiseIds.get(ruleType);
+				if(idList == null) {
+					idList = new ArrayList<>();
+					typeWiseIds.put(ruleType, idList);
 				}
+				idList.add((Long) prop.get("id"));
 			}
-			Map<Long, Map<String, Object>> readingRuleProps = getReadingRuleProps(readingRuleIds);
+			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = getTypeWiseExtendedProps(typeWiseIds);
+			
 			for(Map<String, Object> prop : props) {
 				WorkflowRuleContext workflow = null;
-				Integer ruleType = (Integer) prop.get("ruleType");
-				if(ruleType != null && RuleType.READING_RULE == RuleType.getRuleType(ruleType)) {
-					prop.putAll(readingRuleProps.get((Long) prop.get("id")));
-					workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+				
+				RuleType ruleType = RuleType.valueOf((int) prop.get("ruleType"));
+				switch(ruleType) {
+					
+					case PM_READING_RULE:
+					case READING_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+						break;
+					default:
+						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
+						break;
 				}
-				else {
-					workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
-				}
+				
 				long criteriaId = workflow.getCriteriaId();
 				workflow.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId));
-				
 				if(isEvent) {
 					WorkflowEventContext event = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
 					event.setId(workflow.getEventId());
 					workflow.setEvent(event);
 				}
-				
 				workflows.add(workflow);
 			}
 			return workflows;

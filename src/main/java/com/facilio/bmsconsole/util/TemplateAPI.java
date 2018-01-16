@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,8 +22,10 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
+import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
+import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -58,6 +59,32 @@ public class TemplateAPI {
 		return excelTemplates;
 	}
 	
+	public static List<JSONTemplate> getAllWOTemplates() throws Exception {
+		List<FacilioField> fields = FieldFactory.getUserTemplateFields();
+		fields.addAll(FieldFactory.getJSONTemplateFields());
+		
+		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
+		FacilioModule woTemplateModule = ModuleFactory.getJSONTemplateModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													  .select(fields)
+													  .table(userTemplateModule.getTableName())
+													  .innerJoin(woTemplateModule.getTableName())
+													  .on(userTemplateModule.getTableName()+".ID = "+woTemplateModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(userTemplateModule));
+		
+		List<Map<String, Object>> templatePropList = selectBuilder.get();
+		List<JSONTemplate> woTemplates = new ArrayList<JSONTemplate>();
+		for(int i=0;i<templatePropList.size();i++)
+		{
+			Map<String,Object> templateProps = templatePropList.get(i);
+			JSONTemplate template = FieldUtil.getAsBeanFromMap(templateProps,JSONTemplate.class);
+			woTemplates.add(template);
+			
+		}
+		return woTemplates;
+	}
+	
 	private static UserTemplate getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
 		UserTemplate.Type type = UserTemplate.Type.getType((int) templateMap.get("type"));
 		long id = (long) templateMap.get("id");
@@ -86,6 +113,28 @@ public class TemplateAPI {
 					return getSMSTemplateFromMap(templateMap);
 				}
 			}break;
+			case PUSH_NOTIFICATION: {
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getPushNotificationTemplateFields())
+						.table("Push_Notification_Templates")
+						.andCustomWhere("Push_Notification_Templates.ID = ?", id);
+				List<Map<String, Object>> templates = selectBuilder.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getPushNotificationTemplateFromMap(templateMap);
+				}
+			}break;
+			case WEB_NOTIFICATION: {
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getWebNotificationTemplateFields())
+						.table("Web_Notification_Templates")
+						.andCustomWhere("Web_Notification_Templates", id);
+				List<Map<String, Object>> templates = selectBuilder.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getWebNotificationTemplateFromMap(templateMap);
+				}
+			}
 			case EXCEL: {
 				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 						.select(FieldFactory.getExcelTemplateFields())
@@ -224,6 +273,70 @@ public class TemplateAPI {
 		return updateRecordBuilder.update(templateProps);
 	}
 	
+	public static long addPushNotificationTemplate(long orgId, PushNotificationTemplate template) throws Exception {
+		template.setOrgId(orgId);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder pushNotificationTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("Push_Notification_Templates")
+																.fields(FieldFactory.getPushNotificationTemplateFields())
+																.addRecord(templateProps);
+		pushNotificationTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static int updatePushNotificationTemplate(long orgId, PushNotificationTemplate template, long id) throws Exception {
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table("Push_Notification_Templates")
+																.fields(FieldFactory.getPushNotificationTemplateFields())
+																.andCustomWhere("ID = ?", id);
+		
+		return updateRecordBuilder.update(templateProps);
+	}
+	
+	public static long addWebNotificationTemplate(long orgId, WebNotificationTemplate template) throws Exception {
+		template.setOrgId(orgId);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder pushNotificationTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("Web_Notification_Templates")
+																.fields(FieldFactory.getWebNotificationTemplateFields())
+																.addRecord(templateProps);
+		pushNotificationTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static int updateWebNotificationTemplate(long orgId, WebNotificationTemplate template, long id) throws Exception {
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table("Web_Notification_Templates")
+																.fields(FieldFactory.getWebNotificationTemplateFields())
+																.andCustomWhere("ID = ?", id);
+		
+		return updateRecordBuilder.update(templateProps);
+	}
+	
 	private static EMailTemplate getEMailTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		EMailTemplate template = FieldUtil.getAsBeanFromMap(templateMap, EMailTemplate.class);
 		
@@ -242,6 +355,14 @@ public class TemplateAPI {
 	
 	private static SMSTemplate getSMSTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		SMSTemplate template = FieldUtil.getAsBeanFromMap(templateMap, SMSTemplate.class);
+		return template;
+	}
+	private static PushNotificationTemplate getPushNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		PushNotificationTemplate template = FieldUtil.getAsBeanFromMap(templateMap, PushNotificationTemplate.class);
+		return template;
+	}
+	private static WebNotificationTemplate getWebNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		WebNotificationTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WebNotificationTemplate.class);
 		return template;
 	}
 	
@@ -270,12 +391,27 @@ public class TemplateAPI {
 	}
 	
 	public static long addJsonTemplate(long orgId, JSONTemplate template) throws Exception {
-		
+		return addJsonTemplate(orgId, template, UserTemplate.Type.JSON);
+	}
+	
+	public static long addWorkOrderTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.WORKORDER);
+	}
+	
+	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.ALARM);
+	}
+	
+	public static long addTaskGroupTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, UserTemplate.Type.TASK_GROUP);
+	}
+	
+	private static long addJsonTemplate(long orgId, JSONTemplate template, UserTemplate.Type type) throws Exception {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
 		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
-		template.setType(UserTemplate.Type.JSON);
+		template.setType(type);
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);

@@ -251,6 +251,24 @@ public class ModuleFactory {
 		return smsTemplatesModule;
 	}
 	
+	public static FacilioModule getPushNotificationTemplateModule() {
+		FacilioModule pushNotificationTemplatesModule = new FacilioModule();
+		pushNotificationTemplatesModule.setName("pushNotificationTemplates");
+		pushNotificationTemplatesModule.setDisplayName("Push Notification Templates");
+		pushNotificationTemplatesModule.setTableName("Push_Notification_Templates");
+		pushNotificationTemplatesModule.setExtendModule(getTemplatesModule());
+		return pushNotificationTemplatesModule;
+	}
+	
+	public static FacilioModule getWebNotificationTemplateModule() {
+		FacilioModule webNotificationTemplatesModule = new FacilioModule();
+		webNotificationTemplatesModule.setName("webNotificationTemplates");
+		webNotificationTemplatesModule.setDisplayName("Web Notification Templates");
+		webNotificationTemplatesModule.setTableName("Web_Notification_Templates");
+		webNotificationTemplatesModule.setExtendModule(getTemplatesModule());
+		return webNotificationTemplatesModule;
+	}
+	
 	public static FacilioModule getExcelTemplatesModule() {
 		FacilioModule excelTemplatesModule = new FacilioModule();
 		excelTemplatesModule.setName("exceltemplates");
@@ -587,12 +605,19 @@ public class ModuleFactory {
 		return reminderModule;
 	}
 	
+	public static FacilioModule getPMTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("pmtrigger");
+		pmTriggers.setDisplayName("Preventive Maintenance Triggers");
+		pmTriggers.setTableName("PM_Triggers");
+		return pmTriggers;
+	}
+	
 	public static FacilioModule getAfterPMRemindersWORelModule() {
 		FacilioModule pmReminderJobWORel = new FacilioModule();
 		pmReminderJobWORel.setName("afterpmreminderworel");
 		pmReminderJobWORel.setDisplayName("After PM Reminder WO Rel");
 		pmReminderJobWORel.setTableName("After_PM_Reminder_WO_Rel");
-		
 		return pmReminderJobWORel;
 	}
 	

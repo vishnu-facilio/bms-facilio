@@ -1,36 +1,26 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ViewAPI {
 	
@@ -42,7 +32,8 @@ public class ViewAPI {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
-													.andCustomWhere("ORGID = ? AND MODULEID = ?", orgId, moduleId);
+													.andCustomWhere("ORGID = ? AND MODULEID = ?", orgId, moduleId)
+													.orderBy("SEQUENCE_NUMBER");
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			for(Map<String, Object> viewProp : viewProps) 
@@ -88,6 +79,7 @@ public class ViewAPI {
 	
 	public static long addView(FacilioView view, long orgId) throws Exception {
 		view.setOrgId(orgId);
+		view.setId(-1);
 		try {
 			Criteria criteria = view.getCriteria();
 			if(criteria != null) {
@@ -111,20 +103,40 @@ public class ViewAPI {
 		}
 	}
 	
+	public static void customizeViews(List<FacilioView> views) throws Exception {
+		
+		for(FacilioView view: views)
+		{
+			int order = view.getSequenceNumber();
+			view.setSequenceNumber(order + 1000);
+			Map<String, Object> prop = FieldUtil.getAsProperties(view);
+			
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getViewsModule().getTableName())
+					.fields(FieldFactory.getViewFields())
+					.andCustomWhere("ID = ?", view.getId());
+
+			updateBuilder.update(prop);
+		}
+		
+	}
+	
 	public static void customizeViewColumns(long viewId, List<ViewField> columns) throws Exception {
 		try {
 			deleteViewColumns(viewId);
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-															.table(ModuleFactory.getViewColumnsModule().getTableName())
-															.fields(FieldFactory.getViewColumnFields());
 			
+			List<Map<String, Object>> props = new ArrayList<>();
 			for(ViewField field: columns)
 			{
 				field.setViewId(viewId);
 				Map<String, Object> prop = FieldUtil.getAsProperties(field);
-				insertBuilder.addRecord(prop);
+				props.add(prop);
 			}
 			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table(ModuleFactory.getViewColumnsModule().getTableName())
+															.fields(FieldFactory.getViewColumnFields())
+															.addRecords(props);
 			insertBuilder.save();
 			
 		} catch (Exception e) {
@@ -179,7 +191,7 @@ public class ViewAPI {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		FacilioView view = getView(viewName, moduleId, orgId);
 		if(view == null) {
-			view = ViewFactory.getView(moduleName + "-" +viewName);
+			view = ViewFactory.getView(moduleName, viewName);
 			if(view != null) {
 				if(view.getTypeEnum() == null){
 					view.setType(ViewType.TABLE_LIST);

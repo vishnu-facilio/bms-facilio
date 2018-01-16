@@ -14,6 +14,8 @@ public interface InsertBuilderIfc<E> {
 	
 	public InsertBuilderIfc<E> addRecords(List<E> values);
 	
+	public List<E> getRecords();
+	
 	public void save() throws Exception;
 	
 }

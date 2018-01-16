@@ -115,10 +115,11 @@ body {
 <div class="login-page">
   <div class="form">
     <form class="register-form">
-      <input type="text" placeholder="name"/>
-      <input type="password" placeholder="password"/>
-      <input type="text" placeholder="email address"/>
-      <button>create</button>
+    		<input type="text" id="emailaddress" placeholder="emailaddress"/>
+      <input hidden type="text" id="username" placeholder="name"/>
+      <input type="password" id="password" placeholder="password"/>
+      
+      <button onclick="signup()">create</button>
       <p class="message">Already registered? <a href="#">Sign In</a></p>
     </form>
     <form class="login-form" method="POST"  id="target">
@@ -131,7 +132,22 @@ body {
 </div>
 </body>
 </html>
+
+<script>
+function signup()
+{
+	var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
+	$.ajax({
+			  type: "POST",
+			  url: 'apisignup',
+			  data: jsonStr,
+			  success: handlelogin,
+			});
+}
+</script>
+
 <script type="text/javascript">
+   
    
     $('.message a').click(function(){
     	   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");

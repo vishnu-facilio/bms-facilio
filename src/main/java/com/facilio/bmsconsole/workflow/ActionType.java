@@ -303,6 +303,15 @@ public enum ActionType {
 			}
 																
 		}
+	},
+	ASSIGNMENT_ACTION(9) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 	;
 	

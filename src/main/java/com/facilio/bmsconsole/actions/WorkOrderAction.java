@@ -120,6 +120,8 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE, workorderTemplate);
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
 		addTemplate.execute(context);
@@ -408,6 +410,14 @@ public class WorkOrderAction extends ActionSupport {
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		return SUCCESS;
+	}
+	
+	private JSONTemplate workorderTemplate;
+	public JSONTemplate getWorkorderTemplate() {
+		return workorderTemplate;
+	}
+	public void setWorkorderTemplate(JSONTemplate workorderTemplate) {
+		this.workorderTemplate = workorderTemplate;
 	}
 	
 	private WorkOrderContext workorder;

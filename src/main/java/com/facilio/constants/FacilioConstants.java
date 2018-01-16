@@ -127,6 +127,9 @@ public class FacilioConstants {
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
 		
+		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
+		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
+		
 		public static final String CONTROLLER = "controller";
 		public static final String CONTROLLER_LIST = "controllerSetting";
 		public static final String CONTROLLER_SETTINGS = "controllerSettings";
@@ -312,6 +315,7 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIME = "nextexecutiontime";
 		
 		public static final String VIEWID = "viewId";
+		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
 		
 		

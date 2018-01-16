@@ -21,16 +21,19 @@ public class AddWorkorderTemplateCommand implements Command {
 		// TODO Auto-generated method stub
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		JSONTemplate workorderTemplate = (JSONTemplate) context.get(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE);
+		if(workorderTemplate == null)
+		{
+			workorderTemplate = new JSONTemplate();
+			workorderTemplate.setName(workorder.getSubject());
+		}
 		
-		JSONTemplate workorderTemplate = new JSONTemplate();
 		JSONObject content = new JSONObject();
 		content.put(FacilioConstants.ContextNames.WORK_ORDER, FieldUtil.getAsJSON(workorder));
 		if(tasks != null) {
 			content.put(FacilioConstants.ContextNames.TASK_LIST, FieldUtil.getAsJSONArray(tasks, TaskContext.class));
 		}
 		workorderTemplate.setContent(content.toJSONString());
-		
-		workorderTemplate.setName(workorder.getSubject());
 
 		long templateId = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
 		

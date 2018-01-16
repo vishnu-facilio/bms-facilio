@@ -64,6 +64,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 	
+	@Override
+	public List<E> getRecords() {
+		// TODO Auto-generated method stub
+		return records;
+	}
+	
 	private void checkForNull() throws Exception {
 		
 		if(fields == null || fields.size() < 1) {

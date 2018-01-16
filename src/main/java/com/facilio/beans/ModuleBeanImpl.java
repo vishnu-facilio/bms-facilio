@@ -31,7 +31,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -327,11 +326,7 @@ public class ModuleBeanImpl implements ModuleBean {
 						
 						fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
 						break;
-					case MISC:
-					case STRING:
-					case BOOLEAN:
-					case DATE:
-					case DATE_TIME:
+					default:
 						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
 						break;
 				}
@@ -351,6 +346,8 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
+					break;
+				default:
 					break;
 			}
 		}
@@ -444,6 +441,8 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
+					break;
+				default:
 					break;
 			}
 			

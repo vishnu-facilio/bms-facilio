@@ -26,7 +26,13 @@
 		<action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="root">rule</param>
+				<param name="root">readingRule</param>
+			</result>
+		</action>
+		<action name="addPMReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addPMReadingRule">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="root">readingRule</param>
 			</result>
 		</action>
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
@@ -228,6 +234,13 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailNotifications.*</param>
+			</result>
+		</action>	
+		
+		<action name="wotemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="getWOTemplates">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workorderTemplates.*</param>
 			</result>
 		</action>	
 		

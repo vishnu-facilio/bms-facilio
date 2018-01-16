@@ -33,10 +33,43 @@ public class ReportContext1 {
 	ReportFieldContext y3AxisField;
 	Integer y3AxisaggregateFunction;
 	
+	String orderBy;
+	Integer orderByFunction;
+	
 	Long groupBy;
 	ReportFieldContext groupByField;
 	Integer groupByFieldAggregateFunction;
+	Integer limit;
 	
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public Integer getOrderByFunction() {
+		return orderByFunction;
+	}
+	public OrderByFunction getOrderByFunc() {
+		if(getOrderByFunction() != null) {
+			return OrderByFunction.getOrderByFunction(getOrderByFunction());
+		}
+		return null;
+	}
+	public void setOrderByFunction(Integer orderByFunction) {
+		this.orderByFunction = orderByFunction;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
 	public Long getGroupBy() {
 		return groupBy;
 	}
@@ -366,6 +399,49 @@ public class ReportContext1 {
 		}
 		this.reportCriteriaContexts.add(reportCriteriaContext);
 	}
+	
+	public enum OrderByFunction {
+		ACCENDING (1,"ASC"),
+		DESCENDING (2,"DESC");
+		
+		public int getValue() {
+			return value;
+		}
+
+		public void setValue(int value) {
+			this.value = value;
+		}
+
+		public String getStringValue() {
+			return stringValue;
+		}
+
+		public void setStringValue(String stringValue) {
+			this.stringValue = stringValue;
+		}
+
+		private int value;
+		private String stringValue;
+		
+		OrderByFunction(int value,String stringValue) {
+			
+			this.value = value;
+			this.stringValue = stringValue;
+		}
+		
+		public static OrderByFunction getOrderByFunction(int value) {
+			return ORDER_BY_FUNCTION_MAP.get(value);
+		}
+
+		private static final Map<Integer, OrderByFunction> ORDER_BY_FUNCTION_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, OrderByFunction> initTypeMap() {
+			Map<Integer, OrderByFunction> typeMap = new HashMap<>();
+			for(OrderByFunction type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+	}
 
 
 	public enum ReportChartType {
@@ -481,4 +557,5 @@ public class ReportContext1 {
 		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
+	
 }

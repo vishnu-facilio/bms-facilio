@@ -30,7 +30,7 @@ public class GetEventListCommand implements Command {
 		String cvName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		
-		FacilioView view = ViewFactory.getView("event-" + cvName);
+		FacilioView view = ViewFactory.getView("event", cvName);
 		
 		long alarmId = (long) context.get(EventConstants.EventContextNames.ALARM_ID);
 		

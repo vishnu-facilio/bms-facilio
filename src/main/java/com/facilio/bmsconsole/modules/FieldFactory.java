@@ -1020,7 +1020,67 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getPushNotificationTemplateFields() {
+		return getPushNotificationTemplateFields(true);
+	}
 
+	private static List<FacilioField> getPushNotificationTemplateFields(boolean isIdNeeded) {
+		FacilioModule module = ModuleFactory.getPushNotificationTemplateModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		if (isIdNeeded) {
+			fields.add(getIdField(module));
+		}
+
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setColumnName("TO_UID");
+		smsTo.setModule(module);
+		fields.add(smsTo);
+
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("message");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModule(module);
+		fields.add(smsMsg);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getWebNotificationTemplateFields() {
+		return getWebNotificationTemplateFields(true);
+	}
+
+	private static List<FacilioField> getWebNotificationTemplateFields(boolean isIdNeeded) {
+		FacilioModule module = ModuleFactory.getWebNotificationTemplateModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		if (isIdNeeded) {
+			fields.add(getIdField(module));
+		}
+
+		FacilioField smsTo = new FacilioField();
+		smsTo.setName("to");
+		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setColumnName("TO_UID");
+		smsTo.setModule(module);
+		fields.add(smsTo);
+
+		FacilioField smsMsg = new FacilioField();
+		smsMsg.setName("message");
+		smsMsg.setDataType(FieldType.STRING);
+		smsMsg.setColumnName("MSG");
+		smsMsg.setModule(module);
+		fields.add(smsMsg);
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getExcelTemplateFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getExcelTemplatesModule();
@@ -1478,6 +1538,13 @@ public class FieldFactory {
 		isDefault.setColumnName("ISDEFAULT");
 		isDefault.setModule(module);
 		fields.add(isDefault);
+		
+		FacilioField viewOrder = new FacilioField();
+		viewOrder.setName("sequenceNumber");
+		viewOrder.setDataType(FieldType.NUMBER);
+		viewOrder.setColumnName("SEQUENCE_NUMBER");
+		viewOrder.setModule(module);
+		fields.add(viewOrder);
 		
 		return fields;
 
@@ -2233,6 +2300,27 @@ public class FieldFactory {
 		groupByFieldAggregateFunction.setModule(module);
 		fields.add(groupByFieldAggregateFunction);
 		
+		FacilioField limit = new FacilioField();
+		limit.setName("limit");
+		limit.setDataType(FieldType.NUMBER);
+		limit.setColumnName("LIMIT_VALUE");
+		limit.setModule(module);
+		fields.add(limit);
+		
+		FacilioField orderBy = new FacilioField();
+		orderBy.setName("orderBy");
+		orderBy.setDataType(FieldType.STRING);
+		orderBy.setColumnName("ORDER_BY");
+		orderBy.setModule(module);
+		fields.add(orderBy);
+		
+		FacilioField orderByFunction = new FacilioField();
+		orderByFunction.setName("orderByFunction");
+		orderByFunction.setDataType(FieldType.NUMBER);
+		orderByFunction.setColumnName("ORDER_BY_FUNCTION");
+		orderByFunction.setModule(module);
+		fields.add(orderByFunction);
+		
 		return fields;
 	}
 	public static List<FacilioField> getReportFieldFields() {
@@ -2509,5 +2597,40 @@ public class FieldFactory {
 		fields.add(woId);
 		
 		return fields;
+	}
+	
+	public static List<FacilioField> getPMTriggerFields() {
+		FacilioModule module = ModuleFactory.getPMTriggersModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("readingRuleId", "READING_RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+
+	public static FacilioField getField(String name, String colName, FieldType type) {
+		FacilioField columnFld = new FacilioField();
+		columnFld.setName(name);
+		columnFld.setColumnName(colName);
+		columnFld.setDataType(type);
+		return columnFld;
+	}
+	
+	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
+		FacilioField columnFld = new FacilioField();
+		columnFld.setName(name);
+		columnFld.setColumnName(colName);
+		columnFld.setModule(module);
+		columnFld.setDataType(type);
+		return columnFld;
 	}
 }
