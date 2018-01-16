@@ -307,9 +307,9 @@ public class DashboardAction extends ActionSupport {
 					.andCustomWhere("ID = ?", reportId);
 
 			Map<String, Object> props = new HashMap<String, Object>();
-			props.put("chartType", ReportContext1.ReportChartType.getWidgetChartType(chartType));
+			props.put("chartType", ReportContext1.ReportChartType.getWidgetChartType(chartType).getValue());
 			if (secChartType != null) {
-				props.put("secChartType", ReportContext1.ReportChartType.getWidgetChartType(secChartType));
+				props.put("secChartType", ReportContext1.ReportChartType.getWidgetChartType(secChartType).getValue());
 			}
 			
 			updateBuilder.update(props);
