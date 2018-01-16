@@ -365,7 +365,10 @@ public class ReportContext1 {
 
 
 	public Boolean getIsComparisionReport() {
-		return isComparisionReport;
+		if(isComparisionReport != null) {
+			return isComparisionReport;
+		}
+		return Boolean.FALSE;
 	}
 
 

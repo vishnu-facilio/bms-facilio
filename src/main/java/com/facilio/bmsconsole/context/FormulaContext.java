@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	public enum DateAggregateOperator implements AggregateOperator {
 		
 		COUNT(1,"count","count({$place_holder$})"),
-		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'+04:00'),'%Y')"),
+		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')"),
 		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
 		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')"),
 		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')"),

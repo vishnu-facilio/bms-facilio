@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.MultiMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -43,6 +44,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -399,28 +401,6 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
-//		FacilioField groupByField = new FacilioField();
-//		if(getPeriod() != null) {
-//			Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
-//			WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), getPeriod());
-//			FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
-//			String timePeriodWhereCondition = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
-//			builder.andCustomWhere(timePeriodWhereCondition);
-//			groupByField.setName("label");
-//			
-//			if(xAxisField.getModule().getName().equals(timeSeriesfield.getModule().getName()) && xAxisField.getColumnName().equals(timeSeriesfield.getColumnName())) {
-//				groupByField.setColumnName(DashboardUtil.getTimeFrameFloorValue(dateOperator, fieldModule.getTableName()+"."+xAxisField.getColumnName()));
-//			}
-//			else {
-//				groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
-//			}
-//			groupByField.setDataType(xAxisField.getDataType());
-//		}
-//		else {
-//			groupByField.setName("label");
-//			groupByField.setColumnName(fieldModule.getTableName()+"."+xAxisField.getColumnName());
-//			groupByField.setDataType(xAxisField.getDataType());
-//		}
 		String groupByString = "label";
 		if(reportContext.getGroupBy() != null) {
 			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupByField());
@@ -506,26 +486,84 @@ public class DashboardAction extends ActionSupport {
 			setReportData(finalres);
 		}
 		else {
-			JSONArray res = new JSONArray();
-			for(int i=0;i<rs.size();i++) {
-	 			Map<String, Object> thisMap = rs.get(i);
-	 			JSONObject component = new JSONObject();
-	 			if(thisMap!=null) {
-	 				if(thisMap.get("label") == null) {
-	 					continue;
-	 				}
-	 				if(thisMap.get("dummyField") != null) {
-	 					component.put("label", thisMap.get("dummyField"));
-	 				}
-	 				else {
-	 					component.put("label", thisMap.get("label"));
-	 				}
-	 				component.put("value", thisMap.get("value"));
-	 				res.add(component);
-	 			}
-		 	}
-			setReportData(res);
+			if(!reportContext.getIsComparisionReport()) {
+				JSONArray res = new JSONArray();
+				for(int i=0;i<rs.size();i++) {
+		 			Map<String, Object> thisMap = rs.get(i);
+		 			JSONObject component = new JSONObject();
+		 			if(thisMap!=null) {
+		 				if(thisMap.get("label") == null) {
+		 					continue;
+		 				}
+		 				if(thisMap.get("dummyField") != null) {
+		 					component.put("label", thisMap.get("dummyField"));
+		 				}
+		 				else {
+		 					component.put("label", thisMap.get("label"));
+		 				}
+		 				component.put("value", thisMap.get("value"));
+		 				res.add(component);
+		 			}
+			 	}
+				setReportData(res);
+			}
 		}
+		
+		System.out.println("rs after -- "+rs);
+		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>(); 
+		comparisionRs.add(rs);
+		Multimap<String,Object> comparisonresult = ArrayListMultimap.create();
+		if(reportContext.getIsComparisionReport()) {
+			
+			for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
+				if(i==0) {
+					continue;
+				}
+				GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+						.table(module.getTableName())
+						.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+						.groupBy(groupByString)
+						.select(fields);
+				if(module.getExtendModule() != null) {
+					builder.innerJoin(module.getExtendModule().getTableName())
+						.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+				}
+				if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+					criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+					builder1.andCriteria(criteria);
+				}
+				List<Map<String, Object>> rs1 = builder1.get();
+				comparisionRs.add(rs1);
+			}
+			
+			for(List<Map<String, Object>> comp :comparisionRs) {
+				for(Map<String, Object> result:comp) {
+					String label =(String) result.get("label");
+					Object value = result.get("value");
+					comparisonresult.put(label, value);
+				}
+			}
+			System.out.println("comparisonresult ---- "+comparisonresult);
+			
+			JSONArray compResult =  new JSONArray();
+			for(String key:comparisonresult.keySet()) {
+				JSONObject json = new JSONObject();
+				json.put("label", key);
+				JSONArray valuesArray = new JSONArray();
+				for(Object values :comparisonresult.get(key)) {
+					JSONObject json1 = new JSONObject();
+					json1.put("label", key);
+					json1.put("value", values);
+					valuesArray.add(json1);				
+				}
+				json.put("value", valuesArray);
+				compResult.add(json);
+			}
+			System.out.println("compResult  ----- "+compResult);
+			setReportData(compResult);
+		}
+		
+		
 		
 		if(energyMeterValue != null && isEnergyDataWithTimeFrame) {
 			
@@ -560,34 +598,6 @@ public class DashboardAction extends ActionSupport {
 			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
 			setRelatedAlarms(alarmVsEnergyProps);
 		}
-		System.out.println("rs after -- "+rs);
-//		if(widgetChartContext.getIsComparisionReport()) {
-//			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-//					.table(module.getTableName())
-//					.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-//					.groupBy("label")
-//					.select(fields);
-//			if(!module.getName().equals(fieldModule.getName())) {
-//				builder1.innerJoin(fieldModule.getTableName())
-//					.on(module.getTableName()+".Id="+fieldModule.getTableName()+".Id");
-//			}
-//			if(widgetChartContext.getCriteriaId() != null) {
-//				builder1.andCriteria(criteria);
-//			}
-//			if(getPeriod() != null) {
-//				Operator dateOperator = DateOperators.getAllOperators().get(getPeriod());
-//				if (dateOperator.getOperatorId() == DateOperators.CURRENT_WEEK.getOperatorId()) {
-//					dateOperator = DateOperators.LAST_WEEK;
-//				}
-//				WidgetPeriodContext widgetperiodContext = DashboardUtil.getWidgetPeriod(widgetChartContext.getId(), dateOperator.getOperator());
-//				FacilioField timeSeriesfield = modBean.getField(widgetperiodContext.getTimeSeriesField());
-//				String timePeriodWhereCondition1 = dateOperator.getWhereClause(timeSeriesfield.getColumnName(), null);
-//				builder1.andCustomWhere(timePeriodWhereCondition1);
-//			}
-//			System.out.println(builder1.get());
-//		}
-		
-// 		setReportData(rs);
 		return SUCCESS;
 	}
 	
