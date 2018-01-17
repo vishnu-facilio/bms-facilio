@@ -135,6 +135,15 @@ public enum ActivityType {
 			return "solved the "+moduleName;
 		}
 	},
+	UPDATE_TICKET_TASK(16384) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "Updated the task";
+		}
+		
+	}
 	;
 
     private int eventType;
