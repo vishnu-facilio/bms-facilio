@@ -130,7 +130,7 @@ public class EventToAlarmJob extends FacilioJob{
 				json.put("alarmPriority", event.getPriority());
 				json.put("alarmClass", event.getAlarmClass());
 				json.put("state", event.getState());
-				json.put("type", 6);
+				json.put("alarmType", 6);
 
 				if(event.getAssetId() != -1) {
 					JSONObject asset = new JSONObject();
