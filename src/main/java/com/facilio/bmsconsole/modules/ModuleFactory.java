@@ -645,11 +645,19 @@ public class ModuleFactory {
 		return viewFieldsModule;
 	}
 	
-	public static FacilioModule getTaskInputOoptionModule() {
+	public static FacilioModule getTaskInputOptionModule() {
 		FacilioModule taskInputOptionsModule = new FacilioModule();
 		taskInputOptionsModule.setName("taskInputOpyion");
 		taskInputOptionsModule.setDisplayName("Task Input Options");
 		taskInputOptionsModule.setTableName("Task_Input_Options");
 		return taskInputOptionsModule;
+	}
+	
+	public static FacilioModule getTaskSectionModule() {
+		FacilioModule taskSection = new FacilioModule();
+		taskSection.setName("tasksection");
+		taskSection.setDisplayName("Task Section");
+		taskSection.setTableName("Task_Section");
+		return taskSection;
 	}
 }

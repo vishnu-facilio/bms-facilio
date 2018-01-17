@@ -28,7 +28,7 @@ public class AddTaskOptionsCommand implements Command {
 			}
 		}
 		
-		FacilioModule module = ModuleFactory.getTaskInputOoptionModule();
+		FacilioModule module = ModuleFactory.getTaskInputOptionModule();
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(module.getTableName())

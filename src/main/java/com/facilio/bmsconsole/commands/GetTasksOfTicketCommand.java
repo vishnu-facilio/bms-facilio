@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetTasksOfTicketCommand implements Command {
@@ -32,7 +33,7 @@ public class GetTasksOfTicketCommand implements Command {
 					.orderBy("id");
 
 			List<TaskContext> tasks = builder.get();
-			context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+			context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
 		}
 		else {
 			throw new IllegalArgumentException("Invalid ticket ID : "+ticketId);

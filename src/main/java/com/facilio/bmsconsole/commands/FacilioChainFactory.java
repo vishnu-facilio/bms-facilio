@@ -456,6 +456,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new AddTaskSectionsCommand());
 		c.addCommand(new AddTasksCommand());
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
@@ -511,6 +512,14 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new GetRelatedTasksCommand());
 		c.addCommand(new GetTaskInputDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addTaskSectionChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTaskSectionCommand());
+		c.addCommand(new UpdateTaskWithSectionCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1133,14 +1142,14 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddWorkorderTemplateChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new AddWorkorderTemplateCommand());
+		c.addCommand(new AddPMWorkorderTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new AddWorkorderTemplateCommand());
+		c.addCommand(new AddPMWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
 		c.addCommand(new AddPMReminderCommand());
 		addCleanUpCommand(c);
@@ -1168,7 +1177,7 @@ public class FacilioChainFactory {
 	public static Chain getUpdatePreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new DeletePreventiveMaintenanceCommand());
-		c.addCommand(new AddWorkorderTemplateCommand());
+		c.addCommand(new AddPMWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
 		return c;

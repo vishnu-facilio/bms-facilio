@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -35,6 +37,34 @@ public class TaskAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private TaskSectionContext section;
+	public TaskSectionContext getSection() {
+		return section;
+	}
+	public void setSection(TaskSectionContext section) {
+		this.section = section;
+	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public String addTaskSection() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASK_SECTION, section);
+		
+		Chain addSectionChain = FacilioChainFactory.addTaskSectionChain();
+		addSectionChain.execute(context);
+		setResult("success");
+		
+		return SUCCESS;
+	}
+
 	private List<FacilioField> fields;
 	
 	public List getFormlayout()
@@ -207,7 +237,8 @@ public class TaskAction extends ActionSupport {
 				Chain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
 				getRelatedTasksChain.execute(context);
 
-				setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+				setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+				setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -227,7 +258,8 @@ public class TaskAction extends ActionSupport {
 			taskListChain.execute(context);
 
 			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-			setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+			setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+			setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 
 			FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 			if(cv != null) {
@@ -238,12 +270,20 @@ public class TaskAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
+	private Map<Long, List<TaskContext>> tasks;
+	public Map<Long, List<TaskContext>> getTasks() {
 		return tasks;
 	}
-	public void setTasks(List<TaskContext> tasks) {
+	public void setTasks(Map<Long, List<TaskContext>> tasks) {
 		this.tasks = tasks;
+	}
+	
+	private Map<Long, TaskSectionContext> sections;
+	public Map<Long, TaskSectionContext> getSections() {
+		return sections;
+	}
+	public void setSections(Map<Long, TaskSectionContext> sections) {
+		this.sections = sections;
 	}
 	
 	public String getModuleLinkName()
@@ -254,11 +294,6 @@ public class TaskAction extends ActionSupport {
 	public ViewLayout getViewlayout()
 	{
 		return ViewLayout.getViewTaskLayout();
-	}
-	
-	public List<TaskContext> getRecords() 
-	{
-		return tasks;
 	}
 	
 	private String viewName = null;

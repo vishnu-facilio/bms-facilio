@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -14,11 +16,21 @@ public class ValidateTasksCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
-		if(tasks == null) {
-			TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-			if(task != null) {
-				tasks = Collections.singletonList(task);
+		List<TaskContext> tasks = null;
+		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+		if(taskMap == null) {
+			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+			if(tasks == null) {
+				TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+				if(task != null) {
+					tasks = Collections.singletonList(task);
+				}
+			}
+		}
+		else {
+			tasks = new ArrayList<>();
+			for(Map.Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
+				tasks.addAll(entry.getValue());
 			}
 		}
 		

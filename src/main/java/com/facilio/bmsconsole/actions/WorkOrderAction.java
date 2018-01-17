@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -88,7 +90,7 @@ public class WorkOrderAction extends ActionSupport {
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
@@ -120,7 +122,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE, workorderTemplate);
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
@@ -137,7 +139,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
@@ -206,7 +208,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
 		updatePM.execute(context);
@@ -225,7 +227,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
-		setTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 		
 		return SUCCESS;
 	}
@@ -517,11 +519,27 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
+	private Map<Long, List<TaskContext>> taskList;
+	public Map<Long, List<TaskContext>> getTaskList() {
+		return taskList;
+	}
+	public void setTaskList(Map<Long, List<TaskContext>> taskList) {
+		this.taskList = taskList;
+	}
+	
+	private Map<Long, TaskSectionContext> sections;
+	public Map<Long, TaskSectionContext> getSections() {
+		return sections;
+	}
+	public void setSections(Map<Long, TaskSectionContext> sections) {
+		this.sections = sections;
+	}
+
+	private Map<String, List<TaskContext>> tasks;
+	public Map<String, List<TaskContext>> getTasks() {
 		return tasks;
 	}
-	public void setTasks(List<TaskContext> tasks) {
+	public void setTasks(Map<String, List<TaskContext>> tasks) {
 		this.tasks = tasks;
 	}
 
