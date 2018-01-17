@@ -63,6 +63,7 @@
 <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/api/*</url-pattern>
+    <url-pattern>/internal/*</url-pattern>
 </filter-mapping>
 
     <servlet>
