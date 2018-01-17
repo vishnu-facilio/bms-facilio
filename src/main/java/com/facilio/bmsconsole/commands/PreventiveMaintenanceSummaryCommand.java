@@ -53,8 +53,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
 		if(taskContent != null) {
-			Map<String, List<TaskContext>> tasks = FieldUtil.getAsBeanFromJson(taskContent, Map.class);
-			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+			context.put(FacilioConstants.ContextNames.TASK_MAP, PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent));
 		}
 		else {
 			JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
