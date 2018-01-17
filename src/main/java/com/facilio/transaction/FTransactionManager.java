@@ -10,11 +10,33 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 public class FTransactionManager implements TransactionManager {
+	
+	private static FTransactionManager instance = null;
+	public static TransactionManager getTransactionManager()
+	{
+		if(instance==null)
+		{
+			instance = new FTransactionManager();
+		}
+		return instance;
+		
+	}
+	
+	private FTransactionManager()
+	{
+		
+	}
+	private static ThreadLocal<FacilioTransaction>  currenttransaction = new ThreadLocal<FacilioTransaction>();
 
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
-		// TODO Auto-generated method stub
-
+    FacilioTransaction currenttrans = currenttransaction.get();
+		if(currenttrans ==null)
+		{
+			currenttrans =  new FacilioTransaction();
+			currenttransaction.set(currenttrans);
+		}
+		//return currenttrans;
 	}
 
 	@Override
@@ -35,7 +57,9 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public Transaction getTransaction() throws SystemException {
 		// TODO Auto-generated method stub
-		return null;
+		FacilioTransaction currenttrans = currenttransaction.get();
+		
+		return currenttrans;
 	}
 
 	@Override
