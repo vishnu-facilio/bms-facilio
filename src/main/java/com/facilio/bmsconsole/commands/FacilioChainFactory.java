@@ -954,7 +954,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1003,7 +1004,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1040,6 +1042,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getAllAreaChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetAllAreaCommand());
 		addCleanUpCommand(c);
 		return c;

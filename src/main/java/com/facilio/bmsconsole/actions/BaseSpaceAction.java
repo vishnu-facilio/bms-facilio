@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -18,6 +20,19 @@ public class BaseSpaceAction extends ActionSupport {
 	public String baseSpaceList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
+		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "basespace.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
 		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);
 		
@@ -109,5 +124,21 @@ public class BaseSpaceAction extends ActionSupport {
 
 	public void setSpaceType(String spaceType) {
 		this.spaceType = spaceType;
+	}
+	
+	String filters;
+	public void setFilters(String filters){
+		this.filters = filters;
+	}
+	public String getFilters(){
+		return this.filters;
+	}
+	
+	String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
 	}
 }

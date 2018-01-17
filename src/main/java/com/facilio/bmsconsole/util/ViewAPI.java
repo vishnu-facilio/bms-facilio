@@ -7,8 +7,10 @@ import java.util.Map;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -62,6 +64,7 @@ public class ViewAPI {
 				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
 				if(view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
+					setCriteriaValue(criteria);
 					view.setCriteria(criteria);
 				}
 				List<ViewField> columns = getViewColumns(view.getId());
@@ -204,5 +207,17 @@ public class ViewAPI {
 			viewId = view.getId();
 		}
 		return viewId;
+	}
+	
+	private static void setCriteriaValue(Criteria criteria) throws Exception {
+		Map<Integer, Condition> conditions = criteria.getConditions();
+		for(Map.Entry<Integer, Condition> entry : conditions.entrySet()) {
+			Condition condition = entry.getValue();
+			if(condition.getOperatorId() == LookupOperator.LOOKUP.getOperatorId() && condition.getCriteriaValueId() != -1) {
+				Criteria criteriaValue = CriteriaAPI.getCriteria(criteria.getOrgId(),condition.getCriteriaValueId());
+				condition.setCriteriaValue(criteriaValue);
+				setCriteriaValue(criteriaValue);
+			}
+		}
 	}
 }

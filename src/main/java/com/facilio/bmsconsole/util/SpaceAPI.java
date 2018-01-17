@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -492,7 +493,7 @@ public static long getSitesCount() throws Exception {
 	
 	
 	
-	public static List<BaseSpaceContext> getAllBaseSpaces() throws Exception
+	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -503,6 +504,13 @@ public static long getSitesCount() throws Exception {
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
 																	.beanClass(BaseSpaceContext.class);
+		if (filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
+		}
+		if (searchCriteria != null) {
+			selectBuilder.andCriteria(searchCriteria);
+		}
+		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
