@@ -143,7 +143,7 @@ function signup()
 	var confirmpass = document.getElementById("confirmPassword").value;
 	if(pass != confirmpass)
 		{
-			alert("Incorrect ConfirmPassword");
+			alert("Password not matched with ConfirmPassword");
 			return false;
 		}
 	
@@ -179,6 +179,8 @@ function signup()
   var handlelogin =   function handleloginsubmit(response)
     {
     		//alert(JSON.stringify(response))
+    		console.log("$$$$$$$ response "+response)
+    		console.log("££££££££££££££££££ redirecting to " + '<%= com.facilio.aws.util.AwsUtil.getConfig("clientapp.url")%>');
     		location.href = '<%= com.facilio.aws.util.AwsUtil.getConfig("clientapp.url")%>/app/wo';
     		
     }

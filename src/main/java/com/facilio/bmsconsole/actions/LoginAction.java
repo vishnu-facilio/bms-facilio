@@ -543,6 +543,9 @@ public class LoginAction extends ActionSupport{
 		account.put("config", config);
 		account.put("appProps", appProps);
 		
+		int license = AccountUtil.getFeatureLicense();
+		account.put("License", license);
+		
 		return SUCCESS;
 	}
 	

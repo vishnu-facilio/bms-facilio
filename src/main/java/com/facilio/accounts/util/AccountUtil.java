@@ -1,5 +1,9 @@
 package com.facilio.accounts.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -8,6 +12,8 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class AccountUtil {
 
@@ -66,5 +72,32 @@ public class AccountUtil {
 	public static RoleBean getRoleBean() throws Exception {
 		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean");
 		return roleBean;
+	}
+	
+	public static int getFeatureLicense() throws Exception {
+		long orgId = getCurrentOrg().getOrgId();
+		int module = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("select MODULE from FeatureLicense where ORGID = ?");
+			pstmt.setLong(1, orgId);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+			{
+				module = rs.getInt("MODULE");
+			}
+
+		}catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.closeAll(conn, pstmt, rs);
+		}	
+		return module;
 	}
 }
