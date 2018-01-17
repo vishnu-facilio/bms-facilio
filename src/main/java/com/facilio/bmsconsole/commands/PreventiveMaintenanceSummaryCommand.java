@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,25 +45,28 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
 		JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
-		JSONObject wocontent = (JSONObject) templateContent.get("workorder");
+		JSONObject woContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.WORK_ORDER);
 		
-		List<TaskContext> taskList = new ArrayList<>();
-		if(templateContent.containsKey("tasks"))
-		{
-			JSONArray tasks = (JSONArray) templateContent.get("tasks");
-			for(int i=0; i<tasks.size(); i++)
-			{
-				TaskContext task = FieldUtil.getAsBeanFromJson((JSONObject) tasks.get(i), TaskContext.class);
-				taskList.add(task);
-			}
-		}
-		
-		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(wocontent, WorkOrderContext.class);
-		
+		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(woContent, WorkOrderContext.class);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_LIST, taskList);
 		
+		JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
+		if(taskContent != null) {
+			Map<String, List<TaskContext>> tasks = FieldUtil.getAsBeanFromJson(taskContent, Map.class);
+			context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		}
+		else {
+			JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
+			if (taskJson != null) {
+				List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
+				if(tasks != null && !tasks.isEmpty()) {
+					Map<String, List<TaskContext>> taskMap = new HashMap<>();
+					taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+					context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+				}
+			}
+		}
 		return false;
 	}
 }

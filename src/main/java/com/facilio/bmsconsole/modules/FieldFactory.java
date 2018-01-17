@@ -2643,12 +2643,25 @@ public class FieldFactory {
 	}
 	
 	public static List<FacilioField> getTaskInputOptionsFields() {
-		FacilioModule module = ModuleFactory.getTaskInputOoptionModule();
+		FacilioModule module = ModuleFactory.getTaskInputOptionModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
 		fields.add(getField("taskId", "TASK_ID", module, FieldType.STRING));
 		fields.add(getField("option", "OPTION_VALUE", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getTaskSectionFields() {
+		FacilioModule module = ModuleFactory.getTaskSectionModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("parentTicketId", "PARENT_TICKET_ID", module, FieldType.NUMBER));
+		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.NUMBER));
+		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 		
 		return fields;
 	}

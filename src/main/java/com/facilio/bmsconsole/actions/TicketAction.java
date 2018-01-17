@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
@@ -12,6 +13,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -112,13 +114,10 @@ public class TicketAction extends ActionSupport {
 		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
-		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
-		
 		TicketContext tc =this.ticket;
 		
-		if(tasks != null && tasks.size() > 0) {
-			setTasks(tasks);
-		}
+		setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+		setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		
 		return SUCCESS;
 	}
@@ -154,12 +153,20 @@ public class TicketAction extends ActionSupport {
 		this.ticket = ticket;
 	}
 	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
+	private Map<Long, List<TaskContext>> tasks;
+	public Map<Long, List<TaskContext>> getTasks() {
 		return tasks;
 	}
-	public void setTasks(List<TaskContext> tasks) {
+	public void setTasks(Map<Long, List<TaskContext>> tasks) {
 		this.tasks = tasks;
+	}
+	
+	private Map<Long, TaskSectionContext> sections;
+	public Map<Long, TaskSectionContext> getSections() {
+		return sections;
+	}
+	public void setSections(Map<Long, TaskSectionContext> sections) {
+		this.sections = sections;
 	}
 	
 	private long ticketId;

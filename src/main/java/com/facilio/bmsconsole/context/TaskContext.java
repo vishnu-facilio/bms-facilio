@@ -63,6 +63,22 @@ public class TaskContext extends TicketContext {
 		this.readingDataId = readingDataId;
 	}
 	
+	private long sectionId = -1;
+	public long getSectionId() {
+		return sectionId;
+	}
+	public void setSectionId(long sectionId) {
+		this.sectionId = sectionId;
+	}
+	
+	private int sequence = -1;
+	public int getSequence() {
+		return sequence;
+	}
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
+
 	private InputType inputType;
 	public int getInputType() {
 		if(inputType != null) {
@@ -109,7 +125,10 @@ public class TaskContext extends TicketContext {
 		}
 		
 		public static InputType valueOf(int val) {
-			return values()[val - 1];
+			if(val > 0 && val <= values().length) {
+				return values()[val - 1];
+			}
+			return null;
 		}
 	}
 }

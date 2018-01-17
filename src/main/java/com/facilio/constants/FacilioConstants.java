@@ -143,6 +143,10 @@ public class FacilioConstants {
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
+		public static final String TASK_MAP = "taskMap";
+		public static final String TASK_SECTIONS = "taskSections";
+		public static final String TASK_SECTION = "taskSection";
+		public static final String DEFAULT_TASK_SECTION = "default";
 		
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
