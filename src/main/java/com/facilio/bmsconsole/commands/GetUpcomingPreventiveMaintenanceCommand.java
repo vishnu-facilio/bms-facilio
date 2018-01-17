@@ -35,6 +35,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
+				pm.setTriggers(pmTrigggers);
 				for (PMTriggerContext trigger : pmTrigggers) {
 					if(trigger.getSchedule() != null) {
 						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
