@@ -128,13 +128,13 @@ public class TemplateAPI {
 				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 						.select(FieldFactory.getWebNotificationTemplateFields())
 						.table("Web_Notification_Templates")
-						.andCustomWhere("Web_Notification_Templates", id);
+						.andCustomWhere("Web_Notification_Templates.ID = ?", id);
 				List<Map<String, Object>> templates = selectBuilder.get();
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getWebNotificationTemplateFromMap(templateMap);
 				}
-			}
+			}break;
 			case EXCEL: {
 				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 						.select(FieldFactory.getExcelTemplateFields())
@@ -243,9 +243,9 @@ public class TemplateAPI {
 	
 	public static long addSMSTemplate(long orgId, SMSTemplate template) throws Exception {
 		template.setOrgId(orgId);
-		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
 															.fields(FieldFactory.getUserTemplateFields())
@@ -275,9 +275,11 @@ public class TemplateAPI {
 	
 	public static long addPushNotificationTemplate(long orgId, PushNotificationTemplate template) throws Exception {
 		template.setOrgId(orgId);
-		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+//		JSONArray placeholders = getPlaceholders(template);
+//		template.setPlaceholder(placeholders);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
 															.fields(FieldFactory.getUserTemplateFields())
@@ -307,9 +309,9 @@ public class TemplateAPI {
 	
 	public static long addWebNotificationTemplate(long orgId, WebNotificationTemplate template) throws Exception {
 		template.setOrgId(orgId);
-		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
 															.fields(FieldFactory.getUserTemplateFields())

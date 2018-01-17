@@ -1039,18 +1039,32 @@ public class FieldFactory {
 
 		FacilioField smsTo = new FacilioField();
 		smsTo.setName("to");
-		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setDataType(FieldType.STRING);
 		smsTo.setColumnName("TO_UID");
 		smsTo.setModule(module);
 		fields.add(smsTo);
 
 		FacilioField smsMsg = new FacilioField();
-		smsMsg.setName("message");
+		smsMsg.setName("body");
 		smsMsg.setDataType(FieldType.STRING);
 		smsMsg.setColumnName("MSG");
 		smsMsg.setModule(module);
 		fields.add(smsMsg);
-
+		
+		FacilioField title = new FacilioField();
+		title.setName("title");
+		title.setDataType(FieldType.STRING);
+		title.setColumnName("TITLE");
+		title.setModule(module);
+		fields.add(title);
+		
+		FacilioField url = new FacilioField();
+		url.setName("url");
+		url.setDataType(FieldType.STRING);
+		url.setColumnName("URL");
+		url.setModule(module);
+		fields.add(url);
+		
 		return fields;
 	}
 
@@ -1069,7 +1083,7 @@ public class FieldFactory {
 
 		FacilioField smsTo = new FacilioField();
 		smsTo.setName("to");
-		smsTo.setDataType(FieldType.NUMBER);
+		smsTo.setDataType(FieldType.STRING);
 		smsTo.setColumnName("TO_UID");
 		smsTo.setModule(module);
 		fields.add(smsTo);
@@ -1080,6 +1094,20 @@ public class FieldFactory {
 		smsMsg.setColumnName("MSG");
 		smsMsg.setModule(module);
 		fields.add(smsMsg);
+		
+		FacilioField title = new FacilioField();
+		title.setName("title");
+		title.setDataType(FieldType.STRING);
+		title.setColumnName("TITLE");
+		title.setModule(module);
+		fields.add(title);
+		
+		FacilioField url = new FacilioField();
+		url.setName("url");
+		url.setDataType(FieldType.STRING);
+		url.setColumnName("URL");
+		url.setModule(module);
+		fields.add(url);
 
 		return fields;
 	}

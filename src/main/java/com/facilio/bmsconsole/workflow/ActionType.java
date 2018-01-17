@@ -17,6 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -163,8 +165,23 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
-//				NotificationContext notification = new NotificationContext();
-//				NotificationAPI.sendNotification(notification);
+				try {
+					List<Long> reciepents = null;
+					String toIds = (String) obj.get("to");
+					String[] toList = toIds.trim().split(",");
+					for ( String toId : toList) {
+						reciepents.add(Long.valueOf(toId));
+					}
+					
+					NotificationContext notification = new NotificationContext();
+					notification.setInfo((String) obj.get("message"));
+					int type = (int) obj.get("activityType");
+					notification.setNotificationType(ActivityType.valueOf(type));
+					NotificationAPI.sendNotification(reciepents, notification);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	},

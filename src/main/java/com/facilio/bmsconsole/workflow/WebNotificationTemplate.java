@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class WebNotificationTemplate extends UserTemplate{
 
-	private long to;
+	private String to;
 
-	public long getTo() {
+	public String getTo() {
 		return to;
 	}
 
-	public void setTo(long to) {
+	public void setTo(String to) {
 		this.to = to;
 	}
 	
@@ -32,6 +32,21 @@ public class WebNotificationTemplate extends UserTemplate{
 		this.message = message;
 	}
 	
+	private String url;
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	private String title;	
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
@@ -39,6 +54,9 @@ public class WebNotificationTemplate extends UserTemplate{
 		JSONObject obj = new JSONObject();
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
 		obj.put("message", StrSubstitutor.replace(message, placeHolders));
+		obj.put("activityType", placeHolders.get("rule.event.activityType"));
+		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
+		obj.put("title", StrSubstitutor.replace(title, placeHolders));
 		return obj;
 	}
 	
@@ -47,6 +65,8 @@ public class WebNotificationTemplate extends UserTemplate{
 		JSONObject obj = new JSONObject();
 		obj.put("to", to);
 		obj.put("message", message);
+		obj.put("URL", url);
+		obj.put("title", title);
 		
 		return obj;
 	}
