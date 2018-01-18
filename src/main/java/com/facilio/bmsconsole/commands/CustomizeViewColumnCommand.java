@@ -34,6 +34,8 @@ public class CustomizeViewColumnCommand implements Command {
 			
 			if(viewId != -1) {
 				ViewAPI.customizeViewColumns(viewId, columns);
+				List<ViewField> savedColumns = ViewAPI.getViewColumns(viewId);
+				context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, savedColumns);
 			}
 		}
 		

@@ -11,8 +11,8 @@ import com.facilio.bmsconsole.context.ViewField;
 public class ColumnFactory {
 	
 	private static Map<String, List<ViewField>> columns = Collections.unmodifiableMap(initColumns());
-	public static List<ViewField> getColumns (String viewName) {
-		return columns.get(viewName);
+	public static List<ViewField> getColumns (String moduleName, String viewName) {
+		return columns.get(moduleName + "-" +viewName);
 	}
 	
 	private static Map<String, List<ViewField>> initColumns() {
@@ -29,6 +29,7 @@ public class ColumnFactory {
 		columnMap.put("workorder-myduetoday", getDefaultViewColumns());
 		columnMap.put("workorder-my", getDefaultViewColumns());
 		columnMap.put("workorder-all", getDefaultViewColumns());
+		columnMap.put("workorder-default", getDefaultViewColumns());	// For getting default values for a column - view not shown in ui
 		
 		columnMap.put("alarm-active", getDefaultAlarmColumns());
 		columnMap.put("alarm-cleared", getDefaultAlarmColumns());
@@ -41,6 +42,7 @@ public class ColumnFactory {
 		columnMap.put("alarm-fire", getDefaultAlarmColumns());
 		columnMap.put("alarm-energy", getDefaultAlarmColumns());
 		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
+		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		
 		return columnMap;
 	}
@@ -67,7 +69,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("alarmType", "Category"));
 		columns.add(new ViewField("node", "Entity"));
 		columns.add(new ViewField("modifiedTime", "Time Since Report"));
-		columns.add(new ViewField("acknowledgedBy", "Acknowledge"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
 		
 		return columns;
 	}

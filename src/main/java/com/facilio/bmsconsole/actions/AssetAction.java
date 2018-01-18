@@ -89,7 +89,6 @@ public class AssetAction extends ActionSupport {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
- 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
  		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);

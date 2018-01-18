@@ -21,7 +21,7 @@ public class ExecutePMsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> pmIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds, null);
 		if(pms != null && !pms.isEmpty()) {
 			Map<Long, Long> pmToWo = new HashMap<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -250,11 +251,11 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 	
-	public static List<PreventiveMaintenance> getAllActivePMs() throws Exception {
-		return getActivePMs(null);
+	public static List<PreventiveMaintenance> getAllActivePMs(Criteria filterCriteria) throws Exception {
+		return getActivePMs(null,filterCriteria);
 	}
 	
-	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids) throws Exception {
+	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
@@ -267,6 +268,10 @@ public class PreventiveMaintenanceAPI {
 		
 		if(ids != null && !ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		}
+		
+		if(filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();

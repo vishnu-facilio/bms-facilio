@@ -100,6 +100,8 @@ public class ViewAction extends ActionSupport {
 		Chain customizeColumnChain = FacilioChainFactory.getViewCustomizeColumnChain();
 		customizeColumnChain.execute(context);
 
+		setFields((List<ViewField>) context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields));
+		
 		return SUCCESS;
 	}
 	

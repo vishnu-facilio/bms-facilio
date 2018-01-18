@@ -21,7 +21,10 @@ public class GetAllAreaCommand implements Command{
 	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria));
+		
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy));
 		
 		return false;
 	}

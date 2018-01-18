@@ -493,7 +493,7 @@ public static long getSitesCount() throws Exception {
 	
 	
 	
-	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria) throws Exception
+	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -509,6 +509,9 @@ public static long getSitesCount() throws Exception {
 		}
 		if (searchCriteria != null) {
 			selectBuilder.andCriteria(searchCriteria);
+		}
+		if (orderBy != null && !orderBy.isEmpty()) {
+			selectBuilder.orderBy(orderBy);
 		}
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();

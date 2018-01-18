@@ -109,6 +109,20 @@ public class FacilioView {
 		this.fields = fields;
 	}
 	
+	private Map<String, ViewField> defaultModulefields;
+	public void setDefaultModuleFields(String moduleName) {
+		List<ViewField> fields = ColumnFactory.getColumns(moduleName, "default");
+		if (fields != null && !fields.isEmpty()) {
+			defaultModulefields = new HashMap<>();
+			for(ViewField vf : fields) {
+				defaultModulefields.put(vf.getName(),vf);
+			}
+		}
+	}
+	public Map<String, ViewField> getDefaultModuleFields(){
+		return defaultModulefields;
+	}
+	
 	private JSONObject filters;
 	public JSONObject getFilters() {
 		return filters;

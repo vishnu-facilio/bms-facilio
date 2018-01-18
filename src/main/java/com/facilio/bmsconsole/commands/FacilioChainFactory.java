@@ -1051,8 +1051,10 @@ public class FacilioChainFactory {
 	
 	public static Chain getAllAreaChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetAllAreaCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1209,6 +1211,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetUpcomingPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetUpcomingPreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
 		return c;

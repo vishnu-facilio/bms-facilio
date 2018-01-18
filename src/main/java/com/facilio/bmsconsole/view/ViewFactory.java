@@ -39,7 +39,7 @@ public class ViewFactory {
 	public static FacilioView getView (String moduleName, String viewName) {
 		FacilioView view = getModuleViews(moduleName).get(viewName);
 		if(view != null) {
-			List<ViewField> columns = ColumnFactory.getColumns(moduleName + "-" +viewName);
+			List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
 			view.setFields(columns);
 			view.setDefault(true);
 		}

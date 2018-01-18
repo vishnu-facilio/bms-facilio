@@ -461,7 +461,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			try {
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null);
+				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null,null);
 				
 				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
 				for(BaseSpaceContext space : spaces) {

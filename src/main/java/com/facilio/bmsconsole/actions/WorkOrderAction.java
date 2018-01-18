@@ -322,6 +322,13 @@ public class WorkOrderAction extends ActionSupport {
 		//context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, startTime + (7*24*60*60));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
 		
+		if(getFilters() != null) {	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+ 		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		
 		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		

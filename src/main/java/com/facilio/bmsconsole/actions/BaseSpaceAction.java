@@ -32,6 +32,13 @@ public class BaseSpaceAction extends ActionSupport {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+ 		if (getOrderBy() != null) {
+ 			JSONObject sorting = new JSONObject();
+ 			sorting.put("orderBy", getOrderBy());
+ 			sorting.put("orderType", getOrderType());
+ 			context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 		}
+ 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
 		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);
@@ -132,6 +139,22 @@ public class BaseSpaceAction extends ActionSupport {
 	}
 	public String getFilters(){
 		return this.filters;
+	}
+	
+	String orderBy;
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+	public String getOrderBy() {
+		return this.orderBy;
+	}
+	
+	String orderType;
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	public String getOrderType() {
+		return this.orderType;
 	}
 	
 	String search;

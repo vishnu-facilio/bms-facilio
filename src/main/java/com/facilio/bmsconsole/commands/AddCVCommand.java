@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.constants.FacilioConstants;
@@ -41,6 +42,9 @@ public class AddCVCommand implements Command {
 			if(view.getName() == null)
 			{
 				view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			}
+			if (ColumnFactory.getColumns(moduleName, view.getName()) != null) {
+				throw new Exception("Name already taken");
 			}
 			view.setDefault(false);
 			
