@@ -28,7 +28,9 @@ public class StreamProcessor {
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
-                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"));
+                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                            .withInitialLeaseTableReadCapacity(1)
+                            .withInitialLeaseTableWriteCapacity(1);
 
             //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgDomainName);
 
