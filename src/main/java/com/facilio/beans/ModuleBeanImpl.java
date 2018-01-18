@@ -407,6 +407,11 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
+		
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
+		}
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")

@@ -25,6 +25,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.REQUESTER.equals(specialType)
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
+				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				;
 	}
 	
@@ -179,6 +180,9 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventConstants.EventModuleFactory.getEventModule();
 		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return ModuleFactory.getPreventiveMaintenancetModule();
+		}
 		return null;
 	}
 	
@@ -196,6 +200,17 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventConstants.EventFieldFactory.getEventFields();
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return FieldFactory.getPreventiveMaintenanceFields();
+		}
+		return null;
+	}
+	
+	public static FacilioField getField(String fieldName, String specialType) {
+		List<FacilioField> fields = getAllFields(specialType);
+		if (fields != null && !fields.isEmpty()) {
+			return FieldFactory.getAsMap(fields).get(fieldName);
 		}
 		return null;
 	}
