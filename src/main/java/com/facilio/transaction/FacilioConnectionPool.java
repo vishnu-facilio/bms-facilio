@@ -28,7 +28,6 @@ public enum FacilioConnectionPool {
 			envCtx = (Context) initCtx.lookup("java:comp/env");
 			ds = (DataSource) envCtx.lookup("jdbc/pcmDB");
 		} catch (NamingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new ExceptionInInitializerError("Unable to initialize DB connection pool due to the following error : \n"+e.getMessage());
 		}
@@ -37,7 +36,6 @@ public enum FacilioConnectionPool {
 				try {
 					initCtx.close();
 				} catch (NamingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -58,14 +56,10 @@ public enum FacilioConnectionPool {
 			TransactionManager tm = FTransactionManager.getTransactionManager();
 			try {
 				Transaction t = tm.getTransaction();
-				if(t!=null )
-				{
-					
+				if(t != null ) {
                    return   ((FacilioTransaction)t).getConnection();
-					
 				}
 			} catch (SystemException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return getConnectionFromPool();
@@ -82,9 +76,7 @@ public enum FacilioConnectionPool {
 		return c;
 	}
 	
-public Connection getConnectionFromPool() throws SQLException {
-		
-		
-			return ds.getConnection();
-		}
+    public Connection getConnectionFromPool() throws SQLException {
+        return ds.getConnection();
+	}
 }

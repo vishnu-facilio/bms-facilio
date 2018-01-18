@@ -11,84 +11,68 @@ import javax.transaction.TransactionManager;
 
 public class FTransactionManager implements TransactionManager {
 	
-	private static FTransactionManager instance = null;
-	public static TransactionManager getTransactionManager()
-	{
-		if(instance==null)
-		{
-			instance = new FTransactionManager();
-		}
-		return instance;
-		
+	private static final FTransactionManager INSTANCE = new FTransactionManager();
+
+	public static TransactionManager getTransactionManager() {
+		return INSTANCE;
 	}
 	
-	private FTransactionManager()
-	{
-		
-	}
-	private static ThreadLocal<FacilioTransaction>  currenttransaction = new ThreadLocal<FacilioTransaction>();
+	private FTransactionManager() {
+    }
+
+	private static ThreadLocal<FacilioTransaction> currentTransaction = new ThreadLocal<FacilioTransaction>();
 
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
-    FacilioTransaction currenttrans = currenttransaction.get();
-		if(currenttrans ==null)
-		{
+        FacilioTransaction currenttrans = currentTransaction.get();
+		if(currenttrans == null) {
 			currenttrans =  new FacilioTransaction();
-			currenttransaction.set(currenttrans);
+			currentTransaction.set(currenttrans);
 		}
-		
 	}
 
 	@Override
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, IllegalStateException, SystemException {
 		
-		currenttransaction.get().commit();
-		currenttransaction.remove();
+		currentTransaction.get().commit();
+		currentTransaction.remove();
 
 	}
 
 	@Override
 	public int getStatus() throws SystemException {
-		// TODO Auto-generated method stub
-		return currenttransaction.get().getStatus();
+		return currentTransaction.get().getStatus();
 	}
 
 	@Override
 	public Transaction getTransaction() throws SystemException {
-		// TODO Auto-generated method stub
-		FacilioTransaction currenttrans = currenttransaction.get();
-		
+		FacilioTransaction currenttrans = currentTransaction.get();
 		return currenttrans;
 	}
 
 	@Override
 	public void resume(Transaction arg0) throws InvalidTransactionException, IllegalStateException, SystemException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void rollback() throws IllegalStateException, SecurityException, SystemException {
-		// TODO Auto-generated method stub
 		getTransaction().rollback();
 	}
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException, SystemException {
-		currenttransaction.get().setRollbackOnly();
-
+		currentTransaction.get().setRollbackOnly();
 	}
 
 	@Override
 	public void setTransactionTimeout(int arg0) throws SystemException {
-		//currenttransaction.get().
-
+		//currentTransaction.get().
 	}
 
 	@Override
 	public Transaction suspend() throws SystemException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

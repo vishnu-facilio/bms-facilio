@@ -21,9 +21,8 @@ public enum FacilioTransactionManager {
 	}
 	
 	public TransactionManager getTransactionManager() {
-		if(true)
-		{
-		return FTransactionManager.getTransactionManager();
+		if(true) {
+		    return FTransactionManager.getTransactionManager();
 		}
 		try {
 			TransactionManager	txn = (TransactionManager) InitialContext.doLookup("java:comp/env/TransactionManager");
