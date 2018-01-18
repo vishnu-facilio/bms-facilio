@@ -63,9 +63,11 @@
 <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/api/*</url-pattern>
+</filter-mapping>
+<filter-mapping>
+    <filter-name>struts2</filter-name>
     <url-pattern>/internal/*</url-pattern>
 </filter-mapping>
-
     <servlet>
         <servlet-name>app</servlet-name>
         <jsp-file>/index.html</jsp-file>

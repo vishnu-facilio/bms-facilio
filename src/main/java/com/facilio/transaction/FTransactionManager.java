@@ -36,6 +36,7 @@ public class FTransactionManager implements TransactionManager {
 			currenttrans =  new FacilioTransaction();
 			currenttransaction.set(currenttrans);
 		}
+		//currenttrans.
 		//return currenttrans;
 	}
 
@@ -43,8 +44,8 @@ public class FTransactionManager implements TransactionManager {
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, IllegalStateException, SystemException {
 		
-		//con.commit
-		// TODO Auto-generated method stub
+		currenttransaction.get().commit();
+		currenttransaction.remove();
 
 	}
 
@@ -71,7 +72,7 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public void rollback() throws IllegalStateException, SecurityException, SystemException {
 		// TODO Auto-generated method stub
-
+		getTransaction().rollback();
 	}
 
 	@Override

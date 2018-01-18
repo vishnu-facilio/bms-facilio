@@ -21,9 +21,11 @@ import java.util.concurrent.Executor;
 
 public class FacilioConnection implements Connection {
 
+	java.sql.Connection physicalConnection = null;
 	public FacilioConnection(Connection c) {
-		// TODO Auto-generated constructor stub
-	}
+
+		this.physicalConnection = c;
+		}
 
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
@@ -88,7 +90,7 @@ public class FacilioConnection implements Connection {
 	@Override
 	public void close() throws SQLException {
 		
-
+       this.free=true;
 
 	}
 
@@ -352,6 +354,18 @@ public class FacilioConnection implements Connection {
 	public int getNetworkTimeout() throws SQLException {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	boolean free = true;
+	
+	public boolean isFree()
+	{
+		return free;
+	}
+	
+	 java.sql.Connection getPhysicalConnection()
+	{
+		return this.physicalConnection;
 	}
 
 }

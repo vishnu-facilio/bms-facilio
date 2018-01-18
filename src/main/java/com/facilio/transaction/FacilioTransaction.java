@@ -1,5 +1,9 @@
 package com.facilio.transaction;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
@@ -9,12 +13,54 @@ import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 public class FacilioTransaction implements Transaction {
-
+	
+	ArrayList<Connection> connections = new ArrayList<Connection>();
+	
+	public void associateConnection(java.sql.Connection c)
+	{
+		connections.add(c);
+	}
+	public void disAssociateConnection(java.sql.Connection c)
+	{
+		connections.remove(c);
+	}
+	
+	public Connection getConnection() throws SQLException
+	{
+		for(int i=0;i< connections.size();i++)
+		{
+			FacilioConnection fc = (FacilioConnection)connections.get(i);
+			if(fc.isFree())
+			{
+				return fc;
+			}
+			
+		}
+		java.sql.Connection fc = FacilioConnectionPool.getInstance().getConnectionFromPool();
+		fc.setAutoCommit(false);
+		associateConnection(fc);
+		return fc;
+	}
 	@Override
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, SystemException {
-		// TODO Auto-generated method stub
+		for(int i=0;i< connections.size();i++)
+		{
+			FacilioConnection fc = (FacilioConnection)connections.get(i);
+			try {
+				
+				
+					fc.getPhysicalConnection().commit();
+					fc.getPhysicalConnection().close();
+					disAssociateConnection(fc);
+				
 
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	@Override
