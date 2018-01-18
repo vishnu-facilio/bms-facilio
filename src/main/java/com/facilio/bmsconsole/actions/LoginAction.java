@@ -58,6 +58,7 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -518,7 +519,7 @@ public class LoginAction extends ActionSupport{
 		
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
-		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentUser().getId(), true);
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
 		
 		Map<String, Object> data = new HashMap<>();
@@ -534,6 +535,7 @@ public class LoginAction extends ActionSupport{
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", getTicketStatus());
+		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
 		
 		Map<String, Object> config = new HashMap<>();

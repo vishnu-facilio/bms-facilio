@@ -2323,6 +2323,42 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	public static List<FacilioField> getReportDateFilterFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportDateFilter();
+
+		fields.add(getIdField(module));
+		
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELD_ID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+
+		FacilioField operatorId = new FacilioField();
+		operatorId.setName("operatorId");
+		operatorId.setDataType(FieldType.NUMBER);
+		operatorId.setColumnName("OPERATOR");
+		operatorId.setModule(module);
+		fields.add(operatorId);
+
+		FacilioField value = new FacilioField();
+		value.setName("value");
+		value.setDataType(FieldType.STRING);
+		value.setColumnName("VAL");
+		value.setModule(module);
+		fields.add(value);
+		
+		return fields;
+	}
 	public static List<FacilioField> getReportFormulaFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getReportFormulaField();

@@ -571,6 +571,11 @@ public class ModuleFactory {
 		reportFieldModule.setTableName("Report_Field");
 		return reportFieldModule;
 	}
+	public static FacilioModule getReportDateFilter() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_DateFilter");
+		return reportFieldModule;
+	}
 	public static FacilioModule getReportCriteria() {
 		FacilioModule reportCriteriaModule = new FacilioModule();
 		reportCriteriaModule.setTableName("Report_Criteria");

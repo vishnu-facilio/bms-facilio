@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReportContext1;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
+import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
@@ -281,6 +282,22 @@ public class DashboardUtil {
 					
 					reportContext.addReportUserFilter(reportUserFilterContext);
 				}
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportDateFilterFields())
+					.table(ModuleFactory.getReportDateFilter().getTableName())
+					.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> dateFilterProps = selectBuilder.get();
+			if (dateFilterProps != null && !dateFilterProps.isEmpty()) {
+				ReportDateFilterContext dateFilterContext = FieldUtil.getAsBeanFromMap(dateFilterProps.get(0), ReportDateFilterContext.class);
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField ff = modBean.getField(dateFilterContext.getFieldId());
+				dateFilterContext.setField(ff);
+				
+				reportContext.setDateFilter(dateFilterContext);
 			}
 			return reportContext;
 		}

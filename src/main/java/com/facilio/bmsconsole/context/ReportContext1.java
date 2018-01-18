@@ -570,4 +570,13 @@ public class ReportContext1 {
 		return widgetJson;
 	}
 	
+	private ReportDateFilterContext dateFilter;
+	
+	public void setDateFilter(ReportDateFilterContext dateFilter) {
+		this.dateFilter = dateFilter;
+	}
+	
+	public ReportDateFilterContext getDateFilter() {
+		return this.dateFilter;
+	}
 }

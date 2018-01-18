@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -141,6 +142,16 @@ public class DashboardAction extends ActionSupport {
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
+	
+	String dateFilter;
+	public String getDateFilter() {
+		return dateFilter;
+	}
+	
+	public void setDateFilter(String dateFilter) {
+		this.dateFilter = dateFilter;
+	}
+	
 	String period;
 	public String getPeriod() {
 		return period;
@@ -257,6 +268,16 @@ public class DashboardAction extends ActionSupport {
 				
 				insertBuilder.addRecord(prop).save();
 			}
+		}
+		if(reportContext.getDateFilter() != null) {
+			Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
+			prop.put("reportId", reportContext.getId());
+
+			insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReportDateFilter().getTableName())
+					.fields(FieldFactory.getReportDateFilterFields());
+			
+			insertBuilder.addRecord(prop).save();
 		}
 		return SUCCESS;
 	}
@@ -444,6 +465,32 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 			}
+		}
+		if (reportContext.getDateFilter() != null) {
+			Condition dateCondition = new Condition();
+			dateCondition.setField(reportContext.getDateFilter().getField());
+			
+			if (this.dateFilter != null) {
+				if (this.dateFilter.split(",").length > 1) {
+					// between
+					dateCondition.setOperator(DateOperators.BETWEEN);
+					dateCondition.setValue(this.dateFilter);
+				}
+				else {
+					dateCondition.setOperatorId(Integer.parseInt(this.dateFilter));
+				}
+			}
+			else {
+				if (reportContext.getDateFilter().getReportId() == 20) {
+					// between
+					dateCondition.setOperator(DateOperators.BETWEEN);
+					dateCondition.setValue(reportContext.getDateFilter().getVal());
+				}
+				else {
+					dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
+				}
+			}
+			builder.andCondition(dateCondition);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
