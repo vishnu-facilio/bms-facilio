@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.TicketActivity;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderAction extends ActionSupport {
@@ -325,6 +326,7 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
 		
 		return SUCCESS;
 	}
@@ -356,6 +358,14 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setPms(List<PreventiveMaintenance> pms) {
 		this.pms = pms;
+	}
+	
+	private Map<Long, PMTriggerContext> pmTriggerMap;
+	public Map<Long, PMTriggerContext> getPmTriggerMap() {
+		return pmTriggerMap;
+	}
+	public void setPmTriggerMap(Map<Long, PMTriggerContext> pmTriggerMap) {
+		this.pmTriggerMap = pmTriggerMap;
 	}
 	
 	public String assignWorkOrder() throws Exception {
