@@ -87,6 +87,7 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
+			selectField.setDisplayName(this.name());
 			selectField.setColumnName(selectFieldString);
 			
 			return selectField;
