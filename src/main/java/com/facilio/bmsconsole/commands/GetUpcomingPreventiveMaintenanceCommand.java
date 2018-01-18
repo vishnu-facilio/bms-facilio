@@ -26,9 +26,9 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs();
-		Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 		if(pms != null && !pms.isEmpty()) 
 		{
+			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
