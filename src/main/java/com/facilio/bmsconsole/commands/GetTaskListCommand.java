@@ -40,6 +40,7 @@ public class GetTaskListCommand implements Command{
 		}
 
 		List<TaskContext> tasks = builder.get();
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		Map<Long, List<TaskContext>> taskMap = TicketAPI.groupTaskBySection(tasks);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 		Map<Long, TaskSectionContext> sections = TicketAPI.getTaskSections(taskMap.keySet().stream().collect(Collectors.toList()));

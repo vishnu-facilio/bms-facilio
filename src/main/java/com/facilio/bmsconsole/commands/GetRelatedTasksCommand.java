@@ -27,8 +27,9 @@ public class GetRelatedTasksCommand implements Command {
 		
 		Map<Long, TaskSectionContext> sections = TicketAPI.getRelatedTaskSections(recordId);
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sections);
-		Map<Long, List<TaskContext>> tasks = TicketAPI.getRelatedTasks(recordId);
-		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordId);
+		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
 		return false;
 	}
 

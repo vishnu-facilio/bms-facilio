@@ -147,7 +147,7 @@ public class TicketAPI {
 		}
 	}
 	
-	public static Map<Long, List<TaskContext>> getRelatedTasks(long ticketId) throws Exception 
+	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 		List<FacilioField> fields = modBean.getAllFields("task");
@@ -161,7 +161,7 @@ public class TicketAPI {
 				.orderBy("ID");
 
 		List<TaskContext> tasks = builder.get();	
-		return groupTaskBySection(tasks);
+		return tasks;
 	}
 	
 	private static Map<Long, TaskSectionContext> getTasksSectionsFromMapList(List<Map<String, Object>> sectionProps) {
@@ -234,7 +234,7 @@ public class TicketAPI {
 	public static void loadRelatedModules(TicketContext ticket) throws Exception {
 		if(ticket != null) {
 			ticket.setTaskSections(getRelatedTaskSections(ticket.getId()));
-			ticket.setTasks(getRelatedTasks(ticket.getId()));
+			ticket.setTasks(groupTaskBySection(getRelatedTasks(ticket.getId())));
 			ticket.setNotes(getRelatedNotes(ticket.getId()));
 			ticket.setAttachments(getRelatedAttachments(ticket.getId()));
 		}
