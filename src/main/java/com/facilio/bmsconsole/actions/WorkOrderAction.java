@@ -355,6 +355,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STATUS, true);
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		
 		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);

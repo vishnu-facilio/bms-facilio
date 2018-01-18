@@ -1347,14 +1347,6 @@
 				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
 			</result>
 		</action>
-		
-		<action name="getPlannedMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getPlannedMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
-			</result>
-		</action>
 
 		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getInactivePreventiveMaintenance">
@@ -1452,6 +1444,19 @@
 			<param name="permission">WORKORDER_READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success">/jsps/listview.jsp</result>
+		</action>
+	</package>
+	
+	<package name="plannedMaintenanceApi" namespace="/api/planned"
+		extends="home">
+
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getPlannedMaintenance">
+			<param name="permission">WORKORDER_READ</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="root">pms</param>
+			</result>
 		</action>
 	</package>
 

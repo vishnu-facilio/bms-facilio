@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -45,6 +47,37 @@ public class GetPreventiveMaintenanceCommand implements Command {
 			}
 			else {
 				selectRecordBuilder.andCustomWhere("Preventive_Maintenance.STATUS = ?", status);
+			}
+		}
+		if(context.get(FacilioConstants.ContextNames.CV_NAME) != null)
+		{
+			String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+			Map<Long,Object> woTypes = CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE);
+			Iterator<Long> woTypeIterator = woTypes.keySet().iterator();
+			while(woTypeIterator.hasNext())
+			{
+				Long key = woTypeIterator.next();
+				Object val = woTypes.get(key);
+				if("preventive".equals(viewName) && "Preventive".equals(val))
+				{
+					selectRecordBuilder.andCustomWhere("Preventive_Maintenance.TYPE_ID = ?", key);
+				}
+				else if("corrective".equals(viewName) && "Corrective".equals(val))
+				{
+					selectRecordBuilder.andCustomWhere("Preventive_Maintenance.TYPE_ID = ?", key);
+				}
+				else if("rounds".equals(viewName) && "Rounds".equals(val))
+				{
+					selectRecordBuilder.andCustomWhere("Preventive_Maintenance.TYPE_ID = ?", key);
+				}
+				else if("breakdown".equals(viewName) && "Breakdown".equals(val))
+				{
+					selectRecordBuilder.andCustomWhere("Preventive_Maintenance.TYPE_ID = ?", key);
+				}
+				else if("compliance".equals(viewName) && "Compliance".equals(val))
+				{
+					selectRecordBuilder.andCustomWhere("Preventive_Maintenance.TYPE_ID = ?", key);
+				}
 			}
 		}
 		if(context.get(FacilioConstants.ContextNames.ASSET_ID) != null && (long) context.get(FacilioConstants.ContextNames.ASSET_ID) != -1)
