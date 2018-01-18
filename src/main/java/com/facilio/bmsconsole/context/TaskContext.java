@@ -104,6 +104,20 @@ public class TaskContext extends TicketContext {
 		this.inputValue = inputValue;
 	}
 	
+	private Boolean attachmentRequired;
+	public Boolean getAttachmentRequired() {
+		return attachmentRequired;
+	}
+	public void setAttachmentRequired(Boolean attachmentRequired) {
+		this.attachmentRequired = attachmentRequired;
+	}
+	public boolean isAttachmentRequired() {
+		if(attachmentRequired != null) {
+			return attachmentRequired.booleanValue();
+		}
+		return false;
+	}
+
 	private List<String> options;
 	public List<String> getOptions() {
 		return options;

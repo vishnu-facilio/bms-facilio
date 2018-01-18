@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -54,6 +55,11 @@ public class UpdateTaskCommand implements Command {
 						TaskContext completeRecord = getTask(recordIds.get(0));
 						if (completeRecord.getInputTypeEnum() != InputType.NONE && (completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) {
 							throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
+						}
+						
+						List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(0));
+						if(attachments == null || attachments.isEmpty()) {
+							throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
 						}
 					}
 				}
