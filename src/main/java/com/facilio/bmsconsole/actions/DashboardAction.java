@@ -391,12 +391,7 @@ public class DashboardAction extends ActionSupport {
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
 		xAxisField.setName("label");
-		if (reportY1AxisField.getField() != null) {
-			y1AxisField.setName(reportY1AxisField.getField().getDisplayName());
-		}
-		else {
-			y1AxisField.setName("Value");
-		}
+		y1AxisField.setName("value");
 		reportContext.setY1AxisField(reportY1AxisField);
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
