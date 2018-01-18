@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +79,19 @@ public class ActionAPI {
 			actions.get(i).setId(actionId);
 		}
 		return actionIds;
+	}
+	
+	public static void addWorkflowRuleActionRel(long ruleId, List<ActionContext> actions) throws SQLException, RuntimeException {
+		for(ActionContext action:actions) {
+			Map<String, Object> workflowRuleActionProps = new HashMap<String, Object>();
+			workflowRuleActionProps.put("workflowRuleId", ruleId);
+			workflowRuleActionProps.put("actionId", action.getId());
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table("Workflow_Rule_Action")
+														.fields(FieldFactory.getWorkflowRuleActionFields())
+														.addRecord(workflowRuleActionProps);
+			insertBuilder.save();
+		}
 	}
 	
 	public static List<ActionContext> getActionsFromWorkflowRuleName(long orgId, String workflowName) throws Exception {

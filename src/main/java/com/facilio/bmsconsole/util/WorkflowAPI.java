@@ -32,6 +32,8 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 public class WorkflowAPI {
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
+		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
+		rule.setStatus(true);
 		updateWorkflowRuleChildIds(rule,rule.getOrgId());
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -110,7 +112,7 @@ public class WorkflowAPI {
 		
 		WorkflowEventContext existingEvent = getWorkFlowEvent(event.getActivityTypeEnum(), event.getModuleId());
 		if (existingEvent != null) {
-			return existingEvent.getEventId();
+			return existingEvent.getId();
 		}
 		event.setOrgId(AccountUtil.getCurrentOrg().getId());
 		FacilioModule module = ModuleFactory.getWorkflowEventModule();

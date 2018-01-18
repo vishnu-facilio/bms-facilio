@@ -175,6 +175,7 @@ public class PreventiveMaintenanceAPI {
 		FacilioModule module = ModuleFactory.getPMJobsModule();
 		Map<String, Object> props = FieldUtil.getAsProperties(pmJob);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getPMJobFields())
 														.table(module.getTableName())
 														.addRecord(props);
 		

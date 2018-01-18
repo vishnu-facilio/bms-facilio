@@ -73,6 +73,14 @@ public class PMTriggerContext {
 		return null;
 	}
 	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
 	private ReadingRuleContext readingRule;
 	public ReadingRuleContext getReadingRule() {
 		return readingRule;
@@ -95,5 +103,37 @@ public class PMTriggerContext {
 	}
 	public void setTemplateId(long templateId) {
 		this.templateId = templateId;
+	}
+	
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
+	
+	private long startReading = -1;
+	public long getStartReading() {
+		return startReading;
+	}
+	public void setStartReading(long startReading) {
+		this.startReading = startReading;
+	}
+	
+	private long readingInterval = -1;
+	public long getReadingInterval() {
+		return readingInterval;
+	}
+	public void setReadingInterval(long readingInterval) {
+		this.readingInterval = readingInterval;
+	}
+	
+	private long endReading = -1;
+	public long getEndReading() {
+		return endReading;
+	}
+	public void setEndReading(long endReading) {
+		this.endReading = endReading;
 	}
 }

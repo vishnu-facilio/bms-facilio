@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public enum ActionType {
@@ -291,20 +292,20 @@ public enum ActionType {
 			try {
 				long ruleId = (long) obj.get("rule.id");
 				
-				FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+				FacilioModule module = ModuleFactory.getPMTriggersModule();
 				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-																	.select(FieldFactory.getPreventiveMaintenanceFields())
-																	.table(pmModule.getTableName())
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmModule))
+																	.select(FieldFactory.getPMTriggerFields())
+																	.table(module.getTableName())
+																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("READING_RULE_ID = ?", ruleId);
 				List<Map<String, Object>> pmProps = selectRecordBuilder.get();
-				if(pmProps != null && pmProps.isEmpty()) {
-					PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProps.get(0), PreventiveMaintenance.class);
+				if(pmProps != null && !pmProps.isEmpty()) {
+					PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);
 					
 					FacilioContext pmContext = new FacilioContext();
-					pmContext.put(FacilioConstants.ContextNames.RECORD_ID, pm.getId());
+					pmContext.put(FacilioConstants.ContextNames.RECORD_ID, trigger.getPmId());
+					pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
 					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
-					pmContext.put(FacilioConstants.ContextNames.PM_REMINDER_TYPE, PMReminder.ReminderType.AFTER);
 					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
 					
 					Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();

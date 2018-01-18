@@ -43,7 +43,7 @@ public class PMToWorkOrder extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
 				context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
 				context.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
-				context.put(FacilioConstants.ContextNames.PM_CURRENT_TROGGER, pmTrigger);
+				context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);
 				
 				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 				executePm.execute(context);

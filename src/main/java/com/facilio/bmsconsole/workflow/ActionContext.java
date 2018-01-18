@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class ActionContext {
 	private long id = -1;
@@ -100,7 +103,15 @@ public class ActionContext {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			actionType.performAction(actionObj, context);
-			return true;
+		}
+		else {
+			try {
+				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context);
+				return true;
+			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

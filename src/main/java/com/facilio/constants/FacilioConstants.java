@@ -295,7 +295,7 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		public static final String PM_RESET_TRIGGERS = "pmResetTriggers";
-		public static final String PM_CURRENT_TROGGER = "pmCurrentTriggerId";
+		public static final String PM_CURRENT_TRIGGER = "pmCurrentTriggerId";
 		public static final String PM_TO_WO = "pmtowo";
 		
 		public static final String CV_NAME = "cvName";

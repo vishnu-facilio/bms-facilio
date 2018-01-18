@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +15,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
@@ -23,6 +29,7 @@ import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
+import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
 
 public class ResetTriggersCommand implements Command {
@@ -40,7 +47,7 @@ public class ResetTriggersCommand implements Command {
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			
 			long currentExecutionTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
-			PMTriggerContext currentTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TROGGER); 
+			PMTriggerContext currentTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER); 
 			Boolean reset = (Boolean) context.get(FacilioConstants.ContextNames.PM_RESET_TRIGGERS);
 			if(reset != null && reset) {
 				reset = true;
@@ -77,7 +84,12 @@ public class ResetTriggersCommand implements Command {
 						else {//Deleting oldJobs of other schedule triggers
 							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime);
 							PMJobsContext updatedPM = new PMJobsContext();
-							updatedPM.setNextExecutionTime(trigger.getSchedule().nextExecutionTime(pmJob.getNextExecutionTime()));
+							ZonedDateTime zdt = DateTimeUtil.getDateTime();
+							if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
+								List<LocalTime> times = trigger.getSchedule().getTimeObjects();
+								zdt = zdt.with(times.get(times.size() - 1));
+							}
+							updatedPM.setNextExecutionTime(trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond()));
 							updatedPM.setId(pmJob.getId());
 							pmJob = PreventiveMaintenanceAPI.updatePMJob(updatedPM);
 							PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
@@ -120,12 +132,14 @@ public class ResetTriggersCommand implements Command {
 		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																			.module(module)
+																			.beanClass(ReadingContext.class)
 																			.select(bean.getAllFields(module.getName()))
+																			.andCondition(CriteriaAPI.getCondition(condition.getColumnName(), condition.getFieldName(), null, CommonOperators.IS_NOT_EMPTY))
 																			.orderBy("TTIME DESC")
 																			.limit(1);
 		
 		List<ReadingContext> readings = selectBuilder.get();
-		if(readings != null && readings.isEmpty()) {
+		if(readings != null && !readings.isEmpty()) {
 			long lastValue = new Double(readings.get(0).getReading(condition.getFieldName()).toString()).longValue();
 			return lastValue;
 		}

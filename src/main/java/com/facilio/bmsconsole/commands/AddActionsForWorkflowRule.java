@@ -87,16 +87,7 @@ public class AddActionsForWorkflowRule implements Command {
 		ActionAPI.addActions(actions);
 		
 		if(rule != null) {
-			for(ActionContext action:actions) {
-				Map<String, Object> workflowRuleActionProps = new HashMap<String, Object>();
-				workflowRuleActionProps.put("workflowRuleId", rule.getId());
-				workflowRuleActionProps.put("actionId", action.getId());
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-															.table("Workflow_Rule_Action")
-															.fields(FieldFactory.getWorkflowRuleActionFields())
-															.addRecord(workflowRuleActionProps);
-				insertBuilder.save();
-			}
+			ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
 		}
 		return false;
 	}

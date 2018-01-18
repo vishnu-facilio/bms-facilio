@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.workflow;
 import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class WorkflowEventContext {
-	private long id;
+	private long id = -1;
 	public long getId() {
 		return id;
 	}
@@ -11,15 +11,7 @@ public class WorkflowEventContext {
 		this.id = id;
 	}
 	
-	private long eventId;
-	public long getEventId() {
-		return eventId;
-	}
-	public void setEventId(long eventId) {
-		this.eventId = eventId;
-	}
-	
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -27,7 +19,7 @@ public class WorkflowEventContext {
 		this.orgId = orgId;
 	}
 	
-	private long moduleId;
+	private long moduleId = -1;
 	public long getModuleId() {
 		if(moduleId == -1 && module != null) {
 			return module.getModuleId();
