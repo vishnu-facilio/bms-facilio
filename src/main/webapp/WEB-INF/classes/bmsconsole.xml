@@ -1347,6 +1347,14 @@
 				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
 			</result>
 		</action>
+		
+		<action name="getPlannedMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getPlannedMaintenance">
+			<param name="permission">WORKORDER_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
+			</result>
+		</action>
 
 		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getInactivePreventiveMaintenance">
