@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -174,14 +175,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 			JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
 			if(taskContent != null) {
-				Map<String, List> tasksMap = FieldUtil.getAsBeanFromJson(taskContent, Map.class);
-				Map<String, List<TaskContext>> tasks = new HashMap<>();
-				ObjectMapper mapper = FieldUtil.getMapper(TaskContext.class);
-				for (Map.Entry<String, List> entry : tasksMap.entrySet()) {
-					tasks.put(entry.getKey(), mapper.readValue(JSONArray.toJSONString(entry.getValue()), mapper.getTypeFactory().constructCollectionType(List.class, TaskContext.class)));
-				}
-				
-				context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+				context.put(FacilioConstants.ContextNames.TASK_MAP, PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent));
 			}
 			else {
 				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);

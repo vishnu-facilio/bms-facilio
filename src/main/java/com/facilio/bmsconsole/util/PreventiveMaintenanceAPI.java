@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,8 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -26,6 +31,9 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -321,5 +329,15 @@ public class PreventiveMaintenanceAPI {
 	public static List<PMTriggerContext> getPMTriggers(PreventiveMaintenance pm) throws Exception {
 		Map<Long, List<PMTriggerContext>> pmTriggerMap = getPMTriggers(Collections.singletonList(pm));
 		return pmTriggerMap.get(pm.getId());
+	}
+	
+	public static Map<String, List<TaskContext>> getTaskMapFromJson(JSONObject json) throws JsonParseException, JsonMappingException, IOException {
+		Map<String, List> tasksMap = FieldUtil.getAsBeanFromJson(json, Map.class);
+		Map<String, List<TaskContext>> tasks = new HashMap<>();
+		ObjectMapper mapper = FieldUtil.getMapper(TaskContext.class);
+		for (Map.Entry<String, List> entry : tasksMap.entrySet()) {
+			tasks.put(entry.getKey(), mapper.readValue(JSONArray.toJSONString(entry.getValue()), mapper.getTypeFactory().constructCollectionType(List.class, TaskContext.class)));
+		}
+		return tasks;
 	}
 }
