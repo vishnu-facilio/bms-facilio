@@ -36,8 +36,7 @@ public class FTransactionManager implements TransactionManager {
 			currenttrans =  new FacilioTransaction();
 			currenttransaction.set(currenttrans);
 		}
-		//currenttrans.
-		//return currenttrans;
+		
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public int getStatus() throws SystemException {
 		// TODO Auto-generated method stub
-		return 0;
+		return currenttransaction.get().getStatus();
 	}
 
 	@Override
@@ -77,13 +76,13 @@ public class FTransactionManager implements TransactionManager {
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException, SystemException {
-		// TODO Auto-generated method stub
+		currenttransaction.get().setRollbackOnly();
 
 	}
 
 	@Override
 	public void setTransactionTimeout(int arg0) throws SystemException {
-		// TODO Auto-generated method stub
+		//currenttransaction.get().
 
 	}
 

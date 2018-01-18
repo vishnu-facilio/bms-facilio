@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 public class FacilioTransaction implements Transaction {
-	
+	private int status=Status.STATUS_ACTIVE;
 	ArrayList<Connection> connections = new ArrayList<Connection>();
 	
 	public void associateConnection(java.sql.Connection c)
@@ -36,7 +37,7 @@ public class FacilioTransaction implements Transaction {
 			}
 			
 		}
-		java.sql.Connection fc = FacilioConnectionPool.getInstance().getConnectionFromPool();
+		java.sql.Connection fc =new  FacilioConnection(FacilioConnectionPool.getInstance().getConnectionFromPool());
 		fc.setAutoCommit(false);
 		associateConnection(fc);
 		return fc;
@@ -44,6 +45,7 @@ public class FacilioTransaction implements Transaction {
 	@Override
 	public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
 			SecurityException, SystemException {
+		this.status =Status.STATUS_COMMITTING;
 		for(int i=0;i< connections.size();i++)
 		{
 			FacilioConnection fc = (FacilioConnection)connections.get(i);
@@ -61,6 +63,8 @@ public class FacilioTransaction implements Transaction {
 			}
 			
 		}
+		this.status =Status.STATUS_COMMITTED;
+
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class FacilioTransaction implements Transaction {
 	@Override
 	public int getStatus() throws SystemException {
 		// TODO Auto-generated method stub
-		return 0;
+		return status;
 	}
 
 	@Override
@@ -90,13 +94,30 @@ public class FacilioTransaction implements Transaction {
 
 	@Override
 	public void rollback() throws IllegalStateException, SystemException {
-		// TODO Auto-generated method stub
+		this.status = Status.STATUS_ROLLING_BACK;
+
+		for(int i=0;i< connections.size();i++)
+		{
+			FacilioConnection fc = (FacilioConnection)connections.get(i);
+			try {
+				fc.getPhysicalConnection().rollback();
+				fc.getPhysicalConnection().close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			disAssociateConnection(fc);
+			
+		}
+		this.status = Status.STATUS_ROLLEDBACK;
+		
 
 	}
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException, SystemException {
 		// TODO Auto-generated method stub
+		this.status =Status.STATUS_MARKED_ROLLBACK;
 
 	}
 

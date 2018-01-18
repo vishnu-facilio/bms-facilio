@@ -3,6 +3,7 @@ package com.facilio.fw;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.transaction.Transaction;
@@ -72,6 +73,9 @@ public class BeanInvocationHandler implements InvocationHandler {
 			}
 		
 		}  catch (Exception e) {
+			
+			LOGGER.log(Level.INFO,"exception for  for " + method.getName(),e);
+			
 			if (ENABLE_JTA) {
 				if (istransaction) {
 					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
