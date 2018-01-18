@@ -58,18 +58,17 @@ public enum FacilioConnectionPool {
 			TransactionManager tm = FTransactionManager.getTransactionManager();
 			try {
 				Transaction t = tm.getTransaction();
-				if(t!=null && false)
+				if(t!=null )
 				{
-					java.sql.Connection c =  ds.getConnection();
-					c.setAutoCommit(false);
-					return new FacilioConnection(c);
-					// t.enlistResource(c.get)
+					
+                   return   ((FacilioTransaction)t).getConnection();
+					
 				}
 			} catch (SystemException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return ds.getConnection();
+			return getConnectionFromPool();
 		}
 		
 		Properties info =new Properties();
@@ -82,4 +81,10 @@ public enum FacilioConnectionPool {
 	//	print(c);
 		return c;
 	}
+	
+public Connection getConnectionFromPool() throws SQLException {
+		
+		
+			return ds.getConnection();
+		}
 }
