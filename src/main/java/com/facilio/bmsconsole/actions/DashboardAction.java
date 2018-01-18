@@ -716,6 +716,34 @@ public class DashboardAction extends ActionSupport {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
 		}
+		if (reportContext.getDateFilter() != null) {
+			Condition dateCondition = new Condition();
+			dateCondition.setField(reportContext.getDateFilter().getField());
+			
+			if (this.dateFilter != null) {
+				if (this.dateFilter.split(",").length > 1) {
+					// between
+					dateCondition.setOperator(DateOperators.BETWEEN);
+					dateCondition.setValue(this.dateFilter);
+				}
+				else {
+					dateCondition.setOperatorId(Integer.parseInt(this.dateFilter));
+				}
+			}
+			else {
+				if (reportContext.getDateFilter().getReportId() == 20) {
+					// between
+					dateCondition.setOperator(DateOperators.BETWEEN);
+					dateCondition.setValue(reportContext.getDateFilter().getVal());
+				}
+				else {
+					dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
+				}
+			}
+			builder.andCondition(dateCondition);
+		}
+		builder.limit(200); // 200 records max
+		
 		List<Map<String, Object>> rs = builder.get();
 		
 		JSONArray result = new JSONArray();
