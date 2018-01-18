@@ -23,50 +23,50 @@ public enum DefaultTemplates implements ActionTemplate {
 	PM_EMAIL_REMINDER(10),
 	PM_EMAIL_DUE_REMINDER(11),
 	NEW_WORK_REQUEST_EMAIL(12),
-	NEW_WORK_REQUEST_SMS(13),
-	NEW_WORK_REQUEST_PUSH(14),
+	NEW_WORK_REQUEST_SMS(14),
+	NEW_WORK_REQUEST_PUSH(13),
 	NEW_WORK_REQUEST_WEB(15),
 	APPROVE_WOREQ_EMAIL(16),
 	APPROVE_WOREQ_SMS(17),
-	APPROVE_WO_PUSH(18),
-	APPROVE_WO_WEB(19),
+	APPROVE_WO_PUSH(19),
+	APPROVE_WO_WEB(18),
 	REJECT_WOREQ_EMAIL(20),
 	REJECT_WOREQ_SMS(21),
-	REJECT_WOREQ_PUSH(22),
-	REJECT_WOREQ_WEB(23),
+	REJECT_WOREQ_PUSH(23),
+	REJECT_WOREQ_WEB(22),
 	TECH_SOLVE_WO_EMAIL(24),
 	TECH_SOLVE_WO_SMS(25),
-	TECH_SOLVE_WO_PUSH(26),
-	TECH_SOLVE_WO_WEB(27),
+	TECH_SOLVE_WO_PUSH(27),
+	TECH_SOLVE_WO_WEB(26),
 	TECH_CLOSE_WO_EMAIL(28),
 	TECH_CLOSE_WO_SMS(29),
-	TECH_CLOSE_WO_PUSH(30),
-	TECH_CLOSE_WO_WEB(31),
+	TECH_CLOSE_WO_PUSH(31),
+	TECH_CLOSE_WO_WEB(30),
 	NEW_WORKORDER_EMAIL(32),
 	NEW_WORKORDER_SMS(33),
-	NEW_WORKORDER_PUSH(34),
-	NEW_WORKORDER_WEB(35),
-	WORKORDER_ASSIGN_PUSH(36),
-	WORKORDER_ASSIGN_WEB(37),
+	NEW_WORKORDER_PUSH(35),
+	NEW_WORKORDER_WEB(34),
+	WORKORDER_ASSIGN_PUSH(37),
+	WORKORDER_ASSIGN_WEB(36),
 	WORKORDER_ASSIGN_GROUP_EMAIL(38),
 	WORKORDER_ASSIGN_GROUP_SMS(39),
-	WORKORDER_ASSIGN_GROUP_PUSH(40),
-	WORKORDER_ASSIGN_GROUP_WEB(41),
+	WORKORDER_ASSIGN_GROUP_PUSH(41),
+	WORKORDER_ASSIGN_GROUP_WEB(40),
 	TASK_COMMENT_SMS(42),
 	TASK_COMMENT_PUSH(43),
 	TASK_COMMENT_WEB(44),
 	ADD_TASK_EMAIL(45),
 	ADD_TASK_SMS(46),
-	ADD_TASK_PUSH(47),
-	ADD_TASK_WEB(48),
+	ADD_TASK_PUSH(48),
+	ADD_TASK_WEB(47),
 	UPDATE_TASK_EMAIL(49),
 	UPDATE_TASK_SMS(50),
-	UPDATE_TASK_PUSH(51),
-	UPDATE_TASK_WEB(52),
+	UPDATE_TASK_PUSH(52),
+	UPDATE_TASK_WEB(51),
 	TASK_RESOLVED_EMAIL(53),
 	TASK_RESOLVED_SMS(54),
-	TASK_RESOLVED_PUSH(55),
-	TASK_RESOLVED_WEBL(56),
+	TASK_RESOLVED_PUSH(56),
+	TASK_RESOLVED_WEBL(55),
 	;
 	
 	private int val;
@@ -206,7 +206,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 14:
+			case 15:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -216,7 +216,12 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 15:
+			case 14:
+				json.put("to", "user id");
+				json.put("URL", "some url");
+				json.put("title", "New Workrequest");
+				json.put("icon", "https://fazilio.com/statics/favicon.png");
+				json.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 16:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -228,7 +233,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 18:
+			case 19:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -238,7 +243,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 19:
+			case 18:
 				break;
 			case 20:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -250,7 +255,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 22:
+			case 23:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -260,7 +265,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 23:
+			case 22:
 				break;
 			case 24:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -272,7 +277,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 26:
+			case 27:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -282,7 +287,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 27:
+			case 26:
 				break;
 			case 28:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -294,7 +299,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 30:
+			case 31:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -304,7 +309,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 31:
+			case 30:
 				break;
 			case 32:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -316,7 +321,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.requester.phone:-}");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");			
 				break;
-			case 34:
+			case 35:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -326,9 +331,9 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 35:
+			case 34:
 				break;
-			case 36:
+			case 37:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -338,7 +343,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 37:
+			case 36:
 				break;
 			case 38:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -350,7 +355,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
 				break;
-			case 40:
+			case 41:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -360,13 +365,13 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 41:
+			case 40:
 				break;
 			case 42:
 				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A new comment has been added in your WorkOrder.");
 				break;
-			case 43:
+			case 44:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "A new comment has been added in your WorkOrder.");
@@ -376,7 +381,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 44:
+			case 43:
 				break;
 			case 45:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -388,7 +393,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A new Task has been added in your WorkOrder.");
 				break;
-			case 47:
+			case 48:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "A new Task has been added in your WorkOrder.");
@@ -398,7 +403,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 48:
+			case 47:
 				break;
 			case 49:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -410,7 +415,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A Task has been Updated in your WorkOrder.");
 				break;
-			case 51:
+			case 52:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "A Task has been Updated in your WorkOrder.");
@@ -420,7 +425,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 52:
+			case 51:
 				break;
 			case 53:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -432,7 +437,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("to", "${workorder.assignedTo.phone:-}");
 				json.put("message", "A Task has been closed in your WorkOrder.");
 				break;
-			case 55:
+			case 56:
 				data = new JSONObject();
 				data.put("URL", "${alarm.mobileUrl}");
 				data.put("body", "A Task has been closed in your WorkOrder.");
@@ -442,7 +447,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				break;
-			case 56:
+			case 55:
 				break;
 		}
 		return json;

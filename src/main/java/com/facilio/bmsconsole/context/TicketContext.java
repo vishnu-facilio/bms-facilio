@@ -283,14 +283,22 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.space = space;
 	}
 	
-	private List<TaskContext> tasks;
-	public List<TaskContext> getTasks() {
-		return this.tasks;
+	private Map<Long, TaskSectionContext> taskSections;
+	public Map<Long, TaskSectionContext> getTaskSections() {
+		return taskSections;
 	}
-	public void setTasks(List<TaskContext> tasks) {
+	public void setTaskSections(Map<Long, TaskSectionContext> taskSections) {
+		this.taskSections = taskSections;
+	}
+
+	private Map<Long, List<TaskContext>> tasks;
+	public Map<Long, List<TaskContext>> getTasks() {
+		return tasks;
+	}
+	public void setTasks(Map<Long, List<TaskContext>> tasks) {
 		this.tasks = tasks;
 	}
-	
+
 	private List<NoteContext> notes;
 	public List<NoteContext> getNotes() {
 		return this.notes;

@@ -200,7 +200,7 @@
 			method="taskList">
 			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
-				<param name="includeProperties">tasks,tasks\[\d+\],tasks\[\d+\].*</param>
+				<param name="includeProperties">tasks.*,sections.*</param>
 			</result>
 		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -282,6 +282,14 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="addsection" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTaskSection">
+			<param name="permission">TASK_CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTask">
@@ -307,8 +315,8 @@
 			</result>
 		</action>
 		
-		<action name="addorupdatetaskreadingdata" class="com.facilio.bmsconsole.actions.TaskAction"
-			method="addTaskReadingData">
+		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="addTaskInput">
 			<param name="permission">TASK_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
@@ -1300,7 +1308,7 @@
 			method="preventiveMaintenanceSummary">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,tasks,tasks\[\d+\],tasks\[\d+\].*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*</param>
 			</result>
 		</action>
 
@@ -1332,7 +1340,7 @@
 			method="getUpcomingPreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
-				<param name="root">pms</param>
+				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
 			</result>
 		</action>
 
@@ -1984,7 +1992,7 @@
 	<package name="tenantBillingApi" namespace="/api/tenantbilling" extends="home">
 		<action name="upload" class="com.facilio.billing.action.BillingAction" method="GenerateTemplate">
 			<result name="success" type="json">
-			<param name="includeProperties">excelTemplate,excelTemplate\[\d+\],excelTemplate\[\d+\].*</param>
+			<param name="includeProperties">^excelTemplate.*</param>
 			</result>
 		</action>
 		

@@ -48,7 +48,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				JSONObject payLoad = (JSONObject) parser.parse(data);
 				String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
 				
-				if(dataType!=null & dataType.equals("timeseries")) {
+				if(dataType!=null && "timeseries".equals(dataType)) {
 					long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
 					TimeSeriesAPI.processPayLoad(timeStamp, payLoad);
 					processRecordsInput.getCheckpointer().checkpoint(record);

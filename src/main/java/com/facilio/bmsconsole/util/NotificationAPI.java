@@ -39,7 +39,7 @@ public class NotificationAPI {
 		
 		for (Long recipient : recipients) {
 			notification.setUserId(recipient);
-			
+			notification.setActorId(AccountUtil.getCurrentUser().getId());
 			Map<String, Object> props = FieldUtil.getAsProperties(notification);
 			insertBuilder.addRecord(props);
 		}

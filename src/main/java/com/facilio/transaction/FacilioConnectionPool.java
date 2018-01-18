@@ -9,6 +9,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import com.arjuna.ats.jdbc.TransactionalDriver;
 
@@ -52,6 +55,20 @@ public enum FacilioConnectionPool {
 	public Connection getConnection() throws SQLException {
 		
 		if(true) {
+			TransactionManager tm = FTransactionManager.getTransactionManager();
+			try {
+				Transaction t = tm.getTransaction();
+				if(t!=null && false)
+				{
+					java.sql.Connection c =  ds.getConnection();
+					c.setAutoCommit(false);
+					return new FacilioConnection(c);
+					// t.enlistResource(c.get)
+				}
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return ds.getConnection();
 		}
 		

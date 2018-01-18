@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -15,22 +16,24 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class TicketAPI {
 	
@@ -144,7 +147,7 @@ public class TicketAPI {
 		}
 	}
 	
-	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
+	public static Map<Long, List<TaskContext>> getRelatedTasks(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 		List<FacilioField> fields = modBean.getAllFields("task");
@@ -158,7 +161,60 @@ public class TicketAPI {
 				.orderBy("ID");
 
 		List<TaskContext> tasks = builder.get();	
-		return tasks;
+		return groupTaskBySection(tasks);
+	}
+	
+	private static Map<Long, TaskSectionContext> getTasksSectionsFromMapList(List<Map<String, Object>> sectionProps) {
+		Map<Long, TaskSectionContext> sections = new HashMap<>();
+		if(sectionProps != null && !sectionProps.isEmpty()) {
+			for(Map<String, Object> sectionProp : sectionProps) {
+				TaskSectionContext section = FieldUtil.getAsBeanFromMap(sectionProp, TaskSectionContext.class);
+				sections.put(section.getId(), section);
+			}
+		}
+		return sections;
+	}
+	
+	public static Map<Long, TaskSectionContext> getRelatedTaskSections(long parentTicketId) throws Exception {
+		if(parentTicketId != -1) {
+			FacilioModule module = ModuleFactory.getTaskSectionModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.select(FieldFactory.getTaskSectionFields())
+															.table(module.getTableName())
+															.andCustomWhere("PARENT_TICKET_ID = ?", parentTicketId);
+			
+			return getTasksSectionsFromMapList(selectBuilder.get());
+			
+		}
+		return null;
+	}
+	
+	public static Map<Long, TaskSectionContext> getTaskSections(List<Long> sectionIds) throws Exception {
+		if (sectionIds != null && !sectionIds.isEmpty()) {
+			FacilioModule module = ModuleFactory.getTaskSectionModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.select(FieldFactory.getTaskSectionFields())
+															.table(module.getTableName())
+															.andCondition(CriteriaAPI.getIdCondition(sectionIds, module));
+			return getTasksSectionsFromMapList(selectBuilder.get());
+		}
+		return null;
+	}
+	
+	public static Map<Long, List<TaskContext>> groupTaskBySection(List<TaskContext> tasks) throws Exception {
+		if(tasks != null && !tasks.isEmpty()) {
+			Map<Long, List<TaskContext>> taskMap = new HashMap<>();
+			for(TaskContext task : tasks) {
+				List<TaskContext> taskList = taskMap.get(task.getSectionId());
+				if (taskList == null) {
+					taskList = new ArrayList<>();
+					taskMap.put(task.getSectionId(), taskList);
+				}
+				taskList.add(task);
+			}
+			return taskMap;
+		}
+		return null;
 	}
 	
 	public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception 
@@ -177,10 +233,27 @@ public class TicketAPI {
 	
 	public static void loadRelatedModules(TicketContext ticket) throws Exception {
 		if(ticket != null) {
+			ticket.setTaskSections(getRelatedTaskSections(ticket.getId()));
 			ticket.setTasks(getRelatedTasks(ticket.getId()));
 			ticket.setNotes(getRelatedNotes(ticket.getId()));
 			ticket.setAttachments(getRelatedAttachments(ticket.getId()));
 		}
+	}
+	
+	public static List<String> getTaskInputOptions(long taskId) throws Exception {
+		FacilioModule module = ModuleFactory.getTaskInputOptionModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getTaskInputOptionsFields())
+														.table(module.getTableName())
+														.andCustomWhere("TASK_ID = ?", taskId)
+														;
+		
+		List<Map<String, Object>> optionList = selectBuilder.get();
+		List<String> options = new ArrayList<>();
+		for(Map<String, Object> option : optionList) {
+			options.add((String) option.get("option"));
+		}
+		return options;
 	}
 	
 	private static List<FacilioField> maxSerialNumberField = null;
@@ -388,7 +461,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			try {
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces();
+				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null);
 				
 				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
 				for(BaseSpaceContext space : spaces) {

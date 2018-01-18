@@ -52,60 +52,55 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 	
 	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
 		
-		Object operatorIdObj = fieldJson.get("operatorId");
-		if(operatorIdObj instanceof JSONArray) {
-			JSONArray operatorArray = (JSONArray) operatorIdObj;
-			for(int i=0;i<operatorArray.size();i++) {
-				long operatorId = (long) operatorArray.get(i);
-				setCondition(moduleName, fieldName, (int)operatorId, null, conditionList);
-			}
-		}
-		else {
-			JSONArray value = (JSONArray) fieldJson.get("value");
-			int operatorId = (int) (long)operatorIdObj;
-			String operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
-			if((value!=null && value.size() > 0) || (operatorIdObj != null && !(operatorName.equals("is")) ) ) {
-				setCondition(moduleName, fieldName,operatorId, value, conditionList);
-			}
-		}
-	}
-
-	private void setCondition(String moduleName,String fieldName,int operatorId, JSONArray value, List<Condition> conditionList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField(fieldName, moduleName);
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperatorId(operatorId);
+		JSONArray value = (JSONArray) fieldJson.get("value");
+		int operatorId;
+		String operatorName;
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+		} else {
+			operatorName = (String) fieldJson.get("operator");
+			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
+		}
 		
-		if(value!=null && value.size()>0) {
-			StringBuilder values = new StringBuilder();
-			boolean isFirst = true;
-			Iterator<String> iterator = value.iterator();
-			while(iterator.hasNext())
-			{
-				String obj = iterator.next();
-				if(!isFirst) {
-					values.append(",");
-				}
-				else {
-					isFirst = false;
-				}
-				if (obj.indexOf("_") != -1) {
-					try {
-						long id = Long.parseLong(obj.split("_")[0]);
-						values.append(id+"");
+		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
+			
+			Condition condition = new Condition();
+			condition.setField(field);
+			condition.setOperatorId(operatorId);
+			
+			if(value!=null && value.size()>0) {
+				StringBuilder values = new StringBuilder();
+				boolean isFirst = true;
+				Iterator<String> iterator = value.iterator();
+				while(iterator.hasNext())
+				{
+					String obj = iterator.next();
+					if(!isFirst) {
+						values.append(",");
 					}
-					catch (Exception e) {
+					else {
+						isFirst = false;
+					}
+					if (obj.indexOf("_") != -1) {
+						try {
+							String filterValue = obj.split("_")[0];
+							values.append(filterValue);
+						}
+						catch (Exception e) {
+							values.append(obj);
+						}
+					}
+					else {
 						values.append(obj);
 					}
 				}
-				else {
-					values.append(obj);
-				}
+				condition.setValue(values.toString());
 			}
-			condition.setValue(values.toString());
+			conditionList.add(condition);
 		}
-		conditionList.add(condition);
 	}
 
 }

@@ -147,7 +147,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("active", getSeverityAlarms("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledged", getUnacknowledgedAlarms().setOrder(order++));
 		views.put("critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true).setOrder(order++));
 		views.put("major", getSeverityAlarms("major", "Major Alarms", "Major", true).setOrder(order++));
@@ -817,7 +817,7 @@ public class ViewFactory {
 	private static FacilioView getTypeAlarms(String name, String displayName, AlarmType type) {
 		Condition condition = new Condition();
 		condition.setColumnName("Alarms.ALARM_TYPE");
-		condition.setFieldName("type");
+		condition.setFieldName("alarmType");
 		condition.setOperator(NumberOperators.EQUALS);
 		condition.setValue(String.valueOf(type.getIntVal()));
 		
@@ -878,7 +878,7 @@ public class ViewFactory {
 		
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledged");
-		typeAlarms.setDisplayName("Unacknowledged Alarms");
+		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
 		
 		return typeAlarms;

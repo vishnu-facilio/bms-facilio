@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +32,15 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
+			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			List<Pair<PMJobsContext, PreventiveMaintenance>> pmPairs = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
+				//pm.setTriggers(pmTrigggers);
 				for (PMTriggerContext trigger : pmTrigggers) {
 					if(trigger.getSchedule() != null) {
+						pmTriggerMap.put(trigger.getId(), trigger);
 						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
 								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, startTime);
@@ -89,6 +93,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			}
 			sortPMs(pmPairs);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmPairs);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
 		}
 		
 		return false;

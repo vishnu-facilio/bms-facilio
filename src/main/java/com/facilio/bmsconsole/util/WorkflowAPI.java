@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -23,6 +24,7 @@ import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -63,7 +65,65 @@ public class WorkflowAPI {
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),orgId);
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
+		
+		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
+			workflowRuleContext.setEventId(addOrGetWorkflowEvent(workflowRuleContext.getEvent()));
+		}
+		
+		if (workflowRuleContext.getEventId() == -1) {
+			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
+		}
 	}
+	
+	public static final WorkflowEventContext getWorkFlowEvent(ActivityType type, long moduleId) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getWorkflowEventFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCustomWhere("MODULEID = ? AND ACTIVITY_TYPE = ?", moduleId, type.getValue());
+		
+		List<Map<String, Object>> eventProps = selectBuilder.get();
+		if (eventProps != null && !eventProps.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(eventProps.get(0), WorkflowEventContext.class);
+		}
+		return null;
+	}
+	
+	public static final long addOrGetWorkflowEvent(WorkflowEventContext event) throws Exception {
+		if(event.getActivityTypeEnum() == null) {
+			throw new IllegalArgumentException("Activity type cannot be null during addition of Workflow Event");
+		}
+		if(event.getModuleId() == -1 && event.getModuleName() != null && !event.getModuleName().isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(event.getModuleName());
+			event.setModuleId(module.getModuleId());
+		}
+		
+		if(event.getModuleId() == -1 && event.getModule() != null) {
+			event.setModuleId(event.getModule().getModuleId());
+		}
+		
+		if(event.getModuleId() == -1) {
+			throw new IllegalArgumentException("Module cannot be null while adding Workflow event");
+		}
+		
+		WorkflowEventContext existingEvent = getWorkFlowEvent(event.getActivityTypeEnum(), event.getModuleId());
+		if (existingEvent != null) {
+			return existingEvent.getEventId();
+		}
+		event.setOrgId(AccountUtil.getCurrentOrg().getId());
+		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+		Map<String, Object> eventProps = FieldUtil.getAsProperties(event);
+		GenericInsertRecordBuilder eventBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getWorkflowEventFields())
+														.table(module.getTableName())
+														.addRecord(eventProps);
+		
+		eventBuilder.save();
+		return (long) eventProps.get("id");
+	}
+	
 	public static int updateWorkflowRule(long orgId, WorkflowRuleContext rule, long id) throws Exception {
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -74,8 +134,8 @@ public class WorkflowAPI {
 	}
 	
 	public static WorkflowRuleContext getWorkflowRule (long ruleId) throws Exception {
-		List<FacilioField> fields = FieldFactory.getWorkflowEventFields();
-		fields.addAll(FieldFactory.getWorkflowRuleFields());
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getWorkflowEventFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
@@ -246,6 +306,7 @@ public class WorkflowAPI {
 			}
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = getTypeWiseExtendedProps(typeWiseIds);
 			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
 				WorkflowRuleContext workflow = null;
 				
@@ -267,6 +328,7 @@ public class WorkflowAPI {
 				if(isEvent) {
 					WorkflowEventContext event = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
 					event.setId(workflow.getEventId());
+					event.setModule(modBean.getModule(event.getModuleId()));
 					workflow.setEvent(event);
 				}
 				workflows.add(workflow);

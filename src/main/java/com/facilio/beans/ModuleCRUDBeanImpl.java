@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -171,10 +173,20 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 
-			JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
-			if (taskJson != null) {
-				List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-				context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+			JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
+			if(taskContent != null) {
+				context.put(FacilioConstants.ContextNames.TASK_MAP, PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent));
+			}
+			else {
+				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
+				if (taskJson != null) {
+					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
+					if(tasks != null && !tasks.isEmpty()) {
+						Map<String, List<TaskContext>> taskMap = new HashMap<>();
+						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+						context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+					}
+				}
 			}
 
 			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();

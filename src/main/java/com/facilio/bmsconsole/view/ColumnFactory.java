@@ -30,6 +30,18 @@ public class ColumnFactory {
 		columnMap.put("workorder-my", getDefaultViewColumns());
 		columnMap.put("workorder-all", getDefaultViewColumns());
 		
+		columnMap.put("alarm-active", getDefaultAlarmColumns());
+		columnMap.put("alarm-cleared", getDefaultAlarmColumns());
+		columnMap.put("alarm-critical", getDefaultAlarmColumns());
+		columnMap.put("alarm-major", getDefaultAlarmColumns());
+		columnMap.put("alarm-minor", getDefaultAlarmColumns());
+		columnMap.put("alarm-myalarms", getDefaultAlarmColumns());
+		columnMap.put("alarm-unassigned", getDefaultAlarmColumns());
+		columnMap.put("alarm-unacknowledged", getDefaultAlarmColumns());
+		columnMap.put("alarm-fire", getDefaultAlarmColumns());
+		columnMap.put("alarm-energy", getDefaultAlarmColumns());
+		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
+		
 		return columnMap;
 	}
 	
@@ -37,12 +49,25 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("category", "Category"));
-		columns.add(new ViewField("space", "Space"));
+		columns.add(new ViewField("space", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));
 		columns.add(new ViewField("noOfTasks", "Tasks"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultAlarmColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("alarmType", "Category"));
+		columns.add(new ViewField("node", "Entity"));
+		columns.add(new ViewField("modifiedTime", "Time Since Report"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledge"));
 		
 		return columns;
 	}

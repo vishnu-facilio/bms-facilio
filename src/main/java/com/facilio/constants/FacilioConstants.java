@@ -143,6 +143,10 @@ public class FacilioConstants {
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
+		public static final String TASK_MAP = "taskMap";
+		public static final String TASK_SECTIONS = "taskSections";
+		public static final String TASK_SECTION = "taskSection";
+		public static final String DEFAULT_TASK_SECTION = "default";
 		
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
@@ -167,6 +171,7 @@ public class FacilioConstants {
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		
 		public static final String READINGS = "readings";
+		public static final String READING = "reading";
 		public static final String PHOTOS = "photos";
 		public static final String PHOTO_ID = "photoId";
 		
@@ -285,6 +290,7 @@ public class FacilioConstants {
 		public static final String PM_TRIGGERS = "pmtriggers";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
+		public static final String PREVENTIVE_MAINTENANCE_TRIGGERS_LIST = "preventivemaintenancetriggerss";
 		public static final String INSERT_LEVEL = "insertLevel";
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";

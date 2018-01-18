@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -42,7 +43,21 @@ public class GenericGetModuleDataListCommand implements Command {
 			builder.maxLevel(maxLevel);
 		}
 		
-		if(view != null) {
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			builder.andCriteria(filterCriteria);
+		} else if (filters == null && view != null) {
+			Criteria criteria = view.getCriteria();
+			builder.andCriteria(criteria);
+		}
+		
+		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+		if (searchCriteria != null) {
+			builder.andCriteria(searchCriteria);
+		}
+		
+		/*if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
 		}
@@ -52,7 +67,7 @@ public class GenericGetModuleDataListCommand implements Command {
 			for(Condition condition : conditionList) {
 				builder.andCondition(condition);
 			}
-		}
+		}*/
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

@@ -22,14 +22,6 @@ public class AddTaskCommand implements Command {
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			task.setCreatedTime(System.currentTimeMillis());
 			
-			if(task.getAsset() == null && task.isReadingTask()) {
-				throw new IllegalArgumentException("Asset cannot be null when reading is enabled for task");
-			}
-			
-			if(task.isReadingTask() && task.getReadingFieldId() == -1) {
-				throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
-			}
-			
 			InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
 															.moduleName(moduleName)
 															.table(dataTableName)

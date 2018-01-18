@@ -105,7 +105,7 @@ public class FieldUtil {
 		}
 	}
 	
-	private static ObjectMapper getMapper(Class<?> beanClass) {
+	public static ObjectMapper getMapper(Class<?> beanClass) {
 		ObjectMapper mapper =  new ObjectMapper()
 					.setSerializationInclusion(Include.NON_DEFAULT)
 					.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -24,9 +25,10 @@ public class GetRelatedTasksCommand implements Command {
 		
 		//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
-		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordId);
-		
-		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+		Map<Long, TaskSectionContext> sections = TicketAPI.getRelatedTaskSections(recordId);
+		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sections);
+		Map<Long, List<TaskContext>> tasks = TicketAPI.getRelatedTasks(recordId);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		return false;
 	}
 

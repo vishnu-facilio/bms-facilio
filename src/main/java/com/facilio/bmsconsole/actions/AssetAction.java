@@ -83,6 +83,13 @@ public class AssetAction extends ActionSupport {
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
  		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "asset.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
  		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
@@ -186,8 +193,15 @@ public class AssetAction extends ActionSupport {
 	public String getFilters() {
 		return filters;
 	}
-
 	public void setFilters(String filters) {
 		this.filters = filters;
+	}
+	
+	String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
 	}
 }

@@ -95,7 +95,7 @@ public enum ActivityType {
 			return "added the task.";
 		}
 	},
-	ADD_TASK_READING_VALUE(512) {
+	ADD_TASK_INPUT(512) {
 		@Override
 		public String getMessage(JSONObject json) {
 			// TODO Auto-generated method stub
@@ -135,6 +135,15 @@ public enum ActivityType {
 			return "solved the "+moduleName;
 		}
 	},
+	UPDATE_TICKET_TASK(16384) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "Updated the task";
+		}
+		
+	}
 	;
 
     private int eventType;

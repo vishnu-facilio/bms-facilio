@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.text.ParseException;
+import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -38,20 +39,6 @@ public class TaskContext extends TicketContext {
 		this.createdTime = createdTime;
 	}
 	
-	private Boolean isReadingTask;
-	public Boolean getIsReadingTask() {
-		return isReadingTask;
-	}
-	public void setIsReadingTask(Boolean isReadingTask) {
-		this.isReadingTask = isReadingTask;
-	}
-	public boolean isReadingTask() {
-		if(isReadingTask != null) {
-			return isReadingTask.booleanValue();
-		}
-		return false;
-	}
-	
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;
@@ -68,22 +55,80 @@ public class TaskContext extends TicketContext {
 		this.readingField = readingField;
 	}
 
-	private ReadingContext readingData;
-	public ReadingContext getReadingData() {
-		return readingData;
-	}
-	public void setReadingData(ReadingContext readingData) {
-		this.readingData = readingData;
-	}
-
 	private long readingDataId = -1;
 	public long getReadingDataId() {
-		if(readingDataId == -1 && readingData != null && readingData.getId() != -1) {
-			return readingData.getId();
-		}
 		return readingDataId;
 	}
 	public void setReadingDataId(long readingDataId) {
 		this.readingDataId = readingDataId;
+	}
+	
+	private long sectionId = -1;
+	public long getSectionId() {
+		return sectionId;
+	}
+	public void setSectionId(long sectionId) {
+		this.sectionId = sectionId;
+	}
+	
+	private int sequence = -1;
+	public int getSequence() {
+		return sequence;
+	}
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
+
+	private InputType inputType;
+	public int getInputType() {
+		if(inputType != null) {
+			return inputType.getVal();
+		}
+		return -1;
+	}
+	public void setInputType(int inputType) {
+		this.inputType = InputType.valueOf(inputType);
+	}
+	public void setInputType(InputType inputType) {
+		this.inputType = inputType;
+	}
+	public InputType getInputTypeEnum() {
+		return inputType;
+	}
+	
+	private String inputValue;
+	public String getInputValue() {
+		return inputValue;
+	}
+	public void setInputValue(String inputValue) {
+		this.inputValue = inputValue;
+	}
+	
+	private List<String> options;
+	public List<String> getOptions() {
+		return options;
+	}
+	public void setOptions(List<String> options) {
+		this.options = options;
+	}
+
+	public enum InputType {
+		NONE,
+		READING,
+		TEXT,
+		NUMBER,
+		RADIO,
+		CHECKBOX;
+		
+		public int getVal() {
+			return ordinal()+1;
+		}
+		
+		public static InputType valueOf(int val) {
+			if(val > 0 && val <= values().length) {
+				return values()[val - 1];
+			}
+			return null;
+		}
 	}
 }
