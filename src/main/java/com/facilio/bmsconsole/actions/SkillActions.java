@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SkillContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SkillAPI;
@@ -228,10 +229,20 @@ public class SkillActions extends ActionSupport {
 	public List<SkillContext> getRecords() {
 		return skills;
 	}
+	
+	private List<TicketCategoryContext> ticketCategories;
+
+	public List<TicketCategoryContext> getTicketCategories() {
+		return ticketCategories;
+	}
+
+	public void setTicketCategories(List<TicketCategoryContext> ticketCategories) {
+		this.ticketCategories = ticketCategories;
+	}
 
 	public String skillsList() throws Exception {
 
-		setSetup(SetupLayout.getSkillsListLayout());
+		//setSetup(SetupLayout.getSkillsListLayout());
 		setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
 
 		return SUCCESS;

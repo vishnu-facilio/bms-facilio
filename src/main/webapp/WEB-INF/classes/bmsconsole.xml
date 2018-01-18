@@ -229,7 +229,11 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
-
+		<action name="skilllist" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+			<result name="success" type="json">
+				<param name="includeProperties">skills,skills\[\d+\],skills\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions"
 			method="addSkill">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

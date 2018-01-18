@@ -27,4 +27,13 @@ public class SkillContext extends ModuleBaseWithCustomFields {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
+	
+	private long categoryId;
+	public long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+	
 }
