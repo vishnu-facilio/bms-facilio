@@ -117,6 +117,14 @@ public class TaskContext extends TicketContext {
 		}
 		return false;
 	}
+	
+	private String remarks;
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 
 	private List<String> options;
 	public List<String> getOptions() {
