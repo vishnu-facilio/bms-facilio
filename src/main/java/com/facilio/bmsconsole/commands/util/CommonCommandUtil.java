@@ -169,6 +169,35 @@ public class CommonCommandUtil {
 		return null;	
 	}
 	
+	public static Map<Long,Object> getPickList(List<Long> idList, FacilioModule module) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField primaryField = (FacilioField) modBean.getPrimaryField(module.getName());
+		if( primaryField == null) {
+			return null;
+		}
+
+		try {
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(primaryField);				
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.select(fields).andCondition(CriteriaAPI.getIdCondition(idList, module));
+			List<Map<String, Object>> records = builder.getAsProps();
+			Map<Long,Object> pickList = new HashMap<Long,Object>();
+
+			for(Map<String, Object> record : records) {
+				pickList.put((Long) record.get("id"), record.get(primaryField.getName()));
+			}
+			return pickList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;	
+	}
+	
+	
 	public static void scheduleBeforePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId) throws Exception {
 		if(reminder.getTypeEnum() == ReminderType.BEFORE && nextExecutionTime != -1 && triggerId != -1) {
 			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId);

@@ -2,12 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,7 +21,6 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
-import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
@@ -41,9 +38,9 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -51,8 +48,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
@@ -810,14 +805,45 @@ public class DashboardAction extends ActionSupport {
 		return this.displayFields;
 	}
 	
-	public String getUnderlyingData() throws Exception {
+public String getUnderlyingData() throws Exception {
+		
+		FacilioModule module = getModule();
+		List<Map<String, Object>> rs = getRawData(module);
+		JSONArray result = new JSONArray();
+		for(Map<String, Object> r:rs) {
+			result.add(r);
+		}
+		setReportData(result);
+		setDisplayFields(getDisplayColumns(module.getName()));
+		return SUCCESS;
+	}
+	
+	public String exportData() throws Exception{
+	
+		FacilioModule module = getModule();
+		List<Map<String, Object>> records = getRawData(module);
+		List<FacilioField> fields=getDisplayColumns(module.getName());
+		
+		if(type.equals("xls")){
+			fileUrl=ExportUtil.exportDataAsXLS(module, fields, records);
+		}
+		else if(type.equals("csv")) {
+			fileUrl=ExportUtil.exportDataAsCSV(module, fields, records);
+		}
+		return SUCCESS;
+	}
+	
+	private FacilioModule getModule() throws Exception {
 		
 		reportContext = DashboardUtil.getReportContext(reportId);
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return modBean.getModule(reportFolder.getModuleId());
+	}
+	
+	private List<Map<String, Object>> getRawData(FacilioModule module) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
-		
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
@@ -862,15 +888,12 @@ public class DashboardAction extends ActionSupport {
 		builder.limit(200); // 200 records max
 		
 		List<Map<String, Object>> rs = builder.get();
-		
-		JSONArray result = new JSONArray();
-		for(Map<String, Object> r:rs) {
-			result.add(r);
-		}
-		setReportData(result);
-		setDisplayFields(getDisplayColumns(module.getName()));
-		return SUCCESS;
+		return rs;
 	}
+
+
+
+
 	
 	private Long buildingId;
 	
@@ -1021,5 +1044,21 @@ public class DashboardAction extends ActionSupport {
 	}
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
+	}
+	
+	private String type="xls";
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	private String fileUrl;
+	public String getFileUrl() {
+		return fileUrl;
+	}
+	public void setFileUrl(String url) {
+		this.fileUrl = url;
 	}
 }

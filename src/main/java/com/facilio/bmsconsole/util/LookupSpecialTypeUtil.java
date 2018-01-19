@@ -7,16 +7,21 @@ import java.util.Map;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
+import com.facilio.fw.BeanFactory;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
@@ -89,6 +94,28 @@ public class LookupSpecialTypeUtil {
 		return null;
 	}
 	
+	public static Map<Long, Object> getPickList(String specialType, List<Long> idList) throws Exception {
+		
+		Criteria criteria = new Criteria();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			
+			FacilioField field=FieldFactory.getField("ouid", "ORG_USERID",getModule(specialType), FieldType.NUMBER);
+			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			FacilioField field=FieldFactory.getField("groupId", "GROUPID", FieldType.NUMBER);
+			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
+		}
+		else {
+			criteria.addAndCondition(CriteriaAPI.getIdCondition(idList, getModule(specialType)));
+		}
+		
+		List<Object> list=  getObjects(specialType,criteria);
+		return getPrimaryFieldValues(specialType, list);
+	}
+	
+	
 	public static List getObjects(String specialType, Criteria criteria) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
 			return AccountUtil.getUserBean().getUsers(criteria);
@@ -104,6 +131,8 @@ public class LookupSpecialTypeUtil {
 		}
 		return null;
 	}
+	
+	
 	
 	public static Object getEmptyLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
@@ -164,6 +193,54 @@ public class LookupSpecialTypeUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static Map<Long,Object> getPrimaryFieldValues(String specialType, List<Object> listObjects) throws Exception {
+		
+		if(listObjects==null) {
+			return null;
+		}
+		
+		Map<Long,Object> idVsKey= new HashMap<Long,Object>();
+		
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			
+			for(Object obj:listObjects) {
+				User user = (User)obj;
+				if(user != null) {
+					idVsKey.put(user.getId(),user.getName());
+				}
+
+			}
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			
+			for(Object obj:listObjects) {
+				Group group = (Group)obj;
+				if(group != null) {
+					idVsKey.put(group.getId(), group.getName());
+				}
+			}
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			
+			for(Object obj:listObjects) {
+				BusinessHoursList businessHours = (BusinessHoursList)obj;
+				if(businessHours != null) {
+					idVsKey.put(businessHours.getId(), businessHours.toString());
+				}
+			}
+		}
+		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
+			for(Object obj:listObjects) {
+				
+				EventContext event = (EventContext)obj;
+				if (event != null) {
+					idVsKey.put(event.getId(), event.toString());
+				}
+			}
+		}
+		return idVsKey;
 	}
 	
 	public static FacilioModule getModule(String specialType) {

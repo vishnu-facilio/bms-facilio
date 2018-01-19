@@ -18,6 +18,7 @@ import java.util.Locale;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 
 
 public class DateTimeUtil 
@@ -437,6 +438,10 @@ public class DateTimeUtil
 		//    timeStamp="2017-08-09T10:06:10.894752Z";
 		ZonedDateTime zDateTime= ZonedDateTime.parse(timeStamp);
 		return getLong(zDateTime,false,seconds);
+	}
+	
+	public static String getFormattedTime(long time) {
+		return DateTimeUtil.getZonedDateTime(time).format(FacilioConstants.READABLE_DATE_FORMAT);
 	}
 }
 

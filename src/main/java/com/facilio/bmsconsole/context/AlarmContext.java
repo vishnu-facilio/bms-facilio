@@ -98,7 +98,7 @@ public class AlarmContext extends TicketContext {
 	}
 	public String getModifiedTimeString() {
 		if(modifiedTime != -1) {
-			return DateTimeUtil.getZonedDateTime(modifiedTime).format(FacilioConstants.READABLE_DATE_FORMAT);
+			return DateTimeUtil.getFormattedTime(modifiedTime);
 		}
 		return null;
 	}
