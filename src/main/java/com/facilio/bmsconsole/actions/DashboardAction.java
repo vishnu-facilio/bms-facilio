@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,6 +19,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
@@ -31,13 +34,16 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -279,6 +285,16 @@ public class DashboardAction extends ActionSupport {
 			
 			insertBuilder.addRecord(prop).save();
 		}
+		if(reportContext.getEnergyMeter() != null) {
+			Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+			prop.put("reportId", reportContext.getId());
+
+			insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReportEnergyMeter().getTableName())
+					.fields(FieldFactory.getReportEnergyMeterFields());
+			
+			insertBuilder.addRecord(prop).save();
+		}
 		return SUCCESS;
 	}
 	
@@ -492,6 +508,112 @@ public class DashboardAction extends ActionSupport {
 			}
 			builder.andCondition(dateCondition);
 		}
+		JSONObject buildingVsMeter = new JSONObject();
+		if (reportContext.getEnergyMeter() != null) {
+			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
+				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
+			}
+			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
+				if ("service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+					
+					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(reportContext.getEnergyMeter().getBuildingId()+"");
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+							buildingVsMeter.put(meter.getId(), meter.getPurpose().getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+					}
+					
+					FacilioField groupByField = new FacilioField();
+					groupByField.setName("groupBy");
+					groupByField.setDataType(FieldType.NUMBER);
+					groupByField.setColumnName("PARENT_METER_ID");
+					groupByField.setDisplayName("Service");
+					groupByField.setModule(module);
+					fields.add(groupByField);
+					builder.groupBy("label, groupBy");
+					
+					ReportFieldContext groupByReportField = new ReportFieldContext();
+					groupByReportField.setModuleField(groupByField);
+					
+					reportContext.setGroupByField(groupByReportField);
+					
+					reportContext.setGroupBy(-1L);
+				}
+				else {
+					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getEnergyMeter().getBuildingId()+"");
+					if (meters != null && meters.size() > 0) {
+						List<Long> meterIds = new ArrayList<Long>();
+						for (EnergyMeterContext meter : meters) {
+							meterIds.add(meter.getId());
+						}
+						
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+					}
+				}
+			}
+			else if (reportContext.getEnergyMeter().getGroupBy() != null && "building".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+				
+				List<EnergyMeterContext> meters = DeviceAPI.getAllMainEnergyMeters();
+				if (meters != null && meters.size() > 0) {
+					List<Long> meterIds = new ArrayList<Long>();
+					for (EnergyMeterContext meter : meters) {
+						meterIds.add(meter.getId());
+						buildingVsMeter.put(meter.getId(), meter.getPurposeSpace().getId());
+					}
+					
+					String meterIdStr = StringUtils.join(meterIds, ",");
+					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+				}
+				
+				FacilioField groupByField = new FacilioField();
+				groupByField.setName("groupBy");
+				groupByField.setDataType(FieldType.NUMBER);
+				groupByField.setColumnName("PARENT_METER_ID");
+				groupByField.setDisplayName("Building");
+				groupByField.setModule(module);
+				fields.add(groupByField);
+				builder.groupBy("label, groupBy");
+				
+				ReportFieldContext groupByReportField = new ReportFieldContext();
+				groupByReportField.setModuleField(groupByField);
+				
+				reportContext.setGroupByField(groupByReportField);
+				
+				reportContext.setGroupBy(-1L);
+			}
+//			else if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+//				List<String> buildingIds = new ArrayList<>(); 
+//				JSONObject buildingMap = ReportsUtil.getBuildingMap();
+//				Iterator itr = buildingMap.keySet().iterator();
+//				while (itr.hasNext()) {
+//					buildingIds.add(itr.next().toString());
+//				}
+//				String buildingIdStr = StringUtils.join(buildingIds, ",");
+//				
+//				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", buildingIdStr, NumberOperators.EQUALS));
+//				
+//				FacilioField groupByField = new FacilioField();
+//				groupByField.setName("groupBy");
+//				groupByField.setDataType(FieldType.NUMBER);
+//				groupByField.setColumnName("PARENT_METER_ID");
+//				groupByField.setModule(module);
+//				fields.add(groupByField);
+//				builder.groupBy("label, groupBy");
+//				
+//				ReportFieldContext groupByReportField = new ReportFieldContext();
+//				groupByReportField.setModuleField(groupByField);
+//				
+//				reportContext.setGroupByField(groupByReportField);
+//				
+//				reportContext.setGroupBy(-1L);
+//			}
+		}
 		List<Map<String, Object>> rs = builder.get();
 		
 		if(reportContext.getGroupBy() != null) {
@@ -505,7 +627,7 @@ public class DashboardAction extends ActionSupport {
 	 			if(thisMap!=null) {
 	 				
 	 				JSONObject value = new JSONObject();
-	 				value.put("label", thisMap.get("groupBy"));
+	 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 	 				value.put("value", thisMap.get("value"));
 	 				
 	 				Object xlabel = thisMap.get("label");
@@ -539,9 +661,9 @@ public class DashboardAction extends ActionSupport {
 		 			Map<String, Object> thisMap = rs.get(i);
 		 			JSONObject component = new JSONObject();
 		 			if(thisMap!=null) {
-		 				if(thisMap.get("label") == null) {
-		 					continue;
-		 				}
+//		 				if(thisMap.get("label") == null) {
+//		 					continue;
+//		 				}
 		 				if(thisMap.get("dummyField") != null) {
 		 					component.put("label", thisMap.get("dummyField"));
 		 				}
@@ -612,7 +734,7 @@ public class DashboardAction extends ActionSupport {
 		
 		
 		
-		if(energyMeterValue != null && isEnergyDataWithTimeFrame) {
+		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame) {
 			
 			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
 			
@@ -747,6 +869,54 @@ public class DashboardAction extends ActionSupport {
 		}
 		setReportData(result);
 		setDisplayFields(getDisplayColumns(module.getName()));
+		return SUCCESS;
+	}
+	
+	private Long buildingId;
+	
+	public void setBuildingId(Long buildingId) {
+		this.buildingId = buildingId;
+	}
+	
+	public Long getBuildingId() {
+		return this.buildingId;
+	}
+	
+	private Long serviceId;
+	
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+	
+	public Long getServiceId() {
+		return this.serviceId;
+	}
+	
+	private Long subMeterId;
+	
+	public void setSubMeterId(Long subMeterId) {
+		this.subMeterId = subMeterId;
+	}
+	
+	public Long getSubMeterId() {
+		return this.subMeterId;
+	}
+	
+	List<EnergyMeterContext> energyMeters;
+	
+	public void setEnergyMeters(List<EnergyMeterContext> energyMeters) {
+		this.energyMeters = energyMeters;
+	}
+	
+	public List<EnergyMeterContext> getEnergyMeters() {
+		return this.energyMeters;
+	}
+	
+	// get all sub meters of building
+	public String getSubMeters() throws Exception {
+		
+		setEnergyMeters(DeviceAPI.getAllEnergyMeters(buildingId, serviceId));
+		
 		return SUCCESS;
 	}
 

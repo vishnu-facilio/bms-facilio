@@ -576,6 +576,11 @@ public class ModuleFactory {
 		reportFieldModule.setTableName("Report_DateFilter");
 		return reportFieldModule;
 	}
+	public static FacilioModule getReportEnergyMeter() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_EnergyMeter");
+		return reportFieldModule;
+	}
 	public static FacilioModule getReportCriteria() {
 		FacilioModule reportCriteriaModule = new FacilioModule();
 		reportCriteriaModule.setTableName("Report_Criteria");

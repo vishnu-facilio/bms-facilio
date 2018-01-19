@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReportContext1;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
+import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
@@ -298,6 +299,17 @@ public class DashboardUtil {
 				dateFilterContext.setField(ff);
 				
 				reportContext.setDateFilter(dateFilterContext);
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportEnergyMeterFields())
+					.table(ModuleFactory.getReportEnergyMeter().getTableName())
+					.andCustomWhere(ModuleFactory.getReportEnergyMeter().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> energyMeterProps = selectBuilder.get();
+			if (energyMeterProps != null && !energyMeterProps.isEmpty()) {
+				ReportEnergyMeterContext energyMeterContext = FieldUtil.getAsBeanFromMap(energyMeterProps.get(0), ReportEnergyMeterContext.class);
+				reportContext.setEnergyMeter(energyMeterContext);
 			}
 			return reportContext;
 		}

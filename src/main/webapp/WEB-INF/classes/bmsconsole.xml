@@ -2897,6 +2897,11 @@
 				<param name="includeProperties">^reportData.*,displayFields,displayFields\[\d+\],displayFields\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="getSubMeters" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSubMeters">
+			<result name="success" type="json">
+				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>

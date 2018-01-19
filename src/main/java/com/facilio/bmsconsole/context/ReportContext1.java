@@ -579,4 +579,14 @@ public class ReportContext1 {
 	public ReportDateFilterContext getDateFilter() {
 		return this.dateFilter;
 	}
+	
+	private ReportEnergyMeterContext energyMeter;
+	
+	public void setEnergyMeter(ReportEnergyMeterContext energyMeter) {
+		this.energyMeter = energyMeter;
+	}
+	
+	public ReportEnergyMeterContext getEnergyMeter() {
+		return this.energyMeter;
+	}
 }
