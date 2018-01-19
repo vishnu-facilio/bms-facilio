@@ -313,7 +313,7 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private long startTime = System.currentTimeMillis() / 1000;
+	private long startTime = -1;
 	public long getStartTime() {
 		return startTime;
 	}
@@ -321,7 +321,7 @@ public class WorkOrderAction extends ActionSupport {
 		this.startTime = startTime;
 	}
 	
-	private long endTime = System.currentTimeMillis() / 1000 + (7*24*60*60);
+	private long endTime = -1;
 	public long getEndTime() {
 		return endTime;
 	}
@@ -533,6 +533,8 @@ public class WorkOrderAction extends ActionSupport {
 		// TODO Auto-generated method stub
  		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();
