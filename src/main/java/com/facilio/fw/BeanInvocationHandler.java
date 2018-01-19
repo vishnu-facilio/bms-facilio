@@ -17,7 +17,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 
 	private static final Logger LOGGER = Logger.getLogger( BeanInvocationHandler.class.getName() );
 
-	private static boolean ENABLE_JTA = true;
+	private static boolean ENABLE_JTA = false;
 	private Object delegate;
 	long orgid = 0;
 //	private Connection conn;
