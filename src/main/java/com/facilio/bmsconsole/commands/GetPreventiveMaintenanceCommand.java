@@ -7,9 +7,11 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -87,6 +89,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		if(context.get(FacilioConstants.ContextNames.SPACE_ID) != null && (long) context.get(FacilioConstants.ContextNames.SPACE_ID) != -1)
 		{
 			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.SPACE_ID = ?", (long) context.get(FacilioConstants.ContextNames.SPACE_ID));
+		}
+		
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (filterCriteria != null) {
+			selectRecordBuilder.andCriteria(filterCriteria);
 		}
 		
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();

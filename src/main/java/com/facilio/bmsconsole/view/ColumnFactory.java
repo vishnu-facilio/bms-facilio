@@ -29,7 +29,6 @@ public class ColumnFactory {
 		columnMap.put("workorder-myduetoday", getDefaultViewColumns());
 		columnMap.put("workorder-my", getDefaultViewColumns());
 		columnMap.put("workorder-all", getDefaultViewColumns());
-		columnMap.put("workorder-default", getDefaultViewColumns());	// For getting default values for a column - view not shown in ui
 		
 		columnMap.put("alarm-active", getDefaultAlarmColumns());
 		columnMap.put("alarm-cleared", getDefaultAlarmColumns());
@@ -42,6 +41,9 @@ public class ColumnFactory {
 		columnMap.put("alarm-fire", getDefaultAlarmColumns());
 		columnMap.put("alarm-energy", getDefaultAlarmColumns());
 		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
+		
+		// For getting default values for a column - view not shown in ui
+		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		
 		return columnMap;
