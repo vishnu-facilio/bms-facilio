@@ -42,7 +42,7 @@ public class LeadTracker extends ActionSupport {
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
-		headers.put("Authorization", "Token token=i-hJNvjv8TRdVGlJmGHNmw");
+		headers.put("Authorization", "Token token=fvflMfg-2zhVZ68rKZP9xg");
 		 
 		String url = "https://facilio.freshsales.io/api/leads";
 		AwsUtil.doHttpPost(url, headers, null, postData.toJSONString());
