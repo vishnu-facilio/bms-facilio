@@ -2904,7 +2904,7 @@
 		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportData">
 			<result name="success" type="json">
-				<param name="includeProperties">fileUrl\</param>
+				<param name="includeProperties">fileUrl</param>
 			</result>
 		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
