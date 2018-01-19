@@ -90,10 +90,7 @@
  	</resource-ref>
  	
  	<!--  Context Listener -->
-	<listener>
-		<!-- Register context listener to bootstrap Narayana services -->
-		<listener-class>org.jboss.narayana.tomcat.jta.NarayanaJtaServletContextListener</listener-class>
-	</listener>
+	
  	<listener>
  		<listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
  	</listener>

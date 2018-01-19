@@ -39,7 +39,7 @@
 		  dataSourceJNDI="BmsXA"
      />
     
-    <!-- Transaction Configuration -->
+    <!-- Transaction Configuration 
 	<Transaction factory="org.jboss.narayana.tomcat.jta.UserTransactionFactory"/>
 	<Resource 
 		name="TransactionManager" 
@@ -48,5 +48,5 @@
     <Resource 
     	name="TransactionSynchronizationRegistry" 
 		type="javax.transaction.TransactionSynchronizationRegistry"
-		factory="org.jboss.narayana.tomcat.jta.TransactionSynchronizationRegistryFactory"/>
+		factory="org.jboss.narayana.tomcat.jta.TransactionSynchronizationRegistryFactory"/>  -->
 </Context>

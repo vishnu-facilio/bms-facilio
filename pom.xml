@@ -261,18 +261,7 @@
 		</dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/org.jboss.narayana.jta/narayana-jta -->
-<dependency>
-    <groupId>org.jboss.narayana.jta</groupId>
-    <artifactId>narayana-jta</artifactId>
-    <version>5.6.3.Final</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/org.jboss.narayana.tomcat/tomcat-jta -->
-<dependency>
-    <groupId>org.jboss.narayana.tomcat</groupId>
-    <artifactId>tomcat-jta</artifactId>
-    <version>5.6.3.Final</version>
-</dependency>
+	
 
 <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina -->
 

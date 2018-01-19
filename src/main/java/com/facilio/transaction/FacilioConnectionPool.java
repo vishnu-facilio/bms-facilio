@@ -1,9 +1,7 @@
 package com.facilio.transaction;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -13,7 +11,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import com.arjuna.ats.jdbc.TransactionalDriver;
 
 public enum FacilioConnectionPool {
 	INSTANCE;
@@ -52,7 +49,7 @@ public enum FacilioConnectionPool {
 	
 	public Connection getConnection() throws SQLException {
 		
-		if(true) {
+		
 			TransactionManager tm = FTransactionManager.getTransactionManager();
 			try {
 				Transaction t = tm.getTransaction();
@@ -63,9 +60,9 @@ public enum FacilioConnectionPool {
 				e.printStackTrace();
 			}
 			return getConnectionFromPool();
-		}
 		
-		Properties info =new Properties();
+		
+	/*	Properties info =new Properties();
 	//	info.setProperty(TransactionalDriver.userName, "root");
 	//	info.setProperty(TransactionalDriver.password, "");
 		info.put(TransactionalDriver.XADataSource, ds);
@@ -73,7 +70,7 @@ public enum FacilioConnectionPool {
 		//xaDataSource = info.get(TransactionalDriver.XADataSource);
 		Connection c = DriverManager.getConnection("jdbc:arjuna:java:comp/env/jdbc/pcmDB",info);
 	//	print(c);
-		return c;
+		return c;*/
 	}
 	
     public Connection getConnectionFromPool() throws SQLException {
