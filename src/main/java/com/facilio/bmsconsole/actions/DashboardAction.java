@@ -411,6 +411,9 @@ public class DashboardAction extends ActionSupport {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+		if ("WorkOrders".equals(module.getTableName())){
+	           builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
+	       }
 		
 //		if(userFilterValues == null) {
 //			userFilterValues = new JSONObject();
