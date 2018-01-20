@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -20,6 +22,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class PreventiveMaintenanceSummaryCommand implements Command {
@@ -42,6 +45,13 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
+		
+		for (PMTriggerContext trigger : pm.getTriggers()) {
+			PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, Instant.now().getEpochSecond());
+			if(pmJob != null && (pm.getNextExecutionTime() == -1 || pmJob.getNextExecutionTime() <= pm.getNextExecutionTime())) {
+				pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
+			}
+		}
 		
 		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
 		JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
