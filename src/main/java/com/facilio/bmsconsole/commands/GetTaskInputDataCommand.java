@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,8 +29,12 @@ public class GetTaskInputDataCommand implements Command {
 			for(TaskContext task : tasks) {
 				switch(task.getInputTypeEnum()) {
 					case RADIO:
+						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
 					case CHECKBOX:
 						task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
+						if(task.getInputValue() != null && !task.getInputValue().isEmpty()) {
+							task.setInputValues(Arrays.asList(task.getInputValue().split("\\s*,\\s*")));
+						}
 						break;
 					case READING:
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
