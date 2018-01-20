@@ -352,6 +352,8 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private static double unitCost=0.09;
+	
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
@@ -625,7 +627,13 @@ public class DashboardAction extends ActionSupport {
 	 				
 	 				JSONObject value = new JSONObject();
 	 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
-	 				value.put("value", thisMap.get("value"));
+	 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+	 					Double d = (Double) thisMap.get("value");
+	 					value.put("value", d*unitCost);
+	 				}
+	 				else {
+	 					value.put("value", thisMap.get("value"));
+	 				}
 	 				
 	 				Object xlabel = thisMap.get("label");
 	 				if(thisMap.get("dummyField") != null) {
@@ -667,7 +675,13 @@ public class DashboardAction extends ActionSupport {
 		 				else {
 		 					component.put("label", buildingVsMeter.containsKey(thisMap.get("label")) ? buildingVsMeter.get(thisMap.get("label")) : thisMap.get("label"));
 		 				}
-		 				component.put("value", thisMap.get("value"));
+		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+		 					Double d = (Double) thisMap.get("value");
+		 					component.put("value", d*unitCost);
+		 				}
+		 				else {
+		 					component.put("value", thisMap.get("value"));
+		 				}
 		 				res.add(component);
 		 			}
 			 	}

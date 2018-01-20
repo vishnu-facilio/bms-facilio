@@ -2222,6 +2222,20 @@ public class FieldFactory {
 		xAxisaggregateFunction.setModule(module);
 		fields.add(xAxisaggregateFunction);
 
+		FacilioField xAxisLabel = new FacilioField();
+		xAxisLabel.setName("xAxisLabel");
+		xAxisLabel.setDataType(FieldType.STRING);
+		xAxisLabel.setColumnName("X_AXIS_LABEL");
+		xAxisLabel.setModule(module);
+		fields.add(xAxisLabel);
+		
+		FacilioField xAxisUnit = new FacilioField();
+		xAxisUnit.setName("xAxisUnit");
+		xAxisUnit.setDataType(FieldType.STRING);
+		xAxisUnit.setColumnName("X_AXIS_UNIT");
+		xAxisUnit.setModule(module);
+		fields.add(xAxisUnit);
+		
 		FacilioField y1Axis = new FacilioField();
 		y1Axis.setName("y1Axis");
 		y1Axis.setDataType(FieldType.NUMBER);
@@ -2235,6 +2249,20 @@ public class FieldFactory {
 		y1AxisaggregateFunction.setColumnName("Y1_AGGREGATE_FUNCTION");
 		y1AxisaggregateFunction.setModule(module);
 		fields.add(y1AxisaggregateFunction);
+		
+		FacilioField y1AxisLabel = new FacilioField();
+		y1AxisLabel.setName("y1AxisLabel");
+		y1AxisLabel.setDataType(FieldType.STRING);
+		y1AxisLabel.setColumnName("Y1_AXIS_LABEL");
+		y1AxisLabel.setModule(module);
+		fields.add(y1AxisLabel);
+		
+		FacilioField y1AxisUnit = new FacilioField();
+		y1AxisUnit.setName("y1AxisUnit");
+		y1AxisUnit.setDataType(FieldType.STRING);
+		y1AxisUnit.setColumnName("Y1_AXIS_UNIT");
+		y1AxisUnit.setModule(module);
+		fields.add(y1AxisUnit);
 		
 		FacilioField y2Axis = new FacilioField();
 		y2Axis.setName("y2Axis");
@@ -2284,6 +2312,20 @@ public class FieldFactory {
 		groupBy.setColumnName("GROUP_BY");
 		groupBy.setModule(module);
 		fields.add(groupBy);
+		
+		FacilioField groupByLabel = new FacilioField();
+		groupByLabel.setName("groupByLabel");
+		groupByLabel.setDataType(FieldType.STRING);
+		groupByLabel.setColumnName("GROUP_BY_LABEL");
+		groupByLabel.setModule(module);
+		fields.add(groupByLabel);
+		
+		FacilioField groupByUnit = new FacilioField();
+		groupByUnit.setName("groupByUnit");
+		groupByUnit.setDataType(FieldType.STRING);
+		groupByUnit.setColumnName("GROUP_BY_UNIT");
+		groupByUnit.setModule(module);
+		fields.add(groupByUnit);
 		
 		FacilioField groupByFieldAggregateFunction = new FacilioField();
 		groupByFieldAggregateFunction.setName("groupByFieldAggregateFunction");

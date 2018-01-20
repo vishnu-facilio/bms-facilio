@@ -23,9 +23,13 @@ public class ReportContext1 {
 	Long xAxis;
 	ReportFieldContext xAxisField;
 	Integer xAxisaggregateFunction;
+	String xAxisLabel;
+	String xAxisUnit;
 	Long y1Axis;
 	ReportFieldContext y1AxisField;
 	Integer y1AxisaggregateFunction;
+	String y1AxisLabel;
+	String y1AxisUnit;
 	Long y2Axis;
 	ReportFieldContext y2AxisField;
 	Integer y2AxisaggregateFunction;
@@ -38,6 +42,8 @@ public class ReportContext1 {
 	
 	Long groupBy;
 	ReportFieldContext groupByField;
+	String groupByLabel;
+	String groupByUnit;
 	Integer groupByFieldAggregateFunction;
 	Integer limit;
 	
@@ -588,5 +594,62 @@ public class ReportContext1 {
 	
 	public ReportEnergyMeterContext getEnergyMeter() {
 		return this.energyMeter;
+	}
+
+	public String getxAxisLabel() throws Exception {
+		if (this.xAxisLabel == null && this.getxAxisField() != null && this.getxAxisField().getField() != null) {
+			return this.getxAxisField().getField().getDisplayName();
+		}
+		return xAxisLabel;
+	}
+
+	public void setxAxisLabel(String xAxisLabel) {
+		this.xAxisLabel = xAxisLabel;
+	}
+
+	public String getxAxisUnit() {
+		return xAxisUnit;
+	}
+
+	public void setxAxisUnit(String xAxisUnit) {
+		this.xAxisUnit = xAxisUnit;
+	}
+
+	public String getY1AxisLabel() throws Exception {
+		if (this.y1AxisLabel == null && this.getY1AxisField() != null && this.getY1AxisField().getField() != null) {
+			return this.getY1AxisField().getField().getDisplayName();
+		}
+		return y1AxisLabel;
+	}
+
+	public void setY1AxisLabel(String y1AxisLabel) {
+		this.y1AxisLabel = y1AxisLabel;
+	}
+
+	public String getY1AxisUnit() {
+		return y1AxisUnit;
+	}
+
+	public void setY1AxisUnit(String y1AxisUnit) {
+		this.y1AxisUnit = y1AxisUnit;
+	}
+
+	public String getGroupByLabel() throws Exception {
+		if (this.groupByLabel == null && this.getGroupByField() != null && this.getGroupByField().getField() != null) {
+			return this.getGroupByField().getField().getDisplayName();
+		}
+		return groupByLabel;
+	}
+
+	public void setGroupByLabel(String groupByLabel) {
+		this.groupByLabel = groupByLabel;
+	}
+
+	public String getGroupByUnit() {
+		return groupByUnit;
+	}
+
+	public void setGroupByUnit(String groupByUnit) {
+		this.groupByUnit = groupByUnit;
 	}
 }
