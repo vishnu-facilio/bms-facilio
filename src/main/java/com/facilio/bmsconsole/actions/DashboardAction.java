@@ -779,7 +779,7 @@ public class DashboardAction extends ActionSupport {
 			displayFieldNames = new String[]{"subject", "severity", "node", "modifiedTime", "acknowledgedBy", "state"};
 		}
 		else if ("energydata".equals(module)) {
-			displayFieldNames = new String[]{"subject", "category", "space", "assignedTo", "status", "priority", "createdTime", "dueDate"};
+			displayFieldNames = new String[]{"ttime","parentId", "totalEnergyConsumptionDelta"};
 		}
 		
 		List<FacilioField> displayColumns = new ArrayList<>();
