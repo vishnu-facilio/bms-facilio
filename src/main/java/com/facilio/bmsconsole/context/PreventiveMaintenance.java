@@ -220,6 +220,34 @@ public class PreventiveMaintenance {
 	public void setMaxCount(int maxCount) {
 		this.maxCount = maxCount;
 	}
+	
+	private long nextExecutionTime = -1;
+	public long getNextExecutionTime() {
+		return nextExecutionTime;
+	}
+	public void setNextExecutionTime(long nextExecutionTime) {
+		this.nextExecutionTime = nextExecutionTime;
+	}
+	
+	public String getScheduleMsg() {
+		StringBuilder msg = new StringBuilder();
+		boolean isFirst = true;
+		if(triggers != null && !triggers.isEmpty()) {
+			for(PMTriggerContext trigger : triggers) {
+				if(trigger.getScheduleMsg() != null) {
+					if(isFirst) {
+						isFirst = false;
+					}
+					else {
+						msg.append(" or ");
+					}
+					msg.append(trigger.getScheduleMsg());
+				}
+			}
+			return msg.toString();
+		}
+		return null;
+	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
 	public static enum TriggerType {
