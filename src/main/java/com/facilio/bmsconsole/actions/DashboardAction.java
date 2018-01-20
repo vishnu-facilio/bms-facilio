@@ -755,18 +755,43 @@ public class DashboardAction extends ActionSupport {
 			FacilioField label = new FacilioField();
 			label.setName("label");
 			label.setDataType(FieldType.NUMBER);
-			label.setColumnName("CREATED_TIME");
+			label.setColumnName("MODIFIED_TIME");
 			label.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
 			
 			alarmVsEnergyFields.add(label);
 			
 			FacilioField value = new FacilioField();
 			value.setName("value");
-			value.setDataType(FieldType.NUMBER);
-			value.setColumnName("ALARM_ID");
+			value.setDataType(FieldType.DECIMAL);
+			value.setColumnName("VALUE");
 			value.setModule(ModuleFactory.getAlarmVsEnergyData());
 			
 			alarmVsEnergyFields.add(value);
+			
+			FacilioField severity = new FacilioField();
+			severity.setName("severity");
+			severity.setDataType(FieldType.NUMBER);
+			severity.setColumnName("SEVERITY");
+			severity.setModule(ModuleFactory.getAlarmsModule());
+			
+			alarmVsEnergyFields.add(severity);
+			
+			FacilioField description = new FacilioField();
+			description.setName("description");
+			description.setDataType(FieldType.STRING);
+			description.setColumnName("DESCRIPTION");
+			description.setModule(ModuleFactory.getTicketsModule());
+			
+			alarmVsEnergyFields.add(description);
+			
+			FacilioField alarmId = new FacilioField();
+			alarmId.setName("alarmid");
+			alarmId.setDataType(FieldType.NUMBER);
+			alarmId.setColumnName("ALARM_ID");
+			alarmId.setModule(ModuleFactory.getAlarmVsEnergyData());
+			
+			alarmVsEnergyFields.add(alarmId);
+			
 			
 			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getAlarmVsEnergyData().getTableName())
@@ -775,7 +800,7 @@ public class DashboardAction extends ActionSupport {
 					.innerJoin(ModuleFactory.getTicketsModule().getTableName())
 					.on(ModuleFactory.getTicketsModule().getTableName()+".ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
 					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".ASSET_ID in ("+energyMeterValue.substring(0, energyMeterValue.length()-1)+")")
-					//.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".CREATED_TIME between ? and ?", values)
+					.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.select(alarmVsEnergyFields);
 			
 			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
