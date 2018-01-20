@@ -184,7 +184,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					if(tasks != null && !tasks.isEmpty()) {
 						Map<String, List<TaskContext>> taskMap = new HashMap<>();
 						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
-						context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+						context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 					}
 				}
 			}
