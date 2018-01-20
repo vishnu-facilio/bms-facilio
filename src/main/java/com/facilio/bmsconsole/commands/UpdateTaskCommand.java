@@ -58,7 +58,7 @@ public class UpdateTaskCommand implements Command {
 						}
 						
 						List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(0));
-						if(attachments == null || attachments.isEmpty()) {
+						if(completeRecord.isAttachmentRequired() && (attachments == null || attachments.isEmpty())) {
 							throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
 						}
 					}
