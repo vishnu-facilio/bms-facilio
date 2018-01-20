@@ -566,21 +566,23 @@ public class DashboardAction extends ActionSupport {
 					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 				}
 				
-				FacilioField groupByField = new FacilioField();
-				groupByField.setName("groupBy");
-				groupByField.setDataType(FieldType.NUMBER);
-				groupByField.setColumnName("PARENT_METER_ID");
-				groupByField.setDisplayName("Building");
-				groupByField.setModule(module);
-				fields.add(groupByField);
-				builder.groupBy("label, groupBy");
-				
-				ReportFieldContext groupByReportField = new ReportFieldContext();
-				groupByReportField.setModuleField(groupByField);
-				
-				reportContext.setGroupByField(groupByReportField);
-				
-				reportContext.setGroupBy(-1L);
+				if (!xAxisField.getColumnName().equalsIgnoreCase("PARENT_METER_ID")) {
+					FacilioField groupByField = new FacilioField();
+					groupByField.setName("groupBy");
+					groupByField.setDataType(FieldType.NUMBER);
+					groupByField.setColumnName("PARENT_METER_ID");
+					groupByField.setDisplayName("Building");
+					groupByField.setModule(module);
+					fields.add(groupByField);
+					builder.groupBy("label, groupBy");
+					
+					ReportFieldContext groupByReportField = new ReportFieldContext();
+					groupByReportField.setModuleField(groupByField);
+					
+					reportContext.setGroupByField(groupByReportField);
+					
+					reportContext.setGroupBy(-1L);
+				}
 			}
 //			else if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
 //				List<String> buildingIds = new ArrayList<>(); 
@@ -663,7 +665,7 @@ public class DashboardAction extends ActionSupport {
 		 					component.put("label", thisMap.get("dummyField"));
 		 				}
 		 				else {
-		 					component.put("label", thisMap.get("label"));
+		 					component.put("label", buildingVsMeter.containsKey(thisMap.get("label")) ? buildingVsMeter.get(thisMap.get("label")) : thisMap.get("label"));
 		 				}
 		 				component.put("value", thisMap.get("value"));
 		 				res.add(component);
