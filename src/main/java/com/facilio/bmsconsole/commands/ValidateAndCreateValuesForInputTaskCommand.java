@@ -46,9 +46,6 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								Double.parseDouble(task.getInputValue());
 								break;
 							case RADIO:
-								if(task.getInputValue().contains(",")) {
-									throw new IllegalArgumentException("Only one value can be selected for input task of type RADIIO");
-								}
 								List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
 								if(!options.contains(task.getInputValue())) {
 									throw new IllegalArgumentException("Invalid input value");
