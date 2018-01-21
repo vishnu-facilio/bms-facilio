@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -112,6 +113,15 @@ public class WorkOrderRequestContext extends TicketContext {
 		}
 		public Map<Integer, WORUrgency> getAllTypes() {
 			return urgencyMap;
+		}
+	}
+	
+	public String getMobileUrl() {
+		if(super.getId() != -1) {
+			return   AwsUtil.getConfig("clientapp.url")+"/mobile/workrequest/summary/"+getId();
+		}
+		else {
+			return null;
 		}
 	}
 	
