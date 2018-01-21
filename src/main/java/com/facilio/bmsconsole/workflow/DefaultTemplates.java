@@ -67,6 +67,9 @@ public enum DefaultTemplates implements ActionTemplate {
 	TASK_RESOLVED_SMS(54),
 	TASK_RESOLVED_PUSH(56),
 	TASK_RESOLVED_WEBL(55),
+	WO_ASSIGN_SMS(57),
+	WO_ASSIGN_PUSH(59),
+	WO_ASSIGN_WEB(58)
 	;
 	
 	private int val;
@@ -449,6 +452,23 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 55:
 				break;
+			case 57:
+				json.put("to", "${workorder.assignedTo.phone:-}");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				break;
+			case 58:
+				break;
+			case 59:
+				data = new JSONObject();
+				data.put("URL", "${workorder.mobileUrl}");
+				data.put("body", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "New Workorder");
+				data.put("content_available", true);
+				data.put("priority", "high");
+				data.put("sound", "default");
+				json.put("data", data);
+				break;
+				
 		}
 		return json;
 	}
