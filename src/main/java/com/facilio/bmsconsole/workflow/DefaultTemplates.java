@@ -461,8 +461,8 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 59:
 				data = new JSONObject();
 				data.put("URL", "${workorder.mobileUrl}");
-				data.put("body", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
-				data.put("title", "New Workorder");
+				data.put("body", "A work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("title", "Workorder Assigned");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
