@@ -29,6 +29,8 @@ public class ColumnFactory {
 		columnMap.put("workorder-myduetoday", getDefaultViewColumns());
 		columnMap.put("workorder-my", getDefaultViewColumns());
 		columnMap.put("workorder-all", getDefaultViewColumns());
+		columnMap.put("workorder-planned", getDefaultViewColumns());
+		columnMap.put("workorder-unplanned", getDefaultViewColumns());
 		
 		columnMap.put("alarm-active", getDefaultAlarmColumns());
 		columnMap.put("alarm-cleared", getDefaultAlarmColumns());

@@ -114,6 +114,8 @@ public class ViewFactory {
 		views.put("open", getAllOpenWorkOrders().setOrder(order++));
 		views.put("overdue", getAllOverdueWorkOrders().setOrder(order++));
 		views.put("duetoday", getAllDueTodayWorkOrders().setOrder(order++));
+		views.put("planned", getOpenPlannedWorkOrders().setOrder(order++));
+		views.put("unplanned", getOpenUnPlannedWorkOrders().setOrder(order++));
 		views.put("unassigned", getUnassignedWorkorders().setOrder(order++));
 		views.put("myopen", getMyOpenWorkOrders().setOrder(order++));
 		views.put("myteamopen", getMyTeamOpenWorkOrders().setOrder(order++));
@@ -545,6 +547,54 @@ public class ViewFactory {
 		openTicketsView.setCriteria(criteria);
 	
 		return openTicketsView;
+	}
+	
+	private static FacilioView getOpenPlannedWorkOrders() {
+		FacilioField sourceType = new FacilioField();
+		sourceType.setName("sourceType");
+		sourceType.setColumnName("SOURCE_TYPE");
+		sourceType.setDataType(FieldType.NUMBER);
+		sourceType.setModule(ModuleFactory.getWorkOrdersModule());
+		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition sourceTypeCondition = new Condition();
+		sourceTypeCondition.setField(sourceType);
+		sourceTypeCondition.setOperator(NumberOperators.EQUALS);
+		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(sourceTypeCondition);
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		
+		FacilioView overdueView = new FacilioView();
+		overdueView.setName("planned");
+		overdueView.setDisplayName("Planned");
+		overdueView.setCriteria(criteria);
+		return overdueView;
+	}
+	
+	private static FacilioView getOpenUnPlannedWorkOrders() {
+		FacilioField sourceType = new FacilioField();
+		sourceType.setName("sourceType");
+		sourceType.setColumnName("SOURCE_TYPE");
+		sourceType.setDataType(FieldType.NUMBER);
+		sourceType.setModule(ModuleFactory.getWorkOrdersModule());
+		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
+		
+		Condition sourceTypeCondition = new Condition();
+		sourceTypeCondition.setField(sourceType);
+		sourceTypeCondition.setOperator(NumberOperators.NOT_EQUALS);
+		sourceTypeCondition.setValue(String.valueOf(TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal()));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(sourceTypeCondition);
+		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		
+		FacilioView overdueView = new FacilioView();
+		overdueView.setName("unplanned");
+		overdueView.setDisplayName("Un Planned");
+		overdueView.setCriteria(criteria);
+		return overdueView;
 	}
 	
 	private static FacilioView getAllOverdueWorkOrders() {
