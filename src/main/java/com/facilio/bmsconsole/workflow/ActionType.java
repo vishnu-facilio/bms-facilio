@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -169,16 +170,18 @@ public enum ActionType {
 				try {
 					List<Long> reciepents = null;
 					String toIds = (String) obj.get("to");
-					String[] toList = toIds.trim().split(",");
-					for ( String toId : toList) {
-						reciepents.add(Long.valueOf(toId));
+					if (toIds != null) {
+						String[] toList = toIds.trim().split(",");
+						for ( String toId : toList) {
+							reciepents.add(Long.valueOf(toId));
+						}
+						
+						NotificationContext notification = new NotificationContext();
+						notification.setInfo((String) obj.get("message"));
+						int type = (int) obj.get("activityType");
+						notification.setNotificationType(ActivityType.valueOf(type));
+						NotificationAPI.sendNotification(reciepents, notification);
 					}
-					
-					NotificationContext notification = new NotificationContext();
-					notification.setInfo((String) obj.get("message"));
-					int type = (int) obj.get("activityType");
-					notification.setNotificationType(ActivityType.valueOf(type));
-					NotificationAPI.sendNotification(reciepents, notification);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -219,22 +222,26 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			try {
 				if (obj != null) {
-					List<String> mobileInstanceIds = getMobileInstanceIDs(AccountUtil.getCurrentOrg().getId());
+					String ids = (String) obj.get("id");
 					
-					if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
-						for(String mobileInstanceId : mobileInstanceIds) {
-							if(mobileInstanceId != null) {
-//								content.put("to", "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-								obj.put("to", mobileInstanceId);
-								Map<String, String> headers = new HashMap<>();
-								headers.put("Content-Type","application/json");
-								headers.put("Authorization","key=AAAA7I5dN-o:APA91bE70uJ4z21h9jh3A3TfExeHmtsESVYR0W79qbgcW8iyJZ1hKFzTkqV9xXJU-KPqpO1TstbqufHBp8tTCJRjiRAHP2ghNN49T6W0e13pYvtLd_qfPn_dhiKkTpE_BrpVg0WrxxVG");
-								
-								String url = "https://fcm.googleapis.com/fcm/send";
-								
-								AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
-								System.out.println("Push notification sent");
-								System.out.println(obj.toJSONString());
+					if(ids != null) {
+						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
+						
+						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
+							for(String mobileInstanceId : mobileInstanceIds) {
+								if(mobileInstanceId != null) {
+	//								content.put("to", "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
+									obj.put("to", mobileInstanceId);
+									Map<String, String> headers = new HashMap<>();
+									headers.put("Content-Type","application/json");
+									headers.put("Authorization","key=AAAA7I5dN-o:APA91bE70uJ4z21h9jh3A3TfExeHmtsESVYR0W79qbgcW8iyJZ1hKFzTkqV9xXJU-KPqpO1TstbqufHBp8tTCJRjiRAHP2ghNN49T6W0e13pYvtLd_qfPn_dhiKkTpE_BrpVg0WrxxVG");
+									
+									String url = "https://fcm.googleapis.com/fcm/send";
+									
+									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
+									System.out.println("Push notification sent");
+									System.out.println(obj.toJSONString());
+								}
 							}
 						}
 					}
@@ -245,7 +252,7 @@ public enum ActionType {
 			}
 		}
 		
-		private List<String> getMobileInstanceIDs(long orgId) throws Exception {
+		private List<String> getMobileInstanceIDs(String idList) throws Exception {
 			List<String> mobileInstanceIds = new ArrayList<String>();
 			List<FacilioField> fields = new ArrayList<>();
 			
@@ -272,7 +279,8 @@ public enum ActionType {
 															.on("Users.USERID = ORG_Users.USERID")
 															.innerJoin("User_Mobile_Setting")
 															.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
-															.andCustomWhere("ORG_Users.ORGID = ? and ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1", orgId)
+															.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
+															.andCustomWhere("ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1")
 															.orderBy("USER_MOBILE_SETTING_ID");
 			
 			List<Map<String, Object>> props = selectBuilder.get();

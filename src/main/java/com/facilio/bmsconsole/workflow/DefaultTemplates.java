@@ -176,6 +176,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${user.id:-}");
 				break;
 			case 9:
 				data = new JSONObject();
@@ -186,6 +187,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${user.id:-}");
 				break;
 			case 10:
 				json.put("sender", "support@${org.orgDomain}.facilio.com");
@@ -211,13 +213,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 15:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
-				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("URL", "${workorderrequest.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease follow ${workorderrequest.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				data.put("title", "New Workrequest");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 14:
 				json.put("to", "user id");
@@ -238,13 +241,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 19:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
-				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("URL", "${workorderrequest.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease follow ${workorderrequest.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				data.put("title", "Approve Workrequest");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 18:
 				break;
@@ -260,13 +264,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 23:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("URL", "${workorder.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				data.put("title", "Reject Workrequest");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 			case 22:
 				break;
@@ -289,6 +294,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 26:
 				break;
@@ -311,6 +317,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 30:
 				break;
@@ -333,18 +340,20 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 34:
 				break;
 			case 37:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("URL", "${workorderrequest.mobileUrl}");
 				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				data.put("title", "Assign Workorder");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 36:
 				break;
@@ -360,13 +369,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 41:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
-				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				data.put("URL", "${workorderrequest.mobileUrl}");
+				data.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease follow ${workorderrequest.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				data.put("title", "Assign Workorder");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorderrequest.assignedTo.id:-}");
 				break;
 			case 40:
 				break;
@@ -376,13 +386,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 44:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("URL", "${workorder.mobileUrl}");
 				data.put("body", "A new comment has been added in your WorkOrder.");
 				data.put("title", "New Comment");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 			case 43:
 				break;
@@ -398,13 +409,14 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 48:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("URL", "${workorder.mobileUrl}");
 				data.put("body", "A new Task has been added in your WorkOrder.");
 				data.put("title", "New Task added");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 			case 47:
 				break;
@@ -420,13 +432,15 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 52:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("id", "${workorder.assignedTo.id:-}");
+				data.put("URL", "${workorder.mobileUrl}");
 				data.put("body", "A Task has been Updated in your WorkOrder.");
 				data.put("title", "New Task added");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 			case 51:
 				break;
@@ -442,13 +456,15 @@ public enum DefaultTemplates implements ActionTemplate {
 				break;
 			case 56:
 				data = new JSONObject();
-				data.put("URL", "${alarm.mobileUrl}");
+				data.put("id", "${task.assignedTo.id:-}");
+				data.put("URL", "${task.mobileUrl}");
 				data.put("body", "A Task has been closed in your WorkOrder.");
 				data.put("title", "Task closed");
 				data.put("content_available", true);
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${task.assignedTo.id:-}");
 				break;
 			case 55:
 				break;
@@ -467,6 +483,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("priority", "high");
 				data.put("sound", "default");
 				json.put("data", data);
+				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 				
 		}
