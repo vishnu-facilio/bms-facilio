@@ -115,10 +115,9 @@ body {
 <div class="login-page">
   <div class="form">
   
-    <form class="register-form">
-    		<input type="text" id="emailaddress" placeholder="emailaddress"/>
-      <input hidden type="text" id="username" placeholder="name"/>
-      <input type="password" id="password" placeholder="password"/>
+    <form class="register-form" method="POST"  id="signupform">
+    		<input type="text" id="emailaddress" placeholder="emailaddress" name="username"/>
+      <input type="password" id="password" placeholder="password" name="password"/>
       <input type="password" id="confirmPassword" placeholder="confirmPassword"/>    
       <button onclick="signup()">create</button>
       <p class="message">Already registered? <a href="#">Sign In</a></p>
@@ -148,11 +147,11 @@ function signup()
 		}
 	
 	
-	var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
+	//var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
 	$.ajax({
 			  type: "POST",
 			  url: 'apisignup',
-			  data: jsonStr,
+			  data: $("#signupform").serialize(),
 			  success: handlelogin,
 			});
 }

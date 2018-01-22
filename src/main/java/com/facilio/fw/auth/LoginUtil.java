@@ -44,6 +44,11 @@ public class LoginUtil {
 			if (orgName == null || orgName.equals("")) {
 				orgName = orgDomain;
 			}
+			if(cognitoUser.isFacilioauth())
+			{
+				orgDomain =  cognitoUser.getEmail().replace('@', '_');
+				orgName = orgDomain;
+			}
 			
 			org = AccountUtil.getOrgBean().getOrg(orgDomain);
 			if (org == null) {

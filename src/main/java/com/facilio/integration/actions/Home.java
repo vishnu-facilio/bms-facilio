@@ -154,6 +154,10 @@ Pragma: no-cache
 	
 	
 	public String getEmailaddress() {
+		if(emailaddress==null)
+		{
+			return username;
+		}
 		return emailaddress;
 	}
 	public void setEmailaddress(String emailaddress) {
@@ -161,10 +165,10 @@ Pragma: no-cache
 	}
 	public String signupUser() throws Exception
 	{
-		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+emailaddress );
+		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() );
 		String encryptedPass = cryptWithMD5(password);
 		
-		return AddNewUserDB(username,encryptedPass,emailaddress);
+		return AddNewUserDB(username,encryptedPass,getEmailaddress());
 		
 	//	return SUCCESS;
 	}
