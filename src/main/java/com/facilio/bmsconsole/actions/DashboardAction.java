@@ -801,7 +801,7 @@ public class DashboardAction extends ActionSupport {
 					.on(ModuleFactory.getAlarmVsEnergyData().getTableName()+".ALARM_ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
 					.innerJoin(ModuleFactory.getTicketsModule().getTableName())
 					.on(ModuleFactory.getTicketsModule().getTableName()+".ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
-					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".ASSET_ID in ("+energyMeterValue.substring(0, energyMeterValue.length()-1)+")")
+					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".ASSET_ID in ("+energyMeterValue+")")
 					.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.select(alarmVsEnergyFields);
 			
