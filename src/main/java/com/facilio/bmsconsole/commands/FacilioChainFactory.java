@@ -1378,6 +1378,27 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getSpaceCategoriesChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetSpaceCategoriesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addSpaceCategoryChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddSpaceCategoryCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain editSpaceCategoryChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new EditSpaceCategoryCommand());
+		addCleanUpCommand(c);
+		return c;		
+	}
+	
 	public static Chain getAddReadingChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new CreateReadingModuleCommand());

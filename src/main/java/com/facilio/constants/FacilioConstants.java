@@ -329,6 +329,8 @@ public class FacilioConstants {
 		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
 		
+		public static final String SPACECATEGORY = "SPACECATEGORY";
+		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
