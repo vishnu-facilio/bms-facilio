@@ -56,7 +56,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								if (!task.getInputValues().stream().allMatch(input -> options.contains(input))) {
 									throw new IllegalArgumentException("Invalid input value");
 								}
-								task.setInputValue(StringUtils.join(task.getInputValues()));
+								task.setInputValue(StringUtils.join(task.getInputValues(), ","));
 								break;
 							case TEXT:
 								break;
