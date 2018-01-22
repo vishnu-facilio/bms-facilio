@@ -412,17 +412,9 @@ public class DashboardAction extends ActionSupport {
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
 		if ("WorkOrders".equals(module.getTableName())){
-	           builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
-	       }
+			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
+		}
 		
-//		if(userFilterValues == null) {
-//			userFilterValues = new JSONObject();
-//			userFilterValues.put("1", "21");
-//			JSONArray secVall = new JSONArray();
-//			secVall.add("1512086400000");
-//			secVall.add("1514764799000");
-//			userFilterValues.put("2", secVall);
-//		}
 		
 		if(userFilterValues != null && reportContext.getReportUserFilters() != null) {
 			for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
@@ -482,8 +474,9 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
+		Condition dateCondition = null;
 		if (reportContext.getDateFilter() != null) {
-			Condition dateCondition = new Condition();
+			dateCondition = new Condition();
 			dateCondition.setField(reportContext.getDateFilter().getField());
 			
 			if (this.dateFilter != null) {
@@ -511,6 +504,7 @@ public class DashboardAction extends ActionSupport {
 		JSONObject buildingVsMeter = new JSONObject();
 		if (reportContext.getEnergyMeter() != null) {
 			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
+				energyMeterValue = reportContext.getEnergyMeter().getSubMeterId() + "";
 				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
 			}
 			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
@@ -525,6 +519,7 @@ public class DashboardAction extends ActionSupport {
 						}
 						
 						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
 						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 					}
 					
@@ -553,6 +548,7 @@ public class DashboardAction extends ActionSupport {
 						}
 						
 						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
 						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 					}
 				}
@@ -568,6 +564,7 @@ public class DashboardAction extends ActionSupport {
 					}
 					
 					String meterIdStr = StringUtils.join(meterIds, ",");
+					energyMeterValue = meterIdStr;
 					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 				}
 				
@@ -757,7 +754,6 @@ public class DashboardAction extends ActionSupport {
 			label.setDataType(FieldType.NUMBER);
 			label.setColumnName("MODIFIED_TIME");
 			label.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
-			
 			alarmVsEnergyFields.add(label);
 			
 			FacilioField value = new FacilioField();
@@ -765,23 +761,27 @@ public class DashboardAction extends ActionSupport {
 			value.setDataType(FieldType.DECIMAL);
 			value.setColumnName("VALUE");
 			value.setModule(ModuleFactory.getAlarmVsEnergyData());
-			
 			alarmVsEnergyFields.add(value);
 			
 			FacilioField severity = new FacilioField();
 			severity.setName("severity");
 			severity.setDataType(FieldType.NUMBER);
 			severity.setColumnName("SEVERITY");
-			severity.setModule(ModuleFactory.getAlarmsModule());
-			
+			severity.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
 			alarmVsEnergyFields.add(severity);
+			
+			FacilioField subject = new FacilioField();
+			subject.setName("subject");
+			subject.setDataType(FieldType.STRING);
+			subject.setColumnName("SUBJECT");
+			subject.setModule(ModuleFactory.getTicketsModule()); ////alarm vs energy data
+			alarmVsEnergyFields.add(subject);
 			
 			FacilioField description = new FacilioField();
 			description.setName("description");
 			description.setDataType(FieldType.STRING);
 			description.setColumnName("DESCRIPTION");
 			description.setModule(ModuleFactory.getTicketsModule());
-			
 			alarmVsEnergyFields.add(description);
 			
 			FacilioField alarmId = new FacilioField();
@@ -789,9 +789,11 @@ public class DashboardAction extends ActionSupport {
 			alarmId.setDataType(FieldType.NUMBER);
 			alarmId.setColumnName("ALARM_ID");
 			alarmId.setModule(ModuleFactory.getAlarmVsEnergyData());
-			
 			alarmVsEnergyFields.add(alarmId);
 			
+			if (energyMeterValue.endsWith(",")) {
+				energyMeterValue = energyMeterValue.substring(0, energyMeterValue.length()-1);
+			}
 			
 			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getAlarmVsEnergyData().getTableName())
@@ -802,6 +804,18 @@ public class DashboardAction extends ActionSupport {
 					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".ASSET_ID in ("+energyMeterValue.substring(0, energyMeterValue.length()-1)+")")
 					.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.select(alarmVsEnergyFields);
+			
+			if (dateCondition != null) {
+				FacilioField alarmCreatedTime = new FacilioField();
+				alarmCreatedTime.setName("createdTime");
+				alarmCreatedTime.setDataType(FieldType.NUMBER);
+				alarmCreatedTime.setColumnName("CREATED_TIME");
+				alarmCreatedTime.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
+				
+				dateCondition.setField(alarmCreatedTime);
+				
+				builder1.andCondition(dateCondition);
+			}
 			
 			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
 			setRelatedAlarms(alarmVsEnergyProps);
