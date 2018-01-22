@@ -371,7 +371,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioField xAxisField = reportXAxisField.getField();
 		
 		boolean isEnergyDataWithTimeFrame = false;
-		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME) && module.getName().equals("energydata")) {
+		if(xAxisField.getColumnName().equals("TTIME") && module.getName().equals("energydata")) {
 			isEnergyDataWithTimeFrame = true;
 		}
 		
