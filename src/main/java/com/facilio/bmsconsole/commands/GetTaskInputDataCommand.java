@@ -35,6 +35,9 @@ public class GetTaskInputDataCommand implements Command {
 						if(task.getInputValue() != null && !task.getInputValue().isEmpty()) {
 							task.setInputValues(Arrays.asList(task.getInputValue().split("\\s*,\\s*")));
 						}
+						else {
+							task.setInputValues(Collections.emptyList());
+						}
 						break;
 					case READING:
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
