@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,6 +13,7 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
 
@@ -35,7 +39,7 @@ public class FacilioChainFactory {
 
 	
 	public static Chain getPickListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new LoadMainFieldCommand());
 		c.addCommand(new GetPickListCommand());
 	//	addCleanUpCommand(c);
@@ -958,7 +962,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAssetListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
@@ -971,7 +975,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getAssetDetailsChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
@@ -1008,7 +1012,7 @@ public class FacilioChainFactory {
 	}
 		
 	public static Chain getEnergyMeterListChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadViewCommand());
@@ -1188,7 +1192,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getPreventiveMaintenanceSummaryChain() {
-		Chain c = new TransactionChain();
+		Chain c = new ChainBase();
 		c.addCommand(new PreventiveMaintenanceSummaryCommand());
 		c.addCommand(new GetPMWorkOrders());
 		addCleanUpCommand(c);
@@ -1492,12 +1496,41 @@ public class FacilioChainFactory {
 
 class TransactionChain extends ChainBase
 {
+	private  final static boolean  ENABLE_JTA = false;
 	public boolean execute(Context context)
             throws Exception
             {
-		
-			boolean status = super.execute(context);
-			
+		boolean istransaction = false;
+		try {
+			if (ENABLE_JTA) {
+				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+				Transaction currenttrans = tm.getTransaction();
+				if (currenttrans == null) {
+					tm.begin();
+					istransaction = true;
+				} else {
+					//LOGGER.info("joining parent transaction for " + method.getName());
+				} 
+			}
+				boolean status = super.execute(context);
+				if (ENABLE_JTA) {
+					if (istransaction) {
+					//	LOGGER.info("commit transaction for " + method.getName());
+						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+					} 
+				}
+				
 return status;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if (ENABLE_JTA) {
+				if (istransaction) {
+					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+					//LOGGER.info("rollback transaction for " + method.getName());
+				} 
+			}
+			throw e;
+		}
             }
 }
