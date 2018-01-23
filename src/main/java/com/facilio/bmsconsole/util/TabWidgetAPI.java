@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import com.facilio.bmsconsole.context.TabWidgetContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class TabWidgetAPI {
 	

@@ -23,7 +23,6 @@ import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.ControllerSettingsContext;
-import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.events.constants.EventConstants;

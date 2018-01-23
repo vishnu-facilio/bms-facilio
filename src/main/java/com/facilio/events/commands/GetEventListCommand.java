@@ -1,6 +1,5 @@
 package com.facilio.events.commands;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,15 +9,14 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.events.context.EventContext;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class GetEventListCommand implements Command {
 

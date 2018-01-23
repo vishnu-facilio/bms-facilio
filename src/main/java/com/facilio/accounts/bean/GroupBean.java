@@ -2,8 +2,6 @@ package com.facilio.accounts.bean;
 
 import java.util.List;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;

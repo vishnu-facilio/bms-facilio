@@ -1,15 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 

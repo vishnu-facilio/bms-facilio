@@ -34,7 +34,6 @@ import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 

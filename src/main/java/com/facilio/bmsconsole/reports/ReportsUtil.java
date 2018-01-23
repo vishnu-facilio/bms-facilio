@@ -39,7 +39,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.ExpressionEvaluator;
-import com.google.gson.JsonArray;
 
 public class ReportsUtil 
 {

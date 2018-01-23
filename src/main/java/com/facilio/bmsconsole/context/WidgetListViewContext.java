@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class WidgetListViewContext extends DashboardWidgetContext {

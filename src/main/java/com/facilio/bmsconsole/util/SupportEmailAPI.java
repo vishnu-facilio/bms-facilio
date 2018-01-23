@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.beanutils.BeanUtils;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
@@ -13,7 +10,6 @@ import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class SupportEmailAPI {
 	public static final String TABLE_NAME = "SupportEmails";

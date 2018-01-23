@@ -9,7 +9,6 @@ import com.facilio.urjanet.UrjanetConnection;
 import com.facilio.urjanet.contants.UrjanetConstants;
 import com.facilio.urjanet.context.UtilityProviderCredentials;
 import com.facilio.urjanet.entity.Credential;
-import com.google.gson.JsonObject;
 
 
 public class UrjanetLoginCommand  implements Command 

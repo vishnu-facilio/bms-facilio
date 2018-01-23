@@ -3,7 +3,6 @@ package com.facilio.fw;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 

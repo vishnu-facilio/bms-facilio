@@ -11,7 +11,6 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public class FacilioView {
 	private long orgId = -1;

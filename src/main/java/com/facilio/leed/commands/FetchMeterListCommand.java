@@ -3,6 +3,7 @@ package com.facilio.leed.commands;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
@@ -11,7 +12,6 @@ import org.json.simple.JSONObject;
 import com.facilio.leed.constants.LeedConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.FuelContext;
-import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.context.LeedEnergyMeterContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;

@@ -1,44 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.*;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fs.FileInfo;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.kinesis.KinesisProcessor;
-import com.facilio.kinesis.StreamProcessor;
-
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.device.Device;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.constants.FacilioConstants.Reports;
-import com.facilio.constants.FacilioConstants.Reports.Energy;
-import com.facilio.tasker.FacilioTimer;
-import com.google.gson.Gson;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.util.ValueStack;
 
 public class DeviceAction extends ActionSupport
 {

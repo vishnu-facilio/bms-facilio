@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

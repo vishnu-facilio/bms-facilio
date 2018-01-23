@@ -1,14 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-
 import org.apache.commons.chain.impl.ContextBase;
-
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class FacilioContext extends ContextBase {
 //	private Connection conn = null;

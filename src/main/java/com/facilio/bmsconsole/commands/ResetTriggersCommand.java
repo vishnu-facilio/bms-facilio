@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
-import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
 
 public class ResetTriggersCommand implements Command {

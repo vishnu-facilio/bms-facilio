@@ -3,11 +3,9 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -26,8 +24,6 @@ import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-
-import freemarker.core.TemplateObject;
 
 public class NotificationAction extends ActionSupport {
 	

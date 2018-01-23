@@ -3,7 +3,6 @@ package com.facilio.urjanet.contants;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
-import com.facilio.leed.commands.FetchLeedListCommand;
 import com.facilio.urjanet.command.UrjanetLoginCommand;
 
 public class UrjanetConstants {
