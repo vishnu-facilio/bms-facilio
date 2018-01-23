@@ -42,6 +42,7 @@ public class GetSpaceCategoriesCommand implements Command {
 			context.put(FacilioConstants.ContextNames.SPACECATEGORIESLIST, spaceCategories);
 		}
 		catch(SQLException | RuntimeException e) {
+			e.printStackTrace();
 			throw e;
 		}
 		finally {

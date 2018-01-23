@@ -58,5 +58,15 @@ public class SpaceCategoryAction  extends ActionSupport{
 		
 		return SUCCESS;
 	}
+	
+	public String deleteSpaceCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SPACECATEGORY, getSpaceCategory());
+		Chain deleteSpaceCategoryChain = FacilioChainFactory.deleteSpaceCategoryChain();
+		deleteSpaceCategoryChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 
 }
