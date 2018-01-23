@@ -4,9 +4,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.fw.BeanFactory;
 
 public class FormulaContext extends ModuleBaseWithCustomFields {
 
@@ -34,6 +40,32 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 	}
 	public void setCriteriaId(Long criteriaId) {
 		this.criteriaId = criteriaId;
+	}
+	
+	Criteria criteria;
+	public Criteria getCriteria() throws Exception {
+		if(criteria != null) {
+			return criteria;
+		}
+		else {
+			if(criteriaId == null) {
+				return null;
+			}
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
+		}
+		return criteria;
+	}
+	
+	public FacilioModule getModule() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return modBean.getModule(this.getModuleId());
+	}
+	
+	public FacilioField getSelectField() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField facilioField = getAggregateOperator().getSelectField(modBean.getField(this.getSelectFieldId()));
+		facilioField.setName("formulaValue");
+		return facilioField;
 	}
 	
 	public interface AggregateOperator {
