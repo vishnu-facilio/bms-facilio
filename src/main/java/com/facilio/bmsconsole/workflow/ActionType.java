@@ -195,14 +195,14 @@ public enum ActionType {
 
 			if(obj != null) {
 				try {
-					if(obj.containsKey("type")) {
-						obj.remove("type");
+					if(obj.containsKey("alarmType")) {
+						obj.remove("alarmType");
 					}
 					if(obj.containsKey("subject")) {
 						String subject = (String) obj.get("subject");
 						obj.put("message", subject);
 					}
-					obj.put("type", 5);
+					obj.put("alarmType", 5);
 					FacilioContext context1 = new FacilioContext();
 					context1.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();

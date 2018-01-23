@@ -72,6 +72,7 @@ public class AddActionsForWorkflowRule implements Command {
 				}
 				JSONTemplate alarmTemplate = new JSONTemplate();
 				alarmTemplate.setContent(content.toString());
+				alarmTemplate.setType(Type.ALARM);
 				action.setTemplate(alarmTemplate);
 			}
 			
