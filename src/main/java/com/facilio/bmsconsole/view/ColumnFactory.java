@@ -73,6 +73,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("alarmType", "Category"));
 		columns.add(new ViewField("node", "Entity"));
 		columns.add(new ViewField("modifiedTime", "Time Since Report"));
+		columns.add(new ViewField("source", "Source"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
 		
 		return columns;
