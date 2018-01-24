@@ -150,8 +150,12 @@ public class ModuleAction extends ActionSupport {
 				}
 				workorderFields.add(field);
 			}
+			setFields(workorderFields);
+		}else
+		{
+			setFields(fields);
 		}
-		setFields(workorderFields);
+		
 		return SUCCESS;
 	}
 	

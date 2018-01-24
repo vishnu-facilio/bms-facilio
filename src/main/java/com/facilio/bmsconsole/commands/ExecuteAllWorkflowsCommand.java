@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -70,7 +71,13 @@ public class ExecuteAllWorkflowsCommand implements Command
 							boolean flag = true;
 							if(criteria != null) {
 								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE || workflowRule.getRuleTypeEnum() == RuleType.PM_READING_RULE) {
-									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
+									if(criteria.getFormulaId() != null) {
+										Object record1 = FormulaAPI.getFormulaValue(criteria.getFormulaId());
+										flag = criteria.computePredicate().evaluate(record1);
+									}
+									else {
+										flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
+									}
 									if(flag) {
 										updateLastValueForReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);
 									}

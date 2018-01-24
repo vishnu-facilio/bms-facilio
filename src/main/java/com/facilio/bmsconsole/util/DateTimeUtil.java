@@ -23,7 +23,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class DateTimeUtil 
 {
-	
+	public static Long ONE_HOUR_MILLIS_VALUE = 3600000l; 
 	private static ZoneId getZoneId()
 	{
 		//TODO TimeZone related changes to be done.
@@ -442,6 +442,9 @@ public class DateTimeUtil
 	
 	public static String getFormattedTime(long time) {
 		return DateTimeUtil.getZonedDateTime(time).format(FacilioConstants.READABLE_DATE_FORMAT);
+	}
+	public static long getLastNHour(long currentTime,int hour) {
+		return currentTime - (hour * ONE_HOUR_MILLIS_VALUE);
 	}
 }
 

@@ -842,6 +842,43 @@ public enum DateOperators implements Operator<String> {
 			}
 			return null;
 		}
+	},
+	LAST_N_HOURS(42, "Last N Hours") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				Long currentTime = DateTimeUtil.getCurrenTime();
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(currentTime);
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							Long currentTime = DateTimeUtil.getCurrenTime();
+							long currentVal = (long) object;
+							return DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)) <= currentVal && currentVal < currentTime;
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
 	}
 	;
 	
