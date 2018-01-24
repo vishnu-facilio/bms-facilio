@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
@@ -403,6 +404,19 @@ public class DashboardAction extends ActionSupport {
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+			if (this.dateFilter != null) {
+				int oprId = Integer.parseInt(this.dateFilter);
+				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+				}
+				if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+				}
+				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+				}
+				reportContext.setxAxisaggregateFunction(xAggregateOpperator.getValue());
+			}
 			xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 		}
 		if(reportContext.getY1Axis() != null) {
@@ -765,6 +779,13 @@ public class DashboardAction extends ActionSupport {
 			
 			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
 			
+			FacilioField subject = new FacilioField();
+			subject.setName("subject");
+			subject.setDataType(FieldType.STRING);
+			subject.setColumnName("SUBJECT");
+			subject.setModule(ModuleFactory.getTicketsModule()); ////alarm vs energy data
+			alarmVsEnergyFields.add(subject);
+			
 			FacilioField modTime = new FacilioField();
 			modTime.setName("modifiedTime");
 			modTime.setDataType(FieldType.NUMBER);
@@ -862,13 +883,15 @@ public class DashboardAction extends ActionSupport {
 		Map<Object ,JSONArray> alarmProps= new HashMap<Object,JSONArray>();
 		for(Map<String,Object> mappingProp: alarmVsEnergyProps) {
 
+			String subject = (String) mappingProp.get("subject");
 			Long modifiedTime=(Long)mappingProp.get("modifiedTime");
 			Long id= (Long)mappingProp.get("alarmid");
 			Long alarmSerialNumber=(Long)mappingProp.get("serialNumber");
-			Integer alarmSeverity=(Integer)mappingProp.get("severity");
+			Long alarmSeverity=(Long)mappingProp.get("severity");
 
 			JSONObject props = new JSONObject();
 			props.put("alarmId", id);
+			props.put("subject", subject);
 			props.put("severity", alarmSeverity);
 			props.put("time", modifiedTime);
 			props.put("serialNumber", alarmSerialNumber);
