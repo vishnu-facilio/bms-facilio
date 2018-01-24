@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -15,6 +18,13 @@ public class TimeSeries extends ActionSupport {
 		JSONParser parser = new JSONParser();
 		JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
 		TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);
+		return SUCCESS;
+	}
+	
+	public String migrateData() throws Exception{
+		
+		List<Map<String, Object>> result=TimeSeriesAPI.fetchUnmodeledData(getDeviceList());
+		TimeSeriesAPI.migrateUnmodeledData(result);
 		return SUCCESS;
 	}
 	
@@ -36,6 +46,17 @@ public class TimeSeries extends ActionSupport {
 	public String getDeviceData() {
 		
 		return deviceData;
+	}
+	
+	private String deviceList = null;
+	public void setDeviceList(String deviceList) 
+	{
+		this.deviceList = deviceList;
+	}
+	
+	public String getDeviceList() {
+		
+		return deviceList;
 	}
 	
 	private JSONObject reportData = null;

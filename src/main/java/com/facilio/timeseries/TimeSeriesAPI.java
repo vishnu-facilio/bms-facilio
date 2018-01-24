@@ -12,10 +12,13 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -99,6 +102,7 @@ public class TimeSeriesAPI {
 			}
 		}
 	}
+	
 
 	private static void insertReading(String moduleName, ReadingContext reading) throws Exception {
 
@@ -192,6 +196,87 @@ public class TimeSeriesAPI {
 				.addRecord(value);
 		insertBuilder.save();
 	}
+	
+	
+
+public static List<Map<String, Object>> fetchUnmodeledData(String deviceList) throws Exception {
+	
+	List<Map<String, Object>> result=null;
+	if(deviceList==null) {
+		return result;
+	}
+	List<FacilioField> fields = new ArrayList<>();
+	FacilioField timeFld = ReportsUtil.getField("ttime","TTIME",FieldType.NUMBER);
+	FacilioField deviceFld = ReportsUtil.getField("device","DEVICE_NAME",FieldType.STRING);
+	FacilioField instanceFld = ReportsUtil.getField("instance","INSTANCE_NAME",FieldType.STRING);
+	FacilioField valueFld = ReportsUtil.getField("value","VALUE",FieldType.STRING);
+	
+	
+	fields.add(timeFld);
+	fields.add(deviceFld);
+	fields.add(instanceFld);
+	fields.add(valueFld);
+	
+	 long orgId = AccountUtil.getCurrentOrg().getOrgId();
+     GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Unmodeled_Instance")
+				.innerJoin("Unmodeled_Data")
+				.on("Unmodeled_Instance.ID=Unmodeled_Data.INSTANCE_ID")
+             .andCustomWhere("ORGID=?",orgId)
+				.andCondition(CriteriaAPI.getCondition("DEVICE_NAME","DEVICE_NAME", deviceList, NumberOperators.EQUALS))
+				.orderBy("TTIME ASC");
+		try {
+			result = builder.get();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		return result;
+}
+
+@SuppressWarnings("unchecked")
+public static void migrateUnmodeledData(List<Map<String, Object>> result) throws Exception  {
+	
+
+	if(result==null || result.isEmpty()) {
+		return;
+	}
+	Map<Long,Map<String,JSONObject>> unmodeledDataMap = new HashMap<Long,Map<String,JSONObject>>();
+		for(Map<String,Object> rowData: result)
+		{
+			Long timeStamp=(Long)	rowData.get("ttime");
+			String deviceName=(String) rowData.get("device");
+			String instanceName=(String) rowData.get("instance");
+			String value=(String) rowData.get("value");
+			Map<String,JSONObject> deviceData=  unmodeledDataMap.get(timeStamp);
+			
+			if(deviceData==null) {
+				 deviceData = new HashMap<String,JSONObject>();
+			}
+			JSONObject instanceMapping= deviceData.get(deviceName);
+			if(instanceMapping==null) {
+				instanceMapping = new JSONObject();
+			}
+			instanceMapping.put(instanceName, value);
+			deviceData.put(deviceName, instanceMapping);
+			unmodeledDataMap.put(timeStamp,deviceData);
+		}
+		
+	
+	for(Map.Entry<Long,Map<String,JSONObject>> unmodeledData: unmodeledDataMap.entrySet()) {
+		
+		long timeStamp=unmodeledData.getKey();
+		Map<String,JSONObject> deviceDataMap =unmodeledData.getValue();
+		for(Map.Entry<String, JSONObject> deviceData :deviceDataMap.entrySet()) {
+			
+			String deviceName=deviceData.getKey();
+			JSONObject instanceData=deviceData.getValue();
+			TimeSeriesAPI.insertModeledReading(timeStamp, deviceName, instanceData);
+		}
+	}
+	
+}
 
 
 	private static List<FacilioField> getInstanceMappingFields() {
