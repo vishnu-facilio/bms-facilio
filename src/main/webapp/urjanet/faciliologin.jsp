@@ -119,7 +119,7 @@ body {
     		<input type="text" id="emailaddress" placeholder="emailaddress" name="username"/>
       <input type="password" id="password" placeholder="password" name="password"/>
       <input type="password" id="confirmPassword" placeholder="confirmPassword"/>    
-      <button onclick="signup()">create</button>
+      <button onclick="signup(this.form)">create</button>
       <p class="message">Already registered? <a href="#">Sign In</a></p>
     </form>
         
@@ -136,7 +136,7 @@ body {
 </html>
 
 <script>
-function signup()
+function signup(frm)
 {
 	var pass = 	document.getElementById("password").value;
 	var confirmpass = document.getElementById("confirmPassword").value;
@@ -145,15 +145,8 @@ function signup()
 			alert("Password not matched with ConfirmPassword");
 			return false;
 		}
-	
-	
 	//var jsonStr = {"username" : document.getElementById("emailaddress").value, "password" : document.getElementById("password").value,"emailaddress" : document.getElementById("emailaddress").value };
-	$.ajax({
-			  type: "POST",
-			  url: 'apisignup',
-			  data: $("#signupform").serialize(),
-			  success: handlelogin,
-			});
+	frm.submit();
 }
 </script>
 
@@ -163,6 +156,16 @@ function signup()
     $('.message a').click(function(){
     	   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
     	});
+    
+    $( "#signupform" ).submit(function( event ) {
+   	$.ajax({
+			  type: "POST",
+			  url: 'apisignup',
+			  data: $("#signupform").serialize(),
+			  success: handlelogin,
+			});
+   	  event.preventDefault();
+   	});  
     
     $( "#target" ).submit(function( event ) {
     	 // alert( "Handler for .submit() called." );
