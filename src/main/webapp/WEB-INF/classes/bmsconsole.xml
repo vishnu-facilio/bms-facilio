@@ -1151,9 +1151,25 @@
 				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
+		
+		<action name="getspacedata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getSpaceReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
+			</result>
+		</action>
 
 		<action name="getassetlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAssetLatestReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
+			</result>
+		</action>
+		
+		<action name="getassetdata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAssetReadingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingAndValue.*</param>

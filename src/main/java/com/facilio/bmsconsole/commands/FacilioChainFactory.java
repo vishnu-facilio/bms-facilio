@@ -1456,6 +1456,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetReadingValuesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetLatestCategoryReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddPhotosChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

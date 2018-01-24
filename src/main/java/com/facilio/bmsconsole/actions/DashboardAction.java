@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
@@ -154,6 +155,15 @@ public class DashboardAction extends ActionSupport {
 	
 	public void setDateFilter(String dateFilter) {
 		this.dateFilter = dateFilter;
+	}
+	
+	ReportEnergyMeterContext energyMeterFilter;
+	public ReportEnergyMeterContext getEnergyMeterFilter() {
+		return energyMeterFilter;
+	}
+	
+	public void setEnergyMeterFilter(ReportEnergyMeterContext energyMeterFilter) {
+		this.energyMeterFilter = energyMeterFilter;
 	}
 	
 	String period;
@@ -505,6 +515,9 @@ public class DashboardAction extends ActionSupport {
 			builder.andCondition(dateCondition);
 		}
 		JSONObject buildingVsMeter = new JSONObject();
+		if (getEnergyMeterFilter() != null) {
+			reportContext.setEnergyMeter(getEnergyMeterFilter());
+		}
 		if (reportContext.getEnergyMeter() != null) {
 			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
 				energyMeterValue = reportContext.getEnergyMeter().getSubMeterId() + "";

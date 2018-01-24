@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -207,6 +208,38 @@ public class ReadingAction extends ActionSupport {
 		readingAndValue = new JSONObject();
 		readingAndValue.put("readingData", readingData);
 		readingAndValue.put("readings", readings);
+		return SUCCESS;
+	}
+  	
+  	public String getSpaceReadingData() throws Exception {
+  		return getCategoryReadingData(ModuleFactory.getSpaceCategoryReadingRelModule());
+  	}
+	
+	public String getAssetReadingData() throws Exception {
+  		return getCategoryReadingData(ModuleFactory.getAssetCategoryReadingRelModule());
+  	}
+  	
+  	private String getCategoryReadingData(FacilioModule module) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioModule> moduleList = new ArrayList<>();
+		moduleList.add(modBean.getModule(moduleName));
+		
+		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
+		
+		Chain addCurrentOccupancy = FacilioChainFactory.getGetReadingValuesChain();
+		addCurrentOccupancy.execute(context);
+		
+		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
+		
+		readingAndValue = new JSONObject();
+		readingAndValue.put("readingData", readingData);
 		return SUCCESS;
 	}
   	
