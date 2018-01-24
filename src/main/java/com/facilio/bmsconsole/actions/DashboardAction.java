@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -128,12 +131,12 @@ public class DashboardAction extends ActionSupport {
 	public void setReportData(JSONArray reportData) {
 		this.reportData = reportData;
 	}
-	private List<Map<String, Object>> relatedAlarms;
+	private JSONArray relatedAlarms;
 	
-	public List<Map<String, Object>> getRelatedAlarms() {
+	public JSONArray getRelatedAlarms() {
 		return relatedAlarms;
 	}
-	public void setRelatedAlarms(List<Map<String, Object>> releatedAlarms) {
+	public void setRelatedAlarms(JSONArray releatedAlarms) {
 		this.relatedAlarms = releatedAlarms;
 	}
 	Long reportId;
@@ -749,19 +752,14 @@ public class DashboardAction extends ActionSupport {
 			
 			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
 			
-			FacilioField label = new FacilioField();
-			label.setName("label");
-			label.setDataType(FieldType.NUMBER);
-			label.setColumnName("MODIFIED_TIME");
-			label.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
-			alarmVsEnergyFields.add(label);
+			FacilioField modTime = new FacilioField();
+			modTime.setName("modifiedTime");
+			modTime.setDataType(FieldType.NUMBER);
+			modTime.setColumnName("MODIFIED_TIME");
+			modTime.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
+			alarmVsEnergyFields.add(modTime);
 			
-			FacilioField value = new FacilioField();
-			value.setName("value");
-			value.setDataType(FieldType.DECIMAL);
-			value.setColumnName("VALUE");
-			value.setModule(ModuleFactory.getAlarmVsEnergyData());
-			alarmVsEnergyFields.add(value);
+			
 			
 			FacilioField severity = new FacilioField();
 			severity.setName("severity");
@@ -770,19 +768,14 @@ public class DashboardAction extends ActionSupport {
 			severity.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
 			alarmVsEnergyFields.add(severity);
 			
-			FacilioField subject = new FacilioField();
-			subject.setName("subject");
-			subject.setDataType(FieldType.STRING);
-			subject.setColumnName("SUBJECT");
-			subject.setModule(ModuleFactory.getTicketsModule()); ////alarm vs energy data
-			alarmVsEnergyFields.add(subject);
 			
-			FacilioField description = new FacilioField();
-			description.setName("description");
-			description.setDataType(FieldType.STRING);
-			description.setColumnName("DESCRIPTION");
-			description.setModule(ModuleFactory.getTicketsModule());
-			alarmVsEnergyFields.add(description);
+			
+			FacilioField serialNumber = new FacilioField();
+			serialNumber.setName("serialNumber");
+			serialNumber.setDataType(FieldType.NUMBER);
+			serialNumber.setColumnName("SERIAL_NUMBER");
+			serialNumber.setModule(ModuleFactory.getTicketsModule());
+			alarmVsEnergyFields.add(serialNumber);
 			
 			FacilioField alarmId = new FacilioField();
 			alarmId.setName("alarmid");
@@ -806,21 +799,102 @@ public class DashboardAction extends ActionSupport {
 					.select(alarmVsEnergyFields);
 			
 			if (dateCondition != null) {
-				FacilioField alarmCreatedTime = new FacilioField();
-				alarmCreatedTime.setName("createdTime");
-				alarmCreatedTime.setDataType(FieldType.NUMBER);
-				alarmCreatedTime.setColumnName("CREATED_TIME");
-				alarmCreatedTime.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
-				
-				dateCondition.setField(alarmCreatedTime);
-				
+				dateCondition.setField(modTime);
 				builder1.andCondition(dateCondition);
 			}
 			
 			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
-			setRelatedAlarms(alarmVsEnergyProps);
+			Map<Object ,JSONArray> alarmProps=  getAlarmProps(alarmVsEnergyProps);
+			JSONArray relatedAlarms = getAlarmReturnFormat(alarmProps);
+			setRelatedAlarms(relatedAlarms);
 		}
 		return SUCCESS;
+	}
+	@SuppressWarnings("unchecked")
+	private JSONArray getAlarmReturnFormat(Map<Object, JSONArray> alarmProps) {
+		if(alarmProps==null) {
+			return null;
+		}
+		
+		JSONArray relatedAlarms= new JSONArray();
+		for(Map.Entry<Object, JSONArray> props : alarmProps.entrySet() ) {
+			
+			JSONArray list= props.getValue();
+			JSONObject alarms= (JSONObject)list.get(list.size()-1);
+			Long labelTime = (Long)alarms.get("time");
+			JSONObject record = new JSONObject();
+			record.put("label", labelTime);
+			record.put("value", list);
+			relatedAlarms.add(record);
+		}
+		return relatedAlarms;
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	private Map<Object ,JSONArray> getAlarmProps (List<Map<String, Object>> alarmVsEnergyProps ){
+
+		if(alarmVsEnergyProps==null || alarmVsEnergyProps.isEmpty()) {
+			return null;
+
+		}
+
+		Integer aggregator=reportContext.getxAxisaggregateFunction();
+		int formatter=19;
+		if (aggregator != null) {
+			formatter= AggregateOperator.getAggregateOperator(aggregator).getValue();
+		}
+
+		Map<Object ,JSONArray> alarmProps= new HashMap<Object,JSONArray>();
+		for(Map<String,Object> mappingProp: alarmVsEnergyProps) {
+
+			Long modifiedTime=(Long)mappingProp.get("modifiedTime");
+			Long id= (Long)mappingProp.get("alarmid");
+			Long alarmSerialNumber=(Long)mappingProp.get("serialNumber");
+			Integer alarmSeverity=(Integer)mappingProp.get("severity");
+
+			JSONObject props = new JSONObject();
+			props.put("alarmId", id);
+			props.put("severity", alarmSeverity);
+			props.put("time", modifiedTime);
+			props.put("serialNumber", alarmSerialNumber);
+
+			Object key=getKey(modifiedTime,formatter);
+			JSONArray alarmsList= alarmProps.get(key);
+
+			if(alarmsList==null) {
+				alarmsList= new JSONArray();
+				alarmProps.put(key, alarmsList);
+			}
+			alarmsList.add(props);
+		}
+		return alarmProps;
+	}
+	
+	private Object getKey(Long modifiedTime,int formatter) {
+		
+		Object key=null;
+		ZonedDateTime zdt= DateTimeUtil.getDateTime(modifiedTime);
+		if(formatter==19) {
+			
+			 key= zdt.getHour();
+		}
+		else if (formatter==12 || formatter==13){
+			
+			key=zdt.toLocalDate().toString();
+		}
+		else if(formatter==15 || formatter==10) {
+			key=zdt.getMonth();
+		}
+		else if (formatter==11) {
+			key=zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+		}
+		else if(formatter==17) {
+			key=zdt.getDayOfWeek().getValue();
+			
+		}
+		return key;
 	}
 	
 	private List<FacilioField> getDisplayColumns(String module) throws Exception {
