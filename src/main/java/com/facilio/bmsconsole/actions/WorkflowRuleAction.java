@@ -4,16 +4,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkflowRuleAction extends ActionSupport {
@@ -41,6 +49,41 @@ public class WorkflowRuleAction extends ActionSupport {
 //		
 //		assignedToList = UserAPI.getOrgUsers(OrgInfo.getCurrentOrgInfo().getOrgid(), UserType.USER.getValue());
 		return "newAssignmentRule";
+	}
+	private JSONObject payload;
+	public JSONObject getPayload() {
+		return payload;
+	}
+	public void setPayload(JSONObject payload) {
+		this.payload = payload;
+	}
+	
+	public String runThroughFilters() throws Exception {
+		
+		String moduleName = (String) payload.get("module");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule facilioModule = modBean.getModule(moduleName);
+		String hour = (String) payload.get("hour");
+		
+		
+		String whereClause = DateOperators.LAST_N_HOURS.getWhereClause("TTIME", hour);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(modBean.getAllFields(moduleName))
+				.table(facilioModule.getTableName())
+				.andCustomWhere(whereClause);
+		
+		List<Map<String, Object>> records = selectBuilder.get();
+		
+		FacilioContext facilioContext = new FacilioContext();
+		facilioContext.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		facilioContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		
+		Chain runThroughFilters = FacilioChainFactory.runThroughFilters();
+		runThroughFilters.execute(facilioContext);
+		
+		return "s";
 	}
 	
 	public String addAssignmentRule() throws Exception {

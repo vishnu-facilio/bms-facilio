@@ -126,7 +126,8 @@ public class WorkflowRuleContext {
 		ALARM_NOTIFICATION_RULE,
 		SLA_RULE,
 		ASSIGNMENT_RULE,
-		PM_READING_RULE
+		PM_READING_RULE,
+		READING_THRESHOLD_RULE
 		;
 		
 		public int getIntVal() {

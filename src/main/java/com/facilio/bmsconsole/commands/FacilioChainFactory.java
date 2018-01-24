@@ -1275,6 +1275,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain runThroughFilters() {
+		Chain c = new ChainBase();
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddAlarmEMailNotifierChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddOrUpdateAlarmEMailTemplateCommand());

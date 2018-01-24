@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -20,13 +21,22 @@ public class FormulaAPI {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(formulaContext.getSelectField());
+		
+		FacilioField specialType = new FacilioField();
+		specialType.setName("parentId");
+		specialType.setDataType(FieldType.NUMBER);
+		specialType.setColumnName("PARENT_METER_ID");
+		specialType.setModule(formulaContext.getModule());
+		
+		fields.add(specialType);
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(formulaContext.getModule().getTableName())
 				.andCriteria(formulaContext.getCriteria());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println("props 332 - "+props);
+		System.out.println("props --- "+props);
 		if (props != null && !props.isEmpty()) {
 			return props.get(0);
 		}

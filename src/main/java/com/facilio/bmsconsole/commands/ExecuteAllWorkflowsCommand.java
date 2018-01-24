@@ -71,19 +71,20 @@ public class ExecuteAllWorkflowsCommand implements Command
 							boolean flag = true;
 							if(criteria != null) {
 								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE || workflowRule.getRuleTypeEnum() == RuleType.PM_READING_RULE) {
-									if(criteria.getFormulaId() != null) {
-										Object record1 = FormulaAPI.getFormulaValue(criteria.getFormulaId());
-										flag = criteria.computePredicate().evaluate(record1);
-									}
-									else {
-										flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
-									}
+									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
+									
 									if(flag) {
 										updateLastValueForReadingRule((ReadingRuleContext) workflowRule, (ModuleBaseWithCustomFields) record);
 									}
 								}
 								else {
-									flag = criteria.computePredicate().evaluate(record);
+									if(criteria.getFormulaId() != null) {
+										Object record1 = FormulaAPI.getFormulaValue(criteria.getFormulaId());
+										flag = criteria.computePredicate().evaluate(record1);
+									}
+									else {
+										flag = criteria.computePredicate().evaluate(record);
+									}
 								}
 							}
 							
