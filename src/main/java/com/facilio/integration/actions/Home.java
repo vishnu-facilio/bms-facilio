@@ -7,18 +7,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.bmsconsole.actions.LoginAction;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONObject;
 
 public class Home extends ActionSupport {
 /*
@@ -48,6 +54,16 @@ state = PORTAL-yogendrababu
 	}
 	private String username = null;
 	private String password = null;
+	private String inviteToken = null;
+
+	public String getInviteToken() {
+		return inviteToken;
+	}
+
+	public void setInviteToken(String inviteToken) {
+		this.inviteToken = inviteToken;
+	}
+
 	public Map getJsonresponse() {
 		return jsonresponse;
 	}
@@ -163,6 +179,7 @@ Pragma: no-cache
 	public void setEmailaddress(String emailaddress) {
 		this.emailaddress = emailaddress;
 	}
+
 	public String signupUser() throws Exception
 	{
 		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() );
@@ -172,7 +189,18 @@ Pragma: no-cache
 		
 	//	return SUCCESS;
 	}
-	
+
+	public String acceptOpInvite() throws Exception {
+
+		JSONObject invitation = new LoginAction().acceptUserInvite(inviteToken);
+		if((Boolean) invitation.get("accepted")) {
+            username = emailaddress;
+			return AddNewUserDB(username, cryptWithMD5(password), emailaddress);
+		} else {
+			return ERROR;
+		}
+	}
+
 	public  String AddNewUserDB(String username, String password, String emailaddress) throws Exception
 	{
 		System.out.println("### AddNewUserDB() :"+emailaddress);

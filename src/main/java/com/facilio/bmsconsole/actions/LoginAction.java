@@ -37,6 +37,8 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.integration.actions.Home;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -415,23 +417,26 @@ public class LoginAction extends ActionSupport{
 		else {
 			invitation.put("orgname", org.getName());
 			invitation.put("email", user.getEmail());
-			invitation.put("account_exists", CognitoUtil.isEmailExists(user.getEmail()));
+			if(AwsUtil.getConfig("accessKeyId") != null ) {
+                invitation.put("account_exists", CognitoUtil.isEmailExists(user.getEmail()));
+            } else {
+                invitation.put("account_exists", false);
+            }
 		}
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
 		return SUCCESS;
 	}
-	
-	public String acceptInvite() throws Exception {
-		
-		String[] inviteIds = EncryptionUtil.decode(getInviteToken()).split("_");
+
+	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
+		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("_");
 		long orgId = Long.parseLong(inviteIds[0]);
 		long ouid = Long.parseLong(inviteIds[1]);
-		
+
 		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
-		
+
 		JSONObject invitation = new JSONObject();
-		
+
 		User user = AccountUtil.getUserBean().getUser(ouid);
 		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
 			invitation.put("error", "link_expired");
@@ -445,6 +450,12 @@ public class LoginAction extends ActionSupport{
 				invitation.put("accepted", false);
 			}
 		}
+		return invitation;
+	}
+
+	public String acceptInvite() throws Exception {
+		
+		JSONObject invitation = acceptUserInvite(getInviteToken());
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
 		return SUCCESS;

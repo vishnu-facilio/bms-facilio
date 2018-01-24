@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.email.EmailUtil;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -47,7 +48,11 @@ public enum AccountEmailTemplate {
 	}
 	
 	public void send(Map<String, Object> placeHolders) throws Exception {
-		AwsUtil.sendEmail(getTemplate(placeHolders));
+		if(AwsUtil.getConfig("accessKeyId") == null) {
+			EmailUtil.sendEmail(getTemplate(placeHolders));
+		} else {
+			AwsUtil.sendEmail(getTemplate(placeHolders));
+		}
 	}
 	
 	public static AccountEmailTemplate getEmailTemplate(int val) {
