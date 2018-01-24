@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
+import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.util.ExpressionEvaluator;
 
 public class Criteria extends ExpressionEvaluator<Predicate> {
@@ -20,6 +21,14 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	
 	private long criteriaId = -1;
+	private FormulaContext formulaContext;
+	public FormulaContext getFormulaContext() {
+		return formulaContext;
+	}
+	public void setFormulaContext(FormulaContext formulaContext) {
+		this.formulaContext = formulaContext;
+	}
+
 	private Long formulaId;
 
 	public Long getFormulaId() {

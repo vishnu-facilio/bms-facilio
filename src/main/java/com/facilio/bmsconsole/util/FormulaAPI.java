@@ -1,16 +1,22 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormulaAPI {
@@ -41,6 +47,24 @@ public class FormulaAPI {
 			return props.get(0);
 		}
 		return null;
+	}
+	
+	public static FormulaContext addFormula(FormulaContext formula) throws Exception {
+		
+		formula.setCriteriaId(CriteriaAPI.addCriteria(formula.getCriteria(), AccountUtil.getCurrentOrg().getOrgId()));
+			List<FacilioField> fields = FieldFactory.getFormulaFields();
+			formula.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getFormulaModule().getTableName())
+					.fields(fields);
+
+			Map<String, Object> props = FieldUtil.getAsProperties(formula);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+
+			formula.setId((Long) props.get("id"));
+		
+		return formula;
 	}
 	
 	public static FormulaContext getFomulaContext(Long formulaId) throws Exception {

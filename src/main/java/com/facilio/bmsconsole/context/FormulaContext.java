@@ -14,8 +14,32 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.fw.BeanFactory;
 
-public class FormulaContext extends ModuleBaseWithCustomFields {
+public class FormulaContext {
 
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	private long moduleId = -1;
+	public long getModuleId() throws Exception {
+		if(moduleId == -1 && getModule() != null) {
+			return getModule().getModuleId();
+		}
+		return moduleId;
+	}
+	
 	private Long selectFieldId;
 	private int aggregateOperationValue;
 	private Long criteriaId;
@@ -56,16 +80,31 @@ public class FormulaContext extends ModuleBaseWithCustomFields {
 		return criteria;
 	}
 	
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
+	private String moduleName;
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 	public FacilioModule getModule() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		return modBean.getModule(this.getModuleId());
+		return modBean.getModule(moduleName);
 	}
 	
 	public FacilioField getSelectField() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField facilioField = getAggregateOperator().getSelectField(modBean.getField(this.getSelectFieldId()));
-		facilioField.setName("formulaValue");
-		return facilioField;
+		if(this.getSelectFieldId() != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField facilioField = getAggregateOperator().getSelectField(modBean.getField(this.getSelectFieldId()));
+			facilioField.setName("formulaValue");
+			return facilioField;
+		}
+		return null;
 	}
 	
 	public interface AggregateOperator {

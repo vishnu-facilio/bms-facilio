@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -30,7 +31,15 @@ public class WorkflowRuleAction extends ActionSupport {
 	{
 	    return SUCCESS;
 	}
-	
+	WorkflowRuleContext workflowRuleContext;
+	public WorkflowRuleContext getWorkflowRuleContext() {
+		return workflowRuleContext;
+	}
+
+	public void setWorkflowRuleContext(WorkflowRuleContext workflowRuleContext) {
+		this.workflowRuleContext = workflowRuleContext;
+	}
+
 	public String assignmentRules() throws Exception 
 	{
 		setRules(WorkflowAPI.getWorkflowRules());
@@ -57,7 +66,16 @@ public class WorkflowRuleAction extends ActionSupport {
 	public void setPayload(JSONObject payload) {
 		this.payload = payload;
 	}
-	
+	public String addReadingThresholdRulesWithFormula() throws Exception {
+		workflowRuleContext = this.workflowRuleContext;
+		FormulaAPI.addFormula(workflowRuleContext.getCriteria().getFormulaContext());
+		
+		
+		workflowRuleContext.getCriteria().setFormulaId(workflowRuleContext.getCriteria().getFormulaContext().getId());
+		
+		WorkflowAPI.addWorkflowRule(workflowRuleContext);
+		return SUCCESS;
+	}
 	public String runThroughFilters() throws Exception {
 		
 		String moduleName = (String) payload.get("module");

@@ -28,6 +28,12 @@
 			<result name="success" type="json">
 			</result>
 		</action>
+		<action name="addReadingThresholdRulesWithFormula" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingThresholdRulesWithFormula">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workflowRuleContext.*</param>
+			</result>
+		</action>
 		<action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
