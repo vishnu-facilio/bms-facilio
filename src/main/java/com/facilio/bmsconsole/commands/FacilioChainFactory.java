@@ -1275,6 +1275,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteWorkflowRuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteWorkflowRuleCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getReadingRulesOfFieldsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetReadingRulesFromFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain runThroughFilters() {
 		Chain c = new ChainBase();
 		c.addCommand(new ExecuteAllWorkflowsCommand());

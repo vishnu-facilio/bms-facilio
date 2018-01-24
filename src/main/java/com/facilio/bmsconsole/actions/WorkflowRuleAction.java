@@ -11,9 +11,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
@@ -84,12 +84,10 @@ public class WorkflowRuleAction extends ActionSupport {
 		String hour = (String) payload.get("hour");
 		
 		
-		String whereClause = DateOperators.LAST_N_HOURS.getWhereClause("TTIME", hour);
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(modBean.getAllFields(moduleName))
 				.table(facilioModule.getTableName())
-				.andCustomWhere(whereClause);
+				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", String.valueOf(hour), DateOperators.LAST_N_HOURS));
 		
 		List<Map<String, Object>> records = selectBuilder.get();
 		
@@ -102,19 +100,6 @@ public class WorkflowRuleAction extends ActionSupport {
 		runThroughFilters.execute(facilioContext);
 		
 		return "s";
-	}
-	
-	public String addAssignmentRule() throws Exception {
-		
-		WorkflowRuleContext rule = new WorkflowRuleContext();
-		rule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		rule.setName(getName());
-		rule.setDescription(getDescription());
-		rule.setExecutionOrder(getExecutionOrder());
-		
-		long ruleId = WorkflowAPI.addWorkflowRule(rule);
-		
-		return "addAssignmentRuleSuccess";
 	}
 	
 	private ReadingRuleContext readingRule;
@@ -144,6 +129,54 @@ public class WorkflowRuleAction extends ActionSupport {
 		addRule.execute(facilioContext);
 		
 		return SUCCESS;
+	}
+	
+	public String deleteWorkflowRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		
+		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
+		deleteRule.execute(context);
+		
+		result = context.get(FacilioConstants.ContextNames.RESULT).toString();
+		
+		return SUCCESS;
+	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+
+	public String getReadingRulesMap() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READING_FIELDS, id);
+		
+		Chain getReadingRules = FacilioChainFactory.getReadingRulesOfFieldsChain();
+		getReadingRules.execute(context);
+		
+		readingRules = (Map<Long, ReadingRuleContext>) context.get(FacilioConstants.ContextNames.READING_RULE_LIST);
+		
+		return SUCCESS;
+	}
+	
+	private Map<Long, ReadingRuleContext> readingRules;
+	public Map<Long, ReadingRuleContext> getReadingRules() {
+		return readingRules;
+	}
+	public void setReadingRules(Map<Long, ReadingRuleContext> readingRules) {
+		this.readingRules = readingRules;
 	}
 	
 	public String getWorkflowRules() throws Exception {
@@ -209,22 +242,6 @@ public class WorkflowRuleAction extends ActionSupport {
 		this.rules = rules;
 	}
 	
-	private Map<Long, String> assignmentGroupList;
-	public  Map<Long, String> getAssignmentGroupList() {
-		return assignmentGroupList;
-	}
-	public void setAssignmentGroupList( Map<Long, String> assignmentGroupList) {
-		this.assignmentGroupList = assignmentGroupList;
-	}
-	
-	private Map<Long, String> assignedToList;
-	public Map<Long, String> getAssignedToList() {
-		return assignedToList;
-	}
-	public void setAssignedToList(Map<Long, String> assignedToList) {
-		this.assignedToList = assignedToList;
-	}
-	
 	private long orgId = 0;
 	public long getOrgId() {
 		return orgId;
@@ -233,51 +250,11 @@ public class WorkflowRuleAction extends ActionSupport {
 		this.orgId = orgId;
 	}
 	
-	private long workflowId;
-	public long getWorkflowId() {
-		return workflowId;
-	}
-	public void setWorkflowId(long workflowId) {
-		this.workflowId = workflowId;
-	}
-	
-	private String name;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	private String description;
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 	private String module;
 	public String getModule() {
 		return module;
 	}
 	public void setModule(String module) {
 		this.module = module;
-	}
-	
-	private boolean isActive = true;
-	public boolean isActive() {
-		return isActive;
-	}
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-	
-	private int executionOrder = 1;
-	public int getExecutionOrder() {
-		return executionOrder;
-	}
-	public void setExecutionOrder(int executionOrder) {
-		this.executionOrder = executionOrder;
 	}
 }

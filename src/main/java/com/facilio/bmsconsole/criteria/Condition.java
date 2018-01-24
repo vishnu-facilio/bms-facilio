@@ -42,10 +42,8 @@ public class Condition {
 	private FacilioField field;
 	public void setField(FacilioField field) {
 		this.field = field;
-		if(field != null && field.getExtendedModule() != null && field.getName() != null && field.getColumnName() != null) {
-			this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
-			this.fieldName = field.getName();
-		}
+		this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
+		this.fieldName = field.getName();
 	}
 	
 	private String columnName;

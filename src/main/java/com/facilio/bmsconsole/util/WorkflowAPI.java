@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -336,6 +337,39 @@ public class WorkflowAPI {
 				workflows.add(workflow);
 			}
 			return workflows;
+		}
+		return null;
+	}
+	
+	public static List<ReadingRuleContext> getReadingRules() throws Exception {
+		return getReadingRules(null);
+	}
+	
+	public static List<ReadingRuleContext> getReadingRules(Criteria criteria) throws Exception {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getReadingRuleFields());
+		
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(readingRuleModule.getTableName())
+														.innerJoin(workflowModule.getTableName())
+														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule));
+		
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<ReadingRuleContext> readingRules = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				readingRules.add(FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class));
+			}
+			return readingRules;
 		}
 		return null;
 	}

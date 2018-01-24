@@ -2279,19 +2279,6 @@
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
 	</package>
-
-	<package name="rules" namespace="/app/rules" extends="home">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="{1}">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="assignmentRules">/jsps/rules/assignmentRules.jsp</result>
-			<result name="newAssignmentRule">/jsps/rules/newAssignmentRule.jsp</result>
-			<result name="addAssignmentRuleSuccess" type="json">
-				<param name="includeProperties">ruleId</param>
-			</result>
-			<allowed-methods>assignmentRules,newAssignmentRule,addAssignmentRule,businessRules</allowed-methods>
-		</action>
-	</package>
 		
 	<package name="location" namespace="/app/setup/locations"
 		extends="home">
