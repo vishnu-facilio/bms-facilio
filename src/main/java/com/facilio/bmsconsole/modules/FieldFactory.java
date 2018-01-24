@@ -494,6 +494,8 @@ public class FieldFactory {
 		lastValue.setColumnName("LAST_VALUE");
 		lastValue.setModule(module);
 		fields.add(lastValue);
+		
+		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
@@ -2792,7 +2794,16 @@ public class FieldFactory {
 	}
 	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
-		FacilioField columnFld = new FacilioField();
+		FacilioField columnFld = null;
+		switch (type) {
+			case NUMBER:
+			case DECIMAL:
+				columnFld = new NumberField();
+			case LOOKUP:
+				columnFld = new LookupField();
+			default:
+				columnFld = new FacilioField();
+		}
 		columnFld.setName(name);
 		columnFld.setColumnName(colName);
 		columnFld.setDataType(type);

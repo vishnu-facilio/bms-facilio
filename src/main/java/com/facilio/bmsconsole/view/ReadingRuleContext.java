@@ -32,4 +32,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setLastValue(long lastValue) {
 		this.lastValue = lastValue;
 	}
+	
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
 }

@@ -65,9 +65,10 @@ public class AddActionsForWorkflowRule implements Command {
 				
 				JsonObject content = new JsonObject();
 				for(Map alarmField:alarmFieldMatcher) {
-					content.addProperty(alarmField.get("field").toString(), alarmField.get("regex").toString());
+					content.addProperty(alarmField.get("field").toString(), alarmField.get("value").toString());
 				}
 				JSONTemplate alarmTemplate = new JSONTemplate();
+				alarmTemplate.setName(rule.getName()+"_alarm_template");
 				alarmTemplate.setContent(content.toString());
 				alarmTemplate.setType(Type.ALARM);
 				action.setTemplate(alarmTemplate);
