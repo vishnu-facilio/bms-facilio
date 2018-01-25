@@ -281,6 +281,9 @@ public static void migrateUnmodeledData(List<Map<String, Object>> result) throws
 
 	private static List<FacilioField> getInstanceMappingFields() {
 		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
+		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
 		fields.add(FieldFactory.getField("assetId", "ASSET_ID",FieldType.NUMBER ));
 		fields.add(FieldFactory.getField("fieldId", "FIELD_ID",FieldType.NUMBER ));
 		return fields;
@@ -302,6 +305,46 @@ public static void migrateUnmodeledData(List<Map<String, Object>> result) throws
 		return fields;
 	}
 
+	public static Map<String, List<String>> getAllDevices() throws Exception {
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(getUnmodeledInstanceFields())
+				.table("Unmodeled_Instance")
+				.andCustomWhere("ORGID=?",AccountUtil.getCurrentOrg().getOrgId());
 
+		List<Map<String, Object>> props = builder.get();
+		
+		Map<String, List<String>> deviceInstanceMap = new HashMap<String, List<String>>();
+		for(Map<String, Object> prop : props) {
+			String deviceName = (String) prop.get("device");
+			if(!deviceInstanceMap.containsKey(deviceName)) {
+				deviceInstanceMap.put(deviceName,new ArrayList<>());
+			}
+			List<String> instances = deviceInstanceMap.get(deviceName);
+			instances.add((String)prop.get("instance"));
+		} 
+		return deviceInstanceMap;
+	}
+	
+	public static void insertInstanceAssetMapping(String deviceName, long assetId, Map<String,Long> instanceFieldMap) throws Exception {
+		List<Map<String, Object>> records = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		instanceFieldMap.forEach((instaceName, fieldId) -> {
+			Map<String, Object> record = new HashMap<String,Object>();
+			record.put("orgId", orgId);
+			record.put("device", deviceName);
+			record.put("assetId", assetId);
+			record.put("instance", instaceName);
+			record.put("fieldId", fieldId);
+			records.add(record);
+		});
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.fields(getInstanceMappingFields())
+				.table("Instance_To_Asset_Mapping")
+				.addRecords(records);
+		insertBuilder.save();
+	}
+	
 
 }

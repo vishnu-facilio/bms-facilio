@@ -28,6 +28,21 @@ public class TimeSeries extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deviceList() throws Exception{
+		setAllDevices(TimeSeriesAPI.getAllDevices());
+		return SUCCESS;
+	}
+	
+	public String mapInstanceAsset() throws Exception
+	{
+		Map<String,Object> object = getInstanceAssetMap();
+		String deviceName = (String) object.get("deviceName");
+		long assetId = (long) object.get("assetId");
+		Map<String,Long> instanceFieldMap = (Map<String, Long>) object.get("instanceFieldMap");
+		TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, instanceFieldMap);
+		return SUCCESS;
+	}
+	
 	long timestamp;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
@@ -67,4 +82,19 @@ public class TimeSeries extends ActionSupport {
 		this.reportData = reportData;		
 	}
 	
+	private Map<String,Object> instanceAssetMap = null;
+	public Map<String,Object> getInstanceAssetMap() {
+		return instanceAssetMap;
+	}
+	public void setInstanceAssetMap(Map<String,Object> instanceAssetMap) {
+		this.instanceAssetMap = instanceAssetMap;		
+	}
+	
+	private Map<String, List<String>> allDevices = null;
+	public Map<String, List<String>> getAllDevices() {
+		return allDevices;
+	}
+	public void setAllDevices(Map<String, List<String>> allDevices) {
+		this.allDevices = allDevices;		
+	}
 }
