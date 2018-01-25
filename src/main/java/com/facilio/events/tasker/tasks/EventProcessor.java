@@ -73,7 +73,7 @@ public class EventProcessor implements IRecordProcessor {
                 JSONObject object = (JSONObject) parser.parse(data);
                 if(object.containsKey(DATA_TYPE)){
                     String dataType = (String)object.get(DATA_TYPE);
-                    if("events".equalsIgnoreCase(dataType)){
+                    if("event".equalsIgnoreCase(dataType)){
                         boolean alarmCreated = processEvents(record.getApproximateArrivalTimestamp().getTime(), object);
                         if (alarmCreated) {
                             processRecordsInput.getCheckpointer().checkpoint(record);
