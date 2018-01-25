@@ -367,7 +367,11 @@ public class WorkflowAPI {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingRuleContext> readingRules = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				readingRules.add(FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class));
+				ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+				if (readingRule.getCriteriaId() > 0) {
+					readingRule.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), readingRule.getCriteriaId()));
+				}
+				readingRules.add(readingRule);
 			}
 			return readingRules;
 		}
