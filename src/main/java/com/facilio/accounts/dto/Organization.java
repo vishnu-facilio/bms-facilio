@@ -1,5 +1,8 @@
 package com.facilio.accounts.dto;
 
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+
 public class Organization {
 
 	private long orgId;
@@ -46,6 +49,13 @@ public class Organization {
 	}
 	public void setLogoId(long logoId) {
 		this.logoId = logoId;
+	}
+	public String getLogoUrl() throws Exception {
+		if (this.logoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			return fs.getPrivateUrl(this.logoId);
+		}
+		return null;
 	}
 	public String getPhone() {
 		return phone;
