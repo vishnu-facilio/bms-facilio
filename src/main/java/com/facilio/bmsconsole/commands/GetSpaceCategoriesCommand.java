@@ -34,6 +34,8 @@ public class GetSpaceCategoriesCommand implements Command {
 			while(rs.next())
 			{
 				SpaceCategoryContext spcontext = new SpaceCategoryContext();
+				spcontext.setId(rs.getLong("ID"));
+				spcontext.setOrgId(rs.getLong("ORGID"));
 				spcontext.setName(rs.getString("NAME"));
 				spcontext.setDescription(rs.getString("DESCRIPTION"));
 				spcontext.setCommonArea(rs.getBoolean("IS_COMMON_AREA"));
