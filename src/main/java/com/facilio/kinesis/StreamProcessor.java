@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
+import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 
@@ -26,7 +27,8 @@ public class StreamProcessor {
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withInitialLeaseTableReadCapacity(1)
-                            .withInitialLeaseTableWriteCapacity(1);
+                            .withInitialLeaseTableWriteCapacity(1)
+                            .withMetricsLevel(MetricsLevel.SUMMARY);
 
             //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgDomainName);
 
