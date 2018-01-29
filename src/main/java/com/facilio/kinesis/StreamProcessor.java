@@ -17,7 +17,8 @@ public class StreamProcessor {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgDomainName);
             String clientName = orgDomainName +"-" + eventType + "-";
-            String applicationName = clientName + AwsUtil.getConfig("environment");
+            String environment = AwsUtil.getConfig("environment");
+            String applicationName = clientName + environment;
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             String workerId = clientName + InetAddress.getLocalHost().getCanonicalHostName();
@@ -27,8 +28,12 @@ public class StreamProcessor {
                             .withRegionName(AwsUtil.getRegion())
                             .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                             .withInitialLeaseTableReadCapacity(1)
-                            .withInitialLeaseTableWriteCapacity(1)
-                            .withMetricsLevel(MetricsLevel.SUMMARY);
+                            .withInitialLeaseTableWriteCapacity(1);
+            if("production".equals(environment)) {
+                kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.SUMMARY);
+            } else {
+                kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.NONE);
+            }
 
             //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgDomainName);
 
