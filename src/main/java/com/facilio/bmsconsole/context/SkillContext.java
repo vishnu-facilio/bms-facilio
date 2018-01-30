@@ -28,12 +28,11 @@ public class SkillContext extends ModuleBaseWithCustomFields {
 		this.active = active;
 	}
 	
-	private long categoryId;
-	public long getCategoryId() {
-		return categoryId;
+	private TicketCategoryContext category;
+	public TicketCategoryContext getCategory() {
+		return category;
 	}
-	public void setCategoryId(long categoryId) {
-		this.categoryId = categoryId;
+	public void setCategory(TicketCategoryContext category) {
+		this.category = category;
 	}
-	
 }

@@ -172,8 +172,8 @@ public class SkillActions extends ActionSupport {
 	public String deleteSkill() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		//context.put(FacilioConstants.ContextNames.SKILL, getSkill());
-		context.put(FacilioConstants.ContextNames.ID, getSkillId());
+		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
+		//context.put(FacilioConstants.ContextNames.ID, getSkillId());
 		Command deleteSkill = FacilioChainFactory.getDeleteSkillCommand();
 		deleteSkill.execute(context);
 		
@@ -243,8 +243,14 @@ public class SkillActions extends ActionSupport {
 	public String skillsList() throws Exception {
 
 		//setSetup(SetupLayout.getSkillsListLayout());
-		setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
-
+		//setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
+		Command getSkills = FacilioChainFactory.getAllSkillsCommand();
+		getSkills.execute(context);
+		setSkills((List<SkillContext>)context.get(FacilioConstants.ContextNames.SKILL_LIST));
+		
 		return SUCCESS;
 	}
 }

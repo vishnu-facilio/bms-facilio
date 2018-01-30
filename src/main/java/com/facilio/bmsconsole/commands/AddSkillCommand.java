@@ -18,6 +18,7 @@ public class AddSkillCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
+		System.out.println("############### skill :"+skill);
 		if(skill != null) 
 		{
 				

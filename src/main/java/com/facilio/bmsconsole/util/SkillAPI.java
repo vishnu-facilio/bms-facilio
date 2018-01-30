@@ -147,13 +147,13 @@ public class SkillAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO Skills (ORGID, NAME, DESCRIPTION, IS_ACTIVE,CATEGORY_ID) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO Skills (ORGID, NAME, DESCRIPTION, IS_ACTIVE) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, skillContext.getOrgId());
 			pstmt.setString(2, skillContext.getName());
 			pstmt.setString(3, skillContext.getDescription());
 			pstmt.setBoolean(4, skillContext.getActive());
-			pstmt.setLong(5, skillContext.getCategoryId());
+			//pstmt.setLong(5, skillContext.getCategoryId());
 			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add skill");
@@ -181,12 +181,12 @@ public class SkillAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Skills SET NAME=?, DESCRIPTION=?, IS_ACTIVE=?, CATEGORY_ID=? WHERE ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("UPDATE Skills SET NAME=?, DESCRIPTION=?, IS_ACTIVE=? WHERE ID=? AND ORGID=?");
 			
 			pstmt.setString(1, skillContext.getName());
 			pstmt.setString(2, skillContext.getDescription());
 			pstmt.setBoolean(3, skillContext.getActive());
-			pstmt.setLong(4, skillContext.getCategoryId());
+			//pstmt.setLong(4, skillContext.getCategoryId());
 			pstmt.setLong(5, skillContext.getId());
 			pstmt.setLong(6, skillContext.getOrgId());
 			if(pstmt.executeUpdate() < 1) {
@@ -210,7 +210,7 @@ public class SkillAPI {
 		sc.setName(rs.getString("NAME"));
 		sc.setDescription(rs.getString("DESCRIPTION"));
 		sc.setActive(rs.getBoolean("ACTIVE"));
-		sc.setCategoryId(rs.getLong("CATEGORY_ID"));
+		//sc.setCategoryId(rs.getLong("CATEGORY_ID"));
 		
 		return sc;
 	}

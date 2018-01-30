@@ -597,6 +597,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getAllSkillsCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetAllSkillsCommand());
+		return c;
+	}
+	
 	public static Command getDeleteSkillCommand(){
 		Chain c = new ChainBase();
 		

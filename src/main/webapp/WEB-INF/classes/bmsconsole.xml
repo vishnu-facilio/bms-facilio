@@ -271,6 +271,20 @@
 				<param name="includeProperties">skillId</param>
 			</result>
 		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="updateSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">skillId</param>
+			</result>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.SkillActions"
+			method="deleteSkill">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">skillId</param>
+			</result>
+		</action>
 	</package>
 	<package name="locationApi" namespace="/api/location" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions"

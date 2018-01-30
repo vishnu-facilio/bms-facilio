@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 
@@ -12,8 +13,8 @@ public class DeleteSkillCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		//SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
-		long skillId = (long) context.get(FacilioConstants.ContextNames.ID);
+		SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
+		long skillId = skill.getId();
 		if(skillId != -1) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table("Skills")
