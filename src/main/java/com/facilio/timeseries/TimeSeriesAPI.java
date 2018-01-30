@@ -346,5 +346,21 @@ public static void migrateUnmodeledData(List<Map<String, Object>> result) throws
 		insertBuilder.save();
 	}
 	
+	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
+		Map<String, Long> fieldMap = new HashMap<>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(getInstanceMappingFields())
+				.table("Instance_To_Asset_Mapping")
+				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
+		List<Map<String, Object>> props = builder.get();	
+		if(props!=null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				String instanceName = (String) prop.get("instance");
+				fieldMap.put(instanceName, (Long) prop.get("fieldId"));
+			}
+		}
+		return fieldMap;
+	}
+	
 
 }

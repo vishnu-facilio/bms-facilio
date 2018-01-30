@@ -2781,6 +2781,12 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="getFieldMap" class="com.facilio.bmsconsole.actions.TimeSeries"
+			method="getDefaultFieldMap">
+			<result name="success" type="json">
+				<param name="root">fieldMap</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="campus" namespace="/app/campus" extends="home">

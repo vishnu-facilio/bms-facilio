@@ -43,6 +43,11 @@ public class TimeSeries extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getDefaultFieldMap() throws Exception {
+		setFieldMap(TimeSeriesAPI.getDefaultInstanceFieldMap());
+		return SUCCESS;
+	}
+	
 	long timestamp;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
@@ -96,5 +101,13 @@ public class TimeSeries extends ActionSupport {
 	}
 	public void setAllDevices(Map<String, List<String>> allDevices) {
 		this.allDevices = allDevices;		
+	}
+	
+	private Map<String, Long> fieldMap = null;
+	public Map<String, Long> getFieldMap() {
+		return fieldMap;
+	}
+	public void setFieldMap(Map<String, Long> fieldMap) {
+		this.fieldMap = fieldMap;		
 	}
 }
