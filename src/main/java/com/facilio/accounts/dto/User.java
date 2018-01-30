@@ -25,6 +25,7 @@ public class User {
 	private long invitedTime;
 	private long roleId;
 	private int userType;
+	private boolean facilioAuth;
 	
 	public long getUid() {
 		return uid;
@@ -212,5 +213,13 @@ public class User {
 	}
 	public void setUserType(int userType) {
 		this.userType = userType;
+	}
+
+	public boolean isFacilioAuth() {
+		return facilioAuth;
+	}
+
+	public void setFacilioAuth(boolean facilioAuth) {
+		this.facilioAuth = facilioAuth;
 	}
 }

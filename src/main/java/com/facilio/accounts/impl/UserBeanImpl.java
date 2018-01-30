@@ -149,7 +149,6 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 		
 		long ouid = (Long) props.get("id");
-		
 		user.setOuid(ouid);
 		
 		sendInvitation(orgId, ouid, user);
@@ -161,7 +160,9 @@ public class UserBeanImpl implements UserBean {
 		
 		String inviteToken = EncryptionUtil.encode(orgId + "_" + ouid + "_" + System.currentTimeMillis());
 		String inviteLink = AwsUtil.getConfig("app.url") + "/app/invitation/" + inviteToken;
-		
+		if(user.isFacilioAuth()){
+			inviteLink = inviteLink + "?facilioAuth=true";
+		}
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);

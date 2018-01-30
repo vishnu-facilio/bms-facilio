@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.fw.auth.LoginUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
@@ -21,6 +22,9 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class UserAction extends ActionSupport {
 	
@@ -94,7 +98,11 @@ public class UserAction extends ActionSupport {
 		
 		// setting necessary fields
 		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String value = LoginUtil.getUserCookie(request, "fc.authtype");
+		user.setFacilioAuth("facilio".equals(value));
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
 		

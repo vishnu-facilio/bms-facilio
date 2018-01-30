@@ -23,6 +23,7 @@ public class FacilioChainFactory {
 		c.addCommand(new CreateAccountCommand());
 		c.addCommand(new AddDefaultModulesCommand());
 		c.addCommand(new AddEventModuleCommand());
+		c.addCommand(new AddOrgInfoCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

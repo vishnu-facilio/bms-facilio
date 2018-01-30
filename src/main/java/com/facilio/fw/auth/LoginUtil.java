@@ -57,6 +57,7 @@ public class LoginUtil {
 				signupInfo.put("phone", cognitoUser.getPhoneNumber());
 				signupInfo.put("companyname", orgName);
 				signupInfo.put("domainname", orgDomain);
+				signupInfo.put("isFacilioAuth", cognitoUser.isFacilioauth());
 				
 				FacilioContext signupContext = new FacilioContext();
 				signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);

@@ -408,6 +408,15 @@ public class AccountConstants {
 		return orgModule;
 	}
 
+	public static FacilioModule getOrgInfoModule() {
+		FacilioModule orgModule = new FacilioModule();
+		orgModule.setName("orginfo");
+		orgModule.setDisplayName("OrgInfo");
+		orgModule.setTableName("OrgInfo");
+
+		return orgModule;
+	}
+
 	public static FacilioModule getGroupModule() {
 		FacilioModule groupModule = new FacilioModule();
 		groupModule.setName("group");
@@ -536,6 +545,34 @@ public class AccountConstants {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(module);
 		fields.add(createdTime);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getOrgInfoFields() {
+		FacilioModule module = getOrgInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(module);
+		fields.add(orgId);
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(module);
+		fields.add(name);
+
+		FacilioField value = new FacilioField();
+		value.setName("value");
+		value.setDataType(FieldType.STRING);
+		value.setColumnName("VALUE");
+		value.setModule(module);
+		fields.add(value);
 
 		return fields;
 	}
