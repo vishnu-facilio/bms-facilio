@@ -159,7 +159,7 @@ public class UserBeanImpl implements UserBean {
 	private boolean sendInvitation(long orgId, long ouid, User user) throws Exception {
 		
 		String inviteToken = EncryptionUtil.encode(orgId + "_" + ouid + "_" + System.currentTimeMillis());
-		String inviteLink = AwsUtil.getConfig("app.url") + "/app/invitation/" + inviteToken;
+		String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/invitation/" + inviteToken;
 		if(user.isFacilioAuth()){
 			inviteLink = inviteLink + "?facilioAuth=true";
 		}
