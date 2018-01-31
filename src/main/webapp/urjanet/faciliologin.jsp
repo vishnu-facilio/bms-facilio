@@ -183,6 +183,7 @@ function signup(frm)
 			        }
 			        console.log(msg);
 			        console.log(jqXHR);
+			        console.log(exception);
 			    }
 			});
    	  event.preventDefault();
