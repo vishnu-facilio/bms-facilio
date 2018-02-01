@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -34,7 +33,7 @@ public class ViewAPI {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table("Views")
-													.andCustomWhere("ORGID = ? AND MODULEID = ?", orgId, moduleId)
+													.andCustomWhere("ORGID = ? AND MODULEID = ? AND ISHIDDEN = FALSE", orgId, moduleId)
 													.orderBy("SEQUENCE_NUMBER");
 			
 			List<Map<String, Object>> viewProps = builder.get();
@@ -161,17 +160,11 @@ public class ViewAPI {
 	public static List<ViewField> getViewColumns(long viewId) throws Exception {
 		List<ViewField> columns = new ArrayList<>();
 		try {
-			String columnTableName = ModuleFactory.getViewColumnsModule().getTableName();
-			String fieldsTableName = ModuleFactory.getFieldsModule().getTableName();
-			List<FacilioField> fields = new ArrayList<>(FieldFactory.getSelectFieldFields());
-			fields.addAll(FieldFactory.getViewColumnFields());
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.table(columnTableName)
-													.select(fields)
-													.innerJoin("Fields")
-													.on(columnTableName+".FIELDID="+fieldsTableName+".FIELDID")
+													.table(ModuleFactory.getViewColumnsModule().getTableName())
+													.select(FieldFactory.getViewColumnFields())
 													.andCustomWhere("VIEWID = ?", viewId)
-													.orderBy(columnTableName+".ID");
+													.orderBy("ID");
 			
 			List<Map<String, Object>> props = builder.get();
 			

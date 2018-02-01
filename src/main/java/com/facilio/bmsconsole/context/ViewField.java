@@ -1,14 +1,28 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-
-public class ViewField extends FacilioField{
+public class ViewField{
 	private long id = -1;
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	
+	private long fieldId = -1;
+	public long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	private long viewId = -1;
@@ -30,7 +44,7 @@ public class ViewField extends FacilioField{
 	public ViewField() { }
 	
 	public ViewField(String name, String displayName) {
-		setName(name);
+		this.name = name;
 		this.columnDisplayName = displayName;
 	}
 	

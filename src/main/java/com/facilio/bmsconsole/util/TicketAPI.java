@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -338,6 +339,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketUsers(tickets);
 		loadTicketGroups(tickets);
 		loadTicketSpaces(tickets);
+		loadTicketAssets(tickets);
 	}
 	
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
@@ -471,6 +473,33 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					BaseSpaceContext space = ticket.getSpace();
 					if(space != null) {
 						ticket.setSpace(spaceMap.get(space.getId()));
+					}
+				}
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
+	}
+	
+	private static void loadTicketAssets(Collection<? extends TicketContext> tickets) throws Exception {
+		if(tickets != null && !tickets.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+			
+			try {
+				SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+																				.select(fields)
+																				.module(module)
+																				.beanClass(AssetContext.class);
+				Map<Long, AssetContext> assets = selectBuilder.getAsMap();
+				
+				for(TicketContext ticket : tickets) {
+					AssetContext asset = ticket.getAsset();
+					if(asset != null) {
+						ticket.setAsset((assets.get(asset.getId())));
 					}
 				}
 			}

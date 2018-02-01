@@ -122,6 +122,14 @@ public class FacilioView {
 		return defaultModulefields;
 	}
 	
+	private Map<String, Object> lookupFields;
+	public void setLookupFields( Map<String, Object> lookupFields) {
+		this.lookupFields = lookupFields;
+	}
+	public Map<String, Object> getLookupFields(){
+		return lookupFields;
+	}
+	
 	private JSONObject filters;
 	public JSONObject getFilters() {
 		return filters;
@@ -143,6 +151,20 @@ public class FacilioView {
 	public FacilioView setOrder(int order) {
 		this.sequenceNumber = order;
 		return this;
+	}
+	
+	private Boolean isHidden;
+	public Boolean getIsHidden() {
+		return isHidden;
+	}
+	public void setHidden(Boolean isHidden) {
+		this.isHidden = isHidden;
+	}
+	public boolean isHidden() {
+		if(isHidden != null) {
+			return isHidden.booleanValue();
+		}
+		return false;
 	}
 	
 	public static enum ViewType {
