@@ -28,42 +28,75 @@ public class TimeSeriesAPI {
 
 
 	@SuppressWarnings("unchecked")
-	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad) {
+		
 		long timeStamp = getTimeStamp(ttime, payLoad);
-		Iterator<String> deviceList = payLoad.keySet().iterator();
-		while(deviceList.hasNext())
+		Iterator<String> keyList = payLoad.keySet().iterator();
+		while(keyList.hasNext())
 		{
-			String deviceName = deviceList.next();
-			JSONObject instanceRecord = (JSONObject)payLoad.get(deviceName);
-			insertModeledReading(timeStamp,deviceName,instanceRecord);
-			//by this time instanceRecord will have only unmodeled instances data..
-			Iterator<String> instanceList = instanceRecord.keySet().iterator();
-			while(instanceList.hasNext())
-			{
-				String instanceName=instanceList.next();
-				String instanceVal=instanceRecord.get(instanceName).toString();
+			String actualKey = keyList.next();
+			JSONObject record = (JSONObject)payLoad.get(actualKey);
+			String keyName=actualKey;
+			
+			if(actualKey.startsWith("DEVICE_") || actualKey.startsWith("POINT_")) {
 
-				try {
-					Long instanceId= getUnmodledInstance( deviceName,instanceName);
-					if(instanceId==null) {
-						instanceId=getUnmodeledInstanceAfterInsert(deviceName, instanceName);
-					}
-					insertUnmodeledData(timeStamp, instanceVal, instanceId);
-				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
+				int firstIndex= actualKey.indexOf("_");
+				keyName=actualKey.substring(firstIndex+1);
 			}
+			if (actualKey.startsWith("POINT_")){
+
+				insertModeledReading(timeStamp, record, keyName);
+				//by this time record will have only unmodeled instances data..
+				processUnmodeledData(timeStamp,keyName,record,true);
+				return;
+			}
+			insertModeledReading(timeStamp,keyName,record);
+			//by this time record will have only unmodeled instances data..
+			processUnmodeledData(timeStamp,keyName,record,false);
 		}
 	}
 
+	
+	
+	@SuppressWarnings({ "unchecked" })
+	private static void processUnmodeledData(long timeStamp,String keyName,JSONObject record, boolean point) {
+		
+		Iterator<String> recordList = record.keySet().iterator();
+		while(recordList.hasNext())
+		{
+			
+			String key=recordList.next();
+			String instanceVal=record.get(key).toString();
+
+			String instanceName=key;
+			String deviceName=keyName;
+			if(point) {
+				deviceName=key;
+				instanceName=keyName;
+			}
+
+			try {
+				Long instanceId= getUnmodledInstance(deviceName,instanceName);
+				if(instanceId==null) {
+					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName);
+				}
+				insertUnmodeledData(timeStamp, instanceVal, instanceId);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	public static void insertModeledReading(long timeStamp,String deviceName,JSONObject instanceRecord) {
 
 		String moduleName="energydata";
 		Iterator<String> instanceList = instanceRecord.keySet().iterator();
-		ReadingContext reading = new ReadingContext();
+		
+		Map<String,ReadingContext> moduleVsReading = new HashMap<String,ReadingContext> ();
+		
 		while(instanceList.hasNext())
 		{
 			String instanceName=instanceList.next();
@@ -81,8 +114,14 @@ public class TimeSeriesAPI {
 					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field =bean.getField(fieldId);
 					moduleName=field.getModule().getName();
+					ReadingContext reading=moduleVsReading.get(moduleName);
+					if(reading==null) {
+						reading = new ReadingContext();
+						moduleVsReading.put(moduleName, reading);
+					}
 					reading.addReading(field.getName(), instanceVal);
 					reading.setParentId(assetId);
+					reading.setTtime(timeStamp);
 					//removing here to avoid going into unmodeled instance..
 					instanceList.remove();
 				}
@@ -91,15 +130,76 @@ public class TimeSeriesAPI {
 				e.printStackTrace();
 			}
 		}
-		if(reading.getReadings()!=null ) {
-
+		
+		
+		for(Map.Entry<String, ReadingContext> map: moduleVsReading.entrySet() ) {
+			
 			try {
-				reading.setTtime(timeStamp);
-				insertReading(moduleName, reading);
+
+				String modName=map.getKey();
+				ReadingContext reading = map.getValue();
+				if(reading.getReadings()!=null ) {
+					insertReading(modName, reading);
+				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	//for POINT_INSTANCE:{DEVICENAME:VALUE}
+	@SuppressWarnings("unchecked")
+	public static void insertModeledReading(long timeStamp,JSONObject deviceRecord,String instanceName) {
+
+		String moduleName="energydata";
+		Iterator<String> deviceList = deviceRecord.keySet().iterator();
+		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
+		try {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			while(deviceList.hasNext())
+			{
+				String deviceName=deviceList.next();
+				String instanceVal=deviceRecord.get(deviceName).toString();
+				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
+				if(stat==null) {
+					continue;
+				}
+				Long assetId= (Long) stat.get("assetId");
+				Long fieldId= (Long) stat.get("fieldId");
+
+				if(fieldId!=null && assetId!=null) {
+
+					FacilioField field =bean.getField(fieldId);
+					moduleName=field.getModule().getName();
+					ReadingContext reading = new ReadingContext();
+					reading.addReading(field.getName(), instanceVal);
+					reading.setParentId(assetId);
+					reading.setTtime(timeStamp);
+					//removing here to avoid going into unmodeled instance..
+					deviceList.remove();
+					readingsList.add(reading);
+				}
+			}
+			insertRecords(moduleName, readingsList);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+
+	private static void insertRecords(String moduleName, List<ReadingContext> readingsList)
+			throws InstantiationException, IllegalAccessException, Exception {
+		if(!readingsList.isEmpty()) {
+			
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
+					.moduleName(moduleName)
+					.fields(bean.getAllFields(moduleName))
+					.addRecords(readingsList);
+			readingBuilder.save();
 		}
 	}
 	
