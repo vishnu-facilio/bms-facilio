@@ -287,13 +287,13 @@
 		</action>
 	</package>
 	<package name="locationApi" namespace="/api/location" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="newLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
-			</result>
-		</action>
+<!-- 		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions" -->
+<!-- 			method="newLocation"> -->
+<!-- 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
+<!-- 			<result name="success" type="json"> -->
+<!-- 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param> -->
+<!-- 			</result> -->
+<!-- 		</action> -->
 		<action name="locationlist" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
@@ -319,14 +319,9 @@
 			method="deleteLocation">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
+				<param name="includeProperties">locationId</param>
 			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>		
-		
+		</action>			
 	</package>
 	<package name="businessHoursApi" namespace="/api/businesshours"
 		extends="home">
@@ -2305,59 +2300,6 @@
 			<param name="taskId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
-	</package>
-		
-	<package name="location" namespace="/app/setup/locations"
-		extends="home">
-		<action name="new" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="newLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/newLocation.jsp</result>
-		</action>
-
-		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="addLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">locationId</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>
-
-		<action name="update" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="updateLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>
-
-		<action name="delete" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="deleteLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>
-
-		<action name="edit" class="com.facilio.bmsconsole.actions.LocationActions"
-			method="editLocation">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result type="tiles">setuplayout/editLocation.jsp</result>
-		</action>
-
 	</package>
 
 	<package name="skills" namespace="/app/setup/skills" extends="home">

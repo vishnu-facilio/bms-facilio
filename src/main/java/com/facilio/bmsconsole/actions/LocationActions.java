@@ -74,7 +74,8 @@ public class LocationActions extends ActionSupport {
 	
 	public String deleteLocation() throws Exception {
 		
-		boolean isDeleted = LocationAPI.deleteLocation(locationId, AccountUtil.getCurrentOrg().getOrgId());
+		long id = getLocationId();
+		boolean isDeleted = LocationAPI.deleteLocation(id, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return SUCCESS;
 	}
