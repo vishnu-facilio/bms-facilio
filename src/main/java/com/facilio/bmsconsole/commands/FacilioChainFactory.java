@@ -529,6 +529,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	
 	public static Chain getNewLocationChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());

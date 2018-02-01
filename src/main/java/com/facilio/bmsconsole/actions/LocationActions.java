@@ -122,6 +122,15 @@ public class LocationActions extends ActionSupport {
 		return SUCCESS;
 	}
 	
+//	public String locationsList1() throws Exception {
+//		
+//		FacilioContext context = new FacilioContext();
+//		Chain getAllLocations = FacilioChainFactory.getAllLocationsChain();
+//		getAllLocations.execute(context);
+//		
+//		return SUCCESS;
+//	}
+	
 	private List<LocationContext> locations = null;
 	public List<LocationContext> getLocations() {
 		return locations;

@@ -161,7 +161,7 @@ public class LocationAPI {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Locations SET NAME=?, STREET=?, CITY=?, STATE=?, ZIP=?, COUNTRY=?, LAT=?, LNG=?, CONTACT=?, PHONE=?, FAX_PHONE=? WHERE ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("UPDATE Locations SET NAME=?, STREET=?, CITY=?, STATE=?, ZIP=?, COUNTRY=?, LAT=?, LNG=?, CONTACT_ID=?, PHONE=?, FAX_PHONE=? WHERE ID=? AND ORGID=?");
 			
 			pstmt.setString(1, locationContext.getName());
 			pstmt.setString(2, locationContext.getStreet());
