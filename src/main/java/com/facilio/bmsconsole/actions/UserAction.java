@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.fw.auth.LoginUtil;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
@@ -20,11 +22,9 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.auth.LoginUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.struts2.ServletActionContext;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class UserAction extends ActionSupport {
 	

@@ -7,24 +7,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.bmsconsole.actions.LoginAction;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.actions.LoginAction;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
-import org.json.simple.JSONObject;
 
 public class Home extends ActionSupport {
 /*

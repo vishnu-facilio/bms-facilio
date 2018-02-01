@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddOrgInfoCommand implements Command {
 

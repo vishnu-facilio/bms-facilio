@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.email.EmailUtil;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.email.EmailUtil;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
