@@ -551,7 +551,7 @@ public class LoginAction extends ActionSupport{
 		
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
-		
+		config.put("payment_endpoint", getPaymentEndpoint());
 		account.put("data", data);
 		account.put("config", config);
 		account.put("appProps", appProps);
@@ -562,6 +562,17 @@ public class LoginAction extends ActionSupport{
 		return SUCCESS;
 	}
 	
+	public static Map<String, Object> getPaymentEndpoint() {
+		String BaseUrl = AwsUtil.getConfig("payment.url");
+		String Standard = BaseUrl + "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
+		String Professional = BaseUrl + "facil-blossom?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		String Enterprise = BaseUrl + "facil-blossom?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		Map<String, Object> url = new HashMap<>();
+		url.put("standard", Standard);
+		url.put("professional", Professional);
+		url.put("enterprise", Enterprise);
+		return url;
+	}
 	private String generateSignedSAMLResponse(SAMLAttribute samlAttr) throws Exception 
 	{
 		ClassLoader classLoader = LoginAction.class.getClassLoader();
