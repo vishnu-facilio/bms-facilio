@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
@@ -212,6 +213,26 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
+		updatePM.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private PMJobsContext pmJob;
+	public PMJobsContext getPmJob() {
+		return pmJob;
+	}
+	public void setPmJob(PMJobsContext pmJob) {
+		this.pmJob = pmJob;
+	}
+	
+	public String updatePreventiveMaintenanceJob() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.PM_JOB, pmJob);
+		
+		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceJobChain();
 		updatePM.execute(context);
 		
 		return SUCCESS;
