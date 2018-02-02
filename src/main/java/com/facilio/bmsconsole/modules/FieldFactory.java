@@ -1547,6 +1547,13 @@ public class FieldFactory {
 		viewOrder.setModule(module);
 		fields.add(viewOrder);
 		
+		FacilioField isHidden = new FacilioField();
+		isHidden.setName("isHidden");
+		isHidden.setDataType(FieldType.BOOLEAN);
+		isHidden.setColumnName("ISHIDDEN");
+		isHidden.setModule(module);
+		fields.add(isHidden);
+		
 		return fields;
 
 	}

@@ -1,10 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -20,12 +27,12 @@ public class LoadViewCommand implements Command {
 		
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		if(viewName != null && !viewName.isEmpty()) {
 			FacilioView view = null;
 			boolean isCVEnabled = true;
 			if(isCVEnabled) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
 				view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 			}
@@ -40,6 +47,20 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view != null) {
+				Map<String, Object> lookupFields = new HashMap<>();
+				ArrayList<FacilioField> fieldList = modBean.getAllFields(moduleName);
+				for(FacilioField field: fieldList) {
+					if(field instanceof LookupField && ((LookupField)field).getLookupModule() != null) {
+						String name = ((LookupField)field).getLookupModule().getName();
+						if(!lookupFields.containsKey(name)) {
+							JSONObject object = new JSONObject();
+							object.put("displayName", field.getDisplayName());
+							object.put("fields", modBean.getAllFields(name));
+							lookupFields.put(field.getName(),  object);							
+						}
+					}
+				}
+				view.setLookupFields(lookupFields);
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
 			}
 		}
