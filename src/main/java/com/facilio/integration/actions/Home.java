@@ -286,4 +286,19 @@ Pragma: no-cache
 	private String response_type;
 	private String state ;
 	
+	
+	private JSONObject content;
+	
+	public void setContent(JSONObject content) {
+		this.content = content;
+	}
+	
+	public JSONObject getContent() {
+		return this.content;
+	}
+	
+	public String confirmPayment() {
+		System.out.println(this.content);
+		return SUCCESS;
+	}
 }
