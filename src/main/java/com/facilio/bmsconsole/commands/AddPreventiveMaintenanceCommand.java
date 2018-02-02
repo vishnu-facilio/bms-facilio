@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -56,7 +57,8 @@ public class AddPreventiveMaintenanceCommand implements Command {
 				PMJobsContext pmJob = null;
 				switch (pm.getTriggerTypeEnum()) {
 				case ONLY_SCHEDULE_TRIGGER:
-					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createNNumberOfPMJobs(pm, trigger, startTime, 2);
+					long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
+					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, startTime, endTime);
 					if (!pmJobs.isEmpty()) {
 						pmJob = pmJobs.get(0);
 					}
