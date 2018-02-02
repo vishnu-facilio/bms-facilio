@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -12,9 +14,11 @@ import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AlarmAPI {
 	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
@@ -118,6 +122,17 @@ public class AlarmAPI {
 		return null;
 	}
 	
+	public static long addAlarmEntity() throws Exception {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", AccountUtil.getCurrentAccount().getOrg().getId());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table("Alarm_Entity")
+				.fields(FieldFactory.getAlarmEntityFields())
+				.addRecord(prop);
+		insertBuilder.save();
+		return (long) prop.get("id");
+	}
+	
 	public static AlarmSeverityContext getAlarmSeverity(String severity) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<AlarmSeverityContext> selectBuilder = new SelectRecordsBuilder<AlarmSeverityContext>()
@@ -125,6 +140,21 @@ public class AlarmAPI {
 																		.moduleName(FacilioConstants.ContextNames.ALARM_SEVERITY)
 																		.beanClass(AlarmSeverityContext.class)
 																		.andCustomWhere("SEVERITY = ?", severity);
+		
+		List<AlarmSeverityContext> severities = selectBuilder.get();
+		if(severities != null && !severities.isEmpty()) {
+			return severities.get(0);
+		}
+		return null;
+	}
+	
+	public static AlarmSeverityContext getAlarmSeverity(long severityId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AlarmSeverityContext> selectBuilder = new SelectRecordsBuilder<AlarmSeverityContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_SEVERITY))
+																		.moduleName(FacilioConstants.ContextNames.ALARM_SEVERITY)
+																		.beanClass(AlarmSeverityContext.class)
+																		.andCustomWhere("ID = ?", severityId);
 		
 		List<AlarmSeverityContext> severities = selectBuilder.get();
 		if(severities != null && !severities.isEmpty()) {

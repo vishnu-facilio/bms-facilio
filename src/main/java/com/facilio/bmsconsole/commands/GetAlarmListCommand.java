@@ -64,6 +64,12 @@ public class GetAlarmListCommand implements Command {
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
+		
+		long entityId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ENTITY_ID);
+		if(entityId != -1)
+		{
+			builder.andCustomWhere("Alarms.ENTITY_ID = ?", entityId);
+		}
 
 		List<AlarmContext> alarms = builder.get();
 		TicketAPI.loadTicketLookups(alarms);

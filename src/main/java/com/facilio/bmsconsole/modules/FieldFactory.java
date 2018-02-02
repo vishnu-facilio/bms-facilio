@@ -2795,6 +2795,16 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getAlarmEntityFields() {
+		FacilioModule module = ModuleFactory.getAlarmEntityModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getOrgIdField(module));
+		fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);

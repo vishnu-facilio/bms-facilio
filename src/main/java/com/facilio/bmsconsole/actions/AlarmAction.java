@@ -264,6 +264,8 @@ public class AlarmAction extends ActionSupport {
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		System.out.println("PAGINATION ####### "+ pagination);
  		
+ 		context.put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, entityId);
+ 		
  		System.out.println("View Name : "+getViewName());
  		Chain alarmListChain = FacilioChainFactory.getAlarmListChain();
 		alarmListChain.execute(context);
@@ -277,6 +279,14 @@ public class AlarmAction extends ActionSupport {
 		}
 		
 		return SUCCESS;
+	}
+	
+	private long entityId = -1;
+	public long getEntityId() {
+		return entityId;
+	}
+	public void setEntityId(long entityId) {
+		this.entityId = entityId;
 	}
 	
 	public String viewAlarm() throws Exception {

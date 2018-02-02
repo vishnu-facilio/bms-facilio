@@ -154,6 +154,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setSerialNumber(long serialNumber) {
 		this.serialNumber = serialNumber;
 	}
+	
+	private long entityId = -1;
+	public long getEntityId() {
+		return entityId;
+	}
+	public void setEntityId(long entityId) {
+		this.entityId = entityId;
+	}
 
 	private int noOfNotes = -1;
 	public int getNoOfNotes() {

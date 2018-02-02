@@ -140,6 +140,7 @@ public class FacilioConstants {
 		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
 		public static final String ALARM_LIST = "alarms";
+		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";

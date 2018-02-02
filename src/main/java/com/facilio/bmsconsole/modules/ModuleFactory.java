@@ -670,4 +670,12 @@ public class ModuleFactory {
 		taskSection.setTableName("Task_Section");
 		return taskSection;
 	}
+	
+	public static FacilioModule getAlarmEntityModule() {
+		FacilioModule alarmentity = new FacilioModule();
+		alarmentity.setName("alarmentity");
+		alarmentity.setDisplayName("Alarm Entity");
+		alarmentity.setTableName("Alarm_Entity");
+		return alarmentity;
+	}
 }

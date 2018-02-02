@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,8 +14,15 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -95,10 +103,45 @@ public class EventToAlarmJob extends FacilioJob{
 					.orderBy("CREATED_TIME DESC");
 
 			List<Map<String, Object>> props1 = eventSelectBuilder.get();
+			boolean createAlarm = true;
+			Long entityId = null;
 			if(props1 != null && !props1.isEmpty())
+			{
+				createAlarm = false;
+				
+				long alarmId = (long) props1.get(0).get("alarmId");
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+				
+				SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
+						.table("Alarms")
+						.moduleName(FacilioConstants.ContextNames.ALARM)
+						.beanClass(AlarmContext.class)
+						.select(alarmFields)
+						.maxLevel(0);
+				builder.andCustomWhere("Alarms.ID = ?", alarmId);
+
+				List<AlarmContext> alarms = builder.get();
+				long severityId = alarms.get(0).getSeverity().getId();
+				if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals("Clear"))
+				{
+					createAlarm = true;
+					entityId = alarms.get(0).getEntityId();
+				}
+			}
+			else
+			{
+				createAlarm = true;
+			}
+			
+			if(!createAlarm)
 			{
 				//TODO update alarm
 				long alarmId = (long) props1.get(0).get("alarmId");
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+				
 				JSONObject alarm = new JSONObject();
 				JSONArray ids = new JSONArray();
 				ids.add(alarmId);
@@ -131,6 +174,10 @@ public class EventToAlarmJob extends FacilioJob{
 				json.put("alarmClass", event.getAlarmClass());
 				json.put("state", event.getState());
 				json.put("alarmType", 6);
+				if(entityId != null)
+				{
+					json.put("entityId", entityId);
+				}
 
 				if(event.getAssetId() != -1) {
 					JSONObject asset = new JSONObject();

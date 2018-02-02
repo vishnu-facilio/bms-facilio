@@ -35,6 +35,12 @@ public class AddAlarmCommand implements Command {
 			alarm.setModifiedTime(alarm.getCreatedTime());
 			alarm.setSourceType(TicketContext.SourceType.ALARM);
 			
+			if(alarm.getEntityId() == -1)
+			{
+				long entityId = AlarmAPI.addAlarmEntity();
+				alarm.setEntityId(entityId);
+			}
+			
 			if((alarm.getSeverity() == null || alarm.getSeverity().getId() == -1) && alarm.getSeverityString() != null && !alarm.getSeverityString().isEmpty()) {
 				alarm.setSeverity(AlarmAPI.getAlarmSeverity(alarm.getSeverityString()));
 			}
