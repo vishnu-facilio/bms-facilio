@@ -234,5 +234,19 @@ public class DeviceAPI
 					.maxLevel(0);
 			return selectBuilder.get();
 		}
+		
+		
+		public static List<EnergyMeterContext> getAllVirtualMeters() throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
+			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+																			.select(fields)
+																			.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
+																			.beanClass(EnergyMeterContext.class)
+																			.andCustomWhere("IS_VIRTUAL = ?", true);
+			
+			List<EnergyMeterContext> virtualMeters = selectBuilder.get();
+			return virtualMeters;
+		}
 
 }

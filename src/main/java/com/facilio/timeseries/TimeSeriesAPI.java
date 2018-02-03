@@ -67,6 +67,9 @@ public class TimeSeriesAPI {
 			
 			String key=recordList.next();
 			String instanceVal=record.get(key).toString();
+			if(instanceVal==null || instanceVal.isEmpty() || instanceVal.equalsIgnoreCase("NaN")) {
+				continue;
+			}
 
 			String instanceName=key;
 			String deviceName=keyName;
@@ -104,7 +107,7 @@ public class TimeSeriesAPI {
 
 			try {
 				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
-				if(stat==null) {
+				if(stat==null || instanceVal==null || instanceVal.isEmpty() ||  instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
 				Long assetId= (Long) stat.get("assetId");
@@ -162,7 +165,7 @@ public class TimeSeriesAPI {
 				String deviceName=deviceList.next();
 				String instanceVal=deviceRecord.get(deviceName).toString();
 				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
-				if(stat==null) {
+				if(stat==null || instanceVal==null || instanceVal.isEmpty() || instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
 				Long assetId= (Long) stat.get("assetId");

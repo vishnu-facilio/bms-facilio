@@ -415,6 +415,19 @@ public class ReportsUtil
 	}
 	
 	
+	
+	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval) throws Exception {
+		
+		List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
+		
+		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
+		
+		for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
+			insertVirtualMeterReadings(virtualMeters, map.getKey(), map.getValue());
+		}
+		
+	}
+	
 	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()

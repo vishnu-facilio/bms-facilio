@@ -15,6 +15,7 @@ import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Set;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -123,7 +124,7 @@ public class DateTimeUtil
 	public static DateTimeFormatter getDateTimeFormat(String format)
 	{
 		if(format==null) {
-			return DateTimeFormatter.ofPattern("yyyy-MM-dd", getLocale());
+			return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", getLocale());
 		}
 		return DateTimeFormatter.ofPattern(format, getLocale());
 	}
@@ -434,9 +435,23 @@ public class DateTimeUtil
 	
 	public static long getTime(String timeStamp, Boolean... seconds)
 	{
-		//eg: timeStamp="2017-08-09T10:06:10.894752+04:00"; 
+		//eg: timeStamp="2017-08-09T10:06:10.894752+04:00"; for Muscat /Dubai
+		//    timeStamp="2017-08-09T10:06:10.894752Z"; for UTC
+		return getTime(timeStamp,getDateTimeFormat(null),seconds);
+	}
+	
+	public static long getTime(String timeStamp, String format, Boolean... seconds)
+	{
+		//eg: timeStamp="2017-08-09T10:06:10.894752+04:00"; for Muscat /Dubai
 		//    timeStamp="2017-08-09T10:06:10.894752Z";
-		ZonedDateTime zDateTime= ZonedDateTime.parse(timeStamp);
+		return getTime(timeStamp,getDateTimeFormat(format),seconds);
+		
+	}
+	
+	private static long getTime(String timeStamp, DateTimeFormatter dateFormat,Boolean... seconds ) {
+		
+		LocalDateTime dateTime = LocalDateTime.parse(timeStamp, dateFormat);
+		ZonedDateTime zDateTime= dateTime.atZone(getZoneId());
 		return getLong(zDateTime,false,seconds);
 	}
 	
@@ -445,6 +460,26 @@ public class DateTimeUtil
 	}
 	public static long getLastNHour(long currentTime,int hour) {
 		return currentTime - (hour * ONE_HOUR_MILLIS_VALUE);
+	}
+	
+	
+  public static HashMap<Long,Long> getTimeIntervals(long startTime, long endTime, int minutesInterval){
+		
+		long interval=minutesInterval*60*1000;
+		long modTime=startTime+interval;
+		int adjuster=1;
+		if(startTime>=endTime || modTime > endTime) {
+			return null;
+		}
+		HashMap<Long,Long> intervalMap = new LinkedHashMap <Long,Long>();
+		
+		
+		while(modTime<=endTime) {
+			intervalMap.put(startTime, modTime);
+			startTime=modTime+adjuster;
+			modTime=modTime+interval;
+		}
+		return intervalMap;
 	}
 }
 
