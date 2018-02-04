@@ -55,7 +55,7 @@ public class ReportsUtil
 		return roundOff(variance, 2);
 	}
 	
-	private static double unitCost=0.09;
+	private static double unitCost=0.41;
 
 	
 	public static String[] energyUnitConverter(Double value)
@@ -283,7 +283,7 @@ public class ReportsUtil
 		String[] consumptionArray=ReportsUtil.energyUnitConverter(kwh);
 		data.put("consumption",consumptionArray[0]);
 		data.put("units",consumptionArray[1]);
-		data.put("currency","$");
+		data.put("currency","AED");
 		data.put("days", days);
 		
 		String [] costArray=ReportsUtil.getCost(kwh);
@@ -418,7 +418,11 @@ public class ReportsUtil
 	
 	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval) throws Exception {
 		
-		List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
+		insertVirtualMeterReadings(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	}
+	
+	
+    public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime, int minutesInterval) throws Exception {
 		
 		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		
@@ -427,6 +431,7 @@ public class ReportsUtil
 		}
 		
 	}
+	
 	
 	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

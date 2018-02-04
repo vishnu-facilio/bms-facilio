@@ -6,7 +6,9 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -46,7 +48,13 @@ public class TimeSeries extends ActionSupport {
 	
 	public String insertVirtualMeterReadings() throws Exception{
 		
+		if(deviceList==null) {
 		ReportsUtil.insertVirtualMeterReadings(startTime, endTime, interval);
+		}
+		else {
+			List<EnergyMeterContext> virtualMeters =DeviceAPI.getVirtualMeters(deviceList);
+			ReportsUtil.insertVirtualMeterReadings(virtualMeters,startTime, endTime, interval);
+		}
 		return SUCCESS;
 	}
 	

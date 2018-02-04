@@ -240,11 +240,24 @@ public class DeviceAPI
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
 			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
-																			.select(fields)
-																			.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
-																			.beanClass(EnergyMeterContext.class)
-																			.andCustomWhere("IS_VIRTUAL = ?", true);
-			
+					.select(fields)
+					.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
+					.beanClass(EnergyMeterContext.class)
+					.andCustomWhere("IS_VIRTUAL = ?", true);
+
+			List<EnergyMeterContext> virtualMeters = selectBuilder.get();
+			return virtualMeters;
+		}
+		
+		public static List<EnergyMeterContext> getVirtualMeters(String deviceList) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
+			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
+					.select(fields)
+					.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
+					.beanClass(EnergyMeterContext.class)
+					.andCustomWhere("IS_VIRTUAL = ?", true)
+					.andCondition(CriteriaAPI.getCondition("ID","ID", deviceList,NumberOperators.EQUALS));
 			List<EnergyMeterContext> virtualMeters = selectBuilder.get();
 			return virtualMeters;
 		}
