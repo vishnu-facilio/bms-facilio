@@ -17,4 +17,5 @@
 	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 	 <job name='BeforePMReminder' classname = 'com.facilio.bmsconsole.jobs.BeforePMReminderJob' />
 	 <job name='AfterPMReminder' classname = 'com.facilio.bmsconsole.jobs.AfterPMReminderJob' />
+	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' />
 </scheduler>
