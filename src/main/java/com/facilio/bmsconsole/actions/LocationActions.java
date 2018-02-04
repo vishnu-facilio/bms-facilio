@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.LocationAPI;
@@ -19,18 +21,6 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class LocationActions extends ActionSupport {
 	
-	private SetupLayout setup;
-	
-	private List<FacilioField> fields;
-	
-	public SetupLayout getSetup() {
-		return this.setup;
-	}
-	
-	public void setSetup(SetupLayout setup) {
-		this.setup = setup;
-	}
-	
 	public String execute() throws Exception {
 		
 		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
@@ -38,58 +28,32 @@ public class LocationActions extends ActionSupport {
 	    return SUCCESS;
 	}
 	
-	public String newLocation() throws Exception {
-		setSetup(SetupLayout.getNewLocationLayout());
-		FacilioContext context = new FacilioContext();
-		Chain newLocation = FacilioChainFactory.getNewLocationChain();
-		newLocation.execute(context);
-		
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		
-		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		
-		return SUCCESS;
-	}
+//	public String newLocation() throws Exception {
+//		setSetup(SetupLayout.getNewLocationLayout());
+//		FacilioContext context = new FacilioContext();
+//		Chain newLocation = FacilioChainFactory.getNewLocationChain();
+//		newLocation.execute(context);
+//		
+//		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+//		
+//		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+//		
+//		return SUCCESS;
+//	}
 
-	public String editLocation() throws Exception {
+//	public String editLocation() throws Exception {
+//		
+//		setSetup(SetupLayout.getEditLocationLayout());
+//		FacilioContext context = new FacilioContext();
+//		context.put(FacilioConstants.ContextNames.ID, locationId);
+//		Chain editLocation = FacilioChainFactory.getLocationChain();
+//		editLocation.execute(context);
+//		context.get(FacilioConstants.ContextNames.LOCATION);
+//		setLocation((LocationContext) context.get(FacilioConstants.ContextNames.LOCATION));
+//		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+//		return SUCCESS;
+//	}
 		
-		setSetup(SetupLayout.getEditLocationLayout());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, locationId);
-		Chain editLocation = FacilioChainFactory.getLocationChain();
-		editLocation.execute(context);
-		context.get(FacilioConstants.ContextNames.LOCATION);
-		setLocation((LocationContext) context.get(FacilioConstants.ContextNames.LOCATION));
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		return SUCCESS;
-	}
-	
-	public String updateLocation() throws Exception {
-		
-		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		boolean isUpdated = LocationAPI.updateLocation(location);
-
-		return SUCCESS;
-	}
-	
-	public String deleteLocation() throws Exception {
-		
-		long id = getLocationId();
-		boolean isDeleted = LocationAPI.deleteLocation(id, AccountUtil.getCurrentOrg().getOrgId());
-		
-		return SUCCESS;
-	}
-	
-	public String addLocation() throws Exception {
-		
-		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		long locationId = LocationAPI.addLocation(location);
-		
-		setLocationId(locationId);
-		
-		return SUCCESS;
-	}
-	
 	private ActionForm actionForm;
 	public ActionForm getActionForm() {
 		return actionForm;
@@ -117,21 +81,66 @@ public class LocationActions extends ActionSupport {
 	
 	public String locationsList() throws Exception  {
 		
-		setSetup(SetupLayout.getLocationsListLayout());
-		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
+		FacilioContext context = new FacilioContext();
+		Command getLocations = FacilioChainFactory.getAllLocationsCommand();
+		getLocations.execute(context);
+		setLocations((List<LocationContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+//		setSetup(SetupLayout.getLocationsListLayout());
+//		setLocations(LocationAPI.getAllLocations(AccountUtil.getCurrentOrg().getOrgId()));
 		
 		return SUCCESS;
 	}
 	
-//	public String locationsList1() throws Exception {
-//		
-//		FacilioContext context = new FacilioContext();
-//		Chain getAllLocations = FacilioChainFactory.getAllLocationsChain();
-//		getAllLocations.execute(context);
-//		
-//		return SUCCESS;
-//	}
+	public String addLocation() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getLocation());
+		Command addLocation = FacilioChainFactory.addLocationChain();
+		addLocation.execute(context);
+			
+//		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+//		long locationId = LocationAPI.addLocation(location);	
+//		setLocationId(locationId);
+		
+		return SUCCESS;
+	}
+
+	public String updateLocation() throws Exception {
 	
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getLocation());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,getLocationIds());
+		Command updateLocation = FacilioChainFactory.updateLocationChain();
+		updateLocation.execute(context);
+		
+//		location.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+//		boolean isUpdated = LocationAPI.updateLocation(location);
+		return SUCCESS;
+	}
+	
+	public String deleteLocation() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,getLocationIds());
+		Command deleteLocation = FacilioChainFactory.deleteLocationChain();
+		deleteLocation.execute(context);
+		
+//		long id = getLocationId();
+//		boolean isDeleted = LocationAPI.deleteLocation(id, AccountUtil.getCurrentOrg().getOrgId());
+		return SUCCESS;
+	}
+
+	List<Long> locationIds;
+	
+	public List<Long> getLocationIds() {
+		return locationIds;
+	}
+
+	public void setLocationIds(List<Long> locationIds) {
+		this.locationIds = locationIds;
+	}
+
 	private List<LocationContext> locations = null;
 	public List<LocationContext> getLocations() {
 		return locations;
@@ -143,15 +152,4 @@ public class LocationActions extends ActionSupport {
 		this.locations = locations;
 	}
 	
-	private List formlayout;
-	
-	public List getFormlayout() 
-	{
-		return FormLayout.getNewLocationLayout(fields);
-	}
-	
-	public ViewLayout getViewlayout()
-	{
-		return ViewLayout.getViewLocationLayout();
-	}
 }

@@ -252,14 +252,8 @@
 		</action>
 	</package>
 	<package name="skillApi" namespace="/api/skill" extends="home">
-		<action name="layout" class="com.facilio.bmsconsole.actions.SkillActions"
-			method="newSkill">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
-			<result name="success" type="json">
-				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="skilllist" class="com.facilio.bmsconsole.actions.SkillActions" method="skillsList">
+		<action name="skilllist" class="com.facilio.bmsconsole.actions.SkillActions" 
+			method="skillsList">
 			<result name="success" type="json">
 				<param name="includeProperties">skills,skills\[\d+\],skills\[\d+\].*</param>
 			</result>
@@ -287,13 +281,6 @@
 		</action>
 	</package>
 	<package name="locationApi" namespace="/api/location" extends="home">
-<!-- 		<action name="layout" class="com.facilio.bmsconsole.actions.LocationActions" -->
-<!-- 			method="newLocation"> -->
-<!-- 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
-<!-- 			<result name="success" type="json"> -->
-<!-- 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param> -->
-<!-- 			</result> -->
-<!-- 		</action> -->
 		<action name="locationlist" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>

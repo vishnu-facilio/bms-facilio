@@ -26,15 +26,15 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class SkillActions extends ActionSupport {
 
-	private SetupLayout setup;
-
-	public SetupLayout getSetup() {
-		return this.setup;
-	}
-
-	public void setSetup(SetupLayout setup) {
-		this.setup = setup;
-	}
+//	private SetupLayout setup;
+//
+//	public SetupLayout getSetup() {
+//		return this.setup;
+//	}
+//
+//	public void setSetup(SetupLayout setup) {
+//		this.setup = setup;
+//	}
 
 	private ActionForm actionForm;
 
@@ -52,41 +52,41 @@ public class SkillActions extends ActionSupport {
 		return SUCCESS;
 	}
 
-	private List formlayout;
+//	private List formlayout;
+//
+//	public List getFormlayout() {
+//		return FormLayout.getNewSkillLayout(fields);
+//	}
+//
+//	public void setFormlayout(List formlayout) {
+//		this.formlayout = formlayout;
+//	}
+//
+//	private String moduleName;
+//
+//	public String getModuleName() {
+//		return moduleName;
+//	}
+//
+//	public void setModuleName(String moduleName) {
+//		this.moduleName = moduleName;
+//	}
 
-	public List getFormlayout() {
-		return FormLayout.getNewSkillLayout(fields);
-	}
-
-	public void setFormlayout(List formlayout) {
-		this.formlayout = formlayout;
-	}
-
-	private String moduleName;
-
-	public String getModuleName() {
-		return moduleName;
-	}
-
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-
-	private List<FacilioField> fields;
-
-	public String newSkill() throws Exception {
-		setSetup(SetupLayout.getNewSkillLayout());
-		
-		FacilioContext context = new FacilioContext();
-		Chain newSkill = FacilioChainFactory.getNewSkillChain();
-		newSkill.execute(context);
-
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		
-		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-
-		return SUCCESS;
-	}
+//	private List<FacilioField> fields;
+//
+//	public String newSkill() throws Exception {
+//		setSetup(SetupLayout.getNewSkillLayout());
+//		
+//		FacilioContext context = new FacilioContext();
+//		Chain newSkill = FacilioChainFactory.getNewSkillChain();
+//		newSkill.execute(context);
+//
+//		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+//		
+//		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+//
+//		return SUCCESS;
+//	}
 
 	public void setActionForm(ActionForm actionForm) {
 		this.actionForm = actionForm;
@@ -106,27 +106,40 @@ public class SkillActions extends ActionSupport {
 	 * catch(SQLException e) { e.printStackTrace(); } } } return SUCCESS; }
 	 */
 
-	public String newSkillDialog() throws Exception {
+//	public String newSkillDialog() throws Exception {
+//
+//		Connection conn = null;
+//		try {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
+//			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
+//
+//			conn = FacilioConnectionPool.INSTANCE.getConnection();
+//			setModuleName("Skill");
+//			setFormlayout(FormLayout.getNewSkillLayout(fields));
+//		} catch (SQLException e) {
+//			throw e;
+//		} finally {
+//			if (conn != null) {
+//				try {
+//					conn.close();
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		return SUCCESS;
+//	}
+	
+	public String skillsList() throws Exception {
 
-		Connection conn = null;
-		try {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
-			fields = modBean.getAllFields(FacilioConstants.ContextNames.SKILL);
-
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			setModuleName("Skill");
-			setFormlayout(FormLayout.getNewSkillLayout(fields));
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		//setSetup(SetupLayout.getSkillsListLayout());
+		//setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
+		
+		FacilioContext context = new FacilioContext();
+		Command getSkills = FacilioChainFactory.getAllSkillsCommand();
+		getSkills.execute(context);
+		setSkills((List<SkillContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
 		return SUCCESS;
 	}
 
@@ -134,36 +147,38 @@ public class SkillActions extends ActionSupport {
 
 		//skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SKILL, skill);
-		Chain addSkill = FacilioChainFactory.getAddSkillChain();
+		context.put(FacilioConstants.ContextNames.RECORD, getSkill());
+		Chain addSkill = FacilioChainFactory.addSkillChain();
 		addSkill.execute(context);
-		context.get(FacilioConstants.ContextNames.SKILL);
 		
+		//context.get(FacilioConstants.ContextNames.SKILL);
 		//long skillId = SkillAPI.addSkill(skill);
 
-		setSkillId(skill.getId());
+		//setSkillId(skill.getId());
 
 		return SUCCESS;
 	}
 	
-	public String editSkill() throws Exception {
-		
-		setSetup(SetupLayout.getEditSkillLayout());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, skillId);
-		Chain editSkill = FacilioChainFactory.getSkillChain();
-		editSkill.execute(context);
-		context.get(FacilioConstants.ContextNames.SKILL);
-		setSkill((SkillContext) context.get(FacilioConstants.ContextNames.SKILL));
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-		return SUCCESS;
-	}
+//	public String editSkill() throws Exception {
+//		
+//		setSetup(SetupLayout.getEditSkillLayout());
+//		FacilioContext context = new FacilioContext();
+//		context.put(FacilioConstants.ContextNames.ID, skillId);
+//		Chain editSkill = FacilioChainFactory.getSkillChain();
+//		editSkill.execute(context);
+//		context.get(FacilioConstants.ContextNames.SKILL);
+//		setSkill((SkillContext) context.get(FacilioConstants.ContextNames.SKILL));
+//		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+//		return SUCCESS;
+//	}
 
 	public String updateSkill() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getSkill());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,getSkillIds());
 		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
-		Command updateSkill = FacilioChainFactory.getUpdateSkillCommand();
+		Command updateSkill = FacilioChainFactory.updateSkillCommand();
 		updateSkill.execute(context);
 		
 		return SUCCESS;
@@ -172,9 +187,9 @@ public class SkillActions extends ActionSupport {
 	public String deleteSkill() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,getSkillIds());
 		//context.put(FacilioConstants.ContextNames.ID, getSkillId());
-		Command deleteSkill = FacilioChainFactory.getDeleteSkillCommand();
+		Command deleteSkill = FacilioChainFactory.deleteSkillCommand();
 		deleteSkill.execute(context);
 		
 		return SUCCESS;
@@ -209,6 +224,16 @@ public class SkillActions extends ActionSupport {
 	public void setSkills(List<SkillContext> skills) {
 		this.skills = skills;
 	}
+	
+	List<Long> skillIds;
+
+	public List<Long> getSkillIds() {
+		return skillIds;
+	}
+
+	public void setSkillIds(List<Long> skillIds) {
+		this.skillIds = skillIds;
+	}
 
 	public String getModuleLinkName() {
 		return FacilioConstants.ContextNames.SKILL;
@@ -240,17 +265,5 @@ public class SkillActions extends ActionSupport {
 		this.ticketCategories = ticketCategories;
 	}
 
-	public String skillsList() throws Exception {
 
-		//setSetup(SetupLayout.getSkillsListLayout());
-		//setSkills(SkillAPI.getAllSkill(AccountUtil.getCurrentOrg().getOrgId()));
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SKILL, getSkill());
-		Command getSkills = FacilioChainFactory.getAllSkillsCommand();
-		getSkills.execute(context);
-		setSkills((List<SkillContext>)context.get(FacilioConstants.ContextNames.SKILL_LIST));
-		
-		return SUCCESS;
-	}
 }

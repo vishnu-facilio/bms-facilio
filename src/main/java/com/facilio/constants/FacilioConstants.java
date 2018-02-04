@@ -261,6 +261,7 @@ public class FacilioConstants {
 		public static final String GROUPS = "groups";
 		
 		public static final String LOCATION = "location";
+		public static final String LOCATION_LIST = "locations";
 		
 		public static final String REQUESTER = "requester";
 		

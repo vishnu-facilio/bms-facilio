@@ -529,19 +529,42 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	
-	public static Chain getNewLocationChain() {
+	public static Command getAllLocationsCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
+	public static Chain addLocationChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForLocation());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain getAddLocationChain() {
+	public static Chain updateLocationChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new AddLocationCommand());
+		c.addCommand(SetTableNamesCommand.getForLocation());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain deleteLocationChain() {
+		
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForLocation());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -552,48 +575,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetLocationCommand());
-		
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddSkillChain()
-	{
-		Chain c = new TransactionChain();
-		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new AddSkillCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getSkillChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetSkillCommand());
-		
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getNewSkillChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Command getUpdateSkillCommand() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new LoadModuleNameCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateSkillCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -603,18 +584,69 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForSkill());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GetAllSkillsCommand());
+		//c.addCommand(new GetAllSkillsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
 	
-	public static Command getDeleteSkillCommand(){
-		Chain c = new ChainBase();
-		
-		//c.addCommand(SetTableNamesCommand.getForSkill());
-		c.addCommand(new DeleteSkillCommand());
-		//addCleanUpCommand(c);
+	public static Chain addSkillChain()
+	{
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		//c.addCommand(new AddSkillCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Command updateSkillCommand() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		//c.addCommand(new UpdateSkillCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	
+	
+	public static Command deleteSkillCommand(){
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSkill());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		//c.addCommand(SetTableNamesCommand.getForSkill());
+		//c.addCommand(new DeleteSkillCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+//	public static Chain getSkillChain() {
+//		Chain c = new ChainBase();
+//		c.addCommand(SetTableNamesCommand.getForSkill());
+//		c.addCommand(new LoadModuleNameCommand());
+//		c.addCommand(new LoadAllFieldsCommand());
+//		c.addCommand(new GetSkillCommand());
+//		
+//		addCleanUpCommand(c);
+//		return c;
+//	}
+	
+//	public static Chain getNewSkillChain() {
+//		Chain c = new ChainBase();
+//		c.addCommand(SetTableNamesCommand.getForSkill());
+//		c.addCommand(new LoadModuleNameCommand());
+//		c.addCommand(new LoadAllFieldsCommand());
+//		addCleanUpCommand(c);
+//		return c;
+//	}
+	
+	
 	
 	public static Chain getAllCampusChain() {
 		Chain c = new ChainBase();
