@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -208,6 +209,23 @@ public class DashboardUtil {
 			reportFolderContext.setId(folderId);
 			return reportFolderContext;
 		}
+	}
+	public static ReportFolderContext getBuildingReportFolder(String moduleName, long buildingId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportFolderFields())
+				.table(ModuleFactory.getReportFolder().getTableName())
+				.andCustomWhere("ORGID = ? AND MODULEID = ? AND BUILDING_ID = ?", AccountUtil.getCurrentOrg().getId(), module.getModuleId(), buildingId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			ReportFolderContext reportFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFolderContext.class);
+			return reportFolderContext;
+		}
+		return null;
 	}
 	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
 		
@@ -583,5 +601,260 @@ public class DashboardUtil {
 			return dashboardList;
 		}
 		return null;
+	}
+	
+	public static boolean addReportFolder(ReportFolderContext reportFolder) throws Exception {
+		
+		if (reportFolder != null) {
+			reportFolder.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReportFolder().getTableName())
+					.fields(FieldFactory.getReportFolderFields());
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(reportFolder);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			
+			reportFolder.setId((Long) props.get("id"));
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean addReport(ReportContext1 reportContext) throws Exception {
+		
+		if (reportContext != null) {
+			List<FacilioField> fields = FieldFactory.getReportFields();
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getReport().getTableName())
+					.fields(fields);
+
+			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
+			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
+				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
+			}
+			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
+				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
+			}
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+
+			reportContext.setId((Long) props.get("id"));
+			if(reportContext.getCriteria() != null) {
+				
+				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportCriteria().getTableName())
+						.fields(FieldFactory.getReportCriteriaFields());
+				
+				Map<String, Object> prop = new HashMap<String, Object>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("criteriaId", criteriaId);
+				insertBuilder.addRecord(prop).save();
+			}
+			if(reportContext.getReportUserFilters() != null) {
+				for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
+					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext());
+					Map<String, Object> prop = new HashMap<String, Object>();
+					prop.put("reportId", reportContext.getId());
+					prop.put("reportFieldId", userFilterField.getId());
+					prop.put("whereClause", DashboardUtil.getWhereClauseForUserFilter(userFilterField.getField()));
+					
+					insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getReportUserFilter().getTableName())
+							.fields(FieldFactory.getReportUserFilterFields());
+					
+					insertBuilder.addRecord(prop).save();
+				}
+			}
+			if(reportContext.getReportThresholds() != null) {
+				for(ReportThreshold threshhold : reportContext.getReportThresholds()) {
+					
+					Map<String, Object> prop = FieldUtil.getAsProperties(threshhold);
+					prop.put("reportId", reportContext.getId());
+
+					insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getReportThreshold().getTableName())
+							.fields(FieldFactory.getReportThresholdFields());
+					
+					insertBuilder.addRecord(prop).save();
+				}
+			}
+			if(reportContext.getDateFilter() != null) {
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
+				prop.put("reportId", reportContext.getId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportDateFilter().getTableName())
+						.fields(FieldFactory.getReportDateFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
+			if(reportContext.getEnergyMeter() != null) {
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+				prop.put("reportId", reportContext.getId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportEnergyMeter().getTableName())
+						.fields(FieldFactory.getReportEnergyMeterFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean populateBuildingEnergyReports(long buildingId, String buildingName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("energydata");
+		
+		if (getBuildingReportFolder(module.getName(), buildingId) != null) {
+			// already building report folder exists...
+			return true;
+		}
+		
+		FacilioField ttimeFld = modBean.getField("ttime", module.getName());
+		
+		// create building folder
+		ReportFolderContext buildingFolder = new ReportFolderContext();
+		buildingFolder.setName(buildingName + " Reports");
+		buildingFolder.setModuleId(module.getModuleId());
+		buildingFolder.setBuildingId(buildingId);
+		
+		DashboardUtil.addReportFolder(buildingFolder);
+		
+		// High-res data report
+		ReportContext1 highResReport = new ReportContext1();
+		highResReport.setName("Electricity Demand Today");
+		highResReport.setDescription("Daily Electricity Load in High-Resolution");
+		highResReport.setParentFolderId(buildingFolder.getId());
+		highResReport.setChartType(ReportContext1.ReportChartType.AREA.getValue());
+		
+		ReportFieldContext xAxisFld = new ReportFieldContext();
+		xAxisFld.setModuleFieldId(ttimeFld.getId());
+		highResReport.setxAxisField(xAxisFld);
+		highResReport.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.ACTUAL.getValue());
+		highResReport.setxAxisLabel("Time");
+		
+		ReportFieldContext y1AxisFld = new ReportFieldContext();
+		y1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
+		highResReport.setY1AxisField(y1AxisFld);
+		highResReport.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		highResReport.setY1AxisLabel("Energy Consumption");
+		highResReport.setY1AxisUnit("kw");
+		
+		ReportEnergyMeterContext energyMeterFilter = new ReportEnergyMeterContext();
+		energyMeterFilter.setBuildingId(buildingId);
+		highResReport.setEnergyMeter(energyMeterFilter);
+		
+		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
+		dateFilter.setFieldId(ttimeFld.getId());
+		dateFilter.setOperatorId(DateOperators.TODAY.getOperatorId());
+		highResReport.setDateFilter(dateFilter);
+		
+		DashboardUtil.addReport(highResReport);
+		
+		// End Use breakdown
+		ReportContext1 endUseBreakdown = new ReportContext1();
+		endUseBreakdown.setName("End Use Breakdown");
+		endUseBreakdown.setDescription("End Use Breakdown");
+		endUseBreakdown.setParentFolderId(buildingFolder.getId());
+		endUseBreakdown.setChartType(ReportContext1.ReportChartType.STACKED_BAR.getValue());
+		
+		ReportFieldContext endUseXAxisFld = new ReportFieldContext();
+		endUseXAxisFld.setModuleFieldId(ttimeFld.getId());
+		endUseBreakdown.setxAxisField(endUseXAxisFld);
+		endUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		endUseBreakdown.setxAxisLabel("Date");
+		
+		ReportFieldContext endUseY1AxisFld = new ReportFieldContext();
+		endUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
+		endUseBreakdown.setY1AxisField(endUseY1AxisFld);
+		endUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		endUseBreakdown.setY1AxisLabel("Energy Consumption");
+		endUseBreakdown.setY1AxisUnit("kwh");
+		
+		ReportEnergyMeterContext endUseEnergyMeterFilter = new ReportEnergyMeterContext();
+		endUseEnergyMeterFilter.setBuildingId(buildingId);
+		endUseEnergyMeterFilter.setGroupBy("service");
+		endUseBreakdown.setEnergyMeter(endUseEnergyMeterFilter);
+		
+		ReportDateFilterContext endUseDateFilter = new ReportDateFilterContext();
+		endUseDateFilter.setFieldId(ttimeFld.getId());
+		endUseDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
+		endUseBreakdown.setDateFilter(endUseDateFilter);
+		
+		DashboardUtil.addReport(endUseBreakdown);
+		
+		// Cost usage by End use
+		ReportContext1 costUseBreakdown = new ReportContext1();
+		costUseBreakdown.setName("Cost usage by End use");
+		costUseBreakdown.setDescription("End Use Breakdown");
+		costUseBreakdown.setParentFolderId(buildingFolder.getId());
+		costUseBreakdown.setChartType(ReportContext1.ReportChartType.STACKED_BAR.getValue());
+		
+		ReportFieldContext costUseXAxisFld = new ReportFieldContext();
+		costUseXAxisFld.setModuleFieldId(ttimeFld.getId());
+		costUseBreakdown.setxAxisField(costUseXAxisFld);
+		costUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		costUseBreakdown.setxAxisLabel("Date");
+		
+		ReportFieldContext costUseY1AxisFld = new ReportFieldContext();
+		costUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
+		costUseBreakdown.setY1AxisField(costUseY1AxisFld);
+		costUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		costUseBreakdown.setY1AxisLabel("Cost Usage");
+		costUseBreakdown.setY1AxisUnit("cost");
+		
+		ReportEnergyMeterContext costUseEnergyMeterFilter = new ReportEnergyMeterContext();
+		costUseEnergyMeterFilter.setBuildingId(buildingId);
+		costUseEnergyMeterFilter.setGroupBy("service");
+		costUseBreakdown.setEnergyMeter(costUseEnergyMeterFilter);
+		
+		ReportDateFilterContext costUseDateFilter = new ReportDateFilterContext();
+		costUseDateFilter.setFieldId(ttimeFld.getId());
+		costUseDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
+		costUseBreakdown.setDateFilter(costUseDateFilter);
+		
+		DashboardUtil.addReport(costUseBreakdown);
+		
+		// Daily Energy breakdown
+		ReportContext1 dailyBreakdown = new ReportContext1();
+		dailyBreakdown.setName("Daily energy breakdown");
+		dailyBreakdown.setDescription("Daily energy breakdown");
+		dailyBreakdown.setParentFolderId(buildingFolder.getId());
+		dailyBreakdown.setChartType(ReportContext1.ReportChartType.BAR.getValue());
+		
+		ReportFieldContext dailyXAxisFld = new ReportFieldContext();
+		dailyXAxisFld.setModuleFieldId(ttimeFld.getId());
+		dailyBreakdown.setxAxisField(dailyXAxisFld);
+		dailyBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		dailyBreakdown.setxAxisLabel("Date");
+		
+		ReportFieldContext dailyY1AxisFld = new ReportFieldContext();
+		dailyY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
+		dailyBreakdown.setY1AxisField(dailyY1AxisFld);
+		dailyBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		dailyBreakdown.setY1AxisLabel("Energy Consumption");
+		dailyBreakdown.setY1AxisUnit("kwh");
+		
+		ReportEnergyMeterContext dailyEnergyMeterFilter = new ReportEnergyMeterContext();
+		dailyEnergyMeterFilter.setBuildingId(buildingId);
+		dailyBreakdown.setEnergyMeter(dailyEnergyMeterFilter);
+		
+		ReportDateFilterContext dailyDateFilter = new ReportDateFilterContext();
+		dailyDateFilter.setFieldId(ttimeFld.getId());
+		dailyDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
+		dailyBreakdown.setDateFilter(dailyDateFilter);
+		
+		DashboardUtil.addReport(dailyBreakdown);
+		
+		return true;
 	}
 }

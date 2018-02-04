@@ -9,6 +9,7 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	Long parentFolderId;
 	String name;
 	List<ReportContext1> reports;
+	Long buildingId;
 	public Long getParentFolderId() {
 		return parentFolderId;
 	}
@@ -26,5 +27,11 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Long getBuildingId() {
+		return buildingId;
+	}
+	public void setBuildingId(Long buildingId) {
+		this.buildingId = buildingId;
 	}
 }

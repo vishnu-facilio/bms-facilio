@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -141,6 +143,19 @@ public class WorkOrderReportAction extends ActionSupport {
 		// calling this method to create default report folder if not already exists
 		DashboardUtil.getDefaultReportFolder(moduleName);
 		
+		if ("energydata".equalsIgnoreCase(moduleName)) {
+			JSONObject buildingMap = ReportsUtil.getBuildingMap();
+			if (buildingMap != null) {
+				Iterator itr = buildingMap.keySet().iterator();
+				while (itr.hasNext()) {
+					Object key = itr.next();
+					String value = (String) buildingMap.get(key);
+					
+					DashboardUtil.populateBuildingEnergyReports(Long.parseLong(key.toString()), value);
+				}
+			}
+		}
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFolderFields())
 				.table(ModuleFactory.getReportFolder().getTableName())
@@ -166,6 +181,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	
 		return SUCCESS;
 	}
+	
 	public String summary() throws Exception {
 		String technicianGroupBy = "{\""+FacilioConstants.Reports.REPORT_FIELD+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_ALIAS+"\":\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\",\""+FacilioConstants.Reports.FIELD_MODULE+"\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\"}";
 		String technicianNotNull = "\""+FacilioConstants.Ticket.ASSIGNED_TO_ID+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is not empty\"}";

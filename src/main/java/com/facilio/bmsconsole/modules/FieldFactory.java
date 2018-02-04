@@ -2171,6 +2171,13 @@ public class FieldFactory {
 		parentFolderId.setColumnName("PARENT_FOLDER_ID");
 		parentFolderId.setModule(module);
 		fields.add(parentFolderId);
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
 
 		FacilioField name = new FacilioField();
 		name.setName("name");

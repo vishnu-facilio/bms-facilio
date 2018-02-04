@@ -219,91 +219,14 @@ public class DashboardAction extends ActionSupport {
 
 	public String addReport() throws Exception {
 		
-		List<FacilioField> fields = FieldFactory.getReportFields();
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getReport().getTableName())
-				.fields(fields);
-		
 		if (reportContext.getParentFolderId() == null || reportContext.getParentFolderId() < 0) {
 			// if report parent folder not exists, mapping to default folder 
 			ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
 			reportContext.setParentFolderId(defaultFolder.getId());
 		}
 
-		reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
-		if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
-			reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
-		}
-		if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
-			reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
-		}
+		DashboardUtil.addReport(reportContext);
 		
-		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-
-		reportContext.setId((Long) props.get("id"));
-		if(reportContext.getCriteria() != null) {
-			
-			Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
-			insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getReportCriteria().getTableName())
-					.fields(FieldFactory.getReportCriteriaFields());
-			
-			Map<String, Object> prop = new HashMap<String, Object>();
-			prop.put("reportId", reportContext.getId());
-			prop.put("criteriaId", criteriaId);
-			insertBuilder.addRecord(prop).save();
-		}
-		if(reportContext.getReportUserFilters() != null) {
-			for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
-				ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext());
-				Map<String, Object> prop = new HashMap<String, Object>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("reportFieldId", userFilterField.getId());
-				prop.put("whereClause", DashboardUtil.getWhereClauseForUserFilter(userFilterField.getField()));
-				
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportUserFilter().getTableName())
-						.fields(FieldFactory.getReportUserFilterFields());
-				
-				insertBuilder.addRecord(prop).save();
-			}
-		}
-		if(reportContext.getReportThresholds() != null) {
-			for(ReportThreshold threshhold : reportContext.getReportThresholds()) {
-				
-				Map<String, Object> prop = FieldUtil.getAsProperties(threshhold);
-				prop.put("reportId", reportContext.getId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportThreshold().getTableName())
-						.fields(FieldFactory.getReportThresholdFields());
-				
-				insertBuilder.addRecord(prop).save();
-			}
-		}
-		if(reportContext.getDateFilter() != null) {
-			Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
-			prop.put("reportId", reportContext.getId());
-
-			insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getReportDateFilter().getTableName())
-					.fields(FieldFactory.getReportDateFilterFields());
-			
-			insertBuilder.addRecord(prop).save();
-		}
-		if(reportContext.getEnergyMeter() != null) {
-			Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-			prop.put("reportId", reportContext.getId());
-
-			insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getReportEnergyMeter().getTableName())
-					.fields(FieldFactory.getReportEnergyMeterFields());
-			
-			insertBuilder.addRecord(prop).save();
-		}
 		return SUCCESS;
 	}
 	
@@ -314,14 +237,7 @@ public class DashboardAction extends ActionSupport {
 		
 		reportFolderContext.setModuleId(module.getModuleId());
 		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getReportFolder().getTableName())
-				.fields(FieldFactory.getReportFolderFields());
-		reportFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		reportFolderContext.setId((Long) props.get("id"));
+		DashboardUtil.addReportFolder(reportFolderContext);
 		
 		return SUCCESS;
 	}
@@ -404,7 +320,7 @@ public class DashboardAction extends ActionSupport {
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
-			if (this.dateFilter != null) {
+			if (this.dateFilter != null && reportContext.getxAxisaggregateFunction() != FormulaContext.DateAggregateOperator.ACTUAL.getValue()) {
 				int oprId = Integer.parseInt(this.dateFilter);
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;

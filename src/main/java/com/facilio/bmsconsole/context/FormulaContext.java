@@ -163,6 +163,7 @@ public class FormulaContext {
 	
 	public enum StringAggregateOperator implements AggregateOperator {
 		
+		ACTUAL(0,"{$place_holder$}"),
 		COUNT(1,"count({$place_holder$})");
 		
 		private Integer value;
@@ -189,6 +190,7 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
+		ACTUAL(0,"actual", "{$place_holder$}"),
 		COUNT(1,"count","count({$place_holder$})"),
 		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')"),
 		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
