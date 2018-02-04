@@ -143,7 +143,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		// calling this method to create default report folder if not already exists
 		DashboardUtil.getDefaultReportFolder(moduleName);
 		
-		if ("energydata".equalsIgnoreCase(moduleName)) {
+		if ("energydata".equalsIgnoreCase(moduleName) && AccountUtil.getCurrentOrg().getOrgId() == 58) {
 			JSONObject buildingMap = ReportsUtil.getBuildingMap();
 			if (buildingMap != null) {
 				Iterator itr = buildingMap.keySet().iterator();
