@@ -344,7 +344,7 @@ public class ReportActions extends ActionSupport {
 		if(!fields.isEmpty())
 		{
 			groupBy=groupBy.append(fields.get(0).getName());
-			fields.add(ReportsUtil.getField("TIME","MAX(TTIME)",FieldType.NUMBER));
+			fields.add(ReportsUtil.getField("TIME","MIN(TTIME)",FieldType.NUMBER));
 		}
 
 		FacilioField energyFld = ReportsUtil.getEnergyField();
