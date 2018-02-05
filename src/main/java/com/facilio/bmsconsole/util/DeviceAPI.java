@@ -252,12 +252,14 @@ public class DeviceAPI
 		public static List<EnergyMeterContext> getVirtualMeters(String deviceList) throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+			
 			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
 					.select(fields)
 					.moduleName(FacilioConstants.ContextNames.ENERGY_METER)
 					.beanClass(EnergyMeterContext.class)
 					.andCustomWhere("IS_VIRTUAL = ?", true)
-					.andCondition(CriteriaAPI.getCondition("ID","ID", deviceList,NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getIdCondition(deviceList, module));
 			List<EnergyMeterContext> virtualMeters = selectBuilder.get();
 			return virtualMeters;
 		}

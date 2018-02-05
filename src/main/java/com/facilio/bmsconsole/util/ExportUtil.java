@@ -46,7 +46,7 @@ public class ExportUtil {
 		int rowCount = 1;
 		for(Map<String, Object> record : records)
 		{
-			HSSFRow row = sheet.createRow((short) rowCount);
+			HSSFRow row = sheet.createRow(rowCount);
 			i = 0;
 			for(FacilioField field : fields)
 			{

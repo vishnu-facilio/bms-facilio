@@ -138,6 +138,14 @@ public class CriteriaAPI {
 		return idCondition;
 	}
 	
+	public static Condition getIdCondition(String idList, FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(idList);
+		return idCondition;
+	}
+	
 	public static Condition getCondition( FacilioField field,List<Long> values,Operator operator) {
 		String val = StringUtils.join(values, ",");
 		return getCondition(field, val, operator);
