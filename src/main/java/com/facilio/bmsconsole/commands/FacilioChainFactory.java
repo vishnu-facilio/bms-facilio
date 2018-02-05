@@ -1449,32 +1449,60 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getSpaceCategoriesChain() {
+	public static Chain getAllSpaceCategoriesChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new GetSpaceCategoriesCommand());
+		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
-		return c;
+		return c;	
+//		Chain c = new ChainBase();
+//		c.addCommand(new GetSpaceCategoriesCommand());
+//		addCleanUpCommand(c);
+//		return c;
 	}
 	
 	public static Chain addSpaceCategoryChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddSpaceCategoryCommand());
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
 		addCleanUpCommand(c);
 		return c;
+		
+//		c.addCommand(new AddSpaceCategoryCommand());
+//		addCleanUpCommand(c);
+//		return c;
 	}
 	
-	public static Chain editSpaceCategoryChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new EditSpaceCategoryCommand());
+	public static Chain updateSpaceCategoryChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
 		addCleanUpCommand(c);
-		return c;		
+		return c;
+//		
+//		c.addCommand(new EditSpaceCategoryCommand());
+//		addCleanUpCommand(c);
+//		return c;		
 	}
 	
 	public static Chain deleteSpaceCategoryChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new DeleteSpaceCategoryCommand());
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
 		addCleanUpCommand(c);
-		return c;		
+		return c;
+		
+//		c.addCommand(new DeleteSpaceCategoryCommand());
+//		addCleanUpCommand(c);
+//		return c;		
 	}
 	
 	public static Chain getAddReadingChain() {

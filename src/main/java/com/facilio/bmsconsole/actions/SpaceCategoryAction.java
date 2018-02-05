@@ -32,40 +32,83 @@ public class SpaceCategoryAction  extends ActionSupport{
 		this.spaceCategories = spaceCategories;
 	}
 	
+	List<Long> spaceCategoryIds;
+	
+	
+	public List<Long> getSpaceCategoryIds() {
+		return spaceCategoryIds;
+	}
+
+	public void setSpaceCategoryIds(List<Long> spaceCategoryIds) {
+		this.spaceCategoryIds = spaceCategoryIds;
+	}
+	
+	String resultMessage;
+	
+
+	public String getResultMessage() {
+		return resultMessage;
+	}
+
+	public void setResultMessage(String resultMessage) {
+		this.resultMessage = resultMessage;
+	}
+	boolean resultAction;
+	
+
+	public boolean isResultAction() {
+		return resultAction;
+	}
+
+	public void setResultAction(boolean resultAction) {
+		this.resultAction = resultAction;
+	}
+
 	public String spaceCategoriesList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain getSpaceCategoriesChain = FacilioChainFactory.getSpaceCategoriesChain();
+		Chain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
 		getSpaceCategoriesChain.execute(context);
-		setSpaceCategories((List<SpaceCategoryContext>)context.get(FacilioConstants.ContextNames.SPACECATEGORIESLIST));
+		setSpaceCategories((List<SpaceCategoryContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
 		return SUCCESS;
 	}
 	
 	public String addSpaceCategory() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACECATEGORY, getSpaceCategory());
+		context.put(FacilioConstants.ContextNames.RECORD, getSpaceCategory());
 		Chain addSpaceCategoryChain = FacilioChainFactory.addSpaceCategoryChain();
 		addSpaceCategoryChain.execute(context);
 		
 		return SUCCESS;
 	}
 	
-	public String editSpaceCategory() throws Exception {
+	public String updateSpaceCategory() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACECATEGORY, getSpaceCategory());
-		Chain editSpaceCategoryChain = FacilioChainFactory.editSpaceCategoryChain();
-		editSpaceCategoryChain.execute(context);
+		context.put(FacilioConstants.ContextNames.RECORD, getSpaceCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getSpaceCategoryIds());
+		Chain updateSpaceCategoryChain = FacilioChainFactory.updateSpaceCategoryChain();
+		updateSpaceCategoryChain.execute(context);
 		
 		return SUCCESS;
 	}
 	
-	public String deleteSpaceCategory() throws Exception {
+	public String deleteSpaceCategory() {
+		try {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SPACECATEGORY, getSpaceCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getSpaceCategoryIds());
 		Chain deleteSpaceCategoryChain = FacilioChainFactory.deleteSpaceCategoryChain();
 		deleteSpaceCategoryChain.execute(context);
-		
+		setResultAction(true);
+		setResultMessage("Category deleted Successfully");
 		return SUCCESS;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			setResultAction(false);
+			setResultMessage("Error in deleting Category");
+			return ERROR;
+		}
 	}
 	
 

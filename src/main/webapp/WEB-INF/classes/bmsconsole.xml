@@ -237,7 +237,7 @@
 			</result>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
-			method="editSpaceCategory">
+			method="updateSpaceCategory">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
@@ -247,7 +247,10 @@
 			method="deleteSpaceCategory">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
+				<param name="includeProperties">resultMessage,resultAction</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">resultMessage,resultAction</param>
 			</result>
 		</action>
 	</package>

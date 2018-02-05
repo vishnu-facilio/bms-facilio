@@ -101,4 +101,7 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForController(){
 		return new SetTableNamesCommand("controller","Controller");
 	}
+	public static SetTableNamesCommand getForSpaceCategory(){
+		return new SetTableNamesCommand("spacecategory","Space_Category");
+	}
 }
