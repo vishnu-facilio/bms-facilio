@@ -70,7 +70,45 @@ state = PORTAL-yogendrababu
 		this.jsonresponse.put(key, value);
 	}
 	private Map jsonresponse = new HashMap();
-	
+
+	private String newPassword;
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public String changePassword() throws Exception {
+		boolean verifyOldPassword = verifyPassword(getEmailaddress(), cryptWithMD5(password));
+		if(verifyOldPassword) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement("UPDATE faciliousers SET password = ? WHERE email= ?");
+				pstmt.setString(1, cryptWithMD5(newPassword));
+				pstmt.setString(2, emailaddress);
+				pstmt.executeUpdate();
+
+			} catch(SQLException | RuntimeException e) {
+				e.printStackTrace();
+				throw e;
+			} finally {
+				DBUtil.closeAll(conn, pstmt);
+			}
+			setJsonresponse("message", "Password changed successfully");
+			setJsonresponse("status", "success");
+			return SUCCESS;
+		} else {
+			setJsonresponse("message", "Current Password is incorrect");
+			setJsonresponse("status", "failure");
+			return ERROR;
+		}
+	}
+
 	public String validatelogin() throws Exception
 	{
 		try {

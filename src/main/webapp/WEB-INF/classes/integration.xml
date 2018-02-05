@@ -58,32 +58,45 @@
 		</result>
 	</action>
 
-	<action name="apilogin" class="com.facilio.integration.actions.Home"
-		method="generateAuthToken">
+	<action name="opChangePassword" class="com.facilio.integration.actions.Home"
+			method="changePassword">
 		<result name="success" type="json">
-				<param name="includeProperties">jsonresponse.*</param>
-			</result>
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
+
+
+	<action name="apilogin" class="com.facilio.integration.actions.Home"
+	method="generateAuthToken">
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
 	</action>
 	
-		<action name="apisignup" class="com.facilio.integration.actions.Home"
-		method="signupUser">
+	<action name="apisignup" class="com.facilio.integration.actions.Home"
+	method="signupUser">
 		<result name="success" type="json">
-				<param name="includeProperties">jsonresponse.*</param>
-			</result>
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
 	</action>
-		<action name="confirmpayment" class="com.facilio.integration.actions.Home"
+
+	<action name="confirmpayment" class="com.facilio.integration.actions.Home"
 		method="confirmPayment">
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
-			</result>
+		</result>
 	</action>
+
 	<action name="faciliologin" class="com.facilio.integration.actions.Home">
 		<result>/urjanet/faciliologin.jsp</result>
 	</action>
+
 	<action name="respondToken" class="com.facilio.integration.actions.Home" method="getToken">
-		
 		<result >/urjanet/login.jsp</result>
-		</action>
+	</action>
 			
   
 	</package>

@@ -109,13 +109,13 @@ public class FacilioContextListener implements ServletContextListener {
 		System.out.println("Flyway migration handler started...");
 		
 		DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
-		
+		long startTime = System.currentTimeMillis();
 		Flyway flyway = new Flyway();
 		flyway.setDataSource(ds);
 		flyway.setBaselineOnMigrate(true);
 		int mig_status = flyway.migrate();
 		
-		System.out.println("Flyway migration status: "+mig_status);
+		System.out.println("Flyway migration status: "+mig_status +" time taken in ms : " + (System.currentTimeMillis() - startTime));
 	}
 	
 	/*private void createTables() throws SQLException, IOException {
