@@ -126,7 +126,7 @@ public class FacilioConstants {
 		
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
-		
+		public static final String TEMPLATE_ID = "templateId";
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
 		

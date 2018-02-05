@@ -23,4 +23,6 @@ public interface ModuleCRUDBean {
 	public int updateAlarmAsset(long assetId, String node) throws Exception;
 	
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
+	
+	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
 }

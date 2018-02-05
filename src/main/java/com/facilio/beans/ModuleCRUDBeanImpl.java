@@ -154,12 +154,19 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		return -1;
 	}
-
+	
 	@Override
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
+		return addWorkOrderFromPM(pm, -1);
+	}
+
+	@Override
+	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception {
 		// TODO Auto-generated method stub
 		if (pm != null) {
-			long templateId = pm.getTemplateId();
+			if(templateId == -1) {
+				templateId = pm.getTemplateId();
+			}
 			JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(),
 					templateId);
 

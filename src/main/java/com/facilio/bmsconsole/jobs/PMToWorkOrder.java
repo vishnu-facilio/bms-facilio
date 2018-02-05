@@ -7,7 +7,9 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -28,8 +30,12 @@ public class PMToWorkOrder extends FacilioJob {
 			
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
 			FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
+			
+			List<FacilioField> fields = FieldFactory.getPMJobFields();
+			fields.addAll(FieldFactory.getPMTriggerFields());
+			
 			GenericSelectRecordBuilder pmTriggerBuilder = new GenericSelectRecordBuilder()
-															.select(FieldFactory.getPMTriggerFields())
+															.select(fields)
 															.table(pmTriggerModule.getTableName())
 															.innerJoin(pmJobsModule.getTableName())
 															.on(pmTriggerModule.getTableName()+".ID = "+pmJobsModule.getTableName()+".PM_TRIGGER_ID")
@@ -38,9 +44,13 @@ public class PMToWorkOrder extends FacilioJob {
 			
 			List<Map<String, Object>> props = pmTriggerBuilder.get();
 			if(props != null && !props.isEmpty()) {
-				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(props.get(0), PMTriggerContext.class);
+				Map<String, Object> prop = props.get(0);
+				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
+				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
+				pmTrigger.setId(pmJob.getPmTriggerId());
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
+				context.put(FacilioConstants.ContextNames.TEMPLATE_ID, pmJob.getTemplateId());
 				context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
 				context.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
 				context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);

@@ -19,7 +19,14 @@ public class ExecutePMCommand implements Command {
 		if(pmId != -1) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
-			WorkOrderContext wo = bean.addWorkOrderFromPM(pm);
+			WorkOrderContext wo;
+			Long templateId = (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
+			if (templateId == null) {
+				wo = bean.addWorkOrderFromPM(pm);
+			}
+			else {
+				wo = bean.addWorkOrderFromPM(pm, templateId);
+			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.ID, wo.getId());
