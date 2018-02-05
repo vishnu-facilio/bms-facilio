@@ -292,6 +292,8 @@ public class FacilioConstants {
 		public static final String PM_REMINDER_TYPE = "pmremindertype";
 		public static final String PM_TRIGGERS = "pmtriggers";
 		public static final String PM_JOB = "pmjob";
+		public static final String PM_RESOURCE_ID = "pmresourceid";
+		public static final String PM_ID = "pmresourceid";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
 		public static final String PREVENTIVE_MAINTENANCE_TRIGGERS_LIST = "preventivemaintenancetriggerss";

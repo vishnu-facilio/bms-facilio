@@ -218,6 +218,14 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
 	private PMJobsContext pmJob;
 	public PMJobsContext getPmJob() {
 		return pmJob;
@@ -231,6 +239,8 @@ public class WorkOrderAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PM_JOB, pmJob);
+		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 		
 		Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceJobChain();
 		updatePM.execute(context);

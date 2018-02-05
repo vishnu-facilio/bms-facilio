@@ -6,7 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance {
-
+	
 	private long id = -1;
 	public long getId() {
 		return id;

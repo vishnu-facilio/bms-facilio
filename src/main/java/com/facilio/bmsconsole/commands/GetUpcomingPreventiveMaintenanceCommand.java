@@ -10,11 +10,17 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.tasker.executor.ScheduleInfo;
@@ -56,8 +62,24 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 									List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, startTime, endTime);
 									if(pmJobs != null && !pmJobs.isEmpty()) {
 										for(PMJobsContext pmJob : pmJobs) {
-											Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
-											pmPairs.add(pair);
+											if(pmJob.getTemplateId() != -1)
+											{
+												Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
+												PreventiveMaintenance clonedPM =  FieldUtil.getAsBeanFromMap(pmProps, PreventiveMaintenance.class);
+												
+												JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pmJob.getTemplateId());
+												JSONObject content = template.getTemplate(null);
+												WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
+												clonedPM.setAssignedToid(wo.getAssignedTo().getId());
+												
+												Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, clonedPM);
+												pmPairs.add(pair);
+											}
+											else
+											{
+												Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
+												pmPairs.add(pair);
+											}
 										}
 										virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 									}
