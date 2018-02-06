@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
@@ -147,6 +148,20 @@ public class TemplateAPI {
 					return getExcelTemplateFromMap(templateMap);
 				}
 			}break;
+			case ASSIGNMENT: {
+				FacilioModule module = ModuleFactory.getAssignmentTemplatesModule();
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getAssignmentTemplateFields())
+						.table(module.getTableName())
+						.andCondition(CriteriaAPI.getIdCondition(id, module))
+						;
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getAssignmentTemplateFromMap(templateMap);
+				}
+			}break;
 			case JSON:
 			case WORKORDER:
 			case ALARM:
@@ -239,6 +254,27 @@ public class TemplateAPI {
 																.andCustomWhere("ID = ?", id);
 		
 		return updateRecordBuilder.update(templateProps);
+	}
+	
+	public static long addAssignmentTemplate(long orgId, AssignmentTemplate template) throws Exception {
+		template.setOrgId(orgId);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder assignmentTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("Assignment_Templates")
+																.fields(FieldFactory.getAssignmentTemplateFields())
+																.addRecord(templateProps);
+		assignmentTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
 	}
 	
 	public static long addSMSTemplate(long orgId, SMSTemplate template) throws Exception {
@@ -357,6 +393,10 @@ public class TemplateAPI {
 	
 	private static SMSTemplate getSMSTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		SMSTemplate template = FieldUtil.getAsBeanFromMap(templateMap, SMSTemplate.class);
+		return template;
+	}
+	private static AssignmentTemplate getAssignmentTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		AssignmentTemplate template = FieldUtil.getAsBeanFromMap(templateMap, AssignmentTemplate.class);
 		return template;
 	}
 	private static PushNotificationTemplate getPushNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {

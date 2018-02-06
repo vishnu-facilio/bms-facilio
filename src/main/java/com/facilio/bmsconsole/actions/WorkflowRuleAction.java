@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,11 @@ import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.bmsconsole.workflow.ActivityType;
+import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -130,6 +134,38 @@ public class WorkflowRuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String addAssignmentRule() throws Exception
+	{
+		FacilioContext facilioContext = new FacilioContext();
+		workflowRuleContext.setRuleType(RuleType.ASSIGNMENT_RULE);
+		//ActionContext assignmentAction = actions.get(0);
+		ActionContext assignmentAction = new ActionContext();
+		assignmentAction.setActionType(ActionType.ASSIGNMENT_ACTION);
+		assignmentTemplate.setName(workflowRuleContext.getName());
+		assignmentAction.setTemplate(assignmentTemplate);
+		List<ActionContext> assignActions = new ArrayList<>();
+		assignActions.add(assignmentAction);
+		//actions.add(assignmentAction);
+		//workflowRuleContext.setActions(actions);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, assignActions);
+		Chain addRule = FacilioChainFactory.addAssignmentRuleChain();
+		addRule.execute(facilioContext);
+		System.out.println(">>>>>>>.. "+workflowRuleContext.getDescription());
+		return SUCCESS;
+	}
+	
+	AssignmentTemplate assignmentTemplate;
+	
+	
+	public AssignmentTemplate getAssignmentTemplate() {
+		return assignmentTemplate;
+	}
+
+	public void setAssignmentTemplate(AssignmentTemplate assignmentTemplate) {
+		this.assignmentTemplate = assignmentTemplate;
+	}
+
 	public String deleteWorkflowRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);

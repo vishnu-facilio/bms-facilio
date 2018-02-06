@@ -12,8 +12,11 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.NotificationContext;
@@ -26,10 +29,12 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -332,6 +337,40 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context) {
 			// TODO Auto-generated method stub
+			long assignedToUserId = -1, assignGroupId = -1;
+			
+			assignedToUserId = (long)obj.get("assignedUserId");
+			assignGroupId = (long)obj.get("assignedGroupId");
+						
+			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext updateWO = new WorkOrderContext();
+			
+			if(assignedToUserId != -1) {
+				User user = new User();
+				user.setOuid(assignedToUserId);
+				workOrder.setAssignedTo(user);
+				updateWO.setAssignedTo(user);
+			}
+			
+			if(assignGroupId != -1) {
+				Group group = new Group();
+				group.setId(assignGroupId);
+				workOrder.setAssignmentGroup(group);
+				updateWO.setAssignmentGroup(group);
+			}
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+																	.module(woModule)
+																	.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+																	.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule))
+																	;
+				updateBuilder.update(updateWO);
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			
 		}
 		

@@ -5,6 +5,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
@@ -39,6 +40,10 @@ public class AddTemplateCommand implements Command {
 			}
 			else if(template instanceof JSONTemplate) {
 				long id = TemplateAPI.addJsonTemplate(AccountUtil.getCurrentOrg().getOrgId(), (JSONTemplate) template);
+				template.setId(id);
+			}
+			else if (template instanceof AssignmentTemplate) {
+				long id = TemplateAPI.addAssignmentTemplate(AccountUtil.getCurrentOrg().getOrgId(), (AssignmentTemplate) template);
 				template.setId(id);
 			}
 		}

@@ -251,6 +251,15 @@ public class ModuleFactory {
 		return smsTemplatesModule;
 	}
 	
+	public static FacilioModule getAssignmentTemplatesModule() {
+		FacilioModule assignmentTemplatesModule = new FacilioModule();
+		assignmentTemplatesModule.setName("assignmenttemplates");
+		assignmentTemplatesModule.setDisplayName("Assignment Templates");
+		assignmentTemplatesModule.setTableName("Assignment_Templates");
+		assignmentTemplatesModule.setExtendModule(getTemplatesModule());
+		return assignmentTemplatesModule;
+	}
+	
 	public static FacilioModule getPushNotificationTemplateModule() {
 		FacilioModule pushNotificationTemplatesModule = new FacilioModule();
 		pushNotificationTemplatesModule.setName("pushNotificationTemplates");

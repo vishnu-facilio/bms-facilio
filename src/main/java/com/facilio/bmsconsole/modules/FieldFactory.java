@@ -2819,6 +2819,15 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static  List<FacilioField> getAssignmentTemplateFields() {
+		FacilioModule module = ModuleFactory.getAssignmentTemplatesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("assignedUserId", "USERID", module, FieldType.NUMBER));
+		fields.add(getField("assignedGroupId", "GROUPID", module, FieldType.NUMBER));
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);
