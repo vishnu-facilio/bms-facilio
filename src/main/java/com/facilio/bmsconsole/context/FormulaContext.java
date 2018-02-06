@@ -227,7 +227,7 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			System.out.println("SSSsss -- "+DateTimeUtil.getDateTime().getOffset().toString());
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
-			selectFieldString = selectFieldString.replace("{$place_holder1$}", "UTC");
+			selectFieldString = selectFieldString.replace("{$place_holder1$}", DateTimeUtil.getDateTime().getOffset().toString());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);

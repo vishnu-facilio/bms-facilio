@@ -503,6 +503,7 @@ public class DashboardUtil {
 				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
 			}
 			JSONObject dashboardJson = new JSONObject();
+			dashboardJson.put("id", dashboard.getId());
 			dashboardJson.put("label", dashboardName);
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
