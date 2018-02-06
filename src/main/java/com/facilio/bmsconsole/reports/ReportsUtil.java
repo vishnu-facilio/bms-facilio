@@ -435,11 +435,12 @@ public class ReportsUtil
 	
 	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()
-																.fields(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
-																.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		for(EnergyMeterContext meter : virtualMeters) {
 			try {
+				InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()
+						.fields(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
+						.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+				
 				GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 																	.select(FieldFactory.getVirtualMeterRelFields())
 																	.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
@@ -455,12 +456,13 @@ public class ReportsUtil
 						insertBuilder.addRecord(virtualMeterReading);
 					}
 				}
+				
+				insertBuilder.save();
 			}
 			catch(Exception e) {
 				logger.log(Level.WARNING, "Exception occurred during calculation of energy data for meter : "+meter.getId(), e);
 			}
 		}
-		insertBuilder.save();
 	}
 	
 	private static ReadingContext evaluateChildExpression(EnergyMeterContext meter, List<Long> childIds, long startTime, long endTime) throws Exception {

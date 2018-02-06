@@ -30,10 +30,4 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			e.printStackTrace();
 		}
 	}
-
-	
-	
-	
-	
-	
 }
