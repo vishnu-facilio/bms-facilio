@@ -20,8 +20,8 @@ public class AddDashboardVsWidgetCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		DashboardWidgetContext widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
-		Long dashboardId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
-		if(widget != null && dashboardId != null) {			
+//		Long dashboardId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
+		if(widget != null) {			
 			List<FacilioField> fields = FieldFactory.getDashbaordVsWidgetFields();
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -29,7 +29,7 @@ public class AddDashboardVsWidgetCommand implements Command {
 															.fields(fields);
 			
 			Map<String, Object> props = FieldUtil.getAsProperties(widget);
-			props.put("dashboardId", dashboardId);
+			props.put("dashboardId", widget.getDashboardId());
 			props.put("widgetId", widget.getId());
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
