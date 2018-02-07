@@ -114,14 +114,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.sourceType = type;
 	}
 	
-	private AssetContext asset;
-	public AssetContext getAsset() {
-		return asset;
-	}
-	public void setAsset(AssetContext asset) {
-		this.asset = asset;
-	}
-
 	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
 	
 	private long dueDate = -1;
@@ -283,14 +275,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.actualWorkEnd = actualWorkEnd;
 	}
 	
-	private BaseSpaceContext space;
-	public BaseSpaceContext getSpace() {
-		return space;
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
 	}
-	public void setSpace(BaseSpaceContext space) {
-		this.space = space;
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
 	}
-	
+
 	private Map<Long, TaskSectionContext> taskSections;
 	public Map<Long, TaskSectionContext> getTaskSections() {
 		return taskSections;

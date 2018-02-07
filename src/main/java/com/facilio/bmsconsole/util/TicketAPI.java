@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -326,7 +327,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketCategory(tickets.values());
 		loadTicketUsers(tickets.values());
 		loadTicketGroups(tickets.values());
-		loadTicketSpaces(tickets.values());
+		loadTicketResources(tickets.values());
 		
 		return tickets;
 	}
@@ -338,8 +339,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketCategory(tickets);
 		loadTicketUsers(tickets);
 		loadTicketGroups(tickets);
-		loadTicketSpaces(tickets);
-		loadTicketAssets(tickets);
+		loadTicketResources(tickets);
 	}
 	
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
@@ -459,47 +459,23 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 	}
 	
-	private static void loadTicketSpaces(Collection<? extends TicketContext> tickets) throws Exception {
-		if(tickets != null && !tickets.isEmpty()) {
-			try {
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null,null);
-				
-				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
-				for(BaseSpaceContext space : spaces) {
-					spaceMap.put(space.getId(), space);
-				}
-				
-				for(TicketContext ticket : tickets) {
-					BaseSpaceContext space = ticket.getSpace();
-					if(space != null) {
-						ticket.setSpace(spaceMap.get(space.getId()));
-					}
-				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-				throw e;
-			}
-		}
-	}
-	
-	private static void loadTicketAssets(Collection<? extends TicketContext> tickets) throws Exception {
+	private static void loadTicketResources(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 			
 			try {
-				SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
 																				.select(fields)
 																				.module(module)
-																				.beanClass(AssetContext.class);
-				Map<Long, AssetContext> assets = selectBuilder.getAsMap();
+																				.beanClass(ResourceContext.class);
+				Map<Long, ResourceContext> resources = selectBuilder.getAsMap();
 				
 				for(TicketContext ticket : tickets) {
-					AssetContext asset = ticket.getAsset();
-					if(asset != null) {
-						ticket.setAsset((assets.get(asset.getId())));
+					ResourceContext resource = ticket.getResource();
+					if(resource != null) {
+						ticket.setResource((resources.get(resource.getId())));
 					}
 				}
 			}

@@ -38,7 +38,7 @@ public class AddSpaceCommand implements Command {
 															
 			long id = builder.insert(space);
 			space.setId(id);
-			
+			SpaceAPI.updateHelperFields(space);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}
 		else 

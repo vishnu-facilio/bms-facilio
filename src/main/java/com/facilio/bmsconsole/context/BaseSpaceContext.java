@@ -4,51 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class BaseSpaceContext extends ModuleBaseWithCustomFields {
-	
-	private String name;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	private String displayName;
-	public String getDisplayName() {
-		return displayName;
-	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	private String description;
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	private long photoId = -1;
-	public long getPhotoId() {
-		return photoId;
-	}
-	public void setPhotoId(long photoId) {
-		this.photoId = photoId;
-	}
-	
-	public String getAvatarUrl() throws Exception {
-		if (this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
-		}
-		return null;
-	}
+public class BaseSpaceContext extends ResourceContext {
 	
 	private double area = -1;
 	public double getArea() {
@@ -167,6 +127,16 @@ public class BaseSpaceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFloorId(long floorId) {
 		this.floorId = floorId;
+	}
+	
+	@Override
+	public ResourceType getResourceTypeEnum() {
+		return ResourceType.SPACE;
+	}
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public int getResourceType() {
+		return ResourceType.SPACE.getValue();
 	}
 	
 	public enum SpaceType {

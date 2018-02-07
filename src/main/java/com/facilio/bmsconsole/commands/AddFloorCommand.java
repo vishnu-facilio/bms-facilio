@@ -37,7 +37,7 @@ public class AddFloorCommand implements Command {
 															
 			long id = builder.insert(floor);
 			floor.setId(id);
-			
+			SpaceAPI.updateHelperFields(floor);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}
 		else 

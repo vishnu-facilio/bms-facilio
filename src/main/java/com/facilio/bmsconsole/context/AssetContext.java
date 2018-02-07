@@ -4,17 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class AssetContext extends ModuleBaseWithCustomFields {
-	private String name;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+public class AssetContext extends ResourceContext {
 	private AssetState state;
 	public int getState() {
 		if(state != null) {
@@ -51,22 +45,6 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 		this.category = category;
 	}
 
-	private String description;
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	private long photoId = -1;
-	public long getPhotoId() {
-		return photoId;
-	}
-	public void setPhotoId(long photoId) {
-		this.photoId = photoId;
-	}
-	
 	private long parentAssetId = -1;
 	public long getParentAssetId() {
 		return parentAssetId;
@@ -81,6 +59,15 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 	}
 	public void setSpace(BaseSpaceContext space) {
 		this.space = space;
+	}
+	
+	@Override
+	public long getSpaceId() {
+		// TODO Auto-generated method stub
+		if (space != null) {
+			return space.getId();
+		}
+		return super.getSpaceId();
 	}
 	
 	private AssetDepartmentContext department;
@@ -177,6 +164,16 @@ public class AssetContext extends ModuleBaseWithCustomFields {
 	}
 	public void setLocalId(long localId) {
 		this.localId = localId;
+	}
+	
+	@Override
+	public ResourceType getResourceTypeEnum() {
+		return ResourceType.ASSET;
+	}
+	@Override
+	@JsonInclude(Include.ALWAYS)
+	public int getResourceType() {
+		return ResourceType.ASSET.getValue();
 	}
 
 	public static enum AssetState {

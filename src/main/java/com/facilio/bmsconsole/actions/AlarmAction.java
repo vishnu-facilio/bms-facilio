@@ -115,12 +115,6 @@ public class AlarmAction extends ActionSupport {
 		alarm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		alarm.setSourceType(TicketContext.SourceType.ALARM);
 		alarm.setIsAcknowledged(false);
-		if(alarm.getAsset() != null) {
-			AssetContext asset = AssetsAPI.getAssetInfo(alarm.getAsset().getId());
-			BaseSpaceContext space = asset.getSpace();
-			alarm.setSpace(space);
-			alarm.setAsset(asset);
-		}
 		return alarm;
 	}
 

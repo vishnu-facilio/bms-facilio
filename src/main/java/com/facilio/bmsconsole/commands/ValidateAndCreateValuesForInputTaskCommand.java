@@ -37,7 +37,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								FacilioModule readingModule = field.getModule();
 								ReadingContext reading = new ReadingContext();
 								reading.setId(completeRecord.getReadingDataId());
-								reading.setParentId(completeRecord.getAsset().getId());
+								reading.setParentId(completeRecord.getResource().getId());
 								reading.addReading(field.getName(), task.getInputValue());
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 								context.put(FacilioConstants.ContextNames.READING, reading);

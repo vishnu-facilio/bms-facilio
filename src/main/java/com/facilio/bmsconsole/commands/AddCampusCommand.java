@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AddCampusCommand implements Command {
@@ -34,7 +35,7 @@ public class AddCampusCommand implements Command {
 															.fields(fields);
 			long id = builder.insert(site);
 			site.setId(id);
-			
+			SpaceAPI.updateHelperFields(site);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}
 		else 

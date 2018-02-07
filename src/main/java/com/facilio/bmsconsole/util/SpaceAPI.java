@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -34,6 +35,40 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
+	
+	public static void updateHelperFields(BaseSpaceContext space) throws Exception {
+		BaseSpaceContext updateSpace = new BaseSpaceContext();
+		switch(space.getSpaceTypeEnum()) {
+			case SITE:
+				updateSpace.setSiteId(space.getId());
+				space.setSiteId(space.getId());
+				break;
+			case BUILDING:
+				updateSpace.setBuildingId(space.getId());
+				space.setBuildingId(space.getId());
+				break;
+			case FLOOR:
+				updateSpace.setFloorId(space.getId());
+				space.setFloorId(space.getId());
+				break;
+			default:
+				break;
+		}
+		updateSpace.setSpaceId(space.getId());
+		space.setSpaceId(space.getId());
+		
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = bean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		UpdateRecordBuilder<BaseSpaceContext> updateBuilder = new UpdateRecordBuilder<BaseSpaceContext>()
+																	.fields(bean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE))
+																	.module(module)
+																	.andCondition(CriteriaAPI.getIdCondition(space.getId(), module))
+																	;
+		
+		updateBuilder.update(updateSpace);
+																
+																	
+	}
 	
 	public static SiteContext getSiteSpace(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

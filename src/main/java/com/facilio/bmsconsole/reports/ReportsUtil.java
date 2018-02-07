@@ -243,7 +243,6 @@ public class ReportsUtil
 		JSONObject buildingData= new JSONObject();
 		buildingData.put("name", building.getName());
 		buildingData.put("id", building.getId());
-		buildingData.put("displayName", building.getDisplayName());
 		buildingData.put("area", building.getGrossFloorArea());
 		buildingData.put("floors", building.getNoOfFloors());
 		buildingData.put("photoid", building.getPhotoId());

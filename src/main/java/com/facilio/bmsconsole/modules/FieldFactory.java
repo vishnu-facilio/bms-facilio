@@ -1273,19 +1273,12 @@ public class FieldFactory {
 		fields.add(templateId);
 
 		FacilioField spaceId = new FacilioField();
-		spaceId.setName("spaceId");
+		spaceId.setName("resourceId");
 		spaceId.setDataType(FieldType.NUMBER);
-		spaceId.setColumnName("SPACE_ID");
+		spaceId.setColumnName("RESOURCE_ID");
 		spaceId.setModule(module);
 		fields.add(spaceId);
 
-		FacilioField assetId = new FacilioField();
-		assetId.setName("assetId");
-		assetId.setDataType(FieldType.NUMBER);
-		assetId.setColumnName("ASSET_ID");
-		assetId.setModule(module);
-		fields.add(assetId);
-		
 		FacilioField assignedToId = new FacilioField();
 		assignedToId.setName("assignedToid");
 		assignedToId.setDataType(FieldType.NUMBER);

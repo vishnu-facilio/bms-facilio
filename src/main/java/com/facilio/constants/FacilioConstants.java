@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -222,6 +223,9 @@ public class FacilioConstants {
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";
 		
+		public static final String RESOURCE = "resource";
+		public static final String RESOURCE_LIST = "resourceList";
+		
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
 		
@@ -353,6 +357,7 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM_SEVERITY, AlarmSeverityContext.class);
 			classMap.put(ALARM, AlarmContext.class);
+			classMap.put(RESOURCE, ResourceContext.class);
 			classMap.put(BASE_SPACE, BaseSpaceContext.class);
 			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);
 			classMap.put(CURRENT_OCCUPANCY_READING, ReadingContext.class);

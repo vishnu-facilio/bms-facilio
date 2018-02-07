@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AddBuildingCommand implements Command {
@@ -35,7 +36,7 @@ public class AddBuildingCommand implements Command {
 															
 			long id = builder.insert(building);
 			building.setId(id);
-			
+			SpaceAPI.updateHelperFields(building);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}
 		else 

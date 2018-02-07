@@ -46,7 +46,7 @@ public class AddZoneCommand implements Command {
 															
 			long zoneId = builder.insert(zone);
 			zone.setId(zoneId);
-			
+			SpaceAPI.updateHelperFields(zone);
 			addZoneChildren(zone, children);
 		}
 		else 

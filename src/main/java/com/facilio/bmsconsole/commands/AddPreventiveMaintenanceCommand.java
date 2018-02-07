@@ -88,11 +88,8 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		pm.setCreatedTime(System.currentTimeMillis());
 		pm.setStatus(true);
 
-		if (workorder.getAsset() != null) {
-			pm.setAssetId(workorder.getAsset().getId());
-		}
-		if (workorder.getSpace() != null) {
-			pm.setSpaceId(workorder.getSpace().getId());
+		if(workorder.getResource() != null) {
+			pm.setResourceId(workorder.getResource().getId());
 		}
 		if (workorder.getAssignedTo() != null) {
 			pm.setAssignedToid(workorder.getAssignedTo().getId());

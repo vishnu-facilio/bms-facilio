@@ -199,11 +199,8 @@ public class WorkOrderAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		
-		if(workorder.getAsset() != null) {
-			preventivemaintenance.setAssetId(workorder.getAsset().getId());
-		}
-		if(workorder.getSpace() != null) {
-			preventivemaintenance.setSpaceId(workorder.getSpace().getId());
+		if(workorder.getResource() != null) {
+			preventivemaintenance.setResourceId(workorder.getResource().getId());
 		}
 		preventivemaintenance.setStatus(true);
 		

@@ -41,8 +41,8 @@ public class ValidateTasksCommand implements Command {
 			else {
 				switch(task.getInputTypeEnum()) {
 					case READING:
-						if((task.getAsset() == null || task.getAsset().getId() == -1) && (task.getSpace() == null || task.getSpace().getId() == -1)) {
-							throw new IllegalArgumentException("Space/Asset cannot be null when reading is enabled for task");
+						if (task.getResource() == null || task.getResource().getId() == -1) {
+							throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
 						}
 						if(task.getReadingFieldId() == -1) {
 							throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");

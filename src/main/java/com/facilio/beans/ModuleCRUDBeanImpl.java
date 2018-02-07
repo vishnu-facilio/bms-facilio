@@ -141,7 +141,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			AlarmContext alarm = new AlarmContext();
 			AssetContext asset = new AssetContext();
 			asset.setId(assetId);
-			alarm.setAsset(asset);
+			alarm.setResource(asset);
 
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ALARM, alarm);
@@ -171,8 +171,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					templateId);
 
 			JSONObject content = template.getTemplate(null);
+			JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
+			updateResourceDetails(woJson);
+			
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(
-					(JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
+					woJson, WorkOrderContext.class);
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 
 			FacilioContext context = new FacilioContext();
@@ -186,6 +189,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			else {
 				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
 				if (taskJson != null) {
+					for(int i = 0; i < taskJson.size(); i++) {
+						updateResourceDetails((Map) taskJson.get(i));
+					}
+					
 					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
 					if(tasks != null && !tasks.isEmpty()) {
 						Map<String, List<TaskContext>> taskMap = new HashMap<>();
@@ -203,6 +210,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			return wo;
 		}
 		return null;
+	}
+	
+	private void updateResourceDetails(Map obj) {
+		if(obj.containsKey("asset")) {
+			obj.put("resource", obj.get("asset"));
+		}
+		else if(obj.containsKey("space")) {
+			obj.put("resource", obj.get("space"));
+		}
 	}
 	
 	private void incrementPMCount(PreventiveMaintenance pm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
