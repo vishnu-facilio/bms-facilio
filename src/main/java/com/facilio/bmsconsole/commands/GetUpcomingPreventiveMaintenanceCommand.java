@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
@@ -81,10 +82,14 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 												pmPairs.add(pair);
 											}
 										}
-										virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
+										// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 									}
-									else {
+									long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
+									if(startTime > plannedEndTime) {
 										virtualJobsStartTime = startTime;
+									}
+									else if(endTime > plannedEndTime) {
+										virtualJobsStartTime = plannedEndTime+1;
 									}
 									break;
 								case FIXED:
