@@ -7,8 +7,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -29,11 +32,11 @@ public enum BuildingOperator implements Operator<String> {
 					StringBuilder builder = new StringBuilder();
 					builder.append(columnName)
 							.append(" IN (");
-					List<BaseSpaceContext> allSpaces = getAllBuildingIds(value);
+					List<ResourceContext> resources = getAllResources(value);
 					
-					if(allSpaces != null && !allSpaces.isEmpty()) {
+					if(resources != null && !resources.isEmpty()) {
 						boolean isFirst = true;
-						for(BaseSpaceContext space : allSpaces) {
+						for(ResourceContext space : resources) {
 							if(isFirst) {
 								isFirst = false;
 							}
@@ -109,19 +112,30 @@ public enum BuildingOperator implements Operator<String> {
 		return operatorMap;
 	}
 	
-	private static List<BaseSpaceContext> getAllBuildingIds(String value) throws NumberFormatException, Exception {
+	private static List<ResourceContext> getAllResources(String value) throws NumberFormatException, Exception {
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			List<BaseSpaceContext> spaces = null;
 			if(value.contains(",")) {
 				List<Long> ids = new ArrayList<>();
 				String[] values = value.trim().split("\\s*,\\s*");
 				for(String val : values) {
 					ids.add(Long.parseLong(val));
 				}
-				return SpaceAPI.getBaseSpaceWithChildren(ids);
+				spaces = SpaceAPI.getBaseSpaceWithChildren(ids);
 			}
 			else {
-				return SpaceAPI.getBaseSpaceWithChildren(Long.parseLong(value));
+				spaces = SpaceAPI.getBaseSpaceWithChildren(Long.parseLong(value));
 			}
+			
+			if(spaces != null && !spaces.isEmpty()) {
+				List<Long> spaceIds = spaces.stream()
+											.map(BaseSpaceContext::getId)
+											.collect(Collectors.toList());
+				
+				return ResourceAPI.getAllResourcesFromSpaces(spaceIds);
+											
+			}
+			return null;
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
