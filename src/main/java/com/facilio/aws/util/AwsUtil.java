@@ -1,10 +1,12 @@
 package com.facilio.aws.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -18,8 +20,17 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.URLDataSource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -76,7 +87,9 @@ import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
 public class AwsUtil 
 {
@@ -313,6 +326,35 @@ public class AwsUtil
             throw ex;
         }
 	}
+	
+	public static void sendEmail(JSONObject mailJson, List<String> fileUrls) throws Exception 
+	{
+		if(fileUrls == null || fileUrls.isEmpty()) {
+			sendEmail(mailJson);
+			return;
+		}
+
+        try
+        {
+        		MimeMessage message = getEmailMessage(mailJson, fileUrls);
+        		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        		message.writeTo(outputStream);
+        		RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+        		SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
+        		
+	        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+	        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+	                .withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+	        client.sendRawEmail(request);
+	        System.out.println("Email sent!");
+	    } 
+        catch (Exception ex) 
+        {
+            System.out.println("The email was not sent.");
+            System.out.println("Error message: " + ex.getMessage());
+            throw ex;
+        }
+	}
 
 	private static AWSCredentials getBasicAwsCredentials() {
     	if(basicCredentials == null) {
@@ -527,5 +569,42 @@ public class AwsUtil
 
 	public static String getIotKinesisTopic(String orgDomainName){
     	return orgDomainName;
+	}
+	
+	
+	private static MimeMessage getEmailMessage(JSONObject mailJson, List<String> fileUrls) throws Exception {
+	 	String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
+	 	
+		String sender = "support@facilio.com";
+		
+		Session session = Session.getDefaultInstance(new Properties());
+		MimeMessage message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(sender));
+	    message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
+	    message.setSubject((String) mailJson.get("subject"));
+	    
+	    MimeMultipart messageBody = new MimeMultipart("alternative");
+	    MimeBodyPart textPart = new MimeBodyPart();
+	    textPart.setContent(MimeUtility.encodeText((String) mailJson.get("message"),DefaultCharSet,"B"), "text/plain; charset=UTF-8");
+        textPart.setHeader("Content-Transfer-Encoding", "base64");
+        messageBody.addBodyPart(textPart);
+        
+        MimeBodyPart wrap = new MimeBodyPart();
+        wrap.setContent(messageBody);
+	    
+	    	MimeMultipart messageContent = new MimeMultipart("mixed");
+	    messageContent.addBodyPart(wrap);
+	    
+	    for (String fileUrl : fileUrls) {
+	    		MimeBodyPart attachment = new MimeBodyPart();
+		    URL url = new URL(fileUrl);
+		    DataSource fileDataSource = new URLDataSource(url);
+		    attachment.setDataHandler(new DataHandler(fileDataSource));
+		    attachment.setFileName(fileDataSource.getName());
+		    messageContent.addBodyPart(attachment);
+	    }
+	    
+	    message.setContent(messageContent);
+	    return message;
 	}
 }

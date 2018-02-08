@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -171,6 +172,7 @@ public class ViewAPI {
 			for(Map<String, Object> prop : props) {
 				columns.add(FieldUtil.getAsBeanFromMap(prop, ViewField.class));
 			}
+			setViewFieldsProp(columns, null);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -196,6 +198,16 @@ public class ViewAPI {
 				view.setModuleId(moduleId);
 				viewId = ViewAPI.addView(view, orgId);
 			}
+			else {
+				// For report-like view,  which wont be there in view db or view factory initially
+				view = new FacilioView();
+				view.setName(viewName);
+				view.setModuleId(moduleId);
+				view.setType(ViewType.TABLE_LIST);
+				view.setDefault(false);
+				view.setHidden(true);
+				viewId = ViewAPI.addView(view, orgId);
+			}
 		} else {
 			viewId = view.getId();
 		}
@@ -210,6 +222,24 @@ public class ViewAPI {
 				Criteria criteriaValue = CriteriaAPI.getCriteria(criteria.getOrgId(),condition.getCriteriaValueId());
 				condition.setCriteriaValue(criteriaValue);
 				setCriteriaValue(criteriaValue);
+			}
+		}
+	}
+	
+	public static void setViewFieldsProp(List<ViewField> fields, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(ViewField viewField: fields) {
+			FacilioField field;
+			if(viewField.getFieldId() == -1) {
+				field = modBean.getField(viewField.getName(), moduleName);
+			}
+			else {
+				field = modBean.getField(viewField.getFieldId());
+			}
+			viewField.setField(field);
+			
+			if(viewField.getParentFieldId() != -1) {
+				viewField.setParentField(modBean.getField(viewField.getParentFieldId()));
 			}
 		}
 	}

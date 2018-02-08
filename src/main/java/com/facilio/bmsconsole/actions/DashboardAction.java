@@ -18,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -43,16 +44,23 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.executor.ScheduleInfo;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -891,45 +899,70 @@ public class DashboardAction extends ActionSupport {
 		return this.displayFields;
 	}
 	
-public String getUnderlyingData() throws Exception {
+	public String getUnderlyingData() throws Exception {
 		
 		FacilioModule module = getModule();
-		List<Map<String, Object>> rs = getRawData(module);
+		
+		List<ModuleBaseWithCustomFields> records = getRawData(null, module);
+		
 		JSONArray result = new JSONArray();
-		for(Map<String, Object> r:rs) {
-			result.add(r);
+		if(records != null) {
+			for(ModuleBaseWithCustomFields r:records) {
+				result.add(r);
+			}
 		}
+		
 		setReportData(result);
-		setDisplayFields(getDisplayColumns(module.getName()));
+		// setDisplayFields(getDisplayColumns(module.getName()));
+
 		return SUCCESS;
 	}
 	
 	public String exportData() throws Exception{
 	
 		FacilioModule module = getModule();
-		List<Map<String, Object>> records = getRawData(module);
-		List<FacilioField> fields=getDisplayColumns(module.getName());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+		List<ModuleBaseWithCustomFields> records = getRawData(context, module);
+		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		if(type.equals("xls")){
-			fileUrl=ExportUtil.exportDataAsXLS(module, fields, records);
-		}
-		else if(type.equals("csv")) {
-			fileUrl=ExportUtil.exportDataAsCSV(module, fields, records);
-		} else if ("pdf".equals(type)){
+		FileFormat fileFormat = FileFormat.getFileFormat(type);
+		if(fileFormat == FileFormat.PDF) {
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportId);
 		}
+		else {
+			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+		}
+		
 		return SUCCESS;
 	}
 	
-	private FacilioModule getModule() throws Exception {
+	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {
 		
-		reportContext = DashboardUtil.getReportContext(reportId);
-		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		return modBean.getModule(reportFolder.getModuleId());
+		if(context == null) {
+			context = new FacilioContext();
+		}
+		
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
+		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
+		
+		Chain dataChain = ReportsChainFactory.getReportUnderlyingDataChain();
+		dataChain.execute(context);
+		
+		return (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
 	}
 	
-	private List<Map<String, Object>> getRawData(FacilioModule module) throws Exception {
+	private FacilioModule getModule() throws Exception {
+		reportContext = DashboardUtil.getReportContext(reportId);
+		return ReportsUtil.getReportModule(reportContext);
+	}
+	
+	/*private List<Map<String, Object>> getRawData(FacilioModule module) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -977,11 +1010,7 @@ public String getUnderlyingData() throws Exception {
 		
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
-	}
-
-
-
-
+	}*/
 	
 	private Long buildingId;
 	
@@ -1134,11 +1163,11 @@ public String getUnderlyingData() throws Exception {
 		this.linkName = linkName;
 	}
 	
-	private String type="xls";
-	public String getType() {
+	private int type=1;
+	public int getType() {
 		return type;
 	}
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 	
@@ -1149,4 +1178,67 @@ public String getUnderlyingData() throws Exception {
 	public void setFileUrl(String url) {
 		this.fileUrl = url;
 	}
+	
+	public String sendReportMail() throws Exception {
+		
+ 		FacilioModule module = getModule();
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+		
+		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
+		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		
+		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
+		mailReportChain.execute(context);
+ 		
+ 		return SUCCESS;
+	}
+	
+	public String scheduleReport() throws Exception {
+		
+		emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
+		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
+ 		
+		Chain mailReportChain = ReportsChainFactory.getReportScheduleChain();
+		mailReportChain.execute(context);
+ 		
+ 		return SUCCESS;
+	}
+	
+	private ScheduleInfo scheduleInfo;
+	public ScheduleInfo getScheduleInfo() {
+		return scheduleInfo;
+	}
+	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
+		this.scheduleInfo = scheduleInfo;
+	}
+	
+	private long startTime;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private EMailTemplate emailTemplate;
+	public EMailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+	public void setEmailTemplate(EMailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
+	}
+	
 }

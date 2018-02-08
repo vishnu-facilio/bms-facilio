@@ -103,7 +103,7 @@ public class ViewFactory {
 		return viewMap;
 	}*/
 	
-	public static Map<String, Map<String, FacilioView>> initializeViews() {
+	private static Map<String, Map<String, FacilioView>> initializeViews() {
 		Map<String, Map<String, FacilioView>> viewsMap = new HashMap<String, Map<String, FacilioView>>();
 		Map<String,FacilioView> views = new LinkedHashMap<>();
 		int order = 1;
@@ -128,6 +128,7 @@ public class ViewFactory {
 		views.put("openfirealarms", getFireSafetyWOs().setOrder(order++));
 		views.put("all", getAllWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
+		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put("workorder", views);
 		
 		order = 1;
@@ -164,7 +165,13 @@ public class ViewFactory {
 		views.put("cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		views.put("myalarms", getMyAlarms().setOrder(order++));
 		views.put("unassigned", getUnassignedAlarms().setOrder(order++));
+		views.put("report", getReportView().setOrder(order++));
 		viewsMap.put("alarm", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("report", getReportView().setOrder(order++));
+		viewsMap.put("energydata", views);
 		
 		return viewsMap;
 	}
@@ -979,5 +986,15 @@ public class ViewFactory {
 		allView.setDisplayName("All Work Requests");
 		
 		return allView;
+	}
+	
+	// View for reports. Not shown in ui list
+	private static FacilioView getReportView() {
+		
+		FacilioView reportView = new FacilioView();
+		reportView.setName("report");
+		reportView.setHidden(true);
+		
+		return reportView;
 	}
 }

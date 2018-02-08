@@ -1,5 +1,9 @@
 package com.facilio.fs;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class FileInfo {
 
 	private long orgId;
@@ -58,5 +62,46 @@ public class FileInfo {
 	}
 	public void setUploadedTime(long uploadedTime) {
 		this.uploadedTime = uploadedTime;
+	}
+	
+	public enum FileFormat {
+		CSV(1, "CSV"),
+		XLS(2, "Excel"),
+		PDF(3, "PDF"),
+		IMAGE(4, "Image"),
+		HTML(5, "Html")
+		;
+		
+		private int intVal;
+		private String strVal;
+		
+		private FileFormat(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		public static FileFormat getFileFormat(int val) {
+			return formatMap.get(val);
+		}
+		
+		private static final Map<Integer, FileFormat> formatMap = Collections.unmodifiableMap(initFormatMap());
+		private static Map<Integer, FileFormat> initFormatMap() {
+			Map<Integer, FileFormat> fomatMap = new HashMap<>();
+			
+			for(FileFormat type : values()) {
+				fomatMap.put(type.getIntVal(), type);
+			}
+			return fomatMap;
+		}
+		public Map<Integer, FileFormat> getAllFormats() {
+			return formatMap;
+		}
 	}
 }

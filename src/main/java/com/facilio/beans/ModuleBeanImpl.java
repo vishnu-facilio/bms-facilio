@@ -244,6 +244,27 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
+	@Override
+	public FacilioModule getParentModule(long moduleId) throws Exception {
+		FacilioModule parentModule = null;
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("parentModuleId", "PARENT_MODULE_ID", FieldType.NUMBER));
+		fields.add(FieldFactory.getField("childModuleId", "CHILD_MODULE_ID", FieldType.NUMBER));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table("SubModulesRel")
+														.andCustomWhere("CHILD_MODULE_ID = ?", moduleId);
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<String, Object> prop = fieldProps.get(0);
+			long parentId = (Long) prop.get("PARENT_MODULE_ID");
+			parentModule = getMod(parentId);
+		}
+		return parentModule;
+	}
+	
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
