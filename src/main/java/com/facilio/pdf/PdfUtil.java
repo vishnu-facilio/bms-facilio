@@ -1,6 +1,8 @@
 package com.facilio.pdf;
 
 import com.facilio.executor.CommandExecutor;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.CognitoUtil;
 
 import java.io.File;
@@ -30,5 +32,21 @@ public class PdfUtil {
             }
         }
         return pdfFileLocation;
+    }
+
+    public static String exportUrlAsPdf(long orgId, String username, String url){
+        String pdfFileLocation = convertUrlToPdf(orgId, username, url);
+        File pdfFile = new File(pdfFileLocation);
+        if(pdfFileLocation != null) {
+            FileStore fs = FileStoreFactory.getInstance().getFileStore();
+            long fileId = 0;
+            try {
+                fileId = fs.addFile(pdfFileLocation, pdfFile, "application/csv");
+                return fs.getPrivateUrl(fileId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
