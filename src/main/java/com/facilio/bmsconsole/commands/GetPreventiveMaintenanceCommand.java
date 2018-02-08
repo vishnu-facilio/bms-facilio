@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -18,6 +20,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -95,6 +98,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 			selectRecordBuilder.andCriteria(filterCriteria);
 		}
 		
+		List<Long> resourceIds = new ArrayList<>();
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		
 		if(pmProps != null && !pmProps.isEmpty()) {
@@ -108,9 +112,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 			
 			for(PreventiveMaintenance pm : pms) {
 				pm.setTriggers(pmTriggers.get(pm.getId()));
+				resourceIds.add(pm.getResourceId());
 			}
-			
+			Map<Long, ResourceContext> resourceMap = new HashMap<>();
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
+			context.put(FacilioConstants.ContextNames.RESOURCE_MAP, resourceMap);
 		}
 		
 		return false;

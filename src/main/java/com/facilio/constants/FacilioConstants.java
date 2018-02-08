@@ -225,6 +225,7 @@ public class FacilioConstants {
 		
 		public static final String RESOURCE = "resource";
 		public static final String RESOURCE_LIST = "resourceList";
+		public static final String RESOURCE_MAP = "resourceMap";
 		
 		public static final String BASE_SPACE_LIST = "basespaces";
 		public static final String BASE_SPACE = "basespace";
