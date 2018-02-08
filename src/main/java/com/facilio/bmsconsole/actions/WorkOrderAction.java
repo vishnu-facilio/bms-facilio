@@ -318,7 +318,6 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setResourceMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_MAP));
 		
 		return SUCCESS;
 	}
@@ -339,7 +338,6 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setResourceMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_MAP));
 		
 		return SUCCESS;
 	}
@@ -399,7 +397,6 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setResourceMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_MAP));
 		
 		return SUCCESS;
 	}
@@ -421,7 +418,6 @@ public class WorkOrderAction extends ActionSupport {
 		getPmchain.execute(context);
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setResourceMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_MAP));
 		
 		return SUCCESS;
 	}
@@ -448,14 +444,6 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setPmTriggerMap(Map<Long, PMTriggerContext> pmTriggerMap) {
 		this.pmTriggerMap = pmTriggerMap;
-	}
-	
-	private Map<Long, ResourceContext> resourceMap;
-	public Map<Long, ResourceContext> getResourceMap() {
-		return resourceMap;
-	}
-	public void setResourceMap(Map<Long, ResourceContext> resourceMap) {
-		this.resourceMap = resourceMap;
 	}
 	
 	public String assignWorkOrder() throws Exception {

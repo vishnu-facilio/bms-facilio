@@ -116,8 +116,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 				resourceIds.add(pm.getResourceId());
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			for(PreventiveMaintenance pm : pms) {
+				pm.setResource(resourceMap.get(pm.getResourceId()));
+			}
+			
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
-			context.put(FacilioConstants.ContextNames.RESOURCE_MAP, resourceMap);
 		}
 		
 		return false;

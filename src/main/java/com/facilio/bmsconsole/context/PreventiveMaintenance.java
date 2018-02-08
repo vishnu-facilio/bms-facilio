@@ -118,6 +118,14 @@ public class PreventiveMaintenance {
 		this.resourceId = resourceId;
 	}
 
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+
 	private long assignedToid = -1;
 	public long getAssignedToid() {
 		return assignedToid;
