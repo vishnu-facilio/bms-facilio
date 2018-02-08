@@ -109,9 +109,17 @@ public class FacilioView {
 	}
 	
 	private Map<String, ViewField> defaultModulefields;
-	public void setDefaultModuleFields(String moduleName) {
-		List<ViewField> fields = ColumnFactory.getColumns(moduleName, "default");
-		if (fields != null && !fields.isEmpty()) {
+	public void setDefaultModuleFields(String moduleName, String parentViewName) {
+		List<ViewField> fields = null;
+		if(parentViewName != null && !parentViewName.isEmpty()) {
+			fields = ColumnFactory.getColumns(moduleName, parentViewName);
+		}
+		
+		if (fields == null || fields.isEmpty()) {
+			fields = ColumnFactory.getColumns(moduleName, "default");
+		}
+		
+ 		if (fields != null && !fields.isEmpty()) {
 			defaultModulefields = new HashMap<>();
 			for(ViewField vf : fields) {
 				defaultModulefields.put(vf.getName(),vf);
@@ -166,7 +174,7 @@ public class FacilioView {
 		}
 		return false;
 	}
-	
+
 	public static enum ViewType {
 		TABLE_LIST(1);
 		

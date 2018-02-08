@@ -44,9 +44,15 @@ public class ColumnFactory {
 		columnMap.put("alarm-energy", getDefaultAlarmColumns());
 		columnMap.put("alarm-hvac", getDefaultAlarmColumns());
 		
-		// For getting default values for a column - view not shown in ui
+		// For getting default columns for a module
 		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
+		columnMap.put("energy-default", getDefaultEnergyColumns());
+		
+		// Default report columns 
+		columnMap.put("workorder-report", getWorkOrderReportColumns());
+		columnMap.put("alarm-report", getAlarmReportColumns());
+		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		
 		return columnMap;
 	}
@@ -55,7 +61,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("category", "Category"));
-		columns.add(new ViewField("space", "Space / Asset"));
+		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
@@ -75,6 +81,43 @@ public class ColumnFactory {
 		columns.add(new ViewField("node", "Entity"));
 		columns.add(new ViewField("modifiedTime", "Time Since Report"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultEnergyColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("ttime", "Timestamp"));
+		columns.add(new ViewField("totalEnergyConsumptionDelta", "Total Energy Consumption Delta"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getWorkOrderReportColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		columns.add(new ViewField("dueDate", "Due Date"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getAlarmReportColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("source", "Source"));
+		columns.add(new ViewField("node", "Entity"));
+		columns.add(new ViewField("modifiedTime", "Modified Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		
 		return columns;
 	}

@@ -692,4 +692,12 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Expression");
 		return dashboardWigetModule;
 	}
+	
+	public static FacilioModule getReportScheduleInfoModule() {
+		FacilioModule reportScheduleInfo = new FacilioModule();
+		reportScheduleInfo.setName("reportScheduleInfo");
+		reportScheduleInfo.setDisplayName("Report Schedule Info");
+		reportScheduleInfo.setTableName("Report_Schedule_Info");
+		return reportScheduleInfo;
+	}
 }

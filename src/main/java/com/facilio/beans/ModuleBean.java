@@ -23,6 +23,8 @@ public interface ModuleBean extends RootBean {
 	
 	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.SubModuleType type) throws Exception;
 	
+	public FacilioModule getParentModule(long moduleId) throws Exception;
+	
 	public FacilioField getPrimaryField(String moduleName) throws Exception;
 	
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception;

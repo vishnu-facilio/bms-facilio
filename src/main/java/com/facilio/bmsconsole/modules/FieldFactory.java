@@ -2732,6 +2732,13 @@ public class FieldFactory {
 		displayName.setColumnName("DISPLAY_NAME");
 		displayName.setModule(module);
 		fields.add(displayName);
+		
+		FacilioField parentFieldId = new FacilioField();
+		parentFieldId.setName("parentFieldId");
+		parentFieldId.setDataType(FieldType.NUMBER);
+		parentFieldId.setColumnName("PARENT_FIELDID");
+		parentFieldId.setModule(module);
+		fields.add(parentFieldId);
 
 		return fields;
 	}
@@ -2836,6 +2843,19 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("assignedUserId", "USERID", module, FieldType.NUMBER));
 		fields.add(getField("assignedGroupId", "GROUPID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportScheduleInfoFields() {
+		FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
+		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
+		fields.add(getField("dateFilter", "DATE_FILTER", module, FieldType.STRING));
+		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 

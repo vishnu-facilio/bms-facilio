@@ -200,6 +200,9 @@ public class FacilioConstants {
 		public static final String SITE_ID = "siteId";
 		public static final String REPORT_CARDS = "reportCards";
 		public static final String REPORTS = "reports";
+		public static final String REPORT_CONTEXT = "reportContext";
+		public static final String REPORT_ID = "reportId";
+		public static final String REPORT_INFO = "reportInfo";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
@@ -340,9 +343,15 @@ public class FacilioConstants {
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
+		public static final String PARENT_VIEW = "parentView";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
+		
+		public static final String FILE_FORMAT = "fileFormat";
+		public static final String DATE_FILTER = "dateFilter";
+		public static final String START_TIME = "startTime";
+		public static final String SCHEDULE_INFO = "schedule";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

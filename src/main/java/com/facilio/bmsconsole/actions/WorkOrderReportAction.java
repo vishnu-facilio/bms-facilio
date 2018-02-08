@@ -36,7 +36,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -205,14 +204,14 @@ public class WorkOrderReportAction extends ActionSupport {
 				fields.add(field1);
 				fields.add(field2);
 				
-				if("csv".equals(getExportType()))
+				/*if("csv".equals(getExportType()))
 				{
 					setExportUrl(ExportUtil.exportDataAsCSV(module, fields, records));
 				}
 				else if("xls".equals(getExportType()))
 				{
 					setExportUrl(ExportUtil.exportDataAsXLS(module, fields, records));
-				}
+				}*/
 			}
 			else
 			{

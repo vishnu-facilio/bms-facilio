@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -45,5 +46,18 @@ public class ResourceAPI {
 		
 		List<ResourceContext> resources = resourceBuilder.get();
 		return resources;									
+	}
+	
+	public static Map<Long, ResourceContext> getResourceAsMapFromIds (List<Long> resourceIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		
+		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
+																		.select(fields)
+																		.module(module)
+																		.beanClass(ResourceContext.class)
+																		.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
+		return selectBuilder.getAsMap();
 	}
 }

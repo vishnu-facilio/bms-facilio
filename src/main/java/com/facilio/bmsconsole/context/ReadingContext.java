@@ -81,4 +81,12 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	public Object getReading(String key) {
 		return super.getDatum(key);
 	}
+	
+	private Object parent;
+	public Object getParent() {
+		return parent;
+	}
+	public void setParent(Object parent) {
+		this.parent = parent;
+	}
 } 

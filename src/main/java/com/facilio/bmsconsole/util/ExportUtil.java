@@ -15,42 +15,60 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 
 public class ExportUtil {
 	
+	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+		String fileUrl = null;
+		if(fileFormat == FileFormat.XLS){
+			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records);
+		}
+		else if(fileFormat == FileFormat.CSV){
+			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, fields, records);
+		}
+		return fileUrl;
+	}
+	
 	@SuppressWarnings("resource")
-	public static String exportDataAsXLS(FacilioModule facilioModule, List<FacilioField> fields, List<Map<String, Object>> records) throws Exception 
+	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception 
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
 		HSSFRow rowhead = sheet.createRow((short) 0);
 
 		int i = 0;
-		for(FacilioField field : fields)
+		for(ViewField vf : fields)
 		{
-			rowhead.createCell((short) i).setCellValue(field.getDisplayName());
+			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
+			rowhead.createCell((short) i).setCellValue(displayName);
 			i++;
 		}
-
-		Map<String, List<Long>> modVsIds= getModuleVsIds(fields, records);;
+		
+		Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
 		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
 
 
 		int rowCount = 1;
-		for(Map<String, Object> record : records)
+		for(ModuleBaseWithCustomFields record : records)
 		{
 			HSSFRow row = sheet.createRow(rowCount);
 			i = 0;
-			for(FacilioField field : fields)
+			for(ViewField vf : fields)
 			{
-				Object value = record.get(field.getName());
+				FacilioField field = vf.getField();
+				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
+				Object value = getValue(recordProp, vf);
 				if(value != null)
 				{
 					Object val = getFormattedValue(modVsData, field, value);
@@ -81,29 +99,32 @@ public class ExportUtil {
 		return fs.getPrivateUrl(fileId);
 	}
 	
-	public static String exportDataAsCSV(FacilioModule facilioModule, List<FacilioField> fields, List<Map<String, Object>> records) throws Exception
+	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
         	
         	StringBuilder str = new StringBuilder();
-        	for(FacilioField field : fields)
-        	{
-        		str.append(field.getDisplayName());
+        	for(ViewField vf : fields)
+    		{
+    			String displayName = vf.getColumnDisplayName() != null && !vf.getColumnDisplayName().isEmpty() ? vf.getColumnDisplayName() : vf.getField().getDisplayName();
+        		str.append(displayName);
         		str.append(',');
         	}
         	writer.append(StringUtils.stripEnd(str.toString(), ","));
         	writer.append('\n');
         	
-        	Map<String, List<Long>> modVsIds= getModuleVsIds(fields, records);;
+        	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
     		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
         
-        	for(Map<String, Object> record : records)
+        	for(ModuleBaseWithCustomFields record : records)
         	{
         		str = new StringBuilder();
-	    		for(FacilioField field : fields)
+	    		for(ViewField vf : fields)
 			{
-	    			Object value = record.get(field.getName());
+	    			FacilioField field = vf.getField();
+				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
+				Object value = getValue(recordProp, vf);
 	    			if(value != null)
 	    			{
 	    				Object val = getFormattedValue(modVsData, field, value);
@@ -144,7 +165,7 @@ public class ExportUtil {
 			}
 			Map<Long,Object> idMap= modVsData.get(moduleName);
 			if(idMap!=null) {				
-				return idMap.get((long)value);
+				return idMap.get((long)((Map) value).get("id"));
 			}
 			
 			break;
@@ -159,17 +180,21 @@ public class ExportUtil {
 		return null;
 	}
 
-	private static Map<String, List<Long>> getModuleVsIds(List<FacilioField> fields, List<Map<String, Object>> records) {
+	private static Map<String, List<Long>> getModuleVsLookupIds(List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		
 		Map<String, List<Long>> modVsIds= new HashMap<String, List<Long>>();
-		for(Map<String, Object> record : records){
-			for(FacilioField field : fields)
+		for(ModuleBaseWithCustomFields record : records){
+			for(ViewField vf : fields)
 			{
-				Object value = record.get(field.getName());
-				if(value == null){
-					continue;
-				}
+				FacilioField field = vf.getField();
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
+
+					FacilioField parentField = vf.getParentField();
+					Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
+					Map value = (Map) getValue(recordProp, vf);
+					if(value == null || !value.containsKey("id") || (long)value.get("id") == -1){
+						continue;
+					}
 
 					LookupField lookupField= (LookupField)field;
 					String moduleName=lookupField.getSpecialType();
@@ -181,7 +206,7 @@ public class ExportUtil {
 						ids=new ArrayList<Long>();
 						modVsIds.put(moduleName, ids);
 					}
-					ids.add((long)value);
+					ids.add((long)value.get("id"));
 				}
 			}
 		}
@@ -214,5 +239,19 @@ public class ExportUtil {
 		return modVsData;
 	}
 	
+	private static Object getValue(Map<String, Object> prop, ViewField viewField) {
+		FacilioField field = viewField.getField();
+		FacilioField parentField = viewField.getParentField();
+		Object value = null;
+		if(parentField != null) {
+			Object parentObj = prop.get(parentField.getName());
+			if(parentObj != null) {
+				value = ((Map) parentObj).get(field.getName());
+			}
+		} else {
+			value = prop.get(field.getName());
+		}
+		return value;
+	}
 	
 }

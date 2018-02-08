@@ -23,15 +23,19 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -585,5 +589,11 @@ public class ReportsUtil
 			return null;
 		}
 		
+	}
+	
+	public static FacilioModule getReportModule(ReportContext1 reportContext) throws Exception {
+		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return modBean.getModule(reportFolder.getModuleId());
 	}
 }

@@ -37,6 +37,7 @@ public class ViewAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		
 		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
@@ -50,7 +51,6 @@ public class ViewAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
