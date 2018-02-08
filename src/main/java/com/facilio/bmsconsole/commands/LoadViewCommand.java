@@ -34,7 +34,7 @@ public class LoadViewCommand implements Command {
 				if (view == null) {
 					view = ViewFactory.getView(moduleName, parentViewName);
 				}
-				if(view != null) {
+				if(view != null && view.getFields() != null) {
 					ViewAPI.setViewFieldsProp(view.getFields(), moduleName);
 				}
 			}
