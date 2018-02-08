@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
@@ -114,7 +115,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 				pm.setTriggers(pmTriggers.get(pm.getId()));
 				resourceIds.add(pm.getResourceId());
 			}
-			Map<Long, ResourceContext> resourceMap = new HashMap<>();
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 			context.put(FacilioConstants.ContextNames.RESOURCE_MAP, resourceMap);
 		}
