@@ -282,6 +282,22 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setResource(ResourceContext resource) {
 		this.resource = resource;
 	}
+	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
+	
+	private SpaceContext space;
+	public SpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(SpaceContext space) {
+		this.space = space;
+	}
 
 	private Map<Long, TaskSectionContext> taskSections;
 	public Map<Long, TaskSectionContext> getTaskSections() {

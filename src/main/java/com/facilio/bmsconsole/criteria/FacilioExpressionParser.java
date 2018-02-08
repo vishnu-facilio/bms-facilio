@@ -2,15 +2,12 @@ package com.facilio.bmsconsole.criteria;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.poi.util.StringUtil;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -82,7 +79,7 @@ public class FacilioExpressionParser {
 						subExpResult = value;
 					}
 					else {
-						throw new Exception("Cannot parser expression "+value);
+						throw new Exception("Cannot parse expression "+value);
 					}
 					expString.append(variable);
 					

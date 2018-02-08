@@ -172,35 +172,40 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 			JSONObject content = template.getTemplate(null);
 			JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
-			updateResourceDetails(woJson);
 			
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(
 					woJson, WorkOrderContext.class);
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+			updateResourceDetails(wo);
 
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 
 			JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
+			Map<String, List<TaskContext>> taskMap = null;
 			if(taskContent != null) {
-				context.put(FacilioConstants.ContextNames.TASK_MAP, PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent));
+				taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
 			}
 			else {
 				JSONArray taskJson = (JSONArray) content.get(FacilioConstants.ContextNames.TASK_LIST);
 				if (taskJson != null) {
-					for(int i = 0; i < taskJson.size(); i++) {
-						updateResourceDetails((Map) taskJson.get(i));
-					}
-					
 					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
 					if(tasks != null && !tasks.isEmpty()) {
-						Map<String, List<TaskContext>> taskMap = new HashMap<>();
+						taskMap = new HashMap<>();
 						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
-						context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 					}
 				}
 			}
+			
+			if(taskMap != null && !taskMap.isEmpty()) {
+				for (List<TaskContext> tasks : taskMap.values()) {
+					for (TaskContext task : tasks) {
+						updateResourceDetails(task);
+					}
+				}
+			}
+			context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 
 			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(context);
@@ -212,12 +217,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return null;
 	}
 	
-	private void updateResourceDetails(Map obj) {
-		if(obj.containsKey("asset")) {
-			obj.put("resource", obj.get("asset"));
+	private void updateResourceDetails(TicketContext ticket) {
+		if(ticket.getAsset() != null) {
+			ticket.setResource(ticket.getAsset());
 		}
-		else if(obj.containsKey("space")) {
-			obj.put("resource", obj.get("space"));
+		else if (ticket.getSpace() != null) {
+			ticket.setResource(ticket.getSpace());
 		}
 	}
 	
