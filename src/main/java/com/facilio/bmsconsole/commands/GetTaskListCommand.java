@@ -46,6 +46,8 @@ public class GetTaskListCommand implements Command{
 		Map<Long, TaskSectionContext> sections = TicketAPI.getTaskSections(taskMap.keySet().stream().collect(Collectors.toList()));
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sections);
 		
+		TicketAPI.loadTicketLookups(tasks);
+		
 		return false;
 	}
 
