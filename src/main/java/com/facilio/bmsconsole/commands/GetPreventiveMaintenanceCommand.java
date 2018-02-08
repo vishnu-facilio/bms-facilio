@@ -87,11 +87,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		}
 		if(context.get(FacilioConstants.ContextNames.ASSET_ID) != null && (long) context.get(FacilioConstants.ContextNames.ASSET_ID) != -1)
 		{
-			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.ASSET_ID = ?", (long) context.get(FacilioConstants.ContextNames.ASSET_ID));
+			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.RESOURCE_ID = ?", (long) context.get(FacilioConstants.ContextNames.ASSET_ID));
 		}
 		if(context.get(FacilioConstants.ContextNames.SPACE_ID) != null && (long) context.get(FacilioConstants.ContextNames.SPACE_ID) != -1)
 		{
-			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.SPACE_ID = ?", (long) context.get(FacilioConstants.ContextNames.SPACE_ID));
+			selectRecordBuilder.andCustomWhere("Preventive_Maintenance.RESOURCE_ID = ?", (long) context.get(FacilioConstants.ContextNames.SPACE_ID));
 		}
 		
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
