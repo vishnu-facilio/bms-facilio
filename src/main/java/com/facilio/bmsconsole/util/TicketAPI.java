@@ -239,6 +239,10 @@ public class TicketAPI {
 			ticket.setTasks(groupTaskBySection(getRelatedTasks(ticket.getId())));
 			ticket.setNotes(getRelatedNotes(ticket.getId()));
 			ticket.setAttachments(getRelatedAttachments(ticket.getId()));
+			if(ticket.getResource() != null)
+			{
+				ticket.setResource(ResourceAPI.getResource(ticket.getResource().getId()));
+			}
 		}
 	}
 	
