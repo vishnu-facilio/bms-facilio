@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -461,27 +462,18 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 	private static void loadTicketResources(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-			
-			try {
-				SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
-																				.select(fields)
-																				.module(module)
-																				.beanClass(ResourceContext.class);
-				Map<Long, ResourceContext> resources = selectBuilder.getAsMap();
-				
+			List<Long> resourceIds = tickets.stream()
+											.filter(ticket -> ticket.getResource() != null)
+											.map(ticket -> ticket.getResource().getId())
+											.collect(Collectors.toList());
+			Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			if(resources != null && !resources.isEmpty()) {
 				for(TicketContext ticket : tickets) {
 					ResourceContext resource = ticket.getResource();
 					if(resource != null) {
 						ticket.setResource((resources.get(resource.getId())));
 					}
 				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-				throw e;
 			}
 		}
 	}
