@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.pdf.PdfUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -915,7 +916,7 @@ public String getUnderlyingData() throws Exception {
 		else if(type.equals("csv")) {
 			fileUrl=ExportUtil.exportDataAsCSV(module, fields, records);
 		} else if ("pdf".equals(type)){
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), "/app/em/reports/view/"+reportId);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportId);
 		}
 		return SUCCESS;
 	}

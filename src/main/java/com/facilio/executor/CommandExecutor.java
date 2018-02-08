@@ -1,6 +1,7 @@
 package com.facilio.executor;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class CommandExecutor {
 
@@ -8,6 +9,7 @@ public class CommandExecutor {
         ProcessBuilder builder = new ProcessBuilder(commandWithArgs);
         int exitStatus = -1;
         try {
+            System.out.println("command is : " + Arrays.asList(commandWithArgs));
             Process process = builder.start();
             process.waitFor();
             exitStatus = process.exitValue();

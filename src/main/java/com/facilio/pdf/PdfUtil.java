@@ -1,5 +1,6 @@
 package com.facilio.pdf;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -10,7 +11,9 @@ import java.io.IOException;
 
 public class PdfUtil {
 
-    private static final String WKHTMLTOPDF_CMD = System.getProperty("user.home")+"/wkhtmltox/bin/wkhtmltopdf";
+    private static final String PDF_CMD = System.getProperty("user.home")+"/slimerjs-0.10.3/slimerjs";
+    private static final String RENDER_JS = System.getProperty("user.home")+"/render.js";
+    private static final String SERVER_NAME = AwsUtil.getConfig("api.servername");
 
     public static String convertUrlToPdf(long orgId, String username, String url) {
         File pdfDirectory = new File(System.getProperty("java.io.tmpdir")+"/"+orgId+"/");
@@ -24,7 +27,12 @@ public class PdfUtil {
                 String token = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+1*60*60000);
                 File pdfFile = File.createTempFile("report-", ".pdf", pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
-                String[] command = new String[]{WKHTMLTOPDF_CMD, url, "--custom-header-propagation", "--custom-header", "fc.idToken.facilio", token, pdfFileLocation};
+                String serverName = SERVER_NAME;
+                if(SERVER_NAME != null) {
+                    String[] server = SERVER_NAME.split(":");
+                    serverName = server[0];
+                }
+                String[] command = new String[]{PDF_CMD, RENDER_JS, url, pdfFileLocation, token, serverName};
                 int exitStatus = CommandExecutor.execute(command);
                 System.out.println("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
             } catch (IOException e) {
@@ -41,7 +49,7 @@ public class PdfUtil {
             FileStore fs = FileStoreFactory.getInstance().getFileStore();
             long fileId = 0;
             try {
-                fileId = fs.addFile(pdfFileLocation, pdfFile, "application/csv");
+                fileId = fs.addFile(pdfFileLocation, pdfFile, "application/pdf");
                 return fs.getPrivateUrl(fileId);
             } catch (Exception e) {
                 e.printStackTrace();
