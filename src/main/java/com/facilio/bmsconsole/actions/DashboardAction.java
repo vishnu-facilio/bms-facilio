@@ -329,8 +329,8 @@ public class DashboardAction extends ActionSupport {
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
-			if (this.dateFilter != null && reportContext.getxAxisaggregateFunction() != FormulaContext.DateAggregateOperator.ACTUAL.getValue()) {
-				int oprId = Integer.parseInt(this.dateFilter);
+			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
+				int oprId = (this.dateFilter != null) ? Integer.parseInt(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
@@ -454,6 +454,7 @@ public class DashboardAction extends ActionSupport {
 			builder.andCondition(dateCondition);
 		}
 		JSONObject buildingVsMeter = new JSONObject();
+		HashMap <Long, ArrayList<Long>> purposeVsMeter= new HashMap<Long,ArrayList<Long>>();
 		if (getEnergyMeterFilter() != null) {
 			reportContext.setEnergyMeter(getEnergyMeterFilter());
 		}
@@ -541,32 +542,50 @@ public class DashboardAction extends ActionSupport {
 					reportContext.setGroupBy(-1L);
 				}
 			}
-//			else if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
-//				List<String> buildingIds = new ArrayList<>(); 
-//				JSONObject buildingMap = ReportsUtil.getBuildingMap();
-//				Iterator itr = buildingMap.keySet().iterator();
-//				while (itr.hasNext()) {
-//					buildingIds.add(itr.next().toString());
-//				}
-//				String buildingIdStr = StringUtils.join(buildingIds, ",");
-//				
-//				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", buildingIdStr, NumberOperators.EQUALS));
-//				
-//				FacilioField groupByField = new FacilioField();
-//				groupByField.setName("groupBy");
-//				groupByField.setDataType(FieldType.NUMBER);
-//				groupByField.setColumnName("PARENT_METER_ID");
-//				groupByField.setModule(module);
-//				fields.add(groupByField);
-//				builder.groupBy("label, groupBy");
-//				
-//				ReportFieldContext groupByReportField = new ReportFieldContext();
-//				groupByReportField.setModuleField(groupByField);
-//				
-//				reportContext.setGroupByField(groupByReportField);
-//				
-//				reportContext.setGroupBy(-1L);
-//			}
+			else if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+				
+				List<EnergyMeterContext> meters = DeviceAPI.getAllServiceMeters();
+				
+				if (meters != null && meters.size() > 0) {
+					List<Long> meterIds = new ArrayList<Long>();
+					
+					for (EnergyMeterContext meter : meters) {
+						if (meter.getPurpose() != null) {
+							meterIds.add(meter.getId());
+							
+							long purposeId = meter.getPurpose().getId();
+							ArrayList<Long> meterList = purposeVsMeter.get(purposeId);
+							if (meterList == null) {
+								meterList = new ArrayList<Long>();
+								purposeVsMeter.put(purposeId, meterList);
+							}
+							meterList.add(meter.getId());
+						}
+					}
+					
+					String meterIdStr = StringUtils.join(meterIds, ",");
+					energyMeterValue = meterIdStr;
+					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+				}
+				
+				if (!xAxisField.getColumnName().equalsIgnoreCase("PARENT_METER_ID")) {
+					FacilioField groupByField = new FacilioField();
+					groupByField.setName("groupBy");
+					groupByField.setDataType(FieldType.NUMBER);
+					groupByField.setColumnName("PARENT_METER_ID");
+					groupByField.setDisplayName("Service");
+					groupByField.setModule(module);
+					fields.add(groupByField);
+					builder.groupBy("label, groupBy");
+					
+					ReportFieldContext groupByReportField = new ReportFieldContext();
+					groupByReportField.setModuleField(groupByField);
+					
+					reportContext.setGroupByField(groupByReportField);
+					
+					reportContext.setGroupBy(-1L);
+				}
+			}
 		}
 		List<Map<String, Object>> rs = builder.get();
 		
@@ -576,31 +595,61 @@ public class DashboardAction extends ActionSupport {
 			
 			HashMap<String, Object> labelMapping = new HashMap<>();
 			
+			HashMap<String, Object> purposeMapping = new HashMap<>();
 			for(int i=0;i<rs.size();i++) {
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			if(thisMap!=null) {
 	 				
-	 				JSONObject value = new JSONObject();
-	 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
-	 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-	 					Double d = (Double) thisMap.get("value");
-	 					value.put("value", d*unitCost);
+	 				if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+	 					Object xlabel = thisMap.get("label");
+	 					if(thisMap.get("dummyField") != null) {
+		 					xlabel = thisMap.get("dummyField");
+		 				}
+		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
+		 					xlabel = labelMapping.get(thisMap.get("label").toString());
+		 				}
+		 				else {
+		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+		 				}
+		 				
+	 					Double xvalue = (Double) thisMap.get("value");
+	 					String groupBy = purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")).toString() : thisMap.get("groupBy").toString();
+	 					
+	 					if (purposeMapping.containsKey(xlabel + "-" + groupBy)) {
+	 						JSONObject value = (JSONObject) res.get(xlabel);
+	 						Double existingValue = (Double) value.get("value");
+	 						value.put("value", existingValue + xvalue);
+	 					}
+	 					else {
+	 						JSONObject value = new JSONObject();
+	 						value.put("label", purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
+	 						value.put("value", xvalue);
+	 						res.put(xlabel, value);
+	 					}
 	 				}
 	 				else {
-	 					value.put("value", thisMap.get("value"));
+	 					JSONObject value = new JSONObject();
+		 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
+		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+		 					Double d = (Double) thisMap.get("value");
+		 					value.put("value", d*unitCost);
+		 				}
+		 				else {
+		 					value.put("value", thisMap.get("value"));
+		 				}
+		 				
+		 				Object xlabel = thisMap.get("label");
+		 				if(thisMap.get("dummyField") != null) {
+		 					xlabel = thisMap.get("dummyField");
+		 				}
+		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
+		 					xlabel = labelMapping.get(thisMap.get("label").toString());
+		 				}
+		 				else {
+		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+		 				}
+		 				res.put(xlabel, value);
 	 				}
-	 				
-	 				Object xlabel = thisMap.get("label");
-	 				if(thisMap.get("dummyField") != null) {
-	 					xlabel = thisMap.get("dummyField");
-	 				}
-	 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
-	 					xlabel = labelMapping.get(thisMap.get("label").toString());
-	 				}
-	 				else {
-	 					labelMapping.put(thisMap.get("label").toString(), xlabel);
-	 				}
-	 				res.put(xlabel, value);
 	 			}
 		 	}
 			JSONArray finalres = new JSONArray();
