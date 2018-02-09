@@ -62,20 +62,22 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		
 		JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
+		Map<String, List<TaskContext>> taskMap = null;
 		if(taskContent != null) {
-			context.put(FacilioConstants.ContextNames.TASK_MAP, PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent));
+			taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
 		}
 		else {
 			JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
 			if (taskJson != null) {
 				List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
 				if(tasks != null && !tasks.isEmpty()) {
-					Map<String, List<TaskContext>> taskMap = new HashMap<>();
+					taskMap = new HashMap<>();
 					taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
-					context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 				}
 			}
 		}
+		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		return false;
 	}
 }

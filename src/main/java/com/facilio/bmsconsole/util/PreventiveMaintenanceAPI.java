@@ -13,9 +13,13 @@ import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -23,8 +27,11 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -345,5 +352,64 @@ public class PreventiveMaintenanceAPI {
 			tasks.put(entry.getKey(), mapper.readValue(JSONArray.toJSONString(entry.getValue()), mapper.getTypeFactory().constructCollectionType(List.class, TaskContext.class)));
 		}
 		return tasks;
+	}
+	
+	public static void updateResourceDetails(WorkOrderContext wo, Map<String, List<TaskContext>> taskMap) throws Exception {
+		List<Long> oldAssetIds = new ArrayList<>();
+		checkAndUpdateSpaceResource(wo, oldAssetIds);
+		if(taskMap != null && !taskMap.isEmpty()) {
+			for (List<TaskContext> tasks : taskMap.values()) {
+				for (TaskContext task : tasks) {
+					checkAndUpdateSpaceResource(task, oldAssetIds);
+				}
+			}
+		}
+		
+		if(!oldAssetIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(FieldFactory.getIdField(module));
+			FacilioField oldId = FieldFactory.getField("oldId", "OLD_ID_TEMP", module, FieldType.NUMBER);
+			fields.add(oldId);
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.select(fields)
+															.table(module.getTableName())
+															.andCondition(CriteriaAPI.getCondition(oldId, oldAssetIds, NumberOperators.EQUALS))
+															;
+			List<Map<String, Object>> props = selectBuilder.get();
+			Map<Long, Long> oldIdToNewId = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				oldIdToNewId.put((Long)prop.get("oldId"), (Long)prop.get("id"));
+			}
+			
+			updateAssetResource(wo, oldIdToNewId);
+			if(taskMap != null && !taskMap.isEmpty()) {
+				for (List<TaskContext> tasks : taskMap.values()) {
+					for (TaskContext task : tasks) {
+						updateAssetResource(task, oldIdToNewId);
+					}
+				}
+			}
+		}
+	}
+	
+	private static void updateAssetResource(TicketContext ticket, Map<Long, Long> oldIdToNewId) {
+		if(ticket.getAsset() != null && ticket.getAsset().getId() != -1) {
+			AssetContext asset = ticket.getAsset();
+			asset.setId(oldIdToNewId.get(asset.getId()));
+			ticket.setResource(asset);
+		}
+	}
+	
+	private static void checkAndUpdateSpaceResource(TicketContext ticket, List<Long> oldAssetIds) {
+		if(ticket.getAsset() != null && ticket.getAsset().getId() != -1) {
+			oldAssetIds.add(ticket.getAsset().getId());
+		}
+		else if (ticket.getSpace() != null && ticket.getAsset().getId() != -1){
+			ticket.setResource(ticket.getSpace());
+		}
 	}
 }
