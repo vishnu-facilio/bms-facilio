@@ -49,7 +49,7 @@ public class PdfUtil {
             FileStore fs = FileStoreFactory.getInstance().getFileStore();
             long fileId = 0;
             try {
-                fileId = fs.addFile(pdfFileLocation, pdfFile, "application/pdf");
+                fileId = fs.addFile(pdfFile.getName(), pdfFile, "application/pdf");
                 return fs.getPrivateUrl(fileId);
             } catch (Exception e) {
                 e.printStackTrace();
