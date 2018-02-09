@@ -176,8 +176,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(
 					woJson, WorkOrderContext.class);
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-			updateResourceDetails(wo);
-
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
@@ -197,16 +195,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					}
 				}
 			}
-			
-			if(taskMap != null && !taskMap.isEmpty()) {
-				for (List<TaskContext> tasks : taskMap.values()) {
-					for (TaskContext task : tasks) {
-						updateResourceDetails(task);
-					}
-				}
-			}
 			context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-
+			
+			//Temp fix. Have to be removed eventually
+			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(context);
 
@@ -215,15 +207,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			return wo;
 		}
 		return null;
-	}
-	
-	private void updateResourceDetails(TicketContext ticket) {
-		if(ticket.getAsset() != null) {
-			ticket.setResource(ticket.getAsset());
-		}
-		else if (ticket.getSpace() != null) {
-			ticket.setResource(ticket.getSpace());
-		}
 	}
 	
 	private void incrementPMCount(PreventiveMaintenance pm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
