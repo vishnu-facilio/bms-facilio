@@ -69,7 +69,7 @@ public class GetAssetReportCards implements Command {
 		
 		FacilioField assetIdFld = new FacilioField();
 		assetIdFld.setName("asset_id");
-		assetIdFld.setColumnName("ASSET_ID");
+		assetIdFld.setColumnName("RESOURCE_ID");
 		assetIdFld.setModule(ModuleFactory.getTicketsModule());
 		assetIdFld.setDataType(FieldType.NUMBER);
 
@@ -110,7 +110,7 @@ public class GetAssetReportCards implements Command {
 		
 		FacilioField assetIdFld = new FacilioField();
 		assetIdFld.setName("asset_id");
-		assetIdFld.setColumnName("ASSET_ID");
+		assetIdFld.setColumnName("RESOURCE_ID");
 		assetIdFld.setModule(ModuleFactory.getTicketsModule());
 		assetIdFld.setDataType(FieldType.NUMBER);
 

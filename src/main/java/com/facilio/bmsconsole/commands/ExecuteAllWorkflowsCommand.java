@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +49,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 		}
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		records = new LinkedList<>(records);
 		if(records != null && !records.isEmpty()) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
@@ -65,7 +68,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 						Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
 						Criteria criteria = workflowRule.getCriteria();
-						for(Object record : records) {
+						Iterator<Integer> it = records.iterator();
+						while (it.hasNext()) {
+							Object record = it.next();
 							Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							boolean flag = true;
@@ -97,6 +102,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 									{
 										action.executeAction(recordPlaceHolders, context);
 									}
+								}
+								if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+									it.remove();
 								}
 							}
 						}

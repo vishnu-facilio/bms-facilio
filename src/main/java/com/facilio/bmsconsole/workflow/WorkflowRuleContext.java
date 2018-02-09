@@ -120,19 +120,69 @@ public class WorkflowRuleContext {
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
-		READING_RULE,
-		WORKORDER_AGENT_NOTIFICATION_RULE,
-		WORKORDER_REQUESTER_NOTIFICATION_RULE,
-		ALARM_NOTIFICATION_RULE,
-		SLA_RULE,
-		ASSIGNMENT_RULE,
-		PM_READING_RULE,
-		READING_THRESHOLD_RULE
+		READING_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		WORKORDER_AGENT_NOTIFICATION_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		WORKORDER_REQUESTER_NOTIFICATION_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		ALARM_NOTIFICATION_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		SLA_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return true;
+			}
+		},
+		ASSIGNMENT_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return true;
+			}
+		},
+		PM_READING_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		},
+		READING_THRESHOLD_RULE {
+			@Override
+			public boolean stopFurtherRuleExecution() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		}
 		;
 		
 		public int getIntVal() {
 			return ordinal()+1;
 		}
+		
+		public abstract boolean stopFurtherRuleExecution();
 		
 		public static RuleType valueOf(int val) {
 			try {
