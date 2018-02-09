@@ -105,7 +105,7 @@ public class FacilioExpressionParser {
 	}
 	
 	public static boolean isOperators(String value) {
-		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/") || value.equals("%") || value.equals("^") || value.equals("=") || value.equals("!=") || value.equals("<") || value.equals("<=") || value.equals(">") || value.equals(">=") ) {
+		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/") || value.equals("%") || value.equals("^") || value.equals("=") || value.equals("!=") || value.equals("<") || value.equals("<=") || value.equals(">") || value.equals(">=") || value.equals("(") || value.equals(")")) {
 			return true;
 		}
 		return false;
