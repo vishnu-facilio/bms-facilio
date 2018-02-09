@@ -696,7 +696,7 @@ public class DashboardAction extends ActionSupport {
 		System.out.println("rs after -- "+rs);
 		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>(); 
 		comparisionRs.add(rs);
-		Multimap<String,Object> comparisonresult = ArrayListMultimap.create();
+		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
 		if(reportContext.getIsComparisionReport()) {
 			
 			for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
@@ -723,8 +723,7 @@ public class DashboardAction extends ActionSupport {
 			for(List<Map<String, Object>> comp :comparisionRs) {
 				for(Map<String, Object> result:comp) {
 					String label =(String) result.get("label");
-					Object value = result.get("value");
-					comparisonresult.put(label, value);
+					comparisonresult.put(label, result);
 				}
 			}
 			System.out.println("comparisonresult ---- "+comparisonresult);
@@ -732,13 +731,13 @@ public class DashboardAction extends ActionSupport {
 			JSONArray compResult =  new JSONArray();
 			for(String key:comparisonresult.keySet()) {
 				JSONObject json = new JSONObject();
-				json.put("label", key);
 				JSONArray valuesArray = new JSONArray();
-				for(Object values :comparisonresult.get(key)) {
+				for(Map<String, Object> result :comparisonresult.get(key)) {
+					json.put("label", result.get("dummyField"));
 					JSONObject json1 = new JSONObject();
-					json1.put("label", key);
-					json1.put("value", values);
-					valuesArray.add(json1);				
+					json1.put("label", result.get("dummyField"));
+					json1.put("value", result.get("value"));
+					valuesArray.add(json1);			
 				}
 				json.put("value", valuesArray);
 				compResult.add(json);
