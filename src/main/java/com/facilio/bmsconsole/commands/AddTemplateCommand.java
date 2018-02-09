@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
+import com.facilio.bmsconsole.workflow.SLATemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
@@ -44,6 +45,10 @@ public class AddTemplateCommand implements Command {
 			}
 			else if (template instanceof AssignmentTemplate) {
 				long id = TemplateAPI.addAssignmentTemplate(AccountUtil.getCurrentOrg().getOrgId(), (AssignmentTemplate) template);
+				template.setId(id);
+			}
+			else if (template instanceof SLATemplate) {
+				long id = TemplateAPI.addSlaTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SLATemplate) template);
 				template.setId(id);
 			}
 		}

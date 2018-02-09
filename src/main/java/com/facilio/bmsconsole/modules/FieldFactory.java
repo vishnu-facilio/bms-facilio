@@ -2846,6 +2846,14 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static  List<FacilioField> getSlaTemplateFields() {
+		FacilioModule module = ModuleFactory.getSlaTemplatesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
+		return fields;
+    }
+	
 	public static List<FacilioField> getReportScheduleInfoFields() {
 		FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
 		List<FacilioField> fields = new ArrayList<>();

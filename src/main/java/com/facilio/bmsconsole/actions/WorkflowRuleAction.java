@@ -11,6 +11,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -21,12 +23,15 @@ import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.AssignmentTemplate;
+import com.facilio.bmsconsole.workflow.SLATemplate;
+import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
+import com.facilio.bmsconsole.modules.FacilioField;
 
 public class WorkflowRuleAction extends ActionSupport {
 	
@@ -141,7 +146,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		//ActionContext assignmentAction = actions.get(0);
 		ActionContext assignmentAction = new ActionContext();
 		assignmentAction.setActionType(ActionType.ASSIGNMENT_ACTION);
-		assignmentTemplate.setName(workflowRuleContext.getName());
+		assignmentTemplate.setName(workflowRuleContext.getName()+"_AssignmentTemplate");
 		assignmentAction.setTemplate(assignmentTemplate);
 		List<ActionContext> assignActions = new ArrayList<>();
 		assignActions.add(assignmentAction);
@@ -151,10 +156,52 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, assignActions);
 		Chain addRule = FacilioChainFactory.addAssignmentRuleChain();
 		addRule.execute(facilioContext);
-		System.out.println(">>>>>>>.. "+workflowRuleContext.getDescription());
 		return SUCCESS;
 	}
 	
+	public Criteria getSLACriteria() throws Exception
+	{
+		Criteria obj = new Criteria();
+		//obj.setPattern("1");
+		Condition condition = new Condition();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField priority = modBean.getField("priority", FacilioConstants.ContextNames.WORK_ORDER);
+		condition.setField(priority);		
+		condition.setValue("1");
+		condition.setOperatorId(36);
+		obj.addAndCondition(condition);
+		return obj;
+	}
+	
+
+	public String addSLARule() throws Exception
+	{
+		FacilioContext facilioContext = new FacilioContext();
+		workflowRuleContext.setRuleType(RuleType.SLA_RULE);
+		workflowRuleContext.setCriteria(getSLACriteria());
+		ActionContext slaAction = new ActionContext();
+		slaAction.setActionType(ActionType.SLA_ACTION);
+		slaTemplate.setDuration(1000); //Hardcoding Duration here. This will be configured from the UI
+		slaTemplate.setName(workflowRuleContext.getName()+"_SLATemplate");
+		slaAction.setTemplate(slaTemplate);
+		List<ActionContext> slaActions = new ArrayList<>();
+		slaActions.add(slaAction);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, slaActions);
+		Chain addRule = FacilioChainFactory.addSLARuleChain();
+		addRule.execute(facilioContext);
+		return SUCCESS;
+	}
+	
+	SLATemplate slaTemplate;
+	
+	public SLATemplate getSlaTemplate() {
+		return slaTemplate;
+	}
+
+	public void setSlaTemplate(SLATemplate slaTemplate) {
+		this.slaTemplate = slaTemplate;
+	}
 	AssignmentTemplate assignmentTemplate;
 	
 	

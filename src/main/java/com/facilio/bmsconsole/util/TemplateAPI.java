@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
+import com.facilio.bmsconsole.workflow.SLATemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
@@ -162,6 +163,20 @@ public class TemplateAPI {
 					return getAssignmentTemplateFromMap(templateMap);
 				}
 			}break;
+			case SLA: {
+				FacilioModule module = ModuleFactory.getSlaTemplatesModule();
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getSlaTemplateFields())
+						.table(module.getTableName())
+						.andCondition(CriteriaAPI.getIdCondition(id, module))
+						;
+				
+				List<Map<String, Object>> templates = selectBuider.get();
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getSlaTemplateFromMap(templateMap);
+				}
+			}break;
 			case JSON:
 			case WORKORDER:
 			case ALARM:
@@ -273,6 +288,27 @@ public class TemplateAPI {
 																.fields(FieldFactory.getAssignmentTemplateFields())
 																.addRecord(templateProps);
 		assignmentTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static long addSlaTemplate(long orgId, SLATemplate template) throws Exception {
+		template.setOrgId(orgId);
+		JSONArray placeholders = getPlaceholders(template);
+		template.setPlaceholder(placeholders);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getUserTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder slaTemplateBuilder = new GenericInsertRecordBuilder()
+																.table("SLA_Templates")
+																.fields(FieldFactory.getSlaTemplateFields())
+																.addRecord(templateProps);
+		slaTemplateBuilder.save();
 		
 		return (long) templateProps.get("id");
 	}
@@ -397,6 +433,10 @@ public class TemplateAPI {
 	}
 	private static AssignmentTemplate getAssignmentTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		AssignmentTemplate template = FieldUtil.getAsBeanFromMap(templateMap, AssignmentTemplate.class);
+		return template;
+	}
+	private static SLATemplate getSlaTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		SLATemplate template = FieldUtil.getAsBeanFromMap(templateMap, SLATemplate.class);
 		return template;
 	}
 	private static PushNotificationTemplate getPushNotificationTemplateFromMap(Map<String, Object> templateMap) throws Exception {

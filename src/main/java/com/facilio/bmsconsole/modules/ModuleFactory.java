@@ -259,6 +259,14 @@ public class ModuleFactory {
 		assignmentTemplatesModule.setExtendModule(getTemplatesModule());
 		return assignmentTemplatesModule;
 	}
+	public static FacilioModule getSlaTemplatesModule() {
+		FacilioModule assignmentTemplatesModule = new FacilioModule();
+		assignmentTemplatesModule.setName("slatemplates");
+		assignmentTemplatesModule.setDisplayName("SLA Templates");
+		assignmentTemplatesModule.setTableName("SLA_Templates");
+		assignmentTemplatesModule.setExtendModule(getTemplatesModule());
+		return assignmentTemplatesModule;
+	}
 	
 	public static FacilioModule getPushNotificationTemplateModule() {
 		FacilioModule pushNotificationTemplatesModule = new FacilioModule();

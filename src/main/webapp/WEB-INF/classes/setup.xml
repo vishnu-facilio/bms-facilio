@@ -58,6 +58,12 @@
 				<param name="root">readingRule</param>
 			</result>
 		</action>
+		<action name="addSLARule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addSLARule">
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="root">readingRule</param>
+			</result>
+		</action>
 		<action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

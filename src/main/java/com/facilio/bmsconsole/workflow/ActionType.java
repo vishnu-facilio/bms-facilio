@@ -374,6 +374,42 @@ public enum ActionType {
 			
 		}
 		
+	},
+	SLA_ACTION(9) {
+		@Override
+		public void performAction(JSONObject obj, Context context) {
+			long closePeriod = -1;
+			closePeriod = (long)obj.get("closePeriod");
+			long priority = 1;
+			priority = (long) obj.get("priority");
+			
+			
+			long dueDate = System.currentTimeMillis()+closePeriod;
+			
+			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			long workorderpriority = workOrder.getPriority().getSequenceNumber();
+			
+			WorkOrderContext updateWO = new WorkOrderContext();
+			workOrder.setDueDate(dueDate);
+			updateWO.setDueDate(dueDate);
+			
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+																	.module(woModule)
+																	.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+																	.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule))
+																	;
+				updateBuilder.update(updateWO);
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			
+		}	
 	}
 	;
 	

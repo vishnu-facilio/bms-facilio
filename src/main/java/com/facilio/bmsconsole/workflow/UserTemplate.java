@@ -88,7 +88,8 @@ public abstract class UserTemplate implements ActionTemplate {
 		TASK_GROUP(7),
 		PUSH_NOTIFICATION(8),
 		WEB_NOTIFICATION(9),
-		ASSIGNMENT(10)
+		ASSIGNMENT(10),
+		SLA(11)
 		;
 
 		
