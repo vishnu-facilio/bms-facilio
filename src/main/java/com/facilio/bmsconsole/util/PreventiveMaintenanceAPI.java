@@ -408,7 +408,7 @@ public class PreventiveMaintenanceAPI {
 		if(ticket.getAsset() != null && ticket.getAsset().getId() != -1) {
 			oldAssetIds.add(ticket.getAsset().getId());
 		}
-		else if (ticket.getSpace() != null && ticket.getAsset().getId() != -1){
+		else if (ticket.getSpace() != null && ticket.getSpace().getId() != -1){
 			ticket.setResource(ticket.getSpace());
 		}
 	}
