@@ -30,7 +30,8 @@ public class EventCoRelationCommand implements Command {
 				long expressionId = rule.getCoRelExpressionId();
 				if (expressionId != -1) {
 					ExpressionContext expression = ExpressionAPI.getExpressionContext(expressionId);
-					FacilioExpressionParser parser = new FacilioExpressionParser(StrSubstitutor.replace(expression.getExpressionString(), FieldUtil.getAsProperties(event)));
+					String expressionStr = StrSubstitutor.replace(expression.getExpressionString(), FieldUtil.getAsProperties(event));
+					FacilioExpressionParser parser = new FacilioExpressionParser(expressionStr);
 					if(parser.isSingleValueReturnTypeExpression(expression.getExpressionString())) {
 						double result = (double) parser.getResult();
 						if(result == 1) {

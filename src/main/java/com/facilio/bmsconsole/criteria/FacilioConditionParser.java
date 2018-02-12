@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -81,11 +82,10 @@ public class FacilioConditionParser {
 			conditionString = moduleMatcher.group(3);
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
 		fields = modBean.getAllFields(moduleName);
-		Map<String, FacilioField> fieldMap = new HashMap<>();
-		for (FacilioField field : fields) {
-			fieldMap.put(field.getName(), field);
-		}
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		fieldMap.put("id", FieldFactory.getIdField(module));
 		String[] values = conditionString.split(" ");
 
 		for(String value : values) {
