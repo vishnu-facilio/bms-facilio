@@ -27,7 +27,13 @@ public class ExecutePMsCommand implements Command {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) {
-				WorkOrderContext wo = bean.addWorkOrderFromPM(pm);
+				WorkOrderContext wo = null;
+				try {
+					wo = bean.addWorkOrderFromPM(pm);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				if(wo != null) {
 					woIds.add(wo.getId());
 					pmToWo.put(pm.getId(), wo.getId());
