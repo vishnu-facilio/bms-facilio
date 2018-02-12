@@ -172,6 +172,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			}
 			
 			rs = pstmt.executeQuery();
+			sql = pstmt.toString();
 			List<Map<String, Object>> records = new ArrayList<>();
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
@@ -256,6 +257,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 		
 		return sql.toString();
+	}
+	
+	private String sql;
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return sql;
 	}
 	
 	public static class GenericJoinBuilder implements SelectJoinBuilderIfc<Map<String, Object>> {

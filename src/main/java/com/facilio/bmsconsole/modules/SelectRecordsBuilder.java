@@ -378,6 +378,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return builder.toString();
+	}
+	
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements SelectJoinBuilderIfc<E> {
 		private SelectRecordsBuilder<E> parentBuilder;
 		private GenericJoinBuilder joinBuilder;
