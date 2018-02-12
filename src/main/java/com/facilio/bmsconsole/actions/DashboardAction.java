@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
@@ -186,17 +186,17 @@ public class DashboardAction extends ActionSupport {
 	public void setReportFolderContext(ReportFolderContext reportFolderContext) {
 		this.reportFolderContext = reportFolderContext;
 	}
-	public ReportContext1 getReportContext() {
+	public ReportContext getReportContext() {
 		return reportContext;
 	}
-	public void setReportContext(ReportContext1 reportContext) {
+	public void setReportContext(ReportContext reportContext) {
 		this.reportContext = reportContext;
 	}
 	public void setPeriod(String period) {
 		this.period = period;
 	}
 	private ReportFolderContext reportFolderContext;
-	private ReportContext1 reportContext;
+	private ReportContext reportContext;
 	public ReportThreshold getReportThreshold() {
 		return reportThreshold;
 	}
@@ -280,9 +280,9 @@ public class DashboardAction extends ActionSupport {
 					.andCustomWhere("ID = ?", reportId);
 
 			Map<String, Object> props = new HashMap<String, Object>();
-			props.put("chartType", ReportContext1.ReportChartType.getWidgetChartType(chartType).getValue());
+			props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
 			if (secChartType != null) {
-				props.put("secChartType", ReportContext1.ReportChartType.getWidgetChartType(secChartType).getValue());
+				props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
 			}
 			
 			updateBuilder.update(props);

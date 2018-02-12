@@ -18,11 +18,11 @@ public class ReportInfo {
 	
 	public static final String PARENT_VIEW_NAME = "report";
 	
-	private ReportContext1 reportContext;
-	public ReportContext1 getReportContext() {
+	private ReportContext reportContext;
+	public ReportContext getReportContext() {
 		return reportContext;
 	}
-	public void setReportContext(ReportContext1 reportContext) {
+	public void setReportContext(ReportContext reportContext) {
 		this.reportContext = reportContext;
 	}
 	

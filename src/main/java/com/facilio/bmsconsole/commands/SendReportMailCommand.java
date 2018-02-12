@@ -12,7 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -44,7 +44,7 @@ public class SendReportMailCommand implements Command {
 		String fileUrl = null;
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF) {
-			ReportContext1 reportContext = (ReportContext1) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
+			ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportContext.getId());
 		}
 		else {

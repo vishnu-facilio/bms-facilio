@@ -8,15 +8,15 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 
 	Long parentFolderId;
 	String name;
-	List<ReportContext1> reports;
+	List<ReportContext> reports;
 	Long buildingId;
 	public Long getParentFolderId() {
 		return parentFolderId;
 	}
-	public List<ReportContext1> getReports() {
+	public List<ReportContext> getReports() {
 		return reports;
 	}
-	public void setReports(List<ReportContext1> reports) {
+	public void setReports(List<ReportContext> reports) {
 		this.reports = reports;
 	}
 	public void setParentFolderId(Long parentFolderId) {

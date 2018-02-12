@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.commands.SetTopNReportCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -170,7 +170,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop:props) {
 				ReportFolderContext reportFolder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
-				List<ReportContext1> reports = DashboardUtil.getReportsFormReportFolderId(reportFolder.getId());
+				List<ReportContext> reports = DashboardUtil.getReportsFormReportFolderId(reportFolder.getId());
 				reportFolder.setReports(reports);
 				reportFolders.add(reportFolder);
 			}

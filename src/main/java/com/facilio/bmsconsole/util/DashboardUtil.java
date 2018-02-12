@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
@@ -138,7 +138,7 @@ public class DashboardUtil {
 		}
 		return dashboardWidgetContexts;
 	}
-	public static List<ReportContext1> getReportsFormReportFolderId(Long folderID) throws Exception {
+	public static List<ReportContext> getReportsFormReportFolderId(Long folderID) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFields())
 				.table(ModuleFactory.getReport().getTableName());
@@ -151,11 +151,11 @@ public class DashboardUtil {
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<ReportContext1> reps;
+		List<ReportContext> reps;
 		if (props != null && !props.isEmpty()) {
 			reps = new ArrayList<>();
 			for(Map<String, Object> prop:props) {
-				ReportContext1 reportFolderContext = FieldUtil.getAsBeanFromMap(prop, ReportContext1.class);
+				ReportContext reportFolderContext = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
 				reps.add(reportFolderContext);
 			}
 			return reps;
@@ -248,7 +248,7 @@ public class DashboardUtil {
 		return null;
 	}
 	
-	public static ReportContext1 getReportContext(Long reportId) throws Exception {
+	public static ReportContext getReportContext(Long reportId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getReportFields();
 		fields.addAll(FieldFactory.getReportCriteriaFields());
@@ -263,7 +263,7 @@ public class DashboardUtil {
 		List<Map<String, Object>> props = selectBuilder.get();
 		
 		if (props != null && !props.isEmpty()) {
-			ReportContext1 reportContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportContext1.class);
+			ReportContext reportContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportContext.class);
 			
 			for(Map<String, Object> prop:props) {
 				if(prop.get("criteriaId") != null) {
@@ -518,10 +518,10 @@ public class DashboardUtil {
 //		Collections.sort(dashboards);
 		 for(ReportFolderContext reportFolder:reportFolders) {
 			 String name = reportFolder.getName();
-			Collection<ReportContext1> reportContexts = reportFolder.getReports();
+			Collection<ReportContext> reportContexts = reportFolder.getReports();
 			JSONArray childrenArray = new JSONArray();
 			if(reportContexts != null) {
-				for(ReportContext1 reportContext:reportContexts) {
+				for(ReportContext reportContext:reportContexts) {
 					childrenArray.add(reportContext.widgetJsonObject());
 				}
 				JSONObject dashboardJson = new JSONObject();
@@ -623,7 +623,7 @@ public class DashboardUtil {
 		return false;
 	}
 	
-	public static boolean addReport(ReportContext1 reportContext) throws Exception {
+	public static boolean addReport(ReportContext reportContext) throws Exception {
 		
 		if (reportContext != null) {
 			List<FacilioField> fields = FieldFactory.getReportFields();
@@ -731,11 +731,11 @@ public class DashboardUtil {
 		DashboardUtil.addReportFolder(buildingFolder);
 		
 		// High-res data report
-		ReportContext1 highResReport = new ReportContext1();
+		ReportContext highResReport = new ReportContext();
 		highResReport.setName("Electricity Demand Today");
 		highResReport.setDescription("Daily Electricity Load in High-Resolution");
 		highResReport.setParentFolderId(buildingFolder.getId());
-		highResReport.setChartType(ReportContext1.ReportChartType.AREA.getValue());
+		highResReport.setChartType(ReportContext.ReportChartType.AREA.getValue());
 		
 		ReportFieldContext xAxisFld = new ReportFieldContext();
 		xAxisFld.setModuleFieldId(ttimeFld.getId());
@@ -762,11 +762,11 @@ public class DashboardUtil {
 		DashboardUtil.addReport(highResReport);
 		
 		// End Use breakdown
-		ReportContext1 endUseBreakdown = new ReportContext1();
+		ReportContext endUseBreakdown = new ReportContext();
 		endUseBreakdown.setName("End Use Breakdown");
 		endUseBreakdown.setDescription("End Use Breakdown");
 		endUseBreakdown.setParentFolderId(buildingFolder.getId());
-		endUseBreakdown.setChartType(ReportContext1.ReportChartType.STACKED_BAR.getValue());
+		endUseBreakdown.setChartType(ReportContext.ReportChartType.STACKED_BAR.getValue());
 		
 		ReportFieldContext endUseXAxisFld = new ReportFieldContext();
 		endUseXAxisFld.setModuleFieldId(ttimeFld.getId());
@@ -794,11 +794,11 @@ public class DashboardUtil {
 		DashboardUtil.addReport(endUseBreakdown);
 		
 		// Cost usage by End use
-		ReportContext1 costUseBreakdown = new ReportContext1();
+		ReportContext costUseBreakdown = new ReportContext();
 		costUseBreakdown.setName("Cost usage by End use");
 		costUseBreakdown.setDescription("End Use Breakdown");
 		costUseBreakdown.setParentFolderId(buildingFolder.getId());
-		costUseBreakdown.setChartType(ReportContext1.ReportChartType.STACKED_BAR.getValue());
+		costUseBreakdown.setChartType(ReportContext.ReportChartType.STACKED_BAR.getValue());
 		
 		ReportFieldContext costUseXAxisFld = new ReportFieldContext();
 		costUseXAxisFld.setModuleFieldId(ttimeFld.getId());
@@ -826,11 +826,11 @@ public class DashboardUtil {
 		DashboardUtil.addReport(costUseBreakdown);
 		
 		// Daily Energy breakdown
-		ReportContext1 dailyBreakdown = new ReportContext1();
+		ReportContext dailyBreakdown = new ReportContext();
 		dailyBreakdown.setName("Daily energy breakdown");
 		dailyBreakdown.setDescription("Daily energy breakdown");
 		dailyBreakdown.setParentFolderId(buildingFolder.getId());
-		dailyBreakdown.setChartType(ReportContext1.ReportChartType.BAR.getValue());
+		dailyBreakdown.setChartType(ReportContext.ReportChartType.BAR.getValue());
 		
 		ReportFieldContext dailyXAxisFld = new ReportFieldContext();
 		dailyXAxisFld.setModuleFieldId(ttimeFld.getId());

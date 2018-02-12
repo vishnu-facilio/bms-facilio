@@ -8,7 +8,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -45,7 +45,7 @@ public class ReportScheduler extends FacilioJob {
 				context.put(FacilioConstants.Workflow.TEMPLATE, template);
 				
 				Long reportId = (long) prop.get("reportId");
-				ReportContext1 reportContext = DashboardUtil.getReportContext(reportId);
+				ReportContext reportContext = DashboardUtil.getReportContext(reportId);
 				context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
 				
 				FacilioModule module = ReportsUtil.getReportModule(reportContext);

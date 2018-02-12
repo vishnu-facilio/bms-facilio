@@ -10,9 +10,10 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.util.DashboardUtil;
 
 
-public class ReportContext1 {
+public class ReportContext {
 	
 	Long Id;
 	Long parentFolderId;
@@ -84,10 +85,11 @@ public class ReportContext1 {
 		this.groupBy = groupBy;
 	}
 
-	public ReportFieldContext getGroupByField() {
+	public ReportFieldContext getGroupByField() throws Exception {
 		if (groupByField == null && groupBy != null) {
 			groupByField = new ReportFieldContext();
 			groupByField.setId(groupBy);
+			groupByField = DashboardUtil.getReportField(groupByField);
 		}
 		return groupByField;
 	}
@@ -218,20 +220,22 @@ public class ReportContext1 {
 		}
 		reportThresholds.add(reportThreshold);
 	}
-	public ReportFieldContext getxAxisField() {
+	public ReportFieldContext getxAxisField() throws Exception {
 		if (xAxisField == null && xAxis != null) {
 			xAxisField = new ReportFieldContext();
 			xAxisField.setId(xAxis);
+			DashboardUtil.getReportField(xAxisField);
 		}
 		return xAxisField;
 	}
 	public void setxAxisField(ReportFieldContext xAxisField) {
 		this.xAxisField = xAxisField;
 	}
-	public ReportFieldContext getY1AxisField() {
+	public ReportFieldContext getY1AxisField() throws Exception {
 		if (y1AxisField == null && y1Axis != null) {
 			y1AxisField = new ReportFieldContext();
 			y1AxisField.setId(y1Axis);
+			DashboardUtil.getReportField(y1AxisField);
 		}
 		return y1AxisField;
 	}

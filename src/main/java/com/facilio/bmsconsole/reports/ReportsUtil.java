@@ -23,7 +23,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReportContext1;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -591,7 +591,7 @@ public class ReportsUtil
 		
 	}
 	
-	public static FacilioModule getReportModule(ReportContext1 reportContext) throws Exception {
+	public static FacilioModule getReportModule(ReportContext reportContext) throws Exception {
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		return modBean.getModule(reportFolder.getModuleId());
