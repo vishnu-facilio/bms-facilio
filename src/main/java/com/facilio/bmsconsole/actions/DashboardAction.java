@@ -314,8 +314,6 @@ public class DashboardAction extends ActionSupport {
 			isEnergyDataWithTimeFrame = true;
 		}
 		
-		FacilioModule fieldModule = xAxisField.getExtendedModule();
-		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
@@ -588,6 +586,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		List<Map<String, Object>> rs = builder.get();
+		System.out.println("rs1 -- "+rs);
 		
 		if(reportContext.getGroupBy() != null) {
 			
@@ -690,6 +689,7 @@ public class DashboardAction extends ActionSupport {
 		 			}
 			 	}
 				setReportData(res);
+				System.out.println("res -- "+res);
 			}
 		}
 		
@@ -717,6 +717,7 @@ public class DashboardAction extends ActionSupport {
 					builder1.andCriteria(criteria);
 				}
 				List<Map<String, Object>> rs1 = builder1.get();
+				System.out.println("rs comp  "+i+" -- "+rs);
 				comparisionRs.add(rs1);
 			}
 			
