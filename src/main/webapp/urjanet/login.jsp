@@ -9,14 +9,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-This is the login page 
-<%
-java.util.Enumeration in = request.getParameterNames();
-while(in.hasMoreElements()) {
- String paramName = in.nextElement().toString();
- out.println(paramName + " = " + request.getParameter(paramName)+"<br>");
-}
+Generate Token
+<form action="../api/integ/apilogin" method="post">
+<input type="text" name="username">
+<input type="text" name="password">
+<input type="submit" value="ok">
+</form>
 
-%>
 </body>
 </html>
