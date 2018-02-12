@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -32,17 +33,16 @@ public class GetBaseSpaceChildrenCommand implements Command{
 																	.beanClass(BaseSpaceContext.class);
 		
 		if (BaseSpaceContext.SpaceType.SITE.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.SITE_ID = ? AND BaseSpace.BUILDING_ID IS NULL AND BaseSpace.FLOOR_ID IS NULL", spaceId);
+			selectBuilder.andCustomWhere("BaseSpace.SITE_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.BUILDING.getIntVal());
 		}
 		else if (BaseSpaceContext.SpaceType.BUILDING.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.BUILDING_ID = ? AND BaseSpace.FLOOR_ID IS NULL", spaceId);
+			selectBuilder.andCustomWhere("BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.FLOOR.getIntVal());
 		}
 		else if (BaseSpaceContext.SpaceType.FLOOR.getStringVal().equalsIgnoreCase(spaceType)) {
-			selectBuilder.andCustomWhere("BaseSpace.FLOOR_ID = ?", spaceId);
+			selectBuilder.andCustomWhere("BaseSpace.FLOOR_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.SPACE.getIntVal());
 		}
-		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
-		
+		System.out.println(selectBuilder.toString());
 		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaces);
 		
 		return false;
