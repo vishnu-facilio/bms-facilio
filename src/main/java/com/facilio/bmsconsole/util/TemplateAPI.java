@@ -295,7 +295,7 @@ public class TemplateAPI {
 	public static long addSlaTemplate(long orgId, SLATemplate template) throws Exception {
 		template.setOrgId(orgId);
 		JSONArray placeholders = getPlaceholders(template);
-		template.setPlaceholder(placeholders);
+		template.setPlaceholder(placeholders);	
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")

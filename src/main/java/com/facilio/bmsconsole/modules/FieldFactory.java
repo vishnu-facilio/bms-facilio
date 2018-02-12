@@ -2850,7 +2850,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getSlaTemplatesModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
-		fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
+		fields.add(getField("slaPolicyJsonStr", "SLAPOLICYJSON", module, FieldType.STRING));
 		return fields;
     }
 	

@@ -163,25 +163,44 @@ public class WorkflowRuleAction extends ActionSupport {
 	{
 		Criteria obj = new Criteria();
 		//obj.setPattern("1");
-		Condition condition = new Condition();
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField priority = modBean.getField("priority", FacilioConstants.ContextNames.WORK_ORDER);
-		condition.setField(priority);		
-		condition.setValue("1");
-		condition.setOperatorId(36);
-		obj.addAndCondition(condition);
+		
+		FacilioField assignmentgroup = modBean.getField("assignmentGroup", FacilioConstants.ContextNames.WORK_ORDER);	
+		Condition condition1 = new Condition();
+		condition1.setField(assignmentgroup);		
+		condition1.setValue("1,2");
+		condition1.setOperatorId(36);
+		obj.addAndCondition(condition1);
+		
+		FacilioField space = modBean.getField("resource", FacilioConstants.ContextNames.WORK_ORDER);		
+		Condition condition2 = new Condition();
+		condition2.setField(space);		
+		condition2.setValue("1,2");
+		condition2.setOperatorId(36);
+		obj.addAndCondition(condition2);
+		
+		FacilioField category = modBean.getField("category", FacilioConstants.ContextNames.WORK_ORDER);		
+		Condition condition3 = new Condition();
+		condition3.setField(space);		
+		condition3.setValue("1");
+		condition3.setOperatorId(36);
+		obj.addAndCondition(condition3);
+		
 		return obj;
 	}
 	
 
 	public String addSLARule() throws Exception
 	{
+		System.out.println(">>>>>>>> workflowRuleContext : "+workflowRuleContext);
+		System.out.println(">>>>>>>slaTemplate : "+slaTemplate);
 		FacilioContext facilioContext = new FacilioContext();
 		workflowRuleContext.setRuleType(RuleType.SLA_RULE);
-		workflowRuleContext.setCriteria(getSLACriteria());
+		//workflowRuleContext.setCriteria(getSLACriteria());
 		ActionContext slaAction = new ActionContext();
 		slaAction.setActionType(ActionType.SLA_ACTION);
-		slaTemplate.setDuration(1000); //Hardcoding Duration here. This will be configured from the UI
+		//slaTemplate.setSlaPolicyJson("{1:200000,2:600000}"); //Hardcoding Duration here. This will be configured from the UI
 		slaTemplate.setName(workflowRuleContext.getName()+"_SLATemplate");
 		slaAction.setTemplate(slaTemplate);
 		List<ActionContext> slaActions = new ArrayList<>();

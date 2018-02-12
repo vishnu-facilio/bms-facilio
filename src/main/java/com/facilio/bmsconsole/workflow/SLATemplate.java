@@ -1,26 +1,36 @@
 package com.facilio.bmsconsole.workflow;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class SLATemplate extends UserTemplate {
 
-	long duration;
+	private JSONArray slaPolicyJson;
+	public JSONArray getSlaPolicyJson() {
+		return slaPolicyJson;
+	}
+	public void setSlaPolicyJson(JSONArray slaPolicyJson) {
+		this.slaPolicyJson = slaPolicyJson;
+	}
 	
-	public long getDuration() {
-		return duration;
+	public String getSlaPolicyJsonStr() {
+		if(slaPolicyJson != null) {
+			return slaPolicyJson.toJSONString();
+		}
+		return null;
 	}
-	public void setDuration(long duration) {
-		this.duration = duration;
+	public void setSlaPolicyJsonStr(String slaPolicyJsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		slaPolicyJson = (JSONArray) parser.parse(slaPolicyJsonStr);
 	}
+	
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
@@ -35,7 +45,7 @@ public class SLATemplate extends UserTemplate {
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub
 		JSONObject json = new JSONObject();
-		json.put("duration", duration);
+		json.put("slaPolicyJson", slaPolicyJson);
 		return json;
 	}
 	@Override

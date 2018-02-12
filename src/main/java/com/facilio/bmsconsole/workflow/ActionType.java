@@ -4,8 +4,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -375,37 +377,52 @@ public enum ActionType {
 		}
 		
 	},
-	SLA_ACTION(9) {
+	SLA_ACTION(10) {
 		@Override
 		public void performAction(JSONObject obj, Context context) {
-			long closePeriod = -1;
-			closePeriod = (long)obj.get("closePeriod");
-			long priority = 1;
-			priority = (long) obj.get("priority");
 			
-			
-			long dueDate = System.currentTimeMillis()+closePeriod;
+			JSONArray slaPolicyJson = (JSONArray)obj.get("slaPolicyJson");
 			
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-			long workorderpriority = workOrder.getPriority().getSequenceNumber();
+			long workorderpriority = workOrder.getPriority().getId();
+			Long duration = null ;
 			
-			WorkOrderContext updateWO = new WorkOrderContext();
-			workOrder.setDueDate(dueDate);
-			updateWO.setDueDate(dueDate);
-			
-			try {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-																	.module(woModule)
-																	.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-																	.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule))
-																	;
-				updateBuilder.update(updateWO);
-				
-			}catch(Exception e)
+			Iterator iter = slaPolicyJson.iterator();
+			while(iter.hasNext())
 			{
-				e.printStackTrace();
+				JSONObject slaPolicy = (JSONObject)iter.next();
+				long priorityId = Long.parseLong((String)slaPolicy.get("priority"));
+				if(priorityId == workorderpriority)
+				{
+					duration = Long.parseLong((String)slaPolicy.get("duration"));
+				}
+				
+			}
+			
+			//duration = (Long)slaPolicyJson.get(String.valueOf(workorderpriority));
+			if(duration != null)
+			{
+				long dueDate = workOrder.getCreatedTime()+duration;
+
+				WorkOrderContext updateWO = new WorkOrderContext();
+				workOrder.setDueDate(dueDate);
+				updateWO.setDueDate(dueDate);
+				
+				try {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+																		.module(woModule)
+																		.fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+																		.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule))
+																		;
+					updateBuilder.update(updateWO);
+					
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			
 			}
 			
 			
