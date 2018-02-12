@@ -33,10 +33,10 @@ public class DeletePreventiveMaintenanceCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			
-			GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
+			/*GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
 					.table("Jobs")
 					.andCustomWhere(condition + " AND JOBNAME = ?", recordIds.toArray(), "PreventiveMaintenance");
-			deletebuilder.delete();
+			deletebuilder.delete();*/
 		}
 		return false;
 	}

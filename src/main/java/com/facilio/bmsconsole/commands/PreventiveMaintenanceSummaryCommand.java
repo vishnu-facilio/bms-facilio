@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -20,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
@@ -58,6 +61,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		JSONObject woContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.WORK_ORDER);
 		
 		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(woContent, WorkOrderContext.class);
+		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		
@@ -78,6 +82,12 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		}
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
+		if(taskMap != null && !taskMap.isEmpty()) {
+			for (Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
+				List<TaskContext> tasks = entry.getValue();
+				TicketAPI.loadTicketLookups(tasks);
+			}
+		}
 		return false;
 	}
 }

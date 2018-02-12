@@ -8,15 +8,20 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -472,10 +477,38 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 											.collect(Collectors.toList());
 			Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
 			if(resources != null && !resources.isEmpty()) {
+				
+				// Temporary...needs to verify
+				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null,null);
+				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
+				for(BaseSpaceContext space : spaces) {
+					spaceMap.put(space.getId(), space);
+				}
+				
+				FacilioContext context = new FacilioContext();
+				Chain assetList = FacilioChainFactory.getAssetListChain();
+		 		assetList.execute(context);
+		 		List<AssetContext> assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		 		Map<Long, AssetContext> assetMap = new HashMap<>();
+		 		for(AssetContext asset : assets) {
+		 			assetMap.put(asset.getId(), asset);
+				}
+				
 				for(TicketContext ticket : tickets) {
 					ResourceContext resource = ticket.getResource();
 					if(resource != null) {
-						ticket.setResource((resources.get(resource.getId())));
+						ResourceContext resourceDetail = resources.get(resource.getId());
+						if(resourceDetail.getResourceTypeEnum() == ResourceType.SPACE) {
+							if(spaceMap.containsKey(resourceDetail.getId())) {
+								resourceDetail = spaceMap.get(resourceDetail.getId());
+							}
+						}
+						else {
+							if(assetMap.containsKey(resourceDetail.getId())) {
+								resourceDetail = assetMap.get(resourceDetail.getId());
+							}
+						}
+						ticket.setResource(resourceDetail);
 					}
 				}
 			}

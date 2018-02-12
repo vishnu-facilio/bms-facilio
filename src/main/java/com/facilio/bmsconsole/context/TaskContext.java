@@ -116,7 +116,7 @@ public class TaskContext extends TicketContext {
 	public Boolean getAttachmentRequired() {
 		return attachmentRequired;
 	}
-	public void setAttachmentRequired(Boolean attachmentRequired) {
+	public void setAttachmentRequired(boolean attachmentRequired) {
 		this.attachmentRequired = attachmentRequired;
 	}
 	public boolean isAttachmentRequired() {
