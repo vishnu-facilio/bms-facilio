@@ -166,11 +166,77 @@ public class EventRule {
 		this.thresholdOverSeconds = thresholdOverSeconds;
 	}
 	
+	private String coRelExpression;
+	public String getCoRelExpression() {
+		return coRelExpression;
+	}
+	public void setCoRelExpression(String coRelExpression) {
+		this.coRelExpression = coRelExpression;
+	}
+
+	private long coRelExpressionId = -1;
+	public long getCoRelExpressionId() {
+		return coRelExpressionId;
+	}
+	public void setCoRelExpressionId(long coRelExpressionId) {
+		this.coRelExpressionId = coRelExpressionId;
+	}
+
+	private JSONObject coRelTransformTemplate;
+	public JSONObject getCoRelTransformTemplate() {
+		return coRelTransformTemplate;
+	}
+	public void setCoRelTransformTemplate(JSONObject coRelTransformTemplate) {
+		this.coRelTransformTemplate = coRelTransformTemplate;
+	}
+
+	private long coRelTransformTemplateId = -1;
+	public long getCoRelTransformTemplateId() {
+		return coRelTransformTemplateId;
+	}
+	public void setCoRelTransformTemplateId(long coRelTransformTemplateId) {
+		this.coRelTransformTemplateId = coRelTransformTemplateId;
+	}
+
 	private List<EventToAlarmFieldMapping> fieldMappings;
 	public List<EventToAlarmFieldMapping> getFieldMappings() {
 		return fieldMappings;
 	}
 	public void setFieldMappings(List<EventToAlarmFieldMapping> fieldMappings) {
 		this.fieldMappings = fieldMappings;
+	}
+	
+	private ColRelationAction colRelAction;
+	public int getColRelAction() {
+		if(colRelAction != null) {
+			return colRelAction.getValue();
+		}
+		return -1;
+	}
+	public void setColRelAction(int colRelAction) {
+		this.colRelAction = ColRelationAction.valueOf(colRelAction);
+	}
+	public void setColRelAction(ColRelationAction colRelAction) {
+		this.colRelAction = colRelAction;
+	}
+	public ColRelationAction getColRelActionEnum() {
+		return colRelAction;
+	}
+	
+	public static enum ColRelationAction {
+		IGNORE,
+		TRANSFORM
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public static ColRelationAction valueOf(int val) {
+			if (val > 0 && val <= values().length) {
+				return values()[val - 1];
+			}
+			return null;
+		}
 	}
 }

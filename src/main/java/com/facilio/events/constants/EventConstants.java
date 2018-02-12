@@ -13,11 +13,18 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.events.commands.AddEventCommand;
 import com.facilio.events.commands.AddEventRuleCommand;
+import com.facilio.events.commands.EvalEventBaseCriteriaCommand;
+import com.facilio.events.commands.EventCoRelationCommand;
+import com.facilio.events.commands.EventThresholdCommand;
+import com.facilio.events.commands.EventToAlarmCommand;
+import com.facilio.events.commands.EventTransformCommand;
 import com.facilio.events.commands.GetEventDetailCommand;
 import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
+import com.facilio.events.commands.InsertEventCommand;
 import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
 import com.facilio.events.commands.UpdateEventAssetsMappingCommand;
+import com.facilio.events.commands.UpdateEventCommand;
 import com.facilio.events.commands.UpdateEventRulesCommand;
 import com.facilio.events.commands.UpdateNodeToAssetMappingCommand;
 
@@ -28,6 +35,9 @@ public class EventConstants {
 		public static final String EVENT_ID = "eventId";
 		public static final String EVENT = "event";
 		public static final String EVENT_PAYLOAD = "eventPayload";
+		public static final String EVENT_TIMESTAMP = "eventTimeStamp";
+		public static final String EVENT_LAST_TIMESTAMP = "eventLastTimeStamp";
+		public static final String EVENT_COUNT_MAP = "eventCountMap";
 		public static final String EVENT_LIST = "events";
 		public static final String EVENT_PROPERTY = "eventProperty";
 		public static final String EVENT_RULE = "eventRule";
@@ -35,10 +45,22 @@ public class EventConstants {
 		public static final String NODE = "node";
 		public static final String ASSET_ID = "assetId";
 		public static final String ALARM_ID = "alarmId";
-	
 	}
 	
 	public static class EventChainFactory {
+		public static Chain processEventChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new InsertEventCommand());
+			c.addCommand(new EvalEventBaseCriteriaCommand());
+			c.addCommand(new EventTransformCommand());
+			c.addCommand(new EventThresholdCommand());
+			c.addCommand(new EventCoRelationCommand());
+			c.addCommand(new EventToAlarmCommand());
+			c.addCommand(new UpdateEventCommand());
+			addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain getAddEventChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new AddEventCommand());
@@ -372,6 +394,10 @@ public class EventConstants {
 			clearCriteriaOverseconds.setColumnName("THRESHOLD_OVER_SECONDS");
 			clearCriteriaOverseconds.setModule(module);
 			fields.add(clearCriteriaOverseconds);
+			
+			fields.add(FieldFactory.getField("coRelExpressionId", "CO_REL_EXPRESSION_ID", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("colRelAction", "CO_REL_ACTION", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("coRelTransformTemplateId", "CO_REL_TRANSFORM_TEMPLATE_ID", module, FieldType.NUMBER));
 			
 			return fields;
 		}

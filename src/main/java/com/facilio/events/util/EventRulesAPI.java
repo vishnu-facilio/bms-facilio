@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.ExpressionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.ExpressionAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.events.constants.EventConstants;
@@ -86,6 +88,25 @@ public class EventRulesAPI {
 		if(eventRule.getThresholdCriteria() != null) {
 			long criteriaId = CriteriaAPI.addCriteria(eventRule.getThresholdCriteria(), orgId);
 			eventRule.setThresholdCriteriaId(criteriaId);
+		}
+		
+		if(eventRule.getCoRelExpression() != null) {
+			if(eventRule.getColRelActionEnum() == null) {
+				throw new IllegalArgumentException("Co Relation action cannot be null when co relation expression exists");
+			}
+			
+			ExpressionContext expression = new ExpressionContext();
+			expression.setExpressionString(eventRule.getCoRelExpression());
+			long expressionId = ExpressionAPI.addExpression(expression);
+			eventRule.setCoRelExpressionId(expressionId);
+			
+			if(eventRule.getCoRelTransformTemplate() != null) {
+				JSONTemplate coRelTemplate = new JSONTemplate();
+				coRelTemplate.setName(eventRule.getName());
+				coRelTemplate.setContent(eventRule.getCoRelTransformTemplate().toJSONString());
+				long coRelTemplateId = TemplateAPI.addJsonTemplate(orgId, coRelTemplate);
+				eventRule.setCoRelTransformTemplateId(coRelTemplateId);
+			}
 		}
 	}
 	

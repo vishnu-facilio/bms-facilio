@@ -8,21 +8,46 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.context.EventRule;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class EventAPI {
+	 public static long processEvents(long timestamp, JSONObject object, List<EventRule> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
+    	FacilioContext context = new FacilioContext();
+    	context.put(EventConstants.EventContextNames.EVENT_RULE_LIST, eventRules);
+    	context.put(EventConstants.EventContextNames.EVENT_TIMESTAMP, timestamp);
+    	context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, object);
+    	context.put(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP, lastEventTime);
+    	context.put(EventConstants.EventContextNames.EVENT_COUNT_MAP, eventCountMap);
+    	
+    	Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+    	processEventChain.execute(context);
+        return (long) context.get(context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP));
+    }
+	 
+	public static EventContext transformEvent(EventContext event, JSONTemplate template) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		Map<String, Object> eventProp = FieldUtil.getAsProperties(event);
+		JSONObject content = template.getTemplate(eventProp);
+		eventProp.putAll(FieldUtil.getAsProperties(content));
+		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
+		return event;
+	}
+
 	@SuppressWarnings({ "unchecked"})
 	public static EventContext processPayload(long timestamp, JSONObject payload, long orgId) throws Exception 
 	{

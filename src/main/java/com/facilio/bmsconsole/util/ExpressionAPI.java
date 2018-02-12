@@ -3,21 +3,21 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ExpressionContext;
-import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.FacilioExpressionParser;
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ExpressionAPI {
 	
 	public static Long addExpression(ExpressionContext expressionContext) throws Exception {
-		
+		expressionContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getExpressionModule().getTableName())
 				.fields(FieldFactory.getExpressionFields());
@@ -31,10 +31,11 @@ public class ExpressionAPI {
 	}
 	
 	public static ExpressionContext getExpressionContext(Long expressionId) throws Exception  {
-		
+		FacilioModule module = ModuleFactory.getExpressionModule(); 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getExpressionFields())
-				.table(ModuleFactory.getExpressionModule().getTableName())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere(ModuleFactory.getExpressionModule().getTableName()+".ID = ?", expressionId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();

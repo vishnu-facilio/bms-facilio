@@ -8,12 +8,6 @@
 	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' />
 	 <job name='PreventiveMaintenance' classname='com.facilio.bmsconsole.jobs.PMToWorkOrder' />
 	 <job name='PMScheduler' classname='com.facilio.bmsconsole.jobs.PMScheduler' />
-	 <job name='EventSync' classname='com.facilio.events.tasker.tasks.EventSyncJob' />
-	 <job name='EventFilter' classname='com.facilio.events.tasker.tasks.EventFilterJob' />
-	 <job name='EventTransform' classname='com.facilio.events.tasker.tasks.EventTransformJob' />
-	 <job name='EventThreshold' classname='com.facilio.events.tasker.tasks.EventThresholdJob' />
-	 <job name='EventToAlarm' classname='com.facilio.events.tasker.tasks.EventToAlarmJob' />
-	 <job name='EventToAlarm' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 	 <job name='BeforePMReminder' classname = 'com.facilio.bmsconsole.jobs.BeforePMReminderJob' />
 	 <job name='AfterPMReminder' classname = 'com.facilio.bmsconsole.jobs.AfterPMReminderJob' />

@@ -199,6 +199,7 @@ public class EventContext {
 		FILTERED,
 		TRANSFORMED,
 		THRESHOLD_DONE,
+		CO_RELATION_DONE,
 		COMPLETED
 		;
 		

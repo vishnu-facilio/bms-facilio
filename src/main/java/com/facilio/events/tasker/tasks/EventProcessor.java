@@ -20,10 +20,6 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
@@ -85,7 +81,7 @@ public class EventProcessor implements IRecordProcessor {
                         processRecordsInput.getCheckpointer().checkpoint(record);
                     }
                 }
-            } catch (InvalidStateException | ShutdownException | CharacterCodingException | ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -97,77 +93,12 @@ public class EventProcessor implements IRecordProcessor {
     }
 
 
-    private boolean processEvents(long timestamp, JSONObject object) {
-        try {
-            EventContext event = EventAPI.processPayload(timestamp, object, orgId);
-            Map<String, Object> prop = FieldUtil.getAsProperties(event);
-            EventAPI.insertObject(prop);
-            event = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
-            if(eventRules.isEmpty()){
-                triggerAlarm(prop);
-                return true;
-            } else {
-                for(EventRule rule : eventRules) {
-
-                    Criteria criteria = CriteriaAPI.getCriteria(orgId, rule.getBaseCriteriaId());
-                    boolean isRuleMatched = criteria.computePredicate().evaluate(prop);
-
-                    if (isRuleMatched) {
-                        boolean ignoreEvent = rule.isIgnoreEvent();
-
-                        event.setEventRuleId(rule.getEventRuleId());
-
-                        if (ignoreEvent) {
-                            event.setEventState(EventContext.EventState.IGNORED);
-                        } else {
-
-                            event = EventTransformJob.transform(orgId, event, prop, rule);
-                            event.setEventRuleId(rule.getEventRuleId());
-
-                            if (rule.getThresholdCriteriaId() != -1) {
-                                Criteria thresholdCriteria = CriteriaAPI.getCriteria(orgId, rule.getThresholdCriteriaId());
-                                boolean isThresholdMatched = thresholdCriteria.computePredicate().evaluate(FieldUtil.getAsProperties(event));
-                                if (isThresholdMatched) {
-                                    long currentEventTime = event.getCreatedTime();
-                                    boolean skipEvent = (currentEventTime - lastEventTime) > (rule.getThresholdOverSeconds()*1000);
-                                    lastEventTime = currentEventTime;
-                                    if (skipEvent) {
-                                        event.setEventState(EventContext.EventState.IGNORED);
-                                    } else {
-                                        int thresholdOccurs = rule.getThresholdOccurs();
-                                        int numberOfEvents = eventCountMap.getOrDefault(event.getMessageKey(), 0);
-                                        int numberOfEventsOccurred = numberOfEvents + 1;
-                                        eventCountMap.put(event.getMessageKey(), numberOfEventsOccurred);
-                                        if (thresholdOccurs <= (numberOfEventsOccurred)) {
-                                            eventCountMap.put(event.getMessageKey(), 0);
-                                            triggerAlarm(FieldUtil.getAsProperties(event));
-                                            return true;
-                                        } else {
-                                            event.setEventState(EventContext.EventState.IGNORED);
-                                        }
-                                    }
-                                }
-                            } else {
-                                triggerAlarm(FieldUtil.getAsProperties(event));
-                                return true;
-                            }
-                        }
-                        event.setInternalState(EventContext.EventInternalState.COMPLETED);
-                        EventAPI.updateEvent(event, orgId);
-                        return true;
-                    } else {
-                        triggerAlarm(prop);
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    private boolean processEvents(long timestamp, JSONObject object) throws Exception {
+        long currentExecutionTime = EventAPI.processEvents(timestamp, object, eventRules, eventCountMap, lastEventTime);
+        if(currentExecutionTime != -1) {
+        	lastEventTime = currentExecutionTime;
+        	return true;
         }
         return false;
-    }
-
-    private void triggerAlarm(Map<String, Object> prop) throws Exception {
-        EventToAlarmJob.alarm(orgId, prop);
     }
 }

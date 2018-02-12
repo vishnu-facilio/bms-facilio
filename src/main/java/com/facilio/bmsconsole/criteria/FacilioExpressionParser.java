@@ -18,17 +18,17 @@ import com.udojava.evalex.Expression;
 
 public class FacilioExpressionParser {
 
-	public static final String EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.*)([^.]*)(?:\\.*)([^.]*)";
+	private static final String EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.*)([^.]*)(?:\\.*)([^.]*)";
 	
-	public static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
-	public static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
-	public static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
-	public static final String CONDITION_FORMATTER = "((.*?)`([^`]*)`(.*))";
-	public static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
-	public static final String EXPRESSION_SPACE_SEPERATOR = "``";
-	public static final String RESULT_STRING = "result";
-	public static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
-	public static final String EMPTY_STRING = "";
+	private static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
+	private static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
+	private static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
+	private static final String CONDITION_FORMATTER = "((.*?)`([^`]*)`(.*))";
+	private static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
+	private static final String EXPRESSION_SPACE_SEPERATOR = "``";
+	private static final String RESULT_STRING = "result";
+	private static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
+	private static final String EMPTY_STRING = "";
 	
 	String expressionString;
 
