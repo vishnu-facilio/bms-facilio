@@ -202,11 +202,14 @@ public class DeviceAPI
 				.maxLevel(0);
 		
 		if (buildingId != null) {
-			FacilioField spaceIdFld = new FacilioField();
-			spaceIdFld.setName("space_id");
-			spaceIdFld.setColumnName("SPACE_ID");
-			spaceIdFld.setModule(ModuleFactory.getAssetsModule());
-			spaceIdFld.setDataType(FieldType.NUMBER);
+//			FacilioField spaceIdFld = new FacilioField();
+//			spaceIdFld.setName("space_id");
+//			spaceIdFld.setColumnName("SPACE_ID");
+//			spaceIdFld.setModule(ModuleFactory.getAssetsModule());
+//			spaceIdFld.setDataType(FieldType.NUMBER);
+			
+			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			FacilioField spaceIdFld = modBean.getField("spaceId", resourceModule.getName());
 			
 			Condition spaceCond = new Condition();
 			spaceCond.setField(spaceIdFld);
