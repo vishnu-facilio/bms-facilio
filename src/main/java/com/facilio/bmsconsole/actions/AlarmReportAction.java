@@ -211,6 +211,20 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
+		Condition spaceCond = null;
+		if(buildingId!=-1) {
+			FacilioField resourceIdFld = new FacilioField();
+			resourceIdFld.setName("resourceId");
+			resourceIdFld.setColumnName("RESOURCE_ID");
+			resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+			resourceIdFld.setDataType(FieldType.NUMBER);
+	
+			spaceCond = new Condition();
+			spaceCond.setField(resourceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(buildingId+"");
+		}
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -220,10 +234,16 @@ public class AlarmReportAction extends ActionSupport {
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarm_Severity.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCustomWhere("(Alarms.IS_ACKNOWLEDGED IS NULL OR Alarms.IS_ACKNOWLEDGED = ?)",false);
-		if(buildingId!=-1) {
+//		if(buildingId!=-1) {
+//			builder.innerJoin("Tickets")
+//			.on("Alarms.ID = Tickets.ID")
+//			.andCondition(getSpaceCondition(buildingId));
+//		}
+		if(spaceCond != null)
+		{
 			builder.innerJoin("Tickets")
 			.on("Alarms.ID = Tickets.ID")
-			.andCondition(getSpaceCondition(buildingId));
+			.andCondition(spaceCond);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
@@ -668,17 +688,37 @@ public class AlarmReportAction extends ActionSupport {
 		fields.add(countFld);
 		fields.add(typeField);
 		
+		Condition spaceCond = null;
+		if(buildingId!=-1) {
+			FacilioField resourceIdFld = new FacilioField();
+			resourceIdFld.setName("resourceId");
+			resourceIdFld.setColumnName("RESOURCE_ID");
+			resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+			resourceIdFld.setDataType(FieldType.NUMBER);
+	
+			spaceCond = new Condition();
+			spaceCond.setField(resourceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(buildingId+"");
+		}
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms")
 				.innerJoin("Alarm_Severity")
 				.on("Alarms.SEVERITY=Alarm_Severity.ID");
-				 if(buildingId!=-1) {
-					 builder.innerJoin("Tickets")
-						.on("Alarms.ID = Tickets.ID")
-						.andCondition(getSpaceCondition(buildingId));
-					}
+//				 if(buildingId!=-1) {
+//					 builder.innerJoin("Tickets")
+//						.on("Alarms.ID = Tickets.ID")
+//						.andCondition(getSpaceCondition(buildingId));
+//					}
+				if(spaceCond != null) 
+				{
+					builder.innerJoin("Tickets")
+					.on("Alarms.ID = Tickets.ID")
+					.andCondition(spaceCond);
+				}
 				 builder.andCustomWhere("Alarms.ORGID = ?", orgId)
 				.andCondition(modTime)
 				.groupBy("Alarm_Severity.SEVERITY");
@@ -729,16 +769,34 @@ public class AlarmReportAction extends ActionSupport {
 		StringBuilder where = new StringBuilder();
 		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
 		
+		Condition spaceCond = null;
+		if(buildingId!=-1) {
+			FacilioField resourceIdFld = new FacilioField();
+			resourceIdFld.setName("resourceId");
+			resourceIdFld.setColumnName("RESOURCE_ID");
+			resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+			resourceIdFld.setDataType(FieldType.NUMBER);
+	
+			spaceCond = new Condition();
+			spaceCond.setField(resourceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(buildingId+"");
+		}
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Alarms");
-				 if(buildingId!=-1) {
-					 builder.innerJoin("Tickets")
-						.on("Alarms.ID = Tickets.ID")
-						.andCondition(getSpaceCondition(buildingId));
-					}
+//				 if(buildingId!=-1) {
+//					 builder.innerJoin("Tickets")
+//						.on("Alarms.ID = Tickets.ID")
+//						.andCondition(getSpaceCondition(buildingId));
+//					}
+		if(spaceCond != null) {
+			 builder.innerJoin("Tickets")
+				.on("Alarms.ID = Tickets.ID")
+				.andCondition(spaceCond);
+			}
 				builder.andCustomWhere(where.toString(), orgId)
 				.andCondition(createdTime)
 				.groupBy("ACKNOWLEDGED_BY WITH ROLLUP");
@@ -810,6 +868,20 @@ public class AlarmReportAction extends ActionSupport {
 		StringBuilder where = new StringBuilder();
 		where.append("Alarms.ORGID = ? AND Alarm_Severity.SEVERITY = ? AND Tickets.ASSIGNED_TO_ID IS NOT NULL");
 		
+		Condition spaceCond = null;
+		if(buildingId!=-1) {
+			FacilioField resourceIdFld = new FacilioField();
+			resourceIdFld.setName("resourceId");
+			resourceIdFld.setColumnName("RESOURCE_ID");
+			resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+			resourceIdFld.setDataType(FieldType.NUMBER);
+	
+			spaceCond = new Condition();
+			spaceCond.setField(resourceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(buildingId+"");
+		}
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -820,9 +892,13 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.SEVERITY=Alarm_Severity.ID")
 				.andCustomWhere(where.toString(), orgId, FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCondition(createdTime);
-				 if(buildingId!=-1) {
-						builder.andCondition(getSpaceCondition(buildingId));
-					}
+//				 if(buildingId!=-1) {
+//						builder.andCondition(getSpaceCondition(buildingId));
+//					}
+			if(spaceCond != null)
+			{
+				builder.andCondition(spaceCond);
+			}
 				builder.groupBy("Tickets.ASSIGNED_TO_ID WITH ROLLUP");
 				
 		List<Map<String, Object>> stats = builder.get();
