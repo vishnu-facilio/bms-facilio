@@ -579,7 +579,7 @@ public class AlarmReportAction extends ActionSupport {
 		StringBuilder where = new StringBuilder();
 		where.append("Alarms.ORGID = ? AND Alarms.IS_ACKNOWLEDGED = true");
 		if(spaces != null && !spaces.isEmpty()) {
-			where.append(" AND Tickets.SPACE_ID IN (");
+			where.append(" AND Tickets.RESOURCE_ID IN (");
 			boolean isFirst = true;
 			for(BaseSpaceContext space : spaces) {
 				if(isFirst) {
