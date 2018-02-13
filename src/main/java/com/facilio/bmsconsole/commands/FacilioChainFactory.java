@@ -195,6 +195,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getAddRoleCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddRoleCommand());
+		c.addCommand(new AddPermissionsCommand());
+		addCleanUpCommand(c);
+		return c;		
+	}
+	
 	public static Command getUpdateGroupCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateGroupCommand());
@@ -477,7 +485,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
 		c.addCommand(new UpdateClosedTasksCounterCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand());
+		// c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
