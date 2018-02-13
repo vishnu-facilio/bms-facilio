@@ -292,6 +292,24 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getRelatedAlarmsList() throws Exception {
+		if (reportContext == null) {
+			reportContext = DashboardUtil.getReportContext(reportId);
+		}
+		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE, module);
+		context.put(FacilioConstants.ContextNames.REPORT_DATE_FILTER, dateFilter);
+		Chain getRelatedAlarms = FacilioChainFactory.getRelatedAlarmForReports();
+		getRelatedAlarms.execute(context);
+		return SUCCESS;
+	}
+	
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
