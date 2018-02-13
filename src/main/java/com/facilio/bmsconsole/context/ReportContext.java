@@ -108,6 +108,7 @@ public class ReportContext {
 
 
 	Boolean isComparisionReport;
+	Boolean isHighResolutionReport;
 	String xAxisLegend;
 	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<ReportUserFilterContext> reportUserFilters;
@@ -384,6 +385,17 @@ public class ReportContext {
 
 	public void setIsComparisionReport(Boolean isComparisionReport) {
 		this.isComparisionReport = isComparisionReport;
+	}
+	
+	public Boolean getIsHighResolutionReport() {
+		if(isHighResolutionReport != null) {
+			return isHighResolutionReport;
+		}
+		return Boolean.FALSE;
+	}
+
+	public void setIsHighResolutionReport(Boolean isHighResolutionReport) {
+		this.isHighResolutionReport = isHighResolutionReport;
 	}
 
 

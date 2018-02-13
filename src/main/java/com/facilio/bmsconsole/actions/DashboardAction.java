@@ -333,7 +333,6 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
-		boolean isHighResData = (xAggregateOpperator != null && xAggregateOpperator.getValue() == FormulaContext.DateAggregateOperator.ACTUAL.getValue());
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
 			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
 				int oprId = (this.dateFilter != null) ? Integer.parseInt(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
@@ -348,10 +347,7 @@ public class DashboardAction extends ActionSupport {
 				}
 				reportContext.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
-			if (isHighResData) {
-				xAxisField = FormulaContext.DateAggregateOperator.ACTUAL.getSelectField(xAxisField);
-			}
-			else {
+			if (!reportContext.getIsHighResolutionReport()) {
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 			}
 		}

@@ -2315,6 +2315,13 @@ public class FieldFactory {
 		isComparisionReport.setModule(module);
 		fields.add(isComparisionReport);
 		
+		FacilioField isHighResolutionReport = new FacilioField();
+		isHighResolutionReport.setName("isHighResolutionReport");
+		isHighResolutionReport.setDataType(FieldType.BOOLEAN);
+		isHighResolutionReport.setColumnName("IS_HIGHRESOLUTION_REPORT");
+		isHighResolutionReport.setModule(module);
+		fields.add(isHighResolutionReport);
+		
 		FacilioField xAxisLegend = new FacilioField();
 		xAxisLegend.setName("xAxisLegend");
 		xAxisLegend.setDataType(FieldType.STRING);
