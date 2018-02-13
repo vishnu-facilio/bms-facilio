@@ -508,19 +508,13 @@ public static long getSitesCount() throws Exception {
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
-
-		Condition condition = new Condition();
-		condition.setColumnName("ID");
-		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(idList);
-
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 				.select(fields)
 				.table(module.getTableName())
 				.moduleName(module.getName())
 				.beanClass(BaseSpaceContext.class)
-				.andCondition(condition);
+				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 		
@@ -644,14 +638,14 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
-		FacilioField spaceIdFld = new FacilioField();
-		spaceIdFld.setName("space_id");
-		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
-		spaceIdFld.setDataType(FieldType.NUMBER);
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
 
 		Condition spaceCond = new Condition();
-		spaceCond.setField(spaceIdFld);
+		spaceCond.setField(resourceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
@@ -685,14 +679,14 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
-		FacilioField spaceIdFld = new FacilioField();
-		spaceIdFld.setName("space_id");
-		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModule(ModuleFactory.getTicketsModule());
-		spaceIdFld.setDataType(FieldType.NUMBER);
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
 
 		Condition spaceCond = new Condition();
-		spaceCond.setField(spaceIdFld);
+		spaceCond.setField(resourceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
@@ -724,11 +718,10 @@ public static long getSitesCount() throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
-		FacilioField spaceIdFld = new FacilioField();
-		spaceIdFld.setName("space_id");
-		spaceIdFld.setColumnName("SPACE_ID");
-		spaceIdFld.setModule(ModuleFactory.getAssetsModule());
-		spaceIdFld.setDataType(FieldType.NUMBER);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioField spaceIdFld = modBean.getField("spaceId", resourceModule.getName());
 
 		Condition spaceCond = new Condition();
 		spaceCond.setField(spaceIdFld);
@@ -738,7 +731,9 @@ public static long getSitesCount() throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Assets")
+				.table(assetModule.getTableName())
+				.innerJoin(resourceModule.getTableName())
+				.on(assetModule.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
 				.andCustomWhere("Assets.ORGID=?", orgId)
 				.andCondition(spaceCond);
 		
