@@ -316,6 +316,11 @@ public class DashboardAction extends ActionSupport {
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		
+		boolean isEnergyDataWithTimeFrame = false;
+		if(xAxisField.getColumnName().contains("TTIME") && module.getName().equals("energydata")) {
+			isEnergyDataWithTimeFrame = true;
+		}
+		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
@@ -771,10 +776,6 @@ public class DashboardAction extends ActionSupport {
 			setReportData(compResult);
 		}
 		
-		boolean isEnergyDataWithTimeFrame = false;
-		if(xAxisField.getColumnName().equals("TTIME") && module.getName().equals("energydata")) {
-			isEnergyDataWithTimeFrame = true;
-		}
 		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			if(module.getName().equals("energydata") && criteria != null) {
