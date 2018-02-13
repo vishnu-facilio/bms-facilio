@@ -292,8 +292,6 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private static double unitCost=0.09;
-	
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
@@ -634,7 +632,8 @@ public class DashboardAction extends ActionSupport {
 		 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
 		 					Double d = (Double) thisMap.get("value");
-		 					value.put("value", d*unitCost);
+		 					value.put("value", d*ReportsUtil.unitCost);
+		 					value.put("orig_value", d);
 		 				}
 		 				else {
 		 					value.put("value", thisMap.get("value"));
@@ -683,7 +682,8 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
 		 					Double d = (Double) thisMap.get("value");
-		 					component.put("value", d*unitCost);
+		 					component.put("value", d*ReportsUtil.unitCost);
+		 					component.put("orig_value", d);
 		 				}
 		 				else {
 		 					component.put("value", thisMap.get("value"));
