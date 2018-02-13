@@ -596,7 +596,7 @@ public class DashboardAction extends ActionSupport {
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			if(thisMap!=null) {
 	 				
-	 				if (reportContext.getEnergyMeter().getGroupBy() != null && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+	 				if (reportContext.getEnergyMeter().getGroupBy() != null && (reportContext.getEnergyMeter().getBuildingId() == null || reportContext.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
 	 					Object xlabel = thisMap.get("label");
 	 					if(thisMap.get("dummyField") != null) {
 		 					xlabel = thisMap.get("dummyField");
