@@ -413,8 +413,8 @@ public class ReportActions extends ActionSupport {
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 		long previousEndTime=previousStartTime+(endTime-currentStartTime);
-
-		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,previousEndTime);
+		
+		List<Map<String, Object>> previousResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,currentStartTime-1);
 		List<Map<String, Object>> currentResult = ReportsUtil.fetchMeterData(rootList,currentStartTime,endTime);
 		
 		double lastMonthKwh=0;double thisMonthKwh=0;
@@ -433,11 +433,20 @@ public class ReportActions extends ActionSupport {
 		int lastMonthDays= DateTimeUtil.getDaysBetween(previousStartTime, currentStartTime);
 		int thisMonthDays=DateTimeUtil.getDaysBetween(currentStartTime,endTime)+1;
 
-		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
+		
 		JSONObject lastMonthData = ReportsUtil.getEnergyData(lastMonthKwh,lastMonthDays);
 		JSONObject thisMonthData = ReportsUtil.getEnergyData(thisMonthKwh,thisMonthDays);
 
+		List<Map<String, Object>> previousVarResult = ReportsUtil.fetchMeterData(rootList,previousStartTime,previousEndTime);
+		double lastMonthVarKwh=0;
+		if(previousVarResult!=null && !previousVarResult.isEmpty()){
 
+			Map<String,Object> map = previousVarResult.get(0);
+			lastMonthVarKwh = (double)map.get("CONSUMPTION");
+		}
+		 
+		double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthVarKwh);
+		
 		buildingData.put("previousVal", lastMonthData);
 		buildingData.put("currentVal", thisMonthData);
 		buildingData.put("variance", variance);
