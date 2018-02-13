@@ -475,39 +475,12 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 											.filter(ticket -> ticket.getResource() != null)
 											.map(ticket -> ticket.getResource().getId())
 											.collect(Collectors.toList());
-			Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds);
 			if(resources != null && !resources.isEmpty()) {
-				
-				// Temporary...needs to verify
-				List<BaseSpaceContext> spaces = SpaceAPI.getAllBaseSpaces(null,null,null);
-				Map<Long, BaseSpaceContext> spaceMap = new HashMap<>();
-				for(BaseSpaceContext space : spaces) {
-					spaceMap.put(space.getId(), space);
-				}
-				
-				FacilioContext context = new FacilioContext();
-				Chain assetList = FacilioChainFactory.getAssetListChain();
-		 		assetList.execute(context);
-		 		List<AssetContext> assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		 		Map<Long, AssetContext> assetMap = new HashMap<>();
-		 		for(AssetContext asset : assets) {
-		 			assetMap.put(asset.getId(), asset);
-				}
-				
 				for(TicketContext ticket : tickets) {
 					ResourceContext resource = ticket.getResource();
 					if(resource != null) {
 						ResourceContext resourceDetail = resources.get(resource.getId());
-						if(resourceDetail.getResourceTypeEnum() == ResourceType.SPACE) {
-							if(spaceMap.containsKey(resourceDetail.getId())) {
-								resourceDetail = spaceMap.get(resourceDetail.getId());
-							}
-						}
-						else {
-							if(assetMap.containsKey(resourceDetail.getId())) {
-								resourceDetail = assetMap.get(resourceDetail.getId());
-							}
-						}
 						ticket.setResource(resourceDetail);
 					}
 				}
