@@ -563,9 +563,11 @@ public class LoginAction extends ActionSupport{
 	
 	public static Map<String, Object> getPaymentEndpoint() {
 		String BaseUrl = AwsUtil.getConfig("payment.url");
+		int StaffNumber = 10;
+		int BuildingNumber = 5;
 		String Standard = BaseUrl + "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
-		String Professional = BaseUrl + "facil-blossom?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
-		String Enterprise = BaseUrl + "facil-blossom?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		String Professional = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
+		String Enterprise = BaseUrl + "professional?addons[id][0]=staff-professional&addons[quantity][0]=10&addons[id][1]=building-professional&addons[quantity][1]=5";
 		Map<String, Object> url = new HashMap<>();
 		url.put("standard", Standard);
 		url.put("professional", Professional);

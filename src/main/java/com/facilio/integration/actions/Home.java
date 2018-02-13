@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -14,11 +16,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.billing.context.Tenant;
 import com.facilio.bmsconsole.actions.LoginAction;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -335,8 +351,92 @@ Pragma: no-cache
 		return this.content;
 	}
 	
+	public static void InsertOrgInfo( long orgId, String name, String value) throws Exception
+	{
+	
+		if (GetOrgInfo(orgId, name) == null) {
+		
+		    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+		            .table(AccountConstants.getOrgInfoModule().getTableName())
+		            .fields(AccountConstants.getOrgInfoFields());
+		
+		    Map<String, Object> properties = new HashMap<>();
+		    properties.put("orgId", orgId);
+		    properties.put("name", name);
+		    properties.put("value", value);
+		    insertRecordBuilder.addRecord(properties);
+		    insertRecordBuilder.save();
+//		    System.out.println("Inserted Successfully");
+		}
+		else {
+			// update
+			
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getOrgInfoModule().getTableName()).fields(AccountConstants.getOrgInfoFields())
+					.andCustomWhere("OrgID = ? AND NAME = ?", orgId, name );
+			Map<String, Object> props = new HashMap<>();
+			props.put("name", name);
+		    props.put("value", value);
+		    updateBuilder.update(props);
+		    
+//		    System.out.println("Updated " + name +" Successfully");
+		   
+		}
+			
+	}
+	
+    public static Map<String, Object> GetOrgInfo(long orgId, String name) throws Exception {
+    	
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgInfoFields())
+				.table(AccountConstants.getOrgInfoModule().getTableName())
+				.andCustomWhere("ORGID = ? AND NAME = ?", orgId, name);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return props.get(0);
+		}
+		return null;		
+	}
+
+	
 	public String confirmPayment() {
-		System.out.println(this.content);
+		// Org id details through the customer email 
+		HashMap<String, Object> customer = (HashMap<String, Object>) this.getContent().get("customer");
+		String customerEmail = (String) customer.get("email");
+		long orgId = 0;
+        try{
+        	User userObj = AccountUtil.getUserBean().getUser(customerEmail);
+        	orgId = userObj.getOrgId();
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			HashMap<String, Object> subscription = (HashMap<String, Object>) this.getContent().get("subscription");
+			String PlanId = (String) subscription.get("plan_id");
+		try {
+				InsertOrgInfo(orgId,"Plan_id",PlanId);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ArrayList<?> addons = (ArrayList<?>) subscription.get("addons");
+			for (int i = 0; i < addons.size(); i++) {
+				HashMap<String, Object> addon = (HashMap<String, Object>) addons.get(i);
+				String Name = (String) addon.get("id");
+				String Value = addon.get("quantity").toString();	
+			
+			try {
+				InsertOrgInfo(orgId,Name,Value);
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+
 		return SUCCESS;
 	}
 }
