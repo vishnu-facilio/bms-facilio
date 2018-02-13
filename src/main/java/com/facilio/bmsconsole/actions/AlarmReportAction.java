@@ -259,6 +259,20 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
+		Condition spaceCond = null;
+		if(buildingId!=-1) {
+			FacilioField resourceIdFld = new FacilioField();
+			resourceIdFld.setName("resourceId");
+			resourceIdFld.setColumnName("RESOURCE_ID");
+			resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+			resourceIdFld.setDataType(FieldType.NUMBER);
+	
+			spaceCond = new Condition();
+			spaceCond.setField(resourceIdFld);
+			spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+			spaceCond.setValue(buildingId+"");
+		}
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -270,8 +284,11 @@ public class AlarmReportAction extends ActionSupport {
 				.andCustomWhere("Alarms.ORGID=? ",orgId)
 				.andCustomWhere("Alarm_Severity.SEVERITY!=?",FacilioConstants.Alarm.CLEAR_SEVERITY)
 				.andCustomWhere("Tickets.ORGID=?",orgId);
-		if(buildingId!=-1) {
-			builder.andCondition(getSpaceCondition(buildingId));
+//		if(buildingId!=-1) {
+//			builder.andCondition(getSpaceCondition(buildingId));
+//		}
+		if(spaceCond!=null) {
+			builder.andCondition(spaceCond);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		return rs;
