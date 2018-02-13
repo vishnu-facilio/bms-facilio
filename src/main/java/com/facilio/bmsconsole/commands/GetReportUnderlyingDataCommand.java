@@ -1,13 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -15,10 +18,12 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -79,6 +84,24 @@ public class GetReportUnderlyingDataCommand implements Command {
 			}
 			builder.andCondition(dateCondition);
 		}
+		if (reportContext.getEnergyMeter() != null) {
+			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
+				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
+			}
+			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
+				List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getEnergyMeter().getBuildingId()+"");
+				if (meters != null && meters.size() > 0) {
+					List<Long> meterIds = new ArrayList<Long>();
+					for (EnergyMeterContext meter : meters) {
+						meterIds.add(meter.getId());
+					}
+					
+					String meterIdStr = StringUtils.join(meterIds, ",");
+					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+				}
+			}
+		}
+		
 		builder.limit(200); // 200 records max
 		
 		List<? extends ModuleBaseWithCustomFields> list = builder.get();
