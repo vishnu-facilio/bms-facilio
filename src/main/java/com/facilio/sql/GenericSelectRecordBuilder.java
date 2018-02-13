@@ -172,7 +172,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			}
 			
 			rs = pstmt.executeQuery();
-			sql = pstmt.toString();
+			this.sql = pstmt.toString();
 			List<Map<String, Object>> records = new ArrayList<>();
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
