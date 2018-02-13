@@ -36,17 +36,6 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		
 		headerJson.put("export", isHeaderIsExport());
 		
-		if(!this.getPeriods().isEmpty()) {
-			JSONArray periods = new JSONArray();
-			for(WidgetPeriodContext period:this.getPeriods()) {
-				JSONObject periodJson = new JSONObject();
-				periodJson.put("label", period.getPeriodLabel());
-				periodJson.put("value", period.getPeriodValue());
-				periods.add(periodJson);
-			}
-			headerJson.put("periods", periods);
-		}
-		
 		resultJson.put("header", headerJson);
 		
 		JSONObject dataOptionsJson = new JSONObject();

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
@@ -25,7 +28,6 @@ import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetPeriodContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -42,6 +44,205 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
+	
+	
+	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getWidgetFields();
+		fields.addAll(FieldFactory.getWidgetChartFields());
+		fields.addAll(FieldFactory.getWidgetListViewFields());
+		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getWidgetModule().getTableName())
+				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
+				.leftJoin(ModuleFactory.getWidgetChartModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
+				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop:props) {
+				WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
+				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
+				dashboardWidgetContexts.add(dashboardWidgetContext);
+			}
+		}
+		return dashboardWidgetContexts;
+	}
+	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getWidgetChartFields();
+		fields.addAll(FieldFactory.getWidgetFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getWidgetChartModule().getTableName())
+				.innerJoin(ModuleFactory.getWidgetModule().getTableName())
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
+				.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID = ?", reportId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		System.out.println("111."+props);
+		if (props != null && !props.isEmpty()) {
+			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
+			return widgetReportContext;
+		}
+		return null;
+	}
+	
+	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere("ID = ?", dashboard.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+	public static boolean updateDashboardLinkName(long dashboardId, String linkName) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere("ID = ?", dashboardId);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("linkName", linkName);
+		
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static JSONArray getDashboardResponseJson(DashboardContext dashboard) {
+		List dashboards = new ArrayList<>();
+		dashboards.add(dashboard);
+		return getDashboardResponseJson(dashboards);
+	}
+	
+	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards) {
+		
+		JSONArray result = new JSONArray();
+		
+//		Collections.sort(dashboards);
+		 for(DashboardContext dashboard:dashboards) {
+			 String dashboardName = dashboard.getDashboardName();
+			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
+			JSONArray childrenArray = new JSONArray();
+			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
+				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
+			}
+			JSONObject dashboardJson = new JSONObject();
+			dashboardJson.put("id", dashboard.getId());
+			dashboardJson.put("label", dashboardName);
+			dashboardJson.put("linkName", dashboard.getLinkName());
+			dashboardJson.put("children", childrenArray);
+			result.add(dashboardJson);
+		 }
+		return result;
+	}
+	public static JSONArray getReportResponseJson(List<ReportFolderContext> reportFolders) {
+		
+		JSONArray result = new JSONArray();
+		
+//		Collections.sort(dashboards);
+		 for(ReportFolderContext reportFolder:reportFolders) {
+			 String name = reportFolder.getName();
+			Collection<ReportContext> reportContexts = reportFolder.getReports();
+			JSONArray childrenArray = new JSONArray();
+			if(reportContexts != null) {
+				for(ReportContext reportContext:reportContexts) {
+					childrenArray.add(reportContext.widgetJsonObject());
+				}
+				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("id", reportFolder.getId());
+				dashboardJson.put("label", name);
+				dashboardJson.put("children", childrenArray);
+				result.add(dashboardJson);
+			}
+			else {
+				JSONObject dashboardJson = new JSONObject();
+				dashboardJson.put("id", reportFolder.getId());
+				dashboardJson.put("label", name);
+				dashboardJson.put("children", childrenArray);
+				result.add(dashboardJson);
+			}
+		 }
+		return result;
+	}
+	
+	public static DashboardContext getDashboardWithWidgets(Long dashboardId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("ID = ?", dashboardId);
+		
+		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			dashboard.setDashboardWidgets(dashbaordWidgets);
+			return dashboard;
+		}
+		return null;
+	}
+
+	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			dashboard.setDashboardWidgets(dashbaordWidgets);
+			return dashboard;
+		}
+		return null;
+	}
+
+	public static List<DashboardContext> getDashboardList(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULEID = ?", module.getModuleId());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				dashboardList.add(dashboard);
+			}
+			return dashboardList;
+		}
+		return null;
+	}
 	
 	public static String getWhereClauseForUserFilter(FacilioField field) {
 		if(field.getDataTypeEnum().equals(FieldType.STRING)) {
@@ -104,40 +305,6 @@ public class DashboardUtil {
 		}
  	}
 	
-	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
-		
-		List<FacilioField> fields = FieldFactory.getWidgetFields();
-		fields.addAll(FieldFactory.getWidgetChartFields());
-		fields.addAll(FieldFactory.getWidgetListViewFields());
-		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(ModuleFactory.getWidgetModule().getTableName())
-				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
-				.leftJoin(ModuleFactory.getWidgetChartModule().getTableName())		
-				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
-				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
-				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
-				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
-		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop:props) {
-				WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
-				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
-				addWidgetPeriods(dashboardWidgetContext);
-				if(widgetType.equals(WidgetType.CHART)) {
-					addWidgetConditiontoWidget((WidgetChartContext) dashboardWidgetContext);
-				}
-				dashboardWidgetContexts.add(dashboardWidgetContext);
-
-			}
-		}
-		return dashboardWidgetContexts;
-	}
 	public static List<ReportContext> getReportsFormReportFolderId(Long folderID) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFields())
@@ -224,26 +391,6 @@ public class DashboardUtil {
 		if (props != null && !props.isEmpty()) {
 			ReportFolderContext reportFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFolderContext.class);
 			return reportFolderContext;
-		}
-		return null;
-	}
-	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
-		
-		List<FacilioField> fields = FieldFactory.getWidgetChartFields();
-		fields.addAll(FieldFactory.getWidgetFields());
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(ModuleFactory.getWidgetChartModule().getTableName())
-				.innerJoin(ModuleFactory.getWidgetModule().getTableName())
-				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
-				.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID = ?", reportId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println("111."+props);
-		if (props != null && !props.isEmpty()) {
-			WidgetChartContext widgetReportContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetChartContext.class);
-			addWidgetConditiontoWidget(widgetReportContext);
-			return widgetReportContext;
 		}
 		return null;
 	}
@@ -406,202 +553,6 @@ public class DashboardUtil {
 			
 			return reportFieldContext;
 		}
-	}
-	public static WidgetPeriodContext getWidgetPeriod(Long widgetId,String periodValue) throws Exception {
-		
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getDashboardWidgetPeriodFields())
-//				.table(ModuleFactory.getWidgetPeriodModule().getTableName())
-//				.andCustomWhere(ModuleFactory.getWidgetPeriodModule().getTableName()+".WIDGET_ID = ?", widgetId)
-//				.andCustomWhere(ModuleFactory.getWidgetPeriodModule().getTableName()+".PERIOD_VALUE = ?", periodValue);
-//		
-//		List<Map<String, Object>> props = selectBuilder.get();
-//		if (props != null && !props.isEmpty()) {
-//			WidgetPeriodContext widgetperiodContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetPeriodContext.class);
-//			return widgetperiodContext;
-//		}
-		return null;
-		
-	}
-	public static boolean updateDashboardPublishStatus(DashboardContext dashboard) throws Exception {
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.fields(FieldFactory.getDashboardFields())
-				.andCustomWhere("ID = ?", dashboard.getId());
-
-		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
-	}
-	public static boolean updateDashboardLinkName(long dashboardId, String linkName) throws Exception {
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.fields(FieldFactory.getDashboardFields())
-				.andCustomWhere("ID = ?", dashboardId);
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("linkName", linkName);
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
-	}
-	public static void addWidgetPeriods(DashboardWidgetContext dashboardWidget) throws Exception {
-		
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getDashboardWidgetPeriodFields())
-//				.table(ModuleFactory.getWidgetPeriodModule().getTableName())
-//				.andCustomWhere("WIDGET_ID = ?", dashboardWidget.getId());
-//		
-//		List<Map<String, Object>> props = selectBuilder.get();
-//		
-//		if (props != null && !props.isEmpty()) {
-//			for(Map<String, Object> prop:props) {
-//				WidgetPeriodContext dashboardWidgetPeriod = FieldUtil.getAsBeanFromMap(prop, WidgetPeriodContext.class);
-//				dashboardWidget.addPeriod(dashboardWidgetPeriod);
-//			}
-//		}
-		
-	}
-	
-	public static void addWidgetConditiontoWidget(WidgetChartContext widgetChartContext) throws Exception {
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getWidgetConditionFields())
-//				.table(ModuleFactory.getWidgetCondition().getTableName())
-//				.andCustomWhere("WIDGET_ID = ?", widgetChartContext.getId());
-//		
-//		List<Map<String, Object>> props = selectBuilder.get();
-//		
-//		if (props != null && !props.isEmpty()) {
-//			for(Map<String, Object> prop:props) {
-//				ReportCriteriaContext widgetConditionContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
-//				widgetChartContext.addWidgetCondition(widgetConditionContext);
-//			}
-//		}
-	}
-	public static JSONArray getDashboardResponseJson(DashboardContext dashboard) {
-		List dashboards = new ArrayList<>();
-		dashboards.add(dashboard);
-		return getDashboardResponseJson(dashboards);
-	}
-	
-	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards) {
-		
-		JSONArray result = new JSONArray();
-		
-//		Collections.sort(dashboards);
-		 for(DashboardContext dashboard:dashboards) {
-			 String dashboardName = dashboard.getDashboardName();
-			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
-			JSONArray childrenArray = new JSONArray();
-			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
-			}
-			JSONObject dashboardJson = new JSONObject();
-			dashboardJson.put("id", dashboard.getId());
-			dashboardJson.put("label", dashboardName);
-			dashboardJson.put("linkName", dashboard.getLinkName());
-			dashboardJson.put("children", childrenArray);
-			result.add(dashboardJson);
-		 }
-		return result;
-	}
-	public static JSONArray getReportResponseJson(List<ReportFolderContext> reportFolders) {
-		
-		JSONArray result = new JSONArray();
-		
-//		Collections.sort(dashboards);
-		 for(ReportFolderContext reportFolder:reportFolders) {
-			 String name = reportFolder.getName();
-			Collection<ReportContext> reportContexts = reportFolder.getReports();
-			JSONArray childrenArray = new JSONArray();
-			if(reportContexts != null) {
-				for(ReportContext reportContext:reportContexts) {
-					childrenArray.add(reportContext.widgetJsonObject());
-				}
-				JSONObject dashboardJson = new JSONObject();
-				dashboardJson.put("id", reportFolder.getId());
-				dashboardJson.put("label", name);
-				dashboardJson.put("children", childrenArray);
-				result.add(dashboardJson);
-			}
-			else {
-				JSONObject dashboardJson = new JSONObject();
-				dashboardJson.put("id", reportFolder.getId());
-				dashboardJson.put("label", name);
-				dashboardJson.put("children", childrenArray);
-				result.add(dashboardJson);
-			}
-		 }
-		return result;
-	}
-	
-	public static DashboardContext getDashboardWithWidgets(Long dashboardId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getDashboardFields())
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("ID = ?", dashboardId);
-		
-		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		if (props != null && !props.isEmpty()) {
-			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
-			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
-			dashboard.setDashboardWidgets(dashbaordWidgets);
-			return dashboard;
-		}
-		return null;
-	}
-
-	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getDashboardFields())
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		if (props != null && !props.isEmpty()) {
-			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
-			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
-			dashboard.setDashboardWidgets(dashbaordWidgets);
-			return dashboard;
-		}
-		return null;
-	}
-
-	public static List<DashboardContext> getDashboardList(String moduleName) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getDashboardFields())
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("MODULEID = ?", module.getModuleId());
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		if (props != null && !props.isEmpty()) {
-			List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
-			for (Map<String, Object> prop : props) {
-				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				dashboardList.add(dashboard);
-			}
-			return dashboardList;
-		}
-		return null;
 	}
 	
 	public static boolean addReportFolder(ReportFolderContext reportFolder) throws Exception {
@@ -857,5 +808,31 @@ public class DashboardUtil {
 		DashboardUtil.addReport(dailyBreakdown);
 		
 		return true;
+	}
+public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("energydata");
+		
+		FacilioField field = new FacilioField();
+		field.setColumnName("DISTINCT PARENT_METER_ID");
+		field.setName("parentId");
+		
+		ArrayList<FacilioField> selectFields = new ArrayList<FacilioField>();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table(module.getTableName())
+				.andCustomWhere("ORGID = ?",orgid);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<Long> meterIds = null;
+		if (props != null && !props.isEmpty()) {
+			meterIds = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				meterIds.add((Long) prop.get("parentId"));
+			}
+		}
+		return meterIds;
 	}
 }

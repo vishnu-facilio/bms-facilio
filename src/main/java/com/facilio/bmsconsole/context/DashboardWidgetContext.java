@@ -48,24 +48,14 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	public void setWidgetUrl(String widgetUrl) {
 		this.widgetUrl = widgetUrl;
 	}
-	private List<WidgetPeriodContext> periods = new ArrayList<>(); 
 	
 	public abstract JSONObject widgetJsonObject();
 	
-	public List<WidgetPeriodContext> getPeriods() {
-		return periods;
-	}
 	public Long getDashboardId() {
 		return dashboardId;
 	}
 	public void setDashboardId(Long dashboardId) {
 		this.dashboardId = dashboardId;
-	}
-	public void setPeriods(List<WidgetPeriodContext> periods) {
-		this.periods = periods;
-	}
-	public void addPeriod(WidgetPeriodContext period) {
-		periods.add(period);
 	}
 	public WidgetType getWidgetType() {
 		if(getType() != null) {
