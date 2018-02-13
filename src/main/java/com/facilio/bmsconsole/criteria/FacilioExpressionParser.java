@@ -20,18 +20,21 @@ public class FacilioExpressionParser {
 
 	private static final String EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.*)([^.]*)(?:\\.*)([^.]*)";
 	
-	private static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
-	private static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
-	private static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
-	private static final String CONDITION_FORMATTER = "((.*?)`([^`]*)`(.*))";
-	private static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
-	private static final String EXPRESSION_SPACE_SEPERATOR = "``";
-	private static final String RESULT_STRING = "result";
-	private static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
-	private static final String EMPTY_STRING = "";
+	public static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
+	public static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
+	public static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
+	public static final String RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER = ".+\\s*\\$\\$\\s*(<|<=|>=|>|=|!=)\\s*\\$\\$\\s*.+";
+	public static final String COMPARATOR_FORMATOR = "\\s*\\$\\$\\s*(<|<=|>=|>|=|!=|==|<>)\\s*\\$\\$\\s*";
+	public static final String CONDITION_FORMATTER = "((.*?)`([^`]*)`(.*))";
+	public static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
+	public static final String EXPRESSION_SPACE_SEPERATOR = "``";
+	public static final String COMPARATOR_SPACE_SEPERATOR = "$$";
+	public static final String RESULT_STRING = "result";
+	public static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
+	public static final String EMPTY_STRING = "";
 	
 	String expressionString;
-
+	
 	public String getExpressionString() {
 		return expressionString;
 	}
@@ -64,7 +67,10 @@ public class FacilioExpressionParser {
 					continue;
 				}
 				value = value.trim();
-				if(isOperators(value)) {
+				if(isComparitionOpperator(value)) {
+					expString.append(getComparitionOpperator(value));
+				}
+				else if(isOperators(value)) {
 					expString.append(value);
 				}
 				else {
@@ -104,8 +110,21 @@ public class FacilioExpressionParser {
 		return result.doubleValue();
 	}
 	
+	public static boolean isComparitionOpperator(String value) {
+		Pattern pattern = Pattern.compile(COMPARATOR_FORMATOR);
+		Matcher matcher = pattern.matcher(value);
+		return matcher.find();
+	}
+	public static String getComparitionOpperator(String value) {
+		Pattern pattern = Pattern.compile(COMPARATOR_FORMATOR);
+		Matcher matcher = pattern.matcher(value);
+		while(matcher.find()) {
+			return matcher.group(1);
+		}
+		return null;
+	}
 	public static boolean isOperators(String value) {
-		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/") || value.equals("%") || value.equals("^") || value.equals("=") || value.equals("!=") || value.equals("<") || value.equals("<=") || value.equals(">") || value.equals(">=") || value.equals("(") || value.equals(")")) {
+		if(value.equals("+") || value.equals("-") || value.equals("*") || value.equals("/") || value.equals("%") || value.equals("^") || value.equals("=") || value.equals("==") || value.equals("!=") || value.equals("<") || value.equals("<=") || value.equals(">") || value.equals(">=") || value.equals("(") || value.equals(")")) {
 			return true;
 		}
 		return false;
@@ -131,6 +150,12 @@ public class FacilioExpressionParser {
 		Matcher matcher = pattern.matcher(expression);
 		return matcher.find();
 	}
+	public static boolean isBooleanValueReturnTypeExpression(String expression) {
+		Pattern pattern = Pattern.compile(RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER);
+		Matcher matcher = pattern.matcher(expression);
+		return matcher.find();
+	}
+	
 	
 	private class FacilioSubExpressionParser {
 		
@@ -292,7 +317,6 @@ public class FacilioExpressionParser {
 			Matcher matcher = pattern.matcher(expressionString);
 			return matcher.find();
 		}
-		
 		public String expressionString;
 		
 		public String moduleName;
