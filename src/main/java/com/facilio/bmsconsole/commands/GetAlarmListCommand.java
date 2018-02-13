@@ -34,9 +34,11 @@ public class GetAlarmListCommand implements Command {
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
-		} else if (filters == null && view != null) {
+		}
+		if (( filters == null || includeParentCriteria) && view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
 		}

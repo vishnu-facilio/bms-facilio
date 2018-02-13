@@ -21,8 +21,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -30,7 +28,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.DefaultTemplates;
 import com.facilio.constants.FacilioConstants;
@@ -233,6 +230,7 @@ public class AlarmAction extends ActionSupport {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
@@ -342,6 +340,14 @@ public class AlarmAction extends ActionSupport {
 	public String getFilters()
 	{
 		return this.filters;
+	}
+	
+	private boolean includeParentFilter;
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
 	}
 	
 	String orderBy;

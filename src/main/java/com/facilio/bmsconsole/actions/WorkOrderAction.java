@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -569,6 +568,7 @@ public class WorkOrderAction extends ActionSupport {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
@@ -664,6 +664,14 @@ public class WorkOrderAction extends ActionSupport {
 		this.viewName = viewName;
 	}
 	
+	private boolean includeParentFilter;
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+
 	private String displayName = "All Work Orders";
 	public String getViewDisplayName() {
 		return displayName;
