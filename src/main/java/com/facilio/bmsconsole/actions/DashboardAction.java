@@ -473,6 +473,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		JSONObject buildingVsMeter = new JSONObject();
 		HashMap <Long, ArrayList<Long>> purposeVsMeter= new HashMap<Long,ArrayList<Long>>();
+		JSONObject purposeVsMeter1 = new JSONObject();
 		if (getEnergyMeterFilter() != null) {
 			reportContext.setEnergyMeter(getEnergyMeterFilter());
 		}
@@ -577,6 +578,7 @@ public class DashboardAction extends ActionSupport {
 								meterList = new ArrayList<Long>();
 								purposeVsMeter.put(purposeId, meterList);
 							}
+							purposeVsMeter1.put(meter.getId(), purposeId);
 							meterList.add(meter.getId());
 						}
 					}
@@ -602,6 +604,9 @@ public class DashboardAction extends ActionSupport {
 					reportContext.setGroupByField(groupByReportField);
 					
 					reportContext.setGroupBy(-1L);
+				}
+				else {
+					xAxisField.setDisplayName("Service");
 				}
 			}
 		}
@@ -686,7 +691,9 @@ public class DashboardAction extends ActionSupport {
 		else {
 			if(!reportContext.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
+				JSONObject purposeIndexMapping = new JSONObject();
 				for(int i=0;i<rs.size();i++) {
+					boolean newPurpose = false;
 		 			Map<String, Object> thisMap = rs.get(i);
 		 			JSONObject component = new JSONObject();
 		 			if(thisMap!=null) {
@@ -697,17 +704,44 @@ public class DashboardAction extends ActionSupport {
 		 					component.put("label", thisMap.get("dummyField"));
 		 				}
 		 				else {
-		 					component.put("label", buildingVsMeter.containsKey(thisMap.get("label")) ? buildingVsMeter.get(thisMap.get("label")) : thisMap.get("label"));
+		 					Object lbl = thisMap.get("label");
+		 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
+		 						lbl = buildingVsMeter.get(thisMap.get("label"));
+		 					}
+		 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
+		 						lbl = purposeVsMeter1.get(thisMap.get("label"));
+		 						if (!purposeIndexMapping.containsKey(lbl)) {
+		 							purposeIndexMapping.put(lbl, res.size());
+		 							newPurpose = true;
+		 						}
+		 					}
+		 					component.put("label", lbl);
 		 				}
-		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-		 					Double d = (Double) thisMap.get("value");
-		 					component.put("value", d*ReportsUtil.unitCost);
-		 					component.put("orig_value", d);
+		 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
+		 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
+		 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						Double concatVal = d + (Double) tmpComp.get("orig_value");
+		 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
+		 						tmpComp.put("orig_value", concatVal);
+		 					}
+		 					else {
+		 						Double d = (Double) thisMap.get("value");
+		 						Double concatVal = d + (Double) tmpComp.get("value");
+		 						tmpComp.put("value", thisMap.get("value"));
+		 					}
 		 				}
 		 				else {
-		 					component.put("value", thisMap.get("value"));
+		 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						component.put("value", d*ReportsUtil.unitCost);
+		 						component.put("orig_value", d);
+		 					}
+		 					else {
+		 						component.put("value", thisMap.get("value"));
+		 					}
+		 					res.add(component);
 		 				}
-		 				res.add(component);
 		 			}
 			 	}
 				setReportData(res);
