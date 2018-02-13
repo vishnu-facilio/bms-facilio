@@ -125,6 +125,17 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(resourceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -135,7 +146,8 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.SEVERITY=Alarm_Severity.ID")
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarm_Severity.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
-				.andCondition(getSpaceCondition(spaceId));
+				//.andCondition(getSpaceCondition(spaceId));
+				.andCondition(spaceCond);
 		List<Map<String, Object>> rs = builder.get();
 		if(rs.isEmpty()) {
 			return 0L;
@@ -161,6 +173,17 @@ public class AlarmReportAction extends ActionSupport {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countFld);
 		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(resourceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -169,7 +192,8 @@ public class AlarmReportAction extends ActionSupport {
 				.on("Alarms.ID = Tickets.ID")
 				.andCustomWhere("Alarms.ORGID=?",orgId)
 				.andCustomWhere("Alarms.MODIFIED_TIME > ?", startTime)
-				.andCondition(getSpaceCondition(spaceId));
+				//.andCondition(getSpaceCondition(spaceId));
+				.andCondition(spaceCond);
 		List<Map<String, Object>> rs = builder.get();
 		if(rs.isEmpty()) {
 			return 0L;
