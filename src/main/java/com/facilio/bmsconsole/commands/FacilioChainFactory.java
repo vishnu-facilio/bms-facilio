@@ -1637,18 +1637,18 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getReportData() {
-		Chain c = new TransactionChain();
-		c.addCommand(new SetFieldsCommand());
-		c.addCommand(new SetCriteriaCommand());
-		c.addCommand(new SetUserFilterCommand());
-		c.addCommand(new SetGroupByCommand());
-		c.addCommand(new SetLimitAndOrderCommand());
-		c.addCommand(new FetchData());
-		c.addCommand(new ProcessResult());
-		addCleanUpCommand(c);
-		return c;
-	}
+//	public static Chain getReportData() {
+//		Chain c = new TransactionChain();
+//		c.addCommand(new SetFieldsCommand());
+//		c.addCommand(new SetCriteriaCommand());
+//		c.addCommand(new SetUserFilterCommand());
+//		c.addCommand(new SetGroupByCommand());
+//		c.addCommand(new SetLimitAndOrderCommand());
+//		c.addCommand(new FetchData());
+//		c.addCommand(new ProcessResult());
+//		addCleanUpCommand(c);
+//		return c;
+//	}
 	
 	public static Chain getRelatedAlarmForReports() {
 		Chain c = new TransactionChain();
