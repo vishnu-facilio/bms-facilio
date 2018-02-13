@@ -50,6 +50,7 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.ExpressionAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -305,14 +306,17 @@ public class DashboardAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
 		
+//		FacilioContext context = new FacilioContext();
+//		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+//		context.put(FacilioConstants.ContextNames.MODULE, module);
+//		context.put(FacilioConstants.ContextNames.REPORT_DATE_FILTER, dateFilter);
+//		context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, userFilterValues);
+//		Chain addDashboardChain = FacilioChainFactory.getReportData();
+//		addDashboardChain.execute(context);
+		
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 		reportContext.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
-		
-		boolean isEnergyDataWithTimeFrame = false;
-		if(xAxisField.getColumnName().equals("TTIME") && module.getName().equals("energydata")) {
-			isEnergyDataWithTimeFrame = true;
-		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
@@ -415,15 +419,8 @@ public class DashboardAction extends ActionSupport {
 		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);
-			if(module.getName().equals("energydata") && criteria != null) {
-				Map<Integer, Condition> conditions = criteria.getConditions();
-				for(Condition condition:conditions.values()) {
-					if(condition.getColumnName().equals("Energy_Data.PARENT_METER_ID")) {
-						energyMeterValue = energyMeterValue + condition.getValue() +",";
-					}
-				}
-			}
 		}
+		
 		Condition dateCondition = null;
 		if (reportContext.getDateFilter() != null) {
 			dateCondition = new Condition();
@@ -694,20 +691,41 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		System.out.println("rs after -- "+rs);
-		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>(); 
-		comparisionRs.add(rs);
+		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>();
+//		comparisionRs.add(rs);
 		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
 		if(reportContext.getIsComparisionReport()) {
 			
 			for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
-				if(i==0) {
-					continue;
+				
+				DateOperators dd = null;
+				if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+					Criteria criteria1 = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+					Map<Integer, Condition> conditions = criteria1.getConditions();
+					for(Integer s:conditions.keySet()) {
+						Condition condi = conditions.get(s);
+						if(condi.getColumnName().equals("Energy_Data.TTIME") && condi.getOperator() instanceof DateOperators) {
+							dd = (DateOperators) condi.getOperator();
+						}
+					}
+				}
+//				if(i==0) {
+//					comparisionRs.add(rs);
+//					continue;
+//				}
+				List<FacilioField> fields1 = new ArrayList<>(); 
+				fields1.addAll(fields);
+				if(dd != null) {
+					FacilioField ff = new FacilioField();
+					ff.setColumnName("\""+dd.getOperator()+"\"");
+					ff.setName("dateOpperator");
+					fields1.add(ff);
 				}
 				GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
 						.table(module.getTableName())
 						.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
 						.groupBy(groupByString)
-						.select(fields);
+						.select(fields1);
 				if(module.getExtendModule() != null) {
 					builder.innerJoin(module.getExtendModule().getTableName())
 						.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
@@ -717,7 +735,7 @@ public class DashboardAction extends ActionSupport {
 					builder1.andCriteria(criteria);
 				}
 				List<Map<String, Object>> rs1 = builder1.get();
-				System.out.println("rs comp  "+i+" -- "+rs);
+				System.out.println("rs comp  "+i+" -- "+rs1);
 				comparisionRs.add(rs1);
 			}
 			
@@ -736,7 +754,7 @@ public class DashboardAction extends ActionSupport {
 				for(Map<String, Object> result :comparisonresult.get(key)) {
 					json.put("label", result.get("dummyField"));
 					JSONObject json1 = new JSONObject();
-					json1.put("label", result.get("dummyField"));
+					json1.put("label", result.get("dateOpperator"));
 					json1.put("value", result.get("value"));
 					valuesArray.add(json1);			
 				}
@@ -747,9 +765,23 @@ public class DashboardAction extends ActionSupport {
 			setReportData(compResult);
 		}
 		
+		boolean isEnergyDataWithTimeFrame = false;
+		if(xAxisField.getColumnName().equals("TTIME") && module.getName().equals("energydata")) {
+			isEnergyDataWithTimeFrame = true;
+		}
+		if (reportContext.getReportCriteriaContexts() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+			if(module.getName().equals("energydata") && criteria != null) {
+				Map<Integer, Condition> conditions = criteria.getConditions();
+				for(Condition condition:conditions.values()) {
+					if(condition.getColumnName().equals("Energy_Data.PARENT_METER_ID")) {
+						energyMeterValue = energyMeterValue + condition.getValue() +",";
+					}
+				}
+			}
+		}
 		
-		
-		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame) {
+		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !reportContext.getIsComparisionReport()) {
 			
 			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
 			
