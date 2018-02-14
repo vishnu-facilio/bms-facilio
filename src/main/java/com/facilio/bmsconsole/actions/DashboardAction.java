@@ -733,7 +733,7 @@ public class DashboardAction extends ActionSupport {
 //	 				}
 	 				else {
 	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
-	 					if(reportContext.getId().equals(230l) || reportContext.getId().equals(231l)) {
+	 					if(reportContext.getId().equals(300l) || reportContext.getId().equals(301l)) {
 	 						continue;
 	 					}
 	 					JSONObject value = new JSONObject();
@@ -761,7 +761,7 @@ public class DashboardAction extends ActionSupport {
 	 				}
 	 			}
 		 	}
-			if(reportContext.getId().equals(230l)) {
+			if(reportContext.getId().equals(300l)) {
 				reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
 				reportContext.getxAxisField().getField().setDisplayName("Building");
 				reportContext.getxAxisField().getField().setName("building");
@@ -823,7 +823,7 @@ public class DashboardAction extends ActionSupport {
 		else {
 			if(!reportContext.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
-				if (reportContext.getId().equals(231l)) {
+				if (reportContext.getId().equals(301l)) {
 					reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
 					reportContext.getxAxisField().getField().setDisplayName("Building");
 					reportContext.getxAxisField().getField().setName("building");
