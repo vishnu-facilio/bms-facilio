@@ -165,7 +165,7 @@ public class EventToAlarmCommand implements Command {
 		if(event.getAssetId() != -1) {
 			JSONObject asset = new JSONObject();
 			asset.put("id", event.getAssetId());
-			json.put("asset", asset);
+			json.put("resource", asset);
 		}
 
 		JSONObject additionalInfo = event.getAdditionInfo();
