@@ -703,7 +703,7 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 		
-	public static Condition getMyUserCondition(FacilioModule module) {
+	private static Condition getMyUserCondition(FacilioModule module) {
 		LookupField userField = new LookupField();
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
@@ -720,7 +720,7 @@ public class ViewFactory {
 		return myUserCondition;
 	}
 	
-	public static Condition getMyTeamCondition(FacilioModule module) {
+	private static Condition getMyTeamCondition(FacilioModule module) {
 		LookupField groupField = new LookupField();
 		groupField.setName("assignmentGroup");
 		groupField.setColumnName("ASSIGNMENT_GROUP_ID");
@@ -815,6 +815,19 @@ public class ViewFactory {
 	
 	private static FacilioView getSeverityAlarms(String name, String displayName, String severity, boolean equals) {
 		
+		Condition alarmCondition = getAlarmSeverityCondition(severity, equals);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		return view;
+	}
+	
+	public static Condition getAlarmSeverityCondition(String severity, boolean equals) {
 		LookupField severityField = new LookupField();
 		severityField.setName("severity");
 		severityField.setColumnName("SEVERITY");
@@ -822,19 +835,12 @@ public class ViewFactory {
 		severityField.setModule(ModuleFactory.getAlarmsModule());
 		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
 		
-		Condition activeAlarm = new Condition();
-		activeAlarm.setField(severityField);
-		activeAlarm.setOperator(LookupOperator.LOOKUP);
-		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
+		Condition alarmCondition = new Condition();
+		alarmCondition.setField(severityField);
+		alarmCondition.setOperator(LookupOperator.LOOKUP);
+		alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
 		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(activeAlarm);
-		
-		FacilioView view = new FacilioView();
-		view.setName(name);
-		view.setDisplayName(displayName);
-		view.setCriteria(criteria);
-		return view;
+		return alarmCondition;
 	}
 	
 	private static Criteria getSeverityAlarmCriteria(String severity, boolean equals) {

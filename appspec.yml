@@ -11,6 +11,10 @@ files:
     destination: /home/ubuntu
   - source: /change_conf.sh
     destination: /home/ubuntu
+  - source: /move_logs.sh
+    destination: /home/ubuntu
+  - source: /start_xvfb.sh
+    destination: /home/ubuntu
 
 permissions:
   - object: /home/ubuntu/tomcat/webapps
