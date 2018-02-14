@@ -50,7 +50,7 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
-import com.facilio.bmsconsole.util.ExpressionAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -472,6 +472,7 @@ public class DashboardAction extends ActionSupport {
 			builder.andCondition(dateCondition);
 		}
 		JSONObject buildingVsMeter = new JSONObject();
+		Map<Long,Double> buildingVsArea = null;
 		HashMap <Long, ArrayList<Long>> purposeVsMeter= new HashMap<Long,ArrayList<Long>>();
 		JSONObject purposeVsMeter1 = new JSONObject();
 		if (getEnergyMeterFilter() != null) {
@@ -542,6 +543,8 @@ public class DashboardAction extends ActionSupport {
 					energyMeterValue = meterIdStr;
 					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
 				}
+				String buildingList = StringUtils.join(buildingVsMeter.values(),",");
+				buildingVsArea = ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
 				
 				if (!xAxisField.getColumnName().equalsIgnoreCase("PARENT_METER_ID")) {
 					FacilioField groupByField = new FacilioField();
@@ -736,6 +739,14 @@ public class DashboardAction extends ActionSupport {
 		 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
 		 						Double d = (Double) thisMap.get("value");
 		 						component.put("value", d*ReportsUtil.unitCost);
+		 						component.put("orig_value", d);
+		 					}
+		 					else if ("eui".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+		 						Double d = (Double) thisMap.get("value");
+		 						
+		 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+		 						double eui = ReportsUtil.getEUI(d, buildingArea);
+		 						component.put("value", eui);
 		 						component.put("orig_value", d);
 		 					}
 		 					else {
