@@ -57,8 +57,17 @@
 
 <filter-mapping>
   <filter-name>CorsFilter</filter-name>
-  <url-pattern>/*</url-pattern>
+  <url-pattern>/api/*</url-pattern>
 </filter-mapping>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/internal/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/service/*</url-pattern>
+    </filter-mapping>
+
 
 <filter-mapping>
     <filter-name>struts2</filter-name>
@@ -71,6 +80,14 @@
     <filter-mapping>
         <filter-name>struts2</filter-name>
         <url-pattern>/internal/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/iot/api/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/auth/api/*</url-pattern>
     </filter-mapping>
 
     <servlet>
