@@ -478,10 +478,11 @@ public class DashboardAction extends ActionSupport {
 		if (getEnergyMeterFilter() != null) {
 			reportContext.setEnergyMeter(getEnergyMeterFilter());
 		}
+		Condition buildingCondition = null;
 		if (reportContext.getEnergyMeter() != null) {
 			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
 				energyMeterValue = reportContext.getEnergyMeter().getSubMeterId() + "";
-				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
+				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS);
 			}
 			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
 				if ("service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
@@ -496,7 +497,7 @@ public class DashboardAction extends ActionSupport {
 						
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
-						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 					}
 					
 					FacilioField groupByField = new FacilioField();
@@ -525,7 +526,7 @@ public class DashboardAction extends ActionSupport {
 						
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
-						builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 					}
 				}
 			}
@@ -541,7 +542,7 @@ public class DashboardAction extends ActionSupport {
 					
 					String meterIdStr = StringUtils.join(meterIds, ",");
 					energyMeterValue = meterIdStr;
-					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 				String buildingList = StringUtils.join(buildingVsMeter.values(),",");
 				buildingVsArea = ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
@@ -588,7 +589,7 @@ public class DashboardAction extends ActionSupport {
 					
 					String meterIdStr = StringUtils.join(meterIds, ",");
 					energyMeterValue = meterIdStr;
-					builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS));
+					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 				
 				if (!xAxisField.getColumnName().equalsIgnoreCase("PARENT_METER_ID")) {
@@ -612,6 +613,9 @@ public class DashboardAction extends ActionSupport {
 					xAxisField.setDisplayName("Service");
 				}
 			}
+		}
+		if(buildingCondition != null) {
+			builder.andCondition(buildingCondition);
 		}
 		List<Map<String, Object>> rs = builder.get();
 		System.out.println("builder --- "+builder);
@@ -816,6 +820,9 @@ public class DashboardAction extends ActionSupport {
 					criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
 					builder1.andCriteria(criteria);
 				}
+				if(buildingCondition != null) {
+					builder1.andCondition(buildingCondition);
+				}
 				List<Map<String, Object>> rs1 = builder1.get();
 				System.out.println("builder1 --- "+builder1);
 				System.out.println("rs comp  "+i+" -- "+rs1);
@@ -870,11 +877,10 @@ public class DashboardAction extends ActionSupport {
 			subject.setColumnName("SUBJECT");
 			subject.setModule(ModuleFactory.getTicketsModule()); ////alarm vs energy data
 			alarmVsEnergyFields.add(subject);
-			
 			FacilioField modTime = new FacilioField();
-			modTime.setName("modifiedTime");
+			modTime.setName("createdTime");
 			modTime.setDataType(FieldType.NUMBER);
-			modTime.setColumnName("MODIFIED_TIME");
+			modTime.setColumnName("CREATED_TIME");
 			modTime.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
 			alarmVsEnergyFields.add(modTime);
 			
@@ -969,7 +975,7 @@ public class DashboardAction extends ActionSupport {
 		for(Map<String,Object> mappingProp: alarmVsEnergyProps) {
 
 			String subject = (String) mappingProp.get("subject");
-			Long modifiedTime=(Long)mappingProp.get("modifiedTime");
+			Long createdTime=(Long)mappingProp.get("createdTime");
 			Long id= (Long)mappingProp.get("alarmid");
 			Long alarmSerialNumber=(Long)mappingProp.get("serialNumber");
 			Long alarmSeverity=(Long)mappingProp.get("severity");
@@ -978,10 +984,10 @@ public class DashboardAction extends ActionSupport {
 			props.put("alarmId", id);
 			props.put("subject", subject);
 			props.put("severity", alarmSeverity);
-			props.put("time", modifiedTime);
+			props.put("time", createdTime);
 			props.put("serialNumber", alarmSerialNumber);
 
-			Object key=getKey(modifiedTime,formatter);
+			Object key=getKey(createdTime,formatter);
 			JSONArray alarmsList= alarmProps.get(key);
 
 			if(alarmsList==null) {
@@ -1029,7 +1035,7 @@ public class DashboardAction extends ActionSupport {
 			displayFieldNames = new String[]{"subject", "category", "space", "assignedTo", "status", "priority", "createdTime", "dueDate"};
 		}
 		else if ("alarm".equals(module)) {
-			displayFieldNames = new String[]{"subject", "severity", "node", "modifiedTime", "acknowledgedBy", "state"};
+			displayFieldNames = new String[]{"subject", "severity", "node", "createdTime", "acknowledgedBy", "state"};
 		}
 		else if ("energydata".equals(module)) {
 			displayFieldNames = new String[]{"ttime", "totalEnergyConsumptionDelta"};
