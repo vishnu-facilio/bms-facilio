@@ -632,7 +632,7 @@ public class DashboardAction extends ActionSupport {
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			if(thisMap!=null) {
 	 				
-	 				if (reportContext.getEnergyMeter().getGroupBy() != null && (reportContext.getEnergyMeter().getBuildingId() == null || reportContext.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+	 				if (reportContext.getEnergyMeter() != null && reportContext.getEnergyMeter().getGroupBy() != null && (reportContext.getEnergyMeter().getBuildingId() == null || reportContext.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
 	 					Object xlabel = thisMap.get("label");
 	 					if(thisMap.get("dummyField") != null) {
 		 					xlabel = thisMap.get("dummyField");
@@ -660,6 +660,7 @@ public class DashboardAction extends ActionSupport {
 	 					}
 	 				}
 	 				else {
+	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
 	 					JSONObject value = new JSONObject();
 		 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
@@ -675,11 +676,11 @@ public class DashboardAction extends ActionSupport {
 		 				if(thisMap.get("dummyField") != null) {
 		 					xlabel = thisMap.get("dummyField");
 		 				}
-		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
-		 					xlabel = labelMapping.get(thisMap.get("label").toString());
+		 				if (labelMapping.containsKey(strLabel)) {
+		 					xlabel = labelMapping.get(strLabel);
 		 				}
 		 				else {
-		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+		 					labelMapping.put(strLabel, xlabel);
 		 				}
 		 				res.put(xlabel, value);
 	 				}
