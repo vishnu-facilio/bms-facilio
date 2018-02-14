@@ -227,6 +227,49 @@ public enum DateOperators implements Operator<String> {
 			return null;
 		}
 	},
+	TODAY_UPTO_NOW(43, "today upto now") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${TODAY_NOW}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime() <= currentVal && currentVal < DateTimeUtil.getCurrenTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
 	
 	TOMORROW(23, "Tomorrow") {
 		@Override

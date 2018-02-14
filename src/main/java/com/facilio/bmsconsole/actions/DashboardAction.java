@@ -611,7 +611,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		List<Map<String, Object>> rs = builder.get();
-		System.out.println("rs -- "+rs);
+		System.out.println("builder --- "+builder);
 		System.out.println("rs1 -- "+rs);
 		
 		if(reportContext.getGroupBy() != null) {
@@ -777,7 +777,18 @@ public class DashboardAction extends ActionSupport {
 				fields1.addAll(fields);
 				if(dd != null) {
 					FacilioField ff = new FacilioField();
-					ff.setColumnName("\""+dd.getOperator()+"\"");
+					if(dd.getOperatorId() == 43) {
+						ff.setColumnName("\"Today\"");
+					}
+					else if(dd.getOperatorId() == 28) {
+						ff.setColumnName("\"This Month\"");
+					}
+					else if(dd.getOperatorId() == 31) {
+						ff.setColumnName("\"This Week\"");
+					}
+					else {
+						ff.setColumnName("\""+dd.getOperator()+"\"");
+					}
 					ff.setName("dateOpperator");
 					fields1.add(ff);
 				}
@@ -795,7 +806,7 @@ public class DashboardAction extends ActionSupport {
 					builder1.andCriteria(criteria);
 				}
 				List<Map<String, Object>> rs1 = builder1.get();
-				System.out.println("rs1 --- "+rs1);
+				System.out.println("builder1 --- "+builder1);
 				System.out.println("rs comp  "+i+" -- "+rs1);
 				comparisionRs.add(rs1);
 			}
