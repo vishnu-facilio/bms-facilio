@@ -18,6 +18,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -45,6 +47,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -392,7 +395,6 @@ public class DashboardAction extends ActionSupport {
 			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
 		}
 		
-		
 		if(userFilterValues != null && reportContext.getReportUserFilters() != null) {
 			for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
 				if(userFilterValues.containsKey(userFilter.getId().toString())) {
@@ -479,6 +481,7 @@ public class DashboardAction extends ActionSupport {
 			reportContext.setEnergyMeter(getEnergyMeterFilter());
 		}
 		Condition buildingCondition = null;
+		Multimap<Long,EnergyMeterContext> energyMeterMap =  ArrayListMultimap.create();
 		if (reportContext.getEnergyMeter() != null) {
 			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
 				energyMeterValue = reportContext.getEnergyMeter().getSubMeterId() + "";
@@ -500,6 +503,50 @@ public class DashboardAction extends ActionSupport {
 						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 					}
 					
+					FacilioField groupByField = new FacilioField();
+					groupByField.setName("groupBy");
+					groupByField.setDataType(FieldType.NUMBER);
+					groupByField.setColumnName("PARENT_METER_ID");
+					groupByField.setDisplayName("Service");
+					groupByField.setModule(module);
+					fields.add(groupByField);
+					builder.groupBy("label, groupBy");
+					
+					ReportFieldContext groupByReportField = new ReportFieldContext();
+					groupByReportField.setModuleField(groupByField);
+					
+					reportContext.setGroupByField(groupByReportField);
+					
+					reportContext.setGroupBy(-1L);
+				}
+				else if ("space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+					
+					SelectRecordsBuilder<EnergyMeterContext> builder12 = new SelectRecordsBuilder<EnergyMeterContext>()
+							.table(modBean.getModule("energymeter").getTableName())
+							.moduleName("energymeter")
+							.beanClass(EnergyMeterContext.class)
+							.select(modBean.getAllFields("energymeter"))
+							.innerJoin(modBean.getModule("basespace").getTableName())
+							.on(modBean.getModule("basespace").getTableName()+".ID = "+modBean.getModule("energymeter").getTableName()+".PURPOSE_SPACE_ID")
+							.andCustomWhere(modBean.getModule("basespace").getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+							.andCustomWhere(modBean.getModule("basespace").getTableName()+".BUILDING_ID="+ reportContext.getEnergyMeter().getBuildingId())
+							.andCustomWhere(modBean.getModule("basespace").getTableName()+".FLOOR_ID>0");
+					
+					
+					
+					List<EnergyMeterContext> props = builder12.get();
+					List<Long> meterIds = new ArrayList<Long>();
+					if(props != null && !props.isEmpty()) {
+						for(EnergyMeterContext energyMeterContext:props) {
+							energyMeterMap.put(energyMeterContext.getSpaceId(), energyMeterContext);
+							meterIds.add(energyMeterContext.getId());
+						}
+					}
+					if(!meterIds.isEmpty()) {
+						String meterIdStr = StringUtils.join(meterIds, ",");
+						energyMeterValue = meterIdStr;
+						buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+					}
 					FacilioField groupByField = new FacilioField();
 					groupByField.setName("groupBy");
 					groupByField.setDataType(FieldType.NUMBER);
@@ -659,8 +706,36 @@ public class DashboardAction extends ActionSupport {
 	 						res.put(xlabel, value);
 	 					}
 	 				}
+//	 				else if (reportContext.getEnergyMeter().getGroupBy() != null && reportContext.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+//	 					List<String> lables = getDistinctLabel(rs);
+//	 					Map<String,Map<Long,Double>> totalconsumptionBySpace = new HashMap<String,Map<Long,Double>>();
+//	 					System.out.println(lables);
+//	 					if(!energyMeterMap.isEmpty()) {
+//	 						for(String label:lables) {
+//	 							Map<Long,Double> spaceValue = null;
+//	 							for(Long spaceId :energyMeterMap.keys()) {
+//	 								spaceValue = new HashMap<Long,Double>();
+//	 								spaceValue.put(spaceId, 0.0);
+//		 							List<EnergyMeterContext> energyMeterList = (List<EnergyMeterContext>) energyMeterMap.get(spaceId);
+//		 							for(EnergyMeterContext energyMeter:energyMeterList) {
+//		 								for(Map<String, Object> prop:rs) {
+//
+//		 									if(prop.get("label").equals(lables) && prop.get("groupBy").equals(energyMeter.getId())) {
+//		 										spaceValue.put(spaceId, spaceValue.get(spaceId) + (Double) prop.get("value"));
+//		 									}
+//		 								}
+//		 							}
+//		 						}
+//	 							totalconsumptionBySpace.put(label, spaceValue);
+//	 						}
+//	 					}
+//	 					System.out.println("totalconsumptionBySpace -- "+totalconsumptionBySpace);
+//	 				}
 	 				else {
 	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
+	 					if(reportContext.getId().equals(230l) || reportContext.getId().equals(231l)) {
+	 						continue;
+	 					}
 	 					JSONObject value = new JSONObject();
 		 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
@@ -686,6 +761,54 @@ public class DashboardAction extends ActionSupport {
 	 				}
 	 			}
 		 	}
+			if(reportContext.getId().equals(230l)) {
+				reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
+				reportContext.getxAxisField().getField().setDisplayName("Building");
+				reportContext.getxAxisField().getField().setName("building");
+				reportContext.getGroupByField().getField().setDataType(FieldType.STRING);
+				
+				List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+				for(BuildingContext building:buildings) {
+					
+					if(building.getId() == 457 || building.getId() == 458) {
+						continue;
+					}
+					System.out.println("building.getBuildingId() -- "+building.getId());
+					List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
+					System.out.println("spaceList -- "+spaceList);
+					spaceList.add(building.getBuildingId());
+					long planned = 0;
+					long unplanned = 0;
+					for(Map<String, Object> prop:rs) {
+						if(spaceList.contains((Long)prop.get("label"))) {
+							System.out.println("passed prop -- "+prop);
+							if(prop.get("groupBy") != null && "5".equals(prop.get("groupBy").toString())) {
+								System.out.println("planned -- "+prop.get("value"));
+								planned = planned+(Long)prop.get("value");
+							}
+							else {
+								if(prop.get("value") != null) {
+									System.out.println("unplaned -- "+prop.get("value"));
+									System.out.println(prop.get("value"));
+									unplanned = unplanned+(Long)prop.get("value");
+								}
+							}
+						}
+					}
+					System.out.println("planned - - "+planned);
+					System.out.println("unplanned - - "+unplanned);
+					JSONObject plannedJson = new JSONObject();
+					plannedJson.put("label", "planed");
+					plannedJson.put("value", planned);
+					
+					JSONObject unPlannedJson = new JSONObject();
+					unPlannedJson.put("label", "Unplaned");
+					unPlannedJson.put("value", unplanned);
+					
+					res.put(building.getId(), plannedJson);
+					res.put(building.getId(), unPlannedJson);
+ 				}
+			}
 			JSONArray finalres = new JSONArray();
 			for(Object key : res.keySet()) {
 				JSONObject j1 = new JSONObject();
@@ -700,67 +823,96 @@ public class DashboardAction extends ActionSupport {
 		else {
 			if(!reportContext.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
-				JSONObject purposeIndexMapping = new JSONObject();
-				for(int i=0;i<rs.size();i++) {
-					boolean newPurpose = false;
-		 			Map<String, Object> thisMap = rs.get(i);
-		 			JSONObject component = new JSONObject();
-		 			if(thisMap!=null) {
-//		 				if(thisMap.get("label") == null) {
-//		 					continue;
-//		 				}
-		 				if(thisMap.get("dummyField") != null) {
-		 					component.put("label", thisMap.get("dummyField"));
-		 				}
-		 				else {
-		 					Object lbl = thisMap.get("label");
-		 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
-		 						lbl = buildingVsMeter.get(thisMap.get("label"));
-		 					}
-		 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
-		 						lbl = purposeVsMeter1.get(thisMap.get("label"));
-		 						if (!purposeIndexMapping.containsKey(lbl)) {
-		 							purposeIndexMapping.put(lbl, res.size());
-		 							newPurpose = true;
-		 						}
-		 					}
-		 					component.put("label", lbl);
-		 				}
-		 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
-		 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
-		 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-		 						Double d = (Double) thisMap.get("value");
-		 						Double concatVal = d + (Double) tmpComp.get("orig_value");
-		 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
-		 						tmpComp.put("orig_value", concatVal);
-		 					}
-		 					else {
-		 						Double d = (Double) thisMap.get("value");
-		 						Double concatVal = d + (Double) tmpComp.get("value");
-		 						tmpComp.put("value", thisMap.get("value"));
-		 					}
-		 				}
-		 				else {
-		 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-		 						Double d = (Double) thisMap.get("value");
-		 						component.put("value", d*ReportsUtil.unitCost);
-		 						component.put("orig_value", d);
-		 					}
-		 					else if ("eui".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-		 						Double d = (Double) thisMap.get("value");
-		 						
-		 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
-		 						double eui = ReportsUtil.getEUI(d, buildingArea);
-		 						component.put("value", eui);
-		 						component.put("orig_value", d);
-		 					}
-		 					else {
-		 						component.put("value", thisMap.get("value"));
-		 					}
-		 					res.add(component);
-		 				}
-		 			}
-			 	}
+				if (reportContext.getId().equals(231l)) {
+					reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
+					reportContext.getxAxisField().getField().setDisplayName("Building");
+					reportContext.getxAxisField().getField().setName("building");
+					
+					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+					for(BuildingContext building:buildings) {
+						
+						if(building.getId() == 457 || building.getId() == 458) {
+							continue;
+						}
+						System.out.println("building.getBuildingId() -- "+building.getId());
+						List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
+						System.out.println("spaceList -- "+spaceList);
+						spaceList.add(building.getBuildingId());
+						long count = 0;
+						for(Map<String, Object> prop:rs) {
+							if(spaceList.contains((Long)prop.get("label"))) {
+								count = count+(Long)prop.get("value");
+							}
+						}
+						JSONObject component = new JSONObject();
+						component.put("label", building.getId());
+						component.put("value", count);
+						res.add(component);
+	 				}
+				}
+				else {
+					JSONObject purposeIndexMapping = new JSONObject();
+					for(int i=0;i<rs.size();i++) {
+						boolean newPurpose = false;
+			 			Map<String, Object> thisMap = rs.get(i);
+			 			JSONObject component = new JSONObject();
+			 			if(thisMap!=null) {
+//			 				if(thisMap.get("label") == null) {
+//			 					continue;
+//			 				}
+			 				if(thisMap.get("dummyField") != null) {
+			 					component.put("label", thisMap.get("dummyField"));
+			 				}
+			 				else {
+			 					Object lbl = thisMap.get("label");
+			 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
+			 						lbl = buildingVsMeter.get(thisMap.get("label"));
+			 					}
+			 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
+			 						lbl = purposeVsMeter1.get(thisMap.get("label"));
+			 						if (!purposeIndexMapping.containsKey(lbl)) {
+			 							purposeIndexMapping.put(lbl, res.size());
+			 							newPurpose = true;
+			 						}
+			 					}
+			 					component.put("label", lbl);
+			 				}
+			 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
+			 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
+			 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+			 						Double d = (Double) thisMap.get("value");
+			 						Double concatVal = d + (Double) tmpComp.get("orig_value");
+			 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
+			 						tmpComp.put("orig_value", concatVal);
+			 					}
+			 					else {
+			 						Double d = (Double) thisMap.get("value");
+			 						Double concatVal = d + (Double) tmpComp.get("value");
+			 						tmpComp.put("value", thisMap.get("value"));
+			 					}
+			 				}
+			 				else {
+			 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+			 						Double d = (Double) thisMap.get("value");
+			 						component.put("value", d*ReportsUtil.unitCost);
+			 						component.put("orig_value", d);
+			 					}
+			 					else if ("eui".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+			 						Double d = (Double) thisMap.get("value");
+			 						
+			 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+			 						double eui = ReportsUtil.getEUI(d, buildingArea);
+			 						component.put("value", eui);
+			 						component.put("orig_value", d);
+			 					}
+			 					else {
+			 						component.put("value", thisMap.get("value"));
+			 					}
+			 					res.add(component);
+			 				}
+			 			}
+				 	}
+				}
 				setReportData(res);
 				System.out.println("res -- "+res);
 			}
@@ -935,6 +1087,13 @@ public class DashboardAction extends ActionSupport {
 			setRelatedAlarms(relatedAlarms);
 		}
 		return SUCCESS;
+	}
+	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
+		List<String> labels = new ArrayList<>();
+		for(Map<String, Object> prop:rs) {
+			labels.add((String)prop.get("label"));
+		}
+		return labels;
 	}
 	@SuppressWarnings("unchecked")
 	private JSONArray getAlarmReturnFormat(Map<Object, JSONArray> alarmProps) {

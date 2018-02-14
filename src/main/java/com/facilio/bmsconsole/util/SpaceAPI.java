@@ -602,6 +602,33 @@ public static long getSitesCount() throws Exception {
 		}
 	}
 	
+	public static List<Long> getSpaceIdListForBuilding(long buildingId) throws Exception {
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("id");
+		countFld.setColumnName("ID");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("BaseSpace")
+				.andCustomWhere(" BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, buildingId);
+		
+		List<Map<String, Object>> rs = builder.get();
+		System.out.println("builder -- "+builder);
+		List<Long> spaceIds = new ArrayList<>();
+		if (rs != null && !rs.isEmpty()) {
+			for(Map<String, Object> prop:rs) {
+				spaceIds.add((Long)prop.get("id")); 
+			}
+		}
+		return spaceIds;
+	}
+	
 	public static long getSpacesCountForFloor(long floorId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();
