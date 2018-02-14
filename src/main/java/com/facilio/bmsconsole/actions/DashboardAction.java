@@ -798,11 +798,11 @@ public class DashboardAction extends ActionSupport {
 					System.out.println("planned - - "+planned);
 					System.out.println("unplanned - - "+unplanned);
 					JSONObject plannedJson = new JSONObject();
-					plannedJson.put("label", "planed");
+					plannedJson.put("label", "Planned");
 					plannedJson.put("value", planned);
 					
 					JSONObject unPlannedJson = new JSONObject();
-					unPlannedJson.put("label", "Unplaned");
+					unPlannedJson.put("label", "Unplanned");
 					unPlannedJson.put("value", unplanned);
 					
 					res.put(building.getId(), plannedJson);
