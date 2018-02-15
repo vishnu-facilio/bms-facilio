@@ -108,6 +108,13 @@
     </action>
 
 	</package>
-	
+	<package name="authApi" namespace="/auth/api" extends="integration">
+	<action name="login" class="com.facilio.integration.actions.Home"
+	   method="generateAuthToken">
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
+	</package>
 		
 </struts>
