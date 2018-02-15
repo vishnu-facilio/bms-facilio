@@ -1431,6 +1431,7 @@
 			method="getUpcomingPreventiveMaintenance">
 			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
+				<param name="excludeProperties">pms\[\d+\].left,pms\[\d+\].right</param>
 				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*</param>
 			</result>
 		</action>
