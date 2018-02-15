@@ -490,6 +490,19 @@ public class DashboardAction extends ActionSupport {
 				energyMeterValue = reportContext.getEnergyMeter().getSubMeterId() + "";
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS);
 			}
+			else if (reportContext.getEnergyMeter().getBuildingId() != null && reportContext.getEnergyMeter().getServiceId() != null) {
+				List<EnergyMeterContext> meters = DeviceAPI.getAllEnergyMeters(reportContext.getEnergyMeter().getBuildingId(), reportContext.getEnergyMeter().getServiceId());
+				if (meters != null && meters.size() > 0) {
+					List<Long> meterIds = new ArrayList<Long>();
+					for (EnergyMeterContext meter : meters) {
+						meterIds.add(meter.getId());
+					}
+					
+					String meterIdStr = StringUtils.join(meterIds, ",");
+					energyMeterValue = meterIdStr;
+					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
+				}
+			}
 			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
 				if ("service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
 					
