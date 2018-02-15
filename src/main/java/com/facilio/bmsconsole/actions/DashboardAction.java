@@ -365,9 +365,15 @@ public class DashboardAction extends ActionSupport {
 				}
 				if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					if(reportContext.getIsComparisionReport()) {
+						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					}
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					if(reportContext.getIsComparisionReport()) {
+						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					}
 				}
 				reportContext.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
@@ -952,63 +958,129 @@ public class DashboardAction extends ActionSupport {
 		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>();
 		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
 		if(reportContext.getIsComparisionReport()) {
-			
-			for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
-				
-				DateOperators dd = null;
-				if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
-					Criteria criteria1 = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
-					Map<Integer, Condition> conditions = criteria1.getConditions();
-					for(Integer s:conditions.keySet()) {
-						Condition condi = conditions.get(s);
-						if(condi.getColumnName().equals("Energy_Data.TTIME") && condi.getOperator() instanceof DateOperators) {
-							dd = (DateOperators) condi.getOperator();
+			if(reportContext.getReportCriteriaContexts() != null) {
+				DateOperators dateOperator = null;
+				for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
+					
+					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+						Criteria criteria1 = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+						
+						Map<Integer, Condition> conditions = criteria1.getConditions();
+						for(Integer s:conditions.keySet()) {
+							Condition condi = conditions.get(s);
+							if(condi.getColumnName().equals("Energy_Data.TTIME") && condi.getOperator() instanceof DateOperators) {
+								dateOperator = (DateOperators) condi.getOperator();
+							}
 						}
 					}
-				}
-//				if(i==0) {
-//					comparisionRs.add(rs);
-//					continue;
-//				}
-				List<FacilioField> fields1 = new ArrayList<>(); 
-				fields1.addAll(fields);
-				if(dd != null) {
-					FacilioField ff = new FacilioField();
-					if(dd.getOperatorId() == 43) {
-						ff.setColumnName("\"Today\"");
+//					if(i==0) {
+//						comparisionRs.add(rs);
+//						continue;
+//					}
+					List<FacilioField> fields1 = new ArrayList<>(); 
+					fields1.addAll(fields);
+					if(dateOperator != null) {
+						FacilioField ff = new FacilioField();
+						if(dateOperator.getOperatorId() == 43) {
+							ff.setColumnName("\"Today\"");
+						}
+						else if(dateOperator.getOperatorId() == 28) {
+							ff.setColumnName("\"This Month\"");
+						}
+						else if(dateOperator.getOperatorId() == 31) {
+							ff.setColumnName("\"This Week\"");
+						}
+						else if(dateOperator.getOperatorId() == 44) {
+							ff.setColumnName("\"This Year\"");
+						}
+						else {
+							ff.setColumnName("\""+dateOperator.getOperator()+"\"");
+						}
+						ff.setName("dateOpperator");
+						fields1.add(ff);
 					}
-					else if(dd.getOperatorId() == 28) {
-						ff.setColumnName("\"This Month\"");
+					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+							.table(module.getTableName())
+							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+							.groupBy(groupByString)
+							.select(fields1);
+					if(module.getExtendModule() != null) {
+						builder.innerJoin(module.getExtendModule().getTableName())
+							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 					}
-					else if(dd.getOperatorId() == 31) {
-						ff.setColumnName("\"This Week\"");
+					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+						criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+						builder1.andCriteria(criteria);
 					}
-					else {
-						ff.setColumnName("\""+dd.getOperator()+"\"");
+					if(buildingCondition != null) {
+						builder1.andCondition(buildingCondition);
 					}
-					ff.setName("dateOpperator");
-					fields1.add(ff);
+					List<Map<String, Object>> rs1 = builder1.get();
+					System.out.println("builder1 --- "+builder1);
+					System.out.println("rs comp  "+i+" -- "+rs1);
+					comparisionRs.add(rs1);
 				}
-				GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-						.table(module.getTableName())
-						.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-						.groupBy(groupByString)
-						.select(fields1);
-				if(module.getExtendModule() != null) {
-					builder.innerJoin(module.getExtendModule().getTableName())
-						.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+			}
+			else if(dateCondition != null) {
+				List<Condition> dateConditions = new ArrayList<>();
+				dateConditions.add(dateCondition);
+				Condition dateCondition1 = new Condition();
+				dateCondition1.setField(reportContext.getDateFilter().getField());
+				if(dateCondition.getOperator().equals(DateOperators.TODAY) || dateCondition.getOperator().equals(DateOperators.TODAY_UPTO_NOW)) {
+					dateCondition1.setOperator(DateOperators.YESTERDAY);
 				}
-				if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
-					criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
-					builder1.andCriteria(criteria);
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK)) {
+					dateCondition1.setOperator(DateOperators.LAST_WEEK);
 				}
-				if(buildingCondition != null) {
-					builder1.andCondition(buildingCondition);
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH)) {
+					dateCondition1.setOperator(DateOperators.LAST_MONTH);
 				}
-				List<Map<String, Object>> rs1 = builder1.get();
-				System.out.println("builder1 --- "+builder1);
-				System.out.println("rs comp  "+i+" -- "+rs1);
-				comparisionRs.add(rs1);
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR)) {
+					dateCondition1.setOperator(DateOperators.LAST_YEAR);
+				}
+				dateConditions.add(dateCondition1);
+				
+				for(Condition dateCondi :dateConditions) {
+					List<FacilioField> fields1 = new ArrayList<>(); 
+					fields1.addAll(fields);
+					if(dateCondi.getOperator() != null) {
+						FacilioField ff = new FacilioField();
+						if(dateCondi.getOperator().getOperatorId() == 43) {
+							ff.setColumnName("\"Today\"");
+						}
+						else if(dateCondi.getOperator().getOperatorId() == 28) {
+							ff.setColumnName("\"This Month\"");
+						}
+						else if(dateCondi.getOperator().getOperatorId() == 31) {
+							ff.setColumnName("\"This Week\"");
+						}
+						else if(dateCondi.getOperator().getOperatorId() == 44) {
+							ff.setColumnName("\"This Year\"");
+						}
+						else {
+							ff.setColumnName("\""+dateCondi.getOperator().getOperator()+"\"");
+						}
+						ff.setName("dateOpperator");
+						fields1.add(ff);
+					}
+					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+							.table(module.getTableName())
+							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+							.groupBy(groupByString)
+							.select(fields1);
+					if(module.getExtendModule() != null) {
+						builder1.innerJoin(module.getExtendModule().getTableName())
+							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+					}
+					builder1.andCondition(dateCondi);
+					if(buildingCondition != null) {
+						builder1.andCondition(buildingCondition);
+					}
+					List<Map<String, Object>> rs1 = builder1.get();
+					System.out.println("builder1 --- "+builder1);
+					comparisionRs.add(rs1);
+				}
+				
 			}
 			
 			for(List<Map<String, Object>> comp :comparisionRs) {
