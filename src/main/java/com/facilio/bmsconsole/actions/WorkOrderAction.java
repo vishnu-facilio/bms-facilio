@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -376,6 +377,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
 		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
+		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
 		
 		return SUCCESS;
 	}
@@ -443,6 +445,14 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setPmTriggerMap(Map<Long, PMTriggerContext> pmTriggerMap) {
 		this.pmTriggerMap = pmTriggerMap;
+	}
+	
+	private Map<Long, ResourceContext> pmResourcesMap;
+	public Map<Long, ResourceContext> getPmResourcesMap() {
+		return pmResourcesMap;
+	}
+	public void setPmResourcesMap(Map<Long, ResourceContext> pmResourcesMap) {
+		this.pmResourcesMap = pmResourcesMap;
 	}
 	
 	public String assignWorkOrder() throws Exception {

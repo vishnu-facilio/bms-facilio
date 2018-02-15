@@ -15,11 +15,13 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -41,10 +43,15 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
+			List<Long> resourceIds = new ArrayList<>();
 			List<Pair<PMJobsContext, PreventiveMaintenance>> pmPairs = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
+				if(pm.getResourceId() != -1 && !resourceIds.contains(pm.getResourceId()))
+				{
+					resourceIds.add(pm.getResourceId());
+				}
 				//pm.setTriggers(pmTrigggers);
 				for (PMTriggerContext trigger : pmTrigggers) {
 					if(trigger.getSchedule() != null) {
@@ -122,6 +129,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			sortPMs(pmPairs);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmPairs);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, ResourceAPI.getResourceAsMapFromIds(resourceIds));
 		}
 		
 		return false;
