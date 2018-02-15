@@ -33,6 +33,8 @@ import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -53,6 +55,7 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.EMailTemplate;
@@ -542,6 +545,7 @@ public class DashboardAction extends ActionSupport {
 							meterIds.add(energyMeterContext.getId());
 						}
 					}
+					System.out.println("energyMeterMap -- "+energyMeterMap);
 					if(!meterIds.isEmpty()) {
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
@@ -675,139 +679,151 @@ public class DashboardAction extends ActionSupport {
 			HashMap<String, Object> labelMapping = new HashMap<>();
 			
 			HashMap<String, Object> purposeMapping = new HashMap<>();
-			for(int i=0;i<rs.size();i++) {
-	 			Map<String, Object> thisMap = rs.get(i);
-	 			if(thisMap!=null) {
-	 				
-	 				if (reportContext.getEnergyMeter() != null && reportContext.getEnergyMeter().getGroupBy() != null && (reportContext.getEnergyMeter().getBuildingId() == null || reportContext.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
-	 					Object xlabel = thisMap.get("label");
-	 					if(thisMap.get("dummyField") != null) {
-		 					xlabel = thisMap.get("dummyField");
-		 				}
-		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
-		 					xlabel = labelMapping.get(thisMap.get("label").toString());
-		 				}
-		 				else {
-		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
-		 				}
-		 				
-	 					Double xvalue = (Double) thisMap.get("value");
-	 					String groupBy = purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")).toString() : thisMap.get("groupBy").toString();
-	 					
-	 					if (purposeMapping.containsKey(xlabel + "-" + groupBy)) {
-	 						JSONObject value = (JSONObject) res.get(xlabel);
-	 						Double existingValue = (Double) value.get("value");
-	 						value.put("value", existingValue + xvalue);
-	 					}
-	 					else {
-	 						JSONObject value = new JSONObject();
-	 						value.put("label", purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
-	 						value.put("value", xvalue);
-	 						res.put(xlabel, value);
-	 					}
-	 				}
-//	 				else if (reportContext.getEnergyMeter().getGroupBy() != null && reportContext.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
-//	 					List<String> lables = getDistinctLabel(rs);
-//	 					Map<String,Map<Long,Double>> totalconsumptionBySpace = new HashMap<String,Map<Long,Double>>();
-//	 					System.out.println(lables);
-//	 					if(!energyMeterMap.isEmpty()) {
-//	 						for(String label:lables) {
-//	 							Map<Long,Double> spaceValue = null;
-//	 							for(Long spaceId :energyMeterMap.keys()) {
-//	 								spaceValue = new HashMap<Long,Double>();
-//	 								spaceValue.put(spaceId, 0.0);
-//		 							List<EnergyMeterContext> energyMeterList = (List<EnergyMeterContext>) energyMeterMap.get(spaceId);
-//		 							for(EnergyMeterContext energyMeter:energyMeterList) {
-//		 								for(Map<String, Object> prop:rs) {
-//
-//		 									if(prop.get("label").equals(lables) && prop.get("groupBy").equals(energyMeter.getId())) {
-//		 										spaceValue.put(spaceId, spaceValue.get(spaceId) + (Double) prop.get("value"));
-//		 									}
-//		 								}
-//		 							}
-//		 						}
-//	 							totalconsumptionBySpace.put(label, spaceValue);
-//	 						}
-//	 					}
-//	 					System.out.println("totalconsumptionBySpace -- "+totalconsumptionBySpace);
-//	 				}
-	 				else {
-	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
-	 					if(reportContext.getId().equals(300l) || reportContext.getId().equals(301l)) {
-	 						continue;
-	 					}
-	 					JSONObject value = new JSONObject();
-		 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
-		 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-		 					Double d = (Double) thisMap.get("value");
-		 					value.put("value", d*ReportsUtil.unitCost);
-		 					value.put("orig_value", d);
-		 				}
-		 				else {
-		 					value.put("value", thisMap.get("value"));
-		 				}
-		 				
-		 				Object xlabel = thisMap.get("label");
-		 				if(thisMap.get("dummyField") != null) {
-		 					xlabel = thisMap.get("dummyField");
-		 				}
-		 				if (labelMapping.containsKey(strLabel)) {
-		 					xlabel = labelMapping.get(strLabel);
-		 				}
-		 				else {
-		 					labelMapping.put(strLabel, xlabel);
-		 				}
-		 				res.put(xlabel, value);
-	 				}
-	 			}
-		 	}
-			if(reportContext.getId().equals(300l)) {
-				reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
-				reportContext.getxAxisField().getField().setDisplayName("Building");
-				reportContext.getxAxisField().getField().setName("building");
-				reportContext.getGroupByField().getField().setDataType(FieldType.STRING);
-				
-				List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-				for(BuildingContext building:buildings) {
-					
-					if(building.getId() == 457 || building.getId() == 458) {
-						continue;
-					}
-					System.out.println("building.getBuildingId() -- "+building.getId());
-					List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
-					System.out.println("spaceList -- "+spaceList);
-					spaceList.add(building.getBuildingId());
-					long planned = 0;
-					long unplanned = 0;
-					for(Map<String, Object> prop:rs) {
-						if(spaceList.contains((Long)prop.get("label"))) {
-							System.out.println("passed prop -- "+prop);
-							if(prop.get("groupBy") != null && "5".equals(prop.get("groupBy").toString())) {
-								System.out.println("planned -- "+prop.get("value"));
-								planned = planned+(Long)prop.get("value");
+			
+			if (reportContext.getEnergyMeter().getGroupBy() != null && reportContext.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+				List<String> lables = getDistinctLabel(rs);
+				JSONArray totalconsumptionBySpace = new JSONArray();
+				System.out.println("lables -- "+lables);
+				if(!energyMeterMap.isEmpty()) {
+					for(String label:lables) {
+						JSONArray temp = new JSONArray();
+						Long labelDummyValue = null;
+						for(Long spaceId :energyMeterMap.keySet()) {
+							Double sumValue = 0.0;  
+							List<EnergyMeterContext> energyMeterList = (List<EnergyMeterContext>) energyMeterMap.get(spaceId);
+							for(EnergyMeterContext energyMeter:energyMeterList) {
+								for(Map<String, Object> prop:rs) {
+									if(label.equals(prop.get("label").toString()) && energyMeter.getId() == (long)prop.get("groupBy")) {
+										sumValue = sumValue + (Double) prop.get("value");
+										labelDummyValue = (Long) prop.get("dummyField");
+									}
+								}
 							}
-							else {
-								if(prop.get("value") != null) {
-									System.out.println("unplaned -- "+prop.get("value"));
-									System.out.println(prop.get("value"));
-									unplanned = unplanned+(Long)prop.get("value");
+							JSONObject value = new JSONObject();
+							ResourceContext resource = ResourceAPI.getResource(spaceId);
+							value.put("label", resource.getName());
+							value.put("value", sumValue);
+							temp.add(value);
+							System.out.println(temp);
+						}
+						JSONObject temp1 = new JSONObject();
+						temp1.put("label", labelDummyValue);
+						temp1.put("value", temp);
+						totalconsumptionBySpace.add(temp1);
+					}
+				}
+				setReportData(totalconsumptionBySpace);
+				System.out.println("totalconsumptionBySpace -- "+totalconsumptionBySpace);
+			}
+			else {
+				for(int i=0;i<rs.size();i++) {
+		 			Map<String, Object> thisMap = rs.get(i);
+		 			if(thisMap!=null) {
+		 				
+		 				if (reportContext.getEnergyMeter() != null && reportContext.getEnergyMeter().getGroupBy() != null && (reportContext.getEnergyMeter().getBuildingId() == null || reportContext.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+		 					Object xlabel = thisMap.get("label");
+		 					if(thisMap.get("dummyField") != null) {
+			 					xlabel = thisMap.get("dummyField");
+			 				}
+			 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
+			 					xlabel = labelMapping.get(thisMap.get("label").toString());
+			 				}
+			 				else {
+			 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+			 				}
+			 				
+		 					Double xvalue = (Double) thisMap.get("value");
+		 					String groupBy = purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")).toString() : thisMap.get("groupBy").toString();
+		 					
+		 					if (purposeMapping.containsKey(xlabel + "-" + groupBy)) {
+		 						JSONObject value = (JSONObject) res.get(xlabel);
+		 						Double existingValue = (Double) value.get("value");
+		 						value.put("value", existingValue + xvalue);
+		 					}
+		 					else {
+		 						JSONObject value = new JSONObject();
+		 						value.put("label", purposeVsMeter.containsKey(thisMap.get("groupBy")) ? purposeVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
+		 						value.put("value", xvalue);
+		 						res.put(xlabel, value);
+		 					}
+		 				}
+		 				else {
+		 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
+		 					if(reportContext.getId().equals(300l) || reportContext.getId().equals(301l)) {
+		 						continue;
+		 					}
+		 					JSONObject value = new JSONObject();
+			 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
+			 				if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+			 					Double d = (Double) thisMap.get("value");
+			 					value.put("value", d*ReportsUtil.unitCost);
+			 					value.put("orig_value", d);
+			 				}
+			 				else {
+			 					value.put("value", thisMap.get("value"));
+			 				}
+			 				
+			 				Object xlabel = thisMap.get("label");
+			 				if(thisMap.get("dummyField") != null) {
+			 					xlabel = thisMap.get("dummyField");
+			 				}
+			 				if (labelMapping.containsKey(strLabel)) {
+			 					xlabel = labelMapping.get(strLabel);
+			 				}
+			 				else {
+			 					labelMapping.put(strLabel, xlabel);
+			 				}
+			 				res.put(xlabel, value);
+		 				}
+		 			}
+			 	}
+				if(reportContext.getId().equals(300l)) {
+					reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
+					reportContext.getxAxisField().getField().setDisplayName("Building");
+					reportContext.getxAxisField().getField().setName("building");
+					reportContext.getGroupByField().getField().setDataType(FieldType.STRING);
+					
+					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+					for(BuildingContext building:buildings) {
+						
+						if(building.getId() == 457 || building.getId() == 458) {
+							continue;
+						}
+						System.out.println("building.getBuildingId() -- "+building.getId());
+						List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
+						System.out.println("spaceList -- "+spaceList);
+						spaceList.add(building.getBuildingId());
+						long planned = 0;
+						long unplanned = 0;
+						for(Map<String, Object> prop:rs) {
+							if(spaceList.contains((Long)prop.get("label"))) {
+								System.out.println("passed prop -- "+prop);
+								if(prop.get("groupBy") != null && "5".equals(prop.get("groupBy").toString())) {
+									System.out.println("planned -- "+prop.get("value"));
+									planned = planned+(Long)prop.get("value");
+								}
+								else {
+									if(prop.get("value") != null) {
+										System.out.println("unplaned -- "+prop.get("value"));
+										System.out.println(prop.get("value"));
+										unplanned = unplanned+(Long)prop.get("value");
+									}
 								}
 							}
 						}
+						System.out.println("planned - - "+planned);
+						System.out.println("unplanned - - "+unplanned);
+						JSONObject plannedJson = new JSONObject();
+						plannedJson.put("label", "Planned");
+						plannedJson.put("value", planned);
+						
+						JSONObject unPlannedJson = new JSONObject();
+						unPlannedJson.put("label", "Unplanned");
+						unPlannedJson.put("value", unplanned);
+						
+						res.put(building.getId(), plannedJson);
+						res.put(building.getId(), unPlannedJson);
 					}
-					System.out.println("planned - - "+planned);
-					System.out.println("unplanned - - "+unplanned);
-					JSONObject plannedJson = new JSONObject();
-					plannedJson.put("label", "Planned");
-					plannedJson.put("value", planned);
-					
-					JSONObject unPlannedJson = new JSONObject();
-					unPlannedJson.put("label", "Unplanned");
-					unPlannedJson.put("value", unplanned);
-					
-					res.put(building.getId(), plannedJson);
-					res.put(building.getId(), unPlannedJson);
- 				}
 			}
 			JSONArray finalres = new JSONArray();
 			for(Object key : res.keySet()) {
@@ -815,10 +831,11 @@ public class DashboardAction extends ActionSupport {
 				j1.put("label", key);
 				j1.put("value", res.get(key));
 				finalres.add(j1);
+				}
+				
+				System.out.println("finalres -- "+finalres);
+				setReportData(finalres);
 			}
-			
-			System.out.println("finalres -- "+finalres);
-			setReportData(finalres);
 		}
 		else {
 			if(!reportContext.getIsComparisionReport()) {
@@ -920,7 +937,6 @@ public class DashboardAction extends ActionSupport {
 		
 		System.out.println("rs after -- "+rs);
 		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>();
-//		comparisionRs.add(rs);
 		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
 		if(reportContext.getIsComparisionReport()) {
 			
@@ -1091,7 +1107,9 @@ public class DashboardAction extends ActionSupport {
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
 		for(Map<String, Object> prop:rs) {
-			labels.add((String)prop.get("label"));
+			if(!labels.contains((String)prop.get("label"))) {
+				labels.add((String)prop.get("label"));
+			}
 		}
 		return labels;
 	}

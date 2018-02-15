@@ -572,6 +572,90 @@ public enum DateOperators implements Operator<String> {
 			return null;
 		}
 	},
+	CURRENT_YEAR(44, "Current Year") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getYearStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getYearStartTime(1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${THISYEAR}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getYearStartTime() <= currentVal && currentVal < DateTimeUtil.getYearStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
+	LAST_YEAR(45, "Last Year") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getYearStartTime(-1))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getYearStartTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${LASTYEAR}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
 	
 	LAST_WEEK(30, "Last Week") {
 		@Override
