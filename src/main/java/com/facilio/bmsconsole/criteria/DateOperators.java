@@ -247,7 +247,7 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public String getDynamicParameter() {
-			return "${TODAY_NOW}";
+			return "${TODAY_UPTO_NOW}";
 		}
 		
 		@Override
@@ -528,6 +528,49 @@ public enum DateOperators implements Operator<String> {
 			return null;
 		}
 	},
+	CURRENT_MONTH_UPTO_NOW(48, "Current Month upto now") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getMonthStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${THISMONTH_UPTO_NOW}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime() <= currentVal && currentVal < DateTimeUtil.getCurrenTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
 	
 	NEXT_MONTH(29, "Next Month") {
 		@Override
@@ -656,6 +699,48 @@ public enum DateOperators implements Operator<String> {
 			return null;
 		}
 	},
+	CURRENT_YEAR_UPTO_NOW(46, "Current Year upto now") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getYearStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${THISYEAR_UPTO_NOW}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getYearStartTime() <= currentVal && currentVal < DateTimeUtil.getCurrenTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
 	
 	LAST_WEEK(30, "Last Week") {
 		@Override
@@ -736,6 +821,50 @@ public enum DateOperators implements Operator<String> {
 							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
 							long currentVal = (long) object;
 							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+	},
+	
+	CURRENT_WEEK_UPTO_NOW(47, "Current Week upto now") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getWeekStartTime())
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public String getDynamicParameter() {
+			return "${THISWEEK_UPTO_NOW}";
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return DateTimeUtil.getWeekStartTime() <= currentVal && currentVal < DateTimeUtil.getCurrenTime();
 						}
 						return false;
 					}
