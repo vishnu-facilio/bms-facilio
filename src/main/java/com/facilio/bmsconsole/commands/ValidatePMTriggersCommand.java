@@ -58,7 +58,7 @@ public class ValidatePMTriggersCommand implements Command {
 			}
 		}
 		else {
-			throw new IllegalArgumentException("Atleast one trigger should be there to add a PM");
+			pm.setTriggerType(TriggerType.NONE);
 		}
 		
 		return false;

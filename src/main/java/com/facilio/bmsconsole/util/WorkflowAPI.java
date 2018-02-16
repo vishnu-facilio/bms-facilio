@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -389,4 +390,14 @@ public class WorkflowAPI {
 		}
 		return null;
 	}
+	
+	public static void deleteWorkFlowRule(List<Long> workflowIds) throws Exception{
+		
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
+		deleteBuilder.delete();
+	}
+	
 }

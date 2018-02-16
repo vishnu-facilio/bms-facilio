@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -596,9 +597,19 @@ public class AwsUtil
 	    messageContent.addBodyPart(wrap);
 	    
 	    for (String fileUrl : fileUrls) {
+	    		if(fileUrl == null) {
+	    			continue;
+	    		}
 	    		MimeBodyPart attachment = new MimeBodyPart();
-		    URL url = new URL(fileUrl);
-		    DataSource fileDataSource = new URLDataSource(url);
+	    		String environment = AwsUtil.getConfig("environment"); 
+	    		DataSource fileDataSource = null;
+	    		if ("development".equalsIgnoreCase(environment)) {
+	    			fileDataSource = new FileDataSource(fileUrl);
+	    		}
+	    		else {
+	    			URL url = new URL(fileUrl);
+	    			fileDataSource = new URLDataSource(url);
+	    		}
 		    attachment.setDataHandler(new DataHandler(fileDataSource));
 		    attachment.setFileName(fileDataSource.getName());
 		    messageContent.addBodyPart(attachment);

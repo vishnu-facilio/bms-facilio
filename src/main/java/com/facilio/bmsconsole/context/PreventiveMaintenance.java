@@ -264,12 +264,17 @@ public class PreventiveMaintenance {
 		}
 		return null;
 	}
+	
+	public boolean hasTriggers() {
+		return triggerType != TriggerType.NONE;
+	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
 	public static enum TriggerType {
 		ONLY_SCHEDULE_TRIGGER, 
 		FLOATING, 
-		FIXED;
+		FIXED,
+		NONE;
 
 		public int getVal() {
 			return ordinal() + 1;
