@@ -34,7 +34,6 @@ public class ExecutePMCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			context.put(FacilioConstants.ContextNames.ID, wo.getId());
 		}
 		return false;
 	}

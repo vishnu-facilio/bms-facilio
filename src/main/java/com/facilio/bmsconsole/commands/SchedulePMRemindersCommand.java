@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -31,7 +32,11 @@ public class SchedulePMRemindersCommand implements Command {
 			long pmId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			pmIds = Collections.singletonList(pmId);
 			pmToWo = new HashMap<>();
-			pmToWo.put(pmId, (Long) context.get(FacilioConstants.ContextNames.ID));
+			
+			WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			if (wo != null) {
+				pmToWo.put(pmId, wo.getId());
+			}
 		}
 		else {
 			pmToWo = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.PM_TO_WO);
@@ -71,7 +76,10 @@ public class SchedulePMRemindersCommand implements Command {
 							}
 							break;
 						case AFTER:
-							CommonCommandUtil.scheduleAfterPMReminder(reminder, currentExecutionTime, pmToWo.get(pmId));
+							Long woId = pmToWo.get(pmId);
+							if(woId != null) {
+								CommonCommandUtil.scheduleAfterPMReminder(reminder, currentExecutionTime, woId);
+							}
 							break;
 					}
 				}
