@@ -94,6 +94,9 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		if (workorder.getAssignedTo() != null) {
 			pm.setAssignedToid(workorder.getAssignedTo().getId());
 		}
+		if (workorder.getAssignmentGroup() != null) {
+			pm.setAssignmentGroupId(workorder.getAssignmentGroup().getId());
+		}
 		if (workorder.getType() != null) {
 			pm.setTypeId(workorder.getType().getId());
 		}
