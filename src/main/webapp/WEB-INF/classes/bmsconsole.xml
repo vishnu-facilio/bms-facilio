@@ -93,49 +93,56 @@
 		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="attachmentList">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="campusList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="buildingList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="floorList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="spaceList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="zoneList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
 			</result>
@@ -152,6 +159,7 @@
 		</action> -->
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
@@ -172,6 +180,7 @@
 		</action>
 		<action name="skills" class="com.facilio.bmsconsole.actions.SkillActions"
 			method="skillsList">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,records,records\[\d+\],records\[\d+\].*</param>
@@ -185,7 +194,8 @@
 		</action>
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
@@ -198,7 +208,8 @@
 		</action>
 		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="taskList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">tasks.*,sections.*</param>
 			</result>
@@ -214,6 +225,7 @@
 		extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.TabWidgetAction"
 			method="viewTabWidget">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<param name="tabLinkName">{1}</param>
 			<result name="success" type="json">
@@ -224,6 +236,7 @@
 	<package name="spaceCategoryAPI" namespace="/api/spacecategory" extends="home">
 		<action name="getlist" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="spaceCategoriesList">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
@@ -231,6 +244,7 @@
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="addSpaceCategory">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
@@ -238,6 +252,7 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="updateSpaceCategory">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
@@ -245,6 +260,7 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.SpaceCategoryAction"
 			method="deleteSpaceCategory">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">resultMessage,resultAction</param>
@@ -263,6 +279,7 @@
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.SkillActions"
 			method="addSkill">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
@@ -270,6 +287,7 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.SkillActions"
 			method="updateSkill">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
@@ -277,6 +295,7 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.SkillActions"
 			method="deleteSkill">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">skillId</param>
@@ -286,6 +305,7 @@
 	<package name="locationApi" namespace="/api/location" extends="home">
 		<action name="locationlist" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locations,locations\[\d+\],locations\[\d+\].*</param>
@@ -293,6 +313,7 @@
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="addLocation">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
@@ -300,6 +321,7 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="updateLocation">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
@@ -307,6 +329,7 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="deleteLocation">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
@@ -317,6 +340,7 @@
 		extends="home">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
@@ -325,7 +349,8 @@
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="id">{1}</param>
 			<result name="success" type="json">
 				<param name="root">businessHours</param>
@@ -335,7 +360,8 @@
 	<package name="taskApi" namespace="/api/task" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="newTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -343,7 +369,8 @@
 		
 		<action name="addsection" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTaskSection">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
@@ -351,7 +378,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">taskId</param>
 			</result>
@@ -359,7 +387,8 @@
 
 		<action name="assign" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="assignTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -367,7 +396,8 @@
 
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="updateStatus">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -375,7 +405,8 @@
 		
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTaskInput">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -383,7 +414,8 @@
 
 		<action name="update" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="updateTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -391,7 +423,8 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="deleteTask">
-			<param name="permission">TASK_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -401,7 +434,8 @@
 		extends="task">
 		<action name="*" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="viewTask">
-			<param name="permission">TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM_READ_OWN</param>
 			<param name="taskId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^task.*</param>
@@ -411,63 +445,75 @@
 	<package name="alarmApi" namespace="/api/alarm" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="newAlarm">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="notify" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="notifyUser">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM_READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">followers,followers\[\d+\],followers\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="viewWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="viewWorkorder">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workorderId</param>
 			</result>
 		</action>
 		<action name="viewAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="viewAlarm">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="addAlarm">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
 		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="createWorkorder">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
+			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="updateStatus">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="deleteAlarm">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
@@ -477,7 +523,8 @@
 	<package name="alarmEntityApi" namespace="/api/alarmentity" extends="home">
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
@@ -485,35 +532,41 @@
 	</package>
 	<package name="energyMeterApi" namespace="/api/energymeter" extends="home">
 		<action name="addenergydata" class="com.facilio.bmsconsole.actions.EnergyAction" method="addEnergyData">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">energy</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^event.*</param>
 			</result>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeter">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">energy</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
 		<action name="addPurpose" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="addEnergyMeterPurpose">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">energy</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
 		<action name="getVirtualMeterChildren" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getVirtualMeterChildren">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">energy</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="root">energyMeters</param>
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getEnergyMeterList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">energy</param>
+			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="root">energyMeters</param>
@@ -524,7 +577,8 @@
 	<package name="urjanetApi" namespace="/api/unet" extends="home">
 		<action name="addnewuser" class="com.facilio.urjanet.actions.UrjanetAction"
 			method="UserAdd">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -535,7 +589,8 @@
 	<package name="assetApi" namespace="/api/asset" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="newAsset">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -543,7 +598,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="addAsset">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetId</param>
 			</result>
@@ -551,7 +607,8 @@
 
 		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="updateAsset">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -559,7 +616,8 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="deleteAsset">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -567,7 +625,8 @@
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="reportCards">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
@@ -575,7 +634,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
@@ -587,7 +647,8 @@
 		extends="home">
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="assetId">{1}</param>
 			<result name="success" type="json">
 				<param name="root">asset</param>
@@ -667,30 +728,36 @@
 
 		<action name="ticket" class="com.facilio.bmsconsole.actions.TicketAction"
 			method="ticketList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="workorderrequest"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="leed" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success">/jsps/leed/leedhome.jsp</result>
 		</action>
@@ -709,57 +776,67 @@
 
 		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="taskList">
-			<param name="permission">TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="campusList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="building" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="buildingList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="floor" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="floorList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="space" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="spaceList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="zone" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="zoneList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="reports" class="com.facilio.bmsconsole.actions.ReportActions">
-			<param name="permission">REPORTS_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success">/jsps/reports.jsp</result>
 		</action>
 
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/locations.jsp</result>
 		</action>
 
 		<action name="skill" class="com.facilio.bmsconsole.actions.SkillActions">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/listview.jsp</result>
 		</action>
 
 		<action name="rules"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success">/jsps/assignmentRules.jsp</result>
 		</action>
@@ -1060,21 +1137,19 @@
 	<package name="viewApi" namespace="/api/view" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="addView">
-			<param name="permission">WORKORDER_CREATE</param>
+			<!-- <param name="permission">WORKORDER_CREATE</param> -->
 			<result name="success" type="json">
 				<param name="root">view</param>
 			</result>
 		</action>
 		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeView">
-			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">views.*</param>
 			</result>
 		</action>
 		<action name="customizeColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeColumns">
-			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">fields.*</param>
 			</result>
@@ -1082,7 +1157,6 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
 			<param name="viewName">{1}</param>
-			<param name="permission">WORKORDER_READ</param>
 			<result name="success" type="json">
 				<param name="root">view</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
@@ -1272,7 +1346,6 @@
 	<package name="moduleApi" namespace="/api/module" extends="home">
 		<action name="addmodule" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="addNewModule">
-			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">moduleId</param>
 			</result>
@@ -1280,7 +1353,6 @@
 
 		<action name="addfields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="addCustomFields">
-			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="root">fieldIds</param>
 			</result>
@@ -1288,7 +1360,6 @@
 
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
-			<param name="permission">WORKORDER_CREATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>
@@ -1297,7 +1368,8 @@
 		
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="fields">
-			<param name="permission">WORKORDER_CREATE</param>
+			<!-- <param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param> -->
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
@@ -1306,7 +1378,8 @@
 
 		<action name="updatefield" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="updateField">
-			<param name="permission">WORKORDER_CREATE</param>
+			<!-- <param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1314,7 +1387,8 @@
 
 		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="deleteFields">
-			<param name="permission">WORKORDER_CREATE</param>
+			<!-- <param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">rowsDeleted</param>
 			</result>
@@ -1325,7 +1399,8 @@
 		extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="newWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1333,7 +1408,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1341,7 +1417,8 @@
 
 		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addWorkOrderFromTemplate">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1349,7 +1426,8 @@
 
 		<action name="saveTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addWorkOrderTemplate">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1357,7 +1435,8 @@
 
 		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addPreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1365,7 +1444,8 @@
 
 		<action name="updatePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="updatePreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1373,7 +1453,8 @@
 
 		<action name="updatePreventiveMaintenanceJob" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="updatePreventiveMaintenanceJob">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^pmJob.*</param>
 			</result>
@@ -1381,7 +1462,8 @@
 		
 		<action name="executePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="executePM">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
@@ -1389,7 +1471,8 @@
 		
 		<action name="bulkExecutePM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="executePMs">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="root">id</param>
 			</result>
@@ -1397,7 +1480,8 @@
 
 		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="preventiveMaintenanceSummary">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*</param>
 			</result>
@@ -1405,7 +1489,8 @@
 
 		<action name="changePreventiveMaintenanceStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="changePreventiveMaintenanceStatus">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="root">preventivemaintenance</param>
 			</result>
@@ -1413,7 +1498,8 @@
 
 		<action name="getAllPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getAllPreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
@@ -1421,7 +1507,8 @@
 
 		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getActivePreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
@@ -1429,7 +1516,8 @@
 		
 		<action name="getUpcomingPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getUpcomingPreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="excludeProperties">pms\[\d+\].left,pms\[\d+\].right</param>
 				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*</param>
@@ -1438,7 +1526,8 @@
 
 		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getInactivePreventiveMaintenance">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
@@ -1446,7 +1535,8 @@
 
 		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="assignWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1454,7 +1544,8 @@
 
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="updateWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1462,7 +1553,8 @@
 
 		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="closeWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1470,7 +1562,8 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="deleteWorkOrder">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1478,7 +1571,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
@@ -1487,7 +1581,8 @@
 		
 		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getActivitiesList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">activities</param>
 			</result>
@@ -1540,7 +1635,9 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getPlannedMaintenance">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="root">pms</param>
@@ -1553,7 +1650,8 @@
 
 		<action name="layout"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="newWorkOrderRequest">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1561,7 +1659,8 @@
 
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequestId</param>
 			</result>
@@ -1569,7 +1668,8 @@
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1577,7 +1677,8 @@
 
 		<action name="approve"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1585,7 +1686,8 @@
 
 		<action name="reject"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="rejectWorkOrderRequest">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -1593,7 +1695,8 @@
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
@@ -1605,7 +1708,8 @@
 		extends="ticket">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="workOrderRequestId">{1}</param>
 			<result name="success">/jsps/recordsummary.jsp</result>
 		</action>
@@ -1615,7 +1719,8 @@
 		extends="ticket">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="viewWorkOrderRequest">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="workOrderRequestId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorderrequest.*</param>
@@ -1643,7 +1748,8 @@
 	<package name="templateApi" namespace="/api/template" extends="home">
 		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="addEmail">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">templateId</param>
 			</result>
@@ -1651,7 +1757,26 @@
 
 		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="addSms">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addPushNotification" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addPushNotification">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addWebNotification" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addWebNotification">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">templateId</param>
 			</result>
@@ -1662,7 +1787,8 @@
 		extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="addAttachment">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
@@ -1670,7 +1796,8 @@
 
 		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="deleteAttachment">
-			<param name="permission">WORKORDER_CREATE</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
 			</result>
@@ -1865,7 +1992,8 @@
 	<package name="campusApi" namespace="/api/campus" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="newCampus">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1873,7 +2001,9 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="addCampus">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">campusId</param>
 			</result>
@@ -1881,7 +2011,8 @@
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="reportCards">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
@@ -1889,7 +2020,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="viewCampus">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<param name="campusId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^record.*</param>
@@ -1901,7 +2033,9 @@
 	<package name="buildingApi" namespace="/api/building" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="newBuilding">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1909,7 +2043,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="addBuilding">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
@@ -1917,7 +2052,8 @@
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="reportCards">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
@@ -1925,7 +2061,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="viewBuilding">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^record.*</param>
@@ -1936,7 +2073,9 @@
 	<package name="floorApi" namespace="/api/floor" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="newFloor">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1944,7 +2083,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="addFloor">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">floorId</param>
 			</result>
@@ -1952,7 +2092,8 @@
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="reportCards">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
@@ -1960,7 +2101,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="viewFloor">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<param name="floorId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^record.*</param>
@@ -1970,7 +2112,8 @@
 	<package name="spaceApi" namespace="/api/space" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="newSpace">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -1978,7 +2121,8 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="addSpace">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">spaceId</param>
 			</result>
@@ -1986,7 +2130,9 @@
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="reportCards">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 			</result>
@@ -1994,7 +2140,8 @@
 
 		<action name="independent" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="independentSpaceList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">records,records\[\d+\],records\[\d+\].*</param>
 			</result>
@@ -2002,7 +2149,8 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="viewSpace">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<param name="spaceId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^record.*</param>
@@ -2013,7 +2161,8 @@
 	<package name="zoneApi" namespace="/api/zone" extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="newZone">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
@@ -2021,7 +2170,9 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="addZone">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
 			</result>
@@ -2029,7 +2180,8 @@
 
 		<action name="children" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="zoneChildrenList">
-			<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
 			</result>
@@ -2039,6 +2191,7 @@
 	<package name="setupApi" namespace="/api/settings" extends="home">
 		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="orgSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">org,org.*</param>
@@ -2047,6 +2200,7 @@
 
 		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="updateOrgSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
@@ -2152,7 +2306,8 @@
 		extends="ticket">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="viewWorkOrder">
-			<param name="permission">WORKORDER_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="workOrderId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
@@ -2239,28 +2394,36 @@
 	<package name="noteApi" namespace="/api/note" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addNote">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
 		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addTicketNote">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
 		<action name="addspacenote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addSpaceNote">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
 		<action name="addassetnote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addAssetNote">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
@@ -2268,7 +2431,9 @@
 
 		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getNotesList">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
@@ -2276,7 +2441,9 @@
 
 		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getTicketNotes">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
@@ -2284,7 +2451,9 @@
 
 		<action name="getspacenotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getSpaceNotes">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
@@ -2292,7 +2461,9 @@
 
 		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getAssetNotes">
-			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>

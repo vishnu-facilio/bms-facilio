@@ -186,36 +186,36 @@ public class TicketAction extends ActionSupport {
  	}
 	
  	//Ticket List Props
- 	public String ticketList() throws Exception {
-		// TODO Auto-generated method stub
- 		FacilioContext context = new FacilioContext();
- 		
- 		if (getViewName() == null || getViewName().equals("")) {
- 			if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES) || AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ANY)) {
- 				this.viewName = null;
- 			}
- 			else if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_OWN)) {
- 				this.viewName = "mytickets";
- 			}
- 		}
- 		
- 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		
-		System.out.println("View Name : "+getViewName());
- 		Chain ticketListChain = FacilioChainFactory.getTicketListChain();
- 		ticketListChain.execute(context);
- 		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setTickets((List<TicketContext>) context.get(FacilioConstants.ContextNames.TICKET_LIST));
-		
-		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		if(cv != null) {
-			setViewDisplayName(cv.getDisplayName());
-		}
-		
-		return SUCCESS;
-	}
- 	
+// 	public String ticketList() throws Exception {
+//		// TODO Auto-generated method stub
+// 		FacilioContext context = new FacilioContext();
+// 		
+// 		if (getViewName() == null || getViewName().equals("")) {
+// 			if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ACCESSIBLE_SPACES) || AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_ANY)) {
+// 				this.viewName = null;
+// 			}
+// 			else if (AccountUtil.getCurrentUser().getRole().hasPermission(AccountConstants.Permission.WORKORDER_ACCESS_READ_OWN)) {
+// 				this.viewName = "mytickets";
+// 			}
+// 		}
+// 		
+// 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+//		
+//		System.out.println("View Name : "+getViewName());
+// 		Chain ticketListChain = FacilioChainFactory.getTicketListChain();
+// 		ticketListChain.execute(context);
+// 		
+//		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+//		setTickets((List<TicketContext>) context.get(FacilioConstants.ContextNames.TICKET_LIST));
+//		
+//		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+//		if(cv != null) {
+//			setViewDisplayName(cv.getDisplayName());
+//		}
+//		
+//		return SUCCESS;
+//	}
+// 	
  	private List<TicketContext> tickets = null;
 	public List<TicketContext> getTickets() {
 		return tickets;

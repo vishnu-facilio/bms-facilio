@@ -6,8 +6,10 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -46,6 +48,17 @@ public class GetWorkOrderListCommand implements Command {
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 		if (searchCriteria != null) {
 			selectBuilder.andCriteria(searchCriteria);
+		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			selectBuilder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName);
+		if(permissionCriteria != null) {
+			selectBuilder.andCriteria(permissionCriteria);
 		}
 		
 		if(context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != null && (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != -1)

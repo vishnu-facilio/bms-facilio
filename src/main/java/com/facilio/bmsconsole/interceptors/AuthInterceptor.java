@@ -11,6 +11,7 @@ import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -119,9 +120,15 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 				// Step 5: Checking permission for current resource
 				Parameter permission = ActionContext.getContext().getParameters().get("permission");
-				if (permission != null && permission.getValue() != null && !isAuthorizedAccess(permission.getValue())) {
+				Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
+				if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue() ,permission.getValue())) {
 					return "unauthorized";
 				}
+				
+//				Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
+//				if(moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue())) {
+//					return "unauthorized";
+//				}
 				
 				// Step 6: Setting locale & timezone information in session
 				String lang = currentAccount.getUser().getLanguage();
@@ -167,7 +174,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 		return result;
 	}
 
-	private boolean isAuthorizedAccess(String permissions) throws Exception {
+	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
 		
 		if (permissions == null || "".equals(permissions.trim())) {
 			System.out.println("WARNING: Configured permission is empty");
@@ -175,6 +182,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 		
 		Role role = AccountUtil.getCurrentUser().getRole();
-		return role.hasPermission(role.getPermissions());
+		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals("Administrator")) {
+			return true;
+		}
+		else {
+			return role.hasPermission(moduleName, permissions);
+//		return role.hasPermission(moduleName, AccountConstants.ModulePermission.valueOf(permissions).getModulePermission());
+		}
 	}
 }

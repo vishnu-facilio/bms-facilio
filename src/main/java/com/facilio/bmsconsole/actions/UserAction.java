@@ -105,6 +105,7 @@ public class UserAction extends ActionSupport {
 
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
+		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {
 			Chain addUser = FacilioChainFactory.getAddUserCommand();
@@ -143,6 +144,15 @@ public class UserAction extends ActionSupport {
 		this.user = user;
 	}
 	
+	private List<Long> accessibleSpace;
+	public List<Long> getAccessibleSpace() {
+		return accessibleSpace;
+	}
+
+	public void setAccessibleSpace(List<Long> accessibleSpace) {
+		this.accessibleSpace = accessibleSpace;
+	}
+
 	private long userId;
 	public long getUserId() {
 		return userId;

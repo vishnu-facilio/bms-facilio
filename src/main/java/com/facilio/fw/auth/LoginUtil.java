@@ -75,7 +75,7 @@ public class LoginUtil {
 					locale = Locale.US;
 				}
 				
-				Role adminRole = AccountUtil.getRoleBean().getRole(org.getOrgId(), AccountConstants.DefaultRole.ADMINISTRATOR);
+//				Role adminRole = AccountUtil.getRoleBean().getRole(org.getOrgId(), AccountConstants.DefaultRole.ADMINISTRATOR);
 				
 				User createUser = new User();
 				createUser.setName(cognitoUser.getName());
@@ -86,7 +86,7 @@ public class LoginUtil {
 				createUser.setLanguage(locale.getLanguage());
 				createUser.setCountry(locale.getCountry());
 				createUser.setPhone(cognitoUser.getPhoneNumber());
-				createUser.setRoleId(adminRole.getRoleId());
+//				createUser.setRoleId(adminRole.getRoleId());
 				createUser.setInviteAcceptStatus(true);
 				createUser.setDefaultOrg(true);
 				createUser.setUserStatus(true);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -39,7 +40,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		long orgId = (Long) props.get("id");
 		
-		AccountUtil.getRoleBean().createDefaultRoles(orgId);
+		AccountUtil.getRoleBean().createSuperdminRoles(orgId);
 		
 		return orgId;
 	}
@@ -135,7 +136,10 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
+				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
+				users.add(user);
+//				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
 			}
 			return users;
 		}

@@ -2,11 +2,13 @@ package com.facilio.accounts.bean;
 
 import java.util.List;
 
+import com.amazonaws.services.s3.model.Permission;
+import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 
 public interface RoleBean {
 
-	public boolean createDefaultRoles(long orgId) throws Exception;
+	public long createSuperdminRoles(long orgId) throws Exception;
 	
 	public long createRole(long orgId, Role role) throws Exception;
 
@@ -19,4 +21,8 @@ public interface RoleBean {
 	public Role getRole(long orgId, String roleName) throws Exception;
 
 	public List<Role> getRoles(long orgId) throws Exception;
+	
+	public List<Permissions> getPermissions (long roleId) throws Exception;
+	
+	public boolean addPermission(long roleId, Permissions permissions) throws Exception;
 }
