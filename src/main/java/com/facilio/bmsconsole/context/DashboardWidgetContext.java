@@ -103,7 +103,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	}
 	public enum WidgetType {
 		CHART(1,"chart",WidgetChartContext.class),
-		LIST_VIEW(2,"view",WidgetListViewContext.class);
+		LIST_VIEW(2,"view",WidgetListViewContext.class),
+		MAP(3,"map",WidgetListViewContext.class);
 		
 		private int value;
 		private String name;

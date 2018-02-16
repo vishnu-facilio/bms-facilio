@@ -60,6 +60,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultViewColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
