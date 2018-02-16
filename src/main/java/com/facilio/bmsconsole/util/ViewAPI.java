@@ -7,11 +7,15 @@ import java.util.Map;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -31,10 +35,17 @@ public class ViewAPI {
 		List<FacilioView> views = new ArrayList<>();
 		try 
 		{
+			FacilioModule module = ModuleFactory.getViewsModule();
+			List<FacilioField> fields = FieldFactory.getViewFields();
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+			FacilioField moduleField = fieldsMap.get("moduleId");
+			FacilioField isHiddenField = fieldsMap.get("isHidden");
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getViewFields())
-													.table("Views")
-													.andCustomWhere("ORGID = ? AND MODULEID = ? AND ISHIDDEN = FALSE", orgId, moduleId)
+													.select(fields)
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCondition(moduleField, moduleId+"", NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(isHiddenField, String.valueOf(false) , BooleanOperators.IS))
 													.orderBy("SEQUENCE_NUMBER");
 			
 			List<Map<String, Object>> viewProps = builder.get();
