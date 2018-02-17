@@ -5,7 +5,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.Period;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +17,6 @@ import java.time.temporal.WeekFields;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Set;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -129,6 +130,9 @@ public class DateTimeUtil
 		return DateTimeFormatter.ofPattern(format, getLocale());
 	}
 	
+	public static WeekFields getWeekFields() {
+		return WeekFields.of(getLocale());
+	}
 	
 	public static ZoneId getZoneId(String zoneId)
 	{
@@ -221,6 +225,21 @@ public class DateTimeUtil
 	{
 		ZonedDateTime zdt=getMidnight(zoneId);
 		return getLong(zdt,true,seconds);
+	}
+	
+	
+	public static ZonedDateTime getDayStartZDT(int interval) {	
+		return getDayStartZDT(getZoneId(), interval);
+	}
+	public static ZonedDateTime getDayStartZDT(ZoneId zoneId,int interval) {
+		ZonedDateTime zdt=getMidnight(zoneId).plusDays(interval);
+		return zdt;
+	}
+	public static ZonedDateTime getDayStartZDT() {
+		return getDayStartZDT(getZoneId());
+	}
+	public static ZonedDateTime getDayStartZDT(ZoneId zoneId) {
+		return getDayStartZDT(getZoneId(), 0);
 	}
 
 	public static long getMonthStartTime(Boolean... seconds)
@@ -460,6 +479,48 @@ public class DateTimeUtil
 	}
 	public static long getLastNHour(long currentTime,int hour) {
 		return currentTime - (hour * ONE_HOUR_MILLIS_VALUE);
+	}
+	
+	public static boolean isSameDay (ZonedDateTime start, ZonedDateTime end) {
+		return start.toLocalDate().equals(end.toLocalDate());
+	}
+	public static boolean isSameWeek (ZonedDateTime start, ZonedDateTime end) {
+		WeekFields weekFields = getWeekFields();
+		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfWeekBasedYear()) == end.get(weekFields.weekOfWeekBasedYear());
+	}
+	public static boolean isSameMonth (ZonedDateTime start, ZonedDateTime end) {
+		return Year.from(start).equals(Year.from(end)) && Month.from(start) == Month.from(end);
+	}
+	public static boolean isSameYear (ZonedDateTime start, ZonedDateTime end) {
+		return Year.from(start).equals(Year.from(end));
+	}
+	
+	public static ZonedDateTime getDayStartTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId());
+	}
+	public static ZonedDateTime getDayEndTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId());
+	}
+	
+	public static ZonedDateTime getWeekStartTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(getWeekFields().dayOfWeek(),1);
+	}
+	public static ZonedDateTime getWeekEndTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(getWeekFields().dayOfWeek(),7);
+	}
+	
+	public static ZonedDateTime getMonthStartTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(TemporalAdjusters.firstDayOfMonth());
+	}
+	public static ZonedDateTime getMonthEndTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(TemporalAdjusters.lastDayOfMonth());
+	}
+	
+	public static ZonedDateTime getYearStartTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MIDNIGHT).atZone(getZoneId()).with(TemporalAdjusters.firstDayOfYear());
+	}
+	public static ZonedDateTime getYearEndTimeOf(ZonedDateTime zdt) {
+		return zdt.toLocalDate().atTime(LocalTime.MAX).atZone(getZoneId()).with(TemporalAdjusters.lastDayOfYear());
 	}
 	
 	
