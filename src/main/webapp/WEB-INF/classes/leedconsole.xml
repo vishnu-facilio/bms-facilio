@@ -35,28 +35,24 @@
 		</global-results>
 		
 		<action name="arcloginaction" class="com.facilio.leed.actions.LeedAction" method="arcLoginAction">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
 				
 		<action name="leedlist" class="com.facilio.leed.actions.LeedAction" method="leedList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
 		
 		<action name="importleeds" class="com.facilio.leed.actions.LeedAction" method="importLeedList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
 		</action>
 		
 		<action name="addLeed" class="com.facilio.leed.actions.LeedAction" method="addLeedConfiguration">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<!-- param name="buildingId">{1}</param-->
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
@@ -68,7 +64,8 @@
 	<package name="leedSummaryApi" namespace="/api/leed/energy" extends="leedApi">
 	
 		<action name="loaddataformeter" class="com.facilio.leed.actions.LeedAction" method="fetchConsumptionData">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
@@ -76,13 +73,15 @@
 		
 		
 		<action name="addsample" class="com.facilio.leed.actions.LeedAction" method="addSample">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<result name="success" type="json">
 			</result>
 		</action>
 		
 		<action name="addmeterconsumptiondata" class="com.facilio.leed.actions.LeedAction" method="AddMeterNConsumptionData">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">meterList,meterList*,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
@@ -90,7 +89,8 @@
 		
 		
 		<action name="*" class="com.facilio.leed.actions.LeedAction" method="meterList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
