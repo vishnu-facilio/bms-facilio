@@ -195,13 +195,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-//	public static Command getAddRoleCommand() {
-//		Chain c = new ChainBase();
-//		c.addCommand(new AddRoleCommand());
-//		c.addCommand(new AddPermissionsCommand());
-//		addCleanUpCommand(c);
-//		return c;		
-//	}
+	public static Command getAddRoleCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddRoleCommand());
+		c.addCommand(new AddPermissionsCommand());
+		addCleanUpCommand(c);
+		return c;		
+	}
+
 	
 	public static Command getUpdateGroupCommand() {
 		Chain c = new ChainBase();
@@ -1207,8 +1208,10 @@ public class FacilioChainFactory {
 	public static Chain getAddPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new AddAndSchedulePMTriggerCommand());
 		c.addCommand(new AddPMReminderCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1234,10 +1237,15 @@ public class FacilioChainFactory {
 	
 	public static Chain getUpdatePreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
+		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new ValidatePMTriggersCommand());
-		c.addCommand(new DeletePreventiveMaintenanceCommand());
+		c.addCommand(new ValidateTasksCommand());
 		c.addCommand(new AddPMWorkorderTemplateCommand());
-		c.addCommand(new AddPreventiveMaintenanceCommand());
+		c.addCommand(new UpdatePreventiveMaintenanceCommand());
+		c.addCommand(new DeletePMTriggersAndTemplatesCommand());
+		c.addCommand(new AddAndSchedulePMTriggerCommand());
+		c.addCommand(new DeletePMRemindersCommand());
+		c.addCommand(new AddPMReminderCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

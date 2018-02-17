@@ -18,41 +18,48 @@
 		</interceptors>
 		<default-interceptor-ref name="defaultInterceptor" />
 		<action name="getWorkflowRules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="getWorkflowRules">
+			<param name="moduleName">setup</param>
             <param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">rules</param>
 			</result>
 		</action>
 		<action name="runThroughFilters" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="runThroughFilters">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
 		</action>
 		<action name="addReadingThresholdRulesWithFormula" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingThresholdRulesWithFormula">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^workflowRuleContext.*</param>
 			</result>
 		</action>
 		<action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">readingRule</param>
 			</result>
 		</action>
 		<action name="getReadingRules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="getReadingRulesMap">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">readingRules</param>
 			</result>
 		</action>
 		<action name="deleteRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="deleteWorkflowRule">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
 		<action name="addAssignmentRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addAssignmentRule">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">readingRule</param>
@@ -65,42 +72,56 @@
 			</result>
 		</action>
 		<action name="addReadingrules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addReadingRule">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="root">readingRule</param>
 			</result>
 		</action>
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="userList">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<param name="cache">org</param>  
 			<result name="success" type="json">
 			<param name="includeProperties">users.*</param></result>
 		</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
+		<param name="moduleName">setup</param>
 		<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 		<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>
+		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
+		<param name="moduleName">setup</param>
+		<param name="permission">USER_ACCESS_ADMINISTER</param>
+		<param name="cache">org</param>
+            <result name="success" type="json">
+			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
+		</action>
 		<action name="configureOrg" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureOrg">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">url</param>
 			</result>
 		</action>
 		<action name="device" class="com.facilio.bmsconsole.actions.DeviceAction" method="deviceList">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">deviceList,deviceList\[\d+\],deviceList\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="devicelayout" class="com.facilio.bmsconsole.actions.DeviceAction" method="newDevice">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="addDevice" class="com.facilio.bmsconsole.actions.DeviceAction" method="addDevice">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">device.*</param>
@@ -111,6 +132,7 @@
 			<param name="includeProperties">stateFlow.*</param></result>
 		</action>	
 		<action name="changestatus" class="com.facilio.bmsconsole.actions.UserAction" method="changeStatus">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">user.orgUserId</param>
@@ -122,6 +144,7 @@
 			</result>
 		</action>
 		<action name="deleteUser" class = "com.facilio.bmsconsole.actions.UserAction" method = "deleteUser">
+			<param name="moduleName">setup</param>
 			<param name= "permission">USER_ACCESS_ADMINISTER</param>
 			<result name = "Success" type="json">
 				<param name ="includeProperties">userId</param>
@@ -133,6 +156,7 @@
 			</result>
 		</action>
 	    <action name="adduser" class="com.facilio.bmsconsole.actions.UserAction" method="addUser">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
@@ -144,6 +168,7 @@
 			</result>
 			</action>
 			<action name="resendinvite" class="com.facilio.bmsconsole.actions.UserAction" method="resendInvite">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
@@ -155,6 +180,7 @@
 			</result>
 			</action>
 		<action name="updateuser"  class="com.facilio.bmsconsole.actions.UserAction" method="updateUser">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">userId</param>
@@ -166,6 +192,7 @@
 			</result>
 		</action>
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="addMobileSetting">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^userMobileSetting.*</param>
@@ -177,6 +204,7 @@
 			</result>
 		</action>
 		<action name="addgroup" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
+			<param name="moduleName">setup</param>
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
@@ -188,6 +216,7 @@
 			</result>
 		</action>
 		<action name="deletegroup" class="com.facilio.bmsconsole.actions.GroupAction" method="deleteGroup">
+			<param name="moduleName">setup</param>
 			<param name="permission">GROUP_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">groupId</param>
@@ -199,6 +228,7 @@
 			</result>
 		</action>
 		<action name="changeTeamStatus" class="com.facilio.bmsconsole.actions.GroupAction" method="changeTeamStatus">
+			<param name="moduleName">setup</param>
 			<param name="permission">USER_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">group.groupId</param>
@@ -209,6 +239,18 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>	
+		<action name="addRole" class="com.facilio.bmsconsole.actions.RoleAction" method="addRole">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">roleId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 		<action name="addalarmemail" class="com.facilio.bmsconsole.actions.NotificationAction" method="addAlarmEMailNotifier">
             <result name="success" type="json">
 				<param name="includeProperties">result</param>
@@ -253,6 +295,7 @@
 		</action>
 	<!-- Work Order Actions -->		
 	 <action name="emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailSetting.*,supportEmails.*</param>
@@ -266,6 +309,7 @@
 		</action>	 -->
 		
 		<action name="wonotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showWONotificationSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailNotifications.*</param>
@@ -273,6 +317,7 @@
 		</action>	
 		
 		<action name="wotemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="getWOTemplates">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workorderTemplates.*</param>
@@ -280,6 +325,7 @@
 		</action>	
 		
 		<action name="alarmnotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showAlarmsNotificationSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">emailNotifications.*</param>
@@ -287,36 +333,42 @@
 		</action>	
 		
 	<action name="updatenotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="updateNotificationSettings">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>	
 <action name="updateemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="updateSupportEmailSetting">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
 		<action name="addemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addSupportEmailSetting">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 				<param name="includeProperties">supportEmailId</param>
 			</result>
 		</action>
 		<action name="deleteemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
+			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
 			</result>
 		</action>
 		
 		<action name="controllersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showControllerSettings">
+		<param name="moduleName">setup</param>
 		<param name="permission">ORG_ACCESS_ADMINISTER</param>
 		<result name="success" type="json">
 				<param name="includeProperties">controllerSettings.*</param>
 			</result>
 			</action>
 		<action name="addcontrollersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addControllerSettings">
+		<param name="moduleName">setup</param>
 		<param name="permission">ORG_ACCESS_ADMINISTER</param>
 		<result name="success" type="json">
 				<param name="includeProperties">controllerSettingsId</param>

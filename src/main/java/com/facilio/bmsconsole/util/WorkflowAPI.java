@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -389,4 +390,33 @@ public class WorkflowAPI {
 		}
 		return null;
 	}
+	
+	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception{
+		if (workflowIds != null && !workflowIds.isEmpty()) {
+			ActionAPI.deleteAllActionsFromWorkflowRules(workflowIds);
+			
+			FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
+			deleteBuilder.delete();
+		}
+	}
+	
+	public static ReadingRuleContext getReadingRule(long id) throws Exception {
+		List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(readingRuleModule.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(id, readingRuleModule));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), ReadingRuleContext.class);
+		}
+		return null;
+	}
+	
 }

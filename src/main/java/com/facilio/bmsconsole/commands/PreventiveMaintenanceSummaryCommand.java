@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -23,6 +24,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
@@ -49,10 +52,18 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 		
-		for (PMTriggerContext trigger : pm.getTriggers()) {
-			PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, Instant.now().getEpochSecond());
-			if(pmJob != null && (pm.getNextExecutionTime() == -1 || pmJob.getNextExecutionTime() <= pm.getNextExecutionTime())) {
-				pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
+		if(pm.hasTriggers()) {
+			for (PMTriggerContext trigger : pm.getTriggers()) {
+				PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, Instant.now().getEpochSecond());
+				if(pmJob != null && (pm.getNextExecutionTime() == -1 || pmJob.getNextExecutionTime() <= pm.getNextExecutionTime())) {
+					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
+				}
+				if (trigger.getReadingRuleId() != -1) {
+					ReadingRuleContext rule = WorkflowAPI.getReadingRule(trigger.getReadingRuleId());
+					trigger.setReadingFieldId(rule.getReadingFieldId());
+					trigger.setReadingInterval(rule.getInterval());
+					trigger.setStartReading(rule.getStartValue());
+				}
 			}
 		}
 		
@@ -88,6 +99,10 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 				TicketAPI.loadTicketLookups(tasks);
 			}
 		}
+		
+		List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pm.getId());
+		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
+		
 		return false;
 	}
 }

@@ -4,20 +4,31 @@ import org.json.simple.JSONObject;
 
 public class WidgetListViewContext extends DashboardWidgetContext {
 
-	Long viewId;
+	String viewName;
 	
-	public Long getViewId() {
-		return viewId;
+	public String getViewName() {
+		return viewName;
 	}
-	public void setViewId(Long viewId) {
-		this.viewId = viewId;
+
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
 	}
+
+	String moduleName;
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	@Override
 	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
 		resultJson.put("type", getWidgetType().getName());
-		
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());
@@ -27,20 +38,24 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("title", getHeaderText());
-		headerJson.put("export", isHeaderIsExport());
-		if(getHeaderSubText().equals("{today}")) {		// temprovery
+		// Temprovery 
+		if(getHeaderSubText().equals("{today}")) {
 			headerJson.put("subtitle", "today");
 		}
 		else {
 			headerJson.put("subtitle", getHeaderSubText());
 		}
 		
+		headerJson.put("export", isHeaderIsExport());
+		
 		resultJson.put("header", headerJson);
 		
 		JSONObject dataOptionsJson = new JSONObject();
-		dataOptionsJson.put("dataurl", "/app/dashboard/getData?reportId="+getId());
+//		dataOptionsJson.put("type", getWidgetChartType().getName());
+		dataOptionsJson.put("dataurl", "api/view/" + getViewName() + "?moduleName=" + getModuleName());
 		dataOptionsJson.put("name", "dummy");
-		dataOptionsJson.put("viewId", getViewId());
+		dataOptionsJson.put("moduleName", getModuleName());
+		dataOptionsJson.put("viewName", getViewName());
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);
@@ -52,5 +67,4 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
-
 }

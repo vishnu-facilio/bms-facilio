@@ -520,7 +520,7 @@ public class LoginAction extends ActionSupport{
 	public String currentAccount() throws Exception {
 		
 		HashMap<String, Object> appProps = new HashMap<>();
-		appProps.put("permissions", AccountConstants.Permission.toMap());
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
 		
 		account = new HashMap<>();

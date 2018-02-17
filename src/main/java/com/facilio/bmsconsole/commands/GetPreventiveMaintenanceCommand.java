@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -97,6 +95,11 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		if (filterCriteria != null) {
 			selectRecordBuilder.andCriteria(filterCriteria);
+		}
+		
+		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if(idsToSelect != null && !idsToSelect.isEmpty()) {
+			selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(idsToSelect, module));
 		}
 		
 		List<Long> resourceIds = new ArrayList<>();

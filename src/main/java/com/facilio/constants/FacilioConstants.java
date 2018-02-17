@@ -94,6 +94,7 @@ public class FacilioConstants {
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
+		public static final String ACCESSIBLE_SPACE = "accessibleSpace";
 		
 		public static final String GROUP_ID = "groupId";
 		public static final String GROUP = "group";
@@ -101,6 +102,7 @@ public class FacilioConstants {
 		
 		public static final String ROLE_ID = "roleId";
 		public static final String ROLE = "role";
+		public static final String PERMISSIONS= "permissions";
 		
 		public static final String BUSINESS_HOUR = "businesshour";
 		

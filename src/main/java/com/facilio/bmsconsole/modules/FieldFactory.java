@@ -2138,13 +2138,20 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getWidgetListViewModule();
 
 		fields.add(getIdField(module));
-
-		FacilioField dashboardWidgetListViewId = new FacilioField();
-		dashboardWidgetListViewId.setName("viewId");
-		dashboardWidgetListViewId.setDataType(FieldType.NUMBER);
-		dashboardWidgetListViewId.setColumnName("VIEW_ID");
-		dashboardWidgetListViewId.setModule(module);
-		fields.add(dashboardWidgetListViewId);
+		
+		FacilioField moduleName = new FacilioField();
+		moduleName.setName("moduleName");
+		moduleName.setDataType(FieldType.STRING);
+		moduleName.setColumnName("MODULE_NAME");
+		moduleName.setModule(module);
+		fields.add(moduleName);
+		
+		FacilioField viewName = new FacilioField();
+		viewName.setName("viewName");
+		viewName.setDataType(FieldType.STRING);
+		viewName.setColumnName("VIEW_NAME");
+		viewName.setModule(module);
+		fields.add(viewName);
 
 		return fields;
 	}

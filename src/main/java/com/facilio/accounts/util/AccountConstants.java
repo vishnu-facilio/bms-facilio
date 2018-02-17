@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 
 public class AccountConstants {
 
@@ -86,7 +88,110 @@ public class AccountConstants {
 			return typeMap;
 		}
 	}
+	public static class DefaultSuperAdmin {
+		public static final String SUPER_ADMIN 	= "Super Administrator"; }
+	public static enum CommonPermission {
+		
+		ORG_ACCESS_ADMINISTER(1),
+		
+		ORG_ACCESS_DELETE(2), // permission to close organization
 
+		USER_ACCESS_ADMINISTER(4), // view, create or edit users
+
+		USER_ACCESS_DELETE(8), // delete users
+
+		GROUP_ACCESS_ADMINISTER(16), // view, create or edit groups
+
+		GROUP_ACCESS_DELETE(32); // delete groups
+		
+		long commonPermission;
+
+		CommonPermission(long commonPermission) {
+			this.commonPermission = commonPermission;
+		}
+
+		public long getCommonPermission() {
+			return this.commonPermission;
+		}
+		public static long getSumOf(CommonPermission... commonPermission) {
+			long sumOf = 0;
+			for (CommonPermission perm : commonPermission) {
+				sumOf += perm.getCommonPermission();
+			}
+			return sumOf;
+		}
+
+		public static Map<String, Long> toMap() {
+			HashMap<String, Long> commonPermissionMap = new HashMap<>();
+			for (CommonPermission permission : CommonPermission.values()) {
+				commonPermissionMap.put(permission.name(), permission.getCommonPermission());
+			}
+			return commonPermissionMap;
+		}
+	}
+	
+	public static enum ModulePermission {
+		
+		ORG_ACCESS_ADMINISTER(1),
+		
+		ORG_ACCESS_DELETE(2), // permission to close organization
+
+		USER_ACCESS_ADMINISTER(4), // view, create or edit users
+
+		USER_ACCESS_DELETE(8), // delete users
+
+		GROUP_ACCESS_ADMINISTER(16), // view, create or edit groups
+
+		GROUP_ACCESS_DELETE(32), // delete groups
+		
+		READ (64),
+		
+		UPDATE(128),
+		
+		CREATE(256),
+		
+		DELETE(512),
+		
+		READ_TEAM(1024),
+		
+		READ_OWN(2048),
+		
+		UPDATE_TEAM(4096),
+		
+		UPDATE_OWN(8192),
+		
+		DELETE_TEAM(16384),
+		
+		DELETE_OWN(32768)
+		;
+		
+		long modulePermission;
+		
+		ModulePermission(long modulePermission) {
+			this.modulePermission = modulePermission;
+		}
+		
+		public long getModulePermission() {
+			return this.modulePermission;
+		}
+		
+		public static long getSumOf(ModulePermission... modulePermission) {
+			long sumOf = 0;
+			for (ModulePermission perm : modulePermission) {
+				sumOf += perm.getModulePermission();
+			}
+			return sumOf;
+		}
+
+		public static Map<String, Long> toMap() {
+			HashMap<String, Long> modulePermissionMap = new HashMap<>();
+			for (ModulePermission permission : ModulePermission.values()) {
+				modulePermissionMap.put(permission.name(), permission.getModulePermission());
+			}
+			return modulePermissionMap;
+		}
+		
+	}
 	public static enum Permission {
 
 		ORG_ACCESS_ADMINISTER(1), // full control over the organization
@@ -286,14 +391,35 @@ public class AccountConstants {
 			return permissionGroupMap;
 		}
 	}
+	
+//	public static class DefaultPermssion {
+//		public static final String WORKORDER_READ = "Workorder Read";
+//		public static final String WORKORDER_UPDATE = "Workorder Update";
+//		public static final String WORKORDER_CREATE = "Workorder Create";
+//		public static final String WORKORDER_DELETE = "Workorder Delete";
+//		
+//		public static final Map<String, Permissions> DEFAULT_PERMISSIONS = Collections.unmodifiableMap(initPermissions());
+//		
+//		private static Map<String, Permissions> initPermissions() {
+//			Map<String, Permissions> defaultPermissions = new HashMap<>();
+//			
+//			Permissions workorderCreate = new Permissions();
+//			workorderCreate.setRoleId(1);
+//			workorderCreate.setModuleName("workorder");
+//			workorderCreate.setPermission(ModulePermission.getSumOf(ModulePermission.WORKORDER_CREATE));
+//			
+//		}
+//		
+//		
+//	}
 
 	public static class DefaultRole 
 	{
 		public static final String SUPER_ADMIN 	= "Super Administrator";
-		public static final String ADMINISTRATOR 	= "Administrator";
-		public static final String MANAGER 		    = "Manager";
-		public static final String DISPATCHER 		= "Dispatcher";
-		public static final String TECHNICIAN 		= "Technician";
+//		public static final String ADMINISTRATOR 	= "Administrator";
+//		public static final String MANAGER 		    = "Manager";
+//		public static final String DISPATCHER 		= "Dispatcher";
+//		public static final String TECHNICIAN 		= "Technician";
 
 		public static final Map<String, Role> DEFAULT_ROLES = Collections.unmodifiableMap(initRoles());
 
@@ -301,73 +427,89 @@ public class AccountConstants {
 		{
 			Map<String, Role> defaultRoles = new HashMap<>();
 
+			List<Permissions> superAdminPermission = new ArrayList<>();
+			superAdminPermission.add(new Permissions("workorder", ModulePermission.getSumOf(ModulePermission.CREATE, 
+					ModulePermission.DELETE,
+					ModulePermission.READ,
+					ModulePermission.UPDATE)));
+			List<Permissions> adminPermission = new ArrayList<>();
+			adminPermission.add(new Permissions("workorder", ModulePermission.getSumOf(ModulePermission.CREATE, 
+					ModulePermission.DELETE,
+					ModulePermission.READ,
+					ModulePermission.UPDATE)));
+
 			Role superAdmin = new Role();
 			superAdmin.setName(SUPER_ADMIN);
 			superAdmin.setDescription(SUPER_ADMIN);
-			superAdmin.setPermissions(0L);
+//			superAdmin.setPermissions(0L);
+//			superAdmin.setPermissions(superAdminPermission);
 			
-			Role administrator = new Role();
-			administrator.setName(ADMINISTRATOR);
-			administrator.setDescription(ADMINISTRATOR);
-			administrator.setPermissions(0L);
+//			Role administrator = new Role();
+//			administrator.setName(ADMINISTRATOR);
+//			administrator.setDescription(ADMINISTRATOR);
+//			administrator.setPermissions(0L);
+//			administrator.setPermissions(adminPermission);
 			
-			Role manager = new Role();
-			manager.setName(MANAGER);
-			manager.setDescription(MANAGER);
-			manager.setPermissions(Permission.getSumOf(
-					Permission.USER_ACCESS_ADMINISTER,
-					Permission.GROUP_ACCESS_ADMINISTER,
-					Permission.WORKORDER_ACCESS_CREATE_ANY,
-					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
-					Permission.WORKORDER_ACCESS_READ_ANY,
-					Permission.WORKORDER_ACCESS_DELETE_ANY,
-					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_CREATE_ANY,
-					Permission.TASK_ACCESS_UPDATE_ANY,
-					Permission.TASK_ACCESS_READ_ANY,
-					Permission.TASK_ACCESS_DELETE_ANY,
-					Permission.TASK_ACCESS_ASSIGN_ANY,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.DASHBOARD_ACCESS_ENABLE,
-					Permission.REPORTS_ACCESS_ENABLE
-					));
-			
-			Role dispatcher = new Role();
-			dispatcher.setName(DISPATCHER);
-			dispatcher.setDescription(DISPATCHER);
-			dispatcher.setPermissions(Permission.getSumOf(
-					Permission.WORKORDER_ACCESS_CREATE_ANY,
-					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
-					Permission.WORKORDER_ACCESS_READ_ANY,
-					Permission.WORKORDER_ACCESS_DELETE_ANY,
-					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_CREATE_ANY,
-					Permission.TASK_ACCESS_UPDATE_ANY,
-					Permission.TASK_ACCESS_READ_ANY,
-					Permission.TASK_ACCESS_DELETE_ANY,
-					Permission.TASK_ACCESS_ASSIGN_ANY,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
-					));
-			
-			Role technician = new Role();
-			technician.setName(TECHNICIAN);
-			technician.setDescription(TECHNICIAN);
-			technician.setPermissions(Permission.getSumOf(
-					Permission.WORKORDER_ACCESS_UPDATE_OWN, 
-					Permission.WORKORDER_ACCESS_READ_OWN,
-					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
-					Permission.TASK_ACCESS_UPDATE_OWN,
-					Permission.TASK_ACCESS_READ_OWN,
-					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
-					));
+//			Role manager = new Role();
+//			manager.setName(MANAGER);
+//			manager.setDescription(MANAGER);
+//			manager.setPermissions(adminPermission);
+//			manager.setPermissions(Permission.getSumOf(
+//					Permission.USER_ACCESS_ADMINISTER,
+//					Permission.GROUP_ACCESS_ADMINISTER,
+//					Permission.WORKORDER_ACCESS_CREATE_ANY,
+//					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
+//					Permission.WORKORDER_ACCESS_READ_ANY,
+//					Permission.WORKORDER_ACCESS_DELETE_ANY,
+//					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
+//					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+//					Permission.TASK_ACCESS_CREATE_ANY,
+//					Permission.TASK_ACCESS_UPDATE_ANY,
+//					Permission.TASK_ACCESS_READ_ANY,
+//					Permission.TASK_ACCESS_DELETE_ANY,
+//					Permission.TASK_ACCESS_ASSIGN_ANY,
+//					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY,
+//					Permission.DASHBOARD_ACCESS_ENABLE,
+//					Permission.REPORTS_ACCESS_ENABLE
+//					));
+//			
+//			Role dispatcher = new Role();
+//			dispatcher.setName(DISPATCHER);
+//			dispatcher.setDescription(DISPATCHER);
+//			dispatcher.setPermissions(adminPermission);
+//			dispatcher.setPermissions(Permission.getSumOf(
+//					Permission.WORKORDER_ACCESS_CREATE_ANY,
+//					Permission.WORKORDER_ACCESS_UPDATE_ANY, 
+//					Permission.WORKORDER_ACCESS_READ_ANY,
+//					Permission.WORKORDER_ACCESS_DELETE_ANY,
+//					Permission.WORKORDER_ACCESS_ASSIGN_ANY,
+//					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+//					Permission.TASK_ACCESS_CREATE_ANY,
+//					Permission.TASK_ACCESS_UPDATE_ANY,
+//					Permission.TASK_ACCESS_READ_ANY,
+//					Permission.TASK_ACCESS_DELETE_ANY,
+//					Permission.TASK_ACCESS_ASSIGN_ANY,
+//					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
+//					));
+//			
+//			Role technician = new Role();
+//			technician.setName(TECHNICIAN);
+//			technician.setDescription(TECHNICIAN);
+//			technician.setPermissions(adminPermission);
+//			technician.setPermissions(Permission.getSumOf(
+//					Permission.WORKORDER_ACCESS_UPDATE_OWN, 
+//					Permission.WORKORDER_ACCESS_READ_OWN,
+//					Permission.WORKORDER_ACCESS_CAN_BE_ASSIGNED_ANY,
+//					Permission.TASK_ACCESS_UPDATE_OWN,
+//					Permission.TASK_ACCESS_READ_OWN,
+//					Permission.TASK_ACCESS_CAN_BE_ASSIGNED_ANY
+//					));
 			
 			defaultRoles.put(SUPER_ADMIN, superAdmin);
-			defaultRoles.put(ADMINISTRATOR, administrator);
-			defaultRoles.put(MANAGER, manager);
-			defaultRoles.put(DISPATCHER, dispatcher);
-			defaultRoles.put(TECHNICIAN, technician);
+//			defaultRoles.put(ADMINISTRATOR, administrator);
+//			defaultRoles.put(MANAGER, manager);
+//			defaultRoles.put(DISPATCHER, dispatcher);
+//			defaultRoles.put(TECHNICIAN, technician);
 			return defaultRoles;
 		}
 	}
@@ -443,7 +585,16 @@ public class AccountConstants {
 
 		return roleModule;
 	}
-
+	
+	public static FacilioModule getPermissionModule() {
+		FacilioModule permissionModule = new FacilioModule();
+		permissionModule.setName("permission");
+		permissionModule.setDisplayName("Permission");
+		permissionModule.setTableName("Permission");
+		
+		return permissionModule;
+	}
+	
 	public static List<FacilioField> getOrgFields() {
 		FacilioModule module = getOrgModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -892,6 +1043,56 @@ public class AccountConstants {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPermissionFields() {
+		FacilioModule module = getPermissionModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField roleId = new FacilioField();
+		roleId.setName("roleId");
+		roleId.setColumnName("ROLE_ID");
+		roleId.setDataType(FieldType.NUMBER);
+		roleId.setModule(module);
+		fields.add(roleId);
+		
+		FacilioField moduleName = new FacilioField();
+		moduleName.setName("moduleName");
+		moduleName.setColumnName("MODULE_NAME");
+		moduleName.setDataType(FieldType.STRING);
+		moduleName.setModule(module);
+		fields.add(moduleName);
+		
+		FacilioField permission = new FacilioField();
+		permission.setName("permission");
+		permission.setColumnName("PERMISSION");
+		permission.setDataType(FieldType.NUMBER);
+		permission.setModule(module);
+		fields.add(permission);
+		
+		return fields;
+		
+	}
+	
+	public static List<FacilioField> getAccessbileSpaceFields() {
+		FacilioModule module = ModuleFactory.getAccessibleSpaceModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		FacilioField orgUserId = new FacilioField();
+		orgUserId.setName("ouid");
+		orgUserId.setColumnName("ORG_USER_ID");
+		orgUserId.setDataType(FieldType.NUMBER);
+		orgUserId.setModule(module);
+		fields.add(orgUserId);
+		
+		FacilioField bsid = new FacilioField();
+		bsid.setName("bsid");
+		bsid.setColumnName("BS_ID");
+		bsid.setDataType(FieldType.NUMBER);
+		bsid.setModule(module);
+		fields.add(bsid);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getRoleFields() {
 		FacilioModule module = getRoleModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -923,13 +1124,6 @@ public class AccountConstants {
 		description.setColumnName("DESCRIPTION");
 		description.setModule(module);
 		fields.add(description);
-
-		FacilioField permissions = new FacilioField();
-		permissions.setName("permissionStr");
-		permissions.setDataType(FieldType.STRING);
-		permissions.setColumnName("PERMISSIONS");
-		permissions.setModule(module);
-		fields.add(permissions);
 
 		return fields;
 	}

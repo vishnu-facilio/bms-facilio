@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.workflow.SLATemplate;
 import com.facilio.bmsconsole.workflow.SMSTemplate;
 import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
+import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -219,6 +220,50 @@ public class TemplateAPI {
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(id, module));
 		builder.delete();
+	}
+	
+	public static void deleteTemplates(UserTemplate.Type type, List<Long> ids) throws Exception {
+		switch(type) {
+			case JSON:
+			case WORKORDER:
+			case ALARM:
+			case TASK_GROUP: {
+				
+				FacilioModule module = ModuleFactory.getJSONTemplateModule();
+				
+				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getJSONTemplateFields())
+						.table(module.getTableName())
+						.andCondition(CriteriaAPI.getIdCondition(ids, module));
+				
+				List<Map<String, Object>> props = selectBuider.get();
+				
+				List<Long> contentIds = new ArrayList<>();
+				if(props != null && !props.isEmpty()) {
+					for (Map<String, Object> prop : props) {
+						JSONTemplate template = FieldUtil.getAsBeanFromMap(prop, JSONTemplate.class);
+						contentIds.add(template.getId());
+					}
+				}
+				
+//				List<Long> contentIds = templates.stream().map(JSONTemplate::getContentId).collect(Collectors.toList());
+				FileStore fs = FileStoreFactory.getInstance().getFileStore();
+				if (contentIds.size() > 1) {
+					fs.deleteFiles(contentIds);
+				}
+				else {
+					fs.deleteFile(contentIds.get(0));
+				}
+				
+				FacilioModule templateModule = ModuleFactory.getTemplatesModule();
+				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+															.table(templateModule.getTableName())
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule))
+															.andCondition(CriteriaAPI.getIdCondition(ids, templateModule));
+				builder.delete();
+			}
+			break;
+		}
 	}
 	
 	public static UserTemplate getTemplate(long orgId, String templateName, UserTemplate.Type type) throws Exception {
@@ -554,4 +599,5 @@ public class TemplateAPI {
 		return null;
 		
 	}
+	
 }

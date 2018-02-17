@@ -74,12 +74,12 @@ public class PreventiveMaintenance {
 		this.modifiedBy = modifiedBy;
 	}
 
-	private long modifiedByid = -1;
-	public long getModifiedByid() {
-		return modifiedByid;
+	private long modifiedById = -1;
+	public long getModifiedById() {
+		return modifiedById;
 	}
-	public void setModifiedByid(long modifiedByid) {
-		this.modifiedByid = modifiedByid;
+	public void setModifiedById(long modifiedById) {
+		this.modifiedById = modifiedById;
 	}
 
 	private long createdTime = -1;
@@ -264,12 +264,17 @@ public class PreventiveMaintenance {
 		}
 		return null;
 	}
+	
+	public boolean hasTriggers() {
+		return triggerType != TriggerType.NONE;
+	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
 	public static enum TriggerType {
 		ONLY_SCHEDULE_TRIGGER, 
 		FLOATING, 
-		FIXED;
+		FIXED,
+		NONE;
 
 		public int getVal() {
 			return ordinal() + 1;

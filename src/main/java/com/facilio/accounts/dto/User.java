@@ -1,6 +1,16 @@
 package com.facilio.accounts.dto;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -222,4 +232,32 @@ public class User {
 	public void setFacilioAuth(boolean facilioAuth) {
 		this.facilioAuth = facilioAuth;
 	}
-}
+	
+	private List<Long> accessibleSpace;
+	public List<Long> getAccessibleSpace() {
+		return accessibleSpace;
+	}
+	public void setAccessibleSpace(List<Long> accessibleSpace) {
+		this.accessibleSpace = accessibleSpace;
+	}
+	
+	public Criteria scopeCriteria(String moduleName)
+	{
+		Criteria criteria = null;
+		if(getAccessibleSpace() == null) {
+			return null;
+		}
+		if(moduleName.equals("workorder"))
+		{
+			Condition condition = new Condition();
+			condition.setColumnName("RESOURCE_ID");
+			condition.setFieldName("resourceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+			
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		return criteria;
+	}
+} 

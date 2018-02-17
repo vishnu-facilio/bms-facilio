@@ -193,6 +193,14 @@ public class ModuleFactory {
 		return userModule;
 	}
 	
+	public static FacilioModule getAccessibleSpaceModule() {
+		FacilioModule accessbileSpaceModule = new FacilioModule();
+		accessbileSpaceModule.setName(FacilioConstants.ContextNames.ACCESSIBLE_SPACE);
+		accessbileSpaceModule.setDisplayName("Accessible Space");
+		accessbileSpaceModule.setTableName("Accessible_Space");
+		return accessbileSpaceModule;
+	}
+	
 	public static FacilioModule getNotesModule() {
 		FacilioModule notesModule = new FacilioModule();
 		notesModule.setName("notes");

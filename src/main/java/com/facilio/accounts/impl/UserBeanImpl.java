@@ -1,5 +1,7 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +20,13 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -102,6 +107,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
+		user.setAccessibleSpace(getAccessibleSpaceList(uid));
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
 				.fields(AccountConstants.getOrgUserFields());
@@ -152,6 +158,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOuid(ouid);
 		
 		sendInvitation(orgId, ouid, user);
+		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 		
 		return ouid;
 	}
@@ -244,6 +251,9 @@ public class UserBeanImpl implements UserBean {
 					.table(AccountConstants.getOrgUserModule().getTableName())
 					.fields(AccountConstants.getOrgUserFields())
 					.andCustomWhere("ORG_USERID = ?", ouid);
+			
+			deleteAccessibleSpace(user.getOuid());
+			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
 			
@@ -402,7 +412,9 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(ouid));
+			return user;
 		}
 		return null;
 	}
@@ -423,7 +435,10 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
+//			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
 		}
 		return null;
 	}
@@ -447,7 +462,10 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
+				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+				users.add(user);
+//				users.add(FieldUtil.getAsBeanFromMap(prop, User.class));
 			}
 			return users;
 		}
@@ -470,7 +488,10 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
+//			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
 		}
 		return null;
 	}
@@ -569,4 +590,45 @@ public class UserBeanImpl implements UserBean {
 		}
 		return false;
 	}
+	
+	private void addAccessibleSpace (long uid, List<Long> accessibleSpace) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				.fields(AccountConstants.getAccessbileSpaceFields());
+		
+		for(Long bsid : accessibleSpace) {
+			Map<String, Object> props = new HashMap<>();
+			props.put("ouid", uid);
+			props.put("bsid", bsid);
+			insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();		
+	}
+	
+	private void deleteAccessibleSpace(long uid) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				.andCustomWhere("ORG_USER_ID = ?", uid);
+		builder.delete();
+	}
+	
+	public static List<Long> getAccessibleSpaceList (long uid) throws Exception {
+	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(AccountConstants.getAccessbileSpaceFields())
+			.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+			.andCustomWhere("ORG_USER_ID = ?", uid);
+	
+	List<Map<String, Object>> props = selectBuilder.get();
+	if (props != null && !props.isEmpty()) {
+		List<Long> bsids = new ArrayList<>();
+		for(Map<String, Object> prop : props) {
+			bsids.add((Long) prop.get("bsid"));
+		}
+		return bsids;
+	}
+	return null;
+	
+	}
+
 }

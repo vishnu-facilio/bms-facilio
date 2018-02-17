@@ -37,7 +37,8 @@
 	
 	<package name="eventSummaryApi" namespace="/api/event/summary" extends="home">
 		<action name="*" class="com.facilio.events.actions.EventAction" method="eventDetail">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="eventId">{1}</param>
 			<result name="success" type="json">
 				<param name="root">event</param>
@@ -48,54 +49,62 @@
 	<package name="eventApi" namespace="/api/event" extends="home">
 		<action name="*" class="com.facilio.events.actions.EventAction"
 			method="eventList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">events,events\[\d+\],events\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="alarm" class="com.facilio.events.actions.EventAction" method="eventList">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">events,events\[\d+\],events\[\d+\].*</param>
 			</result>
 		</action>
 		<action name="addevent" class="com.facilio.events.actions.EventAction" method="addEvent">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^event.*</param>
 			</result>
 		</action>
 		<action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">eventRules</param>
 			</result>
 		</action>
 		
 		<action name="addEventRule" class="com.facilio.events.actions.EventAction" method="addEventRule">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
 		</action>
 		
 		<action name="updateEventRule" class="com.facilio.events.actions.EventAction" method="updateEventRule">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="root">eventRule</param>
 			</result>
 		</action>
 		
 		<action name="nodes" class="com.facilio.events.actions.EventAction" method="getAllNodes">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="root">nodes</param>
 			</result>
 		</action>
 		
 		<action name="updatenode" class="com.facilio.events.actions.EventAction" method="updateNodeWithAsset">
-			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<param name="moduleName">alarm</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
