@@ -391,13 +391,32 @@ public class WorkflowAPI {
 		return null;
 	}
 	
-	public static void deleteWorkFlowRule(List<Long> workflowIds) throws Exception{
+	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception{
+		if (workflowIds != null && !workflowIds.isEmpty()) {
+			ActionAPI.deleteAllActionsFromWorkflowRules(workflowIds);
+			
+			FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
+			deleteBuilder.delete();
+		}
+	}
+	
+	public static ReadingRuleContext getReadingRule(long id) throws Exception {
+		List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
 		
-		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
-		deleteBuilder.delete();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(readingRuleModule.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(id, readingRuleModule));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), ReadingRuleContext.class);
+		}
+		return null;
 	}
 	
 }

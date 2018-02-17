@@ -74,12 +74,12 @@ public class PreventiveMaintenance {
 		this.modifiedBy = modifiedBy;
 	}
 
-	private long modifiedByid = -1;
-	public long getModifiedByid() {
-		return modifiedByid;
+	private long modifiedById = -1;
+	public long getModifiedById() {
+		return modifiedById;
 	}
-	public void setModifiedByid(long modifiedByid) {
-		this.modifiedByid = modifiedByid;
+	public void setModifiedById(long modifiedById) {
+		this.modifiedById = modifiedById;
 	}
 
 	private long createdTime = -1;

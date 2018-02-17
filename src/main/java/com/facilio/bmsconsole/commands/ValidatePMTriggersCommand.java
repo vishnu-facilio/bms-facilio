@@ -25,6 +25,11 @@ public class ValidatePMTriggersCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		PreventiveMaintenance oldPm = null;
+		if(context.containsKey(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST) && context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST) != null) {
+			oldPm = ((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST)).get(0);
+		}
+		
 		PreventiveMaintenance pm = (PreventiveMaintenance) context
 				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		
@@ -38,6 +43,9 @@ public class ValidatePMTriggersCommand implements Command {
 				}
 				else if(trigger.getStartTime() == -1) {
 					throw new IllegalArgumentException("Starttime cannot be empty for schedule triggers");
+				}
+				else if (trigger.getStartTime() < System.currentTimeMillis()) {
+					trigger.setStartTime(System.currentTimeMillis());
 				}
 				
 				if (trigger.getReadingRule() != null) {
@@ -58,7 +66,12 @@ public class ValidatePMTriggersCommand implements Command {
 			}
 		}
 		else {
-			pm.setTriggerType(TriggerType.NONE);
+			if (oldPm != null && pmTriggers == null) {
+				pm.setTriggerType(oldPm.getTriggerType());
+			}
+			else {
+				pm.setTriggerType(TriggerType.NONE);
+			}
 		}
 		
 		return false;
@@ -87,6 +100,7 @@ public class ValidatePMTriggersCommand implements Command {
 		rule.setRuleType(RuleType.PM_READING_RULE);
 		rule.setStartValue(trigger.getStartReading());
 		rule.setInterval(trigger.getReadingInterval());
+		rule.setReadingFieldId(trigger.getReadingFieldId());
 		
 		Condition condition = new Condition();
 		condition.setField(field);

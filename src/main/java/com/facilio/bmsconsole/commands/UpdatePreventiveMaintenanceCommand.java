@@ -48,7 +48,7 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 		long templateId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		pm.setTemplateId(templateId);
 
-		pm.setModifiedByid(AccountUtil.getCurrentUser().getId());
+		pm.setModifiedById(AccountUtil.getCurrentUser().getId());
 		pm.setLastModifiedTime(System.currentTimeMillis());
 		
 		pm.setResourceId(workorder.getResource() != null ? workorder.getResource().getId() : -1);

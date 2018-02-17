@@ -71,7 +71,7 @@ public class AddPMReminderCommand implements Command {
 					reminder.setId(schedulerId);
 					
 					if(reminder.getTypeEnum() == ReminderType.BEFORE) {
-						if (!pm.hasTriggers()) {
+						if (pm.getTriggers() == null) {
 							continue;
 						}
 						for(PMTriggerContext trigger : pm.getTriggers()) {

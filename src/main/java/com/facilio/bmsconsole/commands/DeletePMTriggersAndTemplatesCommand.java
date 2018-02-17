@@ -33,17 +33,13 @@ public class DeletePMTriggersAndTemplatesCommand implements Command{
 		List<Long> templateIds = templateIds = new ArrayList<>();
 		templateIds.add(oldPm.getTemplateId());
 		
-		if(oldPm.hasTriggers() && (newPm.hasTriggers() || (newPm.getTriggers() != null && newPm.getTriggers().isEmpty()) ) ) {
+		if(oldPm.hasTriggers() && newPm.getTriggers() != null) {
 			
 			List<Long> ruleIds = new ArrayList<>();
-//			ruleIds.addAll(oldPm.getTriggers().stream().filter(trigger -> trigger.getReadingRuleId() != -1).map(PMTriggerContext::getReadingRuleId).collect(Collectors.toList()));
-			
 			List<Long> triggerIds = new ArrayList<>();
-//			triggerIds.addAll(oldPm.getTriggers().stream().map(PMTriggerContext::getId).collect(Collectors.toList()));
-			
 			oldPm.getTriggers().forEach(trigger -> {
-				if(trigger.getReadingFieldId() != -1) {
-					ruleIds.add(trigger.getReadingFieldId());
+				if(trigger.getReadingRuleId() != -1) {
+					ruleIds.add(trigger.getReadingRuleId());
 				}
 				triggerIds.add(trigger.getId());
 			});
@@ -52,7 +48,7 @@ public class DeletePMTriggersAndTemplatesCommand implements Command{
 			templateIds.addAll(pmJobs.stream().map(PMJobsContext::getTemplateId).collect(Collectors.toList()));
 			
 			if (!ruleIds.isEmpty()) {
-				WorkflowAPI.deleteWorkFlowRule(ruleIds);
+				WorkflowAPI.deleteWorkFlowRules(ruleIds);
 			}
 			
 			FacilioModule triggerModule = ModuleFactory.getPMTriggersModule();

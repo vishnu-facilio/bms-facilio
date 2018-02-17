@@ -30,7 +30,7 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (pm.hasTriggers()) {
+		if (pm.getTriggers() != null) {
 			addTriggersAndReadings(pm);
 			schedulePM(pm, context);
 		}
@@ -96,9 +96,6 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 	}
 	
 	private static long getStartTimeInSecond(long startTime) {
-		if(startTime < System.currentTimeMillis()) {
-			startTime = System.currentTimeMillis();
-		}
 		
 		long startTimeInSecond = startTime / 1000;
 		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time

@@ -9,11 +9,14 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.ActionContext;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -141,5 +144,36 @@ public class ActionAPI {
 			return actions;
 		}
 		return null;
+	}
+	
+	public static void deleteAllActionsFromWorkflowRules(List<Long> workflowRuleIds) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowRuleActionModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleActionFields();
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		FacilioField ruleField = fieldsMap.get("workflowRuleId");
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(ruleField,workflowRuleIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = actionBuilder.get();
+		List<Long> actionIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				long actionId = (long) prop.get("actionId");
+				actionIds.add(actionId);
+			}
+			
+			deleteActions(actionIds);
+		}
+		
+	}
+	
+	public static void deleteActions(List<Long> actionIds) throws SQLException {
+		FacilioModule actionModule = ModuleFactory.getActionModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(actionModule.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
+		deleteBuilder.delete();
 	}
 }
