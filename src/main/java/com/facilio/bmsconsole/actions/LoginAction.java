@@ -546,6 +546,7 @@ public class LoginAction extends ActionSupport{
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", getTicketStatus());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
+		data.put("calendarColor", TicketAPI.getCalendarColor());
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE, CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
 		
 		Map<String, Object> config = new HashMap<>();

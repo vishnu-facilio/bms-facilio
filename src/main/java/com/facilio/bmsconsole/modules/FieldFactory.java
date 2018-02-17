@@ -2902,4 +2902,15 @@ public class FieldFactory {
 		return fields.stream()
 				.collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 	}
+	
+	public static List<FacilioField> getCalendarColorFields() {
+		FacilioModule module = ModuleFactory.getCalendarColorModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("basedOn", "BASED_ON", module, FieldType.STRING));
+		
+		return fields;
+	}
 }

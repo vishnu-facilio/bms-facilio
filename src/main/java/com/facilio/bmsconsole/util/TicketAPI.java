@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
@@ -486,5 +487,18 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 		}
+	}
+	
+	public static CalendarColorContext getCalendarColor() throws Exception {
+		FacilioModule module = ModuleFactory.getCalendarColorModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getCalendarColorFields())
+														.table(module.getTableName());
+		List<Map<String, Object>> results = selectBuilder.get();
+		if(results != null && !results.isEmpty())
+		{
+			return (CalendarColorContext) results.get(0).values().iterator().next();
+		}
+		return new CalendarColorContext();
 	}
 }

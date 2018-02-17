@@ -708,4 +708,12 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
 		return reportScheduleInfo;
 	}
+	
+	public static FacilioModule getCalendarColorModule() {
+		FacilioModule calendarColor = new FacilioModule();
+		calendarColor.setName("calendarColor");
+		calendarColor.setDisplayName("Calendar Color");
+		calendarColor.setTableName("Calendar_Color");
+		return calendarColor;
+	}
 }
