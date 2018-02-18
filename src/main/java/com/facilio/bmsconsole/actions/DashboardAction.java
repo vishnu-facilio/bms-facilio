@@ -699,7 +699,7 @@ public class DashboardAction extends ActionSupport {
 			
 			HashMap<String, Object> purposeMapping = new HashMap<>();
 			
-			if (reportContext.getEnergyMeter().getGroupBy() != null && reportContext.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
+			if (reportContext.getEnergyMeter() != null && reportContext.getEnergyMeter().getGroupBy() != null && reportContext.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(reportContext.getEnergyMeter().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
 				System.out.println("lables -- "+lables);
@@ -1498,6 +1498,18 @@ public class DashboardAction extends ActionSupport {
 		addDashboardChain.execute(context);
 		return SUCCESS;
 	}
+	
+	public String updateDashboard() throws Exception {
+		FacilioContext context = new FacilioContext();
+		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
+		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
+		addDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
 	public String addWidget() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
