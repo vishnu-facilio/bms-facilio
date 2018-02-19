@@ -14,6 +14,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -114,6 +115,31 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
+		}
+		return null;
+	}
+
+	@Override
+	public Long getPortalInfo(String orgDomain) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		FacilioField portalId = new FacilioField();
+		portalId.setName("portalId");
+		portalId.setDataType(FieldType.NUMBER);
+		portalId.setColumnName("PORTALID");
+		portalId.setModule(portalInfoModule);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(portalId);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getOrgModule().getTableName())
+				.innerJoin(portalInfoModule.getTableName())
+				.on(AccountConstants.getOrgModule().getTableName()+".ORGID = PortalInfo.ORGID")
+				.andCustomWhere("FACILIODOMAINNAME = ? AND DELETED_TIME = -1", orgDomain);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return (Long)props.get(0).get("portalId");
 		}
 		return null;
 	}

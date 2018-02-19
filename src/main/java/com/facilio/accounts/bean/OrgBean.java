@@ -16,8 +16,10 @@ public interface OrgBean {
 	public Organization getOrg(long orgId) throws Exception;
 	
 	public Organization getOrg(String orgDomain) throws Exception;
-	
-	public List<User> getAllOrgUsers(long orgId) throws Exception;
+
+    Long getPortalInfo(String orgDomain) throws Exception;
+
+    public List<User> getAllOrgUsers(long orgId) throws Exception;
 	
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
 	

@@ -1,7 +1,15 @@
 package com.facilio.serviceportal.actions;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.fw.auth.LoginUtil;
+import com.facilio.util.AuthenticationUtil;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.beans.ModuleBean;
@@ -26,14 +34,11 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		try {
 			ServletContext context = ServletActionContext.getServletContext();
 			
-			
-			if(RequestUtil.HOSTNAME==null)
-			{
-			String host = (String) context.getInitParameter("DOMAINNAME");
-			 RequestUtil.HOSTNAME = host;
+			if (RequestUtil.HOSTNAME==null) {
+			    String host = (String) context.getInitParameter("DOMAINNAME");
+			    RequestUtil.HOSTNAME = host;
 			}
-			if(RequestUtil.MOBILE_HOSTNAME==null)
-			{
+			if (RequestUtil.MOBILE_HOSTNAME==null) {
 				RequestUtil.MOBILE_HOSTNAME= (String) context.getInitParameter("M_DOMAINNAME");
 			}
 			
@@ -61,26 +66,24 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			{
 				// invalid portal
 			}
-			
+
+
 			String actionname = ActionContext.getContext().getName();
 			System.out.println("inside if"+actionname);
 
 			boolean bypassauth = actionname.equals("login") || actionname.equals("samllogin");
-			
+			intercept0();
 			boolean validsession =false;
-			if(bypassauth || validsession)
-			{
+			if(bypassauth || validsession) {
 				System.out.println("inside if");
 				String result = arg0.invoke();
 				return result;
-			}
-			else
-			{
+			} else {
 				
 				// redirect to login page..
 				System.out.println("inside else");
-
-				return "login";
+				String result = arg0.invoke();
+				return result;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -109,5 +112,31 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		}
 		*/
 	}
+
+	private String intercept0(){
+        HttpServletRequest request = ServletActionContext.getRequest();
+		Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_PORTAL_ACCOUNT");
+        if (currentAccount == null) {
+            try {
+				String domainName = request.getServerName();
+				int index = domainName.indexOf(".");
+				if(index != -1) {
+					String subDomain = domainName.substring(0, index);
+					Long portalId = AccountUtil.getOrgBean().getPortalInfo(subDomain);
+					if (portalId != null) {
+						CognitoUtil.CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
+						if (cognitoUser != null) {
+							currentAccount = LoginUtil.getPortalAccount(cognitoUser, portalId);
+							ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
+						}
+					}
+				}
+            } catch (Exception e){
+                e.printStackTrace();
+                currentAccount = null;
+            }
+        }
+	    return "success";
+    }
 
 }

@@ -36,7 +36,8 @@ public class User {
 	private long roleId;
 	private int userType;
 	private boolean facilioAuth;
-	
+	private long portalId;
+
 	public long getUid() {
 		return uid;
 	}
@@ -232,7 +233,16 @@ public class User {
 	public void setFacilioAuth(boolean facilioAuth) {
 		this.facilioAuth = facilioAuth;
 	}
-	
+
+	public long getPortalId() {
+		return portalId;
+	}
+
+	public void setPortalId(long portalId) {
+		this.portalId = portalId;
+	}
+
+
 	private List<Long> accessibleSpace;
 	public List<Long> getAccessibleSpace() {
 		return accessibleSpace;
@@ -240,7 +250,7 @@ public class User {
 	public void setAccessibleSpace(List<Long> accessibleSpace) {
 		this.accessibleSpace = accessibleSpace;
 	}
-	
+
 	public Criteria scopeCriteria(String moduleName)
 	{
 		Criteria criteria = null;
@@ -254,10 +264,10 @@ public class User {
 			condition.setFieldName("resourceId");
 			condition.setOperator(BuildingOperator.BUILDING_IS);
 			condition.setValue(StringUtils.join(accessibleSpace, ","));
-			
+
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
 		}
 		return criteria;
 	}
-} 
+}

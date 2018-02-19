@@ -523,6 +523,16 @@ public class AccountConstants {
 		return userModule;
 	}
 
+	public static FacilioModule getPortalUserModule() {
+		FacilioModule userModule = new FacilioModule();
+		userModule.setName("portaluser");
+		userModule.setDisplayName("PortalUsers");
+		userModule.setTableName("faciliorequestors");
+
+		return userModule;
+	}
+
+
 	public static FacilioModule getUserMobileSettingModule() {
 		FacilioModule userModule = new FacilioModule();
 		userModule.setName("userMobileSetting");
@@ -836,6 +846,42 @@ public class AccountConstants {
 		country.setColumnName("COUNTRY");
 		country.setModule(module);
 		fields.add(country);
+
+		return fields;
+	}
+
+	public static FacilioModule getPortalInfoModule(){
+        FacilioModule portalInfoModule = new FacilioModule();
+        portalInfoModule.setName("portalinfo");
+        portalInfoModule.setDisplayName("PortalInfo");
+        portalInfoModule.setTableName("PortalInfo");
+        return portalInfoModule;
+    }
+
+	public static List<FacilioField> getPortalUserFields() {
+		FacilioModule module = getPortalUserModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField portalId = new FacilioField();
+		portalId.setName("portalId");
+		portalId.setDataType(FieldType.NUMBER);
+		portalId.setColumnName("PORTALID");
+		portalId.setModule(module);
+		fields.add(portalId);
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("username");
+		name.setModule(module);
+		fields.add(name);
+
+		FacilioField email = new FacilioField();
+		email.setName("email");
+		email.setDataType(FieldType.STRING);
+		email.setColumnName("email");
+		email.setModule(module);
+		fields.add(email);
 
 		return fields;
 	}

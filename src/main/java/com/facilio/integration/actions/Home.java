@@ -97,6 +97,16 @@ state = PORTAL-yogendrababu
 		this.newPassword = newPassword;
 	}
 
+	private int portalId = 0;
+
+	public int getPortalId() {
+		return portalId;
+	}
+
+	public void setPortalId(int portalId) {
+		this.portalId = portalId;
+	}
+
 	public String changePassword() throws Exception {
 		boolean verifyOldPassword = verifyPassword(getEmailaddress(), cryptWithMD5(password));
 		if(verifyOldPassword) {
@@ -125,44 +135,82 @@ state = PORTAL-yogendrababu
 		}
 	}
 
+	public String changePortalPassword() throws Exception {
+		boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), cryptWithMD5(password), getPortalId());
+		if(verifyOldPassword) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			try {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				pstmt = conn.prepareStatement("UPDATE faciliorequestors SET password = ? WHERE email= ? and PORTALID = ?");
+				pstmt.setString(1, cryptWithMD5(newPassword));
+				pstmt.setString(2, emailaddress);
+				pstmt.setLong(3, getPortalId());
+				pstmt.executeUpdate();
+
+			} catch(SQLException | RuntimeException e) {
+				e.printStackTrace();
+				throw e;
+			} finally {
+				DBUtil.closeAll(conn, pstmt);
+			}
+			setJsonresponse("message", "Password changed successfully");
+			setJsonresponse("status", "success");
+			return SUCCESS;
+		} else {
+			setJsonresponse("message", "Current Password is incorrect");
+			setJsonresponse("status", "failure");
+			return ERROR;
+		}
+	}
+
+
 	public String validatelogin() throws Exception
 	{
-		try {
-		System.out.println("validatelogin() : username : "+username +"; password : "+password);
-		String encryptedPass = cryptWithMD5(password);
-		if(!verifyPassword(username, encryptedPass))
-		{
-			System.out.print(">>>>> verifyPassword :"+username);
-			return ERROR;
-		}		
-		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
-		System.out.println("Response token is "+ jwt);
-		setJsonresponse("token",jwt);
-		setJsonresponse("username",username);
-		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();	
+		if(username != null && password != null) {
+			try {
+				System.out.println("validatelogin() : username : " + username + "; password : " + password + " portal id : " + portalId);
+				String encryptedPass = cryptWithMD5(password);
+				boolean validPassword = false;
+				if (getPortalId() > 0) {
+					validPassword = verifyPortalPassword(username, encryptedPass, getPortalId());
+				} else {
+					validPassword = verifyPassword(username, encryptedPass);
+				}
+				if (!validPassword) {
+					System.out.print(">>>>> verifyPassword :" + username);
+					return ERROR;
+				}
+				String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000);
+				System.out.println("Response token is " + jwt);
+				setJsonresponse("token", jwt);
+				setJsonresponse("username", username);
 
-		Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
-		cookie.setMaxAge(60*60*24*2); // Make the cookie last a year
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
+				HttpServletRequest request = ServletActionContext.getRequest();
+				HttpServletResponse response = ServletActionContext.getResponse();
+
+				Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+				cookie.setMaxAge(60 * 60 * 24 * 2); // Make the cookie last a year
+				cookie.setPath("/");
+				cookie.setHttpOnly(true);
 //		cookie.setDomain(request.getServerName());
-		response.addCookie(cookie);
+				response.addCookie(cookie);
 
-		Cookie authmodel = new Cookie("fc.authtype", "facilio");
-		authmodel.setMaxAge(60*60*24*2); // Make the cookie last a year
-		authmodel.setPath("/");
-		authmodel.setHttpOnly(false);
+				Cookie authmodel = new Cookie("fc.authtype", "facilio");
+				authmodel.setMaxAge(60 * 60 * 24 * 2); // Make the cookie last a year
+				authmodel.setPath("/");
+				authmodel.setHttpOnly(false);
 //		authmodel.setDomain(request.getServerName());
-		System.out.println("#################### facilio.in::: "+ request.getServerName());
-		response.addCookie(authmodel);
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			throw e;
+				System.out.println("#################### facilio.in::: " + request.getServerName());
+				response.addCookie(authmodel);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+			return SUCCESS;
 		}
-		return SUCCESS;
+		setJsonresponse("message", "Invalid username or password");
+		return ERROR;
 	}
 /*
  * HTTP/1.1 200 OK
@@ -214,6 +262,34 @@ Pragma: no-cache
 		
 		return userExists;
 	}
+
+	private boolean verifyPortalPassword(String emailaddress, String password, long portalId) throws Exception {
+		boolean userExists = false;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("SELECT password FROM faciliorequestors WHERE email = ? and PORTALID = ?");
+			pstmt.setString(1, emailaddress);
+			pstmt.setLong(2, portalId);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				String storedPass = rs.getString("password");
+				System.out.println("Stored : "+storedPass);
+				System.out.println("UserGiv: "+password);
+				if(storedPass.equalsIgnoreCase(password)) {
+					userExists = true;
+				}
+			}
+		} catch(SQLException | RuntimeException e) {
+			throw e;
+		} finally {
+			DBUtil.closeAll(conn, pstmt);
+		}
+
+		return userExists;
+	}
 	
 	
 	String emailaddress;
@@ -230,14 +306,19 @@ Pragma: no-cache
 		this.emailaddress = emailaddress;
 	}
 
-	public String signupUser() throws Exception
-	{
+	public String signupUser() throws Exception	{
 		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() );
 		String encryptedPass = cryptWithMD5(password);
 		
 		return AddNewUserDB(username,encryptedPass,getEmailaddress());
 		
 	//	return SUCCESS;
+	}
+
+	public String signupPortalUser() throws Exception	{
+		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() + "portal " + getPortalId() );
+		String encryptedPass = cryptWithMD5(password);
+		return addPortalUser(username, encryptedPass, getEmailaddress(), getPortalId());
 	}
 
 	public String acceptOpInvite() throws Exception {
@@ -249,6 +330,28 @@ Pragma: no-cache
 		} else {
 			return ERROR;
 		}
+	}
+
+	private String addPortalUser(String username, String password, String emailaddress, long portalId) throws Exception {
+		System.out.println("### AddNewUserDB() :"+emailaddress);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try	{
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password) VALUES(?,?,?,?)");
+			pstmt.setLong(1, portalId);
+			pstmt.setString(2, username);
+			pstmt.setString(3, emailaddress);
+			pstmt.setString(4, password);
+			pstmt.executeUpdate();
+
+		} catch(SQLException | RuntimeException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			DBUtil.closeAll(conn, pstmt);
+		}
+		return validatelogin();
 	}
 
 	public  String AddNewUserDB(String username, String password, String emailaddress) throws Exception

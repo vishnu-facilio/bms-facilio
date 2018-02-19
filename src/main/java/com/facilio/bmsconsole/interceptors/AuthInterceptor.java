@@ -6,12 +6,13 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.util.AuthenticationUtil;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -28,131 +29,60 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public void init() {
 		super.init();
 	}
-	
+
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-	
+
 		try {
 			System.out.println("intercept() : arg0 :"+arg0);
-			
-			boolean cognito_auth =true;
-			// Step 1: Validating ID Token
+
 			HttpServletRequest request = ServletActionContext.getRequest();
-			
-//			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
-			String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
-			String headerToken = request.getHeader("Authorization");
-			
-			// skiping signup url from authorization check
-			
 
-			if (facilioToken != null || headerToken != null) {
-				
-				boolean isAPI = true;
-				if (headerToken != null) {
-					if(headerToken.startsWith("Bearer facilio "))
-					{
-						facilioToken = headerToken.replace("Bearer facilio ", "");
-					}
-					else
-					{
-						headerToken = request.getHeader("Authorization").replace("Bearer ", "");
-					}
-				}
-
-				System.out.println("intercept() : The header authtoken is "+headerToken);
-				System.out.println("intercept() : The facilioToken authtoken is "+facilioToken);
-				
-				CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);
-				if (cognitoUser == null) {
-					return Action.LOGIN;
-				}
-				
-				// Step 2: Setting current user in session
-				Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_ACCOUNT");
-				if (currentAccount == null) {
-					if (isAPI) {
-						boolean addUserEntryIfNotExists = (request.getRequestURI().indexOf("/api/login") != -1 || request.getRequestURI().indexOf("/api/account") != -1);
-						currentAccount = LoginUtil.getAccount(cognitoUser, addUserEntryIfNotExists);
-						ActionContext.getContext().getSession().put("CURRENT_USER", currentAccount);
-					}
-					else {
+			Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_ACCOUNT");
+			if (currentAccount == null) {
+				try {
+					CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
+					if(cognitoUser != null) {
 						currentAccount = LoginUtil.getAccount(cognitoUser, true);
-						ActionContext.getContext().getSession().put("CURRENT_USER", currentAccount);
+						ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
 					}
+				} catch (Exception e){
+					e.printStackTrace();
+					currentAccount = null;
 				}
-
-				// Step 3: Validating subdomain
-				String serverName = request.getServerName();
-				if (RequestUtil.HOSTNAME == null) {
-					RequestUtil.HOSTNAME = (String) ActionContext.getContext().getApplication().get("DOMAINNAME");
-				}
-				if(RequestUtil.MOBILE_HOSTNAME==null)
-				{
-					RequestUtil.MOBILE_HOSTNAME = (String)ActionContext.getContext().getApplication().get("M_DOMAINNAME");
-				}
-				String requestSubdomain = null;//serverName.replaceAll(HOSTNAME, "");
-				
-				if(serverName.endsWith(RequestUtil.HOSTNAME))
-				{
-					requestSubdomain = serverName.replaceAll(RequestUtil.HOSTNAME, "");
-					 request.setAttribute("isMobile", false);
-					 //System.out.println("desktop");
-				}
-				else
-				{
-					requestSubdomain = serverName.replaceAll(RequestUtil.MOBILE_HOSTNAME, "");
-					request.setAttribute("isMobile", true);
-					 //System.out.println("mobile");
-
-				}
-				
-				if (!isAPI && !requestSubdomain.equalsIgnoreCase(currentAccount.getOrg().getDomain())) {
-					return "unauthorized";
-				}
-
-				// Step 4: Setting threadlocal variables
+			}
+			if(currentAccount != null) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
-				// Setting ORGID & USERID in attributes for using in access log
+
 				request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 				request.setAttribute("USERID", currentAccount.getUser().getOuid());
 
-				// Step 5: Checking permission for current resource
 				Parameter permission = ActionContext.getContext().getParameters().get("permission");
 				Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
 				if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue() ,permission.getValue())) {
 					return "unauthorized";
 				}
-				
-//				Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-//				if(moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue())) {
-//					return "unauthorized";
-//				}
-				
-				// Step 6: Setting locale & timezone information in session
+
 				String lang = currentAccount.getUser().getLanguage();
 				Locale localeObj = null;
 				if (lang == null || lang.trim().isEmpty()) {
 					localeObj = request.getLocale();
-				}
-				else {
+				} else {
 					localeObj = new Locale(lang);
 				}
-				System.out.println("### LOCALE: "+localeObj);
-				
+				System.out.println("### LOCALE: " + localeObj);
+
 				String timezone = currentAccount.getUser().getTimezone();
 				TimeZone timezoneObj = null;
 				if (timezone == null || timezone.trim().isEmpty()) {
 					Calendar calendar = Calendar.getInstance(localeObj);
 					timezoneObj = calendar.getTimeZone();
-				}
-				else {
+				} else {
 					timezoneObj = TimeZone.getTimeZone(timezone);
 				}
 				ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
-			}
-			else {
+			} else {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					return Action.LOGIN;
@@ -168,26 +98,25 @@ public class AuthInterceptor extends AbstractInterceptor {
 		String result = arg0.invoke();
 
 		/* let us do some post-processing */
-		//output = "Post-Processing"; 
+		//output = "Post-Processing";
 		//System.out.println(output);
 
 		return result;
 	}
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
-		
+
 		if (permissions == null || "".equals(permissions.trim())) {
 			System.out.println("WARNING: Configured permission is empty");
 			return true;
 		}
-		
+
 		Role role = AccountUtil.getCurrentUser().getRole();
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals("Administrator")) {
 			return true;
-		}
-		else {
+		} else {
 			return role.hasPermission(moduleName, permissions);
-//		return role.hasPermission(moduleName, AccountConstants.ModulePermission.valueOf(permissions).getModulePermission());
 		}
+
 	}
 }

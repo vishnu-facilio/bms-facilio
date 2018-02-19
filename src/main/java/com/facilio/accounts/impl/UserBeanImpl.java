@@ -19,6 +19,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -159,7 +160,7 @@ public class UserBeanImpl implements UserBean {
 		
 		sendInvitation(orgId, ouid, user);
 		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
-		
+
 		return ouid;
 	}
 	
@@ -251,7 +252,7 @@ public class UserBeanImpl implements UserBean {
 					.table(AccountConstants.getOrgUserModule().getTableName())
 					.fields(AccountConstants.getOrgUserFields())
 					.andCustomWhere("ORG_USERID = ?", ouid);
-			
+
 			deleteAccessibleSpace(user.getOuid());
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 
@@ -442,7 +443,34 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
-	
+
+	public User getPortalUser(String email, long portalId) throws Exception {
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(portalInfoModule);
+		fields.add(orgId);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.andCustomWhere("EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		System.out.println(props);
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+		}
+		return null;
+	}
+
 	@Override
 	public List<User> getUsers(Criteria criteria) throws Exception {
 		
@@ -590,35 +618,35 @@ public class UserBeanImpl implements UserBean {
 		}
 		return false;
 	}
-	
+
 	private void addAccessibleSpace (long uid, List<Long> accessibleSpace) throws Exception {
-		
+
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
 				.fields(AccountConstants.getAccessbileSpaceFields());
-		
+
 		for(Long bsid : accessibleSpace) {
 			Map<String, Object> props = new HashMap<>();
 			props.put("ouid", uid);
 			props.put("bsid", bsid);
 			insertBuilder.addRecord(props);
 		}
-		insertBuilder.save();		
+		insertBuilder.save();
 	}
-	
+
 	private void deleteAccessibleSpace(long uid) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
 				.andCustomWhere("ORG_USER_ID = ?", uid);
 		builder.delete();
 	}
-	
+
 	public static List<Long> getAccessibleSpaceList (long uid) throws Exception {
 	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 			.select(AccountConstants.getAccessbileSpaceFields())
 			.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
 			.andCustomWhere("ORG_USER_ID = ?", uid);
-	
+
 	List<Map<String, Object>> props = selectBuilder.get();
 	if (props != null && !props.isEmpty()) {
 		List<Long> bsids = new ArrayList<>();
@@ -628,7 +656,7 @@ public class UserBeanImpl implements UserBean {
 		return bsids;
 	}
 	return null;
-	
+
 	}
 
 }

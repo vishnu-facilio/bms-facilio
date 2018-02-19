@@ -36,12 +36,31 @@
   	<action name="index" >
         <result>/service/index.jsp</result>
     </action>
-    
-    <action name="login" class="com.facilio.customerportal.actions.Authentication" method="login">
+  
+        <action name="apisignup" class="com.facilio.integration.actions.Home"
+        method="signupPortalUser">
+                <result name="success" type="json">
+                        <param name="includeProperties">jsonresponse.*</param>
+                </result>
+        </action>
+  
+    <action name="login" class="com.facilio.integration.actions.Home" method="validatelogin">
 		<result name="samllogin">/service/samllogin.jsp</result>
 		<result >/service/login.jsp</result>
+		<result name="error">/service/login.jsp</result>
 		</action>
-		
+	
+	<action name="faciliosubmit" class="com.facilio.integration.actions.Home"
+		method="validatelogin">
+		<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
+
+	</action>
+	
    <action name="samllogin" class="com.facilio.customerportal.actions.Authentication" method="samllogin">
 			<result >/service/samllogin.jsp</result>
 		</action>     

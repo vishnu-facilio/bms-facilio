@@ -44,7 +44,8 @@ public class LoginUtil {
 			}
 			if(cognitoUser.isFacilioauth())
 			{
-				orgDomain =  cognitoUser.getEmail().replace('@', '_');
+				orgDomain =  cognitoUser.getEmail().replace('@', '-');
+				orgDomain =  orgDomain.replace('.', '-');
 				orgName = orgDomain;
 			}
 			
@@ -98,6 +99,18 @@ public class LoginUtil {
 			}
 		}
 		else {
+			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+		}
+		return new Account(org, user);
+	}
+
+	public static Account getPortalAccount(CognitoUser cognitoUser, long portalId) throws Exception {
+
+		User user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
+		Organization org = null;
+		if (user == null) {
+			throw new Exception("user not found");
+		} else {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
 		return new Account(org, user);
