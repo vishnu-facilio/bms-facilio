@@ -49,8 +49,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 			}
 		}
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		records = new LinkedList<>(records);
+//		records = new LinkedList<>(records);
 		if(records != null && !records.isEmpty()) {
+			records = new LinkedList<>(records);
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			if(activityType != null) {
