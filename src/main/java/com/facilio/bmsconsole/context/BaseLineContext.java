@@ -56,7 +56,7 @@ public class BaseLineContext {
 	}
 	public int getRangeType() {
 		if (rangeType != null) {
-			rangeType.getVal();
+			return rangeType.getVal();
 		}
 		return -1;
 	}
