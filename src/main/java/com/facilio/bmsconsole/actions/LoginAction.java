@@ -516,7 +516,16 @@ public class LoginAction extends ActionSupport{
 		
 		return SUCCESS;
 	}
-	
+
+	public String portalAccount() throws Exception {
+
+		account = new HashMap<>();
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+
+		return SUCCESS;
+	}
+
 	public String currentAccount() throws Exception {
 		
 		HashMap<String, Object> appProps = new HashMap<>();
