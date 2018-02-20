@@ -2880,6 +2880,32 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getBaseLineFields() {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.NUMBER));
+		fields.add(getField("rangeType", "RANGE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getBaseLineReportsRelFields() {
+		FacilioModule module = ModuleFactory.getBaseLineReportRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "BASE_LINE_ID", module, FieldType.NUMBER));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+		fields.add(getField("isAdjust", "IS_ADJUST", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);
@@ -2907,7 +2933,14 @@ public class FieldFactory {
 	
 	public static Map<String, FacilioField> getAsMap(List<FacilioField> fields) {
 		return fields.stream()
-				.collect(Collectors.toMap(FacilioField::getName, Function.identity()));
+				.collect(
+						Collectors.toMap(FacilioField::getName, 
+										Function.identity(), 
+										(prevValue, curValue) -> {
+											return prevValue;
+										}
+									)
+						);
 	}
 	
 	public static List<FacilioField> getCalendarColorFields() {

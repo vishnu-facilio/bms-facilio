@@ -369,6 +369,9 @@ public class FacilioConstants {
 		public static final String START_TIME = "startTime";
 		public static final String SCHEDULE_INFO = "schedule";
 		
+		public static final String BASE_LINE = "baseLine";
+		public static final String BASE_LINE_LIST = "baseLines";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

@@ -503,15 +503,39 @@ public class DateTimeUtil
 		return currentTime - (hour * ONE_HOUR_MILLIS_VALUE);
 	}
 	
+	public static boolean isSameDay (long startTime, long endTime) {
+		ZonedDateTime start = getDateTime(startTime);
+		ZonedDateTime end = getDateTime(endTime);
+		return start.toLocalDate().equals(end.toLocalDate());
+	}
 	public static boolean isSameDay (ZonedDateTime start, ZonedDateTime end) {
 		return start.toLocalDate().equals(end.toLocalDate());
+	}
+	
+	public static boolean isSameWeek (long startTime, long endTime) {
+		WeekFields weekFields = getWeekFields();
+		ZonedDateTime start = getDateTime(startTime);
+		ZonedDateTime end = getDateTime(endTime);
+		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfWeekBasedYear()) == end.get(weekFields.weekOfWeekBasedYear());
 	}
 	public static boolean isSameWeek (ZonedDateTime start, ZonedDateTime end) {
 		WeekFields weekFields = getWeekFields();
 		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfWeekBasedYear()) == end.get(weekFields.weekOfWeekBasedYear());
 	}
+	
+	public static boolean isSameMonth (long startTime, long endTime) {
+		ZonedDateTime start = getDateTime(startTime);
+		ZonedDateTime end = getDateTime(endTime);
+		return Year.from(start).equals(Year.from(end)) && Month.from(start) == Month.from(end);
+	}
 	public static boolean isSameMonth (ZonedDateTime start, ZonedDateTime end) {
 		return Year.from(start).equals(Year.from(end)) && Month.from(start) == Month.from(end);
+	}
+	
+	public static boolean isSameYear (long startTime, long endTime) {
+		ZonedDateTime start = getDateTime(startTime);
+		ZonedDateTime end = getDateTime(endTime);
+		return Year.from(start).equals(Year.from(end));
 	}
 	public static boolean isSameYear (ZonedDateTime start, ZonedDateTime end) {
 		return Year.from(start).equals(Year.from(end));
