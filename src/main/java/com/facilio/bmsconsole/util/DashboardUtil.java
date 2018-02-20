@@ -835,4 +835,23 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 		}
 		return meterIds;
 	}
+	public static final long ONE_MIN_MILLIS = 60000l;
+	public static int predictDateOpperator(JSONArray dateFilter) {
+	
+	long diff = (Long) dateFilter.get(1) - (Long) dateFilter.get(0);
+	
+	if(diff <= ONE_MIN_MILLIS * 60 * 24) {
+		return DateOperators.TODAY.getOperatorId();
+	}
+	else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 7) {
+		return DateOperators.CURRENT_WEEK.getOperatorId();
+	}
+	else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 31) {
+		return DateOperators.CURRENT_MONTH.getOperatorId();
+	}
+	else {
+		return DateOperators.CURRENT_YEAR.getOperatorId();
+	}
+	
+}
 }

@@ -153,7 +153,29 @@ public class DateTimeUtil
 	{
 		return getDateTime(getZoneId(),addedTime,seconds);
 	}
-	
+	public static long utcTimeToOrgTime(long utcTime) {
+		
+		String orgTimeZone = getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
+		long timeZoneMillis =  timeZonetoMin(orgTimeZone) * (60*1000);
+		return utcTime - timeZoneMillis;
+	}
+	public static long timeZonetoMin(String timeZone) { //eg: -10:30, +00:00, +05:30
+		String[] res = timeZone.split(":");
+		
+		String hourString = res[0];
+		String minString = res[1];
+		
+		Long hourToMins = Long.parseLong(hourString) * 60;
+		long mins;
+		if(hourToMins >= 0) {
+			mins = hourToMins + Long.parseLong(minString);
+		}
+		else {
+			mins = hourToMins - Long.parseLong(minString);
+		}
+		System.out.println(mins);
+		return mins;
+	}
 	public static HashMap<String,Object> getTimeData(ZoneId zoneId,long addedTime, Boolean... seconds)
 	{
 		ZonedDateTime zdt = getDateTime(zoneId,addedTime,seconds);

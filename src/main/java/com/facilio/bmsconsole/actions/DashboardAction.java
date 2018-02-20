@@ -471,14 +471,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 			else {
-				if (reportContext.getDateFilter().getReportId() == 20) {
-					// between
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(reportContext.getDateFilter().getVal());
-				}
-				else {
-					dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-				}
+				dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
 			}
 			builder.andCondition(dateCondition);
 		}
@@ -1179,6 +1172,7 @@ public class DashboardAction extends ActionSupport {
 			
 			if (dateCondition != null) {
 				dateCondition.setField(modTime);
+				dateCondition.setComputedWhereClause(null);
 				builder1.andCondition(dateCondition);
 			}
 			
