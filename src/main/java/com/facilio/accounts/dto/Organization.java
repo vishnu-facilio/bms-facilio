@@ -19,6 +19,7 @@ public class Organization {
 	private String country;
 	private String timezone;
 	private long createdTime;
+	private long portalId;
 	
 	public long getOrgId() {
 		return orgId;
@@ -116,5 +117,13 @@ public class Organization {
 	}
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
+	}
+
+	public long getPortalId() {
+		return portalId;
+	}
+
+	public void setPortalId(long portalId) {
+		this.portalId = portalId;
 	}
 }

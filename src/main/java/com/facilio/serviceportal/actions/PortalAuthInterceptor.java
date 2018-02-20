@@ -2,19 +2,15 @@ package com.facilio.serviceportal.actions;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.util.AuthenticationUtil;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.fw.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -59,14 +55,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		String subdomian =  RequestUtil.getDomainName();
 		
 		try {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", subdomian);
-
-			ServicePortalInfo  sinfo = modBean.getServicePortalInfo();
-			if(sinfo==null)
-			{
-				// invalid portal
-			}
-
 
 			String actionname = ActionContext.getContext().getName();
 			System.out.println("inside if"+actionname);
@@ -122,13 +110,18 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				int index = domainName.indexOf(".");
 				if(index != -1) {
 					String subDomain = domainName.substring(0, index);
-					Long portalId = AccountUtil.getOrgBean().getPortalInfo(subDomain);
-					if (portalId != null) {
+					Organization org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
+					if (org != null) {
+						Long portalId = org.getPortalId();
 						CognitoUtil.CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
+						User user = null;
 						if (cognitoUser != null) {
-							currentAccount = LoginUtil.getPortalAccount(cognitoUser, portalId);
-							ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
+							user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
 						}
+						currentAccount = new Account(org, user);
+						AccountUtil.cleanCurrentAccount();
+						AccountUtil.setCurrentAccount(currentAccount);
+						ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
 					}
 				}
             } catch (Exception e){

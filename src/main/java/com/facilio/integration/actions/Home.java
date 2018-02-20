@@ -16,20 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.billing.context.Tenant;
 import com.facilio.bmsconsole.actions.LoginAction;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -97,14 +89,8 @@ state = PORTAL-yogendrababu
 		this.newPassword = newPassword;
 	}
 
-	private int portalId = 0;
-
-	public int getPortalId() {
-		return portalId;
-	}
-
-	public void setPortalId(int portalId) {
-		this.portalId = portalId;
+	public long portalId() {
+        return AccountUtil.getCurrentOrg().getPortalId();
 	}
 
 	public String changePassword() throws Exception {
@@ -136,7 +122,7 @@ state = PORTAL-yogendrababu
 	}
 
 	public String changePortalPassword() throws Exception {
-		boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), cryptWithMD5(password), getPortalId());
+		boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), cryptWithMD5(password), portalId());
 		if(verifyOldPassword) {
 			Connection conn = null;
 			PreparedStatement pstmt = null;
@@ -145,7 +131,7 @@ state = PORTAL-yogendrababu
 				pstmt = conn.prepareStatement("UPDATE faciliorequestors SET password = ? WHERE email= ? and PORTALID = ?");
 				pstmt.setString(1, cryptWithMD5(newPassword));
 				pstmt.setString(2, emailaddress);
-				pstmt.setLong(3, getPortalId());
+				pstmt.setLong(3, portalId());
 				pstmt.executeUpdate();
 
 			} catch(SQLException | RuntimeException e) {
@@ -169,11 +155,11 @@ state = PORTAL-yogendrababu
 	{
 		if(username != null && password != null) {
 			try {
-				System.out.println("validatelogin() : username : " + username + "; password : " + password + " portal id : " + portalId);
+				System.out.println("validatelogin() : username : " + username + "; password : " + password + " portal id : " + portalId());
 				String encryptedPass = cryptWithMD5(password);
 				boolean validPassword = false;
-				if (getPortalId() > 0) {
-					validPassword = verifyPortalPassword(username, encryptedPass, getPortalId());
+				if (portalId() > 0) {
+					validPassword = verifyPortalPassword(username, encryptedPass, portalId());
 				} else {
 					validPassword = verifyPassword(username, encryptedPass);
 				}
@@ -272,7 +258,7 @@ Pragma: no-cache
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("SELECT password FROM faciliorequestors WHERE email = ? and PORTALID = ?");
 			pstmt.setString(1, emailaddress);
-			pstmt.setLong(2, portalId);
+			pstmt.setLong(2, portalId());
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				String storedPass = rs.getString("password");
@@ -316,9 +302,9 @@ Pragma: no-cache
 	}
 
 	public String signupPortalUser() throws Exception	{
-		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() + "portal " + getPortalId() );
+		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
 		String encryptedPass = cryptWithMD5(password);
-		return addPortalUser(username, encryptedPass, getEmailaddress(), getPortalId());
+		return addPortalUser(username, encryptedPass, getEmailaddress(), portalId());
 	}
 
 	public String acceptOpInvite() throws Exception {
@@ -339,7 +325,7 @@ Pragma: no-cache
 		try	{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password) VALUES(?,?,?,?)");
-			pstmt.setLong(1, portalId);
+			pstmt.setLong(1, portalId());
 			pstmt.setString(2, username);
 			pstmt.setString(3, emailaddress);
 			pstmt.setString(4, password);

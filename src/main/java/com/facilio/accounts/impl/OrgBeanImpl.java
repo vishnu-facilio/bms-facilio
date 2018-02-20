@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.bean.OrgBean;
-import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -120,7 +119,8 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
-	public Long getPortalInfo(String orgDomain) throws Exception {
+	public Organization getPortalOrg(String orgDomain) throws Exception {
+		Organization org = null;
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
 		FacilioField portalId = new FacilioField();
 		portalId.setName("portalId");
@@ -130,6 +130,7 @@ public class OrgBeanImpl implements OrgBean {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(portalId);
+		fields.addAll(AccountConstants.getOrgFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(AccountConstants.getOrgModule().getTableName())
@@ -139,9 +140,9 @@ public class OrgBeanImpl implements OrgBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return (Long)props.get(0).get("portalId");
+			org = FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
 		}
-		return null;
+		return org;
 	}
 	
 	@Override
