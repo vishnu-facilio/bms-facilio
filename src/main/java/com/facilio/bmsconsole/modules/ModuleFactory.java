@@ -724,4 +724,21 @@ public class ModuleFactory {
 		calendarColor.setTableName("Calendar_Color");
 		return calendarColor;
 	}
+	
+	public static FacilioModule getBaseLineModule()  {
+		FacilioModule blModule = new FacilioModule();
+		blModule.setName("baseline");
+		blModule.setDisplayName("Base Lines");
+		blModule.setTableName("BaseLines");
+		return  blModule;
+	}
+	
+	public static FacilioModule getBaseLineReportRelModule() {
+		FacilioModule relModule = new FacilioModule();
+		relModule.setName("baselinereportrel");
+		relModule.setDisplayName("Base Line Reports Rel");
+		relModule.setTableName("Report_BaseLine_Rel");
+		
+		return relModule;
+	}
 }

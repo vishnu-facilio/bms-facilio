@@ -39,6 +39,14 @@ public class BaseLineContext {
 		this.name = name;
 	}
 	
+	private long spaceId = -1;
+	public long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(long spaceId) {
+		this.spaceId = spaceId;
+	}
+
 	private RangeType rangeType;
 	public RangeType getRangeTypeEnum() {
 		return rangeType;
@@ -48,7 +56,7 @@ public class BaseLineContext {
 	}
 	public int getRangeType() {
 		if (rangeType != null) {
-			rangeType.getVal();
+			return rangeType.getVal();
 		}
 		return -1;
 	}
@@ -72,8 +80,30 @@ public class BaseLineContext {
 		this.endTime = endTime;
 	}
 	
-	public Criteria getBaseLineCriteria(FacilioField field, long dataStartTime, long dataEndTime, boolean adjust) {
-		String range = getRange(dataStartTime, dataEndTime, adjust);
+	private long reportId = -1;
+	public long getReportId() {
+		return reportId;
+	}
+	public void setReportId(long reportId) {
+		this.reportId = reportId;
+	}
+	
+	private Boolean isAdjust;
+	public Boolean getIsAdjust() {
+		return isAdjust;
+	}
+	public void setIsAdjust(boolean isAdjust) {
+		this.isAdjust = isAdjust;
+	}
+	public boolean isAdjust() {
+		if (isAdjust != null) {
+			return isAdjust.booleanValue();
+		}
+		return true;
+	}
+	
+	public Criteria getBaseLineCriteria(FacilioField field, long dataStartTime, long dataEndTime) {
+		String range = calculateRange(dataStartTime, dataEndTime, isAdjust());
 		if (range != null && !range.isEmpty()) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(field, range, DateOperators.BETWEEN));
@@ -128,9 +158,14 @@ public class BaseLineContext {
 		return new ImmutablePair<ZonedDateTime, ZonedDateTime>(blStartZdt, blEndZdt);
 	}
 	
-	private String getRange(long dataStartTime, long dataEndTime, boolean adjust) {
+	private String calculateRange(long dataStartTime, long dataEndTime, boolean adjust) {
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
+		
+		System.out.println(dataStartZdt);
+		System.out.println(dataEndZdt);
+		
+		System.out.println("#####");
 		
 		Duration duration = Duration.between(dataStartZdt, dataEndZdt);
 		RangeType type = rangeType;
@@ -204,9 +239,14 @@ public class BaseLineContext {
 				}
 			}
 			else {
+				Duration blDuration = Duration.between(blStartZdt, blEndZdt);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-				blEndZdt = adjustEndTime(dataEndZdt, blEndZdt);
+				if (duration.compareTo(blDuration) < 0) {
+					blEndZdt = blStartZdt.plus(duration);
+				}
 			}
+			System.out.println(blStartZdt);
+			System.out.println(blEndZdt);
 			return blStartZdt.toInstant().toEpochMilli()+", "+blEndZdt.toInstant().toEpochMilli();
 		}
 		return null;

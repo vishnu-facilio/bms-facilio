@@ -1357,3 +1357,8 @@ SET @ADD_ROLE_ID := (SELECT LAST_INSERT_ID());
 INSERT INTO Permission (ROLE_ID, MODULE_NAME, PERMISSION) VALUES (@ADD_ROLE_ID, 'workorder', 10240);
 INSERT INTO Permission (ROLE_ID, MODULE_NAME, PERMISSION) VALUES (@ADD_ROLE_ID, 'alarm', 10240);
 
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Period', 1);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Day', 2);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Week', 3);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Month', 4);
+INSERT INTO BaseLines (ORGID, NAME, RANGE_TYPE) VALUES (${orgId}, 'Previous Year', 5);

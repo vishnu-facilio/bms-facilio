@@ -1803,6 +1803,33 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="baseLineApi" namespace="/api/baseline" extends="home">
+		<action name="addBaseLine" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="addBaseLine">
+			<result name="success" type="json">
+				<param name="root">baseLine</param>
+			</result>
+		</action>
+		<action name="getSpaceBaseLines" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="getBaseLineList">
+			<result name="success" type="json">
+				<param name="root">baseLines</param>
+			</result>
+		</action>
+		<action name="addReportBaseLines" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="addReportBaseLines">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		<action name="updateReportBaseLines" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="updateReportBaseLines">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="energyBuildingReportsApi" namespace="/api/report/energy/building" extends="home">
 		<action name="getBuildingDetails" class="com.facilio.bmsconsole.actions.ReportActions"

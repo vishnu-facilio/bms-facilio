@@ -1679,6 +1679,36 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addBaseLineChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ValidateBaseLineCommand());
+		c.addCommand(new AddBaseLineCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getBaseLinesOfSpaceChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetBaseLinesForSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addReportBaseLinesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddReportBaseLinesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateReportBaseLinesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteExistingReportBaseLineCommand());
+		c.addCommand(new AddReportBaseLinesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase
