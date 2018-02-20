@@ -18,6 +18,7 @@ public class LoadAllFieldsCommand implements Command{
 		if(moduleName != null && !moduleName.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(moduleName));
+
 		}
 		return false;
 	}

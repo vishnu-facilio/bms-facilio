@@ -495,6 +495,13 @@ public class FieldFactory {
 		lastValue.setModule(module);
 		fields.add(lastValue);
 		
+		FacilioField resourceId = new FacilioField();
+		resourceId.setName("resourceId");
+		resourceId.setDataType(FieldType.NUMBER);
+		resourceId.setColumnName("RESOURCE_ID");
+		resourceId.setModule(module);
+		fields.add(resourceId);
+		
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 
 		return fields;

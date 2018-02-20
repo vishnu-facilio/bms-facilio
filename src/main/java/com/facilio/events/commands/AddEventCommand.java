@@ -29,6 +29,7 @@ public class AddEventCommand implements Command {
 				EventAPI.processEvents(System.currentTimeMillis(), payload, ruleList, new HashMap<>(), -1);
 			} catch (Exception e) {
 				System.out.println(e.getLocalizedMessage() + " Exception while adding event: " + payload.toString());
+				e.printStackTrace();
 			}
 		}
 		return false;

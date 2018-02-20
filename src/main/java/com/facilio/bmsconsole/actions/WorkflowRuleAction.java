@@ -110,6 +110,15 @@ public class WorkflowRuleAction extends ActionSupport {
 		return "s";
 	}
 	
+	private long assetId;
+	
+	public long getAssetId() {
+		return assetId;
+	}
+
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
 	private ReadingRuleContext readingRule;
 	public ReadingRuleContext getReadingRule() {
 		return readingRule;
@@ -130,9 +139,9 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	private String commonAddReadingRule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
+		//readingRule.setResourceId(getAssetId());
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
-		
 		Chain addRule = FacilioChainFactory.getAddReadingRuleChain();
 		addRule.execute(facilioContext);
 		

@@ -15,6 +15,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -72,6 +73,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 						Iterator<Integer> it = records.iterator();
 						while (it.hasNext()) {
 							Object record = it.next();
+							if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE && ((ReadingRuleContext)workflowRule).getResourceId() != ((ReadingContext)record).getParentId()) { //Reading Rule check for specific assets used in the rule
+								continue;
+							}
 							Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							boolean flag = true;

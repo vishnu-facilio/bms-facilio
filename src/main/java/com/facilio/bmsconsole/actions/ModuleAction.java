@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -11,9 +12,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.WorkflowAPI;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
@@ -83,16 +86,73 @@ public class ModuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private long assetId = -1;
+	private long categoryId = -1;
+		
+	public long getAssetId() {
+		return assetId;
+	}
+
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+	
 	public String metadata() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+
+		List<FacilioField> fields = new ArrayList();
 		
-		Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
-		getFieldsChain.execute(context);
-	
+		if(getAssetId() != -1 && getCategoryId() != -1)
+		{
+			FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, getAssetId());
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			List<FacilioModule> moduleList = new ArrayList<>();
+			moduleList.add(modBean.getModule(moduleName));
+			
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
+			
+			Chain addCurrentOccupancy = FacilioChainFactory.getCategoryReadingsChain();
+			addCurrentOccupancy.execute(context);
+			
+			List<FacilioModule> readingModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			for(FacilioModule reading : readingModules) {
+				List<FacilioField> readingFields = reading.getFields();
+				fields.addAll(readingFields);
+			}
+			
+		}
+		else
+		{
+			Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
+			getFieldsChain.execute(context);
+		
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			
+			
+			
+		}
+		
 		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		
+		if(displayName == null)
+		{
+			displayName = (String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		}
+
 		JSONObject operators = new JSONObject();
 		for (FieldType ftype : FieldType.values()) {
 			operators.put(ftype.name(), ftype.getOperators());

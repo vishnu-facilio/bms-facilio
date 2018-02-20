@@ -37,7 +37,7 @@ public class EventAPI {
     	
     	Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
     	processEventChain.execute(context);
-        return (long) context.get(context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP));
+        return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
     }
 	 
 	public static EventContext transformEvent(EventContext event, JSONTemplate template) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
