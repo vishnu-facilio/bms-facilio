@@ -164,7 +164,14 @@ public class DashboardAction extends ActionSupport {
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
+	Long criteriaId;
 	
+	public Long getCriteriaId() {
+		return criteriaId;
+	}
+	public void setCriteriaId(Long criteriaId) {
+		this.criteriaId = criteriaId;
+	}
 	String dateFilter;
 	public String getDateFilter() {
 		return dateFilter;
@@ -360,6 +367,7 @@ public class DashboardAction extends ActionSupport {
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
 			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
 				int oprId = (this.dateFilter != null) ? Integer.parseInt(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
+				
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
@@ -451,7 +459,12 @@ public class DashboardAction extends ActionSupport {
 		Criteria criteria = null;
 		String energyMeterValue = "";
 		if (reportContext.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+			if(getCriteriaId() != null) {
+				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
+			}
+			else {
+				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+			}
 			builder.andCriteria(criteria);
 		}
 		
@@ -850,7 +863,7 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		else {
-			if(!reportContext.getIsComparisionReport()) {
+//			if(!reportContext.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
 				if (reportContext.getId().equals(301l)) {
 					reportContext.getxAxisField().getField().setColumnName("PARENT_METER_ID");
@@ -881,226 +894,227 @@ public class DashboardAction extends ActionSupport {
 				}
 				else {
 					JSONObject purposeIndexMapping = new JSONObject();
-					for(int i=0;i<rs.size();i++) {
-						boolean newPurpose = false;
-			 			Map<String, Object> thisMap = rs.get(i);
-			 			JSONObject component = new JSONObject();
-			 			if(thisMap!=null) {
-//			 				if(thisMap.get("label") == null) {
-//			 					continue;
-//			 				}
-			 				if(thisMap.get("dummyField") != null) {
-			 					component.put("label", thisMap.get("dummyField"));
-			 				}
-			 				else {
-			 					Object lbl = thisMap.get("label");
-			 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
-			 						lbl = buildingVsMeter.get(thisMap.get("label"));
-			 					}
-			 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
-			 						lbl = purposeVsMeter1.get(thisMap.get("label"));
-			 						if (!purposeIndexMapping.containsKey(lbl)) {
-			 							purposeIndexMapping.put(lbl, res.size());
-			 							newPurpose = true;
-			 						}
-			 					}
-			 					component.put("label", lbl);
-			 				}
-			 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
-			 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
-			 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						Double concatVal = d + (Double) tmpComp.get("orig_value");
-			 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
-			 						tmpComp.put("orig_value", concatVal);
-			 					}
-			 					else {
-			 						Double d = (Double) thisMap.get("value");
-			 						Double concatVal = d + (Double) tmpComp.get("value");
-			 						tmpComp.put("value", thisMap.get("value"));
-			 					}
-			 				}
-			 				else {
-			 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						component.put("value", d*ReportsUtil.unitCost);
-			 						component.put("orig_value", d);
-			 					}
-			 					else if ("eui".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						
-			 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
-			 						double eui = ReportsUtil.getEUI(d, buildingArea);
-			 						component.put("value", eui);
-			 						component.put("orig_value", d);
-			 					}
-			 					else {
-			 						component.put("value", thisMap.get("value"));
-			 					}
-			 					res.add(component);
-			 				}
-			 			}
-				 	}
+						for(int i=0;i<rs.size();i++) {
+							boolean newPurpose = false;
+				 			Map<String, Object> thisMap = rs.get(i);
+				 			JSONObject component = new JSONObject();
+				 			if(thisMap!=null) {
+	//			 				if(thisMap.get("label") == null) {
+	//			 					continue;
+	//			 				}
+				 				if(thisMap.get("dummyField") != null) {
+				 					component.put("label", thisMap.get("dummyField"));
+				 				}
+				 				else {
+				 					Object lbl = thisMap.get("label");
+				 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
+				 						lbl = buildingVsMeter.get(thisMap.get("label"));
+				 					}
+				 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
+				 						lbl = purposeVsMeter1.get(thisMap.get("label"));
+				 						if (!purposeIndexMapping.containsKey(lbl)) {
+				 							purposeIndexMapping.put(lbl, res.size());
+				 							newPurpose = true;
+				 						}
+				 					}
+				 					component.put("label", lbl);
+				 				}
+				 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
+				 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
+				 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+				 						Double d = (Double) thisMap.get("value");
+				 						Double concatVal = d + (Double) tmpComp.get("orig_value");
+				 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
+				 						tmpComp.put("orig_value", concatVal);
+				 					}
+				 					else {
+				 						Double d = (Double) thisMap.get("value");
+				 						Double concatVal = d + (Double) tmpComp.get("value");
+				 						tmpComp.put("value", thisMap.get("value"));
+				 					}
+				 				}
+				 				else {
+				 					if ("cost".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+				 						Double d = (Double) thisMap.get("value");
+				 						component.put("value", d*ReportsUtil.unitCost);
+				 						component.put("orig_value", d);
+				 					}
+				 					else if ("eui".equalsIgnoreCase(reportContext.getY1AxisUnit())) {
+				 						Double d = (Double) thisMap.get("value");
+				 						
+				 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+				 						double eui = ReportsUtil.getEUI(d, buildingArea);
+				 						component.put("value", eui);
+				 						component.put("orig_value", d);
+				 					}
+				 					else {
+				 						component.put("value", thisMap.get("value"));
+				 					}
+				 					res.add(component);
+				 				}
+				 			}
+					 	}
 				}
-				setReportData(res);
-				System.out.println("res -- "+res);
-			}
+//			}
+			setReportData(res);
+			System.out.println("res -- "+res);
 		}
 		
 		System.out.println("rs after -- "+rs);
 		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>();
 		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
-		if(reportContext.getIsComparisionReport()) {
-			if(reportContext.getReportCriteriaContexts() != null) {
-				DateOperators dateOperator = null;
-				for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
-					
-					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
-						Criteria criteria1 = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
-						
-						Map<Integer, Condition> conditions = criteria1.getConditions();
-						for(Integer s:conditions.keySet()) {
-							Condition condi = conditions.get(s);
-							if(condi.getColumnName().equals("Energy_Data.TTIME") && condi.getOperator() instanceof DateOperators) {
-								dateOperator = (DateOperators) condi.getOperator();
-							}
-						}
-					}
-//					if(i==0) {
-//						comparisionRs.add(rs);
-//						continue;
+		
+//		if(reportContext.getIsComparisionReport()) {
+//			if(reportContext.getReportCriteriaContexts() != null) {
+//				DateOperators dateOperator = null;
+//				for(int i=0;i<reportContext.getReportCriteriaContexts().size();i++) {
+//					
+//					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+//						Criteria criteria1 = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+//						
+//						Map<Integer, Condition> conditions = criteria1.getConditions();
+//						for(Integer s:conditions.keySet()) {
+//							Condition condi = conditions.get(s);
+//							if(condi.getColumnName().equals("Energy_Data.TTIME") && condi.getOperator() instanceof DateOperators) {
+//								dateOperator = (DateOperators) condi.getOperator();
+//							}
+//						}
 //					}
-					List<FacilioField> fields1 = new ArrayList<>(); 
-					fields1.addAll(fields);
-					if(dateOperator != null) {
-						FacilioField ff = new FacilioField();
-						if(dateOperator.getOperatorId() == 43) {
-							ff.setColumnName("\"Today\"");
-						}
-						else if(dateOperator.getOperatorId() == 28) {
-							ff.setColumnName("\"This Month\"");
-						}
-						else if(dateOperator.getOperatorId() == 31) {
-							ff.setColumnName("\"This Week\"");
-						}
-						else if(dateOperator.getOperatorId() == 44) {
-							ff.setColumnName("\"This Year\"");
-						}
-						else {
-							ff.setColumnName("\""+dateOperator.getOperator()+"\"");
-						}
-						ff.setName("dateOpperator");
-						fields1.add(ff);
-					}
-					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-							.table(module.getTableName())
-							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-							.groupBy(groupByString)
-							.select(fields1);
-					if(module.getExtendModule() != null) {
-						builder.innerJoin(module.getExtendModule().getTableName())
-							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
-					}
-					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
-						criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
-						builder1.andCriteria(criteria);
-					}
-					if(buildingCondition != null) {
-						builder1.andCondition(buildingCondition);
-					}
-					List<Map<String, Object>> rs1 = builder1.get();
-					System.out.println("builder1 --- "+builder1);
-					System.out.println("rs comp  "+i+" -- "+rs1);
-					comparisionRs.add(rs1);
-				}
-			}
-			else if(dateCondition != null) {
-				List<Condition> dateConditions = new ArrayList<>();
-				dateConditions.add(dateCondition);
-				Condition dateCondition1 = new Condition();
-				dateCondition1.setField(reportContext.getDateFilter().getField());
-				if(dateCondition.getOperator().equals(DateOperators.TODAY) || dateCondition.getOperator().equals(DateOperators.TODAY_UPTO_NOW)) {
-					dateCondition1.setOperator(DateOperators.YESTERDAY);
-				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK)) {
-					dateCondition1.setOperator(DateOperators.LAST_WEEK);
-				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH)) {
-					dateCondition1.setOperator(DateOperators.LAST_MONTH);
-				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR)) {
-					dateCondition1.setOperator(DateOperators.LAST_YEAR);
-				}
-				dateConditions.add(dateCondition1);
-				
-				for(Condition dateCondi :dateConditions) {
-					List<FacilioField> fields1 = new ArrayList<>(); 
-					fields1.addAll(fields);
-					if(dateCondi.getOperator() != null) {
-						FacilioField ff = new FacilioField();
-						if(dateCondi.getOperator().getOperatorId() == 43) {
-							ff.setColumnName("\"Today\"");
-						}
-						else if(dateCondi.getOperator().getOperatorId() == 28) {
-							ff.setColumnName("\"This Month\"");
-						}
-						else if(dateCondi.getOperator().getOperatorId() == 31) {
-							ff.setColumnName("\"This Week\"");
-						}
-						else if(dateCondi.getOperator().getOperatorId() == 44) {
-							ff.setColumnName("\"This Year\"");
-						}
-						else {
-							ff.setColumnName("\""+dateCondi.getOperator().getOperator()+"\"");
-						}
-						ff.setName("dateOpperator");
-						fields1.add(ff);
-					}
-					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-							.table(module.getTableName())
-							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-							.groupBy(groupByString)
-							.select(fields1);
-					if(module.getExtendModule() != null) {
-						builder1.innerJoin(module.getExtendModule().getTableName())
-							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
-					}
-					builder1.andCondition(dateCondi);
-					if(buildingCondition != null) {
-						builder1.andCondition(buildingCondition);
-					}
-					List<Map<String, Object>> rs1 = builder1.get();
-					System.out.println("builder1 --- "+builder1);
-					comparisionRs.add(rs1);
-				}
-				
-			}
-			
-			for(List<Map<String, Object>> comp :comparisionRs) {
-				for(Map<String, Object> result:comp) {
-					String label =(String) result.get("label");
-					comparisonresult.put(label, result);
-				}
-			}
-			System.out.println("comparisonresult ---- "+comparisonresult);
-			
-			JSONArray compResult =  new JSONArray();
-			for(String key:comparisonresult.keySet()) {
-				JSONObject json = new JSONObject();
-				JSONArray valuesArray = new JSONArray();
-				for(Map<String, Object> result :comparisonresult.get(key)) {
-					json.put("label", result.get("dummyField"));
-					JSONObject json1 = new JSONObject();
-					json1.put("label", result.get("dateOpperator"));
-					json1.put("value", result.get("value"));
-					valuesArray.add(json1);			
-				}
-				json.put("value", valuesArray);
-				compResult.add(json);
-			}
-			System.out.println("compResult  ----- "+compResult);
-			setReportData(compResult);
-		}
+////					if(i==0) {
+////						comparisionRs.add(rs);
+////						continue;
+////					}
+//					List<FacilioField> fields1 = new ArrayList<>(); 
+//					fields1.addAll(fields);
+//					if(dateOperator != null) {
+//						FacilioField ff = new FacilioField();
+//						if(dateOperator.getOperatorId() == 43) {
+//							ff.setColumnName("\"Today\"");
+//						}
+//						else if(dateOperator.getOperatorId() == 28) {
+//							ff.setColumnName("\"This Month\"");
+//						}
+//						else if(dateOperator.getOperatorId() == 31) {
+//							ff.setColumnName("\"This Week\"");
+//						}
+//						else if(dateOperator.getOperatorId() == 44) {
+//							ff.setColumnName("\"This Year\"");
+//						}
+//						else {
+//							ff.setColumnName("\""+dateOperator.getOperator()+"\"");
+//						}
+//						ff.setName("dateOpperator");
+//						fields1.add(ff);
+//					}
+//					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+//							.table(module.getTableName())
+//							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+//							.groupBy(groupByString)
+//							.select(fields1);
+//					if(module.getExtendModule() != null) {
+//						builder.innerJoin(module.getExtendModule().getTableName())
+//							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+//					}
+//					if(reportContext.getReportCriteriaContexts().get(i).getCriteriaId() != null) {
+//						criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(i).getCriteriaId());
+//						builder1.andCriteria(criteria);
+//					}
+//					if(buildingCondition != null) {
+//						builder1.andCondition(buildingCondition);
+//					}
+//					List<Map<String, Object>> rs1 = builder1.get();
+//					System.out.println("builder1 --- "+builder1);
+//					System.out.println("rs comp  "+i+" -- "+rs1);
+//					comparisionRs.add(rs1);
+//				}
+//			}
+//			else if(dateCondition != null) {
+//				List<Condition> dateConditions = new ArrayList<>();
+//				dateConditions.add(dateCondition);
+//				Condition dateCondition1 = new Condition();
+//				dateCondition1.setField(reportContext.getDateFilter().getField());
+//				if(dateCondition.getOperator().equals(DateOperators.TODAY) || dateCondition.getOperator().equals(DateOperators.TODAY_UPTO_NOW)) {
+//					dateCondition1.setOperator(DateOperators.YESTERDAY);
+//				}
+//				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK)) {
+//					dateCondition1.setOperator(DateOperators.LAST_WEEK);
+//				}
+//				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH)) {
+//					dateCondition1.setOperator(DateOperators.LAST_MONTH);
+//				}
+//				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR)) {
+//					dateCondition1.setOperator(DateOperators.LAST_YEAR);
+//				}
+//				dateConditions.add(dateCondition1);
+//				
+//				for(Condition dateCondi :dateConditions) {
+//					List<FacilioField> fields1 = new ArrayList<>(); 
+//					fields1.addAll(fields);
+//					if(dateCondi.getOperator() != null) {
+//						FacilioField ff = new FacilioField();
+//						if(dateCondi.getOperator().getOperatorId() == 43) {
+//							ff.setColumnName("\"Today\"");
+//						}
+//						else if(dateCondi.getOperator().getOperatorId() == 28) {
+//							ff.setColumnName("\"This Month\"");
+//						}
+//						else if(dateCondi.getOperator().getOperatorId() == 31) {
+//							ff.setColumnName("\"This Week\"");
+//						}
+//						else if(dateCondi.getOperator().getOperatorId() == 44) {
+//							ff.setColumnName("\"This Year\"");
+//						}
+//						else {
+//							ff.setColumnName("\""+dateCondi.getOperator().getOperator()+"\"");
+//						}
+//						ff.setName("dateOpperator");
+//						fields1.add(ff);
+//					}
+//					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
+//							.table(module.getTableName())
+//							.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+//							.groupBy(groupByString)
+//							.select(fields1);
+//					if(module.getExtendModule() != null) {
+//						builder1.innerJoin(module.getExtendModule().getTableName())
+//							.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+//					}
+//					builder1.andCondition(dateCondi);
+//					if(buildingCondition != null) {
+//						builder1.andCondition(buildingCondition);
+//					}
+//					List<Map<String, Object>> rs1 = builder1.get();
+//					System.out.println("builder1 --- "+builder1);
+//					comparisionRs.add(rs1);
+//				}
+//				
+//			}
+//			
+//			for(List<Map<String, Object>> comp :comparisionRs) {
+//				for(Map<String, Object> result:comp) {
+//					String label =(String) result.get("label");
+//					comparisonresult.put(label, result);
+//				}
+//			}
+//			System.out.println("comparisonresult ---- "+comparisonresult);
+//			
+//			JSONArray compResult =  new JSONArray();
+//			for(String key:comparisonresult.keySet()) {
+//				JSONObject json = new JSONObject();
+//				JSONArray valuesArray = new JSONArray();
+//				for(Map<String, Object> result :comparisonresult.get(key)) {
+//					json.put("label", result.get("dummyField"));
+//					JSONObject json1 = new JSONObject();
+//					json1.put("label", result.get("dateOpperator"));
+//					json1.put("value", result.get("value"));
+//					valuesArray.add(json1);			
+//				}
+//				json.put("value", valuesArray);
+//				compResult.add(json);
+//			}
+//			System.out.println("compResult  ----- "+compResult);
+//			setReportData(compResult);
+//		}
 		
 		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());

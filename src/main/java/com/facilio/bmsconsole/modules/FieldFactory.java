@@ -2553,7 +2553,33 @@ public class FieldFactory {
 
 		return fields;
 	}
-	
+	public static List<FacilioField> getReportVsBaselineFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportVsBaseLine();
+
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+
+		FacilioField baseLineId = new FacilioField();
+		baseLineId.setName("baseLineId");
+		baseLineId.setDataType(FieldType.NUMBER);
+		baseLineId.setColumnName("BASE_LINE_ID");
+		baseLineId.setModule(module);
+		fields.add(baseLineId);
+		
+		FacilioField isAdjust = new FacilioField();
+		isAdjust.setName("isAdjust");
+		isAdjust.setDataType(FieldType.BOOLEAN);
+		isAdjust.setColumnName("IS_ADJUST");
+		isAdjust.setModule(module);
+		fields.add(isAdjust);
+
+		return fields;
+	}
 	public static List<FacilioField> getReportThresholdFields() {
 		
 		List<FacilioField> fields = new ArrayList<>();

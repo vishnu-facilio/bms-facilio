@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.ReportBaseLineContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
@@ -476,9 +477,37 @@ public class DashboardUtil {
 				ReportEnergyMeterContext energyMeterContext = FieldUtil.getAsBeanFromMap(energyMeterProps.get(0), ReportEnergyMeterContext.class);
 				reportContext.setEnergyMeter(energyMeterContext);
 			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportVsBaselineFields())
+					.table(ModuleFactory.getReportVsBaseLine().getTableName())
+					.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> baselineProps = selectBuilder.get();
+			if (baselineProps != null && !baselineProps.isEmpty()) {
+				for(Map<String, Object> baselineProp:baselineProps) {
+					ReportBaseLineContext reportBaseLineContext = FieldUtil.getAsBeanFromMap(baselineProp, ReportBaseLineContext.class);
+					reportContext.addReportBaseLineContext(reportBaseLineContext);
+				}
+			}
 			return reportContext;
 		}
 		return null;
+	}
+	public static void getBaseLineContext(long baseLineId) {
+//		selectBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getBas)
+//				.table(ModuleFactory.getB().getTableName())
+//				.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".REPORT_ID = ?", reportId);
+//		
+//		List<Map<String, Object>> baselineProps = selectBuilder.get();
+//		if (baselineProps != null && !baselineProps.isEmpty()) {
+//			for(Map<String, Object> baselineProp:baselineProps) {
+//				ReportBaseLineContext reportBaseLineContext = FieldUtil.getAsBeanFromMap(baselineProp, ReportBaseLineContext.class);
+//			}
+//			reportContext.setEnergyMeter(energyMeterContext);
+//		}
+//		return reportContext;
 	}
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		

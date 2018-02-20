@@ -741,4 +741,9 @@ public class ModuleFactory {
 		
 		return relModule;
 	}
+	public static FacilioModule getReportVsBaseLine() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_BaseLine_Rel");
+		return reportFieldModule;
+	}
 }
