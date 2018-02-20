@@ -144,7 +144,9 @@ public class ModuleAction extends ActionSupport {
 				|| field.getName().equals("noOfTasks")
 				|| field.getName().equals("scheduledStart")
 				|| field.getName().equals("serialNumber")
-				|| field.getName().equals("sourceType"))
+				|| field.getName().equals("sourceType")
+				|| field.getName().equals("assignmentGroup")
+				|| field.getName().equals("createdTime"))
 				{
 					continue;
 				}
