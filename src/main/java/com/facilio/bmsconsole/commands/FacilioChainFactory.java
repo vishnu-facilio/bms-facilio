@@ -1694,6 +1694,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllBaseLinesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllBaseLinesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain addReportBaseLinesChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new AddReportBaseLinesCommand());

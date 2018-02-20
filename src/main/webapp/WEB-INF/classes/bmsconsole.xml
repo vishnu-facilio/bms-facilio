@@ -1811,6 +1811,12 @@
 				<param name="root">baseLine</param>
 			</result>
 		</action>
+		<action name="all" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="getAllBaseLineList">
+			<result name="success" type="json">
+				<param name="root">baseLines</param>
+			</result>
+		</action>
 		<action name="getSpaceBaseLines" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="getBaseLineList">
 			<result name="success" type="json">
