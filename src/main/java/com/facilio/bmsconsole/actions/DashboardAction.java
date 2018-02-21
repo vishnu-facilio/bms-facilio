@@ -52,6 +52,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -464,21 +465,6 @@ public class DashboardAction extends ActionSupport {
 			}
 			
 		}
-		Criteria criteria = null;
-		String energyMeterValue = "";
-		if (reportContext.getReportCriteriaContexts() != null) {
-			if(getBaseLineId() != null) {
-				BaseLineContext baseLineContext = DashboardUtil.getBaseLineContext(getBaseLineId());
-				//baseLineContext.getBaseLineCriteria(field, dataStartTime, dataEndTime);
-			}
-			if(getCriteriaId() != null) {
-				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
-			}
-			else {
-				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
-			}
-			builder.andCriteria(criteria);
-		}
 		
 		Condition dateCondition = null;
 		if (reportContext.getDateFilter() != null) {
@@ -500,6 +486,25 @@ public class DashboardAction extends ActionSupport {
 			}
 			builder.andCondition(dateCondition);
 		}
+		
+		Criteria criteria = null;
+		
+		if(getBaseLineId() != null) {
+			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
+			//criteria = baseLineContext.getBaseLineCriteria(reportContext.getDateFilter().getField(), dataStartTime, dataEndTime);
+			
+		}
+		if(getCriteriaId() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
+		}
+		else if(reportContext.getReportCriteriaContexts() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
+		}
+		if(criteria != null) {
+			builder.andCriteria(criteria);
+		}
+		
+		String energyMeterValue = "";
 		JSONObject buildingVsMeter = new JSONObject();
 		Map<Long,Double> buildingVsArea = null;
 		HashMap <Long, ArrayList<Long>> purposeVsMeter= new HashMap<Long,ArrayList<Long>>();

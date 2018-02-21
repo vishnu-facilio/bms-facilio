@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
-import com.facilio.bmsconsole.context.ReportBaseLineContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
@@ -479,33 +478,9 @@ public class DashboardUtil {
 				reportContext.setEnergyMeter(energyMeterContext);
 			}
 			
-			selectBuilder = new GenericSelectRecordBuilder()
-					.select(FieldFactory.getReportVsBaselineFields())
-					.table(ModuleFactory.getReportVsBaseLine().getTableName())
-					.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".REPORT_ID = ?", reportId);
-			
-			List<Map<String, Object>> baselineProps = selectBuilder.get();
-			if (baselineProps != null && !baselineProps.isEmpty()) {
-				for(Map<String, Object> baselineProp:baselineProps) {
-					ReportBaseLineContext reportBaseLineContext = FieldUtil.getAsBeanFromMap(baselineProp, ReportBaseLineContext.class);
-					reportContext.addReportBaseLineContext(reportBaseLineContext);
-				}
-			}
+			reportContext.setBaseLineContexts(BaseLineAPI.getBaseLinesOfReport(reportId));
 			return reportContext;
 		}
-		return null;
-	}
-	public static BaseLineContext getBaseLineContext(long baseLineId) {
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getBas)
-//				.table(ModuleFactory.getB().getTableName())
-//				.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".ID = ?", baseLineId);
-//		
-//		List<Map<String, Object>> baselineProps = selectBuilder.get();
-//		if (baselineProps != null && !baselineProps.isEmpty()) {
-//				BaseLineContext baseLineContext = FieldUtil.getAsBeanFromMap(baselineProps.get(0), BaseLineContext.class);
-//				return baseLineContext;
-//		}
 		return null;
 	}
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
