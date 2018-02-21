@@ -6,15 +6,15 @@ import com.facilio.accounts.util.AccountUtil;
 
 public class Group {
 	
-	private long groupId;
-	private long orgId;
+	private long groupId = -1;
+	private long orgId = -1;
 	private String name;
 	private String email;
 	private String description;
 //	private boolean isActive;
-	private long createdTime;
-	private long createdBy;
-	private long parent;
+	private long createdTime = -1;
+	private long createdBy = -1;
+	private long parent = -1;
 	
 	public long getGroupId() {
 		return groupId;
