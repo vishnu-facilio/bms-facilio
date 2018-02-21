@@ -1493,14 +1493,53 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	JSONObject dashboardMeta;
+	
+	public void setDashboardMeta(JSONObject dashboardMeta) {
+		this.dashboardMeta = dashboardMeta;
+	}
+	
+	public JSONObject getDashboardMeta() {
+		return this.dashboardMeta;
+	}
+	
 	public String updateDashboard() throws Exception {
+		
+		this.dashboard = new DashboardContext();
+		this.dashboard.setId((Long) dashboardMeta.get("id"));
+		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
+		
+		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+		if (dashboardWidgets != null) {
+			for (int i=0; i < dashboardWidgets.size(); i++) {
+				Map widget = (Map) dashboardWidgets.get(i);
+				Integer widgetType = Integer.parseInt(widget.get("type").toString());
+				
+				DashboardWidgetContext widgetContext = null;
+				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
+					widgetContext = new WidgetChartContext();
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
+					widgetContext = new WidgetListViewContext();
+				}
+				
+				widgetContext.setId((Long) widget.get("id"));
+				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
+				widgetContext.setLayoutHeight(Integer.parseInt(widget.get("layoutHeight").toString()));
+				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
+				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
+				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
+				
+				this.dashboard.addDashboardWidget(widgetContext);
+			}
+		}
+		
 		FacilioContext context = new FacilioContext();
-		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
-		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
-		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
-		addDashboardChain.execute(context);
+		
+		Chain updateDashboardChain = FacilioChainFactory.getUpdateDashboardChain();
+		updateDashboardChain.execute(context);
+		
 		return SUCCESS;
 	}
 	

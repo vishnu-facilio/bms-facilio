@@ -64,6 +64,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
+		selectBuilder.orderBy(ModuleFactory.getDashboardVsWidgetModule().getTableName() + ".LAYOUT_POSITION");
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {

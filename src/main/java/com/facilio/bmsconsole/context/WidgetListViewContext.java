@@ -28,10 +28,13 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
+		resultJson.put("id", getId());
 		resultJson.put("type", getWidgetType().getName());
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());
+		layoutJson.put("x", getxPosition());
+		layoutJson.put("y", getyPosition());
 		layoutJson.put("position", getLayoutPosition());
 		
 		resultJson.put("layout", layoutJson);

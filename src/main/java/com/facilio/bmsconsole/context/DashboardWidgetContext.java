@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -17,6 +15,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private Long dashboardId;
 	private Integer layoutWidth;
 	private Integer layoutHeight;
+	private Integer xPosition;
+	private Integer yPosition;
 	private int layoutPosition;
 	private int dataRefreshIntervel;
 	private String widgetUrl;
@@ -147,6 +147,16 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 			return typeMap;
 		}
 	}
-
-	
+	public Integer getxPosition() {
+		return xPosition;
+	}
+	public void setxPosition(Integer xPosition) {
+		this.xPosition = xPosition;
+	}
+	public Integer getyPosition() {
+		return yPosition;
+	}
+	public void setyPosition(Integer yPosition) {
+		this.yPosition = yPosition;
+	}	
 }

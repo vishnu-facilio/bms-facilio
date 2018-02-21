@@ -1645,6 +1645,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateDashboardChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateDashboardCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 //	public static Chain getReportData() {
 //		Chain c = new TransactionChain();
 //		c.addCommand(new SetFieldsCommand());

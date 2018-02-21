@@ -3144,6 +3144,11 @@
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
 		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">
 			<result name="success" type="json">
 				<param name="includeProperties">modules,modules\[\d+\],modules\[\d+\].*</param>

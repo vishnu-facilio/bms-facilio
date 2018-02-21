@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class WidgetChartContext extends DashboardWidgetContext {
@@ -16,10 +15,13 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
 		
+		resultJson.put("id", getId());
 		resultJson.put("type", getWidgetType().getName());
 		JSONObject layoutJson = new JSONObject();
 		layoutJson.put("height", getLayoutHeight());
 		layoutJson.put("width", getLayoutWidth());
+		layoutJson.put("x", getxPosition());
+		layoutJson.put("y", getyPosition());
 		layoutJson.put("position", getLayoutPosition());
 		
 		resultJson.put("layout", layoutJson);
