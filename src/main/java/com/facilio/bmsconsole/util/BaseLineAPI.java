@@ -71,6 +71,19 @@ public class BaseLineAPI {
 		return deleteBuilder.delete();
 	}
 	
+	public static List<BaseLineContext> getAllBaseLines() throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														;
+		
+		return getBaseLinesFromMap(selectBuilder.get());
+	}
+	
 	public static List<BaseLineContext> getBaseLinesOfSpace(long spaceId) throws Exception {
 		FacilioModule module = ModuleFactory.getBaseLineModule();
 		List<FacilioField> fields = FieldFactory.getBaseLineFields();
