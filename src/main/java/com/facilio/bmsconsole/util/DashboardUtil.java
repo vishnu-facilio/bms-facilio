@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -494,20 +495,18 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-	public static void getBaseLineContext(long baseLineId) {
-//		selectBuilder = new GenericSelectRecordBuilder()
+	public static BaseLineContext getBaseLineContext(long baseLineId) {
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 //				.select(FieldFactory.getBas)
 //				.table(ModuleFactory.getB().getTableName())
-//				.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".REPORT_ID = ?", reportId);
+//				.andCustomWhere(ModuleFactory.getReportVsBaseLine().getTableName()+".ID = ?", baseLineId);
 //		
 //		List<Map<String, Object>> baselineProps = selectBuilder.get();
 //		if (baselineProps != null && !baselineProps.isEmpty()) {
-//			for(Map<String, Object> baselineProp:baselineProps) {
-//				ReportBaseLineContext reportBaseLineContext = FieldUtil.getAsBeanFromMap(baselineProp, ReportBaseLineContext.class);
-//			}
-//			reportContext.setEnergyMeter(energyMeterContext);
+//				BaseLineContext baseLineContext = FieldUtil.getAsBeanFromMap(baselineProps.get(0), BaseLineContext.class);
+//				return baseLineContext;
 //		}
-//		return reportContext;
+		return null;
 	}
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		

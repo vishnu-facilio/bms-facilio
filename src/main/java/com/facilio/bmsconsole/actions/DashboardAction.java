@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
@@ -165,7 +166,14 @@ public class DashboardAction extends ActionSupport {
 		this.reportId = reportId;
 	}
 	Long criteriaId;
+	Long baseLineId;
 	
+	public Long getBaseLineId() {
+		return baseLineId;
+	}
+	public void setBaseLineId(Long baseLineId) {
+		this.baseLineId = baseLineId;
+	}
 	public Long getCriteriaId() {
 		return criteriaId;
 	}
@@ -459,6 +467,10 @@ public class DashboardAction extends ActionSupport {
 		Criteria criteria = null;
 		String energyMeterValue = "";
 		if (reportContext.getReportCriteriaContexts() != null) {
+			if(getBaseLineId() != null) {
+				BaseLineContext baseLineContext = DashboardUtil.getBaseLineContext(getBaseLineId());
+				//baseLineContext.getBaseLineCriteria(field, dataStartTime, dataEndTime);
+			}
 			if(getCriteriaId() != null) {
 				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
 			}
