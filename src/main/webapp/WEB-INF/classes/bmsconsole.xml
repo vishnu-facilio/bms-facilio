@@ -2151,6 +2151,15 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="spacelist" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="spaceList">
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">moduleName,spaces,spaces\[\d+\],spaces\[\d+\].*</param>
+			</result>
+		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="addSpace">

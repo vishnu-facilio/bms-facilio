@@ -86,6 +86,16 @@ public class ModuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private String resourceType = null;
+	
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(String resourceType) {
+		this.resourceType = resourceType;
+	}
+
 	private long assetId = -1;
 	private long categoryId = -1;
 		
@@ -110,10 +120,17 @@ public class ModuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 
 		List<FacilioField> fields = new ArrayList();
-		
-		if(getAssetId() != -1 && getCategoryId() != -1)
+		if(resourceType!= null && getAssetId() != -1 && getCategoryId() != -1)
 		{
-			FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
+			FacilioModule module = null;
+			if(resourceType.equalsIgnoreCase("asset"))
+			{
+				module = ModuleFactory.getAssetCategoryReadingRelModule();
+			}
+			else
+			{
+				module = ModuleFactory.getSpaceCategoryReadingRelModule();
+			}
 			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
 			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
