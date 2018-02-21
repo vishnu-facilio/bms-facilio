@@ -1,5 +1,6 @@
 package com.facilio.util;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.LoginUtil;
 
@@ -30,4 +31,9 @@ public class AuthenticationUtil {
         }
         return  null;
     }
+
+    public static boolean checkIfSameUser(Account currentAccount, CognitoUtil.CognitoUser cognitoUser){
+        return currentAccount != null && cognitoUser != null && currentAccount.getUser() != null && (currentAccount.getUser().getEmail().equalsIgnoreCase(cognitoUser.getEmail()));
+    }
+
 }

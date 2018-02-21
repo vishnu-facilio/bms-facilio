@@ -37,21 +37,18 @@ public class AuthInterceptor extends AbstractInterceptor {
 			System.out.println("intercept() : arg0 :"+arg0);
 
 			HttpServletRequest request = ServletActionContext.getRequest();
-
+			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
 			Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_ACCOUNT");
-			if (currentAccount == null) {
+			if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				try {
-					CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
-					if(cognitoUser != null) {
-						currentAccount = LoginUtil.getAccount(cognitoUser, true);
-						ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
-					}
+					currentAccount = LoginUtil.getAccount(cognitoUser, true);
+					ActionContext.getContext().getSession().put("CURRENT_ACCOUNT", currentAccount);
 				} catch (Exception e){
 					e.printStackTrace();
 					currentAccount = null;
 				}
 			}
-			if(currentAccount != null) {
+			if(AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
 
