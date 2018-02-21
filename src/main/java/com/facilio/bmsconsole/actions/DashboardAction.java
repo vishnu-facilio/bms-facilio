@@ -164,13 +164,12 @@ public class DashboardAction extends ActionSupport {
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
 	}
-	
-	String dateFilter;
-	public String getDateFilter() {
+
+	JSONArray dateFilter;
+	public JSONArray getDateFilter() {
 		return dateFilter;
 	}
-	
-	public void setDateFilter(String dateFilter) {
+	public void setDateFilter(JSONArray dateFilter) {
 		this.dateFilter = dateFilter;
 	}
 	
@@ -357,13 +356,15 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue()) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
-				int oprId = (this.dateFilter != null) ? Integer.parseInt(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
+				
+				int oprId =  this.dateFilter != null ? DashboardUtil.predictDateOpperator(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
+				
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
-				if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
+				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
 					if(reportContext.getIsComparisionReport()) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
@@ -461,13 +462,15 @@ public class DashboardAction extends ActionSupport {
 			dateCondition.setField(reportContext.getDateFilter().getField());
 			
 			if (this.dateFilter != null) {
-				if (this.dateFilter.split(",").length > 1) {
-					// between
+				if (this.dateFilter.size() > 1) {
+
 					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(this.dateFilter);
-				}
-				else {
-					dateCondition.setOperatorId(Integer.parseInt(this.dateFilter));
+					long fromValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(0));
+					long toValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(1));
+					if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
+						toValue = DateTimeUtil.getCurrenTime();
+					}
+					dateCondition.setValue(fromValue+","+toValue);
 				}
 			}
 			else {
