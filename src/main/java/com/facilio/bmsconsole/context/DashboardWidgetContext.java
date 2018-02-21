@@ -102,6 +102,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		this.dataRefreshIntervel = dataRefreshIntervel;
 	}
 	public enum WidgetType {
+		STATIC(0,"static",WidgetStaticContext.class),
 		CHART(1,"chart",WidgetChartContext.class),
 		LIST_VIEW(2,"view",WidgetListViewContext.class),
 		MAP(3,"map",WidgetListViewContext.class);
@@ -137,14 +138,26 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		public static WidgetType getWidgetType(int value) {
 			return WIDGET_CHART_TYPE_MAP.get(value);
 		}
+		
+		public static WidgetType getWidgetType(String name) {
+			return WIDGET_CHART_NAME_MAP.get(name);
+		}
 
 		private static final Map<Integer, WidgetType> WIDGET_CHART_TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static final Map<String, WidgetType> WIDGET_CHART_NAME_MAP = Collections.unmodifiableMap(initNameMap());
 		private static Map<Integer, WidgetType> initTypeMap() {
 			Map<Integer, WidgetType> typeMap = new HashMap<>();
 			for(WidgetType type : values()) {
 				typeMap.put(type.getValue(), type);
 			}
 			return typeMap;
+		}
+		private static Map<String, WidgetType> initNameMap() {
+			Map<String, WidgetType> nameMap = new HashMap<>();
+			for(WidgetType type : values()) {
+				nameMap.put(type.getName(), type);
+			}
+			return nameMap;
 		}
 	}
 	public Integer getxPosition() {

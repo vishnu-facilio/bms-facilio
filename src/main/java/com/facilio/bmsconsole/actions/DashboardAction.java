@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -108,7 +109,15 @@ public class DashboardAction extends ActionSupport {
 	private List<DashboardContext> dashboards;
 	private DashboardWidgetContext dashboardWidget;
 	private WidgetChartContext widgetChartContext;
-	private WidgetListViewContext widgetListViewContext; 
+	private WidgetListViewContext widgetListViewContext;
+	private WidgetStaticContext widgetStaticContext;
+	
+	public WidgetStaticContext getWidgetStaticContext() {
+		return widgetStaticContext;
+	}
+	public void setWidgetStaticContext(WidgetStaticContext widgetStaticContext) {
+		this.widgetStaticContext = widgetStaticContext;
+	}
 	
 	public List<DashboardContext> getDashboards() {
 		return dashboards;
@@ -1516,7 +1525,7 @@ public class DashboardAction extends ActionSupport {
 		if (dashboardWidgets != null) {
 			for (int i=0; i < dashboardWidgets.size(); i++) {
 				Map widget = (Map) dashboardWidgets.get(i);
-				Integer widgetType = Integer.parseInt(widget.get("type").toString());
+				Integer widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.get("type").toString()).getValue();
 				
 				DashboardWidgetContext widgetContext = null;
 				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
@@ -1561,6 +1570,12 @@ public class DashboardAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.LIST_VIEW);
 			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetListViewContext.getDashboardId());
 			widgetListViewContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		else if (widgetStaticContext != null) {
+			context.put(FacilioConstants.ContextNames.WIDGET, widgetStaticContext);
+			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.STATIC);
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetStaticContext.getDashboardId());
+			widgetStaticContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		}
 		
 		Chain addWidgetChain = null;

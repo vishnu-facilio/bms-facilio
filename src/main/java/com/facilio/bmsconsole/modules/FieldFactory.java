@@ -2176,6 +2176,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	public static List<FacilioField> getWidgetStaticFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetStaticModule();
+
+		fields.add(getIdField(module));
+		
+		FacilioField staticKey = new FacilioField();
+		staticKey.setName("staticKey");
+		staticKey.setDataType(FieldType.STRING);
+		staticKey.setColumnName("STATIC_KEY");
+		staticKey.setModule(module);
+		fields.add(staticKey);
+
+		return fields;
+	}
 	
 	public static List<FacilioField> getReportFolderFields() {
 		
