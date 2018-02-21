@@ -104,7 +104,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	private String intercept0(){
         HttpServletRequest request = ServletActionContext.getRequest();
 		Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_PORTAL_ACCOUNT");
-		if (currentAccount != null) {
+		if (currentAccount != null && currentAccount.getOrg() != null && currentAccount.getUser() != null) {
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(currentAccount);
 		} else {
