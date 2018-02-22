@@ -59,7 +59,7 @@ public class UpdateDashboardCommand implements Command {
 					GenericUpdateRecordBuilder updateBuilder1 = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
 							.fields(FieldFactory.getDashbaordVsWidgetFields())
-							.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".ID = ?", updatedWidgets.get(i).getId());
+							.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID = ?", dashboard.getId(), updatedWidgets.get(i).getId());
 
 					Map<String, Object> props1 = FieldUtil.getAsProperties(updatedWidgets.get(i));
 					updateBuilder1.update(props1);

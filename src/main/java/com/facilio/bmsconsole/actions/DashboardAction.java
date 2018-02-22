@@ -1534,6 +1534,9 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
 				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
+					widgetContext = new WidgetStaticContext();
+				}
 				
 				widgetContext.setId((Long) widget.get("id"));
 				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
