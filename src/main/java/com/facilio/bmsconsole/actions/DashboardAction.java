@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -499,11 +500,11 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		Criteria criteria = null;
-		
 		if(getBaseLineId() != null) {
 			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
-			//criteria = baseLineContext.getBaseLineCriteria(reportContext.getDateFilter().getField(), dataStartTime, dataEndTime);
-			
+			DateRange dateRange = reportContext.getDateFilter().getOperator().getRange(null);
+			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
+			builder.andCondition(condition);
 		}
 		if(getCriteriaId() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
