@@ -1196,7 +1196,14 @@
 		<action name="getspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceReadings">
 			<result name="success" type="json">
-				<param name="root">readings</param>
+				<param name="root">readings,readings\[\d+\],readings\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="getallspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAllSpaceReadings">
+			<result name="success" type="json">
+				<param name="root">moduleMap</param>
 			</result>
 		</action>
 

@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -36,11 +37,11 @@ public class ReadingAction extends ActionSupport {
 	}
 	
 	public String addSpaceReading() throws Exception {
-		return addCategoryReading(FacilioConstants.ContextNames.SPACE, ModuleFactory.getSpaceCategoryReadingRelModule());
+		return addCategoryReading(FacilioConstants.ContextNames.SPACE_CATEGORY, ModuleFactory.getSpaceCategoryReadingRelModule());
 	}
 	
 	public String addAssetReading() throws Exception {
-		return addCategoryReading(FacilioConstants.ContextNames.ASSET, ModuleFactory.getAssetCategoryReadingRelModule());
+		return addCategoryReading(FacilioConstants.ContextNames.ASSET_CATEGORY, ModuleFactory.getAssetCategoryReadingRelModule());
 	}
 	
 	private String addCategoryReading(String parentModule, FacilioModule categoryReadingModule) throws Exception {
@@ -273,5 +274,65 @@ public class ReadingAction extends ActionSupport {
 	}
 	public void setReadingData(Map<String, List<ReadingContext>> readingData) {
 		this.readingData = readingData;
+	}
+	
+	List<SpaceCategoryContext> spaceCategories;
+	
+	public List<SpaceCategoryContext> getSpaceCategories() {
+		return spaceCategories;
+	}
+	
+	public List<Long> getCategoryIds()
+	{
+		List<Long> spaceCategoryIds = new ArrayList();
+		for(int i=0; i < spaceCategories.size();i++)
+		{
+			SpaceCategoryContext context = spaceCategories.get(i);
+			Long categoryId = context.getId();
+			spaceCategoryIds.add(categoryId);
+		}
+		return spaceCategoryIds;
+	}
+
+	public void setSpaceCategories(List<SpaceCategoryContext> spaceCategories) {
+		this.spaceCategories = spaceCategories;
+	}
+	
+	public void spaceCategoriesList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		Chain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
+		getSpaceCategoriesChain.execute(context);
+		setSpaceCategories((List<SpaceCategoryContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+	}
+	
+	public String getAllSpaceReadings() throws Exception {
+		
+		spaceCategoriesList();
+		List<Long> spaceCategoryIds = getCategoryIds();
+		
+		FacilioModule module = ModuleFactory.getSpaceCategoryReadingRelModule();
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, spaceCategoryIds);
+		
+		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		getCategoryReadingChain.execute(context);
+		
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
+		System.out.println(">>>>>>> readings : "+readings);
+		System.out.println(">>>>>>> moduleMap : "+moduleMap);
+		return SUCCESS;
+	}
+	
+	Map<Long,List<FacilioModule>> moduleMap;
+	public Map<Long, List<FacilioModule>> getModuleMap() {
+		return moduleMap;
+	}
+
+	public void setModuleMap(Map<Long, List<FacilioModule>> moduleMap) {
+		this.moduleMap = moduleMap;
 	}
 }

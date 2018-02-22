@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,22 +19,26 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class GetCategoryReadingsCommand implements Command {
+public class GetAllCategoryReadingsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
+		List<Long> spaceCategoryIds = (List<Long>)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS);
+		//long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
+		FacilioField parentCategoryField = FieldFactory.getAsMap(fields).get("parentCategoryId");
 		
-		if(parentCategoryId != -1) {
+		if(spaceCategoryIds != null) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table(categoryReadingRelModule.getTableName())
-															.andCustomWhere("PARENT_CATEGORY_ID = ?", parentCategoryId);
+															.andCondition(CriteriaAPI.getCondition(parentCategoryField, spaceCategoryIds, PickListOperators.IS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
+			
+			System.out.println(">>>>>>>>>>>> props : "+props);
 			
 			List<FacilioModule> readings = null;
 			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
@@ -42,14 +47,23 @@ public class GetCategoryReadingsCommand implements Command {
 			else {
 				readings = new ArrayList<>();
 			}
-			
+			Map<Long,List<FacilioModule>> moduleMap = new HashMap();
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for(Map<String, Object> prop : props) {
-					readings.add(modBean.getModule((long) prop.get("readingModuleId")));
+					FacilioModule readingModule = modBean.getModule((long) prop.get("readingModuleId"));
+					readings.add(readingModule);
+					Long categoryId = (Long)prop.get("parentCategoryId");
+					List<FacilioModule> modList = moduleMap.get(categoryId);
+					if(modList == null) {
+						modList = new ArrayList<>();
+						moduleMap.put(categoryId, modList);
+					}
+					modList.add(readingModule);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
 		}
 		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, getDefaultReadings());

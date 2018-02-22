@@ -1563,6 +1563,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllCategoryReadingsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllCategoryReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
