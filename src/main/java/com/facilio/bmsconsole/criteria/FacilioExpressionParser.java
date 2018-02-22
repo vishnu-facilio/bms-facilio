@@ -13,7 +13,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -29,7 +28,7 @@ public class FacilioExpressionParser {
 	private static final String RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER = ".+\\s*\\$\\$\\s*(<|<=|>=|>|=|!=)\\s*\\$\\$\\s*.+";
 	private static final String COMPARATOR_FORMATOR = "\\s*\\$\\$\\s*(<|<=|>=|>|=|!=|==|<>)\\s*\\$\\$\\s*";
 	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\[(\\d+)\\]\\s+)?([^`]*)`(.*))";
-	private static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
+	private static final String CONDITION_SPACE_SEPERATOR = "##";
 	private static final String EXPRESSION_SPACE_SEPERATOR = "``";
 	private static final String COMPARATOR_SPACE_SEPERATOR = "$$";
 	private static final String RESULT_STRING = "result";
@@ -41,7 +40,7 @@ public class FacilioExpressionParser {
 	public String getExpressionString() {
 		return expressionString;
 	}
-
+	
 	public void setExpressionString(String expressionString) {
 		this.expressionString = expressionString;
 	}
