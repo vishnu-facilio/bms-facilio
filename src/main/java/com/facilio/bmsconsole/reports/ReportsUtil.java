@@ -54,7 +54,7 @@ public class ReportsUtil
 		{
 			return 0;
 		}
-		double variance =(currentVal - previousVal)/currentVal;
+		double variance =(currentVal - previousVal)/previousVal;
 		variance=variance*100;
 		return roundOff(variance, 2);
 	}
