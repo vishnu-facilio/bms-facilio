@@ -51,6 +51,12 @@ public enum DateOperators implements Operator<String> {
 			long val = Long.parseLong(value);
 			return new DateRange(val, val);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	ISN_T(17, "isn't") {
@@ -97,6 +103,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	IS_BEFORE(18, "is before") {
@@ -131,6 +143,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(-1, Long.parseLong(value));
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -167,6 +185,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(Long.parseLong(value), -1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	BETWEEN(20, "between") {
@@ -194,6 +218,12 @@ public enum DateOperators implements Operator<String> {
 			String values[] = value.trim().split("\\s*,\\s*");
 			return new DateRange(Long.parseLong(values[0]), Long.parseLong(values[1]));
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	NOT_BETWEEN(21, "not between") {
@@ -219,6 +249,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -270,6 +306,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getDayStartTime(), DateTimeUtil.getDayStartTime(1)-1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	TODAY_UPTO_NOW(43, "today upto now") {
 		@Override
@@ -318,6 +360,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getDayStartTime(), DateTimeUtil.getCurrenTime());
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -369,6 +417,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getDayStartTime(1), DateTimeUtil.getDayStartTime(2) - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	 	
 	},
 	
@@ -415,6 +469,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getDayStartTime(1), -1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	 	
 	},
@@ -467,6 +527,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getDayStartTime(-1), DateTimeUtil.getDayStartTime() - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	TILL_YESTERDAY(26, "Till Yesterday") {
@@ -512,6 +578,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(-1, DateTimeUtil.getDayStartTime() - 1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -563,6 +635,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthStartTime());
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	CURRENT_MONTH(28, "Current Month") {
@@ -613,6 +691,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getMonthStartTime(1) - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	CURRENT_MONTH_UPTO_NOW(48, "Current Month upto now") {
 		@Override
@@ -661,6 +745,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(), DateTimeUtil.getCurrenTime());
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -712,6 +802,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(1), DateTimeUtil.getMonthStartTime(2) - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	CURRENT_YEAR(44, "Current Year") {
 		@Override
@@ -759,6 +855,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getYearStartTime(), DateTimeUtil.getYearStartTime(1) - 1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	LAST_YEAR(45, "Last Year") {
@@ -808,6 +910,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthStartTime());
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	CURRENT_YEAR_UPTO_NOW(46, "Current Year upto now") {
 		@Override
@@ -855,6 +963,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getYearStartTime(), DateTimeUtil.getCurrenTime());
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -906,6 +1020,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getWeekStartTime(-1), DateTimeUtil.getWeekStartTime() - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	CURRENT_WEEK(31, "Current Week") {
@@ -955,6 +1075,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getWeekStartTime(), DateTimeUtil.getWeekStartTime(1) - 1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
 		}
 	},
 	
@@ -1006,6 +1132,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getWeekStartTime(), DateTimeUtil.getCurrenTime());
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	NEXT_WEEK(32, "Next Week") {
@@ -1056,6 +1188,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getWeekStartTime(1), DateTimeUtil.getWeekStartTime(2) - 1);
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	AGE_IN_DAYS(33, "Age in Days") {
@@ -1099,6 +1237,12 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	},
 	
 	DUE_IN_DAYS(34, "Due in Days") {
@@ -1141,6 +1285,12 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	},
 	
@@ -1187,6 +1337,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
 			return true;
 		}
 	},
@@ -1236,6 +1392,12 @@ public enum DateOperators implements Operator<String> {
 		public boolean isDynamicOperator() {
 			return true;
 		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
 	},
 	
 	NEXT_HOURS(41, "Next Hours") {
@@ -1281,6 +1443,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
 			return true;
 		}
 	},
@@ -1330,6 +1498,12 @@ public enum DateOperators implements Operator<String> {
 		
 		@Override
 		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
 			return true;
 		}
 	}
@@ -1412,6 +1586,7 @@ public enum DateOperators implements Operator<String> {
 	}
 	
 	public abstract DateRange getRange(String value);
+	public abstract boolean isBaseLineSupported();
 	
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
 	private static Map<String, Operator> initOperatorMap() {

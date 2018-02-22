@@ -235,7 +235,7 @@ public class FacilioExpressionParser {
 						
 						Condition condition = null;
 						if (matcher.group(3) != null) {
-							if(BaseLineAPI.isBaseLineSupportedOperator(operator)) {
+							if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
 								BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
 								condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
 							}
