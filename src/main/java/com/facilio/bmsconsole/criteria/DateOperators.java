@@ -241,8 +241,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${TODAY}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -290,8 +290,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${TODAY_UPTO_NOW}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -340,8 +340,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${TOMORROW}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -387,8 +387,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${TOMORROWPLUS}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -438,8 +438,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${YESTERDAY}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -484,8 +484,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${YESTERDAYMINUS}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -534,8 +534,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${LASTMONTH}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -584,8 +584,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISMONTH}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -633,8 +633,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISMONTH_UPTO_NOW}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -683,8 +683,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${NEXTMONTH}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -732,8 +732,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISYEAR}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -780,8 +780,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${LASTYEAR}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -828,8 +828,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISYEAR_UPTO_NOW}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -877,8 +877,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${LASTWEEK}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -927,8 +927,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISWEEK}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -977,8 +977,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${THISWEEK_UPTO_NOW}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -1027,8 +1027,8 @@ public enum DateOperators implements Operator<String> {
 		}
 		
 		@Override
-		public String getDynamicParameter() {
-			return "${NEXTWEEK}";
+		public boolean isDynamicOperator() {
+			return true;
 		}
 		
 		@Override
@@ -1184,6 +1184,11 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getMonthStartTime(-Integer.parseInt(value)), DateTimeUtil.getMonthStartTime() - 1);
 		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
 	},
 	
 	WITHIN_HOURS(40, "Within Hours") {
@@ -1226,6 +1231,11 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return new DateRange(DateTimeUtil.getHourStartTime(-Integer.parseInt(value)), DateTimeUtil.getHourStartTime(1));
 		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
 	},
 	
 	NEXT_HOURS(41, "Next Hours") {
@@ -1267,6 +1277,11 @@ public enum DateOperators implements Operator<String> {
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
 			return new DateRange( DateTimeUtil.getHourStartTime(), DateTimeUtil.getHourStartTime(Integer.parseInt(value)));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
 		}
 	},
 	LAST_N_HOURS(42, "Last N Hours") {
@@ -1311,6 +1326,11 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			Long currentTime = DateTimeUtil.getCurrenTime();
 			return new DateRange(DateTimeUtil.getLastNHour(currentTime, Integer.valueOf(value)), currentTime);
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
 		}
 	}
 	;
@@ -1365,8 +1385,8 @@ public enum DateOperators implements Operator<String> {
 	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
-	public String getDynamicParameter() {
-		return null;
+	public boolean isDynamicOperator() {
+		return false;
 	}
  	
 	@Override

@@ -112,7 +112,7 @@ public class Condition {
 	}
 	
 	public String getComputedWhereClause(Map<String, Object> placeHolders) {
-		if(operator != null && (computedWhereClause == null || DYNAMIC_OPERATORS.contains(operator) || isExpressionValue())) {
+		if(operator != null && (computedWhereClause == null || operator.isDynamicOperator() || isExpressionValue())) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
@@ -187,28 +187,6 @@ public class Condition {
 			fieldName = field.getModule().getName()+"."+fieldName;
 			field = null;
 		}
-	}
-	
-	private static List<Operator> DYNAMIC_OPERATORS = Collections.unmodifiableList(getDynamicOperators());
-	private static List<Operator> getDynamicOperators() {
-		List<Operator> dynamicOperators = new ArrayList<>();
-		dynamicOperators.add(PickListOperators.IS);
-		dynamicOperators.add(PickListOperators.ISN_T);
-		dynamicOperators.add(DateOperators.TODAY);
-		dynamicOperators.add(DateOperators.TOMORROW);
-		dynamicOperators.add(DateOperators.STARTING_TOMORROW);
-		dynamicOperators.add(DateOperators.YESTERDAY);
-		dynamicOperators.add(DateOperators.TILL_YESTERDAY);
-		dynamicOperators.add(DateOperators.LAST_MONTH);
-		dynamicOperators.add(DateOperators.CURRENT_MONTH);
-		dynamicOperators.add(DateOperators.NEXT_MONTH);
-		dynamicOperators.add(DateOperators.LAST_WEEK);
-		dynamicOperators.add(DateOperators.CURRENT_WEEK);
-		dynamicOperators.add(DateOperators.NEXT_WEEK);
-		dynamicOperators.add(DateOperators.LAST_MONTHS);
-		dynamicOperators.add(DateOperators.WITHIN_HOURS);
-		dynamicOperators.add(DateOperators.NEXT_HOURS);
-		return dynamicOperators;
 	}
 	
 	@Override

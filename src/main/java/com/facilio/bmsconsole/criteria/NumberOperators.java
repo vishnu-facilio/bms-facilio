@@ -168,8 +168,8 @@ public enum NumberOperators implements Operator<String> {
 	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
 	
 	@Override
-	public String getDynamicParameter() {
-		return null;
+	public boolean isDynamicOperator() {
+		return false;
 	}
 	
 	@Override

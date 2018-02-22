@@ -63,8 +63,8 @@ public enum BooleanOperators implements Operator<String> {
 	}
 	
 	@Override
-	public String getDynamicParameter() {
-		return null;
+	public boolean isDynamicOperator() {
+		return false;
 	}
 	
 	@Override
