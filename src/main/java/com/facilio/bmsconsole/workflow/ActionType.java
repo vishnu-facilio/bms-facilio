@@ -22,6 +22,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -34,6 +35,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -361,6 +363,11 @@ public enum ActionType {
 				updateWO.setAssignmentGroup(group);
 			}
 			try {
+				if(assignedToUserId != -1 || assignGroupId != -1) {
+					TicketStatusContext status = TicketAPI.getStatus("Assigned");
+					workOrder.setStatus(status);
+					updateWO.setStatus(status);
+				}
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
