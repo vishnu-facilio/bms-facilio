@@ -10,8 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.udojava.evalex.Expression;
@@ -20,18 +23,18 @@ public class FacilioExpressionParser {
 
 	private static final String EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.*)([^.]*)(?:\\.*)([^.]*)";
 	
-	public static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
-	public static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
-	public static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
-	public static final String RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER = ".+\\s*\\$\\$\\s*(<|<=|>=|>|=|!=)\\s*\\$\\$\\s*.+";
-	public static final String COMPARATOR_FORMATOR = "\\s*\\$\\$\\s*(<|<=|>=|>|=|!=|==|<>)\\s*\\$\\$\\s*";
-	public static final String CONDITION_FORMATTER = "((.*?)`([^`]*)`(.*))";
-	public static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
-	public static final String EXPRESSION_SPACE_SEPERATOR = "``";
-	public static final String COMPARATOR_SPACE_SEPERATOR = "$$";
-	public static final String RESULT_STRING = "result";
-	public static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
-	public static final String EMPTY_STRING = "";
+	private static final String RETURN_SINGLE_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)(?:\\.+)([^.]+)$";
+	private static final String RETURN_LIST_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)(?:\\.+)([^.]+)$";
+	private static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
+	private static final String RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER = ".+\\s*\\$\\$\\s*(<|<=|>=|>|=|!=)\\s*\\$\\$\\s*.+";
+	private static final String COMPARATOR_FORMATOR = "\\s*\\$\\$\\s*(<|<=|>=|>|=|!=|==|<>)\\s*\\$\\$\\s*";
+	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\[(\\d+)\\]\\s+)?([^`]*)`(.*))";
+	private static final String CONDITION_SPACE_SEPERATOR = " \\(##\\) ";
+	private static final String EXPRESSION_SPACE_SEPERATOR = "``";
+	private static final String COMPARATOR_SPACE_SEPERATOR = "$$";
+	private static final String RESULT_STRING = "result";
+	private static final String NUMBER_CONSTANT_FORMATER = "[0-9]+";
+	private static final String EMPTY_STRING = "";
 	
 	String expressionString;
 	
@@ -220,8 +223,6 @@ public class FacilioExpressionParser {
 					Matcher matcher = condtionStringpattern.matcher(value);
 					while (matcher.find()) {
 						String fieldName = matcher.group(2);
-						Condition condition = new Condition();
-						condition.setFieldName(fieldName);
 						FacilioField field = null;
 						if(fieldName.equals("id")) {
 							field = FieldFactory.getIdField(modBean.getModule(moduleName));
@@ -229,9 +230,25 @@ public class FacilioExpressionParser {
 						else {
 							field = fieldMap.get(fieldName);
 						}
-						condition.setColumnName(field.getExtendedModule().getTableName()+"."+field.getColumnName());
-						condition.setOperator(field.getDataTypeEnum().getOperator(matcher.group(3)));
-						condition.setValue(matcher.group(4));
+						Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
+						String conditionValue = matcher.group(6);
+						
+						Condition condition = null;
+						if (matcher.group(3) != null) {
+							if(BaseLineAPI.isBaseLineSupportedOperator(operator)) {
+								BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+								condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+							}
+							else {
+								throw new IllegalArgumentException("BaseLine is not supported for this operator");
+							}
+						}
+						else {
+							condition = new Condition();
+							condition.setField(field);
+							condition.setOperator(operator);
+							condition.setValue(conditionValue);
+						}
 						sequence++;
 						sb.append(sequence + " ");
 						condition.setSequence(sequence);

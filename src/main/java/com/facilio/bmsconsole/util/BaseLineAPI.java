@@ -13,7 +13,10 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -138,6 +141,34 @@ public class BaseLineAPI {
 														;
 		
 		return getBaseLinesFromMap(selectBuilder.get());
+	}
+	
+	private static List<Operator> BASE_LINE_OPERATORS = Collections.unmodifiableList(getBaseLineOperators());
+	private static List<Operator> getBaseLineOperators() {
+		List<Operator> baseLineOperators = new ArrayList<>();
+		baseLineOperators.add(DateOperators.TODAY);
+		baseLineOperators.add(DateOperators.TOMORROW);
+		baseLineOperators.add(DateOperators.STARTING_TOMORROW);
+		baseLineOperators.add(DateOperators.YESTERDAY);
+		baseLineOperators.add(DateOperators.TILL_YESTERDAY);
+		baseLineOperators.add(DateOperators.LAST_MONTH);
+		baseLineOperators.add(DateOperators.CURRENT_MONTH);
+		baseLineOperators.add(DateOperators.NEXT_MONTH);
+		baseLineOperators.add(DateOperators.LAST_WEEK);
+		baseLineOperators.add(DateOperators.CURRENT_WEEK);
+		baseLineOperators.add(DateOperators.NEXT_WEEK);
+		baseLineOperators.add(DateOperators.LAST_MONTHS);
+		baseLineOperators.add(DateOperators.WITHIN_HOURS);
+		baseLineOperators.add(DateOperators.NEXT_HOURS);
+		baseLineOperators.add(DateOperators.LAST_N_HOURS);
+		baseLineOperators.add(DateOperators.TODAY_UPTO_NOW);
+		baseLineOperators.add(DateOperators.CURRENT_MONTH_UPTO_NOW);
+		baseLineOperators.add(DateOperators.CURRENT_WEEK_UPTO_NOW);
+		baseLineOperators.add(DateOperators.CURRENT_YEAR_UPTO_NOW);
+		return baseLineOperators;
+	}
+	public static boolean isBaseLineSupportedOperator(Operator operator) {
+		return BASE_LINE_OPERATORS.contains(operator);
 	}
 	
 	private static List<BaseLineContext> getBaseLinesFromMap(List<Map<String, Object>> props) {
