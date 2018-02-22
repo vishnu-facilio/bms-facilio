@@ -196,7 +196,7 @@ public enum ActionType {
 	ADD_ALARM(6){
 		@Override
 		public void performAction(JSONObject obj, Context context) {
-
+			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
 					if(obj.containsKey("alarmType")) {

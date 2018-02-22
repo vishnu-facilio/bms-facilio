@@ -7,9 +7,10 @@ import java.time.temporal.WeekFields;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
@@ -102,12 +103,10 @@ public class BaseLineContext {
 		return true;
 	}
 	
-	public Criteria getBaseLineCriteria(FacilioField field, long dataStartTime, long dataEndTime) {
-		String range = calculateRange(dataStartTime, dataEndTime, isAdjust());
-		if (range != null && !range.isEmpty()) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(field, range, DateOperators.BETWEEN));
-			return criteria;
+	public Condition getBaseLineCondition(FacilioField field, DateRange range) {
+		String blRange = calculateRange(range.getStartTime(), range.getEndTime(), isAdjust());
+		if (blRange != null && !blRange.isEmpty()) {
+			return CriteriaAPI.getCondition(field, blRange, DateOperators.BETWEEN);
 		}
 		return null;
 	}

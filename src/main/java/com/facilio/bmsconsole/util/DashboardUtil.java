@@ -52,6 +52,7 @@ public class DashboardUtil {
 		List<FacilioField> fields = FieldFactory.getWidgetFields();
 		fields.addAll(FieldFactory.getWidgetChartFields());
 		fields.addAll(FieldFactory.getWidgetListViewFields());
+		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -63,7 +64,11 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetStaticModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
+		
+		selectBuilder.orderBy(ModuleFactory.getDashboardVsWidgetModule().getTableName() + ".LAYOUT_POSITION");
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();

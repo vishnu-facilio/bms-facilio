@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -17,6 +15,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private Long dashboardId;
 	private Integer layoutWidth;
 	private Integer layoutHeight;
+	private Integer xPosition;
+	private Integer yPosition;
 	private int layoutPosition;
 	private int dataRefreshIntervel;
 	private String widgetUrl;
@@ -102,6 +102,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		this.dataRefreshIntervel = dataRefreshIntervel;
 	}
 	public enum WidgetType {
+		STATIC(0,"static",WidgetStaticContext.class),
 		CHART(1,"chart",WidgetChartContext.class),
 		LIST_VIEW(2,"view",WidgetListViewContext.class),
 		MAP(3,"map",WidgetListViewContext.class);
@@ -137,8 +138,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		public static WidgetType getWidgetType(int value) {
 			return WIDGET_CHART_TYPE_MAP.get(value);
 		}
+		
+		public static WidgetType getWidgetType(String name) {
+			return WIDGET_CHART_NAME_MAP.get(name);
+		}
 
 		private static final Map<Integer, WidgetType> WIDGET_CHART_TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+		private static final Map<String, WidgetType> WIDGET_CHART_NAME_MAP = Collections.unmodifiableMap(initNameMap());
 		private static Map<Integer, WidgetType> initTypeMap() {
 			Map<Integer, WidgetType> typeMap = new HashMap<>();
 			for(WidgetType type : values()) {
@@ -146,7 +152,24 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 			}
 			return typeMap;
 		}
+		private static Map<String, WidgetType> initNameMap() {
+			Map<String, WidgetType> nameMap = new HashMap<>();
+			for(WidgetType type : values()) {
+				nameMap.put(type.getName(), type);
+			}
+			return nameMap;
+		}
 	}
-
-	
+	public Integer getxPosition() {
+		return xPosition;
+	}
+	public void setxPosition(Integer xPosition) {
+		this.xPosition = xPosition;
+	}
+	public Integer getyPosition() {
+		return yPosition;
+	}
+	public void setyPosition(Integer yPosition) {
+		this.yPosition = yPosition;
+	}	
 }

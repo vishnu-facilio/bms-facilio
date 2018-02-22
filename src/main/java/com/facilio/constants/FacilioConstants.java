@@ -360,6 +360,7 @@ public class FacilioConstants {
 		public static final String VIEW_LIST = "views";
 		public static final String VIEWCOLUMNS = "viewColumns";
 		public static final String PARENT_VIEW = "parentView";
+		public static final String RESOURCE_ID = "RESOURCE_ID";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";

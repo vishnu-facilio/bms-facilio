@@ -33,6 +33,15 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.lastValue = lastValue;
 	}
 	
+	private long resourceId = -1;
+	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;

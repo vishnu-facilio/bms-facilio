@@ -1645,6 +1645,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateDashboardChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateDashboardCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 //	public static Chain getReportData() {
 //		Chain c = new TransactionChain();
 //		c.addCommand(new SetFieldsCommand());
@@ -1690,6 +1697,13 @@ public class FacilioChainFactory {
 	public static Chain getBaseLinesOfSpaceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetBaseLinesForSpaceCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllBaseLinesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllBaseLinesCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

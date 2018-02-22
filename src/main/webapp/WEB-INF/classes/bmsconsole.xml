@@ -1811,6 +1811,12 @@
 				<param name="root">baseLine</param>
 			</result>
 		</action>
+		<action name="all" class="com.facilio.bmsconsole.actions.BaseLineAction"
+			method="getAllBaseLineList">
+			<result name="success" type="json">
+				<param name="root">baseLines</param>
+			</result>
+		</action>
 		<action name="getSpaceBaseLines" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="getBaseLineList">
 			<result name="success" type="json">
@@ -2143,6 +2149,15 @@
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="spacelist" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="spaceList">
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">moduleName,spaces,spaces\[\d+\],spaces\[\d+\].*</param>
 			</result>
 		</action>
 
@@ -3140,6 +3155,11 @@
 	</package>
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
 		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>

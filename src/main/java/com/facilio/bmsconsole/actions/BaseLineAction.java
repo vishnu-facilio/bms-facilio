@@ -28,6 +28,15 @@ public class BaseLineAction extends ActionSupport {
 		this.baseLine = baseLine;
 	}
 	
+	public String getAllBaseLineList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		Chain getBaseLineChain = FacilioChainFactory.getAllBaseLinesChain();
+		getBaseLineChain.execute(context);
+		
+		baseLines = (List<BaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST);
+		return SUCCESS;
+	}
+	
 	public String getBaseLineList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_ID, space);

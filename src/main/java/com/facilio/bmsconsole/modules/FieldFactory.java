@@ -495,6 +495,13 @@ public class FieldFactory {
 		lastValue.setModule(module);
 		fields.add(lastValue);
 		
+		FacilioField resourceId = new FacilioField();
+		resourceId.setName("resourceId");
+		resourceId.setDataType(FieldType.NUMBER);
+		resourceId.setColumnName("RESOURCE_ID");
+		resourceId.setModule(module);
+		fields.add(resourceId);
+		
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 
 		return fields;
@@ -2047,6 +2054,20 @@ public class FieldFactory {
 		dashboardWidgetLayoutHeight.setColumnName("LAYOUT_HEIGHT");
 		dashboardWidgetLayoutHeight.setModule(module);
 		fields.add(dashboardWidgetLayoutHeight);
+		
+		FacilioField xPosition = new FacilioField();
+		xPosition.setName("xPosition");
+		xPosition.setDataType(FieldType.NUMBER);
+		xPosition.setColumnName("X_POSITION");
+		xPosition.setModule(module);
+		fields.add(xPosition);
+
+		FacilioField yPosition = new FacilioField();
+		yPosition.setName("yPosition");
+		yPosition.setDataType(FieldType.NUMBER);
+		yPosition.setColumnName("Y_POSITION");
+		yPosition.setModule(module);
+		fields.add(yPosition);
 
 		FacilioField dashboardWidgetLayoutPosition = new FacilioField();
 		dashboardWidgetLayoutPosition.setName("layoutPosition");
@@ -2152,6 +2173,21 @@ public class FieldFactory {
 		viewName.setColumnName("VIEW_NAME");
 		viewName.setModule(module);
 		fields.add(viewName);
+
+		return fields;
+	}
+	public static List<FacilioField> getWidgetStaticFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetStaticModule();
+
+		fields.add(getIdField(module));
+		
+		FacilioField staticKey = new FacilioField();
+		staticKey.setName("staticKey");
+		staticKey.setDataType(FieldType.STRING);
+		staticKey.setColumnName("STATIC_KEY");
+		staticKey.setModule(module);
+		fields.add(staticKey);
 
 		return fields;
 	}

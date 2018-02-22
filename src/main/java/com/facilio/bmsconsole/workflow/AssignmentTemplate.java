@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class AssignmentTemplate extends UserTemplate {
 
 	
-	long assignedGroupId;
-	long assignedUserId;
+	long assignedGroupId = -1;
+	long assignedUserId = -1;
 	
 	public long getAssignedGroupId() {
 		return assignedGroupId;

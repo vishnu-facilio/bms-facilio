@@ -14,7 +14,7 @@ public interface Operator<E> {
 	
 	public FacilioModulePredicate getPredicate(String fieldName, E value);
 	
-	public String getDynamicParameter();
+	public boolean isDynamicOperator();
 	
 	public List<Object> computeValues(E value);
 	

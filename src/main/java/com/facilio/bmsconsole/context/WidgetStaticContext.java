@@ -2,15 +2,18 @@ package com.facilio.bmsconsole.context;
 
 import org.json.simple.JSONObject;
 
-public class WidgetChartContext extends DashboardWidgetContext {
+public class WidgetStaticContext extends DashboardWidgetContext {
 
-	Long reportId;
-	public Long getReportId() {
-		return reportId;
+	String staticKey;
+	
+	public void setStaticKey(String staticKey) {
+		this.staticKey = staticKey;
 	}
-	public void setReportId(Long reportId) {
-		this.reportId = reportId;
+	
+	public String getStaticKey() {
+		return this.staticKey;
 	}
+	
 	@Override
 	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
@@ -41,10 +44,9 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		resultJson.put("header", headerJson);
 		
 		JSONObject dataOptionsJson = new JSONObject();
-//		dataOptionsJson.put("type", getWidgetChartType().getName());
-		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getReportId());
+		dataOptionsJson.put("dataurl", "");
 		dataOptionsJson.put("name", "dummy");
-		dataOptionsJson.put("reportId", getReportId());
+		dataOptionsJson.put("staticKey", getStaticKey());
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);

@@ -103,17 +103,31 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 
 	private String intercept0(){
         HttpServletRequest request = ServletActionContext.getRequest();
-		Account currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_PORTAL_ACCOUNT");
-        if (currentAccount == null) {
-            try {
+		CognitoUtil.CognitoUser cognitoUser = null;
+		Account currentAccount = null;
+		try {
+			cognitoUser = AuthenticationUtil.getCognitoUser(request);
+			currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_PORTAL_ACCOUNT");
+			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+				AccountUtil.cleanCurrentAccount();
+				AccountUtil.setCurrentAccount(currentAccount);
+			} else {
 				String domainName = request.getServerName();
 				int index = domainName.indexOf(".");
-				if(index != -1) {
+				if (index != -1) {
 					String subDomain = domainName.substring(0, index);
-					Organization org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
+					String currentAccountSubDomain = "";
+					if(currentAccount != null && currentAccount.getOrg() != null){
+						currentAccountSubDomain = currentAccount.getOrg().getDomain();
+					}
+					Organization org = null;
+					if(domainName.equalsIgnoreCase(currentAccountSubDomain)){
+						org = currentAccount.getOrg();
+					} else {
+						org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
+					}
 					if (org != null) {
 						Long portalId = org.getPortalId();
-						CognitoUtil.CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
 						User user = null;
 						if (cognitoUser != null) {
 							user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
@@ -124,11 +138,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 						ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
 					}
 				}
-            } catch (Exception e){
-                e.printStackTrace();
-                currentAccount = null;
-            }
-        }
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	    return "success";
     }
 

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -36,7 +37,17 @@ public class AddWidgetCommand implements Command {
 
 			widget.setId((Long) props.get("id"));
 			
-			if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CHART)) {
+			if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.STATIC)) {
+				WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widget;
+						insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetStaticModule().getTableName())
+						.fields(FieldFactory.getWidgetStaticFields());
+
+				props = FieldUtil.getAsProperties(widgetStaticContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
+			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CHART)) {
 				WidgetChartContext widgetChartContext = (WidgetChartContext) widget;
 						insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getWidgetChartModule().getTableName())

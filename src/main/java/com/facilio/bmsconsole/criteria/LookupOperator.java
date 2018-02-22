@@ -67,9 +67,8 @@ public enum LookupOperator implements Operator<Criteria> {
 	}
 
 	@Override
-	public String getDynamicParameter() {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean isDynamicOperator() {
+		return false;
 	}
 
 	@Override

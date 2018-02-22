@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -110,7 +111,15 @@ public class DashboardAction extends ActionSupport {
 	private List<DashboardContext> dashboards;
 	private DashboardWidgetContext dashboardWidget;
 	private WidgetChartContext widgetChartContext;
-	private WidgetListViewContext widgetListViewContext; 
+	private WidgetListViewContext widgetListViewContext;
+	private WidgetStaticContext widgetStaticContext;
+	
+	public WidgetStaticContext getWidgetStaticContext() {
+		return widgetStaticContext;
+	}
+	public void setWidgetStaticContext(WidgetStaticContext widgetStaticContext) {
+		this.widgetStaticContext = widgetStaticContext;
+	}
 	
 	public List<DashboardContext> getDashboards() {
 		return dashboards;
@@ -185,8 +194,7 @@ public class DashboardAction extends ActionSupport {
 	public String getDateFilter() {
 		return dateFilter;
 	}
-	
-	public void setDateFilter(String dateFilter) {
+	public void setDateFilter(JSONArray dateFilter) {
 		this.dateFilter = dateFilter;
 	}
 	
@@ -373,14 +381,15 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = reportContext.getXAxisAggregateOpperator();
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue()) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
-				int oprId = (this.dateFilter != null) ? Integer.parseInt(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
+				
+				int oprId =  this.dateFilter != null ? DashboardUtil.predictDateOpperator(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
 				
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
-				if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
+				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
 					if(reportContext.getIsComparisionReport()) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
@@ -472,13 +481,15 @@ public class DashboardAction extends ActionSupport {
 			dateCondition.setField(reportContext.getDateFilter().getField());
 			
 			if (this.dateFilter != null) {
-				if (this.dateFilter.split(",").length > 1) {
-					// between
+				if (this.dateFilter.size() > 1) {
+
 					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(this.dateFilter);
-				}
-				else {
-					dateCondition.setOperatorId(Integer.parseInt(this.dateFilter));
+					long fromValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(0));
+					long toValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(1));
+					if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
+						toValue = DateTimeUtil.getCurrenTime();
+					}
+					dateCondition.setValue(fromValue+","+toValue);
 				}
 			}
 			else {
@@ -1524,14 +1535,56 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	JSONObject dashboardMeta;
+	
+	public void setDashboardMeta(JSONObject dashboardMeta) {
+		this.dashboardMeta = dashboardMeta;
+	}
+	
+	public JSONObject getDashboardMeta() {
+		return this.dashboardMeta;
+	}
+	
 	public String updateDashboard() throws Exception {
+		
+		this.dashboard = new DashboardContext();
+		this.dashboard.setId((Long) dashboardMeta.get("id"));
+		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
+		
+		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+		if (dashboardWidgets != null) {
+			for (int i=0; i < dashboardWidgets.size(); i++) {
+				Map widget = (Map) dashboardWidgets.get(i);
+				Integer widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.get("type").toString()).getValue();
+				
+				DashboardWidgetContext widgetContext = null;
+				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
+					widgetContext = new WidgetChartContext();
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
+					widgetContext = new WidgetListViewContext();
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
+					widgetContext = new WidgetStaticContext();
+				}
+				
+				widgetContext.setId((Long) widget.get("id"));
+				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
+				widgetContext.setLayoutHeight(Integer.parseInt(widget.get("layoutHeight").toString()));
+				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
+				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
+				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
+				
+				this.dashboard.addDashboardWidget(widgetContext);
+			}
+		}
+		
 		FacilioContext context = new FacilioContext();
-		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
-		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
-		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
-		addDashboardChain.execute(context);
+		
+		Chain updateDashboardChain = FacilioChainFactory.getUpdateDashboardChain();
+		updateDashboardChain.execute(context);
+		
 		return SUCCESS;
 	}
 	
@@ -1550,6 +1603,12 @@ public class DashboardAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.LIST_VIEW);
 			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetListViewContext.getDashboardId());
 			widgetListViewContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		else if (widgetStaticContext != null) {
+			context.put(FacilioConstants.ContextNames.WIDGET, widgetStaticContext);
+			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.STATIC);
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetStaticContext.getDashboardId());
+			widgetStaticContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		}
 		
 		Chain addWidgetChain = null;

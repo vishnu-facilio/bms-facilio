@@ -13,7 +13,10 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -71,6 +74,19 @@ public class BaseLineAPI {
 		return deleteBuilder.delete();
 	}
 	
+	public static List<BaseLineContext> getAllBaseLines() throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														;
+		
+		return getBaseLinesFromMap(selectBuilder.get());
+	}
+	
 	public static List<BaseLineContext> getBaseLinesOfSpace(long spaceId) throws Exception {
 		FacilioModule module = ModuleFactory.getBaseLineModule();
 		List<FacilioField> fields = FieldFactory.getBaseLineFields();
@@ -88,6 +104,24 @@ public class BaseLineAPI {
 														;
 		
 		return getBaseLinesFromMap(selectBuilder.get());
+	}
+	
+	public static BaseLineContext getBaseLine(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(id, module))
+														;
+		
+		List<BaseLineContext> baseLines = getBaseLinesFromMap(selectBuilder.get());
+		if (baseLines != null && !baseLines.isEmpty()) {
+			return baseLines.get(0);
+		}
+		return null;
 	}
 	
 	public static List<BaseLineContext> getBaseLinesOfReport(long reportId) throws Exception {
