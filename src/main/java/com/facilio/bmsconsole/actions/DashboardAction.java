@@ -190,8 +190,8 @@ public class DashboardAction extends ActionSupport {
 	public void setCriteriaId(Long criteriaId) {
 		this.criteriaId = criteriaId;
 	}
-	String dateFilter;
-	public String getDateFilter() {
+	JSONArray dateFilter;
+	public JSONArray getDateFilter() {
 		return dateFilter;
 	}
 	public void setDateFilter(JSONArray dateFilter) {
