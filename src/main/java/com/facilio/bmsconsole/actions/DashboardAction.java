@@ -506,6 +506,12 @@ public class DashboardAction extends ActionSupport {
 				if (meters != null && meters.size() > 0) {
 					List<Long> meterIds = new ArrayList<Long>();
 					for (EnergyMeterContext meter : meters) {
+						
+						if(meter.isRoot()) {
+							meterIds = new ArrayList<Long>();
+							meterIds.add(meter.getId());
+							break;
+						}
 						meterIds.add(meter.getId());
 					}
 					
