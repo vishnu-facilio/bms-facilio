@@ -27,7 +27,7 @@ public class FacilioExpressionParser {
 	private static final String RETURN_MAP_VALUE_EXPRESSION_FORMATTER = "((.+?)\\s*)(?:\\[+)(.+?)(?:\\]+)$";
 	private static final String RETURN_BOOLEAN_VALUE_EXPRESSION_FORMATTER = ".+\\s*\\$\\$\\s*(<|<=|>=|>|=|!=)\\s*\\$\\$\\s*.+";
 	private static final String COMPARATOR_FORMATOR = "\\s*\\$\\$\\s*(<|<=|>=|>|=|!=|==|<>)\\s*\\$\\$\\s*";
-	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\[(\\d+)\\]\\s+)?([^`]*)`(.*))";
+	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CONDITION_SPACE_SEPERATOR = "##";
 	private static final String EXPRESSION_SPACE_SEPERATOR = "``";
 	private static final String COMPARATOR_SPACE_SEPERATOR = "$$";

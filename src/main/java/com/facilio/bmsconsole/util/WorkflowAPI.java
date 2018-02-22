@@ -328,7 +328,15 @@ public class WorkflowAPI {
 				}
 				
 				long criteriaId = workflow.getCriteriaId();
-				workflow.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId));
+				if (criteriaId != -1) {
+					workflow.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId));
+				}
+				
+				long expressionId = workflow.getExpressionId();
+				if (expressionId != -1) {
+					workflow.setExpression(ExpressionAPI.getExpressionContext(expressionId));
+				}
+				
 				if(isEvent) {
 					WorkflowEventContext event = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
 					event.setId(workflow.getEventId());

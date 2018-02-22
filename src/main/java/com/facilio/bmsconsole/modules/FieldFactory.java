@@ -437,12 +437,14 @@ public class FieldFactory {
 		eventId.setModule(module);
 		fields.add(eventId);
 
-		FacilioField criteriaId = new FacilioField();
+		FacilioField criteriaId = new NumberField();
 		criteriaId.setName("criteriaId");
 		criteriaId.setDataType(FieldType.NUMBER);
 		criteriaId.setColumnName("CRITERIAID");
 		criteriaId.setModule(module);
 		fields.add(criteriaId);
+		
+		fields.add(getField("expressionId", "EXPRESSION_ID", module, FieldType.NUMBER));
 
 		FacilioField executionOrder = new FacilioField();
 		executionOrder.setName("executionOrder");

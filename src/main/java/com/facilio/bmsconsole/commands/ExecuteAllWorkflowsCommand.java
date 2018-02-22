@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.FacilioExpressionParser;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -69,7 +70,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 					{
 						Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
-						Criteria criteria = workflowRule.getCriteria();
 						Iterator<Integer> it = records.iterator();
 						while (it.hasNext()) {
 							Object record = it.next();
@@ -79,6 +79,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 							Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
 							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
 							boolean flag = true;
+							Criteria criteria = workflowRule.getCriteria();
 							if(criteria != null) {
 								if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE || workflowRule.getRuleTypeEnum() == RuleType.PM_READING_RULE) {
 									flag = criteria.computePredicate(recordPlaceHolders).evaluate(record);
@@ -97,9 +98,16 @@ public class ExecuteAllWorkflowsCommand implements Command
 									}
 								}
 							}
+							else if (workflowRule.getExpression() != null) {
+								String expressionString = workflowRule.getExpression().getExpressionString();
+								if(FacilioExpressionParser.isBooleanValueReturnTypeExpression(expressionString)) {
+									FacilioExpressionParser parser = new FacilioExpressionParser(expressionString);
+									double result = (double) parser.getResult();
+									flag = result == 1;
+								}
+							}
 							
-							if(flag)
-							{
+							if(flag) {
 								long workflowRuleId = workflowRule.getId();
 								List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(orgId, workflowRuleId);
 								if(actions != null) {

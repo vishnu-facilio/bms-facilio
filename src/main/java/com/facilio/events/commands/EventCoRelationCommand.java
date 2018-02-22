@@ -31,8 +31,8 @@ public class EventCoRelationCommand implements Command {
 				if (expressionId != -1) {
 					ExpressionContext expression = ExpressionAPI.getExpressionContext(expressionId);
 					String expressionStr = StrSubstitutor.replace(expression.getExpressionString(), FieldUtil.getAsProperties(event));
-					FacilioExpressionParser parser = new FacilioExpressionParser(expressionStr);
-					if(parser.isSingleValueReturnTypeExpression(expressionStr)) {
+					if(FacilioExpressionParser.isSingleValueReturnTypeExpression(expressionStr)) {
+						FacilioExpressionParser parser = new FacilioExpressionParser(expressionStr);
 						double result = (double) parser.getResult();
 						if(result == 1) {
 							switch(rule.getColRelActionEnum()) {
