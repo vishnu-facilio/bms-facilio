@@ -90,7 +90,10 @@ state = PORTAL-yogendrababu
 	}
 
 	public long portalId() {
-        return AccountUtil.getCurrentOrg().getPortalId();
+		if(AccountUtil.getCurrentOrg() != null) {
+			return AccountUtil.getCurrentOrg().getPortalId();
+		}
+		return -1l;
 	}
 
 	public String changePassword() throws Exception {
