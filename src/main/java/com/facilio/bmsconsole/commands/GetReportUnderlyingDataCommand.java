@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -17,12 +18,12 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -36,7 +37,7 @@ public class GetReportUnderlyingDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		String dateFilter = (String)context.get(FacilioConstants.ContextNames.DATE_FILTER);
+		JSONArray dateFilter = (JSONArray)context.get(FacilioConstants.ContextNames.DATE_FILTER);
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -59,29 +60,7 @@ public class GetReportUnderlyingDataCommand implements Command {
 			builder.andCriteria(criteria);
 		}
 		if (reportContext.getDateFilter() != null) {
-			Condition dateCondition = new Condition();
-			dateCondition.setField(reportContext.getDateFilter().getField());
-			
-			if (dateFilter != null) {
-				if (dateFilter.split(",").length > 1) {
-					// between
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(dateFilter);
-				}
-				else {
-					dateCondition.setOperatorId(Integer.parseInt(dateFilter));
-				}
-			}
-			else {
-				if (reportContext.getDateFilter().getReportId() == 20) {
-					// between
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(reportContext.getDateFilter().getVal());
-				}
-				else {
-					dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-				}
-			}
+			Condition dateCondition = DashboardUtil.getDateCondition(reportContext, dateFilter, module);
 			builder.andCondition(dateCondition);
 		}
 		if (reportContext.getEnergyMeter() != null) {
