@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -20,7 +21,7 @@ public class ScheduleReportCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		long reportId = (long) context.get(FacilioConstants.ContextNames.REPORT_ID);
 		if (reportId > 0) {
-			String dateFilter = (String)context.get(FacilioConstants.ContextNames.DATE_FILTER);
+			JSONArray dateFilter = (JSONArray)context.get(FacilioConstants.ContextNames.DATE_FILTER);
 			int fileFormat = (int) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 			EMailTemplate emailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 			

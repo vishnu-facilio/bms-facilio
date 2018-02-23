@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +11,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
@@ -28,6 +25,7 @@ import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -862,4 +860,26 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 	}
 	
 }
+	
+	public static Condition getDateCondition(ReportContext reportContext, JSONArray dateFilter, FacilioModule module) {
+		Condition dateCondition = new Condition();
+		dateCondition.setField(reportContext.getDateFilter().getField());
+		
+		if (dateFilter != null) {
+			if (dateFilter.size() > 1) {
+
+				dateCondition.setOperator(DateOperators.BETWEEN);
+				long fromValue = DateTimeUtil.utcTimeToOrgTime((long)dateFilter.get(0));
+				long toValue = DateTimeUtil.utcTimeToOrgTime((long)dateFilter.get(1));
+				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
+					toValue = DateTimeUtil.getCurrenTime();
+				}
+				dateCondition.setValue(fromValue+","+toValue);
+			}
+		}
+		else {
+			dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
+		}
+		return dateCondition;
+	}
 }

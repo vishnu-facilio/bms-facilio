@@ -18,7 +18,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
@@ -34,7 +33,6 @@ import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
@@ -476,24 +474,7 @@ public class DashboardAction extends ActionSupport {
 		
 		Condition dateCondition = null;
 		if (reportContext.getDateFilter() != null) {
-			dateCondition = new Condition();
-			dateCondition.setField(reportContext.getDateFilter().getField());
-			
-			if (this.dateFilter != null) {
-				if (this.dateFilter.size() > 1) {
-
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					long fromValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(0));
-					long toValue = DateTimeUtil.utcTimeToOrgTime((long)this.dateFilter.get(1));
-					if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
-						toValue = DateTimeUtil.getCurrenTime();
-					}
-					dateCondition.setValue(fromValue+","+toValue);
-				}
-			}
-			else {
-				dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-			}
+			dateCondition = DashboardUtil.getDateCondition(reportContext, this.dateFilter, module);
 			builder.andCondition(dateCondition);
 		}
 		JSONObject buildingVsMeter = new JSONObject();
