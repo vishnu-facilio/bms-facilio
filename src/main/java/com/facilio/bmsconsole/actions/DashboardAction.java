@@ -571,6 +571,17 @@ public class DashboardAction extends ActionSupport {
 					List<Long> meterIds = new ArrayList<Long>();
 					if(props != null && !props.isEmpty()) {
 						for(EnergyMeterContext energyMeterContext:props) {
+							
+							if(energyMeterContext.isRoot()) {
+								meterIds = new ArrayList<Long>();
+								meterIds.add(energyMeterContext.getId());
+								if(energyMeterMap.containsKey(energyMeterContext.getSpaceId())) {
+									energyMeterMap.removeAll(energyMeterContext.getSpaceId());
+								}
+								energyMeterMap.put(energyMeterContext.getSpaceId(), energyMeterContext);
+								break;
+							}
+							
 							energyMeterMap.put(energyMeterContext.getSpaceId(), energyMeterContext);
 							meterIds.add(energyMeterContext.getId());
 						}
@@ -861,10 +872,10 @@ public class DashboardAction extends ActionSupport {
 				j1.put("label", key);
 				j1.put("value", res.get(key));
 				finalres.add(j1);
-				}
+			}
 				
-				System.out.println("finalres -- "+finalres);
-				setReportData(finalres);
+			System.out.println("finalres -- "+finalres);
+			setReportData(finalres);
 			}
 		}
 		else {
