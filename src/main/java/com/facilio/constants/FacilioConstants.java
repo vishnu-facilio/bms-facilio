@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AHUContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -256,6 +258,8 @@ public class FacilioConstants {
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
+		public static final String CHILLER = "chiller";
+		public static final String AHU = "ahu";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
@@ -408,6 +412,8 @@ public class FacilioConstants {
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
+			classMap.put(CHILLER, ChillerContext.class);
+			classMap.put(AHU, AHUContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			
