@@ -52,6 +52,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetChartFields());
 		fields.addAll(FieldFactory.getWidgetListViewFields());
 		fields.addAll(FieldFactory.getWidgetStaticFields());
+		fields.addAll(FieldFactory.getWidgetWebFields());
 		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -65,6 +66,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetStaticModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetWebModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		selectBuilder.orderBy(ModuleFactory.getDashboardVsWidgetModule().getTableName() + ".LAYOUT_POSITION");

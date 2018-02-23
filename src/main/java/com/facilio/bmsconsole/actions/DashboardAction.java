@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -111,6 +112,14 @@ public class DashboardAction extends ActionSupport {
 	private WidgetChartContext widgetChartContext;
 	private WidgetListViewContext widgetListViewContext;
 	private WidgetStaticContext widgetStaticContext;
+	private WidgetWebContext widgetWebContext;
+	
+	public WidgetWebContext getWidgetWebContext() {
+		return widgetWebContext;
+	}
+	public void setWidgetWebContext(WidgetWebContext widgetWebContext) {
+		this.widgetWebContext = widgetWebContext;
+	}
 	
 	public WidgetStaticContext getWidgetStaticContext() {
 		return widgetStaticContext;
@@ -1554,6 +1563,9 @@ public class DashboardAction extends ActionSupport {
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
 				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
+					widgetContext = new WidgetWebContext();
+				}
 				
 				widgetContext.setId((Long) widget.get("id"));
 				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
@@ -1596,6 +1608,12 @@ public class DashboardAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.STATIC);
 			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetStaticContext.getDashboardId());
 			widgetStaticContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		}
+		else if (widgetWebContext != null) {
+			context.put(FacilioConstants.ContextNames.WIDGET, widgetWebContext);
+			context.put(FacilioConstants.ContextNames.WIDGET_TYPE, DashboardWidgetContext.WidgetType.WEB);
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, widgetWebContext.getDashboardId());
+			widgetWebContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		}
 		
 		Chain addWidgetChain = null;

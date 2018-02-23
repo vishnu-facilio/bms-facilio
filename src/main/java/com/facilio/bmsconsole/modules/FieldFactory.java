@@ -2193,6 +2193,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	public static List<FacilioField> getWidgetWebFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetWebModule();
+
+		fields.add(getIdField(module));
+		
+		FacilioField webUrl = new FacilioField();
+		webUrl.setName("webUrl");
+		webUrl.setDataType(FieldType.STRING);
+		webUrl.setColumnName("WEB_URL");
+		webUrl.setModule(module);
+		fields.add(webUrl);
+
+		return fields;
+	}
 	
 	public static List<FacilioField> getReportFolderFields() {
 		

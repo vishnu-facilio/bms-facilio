@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -44,6 +45,16 @@ public class AddWidgetCommand implements Command {
 						.fields(FieldFactory.getWidgetStaticFields());
 
 				props = FieldUtil.getAsProperties(widgetStaticContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
+			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
+				WidgetWebContext widgetWebContext = (WidgetWebContext) widget;
+						insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetWebModule().getTableName())
+						.fields(FieldFactory.getWidgetWebFields());
+
+				props = FieldUtil.getAsProperties(widgetWebContext);
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
 			}
