@@ -25,16 +25,16 @@ public class GetAllCategoryReadingsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		List<Long> spaceCategoryIds = (List<Long>)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS);
+		List<Long> categoryIds = (List<Long>)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS);
 		//long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 		FacilioField parentCategoryField = FieldFactory.getAsMap(fields).get("parentCategoryId");
 		
-		if(spaceCategoryIds != null) {
+		if(categoryIds != null) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table(categoryReadingRelModule.getTableName())
-															.andCondition(CriteriaAPI.getCondition(parentCategoryField, spaceCategoryIds, PickListOperators.IS));
+															.andCondition(CriteriaAPI.getCondition(parentCategoryField, categoryIds, PickListOperators.IS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			

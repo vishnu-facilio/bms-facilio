@@ -10,12 +10,14 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -316,6 +318,42 @@ public class ReadingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, spaceCategoryIds);
+		
+		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		getCategoryReadingChain.execute(context);
+		
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
+		System.out.println(">>>>>>> readings : "+readings);
+		System.out.println(">>>>>>> moduleMap : "+moduleMap);
+		return SUCCESS;
+	}
+	
+	public List<Long> getAssetCategoryIds() throws Exception
+	{
+		List<AssetCategoryContext> assetCategories =  AssetsAPI.getCategoryList();
+		
+		List<Long> assetCategoryIds = new ArrayList();
+		
+		for(int i=0; i< assetCategories.size();i++)
+		{
+			AssetCategoryContext context = assetCategories.get(i);
+			Long catId = context.getId();
+			assetCategoryIds.add(catId);
+		}
+		
+		return assetCategoryIds;
+	}
+	
+	public String getAllAssetReadings() throws Exception {
+			
+		List<Long> assetCategoryIds = getAssetCategoryIds();
+		
+		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);
 		
 		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);

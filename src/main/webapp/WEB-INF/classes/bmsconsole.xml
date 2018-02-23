@@ -1214,6 +1214,13 @@
 			</result>
 		</action>
 
+		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAllAssetReadings">
+			<result name="success" type="json">
+				<param name="root">moduleMap</param>
+			</result>
+		</action>
+		
 		<action name="addcurrentoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addCurrentOccupancyReading">
 			<result name="success" type="json">
