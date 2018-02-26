@@ -1,13 +1,13 @@
 package com.facilio.pdf.actions;
 
-import com.facilio.pdf.PdfUtil;
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionSupport;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import com.facilio.pdf.PdfUtil;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 
 public class PdfAction extends ActionSupport {
 

@@ -1,10 +1,10 @@
 package com.facilio.util;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.LoginUtil;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 public class AuthenticationUtil {

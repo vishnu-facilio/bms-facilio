@@ -2,19 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.SkillContext;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;

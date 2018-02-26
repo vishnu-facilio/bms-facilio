@@ -11,9 +11,9 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.context.EventRule;
 
 public class EventThresholdCommand implements Command {
 

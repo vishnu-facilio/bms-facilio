@@ -2,7 +2,6 @@ package com.facilio.accounts.bean;
 
 import java.util.List;
 
-import com.amazonaws.services.s3.model.Permission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 

@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;
@@ -24,14 +25,12 @@ import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.AssignmentTemplate;
 import com.facilio.bmsconsole.workflow.SLATemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionSupport;
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public class WorkflowRuleAction extends ActionSupport {
 	

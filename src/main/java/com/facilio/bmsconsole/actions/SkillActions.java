@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,20 +7,14 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.SkillAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SkillActions extends ActionSupport {

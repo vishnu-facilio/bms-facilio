@@ -3,15 +3,15 @@ package com.facilio.serviceportal.actions;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.util.AuthenticationUtil;
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.fw.util.RequestUtil;
+import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;

@@ -5,12 +5,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
