@@ -9,9 +9,12 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -40,6 +43,13 @@ public class AssetAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+		AssetCategoryContext assetCategory= asset.getCategory();
+		long categoryId=-1;
+		if(assetCategory!=null) {
+			categoryId=assetCategory.getId();
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		
 		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);

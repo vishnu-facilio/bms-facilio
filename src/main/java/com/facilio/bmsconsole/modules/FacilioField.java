@@ -216,6 +216,23 @@ public class FacilioField implements Serializable {
 		return null;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj!=null && obj instanceof FacilioField ) {
+			FacilioField iObj=(FacilioField)obj;
+			FacilioModule iModule=iObj.module;
+			if(iModule==null && this.module==null) {
+				return this.name.equals(iObj.name);
+			}
+			else if (iModule!=null && this.module!=null) {
+				
+				return this.module.equals(iObj.module) && this.name.equals(iObj.name);
+			}
+		}
+		return false;
+	}
+	
 	private FieldDisplayType displayType;
 	public FieldDisplayType getDisplayType() {
 		return displayType;

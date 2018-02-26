@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -25,6 +27,9 @@ public class EnergyAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
+		
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, AssetsAPI.getCategory("Energy Meter").getId());
 		//energyMeter.setName("test1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
 		addAssetChain.execute(context);

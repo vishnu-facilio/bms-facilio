@@ -873,6 +873,8 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForSpace());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
+		c.addCommand(getCategoryReadingsChain());
+		c.addCommand(new InsertLastReadingForResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -959,6 +961,8 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(getCategoryReadingsChain());
+		c.addCommand(new InsertLastReadingForResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1059,6 +1063,8 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new AddVirtualMeterRelCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(getCategoryReadingsChain());
+		c.addCommand(new InsertLastReadingForResourceCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1551,6 +1557,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
+		c.addCommand(new InsertLastReadingForNewReadingCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

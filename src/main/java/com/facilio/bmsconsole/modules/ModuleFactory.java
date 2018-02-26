@@ -751,4 +751,12 @@ public class ModuleFactory {
 		
 		return relModule;
 	}
+	
+	public static FacilioModule getLastReadingModule() {
+		FacilioModule lastReading = new FacilioModule();
+		lastReading.setName("lastReading");
+		lastReading.setDisplayName("Last Reading");
+		lastReading.setTableName("Last_Reading");
+		return lastReading;
+	}
 }

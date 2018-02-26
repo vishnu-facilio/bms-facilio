@@ -32,6 +32,7 @@ public class GenericAddModuleDataCommand implements Command {
 			
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		}
 		else {
 			throw new IllegalArgumentException("Record cannot be null during addition");

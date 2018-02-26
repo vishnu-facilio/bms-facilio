@@ -16,6 +16,9 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -205,4 +208,23 @@ public class AssetsAPI {
 																		.beanClass(AssetDepartmentContext.class);
 		return selectBuilder.get();
 	}
+	
+	public static List<AssetContext> getAssetListOfCategory(long category) throws Exception
+	{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		FacilioField categoryField= FieldFactory.getAsMap(fields).get("category");
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
+		List<AssetContext> assets = selectBuilder.get();
+		return assets;
+		
+	}
+	
 }

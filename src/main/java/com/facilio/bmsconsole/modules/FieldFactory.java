@@ -3006,4 +3006,15 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getLastReadingFields() {
+		FacilioModule module = ModuleFactory.getLastReadingModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getOrgIdField(module));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		fields.add(getField("value", "VALUE", module, FieldType.DECIMAL));
+		return fields;
+	}
 }

@@ -61,6 +61,15 @@ public class FacilioModule implements Serializable {
 		this.fields = fields;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj!=null && obj instanceof FacilioModule ) {
+			return this.name.equals(((FacilioModule)obj).name);
+		}
+		return false;
+	}
+	
 	public static enum SubModuleType {
 		MISC(1),
 		READING(2),

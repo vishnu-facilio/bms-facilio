@@ -2,23 +2,27 @@ package com.facilio.timeseries;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -142,7 +146,7 @@ public class TimeSeriesAPI {
 				String modName=map.getKey();
 				ReadingContext reading = map.getValue();
 				if(reading.getReadings()!=null ) {
-					insertReading(modName, reading);
+					insertRecords(modName,  Collections.singletonList(reading));
 				}
 			}
 			catch(Exception e) {
@@ -196,26 +200,15 @@ public class TimeSeriesAPI {
 	private static void insertRecords(String moduleName, List<ReadingContext> readingsList)
 			throws InstantiationException, IllegalAccessException, Exception {
 		if(!readingsList.isEmpty()) {
-			
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-					.moduleName(moduleName)
-					.fields(bean.getAllFields(moduleName))
-					.addRecords(readingsList);
-			readingBuilder.save();
+
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.READINGS, readingsList);
+			Chain addCurrentOccupancy = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			addCurrentOccupancy.execute(context);
 		}
 	}
 	
-
-	private static void insertReading(String moduleName, ReadingContext reading) throws Exception {
-
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-				.moduleName(moduleName)
-				.fields(bean.getAllFields(moduleName))
-				.addRecord(reading);
-		readingBuilder.save();
-	}
 	private static Map<String, Object> getInstanceMapping(String deviceName, String instanceName) throws Exception {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();

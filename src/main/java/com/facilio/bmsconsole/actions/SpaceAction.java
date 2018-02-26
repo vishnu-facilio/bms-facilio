@@ -10,11 +10,14 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -87,6 +90,14 @@ public class SpaceAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE, space);
+		
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
+		SpaceCategoryContext spaceCategory= space.getSpaceCategory();
+		long categoryId=-1;
+		if(spaceCategory!=null) {
+			categoryId=spaceCategory.getId();
+		}
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		
 		Chain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
