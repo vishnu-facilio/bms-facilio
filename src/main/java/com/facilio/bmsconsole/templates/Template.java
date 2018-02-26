@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public abstract class UserTemplate implements ActionTemplate {
+public abstract class Template implements ActionTemplate {
 
 	private long id;
 	public long getId() {

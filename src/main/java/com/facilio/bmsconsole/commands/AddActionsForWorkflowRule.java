@@ -12,8 +12,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate.Type;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
@@ -80,7 +80,7 @@ public class AddActionsForWorkflowRule implements Command {
 			Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
 			addTemplate.execute(templateContext);
 			action.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			UserTemplate userTemplate = (UserTemplate)action.getTemplate();
+			Template userTemplate = (Template)action.getTemplate();
 			action.setTemplateId(userTemplate.getId());
 		}
 		ActionAPI.addActions(actions);

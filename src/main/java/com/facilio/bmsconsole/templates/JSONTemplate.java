@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class JSONTemplate extends UserTemplate {
+public class JSONTemplate extends Template {
 
 	private long contentId = -1;
 	public long getContentId() {

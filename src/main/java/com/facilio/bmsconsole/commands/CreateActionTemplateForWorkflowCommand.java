@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.constants.FacilioConstants;
 
@@ -19,7 +19,7 @@ public class CreateActionTemplateForWorkflowCommand implements Command {
 		JSONObject templateContent = (JSONObject) context.get(FacilioConstants.Workflow.ACTION_TEMPLATE);
 		
 		if(templateContent != null && !templateContent.isEmpty()) {
-			UserTemplate.Type type = UserTemplate.Type.getType(((Long)templateContent.get("type")).intValue());
+			Template.Type type = Template.Type.getType(((Long)templateContent.get("type")).intValue());
 			
 			switch(type) {
 				case EMAIL:

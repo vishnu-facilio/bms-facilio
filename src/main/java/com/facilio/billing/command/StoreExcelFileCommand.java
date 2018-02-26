@@ -20,7 +20,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
-import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 
 public class StoreExcelFileCommand implements Command {
@@ -42,7 +42,7 @@ public class StoreExcelFileCommand implements Command {
 		//template.setName(storeFileName);
 		//template.setName(fileName);
 		template.setName(templateName);
-		template.setType(UserTemplate.Type.EXCEL);
+		template.setType(Template.Type.EXCEL);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		long templateId = TemplateAPI.addExcelTemplate(orgId,template,fileName);
 		template.setId(templateId);

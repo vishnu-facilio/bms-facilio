@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class SLATemplate extends UserTemplate {
+public class SLATemplate extends Template {
 
 	private JSONArray slaPolicyJson;
 	public JSONArray getSlaPolicyJson() {

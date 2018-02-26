@@ -6,7 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,7 +16,7 @@ public class UpdateAlarmCreationActionCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		UserTemplate template = (UserTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
+		Template template = (Template) context.get(FacilioConstants.Workflow.TEMPLATE);
 		if(template != null) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			List<ActionContext> alarmEmailActions = ActionAPI.getActionsFromWorkflowRuleName(orgId, (String) context.get(FacilioConstants.Workflow.WORKFLOW));

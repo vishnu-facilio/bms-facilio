@@ -7,8 +7,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate.Type;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -49,7 +49,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 		JSONObject alarmSmsJson = DefaultTemplates.ALARM_CREATION_SMS.getOriginalTemplate();
 		
 		smsTemplate.setName("New Alarm Raised");
-		smsTemplate.setType(UserTemplate.Type.SMS);
+		smsTemplate.setType(Template.Type.SMS);
 //		emailTemplate.setFrom((String) alarmMailJson.get("sender"));
 		smsTemplate.setTo(phone);
 		smsTemplate.setMessage((String) alarmSmsJson.get("message"));

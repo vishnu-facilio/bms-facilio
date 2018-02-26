@@ -9,7 +9,7 @@ import com.facilio.accounts.dto.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class AssignmentTemplate extends UserTemplate {
+public class AssignmentTemplate extends Template {
 
 	
 	long assignedGroupId = -1;

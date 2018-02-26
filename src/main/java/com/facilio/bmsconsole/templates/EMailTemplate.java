@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class EMailTemplate extends UserTemplate {
+public class EMailTemplate extends Template {
 	private String from;
 	public String getFrom() {
 		return from;

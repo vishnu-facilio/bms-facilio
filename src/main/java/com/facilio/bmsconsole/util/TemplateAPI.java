@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -88,8 +88,8 @@ public class TemplateAPI {
 		return woTemplates;
 	}
 	
-	private static UserTemplate getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
-		UserTemplate.Type type = UserTemplate.Type.getType((int) templateMap.get("type"));
+	private static Template getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
+		Template.Type type = Template.Type.getType((int) templateMap.get("type"));
 		long id = (long) templateMap.get("id");
 		switch (type) {
 			case EMAIL: {
@@ -198,7 +198,7 @@ public class TemplateAPI {
 		return null;
 	}
  	
-	public static UserTemplate getTemplate(long orgId, long id) throws Exception {
+	public static Template getTemplate(long orgId, long id) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getUserTemplateFields())
 													.table("Templates")
@@ -222,7 +222,7 @@ public class TemplateAPI {
 		builder.delete();
 	}
 	
-	public static void deleteTemplates(UserTemplate.Type type, List<Long> ids) throws Exception {
+	public static void deleteTemplates(Template.Type type, List<Long> ids) throws Exception {
 		switch(type) {
 			case JSON:
 			case WORKORDER:
@@ -266,7 +266,7 @@ public class TemplateAPI {
 		}
 	}
 	
-	public static UserTemplate getTemplate(long orgId, String templateName, UserTemplate.Type type) throws Exception {
+	public static Template getTemplate(long orgId, String templateName, Template.Type type) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getUserTemplateFields())
 													.table("Templates")
@@ -518,22 +518,22 @@ public class TemplateAPI {
 	}
 	
 	public static long addJsonTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, UserTemplate.Type.JSON);
+		return addJsonTemplate(orgId, template, Template.Type.JSON);
 	}
 	
 	public static long addWorkOrderTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, UserTemplate.Type.WORKORDER);
+		return addJsonTemplate(orgId, template, Template.Type.WORKORDER);
 	}
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, UserTemplate.Type.ALARM);
+		return addJsonTemplate(orgId, template, Template.Type.ALARM);
 	}
 	
 	public static long addTaskGroupTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, UserTemplate.Type.TASK_GROUP);
+		return addJsonTemplate(orgId, template, Template.Type.TASK_GROUP);
 	}
 	
-	private static long addJsonTemplate(long orgId, JSONTemplate template, UserTemplate.Type type) throws Exception {
+	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setOrgId(orgId);
@@ -584,7 +584,7 @@ public class TemplateAPI {
 		return (long) templateProps.get("id");
 	}
 	
-	private static JSONArray getPlaceholders(UserTemplate template) {
+	private static JSONArray getPlaceholders(Template template) {
 		String formatSpecifier = "(\\$\\{([^\\:}]*))";
 		Pattern pattern = Pattern.compile(formatSpecifier);
 		JSONObject templateString = template.getOriginalTemplate();

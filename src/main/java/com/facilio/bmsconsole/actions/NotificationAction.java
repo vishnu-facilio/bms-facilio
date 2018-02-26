@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate.Type;
+import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowAPI;

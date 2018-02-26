@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class WebNotificationTemplate extends UserTemplate{
+public class WebNotificationTemplate extends Template{
 
 	private String to;
 

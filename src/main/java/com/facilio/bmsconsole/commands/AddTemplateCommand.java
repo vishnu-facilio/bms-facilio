@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
@@ -20,7 +20,7 @@ public class AddTemplateCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		UserTemplate template = (UserTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
+		Template template = (Template) context.get(FacilioConstants.Workflow.TEMPLATE);
 		
 		if(template != null) {
 			if(template instanceof EMailTemplate) {
