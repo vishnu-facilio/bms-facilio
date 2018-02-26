@@ -5,11 +5,11 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.templates.DefaultTemplates;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.UserTemplate.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.DefaultTemplates;
-import com.facilio.bmsconsole.workflow.EMailTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate.Type;
 import com.facilio.constants.FacilioConstants;
 
 public class AddOrUpdateAlarmEMailTemplateCommand implements Command {

@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.templates;
 
 import java.util.Map;
 
@@ -9,15 +9,8 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class EMailTemplate extends UserTemplate {
-	private String from;
-	public String getFrom() {
-		return from;
-	}
-	public void setFrom(String from) {
-		this.from = from;
-	}
-	
+public class PushNotificationTemplate extends UserTemplate{
+
 	private String to;
 	public String getTo() {
 		return to;
@@ -26,53 +19,57 @@ public class EMailTemplate extends UserTemplate {
 		this.to = to;
 	}
 	
-	private String subject;
-	public String getSubject() {
-		return subject;
+	private String body;
+	public String getBody() {
+		return body;
 	}
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	private long bodyId;
-	public long getBodyId() {
-		return bodyId;
-	}
-	public void setBodyId(long bodyId) {
-		this.bodyId = bodyId;
+	public void setBody(String body) {
+		this.body = body;
 	}
 	
-	private String message;
-	public String getMessage() {
-		return message;
+	private String url;
+	public String getUrl() {
+		return url;
 	}
-	public void setMessage(String message) {
-		this.message = message;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
+	private String title;	
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub
 		JSONObject obj = new JSONObject();
-		obj.put("sender", StrSubstitutor.replace(from, placeHolders));
+		JSONObject data = new JSONObject();
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("subject", StrSubstitutor.replace(subject, placeHolders));
-		obj.put("message", StrSubstitutor.replace(message, placeHolders));
-		
-		return obj;
+		obj.put("body", StrSubstitutor.replace(body, placeHolders));
+		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
+		obj.put("title", StrSubstitutor.replace(title, placeHolders));
+		obj.put("content_available", true);
+		obj.put("priority", "high");
+		obj.put("sound", "default");
+		data.put("data", obj);
+		return data;
 	}
 	
 	@Override
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
-		obj.put("sender", from);
 		obj.put("to", to);
-		obj.put("subject", subject);
-		obj.put("message", message);
+		obj.put("body", body);
+		obj.put("URL", url);
+		obj.put("title", title);
 		
 		return obj;
 	}
+	
 	
 	private Object getTo(String to) {
 		if(to != null && !to.isEmpty()) {
@@ -90,15 +87,17 @@ public class EMailTemplate extends UserTemplate {
 		}
 		return null;
 	}
-	
+
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
-		return Type.EMAIL.getIntVal();
+		return Type.PUSH_NOTIFICATION.getIntVal();
 	}
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public Type getTypeEnum() {
-		return Type.EMAIL;
+		return Type.PUSH_NOTIFICATION;
 	}
+
+	
 }

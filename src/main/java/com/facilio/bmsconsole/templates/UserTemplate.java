@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.templates;
 
 import java.util.Collections;
 import java.util.HashMap;

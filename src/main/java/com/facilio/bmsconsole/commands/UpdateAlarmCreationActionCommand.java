@@ -6,9 +6,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.templates.UserTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
-import com.facilio.bmsconsole.workflow.UserTemplate;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateAlarmCreationActionCommand implements Command {

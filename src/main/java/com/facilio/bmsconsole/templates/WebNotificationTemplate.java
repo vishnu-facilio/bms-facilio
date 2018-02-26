@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.templates;
 
 import java.util.Map;
 
@@ -9,22 +9,26 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class PushNotificationTemplate extends UserTemplate{
+public class WebNotificationTemplate extends UserTemplate{
 
 	private String to;
+
 	public String getTo() {
 		return to;
 	}
+
 	public void setTo(String to) {
 		this.to = to;
 	}
 	
-	private String body;
-	public String getBody() {
-		return body;
+	private String message;
+
+	public String getMessage() {
+		return message;
 	}
-	public void setBody(String body) {
-		this.body = body;
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 	private String url;
@@ -34,7 +38,6 @@ public class PushNotificationTemplate extends UserTemplate{
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
 	private String title;	
 	public String getTitle() {
 		return title;
@@ -42,28 +45,25 @@ public class PushNotificationTemplate extends UserTemplate{
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub
 		JSONObject obj = new JSONObject();
-		JSONObject data = new JSONObject();
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("body", StrSubstitutor.replace(body, placeHolders));
+		obj.put("message", StrSubstitutor.replace(message, placeHolders));
+		obj.put("activityType", placeHolders.get("rule.event.activityType"));
 		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
 		obj.put("title", StrSubstitutor.replace(title, placeHolders));
-		obj.put("content_available", true);
-		obj.put("priority", "high");
-		obj.put("sound", "default");
-		data.put("data", obj);
-		return data;
+		return obj;
 	}
 	
 	@Override
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
 		obj.put("to", to);
-		obj.put("body", body);
+		obj.put("message", message);
 		obj.put("URL", url);
 		obj.put("title", title);
 		
@@ -91,13 +91,11 @@ public class PushNotificationTemplate extends UserTemplate{
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
-		return Type.PUSH_NOTIFICATION.getIntVal();
+		return Type.WEB_NOTIFICATION.getIntVal();
 	}
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public Type getTypeEnum() {
-		return Type.PUSH_NOTIFICATION;
+		return Type.WEB_NOTIFICATION;
 	}
-
-	
 }

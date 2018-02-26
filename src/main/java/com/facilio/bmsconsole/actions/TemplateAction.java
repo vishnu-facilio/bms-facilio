@@ -6,11 +6,11 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.workflow.EMailTemplate;
-import com.facilio.bmsconsole.workflow.JSONTemplate;
-import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
-import com.facilio.bmsconsole.workflow.SMSTemplate;
-import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 

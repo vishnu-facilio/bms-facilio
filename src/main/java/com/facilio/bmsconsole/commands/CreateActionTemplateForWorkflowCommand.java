@@ -4,11 +4,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.workflow.EMailTemplate;
-import com.facilio.bmsconsole.workflow.PushNotificationTemplate;
-import com.facilio.bmsconsole.workflow.SMSTemplate;
-import com.facilio.bmsconsole.workflow.UserTemplate;
-import com.facilio.bmsconsole.workflow.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.UserTemplate;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.constants.FacilioConstants;
 
 public class CreateActionTemplateForWorkflowCommand implements Command {

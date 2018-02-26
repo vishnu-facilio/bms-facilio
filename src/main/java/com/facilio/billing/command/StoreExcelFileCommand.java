@@ -20,8 +20,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
+import com.facilio.bmsconsole.templates.UserTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.UserTemplate;
 
 public class StoreExcelFileCommand implements Command {
 

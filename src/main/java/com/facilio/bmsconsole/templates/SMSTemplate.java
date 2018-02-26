@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.workflow;
+package com.facilio.bmsconsole.templates;
 
 import java.util.Map;
 
@@ -9,41 +9,30 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class WebNotificationTemplate extends UserTemplate{
+public class SMSTemplate extends UserTemplate {
 
+	private String from;
+	public String getFrom() {
+		return from;
+	}
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	
 	private String to;
-
 	public String getTo() {
 		return to;
 	}
-
 	public void setTo(String to) {
 		this.to = to;
 	}
 	
 	private String message;
-
 	public String getMessage() {
 		return message;
 	}
-
 	public void setMessage(String message) {
 		this.message = message;
-	}
-	
-	private String url;
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	private String title;	
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -53,9 +42,6 @@ public class WebNotificationTemplate extends UserTemplate{
 		JSONObject obj = new JSONObject();
 		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
 		obj.put("message", StrSubstitutor.replace(message, placeHolders));
-		obj.put("activityType", placeHolders.get("rule.event.activityType"));
-		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
-		obj.put("title", StrSubstitutor.replace(title, placeHolders));
 		return obj;
 	}
 	
@@ -64,8 +50,6 @@ public class WebNotificationTemplate extends UserTemplate{
 		JSONObject obj = new JSONObject();
 		obj.put("to", to);
 		obj.put("message", message);
-		obj.put("URL", url);
-		obj.put("title", title);
 		
 		return obj;
 	}
@@ -91,11 +75,11 @@ public class WebNotificationTemplate extends UserTemplate{
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public int getType() {
-		return Type.WEB_NOTIFICATION.getIntVal();
+		return Type.SMS.getIntVal();
 	}
 	@Override
 	@JsonInclude(Include.ALWAYS)
 	public Type getTypeEnum() {
-		return Type.WEB_NOTIFICATION;
+		return Type.SMS;
 	}
 }
