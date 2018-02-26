@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,24 +36,32 @@ public class SendReportMailCommand implements Command {
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 		
 		int type = (int) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 		
+		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
 		String fileUrl = null;
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF) {
-			ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportContext.getId());
+			fileName += ".pdf";
 		}
 		else {
 			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+			if (fileFormat == FileFormat.CSV) {
+				fileName += ".csv";
+			}
+			else if(fileFormat == fileFormat.XLS) {
+				fileName += ".xls";
+			}
 		}
-
+		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
- 		AwsUtil.sendEmail(eMailTemplate.getTemplate(placeHolders), Arrays.asList(fileUrl));
+ 		AwsUtil.sendEmail(eMailTemplate.getTemplate(placeHolders), Collections.singletonMap(fileName, fileUrl));
  		
 		return false;
 	}

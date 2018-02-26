@@ -328,16 +328,16 @@ public class AwsUtil
         }
 	}
 	
-	public static void sendEmail(JSONObject mailJson, List<String> fileUrls) throws Exception 
+	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception 
 	{
-		if(fileUrls == null || fileUrls.isEmpty()) {
+		if(files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
 
         try
         {
-        		MimeMessage message = getEmailMessage(mailJson, fileUrls);
+        		MimeMessage message = getEmailMessage(mailJson, files);
         		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         		message.writeTo(outputStream);
         		RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
@@ -573,7 +573,7 @@ public class AwsUtil
 	}
 	
 	
-	private static MimeMessage getEmailMessage(JSONObject mailJson, List<String> fileUrls) throws Exception {
+	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String,String> files) throws Exception {
 	 	String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
 	 	
 		String sender = "support@facilio.com";
@@ -596,8 +596,9 @@ public class AwsUtil
 	    	MimeMultipart messageContent = new MimeMultipart("mixed");
 	    messageContent.addBodyPart(wrap);
 	    
-	    for (String fileUrl : fileUrls) {
-	    		if(fileUrl == null) {
+	    for (Map.Entry<String, String> file : files.entrySet()) {
+	    		String fileUrl = file.getValue();
+	    		if(fileUrl == null) {	// Temporary check for local filestore.
 	    			continue;
 	    		}
 	    		MimeBodyPart attachment = new MimeBodyPart();
@@ -611,7 +612,7 @@ public class AwsUtil
 	    			fileDataSource = new URLDataSource(url);
 	    		}
 		    attachment.setDataHandler(new DataHandler(fileDataSource));
-		    attachment.setFileName(fileDataSource.getName());
+		    attachment.setFileName(file.getKey());
 		    messageContent.addBodyPart(attachment);
 	    }
 	    
