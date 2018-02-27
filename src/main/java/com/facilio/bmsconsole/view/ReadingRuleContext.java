@@ -67,4 +67,44 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
 	}
+
+	private long baselineId = -1;
+	public long getBaselineId() {
+		return baselineId;
+	}
+	public void setBaselineId(long baselineId) {
+		this.baselineId = baselineId;
+	}
+
+	private String aggregation;
+	public String getAggregation() {
+		return aggregation;
+	}
+	public void setAggregation(String aggregation) {
+		this.aggregation = aggregation;
+	}
+
+	private long dateRange = -1;
+	public long getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(long dateRange) {
+		this.dateRange = dateRange;
+	}
+
+	private String operator;
+	public String getOperator() {
+		return operator;
+	}
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	private long percentage = -1;
+	public long getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(long percentage) {
+		this.percentage = percentage;
+	}
 }
