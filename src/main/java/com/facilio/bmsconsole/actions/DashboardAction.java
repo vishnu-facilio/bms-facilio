@@ -1017,6 +1017,14 @@ public class DashboardAction extends ActionSupport {
 							ff.setColumnName("\""+dateOperator.getOperator()+"\"");
 						}
 						ff.setName("dateOpperator");
+						if(reportContext.getId().equals(323l)) {
+							if(dateOperator.getOperatorId() == 28) {
+								ff.setColumnName("\"February 2018\"");
+							}
+							else if (dateOperator.getOperatorId() == 20) {
+								ff.setColumnName("\"February 2017\"");;
+							}
+						}
 						fields1.add(ff);
 					}
 					GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
