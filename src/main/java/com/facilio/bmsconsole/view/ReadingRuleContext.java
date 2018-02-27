@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.view;
 
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
@@ -40,6 +42,22 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
+	}
+	
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+	
+	private FacilioField readingField;
+	public FacilioField getReadingField() {
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
 	}
 
 	private long readingFieldId = -1;

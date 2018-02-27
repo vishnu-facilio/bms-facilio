@@ -288,6 +288,16 @@ public class WorkflowRuleAction extends ActionSupport {
 		this.readingRules = readingRules;
 	}
 	
+	public String getAssetThresholdRules() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.READING_RULE);
+		
+		Chain thresholdRules = FacilioChainFactory.getThresholdRulesChain();
+		thresholdRules.execute(context);
+		setRules((List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+		return SUCCESS;
+	}
+	
 	public String getWorkflowRules() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

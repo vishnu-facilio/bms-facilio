@@ -981,6 +981,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getThresholdRulesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateWorkflowRuleAction() {
 		Chain c = new TransactionChain();
 		c.addCommand(new UpdateWorkFlowRuleAction());
