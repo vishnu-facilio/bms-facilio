@@ -27,10 +27,10 @@
 
 <filter>
   <filter-name>CorsFilter</filter-name>
-  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+  <filter-class>com.facilio.filters.FacilioCorsFilter</filter-class>
   <init-param>
     <param-name>cors.allowed.origins</param-name>
-    <param-value>https://facilio.facilstack.com,http://localhost:8080,http://localhost:9090,http://facilio.ae,https://facilio.ae,https://app.facilio.ae,http://fazilio.com,https://fazilio.com,http://app.fazilio.com,https://app.fazilio.com,http://facilio.com,https://facilio.com,https://app.facilio.com,https://app.facilio.in,https://api.facilio.in,https://api.facilio.ae,https://facilstack.com,http://facilstack.com</param-value>
+    <param-value>http://localhost:9090,https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com</param-value>
   </init-param>
   <init-param>
     <param-name>cors.allowed.methods</param-name>
@@ -43,10 +43,6 @@
   <init-param>
     <param-name>cors.exposed.headers</param-name>
     <param-value>Access-Control-Allow-Origin</param-value>
-  </init-param>
-  <init-param>
-    <param-name>cors.support.credentials</param-name>
-    <param-value>true</param-value>
   </init-param>
 </filter>
 
