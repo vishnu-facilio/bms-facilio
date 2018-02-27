@@ -54,11 +54,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-<<<<<<< HEAD
 import com.facilio.bmsconsole.templates.EMailTemplate;
-=======
-import com.facilio.bmsconsole.util.BaseLineAPI;
->>>>>>> Report_branch
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
