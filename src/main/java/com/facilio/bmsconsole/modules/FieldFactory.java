@@ -504,6 +504,11 @@ public class FieldFactory {
 		resourceId.setModule(module);
 		fields.add(resourceId);
 		
+		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.NUMBER));
+		fields.add(getField("aggregation", "AGGREGATION", module, FieldType.STRING));
+		fields.add(getField("dateRange", "DATE_RANGE", module, FieldType.NUMBER));
+		fields.add(getField("operator", "OPERATOR", module, FieldType.STRING));
+		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.NUMBER));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 
 		return fields;
