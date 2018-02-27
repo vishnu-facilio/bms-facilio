@@ -759,4 +759,10 @@ public class ModuleFactory {
 		lastReading.setTableName("Last_Reading");
 		return lastReading;
 	}
+	
+	public static FacilioModule getReportVsBaseLine() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_BaseLine_Rel");
+		return reportFieldModule;
+	}
 }
