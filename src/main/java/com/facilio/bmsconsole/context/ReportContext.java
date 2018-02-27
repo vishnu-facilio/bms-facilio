@@ -110,6 +110,32 @@ public class ReportContext {
 	Boolean isComparisionReport;
 	Boolean isHighResolutionReport;
 	String xAxisLegend;
+	List<BaseLineContext> baseLineContexts;
+	public List<BaseLineContext> getBaseLineContexts() {
+		return baseLineContexts;
+	}
+
+	public void setBaseLineContexts(List<BaseLineContext> baseLineContexts) {
+		this.baseLineContexts = baseLineContexts;
+	}
+	public void addReportBaseLineContext(BaseLineContext baseLineContext) {
+		if(baseLineContexts == null) {
+			baseLineContexts = new ArrayList<>();
+		}
+		baseLineContexts.add(baseLineContext);
+	}
+
+	public BaseLineContext getBaseLineContext(long baseLineId) {
+		if(baseLineContexts != null) {
+			for(BaseLineContext baseLineContext :baseLineContexts) {
+				if(baseLineContext.getId() == baseLineId) {
+					return baseLineContext;
+				}
+			}
+		}
+		return null;
+	}
+
 	List<ReportCriteriaContext> reportCriteriaContexts;
 	List<ReportUserFilterContext> reportUserFilters;
 	List<Long> reportCriteriaIds;
