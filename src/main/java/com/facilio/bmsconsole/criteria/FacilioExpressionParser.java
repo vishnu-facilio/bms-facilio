@@ -81,7 +81,7 @@ public class FacilioExpressionParser {
 						FacilioSubExpressionParser facilioSubExpressionParser = new FacilioSubExpressionParser();
 						facilioSubExpressionParser.setExpressionString(value);
 						facilioSubExpressionParser.parseExpression();
-						subExpResult = facilioSubExpressionParser.getResult().toString();
+						subExpResult = (String) facilioSubExpressionParser.getResult();
 					}
 					else if(isNumber(value)) {
 						subExpResult = value;
@@ -299,6 +299,8 @@ public class FacilioExpressionParser {
 			}
 			
 			List<Map<String, Object>> props = selectBuilder.get();
+			System.out.println("selectBuilder -- "+selectBuilder);
+			System.out.println("selectBuilder result -- "+props);
 			if(props != null && !props.isEmpty()) {
 				if(selectField == null && aggregateFunctionString == null) {
 					subExpresionResult = props;
