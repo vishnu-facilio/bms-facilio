@@ -69,6 +69,10 @@ public class WorkflowAPI {
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),orgId);
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
+		if(workflowRuleContext.getExpression() != null) {
+			long expressionId = ExpressionAPI.addExpression(workflowRuleContext.getExpression());
+			workflowRuleContext.setExpressionId(expressionId);
+		}
 		
 		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
 			workflowRuleContext.setEventId(addOrGetWorkflowEvent(workflowRuleContext.getEvent()));
