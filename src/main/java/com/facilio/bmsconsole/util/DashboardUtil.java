@@ -43,6 +43,30 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
 	
+	public static JSONObject getStandardVariance(List<Map<String, Object>> props) {
+		Double min = null ,max = null,avg = null,sum = (double) 0;
+		for(Map<String, Object> prop:props) {
+			double value = (double) prop.get("value");
+			
+			sum = sum + value;
+			
+			if(min == null && max == null) {
+				min = value;
+				max = value;
+			}
+			else {
+				min = min < value ? min : value;
+				max = max > value ? max : value;
+			}
+		}
+		avg = sum / props.size();
+		JSONObject variance = new JSONObject();
+		variance.put("min", min);
+		variance.put("max", max);
+		variance.put("avg", avg);
+		variance.put("sum", sum);
+		return variance;
+	}
 	
 	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
 		

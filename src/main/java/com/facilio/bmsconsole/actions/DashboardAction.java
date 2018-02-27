@@ -73,6 +73,14 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
 
+	public JSONObject resultVariance;
+	
+	public JSONObject getResultVariance() {
+		return resultVariance;
+	}
+	public void setResultVariance(JSONObject resultVariance) {
+		this.resultVariance = resultVariance;
+	}
 	public String xaxisLegent;
 	public String getXaxisLegent() {
 		return xaxisLegent;
@@ -568,11 +576,10 @@ public class DashboardAction extends ActionSupport {
 								if(energyMeterMap.containsKey(energyMeterContext.getSpaceId())) {
 									energyMeterMap.removeAll(energyMeterContext.getSpaceId());
 								}
-								energyMeterMap.put(energyMeterContext.getSpaceId(), energyMeterContext);
+								energyMeterMap.put(energyMeterContext.getPurposeSpace().getId(), energyMeterContext);
 								break;
 							}
-							
-							energyMeterMap.put(energyMeterContext.getSpaceId(), energyMeterContext);
+							energyMeterMap.put(energyMeterContext.getPurposeSpace().getId(), energyMeterContext);
 							meterIds.add(energyMeterContext.getId());
 						}
 					}
@@ -900,6 +907,7 @@ public class DashboardAction extends ActionSupport {
 				}
 				else {
 					JSONObject purposeIndexMapping = new JSONObject();
+					//setResultVariance(DashboardUtil.getStandardVariance(rs));
 					for(int i=0;i<rs.size();i++) {
 						boolean newPurpose = false;
 			 			Map<String, Object> thisMap = rs.get(i);
