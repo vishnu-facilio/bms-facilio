@@ -477,7 +477,14 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		Condition dateCondition = null;
-		if (reportContext.getDateFilter() != null) {
+		Criteria criteria = null;
+		if(getBaseLineId() != null) {
+			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
+			DateRange dateRange = reportContext.getDateFilter().getOperator().getRange(null);
+			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
+			builder.andCondition(condition);
+		}
+		else if(reportContext.getDateFilter() != null) {
 			dateCondition = new Condition();
 			dateCondition.setField(reportContext.getDateFilter().getField());
 			
@@ -499,13 +506,6 @@ public class DashboardAction extends ActionSupport {
 			builder.andCondition(dateCondition);
 		}
 		
-		Criteria criteria = null;
-		if(getBaseLineId() != null) {
-			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
-			DateRange dateRange = reportContext.getDateFilter().getOperator().getRange(null);
-			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
-			builder.andCondition(condition);
-		}
 		if(getCriteriaId() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), getCriteriaId());
 		}

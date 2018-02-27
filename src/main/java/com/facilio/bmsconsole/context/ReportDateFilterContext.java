@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public class ReportDateFilterContext {
@@ -37,7 +38,7 @@ public class ReportDateFilterContext {
 		this.field = field;
 	}
 	public DateOperators getOperator() {
-		return (DateOperators) DateOperators.getAllOperators().get(operatorId);
+		return (DateOperators) Operator.OPERATOR_MAP.get(operatorId);
 	}
 	public Integer getOperatorId() {
 		return operatorId;
