@@ -1057,13 +1057,13 @@ public class DashboardAction extends ActionSupport {
 				if(dateCondition.getOperator().equals(DateOperators.TODAY) || dateCondition.getOperator().equals(DateOperators.TODAY_UPTO_NOW)) {
 					dateCondition1.setOperator(DateOperators.YESTERDAY);
 				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK)) {
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK) || dateCondition.getOperator().equals(DateOperators.CURRENT_WEEK_UPTO_NOW)) {
 					dateCondition1.setOperator(DateOperators.LAST_WEEK);
 				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH)) {
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH) || dateCondition.getOperator().equals(DateOperators.CURRENT_MONTH_UPTO_NOW)) {
 					dateCondition1.setOperator(DateOperators.LAST_MONTH);
 				}
-				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR)) {
+				else if(dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR) || dateCondition.getOperator().equals(DateOperators.CURRENT_YEAR_UPTO_NOW)) {
 					dateCondition1.setOperator(DateOperators.LAST_YEAR);
 				}
 				dateConditions.add(dateCondition1);
