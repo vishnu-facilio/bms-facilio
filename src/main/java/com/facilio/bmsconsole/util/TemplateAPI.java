@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +19,10 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -26,8 +34,13 @@ import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -38,18 +51,18 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 public class TemplateAPI {
 	
 	public static List<ExcelTemplate> getAllExcelTemplates() throws Exception {
-		List<FacilioField> fields = FieldFactory.getUserTemplateFields();
+		List<FacilioField> fields = FieldFactory.getTemplateFields();
 		fields.addAll(FieldFactory.getExcelTemplateFields());
 		
-		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
+		FacilioModule templateModule = ModuleFactory.getTemplatesModule();
 		FacilioModule excelTemplateModule = ModuleFactory.getExcelTemplatesModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													  .select(fields)
-													  .table(userTemplateModule.getTableName())
+													  .table(templateModule.getTableName())
 													  .innerJoin(excelTemplateModule.getTableName())
-													  .on(userTemplateModule.getTableName()+".ID = "+excelTemplateModule.getTableName()+".ID")
-													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(userTemplateModule));
+													  .on(templateModule.getTableName()+".ID = "+excelTemplateModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
 		
 		List<Map<String, Object>> templatePropList = selectBuilder.get();
 		List<ExcelTemplate> excelTemplates = new ArrayList();
@@ -63,7 +76,7 @@ public class TemplateAPI {
 	}
 	
 	public static List<JSONTemplate> getAllWOTemplates() throws Exception {
-		List<FacilioField> fields = FieldFactory.getUserTemplateFields();
+		List<FacilioField> fields = FieldFactory.getTemplateFields();
 		fields.addAll(FieldFactory.getJSONTemplateFields());
 		
 		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
@@ -93,114 +106,95 @@ public class TemplateAPI {
 		long id = (long) templateMap.get("id");
 		switch (type) {
 			case EMAIL: {
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getEMailTemplateFields())
-						.table("EMail_Templates")
-						.andCustomWhere("EMail_Templates.ID = ?", id);
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getEMailTemplateFromMap(templateMap);
 				}
 			}break;
 			case SMS: {
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getSMSTemplateFields())
-						.table("SMS_Templates")
-						.andCustomWhere("SMS_Templates.ID = ?", id);
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getSMSTemplatesModule(), FieldFactory.getSMSTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getSMSTemplateFromMap(templateMap);
 				}
 			}break;
 			case PUSH_NOTIFICATION: {
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getPushNotificationTemplateFields())
-						.table("Push_Notification_Templates")
-						.andCustomWhere("Push_Notification_Templates.ID = ?", id);
-				List<Map<String, Object>> templates = selectBuilder.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getPushNotificationTemplateModule(), FieldFactory.getPushNotificationTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getPushNotificationTemplateFromMap(templateMap);
 				}
 			}break;
 			case WEB_NOTIFICATION: {
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getWebNotificationTemplateFields())
-						.table("Web_Notification_Templates")
-						.andCustomWhere("Web_Notification_Templates.ID = ?", id);
-				List<Map<String, Object>> templates = selectBuilder.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWebNotificationTemplateModule(), FieldFactory.getWebNotificationTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getWebNotificationTemplateFromMap(templateMap);
 				}
 			}break;
 			case EXCEL: {
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getExcelTemplateFields())
-						.table("Excel_Templates")
-						.andCustomWhere("Excel_Templates.ID = ?", id);
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getExcelTemplatesModule(), FieldFactory.getExcelTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getExcelTemplateFromMap(templateMap);
 				}
 			}break;
 			case ASSIGNMENT: {
-				FacilioModule module = ModuleFactory.getAssignmentTemplatesModule();
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getAssignmentTemplateFields())
-						.table(module.getTableName())
-						.andCondition(CriteriaAPI.getIdCondition(id, module))
-						;
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getAssignmentTemplatesModule(), FieldFactory.getAssignmentTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getAssignmentTemplateFromMap(templateMap);
 				}
 			}break;
 			case SLA: {
-				FacilioModule module = ModuleFactory.getSlaTemplatesModule();
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getSlaTemplateFields())
-						.table(module.getTableName())
-						.andCondition(CriteriaAPI.getIdCondition(id, module))
-						;
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getSlaTemplatesModule(), FieldFactory.getSlaTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getSlaTemplateFromMap(templateMap);
 				}
 			}break;
-			case JSON:
 			case WORKORDER:
-			case ALARM:
-			case TASK_GROUP:
-			{
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getJSONTemplateFields())
-						.table("JSON_Template")
-						.andCustomWhere("JSON_Template.ID = ?", id);
-				
-				List<Map<String, Object>> templates = selectBuider.get();
+			case PM_WORKORDER: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getWOTemplateFromMap(templateMap);
+				}
+			}break;
+			case TASK_GROUP:{
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getTaskSectionModule(), FieldFactory.getTaskSectionTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					return getTaskGroupTemplateFromMap(templateMap);
+				}
+			}break;
+			case JSON:
+			case ALARM: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getJSONTemplateModule(), FieldFactory.getJSONTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getJSONTemplateFromMap(templateMap);
 				}
 			}break;
+			default: break;
 		}
 		return null;
 	}
  	
+	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id) throws Exception {
+		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(id, module))
+				;
+		
+		return selectBuider.get();
+	}
+	
 	public static Template getTemplate(long orgId, long id) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getUserTemplateFields())
+													.select(FieldFactory.getTemplateFields())
 													.table("Templates")
 													.andCustomWhere("Templates.ORGID = ? AND Templates.ID = ?", orgId, id);
 		
@@ -214,6 +208,16 @@ public class TemplateAPI {
 	}
 	
 	public static void deleteTemplate(long id) throws Exception {
+		Template template = getTemplate(AccountUtil.getCurrentOrg().getId(), id);
+		
+		switch (template.getTypeEnum()) {
+			case ALARM:
+			case JSON:
+				deleteJSONTemplate((JSONTemplate)template);
+				break;
+			default: break;
+		}
+		
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
@@ -222,53 +226,20 @@ public class TemplateAPI {
 		builder.delete();
 	}
 	
-	public static void deleteTemplates(Template.Type type, List<Long> ids) throws Exception {
-		switch(type) {
-			case JSON:
-			case WORKORDER:
-			case ALARM:
-			case TASK_GROUP: {
-				
-				FacilioModule module = ModuleFactory.getJSONTemplateModule();
-				
-				GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-						.select(FieldFactory.getJSONTemplateFields())
-						.table(module.getTableName())
-						.andCondition(CriteriaAPI.getIdCondition(ids, module));
-				
-				List<Map<String, Object>> props = selectBuider.get();
-				
-				List<Long> contentIds = new ArrayList<>();
-				if(props != null && !props.isEmpty()) {
-					for (Map<String, Object> prop : props) {
-						JSONTemplate template = FieldUtil.getAsBeanFromMap(prop, JSONTemplate.class);
-						contentIds.add(template.getId());
-					}
-				}
-				
-//				List<Long> contentIds = templates.stream().map(JSONTemplate::getContentId).collect(Collectors.toList());
-				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				if (contentIds.size() > 1) {
-					fs.deleteFiles(contentIds);
-				}
-				else {
-					fs.deleteFile(contentIds.get(0));
-				}
-				
-				FacilioModule templateModule = ModuleFactory.getTemplatesModule();
-				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-															.table(templateModule.getTableName())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule))
-															.andCondition(CriteriaAPI.getIdCondition(ids, templateModule));
-				builder.delete();
-			}
-			break;
+	public static void deleteTemplates(List<Long> ids) throws Exception {
+		for (Long id : ids) {
+			deleteTemplate(id);
 		}
+	}
+	
+	private static void deleteJSONTemplate(JSONTemplate template) throws Exception {
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		fs.deleteFile(template.getContentId());
 	}
 	
 	public static Template getTemplate(long orgId, String templateName, Template.Type type) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getUserTemplateFields())
+													.select(FieldFactory.getTemplateFields())
 													.table("Templates")
 													.andCustomWhere("Templates.ORGID = ? AND Templates.NAME = ? AND Templates.TEMPLATE_TYPE = ?", orgId, templateName, type.getIntVal());
 		
@@ -292,7 +263,7 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -323,7 +294,7 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -344,7 +315,7 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -365,7 +336,7 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -399,7 +370,7 @@ public class TemplateAPI {
 //		template.setPlaceholder(placeholders);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -431,7 +402,7 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -495,18 +466,117 @@ public class TemplateAPI {
 	
 	private static ExcelTemplate getExcelTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		ExcelTemplate template = FieldUtil.getAsBeanFromMap(templateMap, ExcelTemplate.class);
-		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		
 		//template.setWorkbook(WorkbookFactory.create(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
 		return template;
 	}
 	
+	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
+		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
+		
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate.getId());
+		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate.getId(), sectionMap));
+		
+		return woTemplate;
+	}
+	
+	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(long woId) throws Exception {
+		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
+		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
+		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
+		List<Map<String, Object>> sectionProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woId), PickListOperators.IS));
+		
+		if (sectionProps != null && !sectionProps.isEmpty()) {
+			Map<Long, TaskSectionTemplate> sections = new HashMap<>();
+			for (Map<String, Object> prop : sectionProps) {
+				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
+				sections.put(sectionTemplate.getId(), sectionTemplate);
+			}
+			return sections;
+		}
+		return null;
+	}
+	
+	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(long woId, Map<Long, TaskSectionTemplate> sectionMap) throws Exception {
+		FacilioModule module = ModuleFactory.getTaskTemplateModule();
+		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
+		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
+		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woId), PickListOperators.IS));
+		
+		if (taskProps != null && !taskProps.isEmpty()) {
+			Map<String, List<TaskContext>> taskMap = new HashMap<>();
+			for (Map<String, Object> prop : taskProps) {
+				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
+				TaskContext task = template.getTask();
+				
+				String sectionName = null;
+				if (template.getSectionId() == -1) {
+					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
+				}
+				else {
+					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
+					sectionName = sectionTemplate.getName();
+				}
+				
+				List<TaskContext> tasks = taskMap.get(sectionName);
+				if (tasks == null) {
+					tasks = new ArrayList<>();
+					taskMap.put(sectionName, tasks);
+				}
+				tasks.add(task);
+			}
+			return taskMap;
+		}
+		return null;
+	}
+	
+	private static List<Map<String, Object>> getTemplateJoinedProps(FacilioModule extendedModule, List<FacilioField> extendedFields, Condition extraCondition) throws Exception {
+		FacilioModule templateModule = ModuleFactory.getTemplatesModule();
+		
+		List<FacilioField> fields = FieldFactory.getTemplateFields();
+		fields.addAll(extendedFields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+													  .select(fields)
+													  .table(templateModule.getTableName())
+													  .innerJoin(extendedModule.getTableName())
+													  .on(templateModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
+		
+		if (extraCondition != null) {
+			selectBuilder.andCondition(extraCondition);
+		}
+		
+		return selectBuilder.get();
+	}
+	
+	private static TaskSectionTemplate getTaskGroupTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		TaskSectionTemplate template = FieldUtil.getAsBeanFromMap(templateMap, TaskSectionTemplate.class);
+		template.setTasks(getTasksFromSection(template.getId()));
+		return template;
+	}
+	
+	private static List<TaskContext> getTasksFromSection(long sectionId) throws Exception {
+		FacilioModule module = ModuleFactory.getTaskTemplateModule();
+		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
+		FacilioField sectionIdField = FieldFactory.getAsMap(fields).get("sectionId");
+		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(sectionIdField, String.valueOf(sectionId), PickListOperators.IS));
+		
+		if (taskProps != null && !taskProps.isEmpty()) {
+			List<TaskContext> tasks = new ArrayList<>();
+			for (Map<String, Object> prop : taskProps) {
+				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
+				TaskContext task = template.getTask();
+				tasks.add(task);
+			}
+			return tasks;
+		}
+		return null;
+	}
+	
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
-		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
 			template.setContent(IOUtils.toString(body));
 		}
@@ -521,16 +591,108 @@ public class TemplateAPI {
 		return addJsonTemplate(orgId, template, Template.Type.JSON);
 	}
 	
-	public static long addWorkOrderTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, Template.Type.WORKORDER);
+	public static long addPMWorkOrderTemplate (long orgId, WorkorderTemplate template) throws Exception {
+		return addWorkOrderTemplate(orgId, template, Type.PM_WORKORDER, Type.PM_TASK, Type.PM_TASK_SECTION);
+	}
+	
+	public static long addWorkOrderTemplate (long orgId, WorkorderTemplate template) throws Exception {
+		return addWorkOrderTemplate(orgId, template, Type.WORKORDER, Type.WO_TASK, Type.WO_TASK_SECTION);
+	}
+	
+	private static long addWorkOrderTemplate(long orgId, WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
+		template.setType(woType);
+		template.setOrgId(AccountUtil.getCurrentOrg().getId());
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps);
+		Map<String, List<TaskContext>> tasks = template.getTasks();
+		if (tasks != null && !tasks.isEmpty()) {
+			Map<String, Long> sectionMap = addSectionTemplatesForWO(templateId, tasks.keySet(), sectionType);
+			List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
+			for (Entry<String, List<TaskContext>> entry : tasks.entrySet()) {
+				long sectionId = -1;
+				String sectionName = entry.getKey(); 
+				if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+					sectionId = sectionMap.get(sectionName);
+				}
+				List<TaskContext> taskList = entry.getValue();
+				for (TaskContext task : taskList) {
+					TaskTemplate taskTemplate = new TaskTemplate();
+					taskTemplate.setTask(task);
+					taskTemplate.setSectionId(sectionId);
+					taskTemplate.setParentTemplateId(templateId);
+					taskTemplate.setType(taskType);
+					taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+					taskTemplateProps.add(FieldUtil.getAsProperties(taskTemplate));
+				}
+			}
+			insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
+		}
+		return templateId;
+	}
+	
+	private static Map<String, Long> addSectionTemplatesForWO(long woId, Set<String> sectionNames, Type sectionType) throws Exception {
+		List<Map<String, Object>> templatePropList = new ArrayList<>();
+		for (String section : sectionNames) {
+			if (!section.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+				TaskSectionTemplate sectionTemplate = new TaskSectionTemplate();
+				sectionTemplate.setName(section);
+				sectionTemplate.setParentWOTemplateId(woId);
+				sectionTemplate.setType(sectionType);
+				sectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+				templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
+			}
+		}
+		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);
+		Map<String, Long> sectionMap = new HashMap<>();
+		for (Map<String, Object> prop : templatePropList) {
+			sectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
+		}
+		return sectionMap;
+	}
+	
+	private static long insertTemplateWithExtendedProps(FacilioModule extendedModule, List<FacilioField> fields, Map<String, Object> templateProps) throws SQLException, RuntimeException {
+		insertTemplatesWithExtendedProps(extendedModule, fields, Collections.singletonList(templateProps));
+		return (long) templateProps.get("id"); 
+	}
+	
+	private static void insertTemplatesWithExtendedProps(FacilioModule extendedModule, List<FacilioField> fields, List<Map<String, Object>> templatePropList) throws SQLException, RuntimeException {
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+				.table("Templates")
+				.fields(FieldFactory.getTemplateFields())
+				.addRecords(templatePropList);
+
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder workorderTemplateBuilder = new GenericInsertRecordBuilder()
+							.table(extendedModule.getTableName())
+							.fields(fields)
+							.addRecords(templatePropList);
+		workorderTemplateBuilder.save();
 	}
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
 		return addJsonTemplate(orgId, template, Template.Type.ALARM);
 	}
 	
-	public static long addTaskGroupTemplate(long orgId, JSONTemplate template) throws Exception {
-		return addJsonTemplate(orgId, template, Template.Type.TASK_GROUP);
+	public static long addTaskGroupTemplate(long orgId, TaskSectionTemplate template) throws Exception {
+		template.setType(Type.TASK_GROUP);
+		template.setOrgId(AccountUtil.getCurrentOrg().getId());
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templateProps);
+		List<TaskContext> tasks = template.getTasks();
+		
+		List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
+		for (TaskContext task : tasks) {
+			TaskTemplate taskTemplate = new TaskTemplate();
+			taskTemplate.setTask(task);
+			taskTemplate.setSectionId(templateId);
+			taskTemplate.setType(Type.TASK_GROUP_TASK);
+			taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+			taskTemplateProps.add(FieldUtil.getAsProperties(taskTemplate));
+		}
+		insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
+		
+		return templateId;
 	}
 	
 	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {
@@ -545,7 +707,7 @@ public class TemplateAPI {
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();
@@ -570,7 +732,7 @@ public class TemplateAPI {
 		
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
-															.fields(FieldFactory.getUserTemplateFields())
+															.fields(FieldFactory.getTemplateFields())
 															.addRecord(templateProps);
 		
 		userTemplateBuilder.save();

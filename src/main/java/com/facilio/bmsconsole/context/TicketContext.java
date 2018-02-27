@@ -139,6 +139,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.dueDate = dueDate;
 	}
 	
+	private long duration = -1; //In Seconds
+	public long getDuration() {
+		return duration;
+	}
+	public void setDuration(long duration) {
+		this.duration = duration;
+	}
+	
 	private long serialNumber = -1;
 	public long getSerialNumber() {
 		return serialNumber;

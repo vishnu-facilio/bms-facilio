@@ -28,6 +28,8 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -126,7 +128,7 @@ public class WorkOrderAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE, workorderTemplate);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
 		addTemplate.execute(context);
@@ -143,6 +145,7 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		
 		Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
 		addTemplate.execute(context);
@@ -525,11 +528,11 @@ public class WorkOrderAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private JSONTemplate workorderTemplate;
-	public JSONTemplate getWorkorderTemplate() {
+	private WorkorderTemplate workorderTemplate;
+	public WorkorderTemplate getWorkorderTemplate() {
 		return workorderTemplate;
 	}
-	public void setWorkorderTemplate(JSONTemplate workorderTemplate) {
+	public void setWorkorderTemplate(WorkorderTemplate workorderTemplate) {
 		this.workorderTemplate = workorderTemplate;
 	}
 	
