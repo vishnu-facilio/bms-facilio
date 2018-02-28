@@ -120,6 +120,8 @@ public class AwsUtil
 	private static AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
+	
+	private static final String SERVERNAME = getConfig("servername");
 
     public static String getConfig(String name) 
     {
@@ -617,6 +619,10 @@ public class AwsUtil
 	    }
 	    
 	    message.setContent(messageContent);
+	    if(SERVERNAME!=null)
+	    {
+	       message.addHeader("host", SERVERNAME);
+	    }
 	    return message;
 	}
 }
