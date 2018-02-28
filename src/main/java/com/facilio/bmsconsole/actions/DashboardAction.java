@@ -493,7 +493,13 @@ public class DashboardAction extends ActionSupport {
 		Criteria criteria = null;
 		if(getBaseLineId() != null) {
 			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
-			DateRange dateRange = reportContext.getDateFilter().getOperator().getRange(null);
+			DateRange dateRange;
+			if(this.dateFilter != null) {
+				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1)); 
+			}
+			else {
+				dateRange = reportContext.getDateFilter().getOperator().getRange(null);
+			}
 			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
 			builder.andCondition(condition);
 		}
