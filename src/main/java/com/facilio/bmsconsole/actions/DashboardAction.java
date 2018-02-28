@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
@@ -74,6 +75,13 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class DashboardAction extends ActionSupport {
 
+	Long baseLineComparisionDiff;
+	
+	public Long getBaseLineComparisionDiff() {
+		return baseLineComparisionDiff;
+	}
+	public void setBaseLineComparisionDiff(Long baseLineComparisionDiff) {
+		this.baseLineComparisionDiff = baseLineComparisionDiff;
 	public JSONObject resultVariance;
 	
 	public JSONObject getResultVariance() {
@@ -496,7 +504,7 @@ public class DashboardAction extends ActionSupport {
 			DateRange dateRange;
 			if(this.dateFilter != null) {
 				System.out.println("dateFilter --- "+dateFilter);
-				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1)); 
+				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
 			}
 			else {
 				dateRange = reportContext.getDateFilter().getOperator().getRange(null);
