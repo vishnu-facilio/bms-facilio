@@ -607,7 +607,7 @@ public class ReportsUtil
 		else if (moduleName.equals("alarm")) {
 			url.append("fa");
 		}
-		else if (moduleName.equals("energy")) {
+		else if (moduleName.equals("energydata")) {
 			url.append("em");
 		}
 		url.append("/reports/view/").append(reportId);
