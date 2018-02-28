@@ -1,10 +1,7 @@
 package com.facilio.timeseries;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +9,6 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -23,209 +19,43 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class TimeSeriesAPI {
 
-
-
-	@SuppressWarnings("unchecked")
-	public static void processPayLoad(long ttime, JSONObject payLoad) {
+	
+	@SuppressWarnings({ "unchecked"})
+	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
-		Iterator<String> keyList = payLoad.keySet().iterator();
-		while(keyList.hasNext())
-		{
-			String actualKey = keyList.next();
-			JSONObject record = (JSONObject)payLoad.get(actualKey);
-			String keyName=actualKey;
-			
-			if(actualKey.startsWith("DEVICE_") || actualKey.startsWith("POINT_")) {
-
-				int firstIndex= actualKey.indexOf("_");
-				keyName=actualKey.substring(firstIndex+1);
-			}
-			if (actualKey.startsWith("POINT_")){
-
-				insertModeledReading(timeStamp, record, keyName);
-				//by this time record will have only unmodeled instances data..
-				processUnmodeledData(timeStamp,keyName,record,true);
-				return;
-			}
-			insertModeledReading(timeStamp,keyName,record);
-			//by this time record will have only unmodeled instances data..
-			processUnmodeledData(timeStamp,keyName,record,false);
-		}
-	}
-
-	
-	
-	@SuppressWarnings({ "unchecked" })
-	private static void processUnmodeledData(long timeStamp,String keyName,JSONObject record, boolean point) {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
+		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
+		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
+		processDataChain.execute(context);
 		
-		Iterator<String> recordList = record.keySet().iterator();
-		while(recordList.hasNext())
-		{
-			
-			String key=recordList.next();
-			String instanceVal=record.get(key).toString();
-			if(instanceVal==null || instanceVal.isEmpty() || instanceVal.equalsIgnoreCase("NaN")) {
-				continue;
-			}
-
-			String instanceName=key;
-			String deviceName=keyName;
-			if(point) {
-				deviceName=key;
-				instanceName=keyName;
-			}
-
-			try {
-				Long instanceId= getUnmodledInstance(deviceName,instanceName);
-				if(instanceId==null) {
-					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName);
-				}
-				insertUnmodeledData(timeStamp, instanceVal, instanceId);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void insertModeledReading(long timeStamp,String deviceName,JSONObject instanceRecord) {
-
-		String moduleName="energydata";
-		Iterator<String> instanceList = instanceRecord.keySet().iterator();
-		
-		Map<String,ReadingContext> moduleVsReading = new HashMap<String,ReadingContext> ();
-		
-		while(instanceList.hasNext())
-		{
-			String instanceName=instanceList.next();
-			String instanceVal=instanceRecord.get(instanceName).toString();
-
-			try {
-				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
-				if(stat==null || instanceVal==null || instanceVal.isEmpty() ||  instanceVal.equalsIgnoreCase("NaN")) {
-					continue;
-				}
-				Long assetId= (Long) stat.get("assetId");
-				Long fieldId= (Long) stat.get("fieldId");
-
-				if(fieldId!=null && assetId!=null) {
-					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioField field =bean.getField(fieldId);
-					moduleName=field.getModule().getName();
-					ReadingContext reading=moduleVsReading.get(moduleName);
-					if(reading==null) {
-						reading = new ReadingContext();
-						moduleVsReading.put(moduleName, reading);
-					}
-					reading.addReading(field.getName(), instanceVal);
-					reading.setParentId(assetId);
-					reading.setTtime(timeStamp);
-					//removing here to avoid going into unmodeled instance..
-					instanceList.remove();
-				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		
-		for(Map.Entry<String, ReadingContext> map: moduleVsReading.entrySet() ) {
-			
-			try {
-
-				String modName=map.getKey();
-				ReadingContext reading = map.getValue();
-				if(reading.getReadings()!=null ) {
-					insertRecords(modName,  Collections.singletonList(reading));
-				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
+		insertRecords(moduleVsReading);
 	}
 	
-	//for POINT_INSTANCE:{DEVICENAME:VALUE}
-	@SuppressWarnings("unchecked")
-	public static void insertModeledReading(long timeStamp,JSONObject deviceRecord,String instanceName) {
 
-		String moduleName="energydata";
-		Iterator<String> deviceList = deviceRecord.keySet().iterator();
-		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
-		try {
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			while(deviceList.hasNext())
-			{
-				String deviceName=deviceList.next();
-				String instanceVal=deviceRecord.get(deviceName).toString();
-				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
-				if(stat==null || instanceVal==null || instanceVal.isEmpty() || instanceVal.equalsIgnoreCase("NaN")) {
-					continue;
-				}
-				Long assetId= (Long) stat.get("assetId");
-				Long fieldId= (Long) stat.get("fieldId");
-
-				if(fieldId!=null && assetId!=null) {
-
-					FacilioField field =bean.getField(fieldId);
-					moduleName=field.getModule().getName();
-					ReadingContext reading = new ReadingContext();
-					reading.addReading(field.getName(), instanceVal);
-					reading.setParentId(assetId);
-					reading.setTtime(timeStamp);
-					//removing here to avoid going into unmodeled instance..
-					deviceList.remove();
-					readingsList.add(reading);
-				}
-			}
-			insertRecords(moduleName, readingsList);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-
-	private static void insertRecords(String moduleName, List<ReadingContext> readingsList)
+	private static void insertRecords(Map<String,List<ReadingContext>> moduleVsReading)
 			throws InstantiationException, IllegalAccessException, Exception {
-		if(!readingsList.isEmpty()) {
+		
+		for(Map.Entry<String, List<ReadingContext>> map:moduleVsReading.entrySet()) {
+			String moduleName=map.getKey();
+			List<ReadingContext> readingsList=map.getValue();
 
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 			context.put(FacilioConstants.ContextNames.READINGS, readingsList);
-			Chain addCurrentOccupancy = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-			addCurrentOccupancy.execute(context);
+			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			addReading.execute(context);
 		}
 	}
 	
-	private static Map<String, Object> getInstanceMapping(String deviceName, String instanceName) throws Exception {
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(getInstanceMappingFields())
-				.table("Instance_To_Asset_Mapping")
-				.andCustomWhere("ORGID=?",orgId)
-				.andCustomWhere("DEVICE_NAME= ?",deviceName)
-				.andCustomWhere("INSTANCE_NAME=?",instanceName);
-
-		List<Map<String, Object>> stats = builder.get();	
-		if(stats!=null && !stats.isEmpty()) {
-
-			return stats.get(0); 
-		}
-		return null;
-	}
+	
 
 	private static long getTimeStamp(long ttime, JSONObject payLoad) {
 
@@ -244,54 +74,6 @@ public class TimeSeriesAPI {
 		return timeStamp;
 	}
 
-	private static Long getUnmodledInstance(String deviceName, String instanceName) throws Exception {
-
-		Long id =null;
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		List<FacilioField> instanceFields = new ArrayList<>();
-		instanceFields.add(FieldFactory.getIdField());
-		GenericSelectRecordBuilder unmodeledBuilder = new GenericSelectRecordBuilder()
-				.select(instanceFields)
-				.table("Unmodeled_Instance")
-				.andCustomWhere("ORGID=?",orgId)
-				.andCustomWhere("DEVICE_NAME= ?",deviceName)
-				.andCustomWhere("INSTANCE_NAME=?",instanceName);
-
-		List<Map<String, Object>> stats = unmodeledBuilder.get();	
-		if(stats!=null && !stats.isEmpty()) {
-			Map<String, Object> stat = stats.get(0);
-			id=(Long)stat.get("id");
-		}
-		return id;
-	}
-
-	private static Long getUnmodeledInstanceAfterInsert(String deviceName, String instanceName) throws SQLException {
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		Map<String, Object> value=new HashMap<String,Object>();
-		value.put("orgId", orgId);
-		value.put("device",deviceName);
-		value.put("instance", instanceName);
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.fields(getUnmodeledInstanceFields())
-				.table("Unmodeled_Instance")
-				.addRecord(value);
-		insertBuilder.save();
-		Long instanceId = (Long) value.get("id");
-		return instanceId;
-	}
-
-	private static void insertUnmodeledData(long timeStamp, String instanceVal, long id) throws SQLException {
-		Map<String, Object> value=new HashMap<String,Object>();
-		value.put("instanceId", id);
-		value.put("ttime",timeStamp);
-		value.put("value", instanceVal);
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.fields(getUnmodeledDataFields())
-				.table("Unmodeled_Data")
-				.addRecord(value);
-		insertBuilder.save();
-	}
 	
 	
 
@@ -331,80 +113,11 @@ public static List<Map<String, Object>> fetchUnmodeledData(String deviceList) th
 		return result;
 }
 
-@SuppressWarnings("unchecked")
-public static void migrateUnmodeledData(List<Map<String, Object>> result) throws Exception  {
-	
-
-	if(result==null || result.isEmpty()) {
-		return;
-	}
-	Map<Long,Map<String,JSONObject>> unmodeledDataMap = new HashMap<Long,Map<String,JSONObject>>();
-		for(Map<String,Object> rowData: result)
-		{
-			Long timeStamp=(Long)	rowData.get("ttime");
-			String deviceName=(String) rowData.get("device");
-			String instanceName=(String) rowData.get("instance");
-			String value=(String) rowData.get("value");
-			Map<String,JSONObject> deviceData=  unmodeledDataMap.get(timeStamp);
-			
-			if(deviceData==null) {
-				 deviceData = new HashMap<String,JSONObject>();
-			}
-			JSONObject instanceMapping= deviceData.get(deviceName);
-			if(instanceMapping==null) {
-				instanceMapping = new JSONObject();
-			}
-			instanceMapping.put(instanceName, value);
-			deviceData.put(deviceName, instanceMapping);
-			unmodeledDataMap.put(timeStamp,deviceData);
-		}
-		
-	
-	for(Map.Entry<Long,Map<String,JSONObject>> unmodeledData: unmodeledDataMap.entrySet()) {
-		
-		long timeStamp=unmodeledData.getKey();
-		Map<String,JSONObject> deviceDataMap =unmodeledData.getValue();
-		for(Map.Entry<String, JSONObject> deviceData :deviceDataMap.entrySet()) {
-			
-			String deviceName=deviceData.getKey();
-			JSONObject instanceData=deviceData.getValue();
-			TimeSeriesAPI.insertModeledReading(timeStamp, deviceName, instanceData);
-		}
-	}
-	
-}
-
-
-	private static List<FacilioField> getInstanceMappingFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("assetId", "ASSET_ID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("fieldId", "FIELD_ID",FieldType.NUMBER ));
-		return fields;
-	}
-
-	private static List<FacilioField> getUnmodeledDataFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("instanceId", "INSTANCE_ID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("ttime", "TTIME",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("value", "VALUE",FieldType.STRING ));
-		return fields;
-	}
-
-	private static List<FacilioField> getUnmodeledInstanceFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
-		return fields;
-	}
 
 	public static Map<String, List<String>> getAllDevices() throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(getUnmodeledInstanceFields())
+				.select(FieldFactory.getUnmodeledInstanceFields())
 				.table("Unmodeled_Instance")
 				.andCustomWhere("ORGID=?",AccountUtil.getCurrentOrg().getOrgId());
 
@@ -436,7 +149,7 @@ public static void migrateUnmodeledData(List<Map<String, Object>> result) throws
 		});
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.fields(getInstanceMappingFields())
+				.fields(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
 				.addRecords(records);
 		insertBuilder.save();
@@ -445,7 +158,7 @@ public static void migrateUnmodeledData(List<Map<String, Object>> result) throws
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
 		Map<String, Long> fieldMap = new HashMap<>();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(getInstanceMappingFields())
+				.select(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
 				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
 		List<Map<String, Object>> props = builder.get();	

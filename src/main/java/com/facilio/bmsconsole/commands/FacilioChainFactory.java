@@ -1068,6 +1068,15 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getProcessDataChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ProcessDataCommand());
+		c.addCommand(new ModeledDataCommand());
+		c.addCommand(new UnModeledDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 		
 	public static Chain getEnergyMeterListChain() {
 		Chain c = new ChainBase();

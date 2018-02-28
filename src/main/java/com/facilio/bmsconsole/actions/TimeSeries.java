@@ -27,7 +27,7 @@ public class TimeSeries extends ActionSupport {
 	public String migrateData() throws Exception{
 		
 		List<Map<String, Object>> result=TimeSeriesAPI.fetchUnmodeledData(getDeviceList());
-		TimeSeriesAPI.migrateUnmodeledData(result);
+		//TimeSeriesAPI.migrateUnmodeledData(result);
 		return SUCCESS;
 	}
 	
@@ -36,6 +36,7 @@ public class TimeSeries extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public String mapInstanceAsset() throws Exception
 	{
 		Map<String,Object> object = getInstanceAssetMap();

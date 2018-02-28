@@ -3017,4 +3017,32 @@ public class FieldFactory {
 		fields.add(getField("value", "VALUE", module, FieldType.DECIMAL));
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getInstanceMappingFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
+		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
+		fields.add(FieldFactory.getField("assetId", "ASSET_ID",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("fieldId", "FIELD_ID",FieldType.NUMBER ));
+		return fields;
+	}
+
+	public static List<FacilioField> getUnmodeledDataFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("instanceId", "INSTANCE_ID",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("ttime", "TTIME",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("value", "VALUE",FieldType.STRING ));
+		return fields;
+	}
+
+	public static List<FacilioField> getUnmodeledInstanceFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
+		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
+		return fields;
+	}
+
 }

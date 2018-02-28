@@ -379,6 +379,12 @@ public class FacilioConstants {
 		public static final String BASE_LINE = "baseLine";
 		public static final String BASE_LINE_LIST = "baseLines";
 		
+		public static final String TIMESTAMP = "timestamp";
+		public static final String DEVICE_DATA="deviceData";
+		public static final String PAY_LOAD = "payLoad";
+		public static final String MODELED_DATA="modeledData";
+		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
