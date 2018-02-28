@@ -82,6 +82,14 @@ public class DashboardAction extends ActionSupport {
 	}
 	public void setBaseLineComparisionDiff(Long baseLineComparisionDiff) {
 		this.baseLineComparisionDiff = baseLineComparisionDiff;
+	}
+	boolean isHeatMap;
+	public boolean getIsHeatMap() {
+		return isHeatMap;
+	}
+	public void setIsHeatMap(boolean isHeatMap) {
+		this.isHeatMap = isHeatMap;
+	}
 	public JSONObject resultVariance;
 	
 	public JSONObject getResultVariance() {
@@ -407,8 +415,11 @@ public class DashboardAction extends ActionSupport {
 			if (this.dateFilter != null || reportContext.getDateFilter() != null) {
 				
 				int oprId =  this.dateFilter != null ? DashboardUtil.predictDateOpperator(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
-				
-				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+				if(getIsHeatMap()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
+					reportContext.setChartType(ReportChartType.heatMap.getValue());
+				}
+				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
@@ -511,6 +522,8 @@ public class DashboardAction extends ActionSupport {
 			}
 			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
+			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
+			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
 			System.out.println(condition);
 			builder.andCondition(condition);
 		}
