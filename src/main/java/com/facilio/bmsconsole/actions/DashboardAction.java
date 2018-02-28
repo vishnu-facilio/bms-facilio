@@ -495,12 +495,15 @@ public class DashboardAction extends ActionSupport {
 			BaseLineContext baseLineContext = reportContext.getBaseLineContext(getBaseLineId());
 			DateRange dateRange;
 			if(this.dateFilter != null) {
+				System.out.println("dateFilter --- "+dateFilter);
 				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1)); 
 			}
 			else {
 				dateRange = reportContext.getDateFilter().getOperator().getRange(null);
 			}
+			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
 			Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), dateRange);
+			System.out.println(condition);
 			builder.andCondition(condition);
 		}
 		else if(reportContext.getDateFilter() != null) {
