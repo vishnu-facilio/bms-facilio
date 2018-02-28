@@ -23,10 +23,10 @@ import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
 import com.facilio.events.commands.InsertEventCommand;
 import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
-import com.facilio.events.commands.UpdateEventAssetsMappingCommand;
+import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
 import com.facilio.events.commands.UpdateEventCommand;
 import com.facilio.events.commands.UpdateEventRulesCommand;
-import com.facilio.events.commands.UpdateNodeToAssetMappingCommand;
+import com.facilio.events.commands.UpdateNodeToResourceMappingCommand;
 
 public class EventConstants {
 	
@@ -43,7 +43,7 @@ public class EventConstants {
 		public static final String EVENT_RULE = "eventRule";
 		public static final String EVENT_RULE_LIST = "eventRules";
 		public static final String NODE = "node";
-		public static final String ASSET_ID = "assetId";
+		public static final String RESOURCE_ID = "resourceId";
 		public static final String ALARM_ID = "alarmId";
 	}
 	
@@ -103,10 +103,10 @@ public class EventConstants {
 			return c;
 		}
 		
-		public static Chain updateNodeToAssetMappingChain() {
+		public static Chain updateNodeToResourceMappingChain() {
 			Chain c = new ChainBase();
-			c.addCommand(new UpdateNodeToAssetMappingCommand());
-			c.addCommand(new UpdateEventAssetsMappingCommand());
+			c.addCommand(new UpdateNodeToResourceMappingCommand());
+			c.addCommand(new UpdateEventResourcesMappingCommand());
 			c.addCommand(new UpdateAlarmAssetMappingCommand());
 			addCleanUpCommand(c);
 			return c;
@@ -151,11 +151,11 @@ public class EventConstants {
 			return eventmappingrule;
 		}
 		
-		public static FacilioModule getNodeAssetMappingModule() {
+		public static FacilioModule getNodeToResourceMappingModule() {
 			FacilioModule nodeAssetMappingModule = new FacilioModule();
-			nodeAssetMappingModule.setName("nodetoassetmapping");
-			nodeAssetMappingModule.setDisplayName("Node To Asset Mapping");
-			nodeAssetMappingModule.setTableName("Node_To_Asset_Mapping");
+			nodeAssetMappingModule.setName("nodetoresourcemapping");
+			nodeAssetMappingModule.setDisplayName("Node To Resource Mapping");
+			nodeAssetMappingModule.setTableName("Node_To_Resource_Mapping");
 			return  nodeAssetMappingModule;
 		}
 	}
@@ -185,13 +185,13 @@ public class EventConstants {
 			node.setModule(module);
 			fields.add(node);
 			
-			FacilioField assetId = new FacilioField();
-			assetId.setName("assetId");
-			assetId.setDataType(FieldType.NUMBER);
-			assetId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-			assetId.setColumnName("ASSETID");
-			assetId.setModule(module);
-			fields.add(assetId);
+			FacilioField resourceId = new FacilioField();
+			resourceId.setName("resourceId");
+			resourceId.setDataType(FieldType.NUMBER);
+			resourceId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+			resourceId.setColumnName("RESOURCE_ID");
+			resourceId.setModule(module);
+			fields.add(resourceId);
 			
 			FacilioField eventType = new FacilioField();
 			eventType.setName("eventMessage");
@@ -460,8 +460,8 @@ public class EventConstants {
 			return fields;
 		}
 		
-		public static List<FacilioField> getNodeToAssetMappingFields() {
-			FacilioModule module = EventModuleFactory.getNodeAssetMappingModule();
+		public static List<FacilioField> getNodeToResourceMappingFields() {
+			FacilioModule module = EventModuleFactory.getNodeToResourceMappingModule();
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
@@ -475,9 +475,9 @@ public class EventConstants {
 			fields.add(node);
 			
 			FacilioField assetId = new FacilioField();
-			assetId.setName(EventConstants.EventContextNames.ASSET_ID);
+			assetId.setName(EventConstants.EventContextNames.RESOURCE_ID);
 			assetId.setDataType(FieldType.NUMBER);
-			assetId.setColumnName("ASSET_ID");
+			assetId.setColumnName("RESOURCE_ID");
 			assetId.setModule(module);
 			fields.add(assetId);
 			

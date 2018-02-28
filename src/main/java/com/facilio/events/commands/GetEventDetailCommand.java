@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -27,7 +28,13 @@ public class GetEventDetailCommand implements Command {
 			
 			if(eventProps != null && !eventProps.isEmpty()) {
 				Map<String, Object> eventProp = eventProps.get(0);
-				context.put(EventConstants.EventContextNames.EVENT, FieldUtil.getAsBeanFromMap(eventProp, EventContext.class));
+				EventContext event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
+				
+				if (event.getResourceId() != -1) {
+					event.setResource(ResourceAPI.getExtendedResource(eventId));
+				}
+				
+				context.put(EventConstants.EventContextNames.EVENT, event);
 			}
 		}
 		return false;

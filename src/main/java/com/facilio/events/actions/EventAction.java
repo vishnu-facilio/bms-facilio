@@ -173,12 +173,12 @@ public class EventAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String updateNodeWithAsset() throws Exception {
+	public String updateNodeWithResource() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.NODE, node);
-		context.put(EventConstants.EventContextNames.ASSET_ID, assetId);
+		context.put(EventConstants.EventContextNames.RESOURCE_ID, resourceId);
 		
-		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToAssetMappingChain();
+		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
 		updateAssetChain.execute(context);
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
@@ -197,12 +197,12 @@ public class EventAction extends ActionSupport {
 		this.node = node;
 	}
 	
-	private long assetId = -1;
-	public long getAssetId() {
-		return assetId;
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
 	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
 	}
 
 	private List<Map<String, Object>> nodes;

@@ -431,7 +431,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getUpdateAlarmAssetChain() {
+	public static Chain getUpdateAlarmResourceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new LoadAllFieldsCommand());

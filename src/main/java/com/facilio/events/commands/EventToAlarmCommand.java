@@ -162,10 +162,10 @@ public class EventToAlarmCommand implements Command {
 			json.put("entityId", entityId);
 		}
 
-		if(event.getAssetId() != -1) {
-			JSONObject asset = new JSONObject();
-			asset.put("id", event.getAssetId());
-			json.put("resource", asset);
+		if(event.getResourceId() != -1) {
+			JSONObject resource = new JSONObject();
+			resource.put("id", event.getResourceId());
+			json.put("resource", resource);
 		}
 
 		JSONObject additionalInfo = event.getAdditionInfo();

@@ -149,9 +149,9 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String updateAlarmAsset() throws Exception {
+	public String updateAlarmResource() throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		rowsUpdated = bean.updateAlarmAsset(assetId, node);
+		rowsUpdated = bean.updateAlarmResource(resourceId, node);
 		return SUCCESS;
 	}
 	
@@ -162,14 +162,14 @@ public class AlarmAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private long assetId = -1;
-	public long getAssetId() {
-		return assetId;
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
 	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
 	}
-	
+
 	private String node;
 	public String getNode() {
 		return node;

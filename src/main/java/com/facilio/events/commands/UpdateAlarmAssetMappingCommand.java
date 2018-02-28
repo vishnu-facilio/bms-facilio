@@ -18,17 +18,17 @@ public class UpdateAlarmAssetMappingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String node = (String) context.get(EventConstants.EventContextNames.NODE);
-		long assetId = (long) context.get(EventConstants.EventContextNames.ASSET_ID);
+		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
 		
 		JSONObject json = new JSONObject();
 		json.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		json.put("node", node);
-		json.put("assetId", assetId);
+		json.put("resourceId", resourceId);
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
 		String server = AwsUtil.getConfig("servername");
-		String url = "http://" + server + "/internal/updateAlarmAsset";
+		String url = "http://" + server + "/internal/updateAlarmResource";
 		AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");

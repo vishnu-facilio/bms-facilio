@@ -2837,8 +2837,8 @@
 			</result>
 		</action>
 		
-		<action name="updateAlarmAsset" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="updateAlarmAsset">
+		<action name="updateAlarmResource" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmResource">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
