@@ -178,7 +178,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				JSONObject woJson = (JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER);
 				
 				wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				FacilioContext context = new FacilioContext();
 				
 				JSONObject taskContent = (JSONObject) content.get(FacilioConstants.ContextNames.TASK_MAP);
@@ -201,6 +200,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				taskMap = ((WorkorderTemplate)template).getTasks();
 			}
 			
+			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
