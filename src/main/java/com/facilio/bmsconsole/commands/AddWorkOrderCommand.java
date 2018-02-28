@@ -30,10 +30,12 @@ public class AddWorkOrderCommand implements Command {
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedTime(System.currentTimeMillis());
+			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			
 			if(workOrder.getDuration() != -1) {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
 			}
+			workOrder.setEstimatedEnd(workOrder.getDueDate());
 			
 			TicketAPI.updateTicketStatus(workOrder);
 			

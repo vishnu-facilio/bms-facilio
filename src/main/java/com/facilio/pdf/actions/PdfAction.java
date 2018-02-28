@@ -49,7 +49,7 @@ public class PdfAction extends ActionSupport {
     }
 
     public String createPdf() {
-        String fileName  = PdfUtil.convertUrlToPdf(getOrgId(), getUsername(), getUrl());
+        String fileName  = PdfUtil.convertUrlToPdf(getOrgId(), getUsername(), getUrl(), null);
         if(fileName != null){
             try {
                 fileInputStream = new FileInputStream(new File(fileName));

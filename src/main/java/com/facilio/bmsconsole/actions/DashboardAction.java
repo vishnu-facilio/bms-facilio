@@ -13,12 +13,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -1409,8 +1407,9 @@ public class DashboardAction extends ActionSupport {
 		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
-		if(fileFormat == FileFormat.PDF) {
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportId);
+		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+			String url = ReportsUtil.getReportClientUrl(module.getName(), reportId);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 		}
 		else {
 			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);

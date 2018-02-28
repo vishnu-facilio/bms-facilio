@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -42,22 +43,18 @@ public class SendReportMailCommand implements Command {
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 		
-		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
 		String fileUrl = null;
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
-		if(fileFormat == FileFormat.PDF) {
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),AwsUtil.getConfig("clientapp.url")+"/app/wo/reports/view/"+reportContext.getId());
-			fileName += ".pdf";
+		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+			String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId());
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 		}
 		else {
 			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
-			if (fileFormat == FileFormat.CSV) {
-				fileName += ".csv";
-			}
-			else if(fileFormat == fileFormat.XLS) {
-				fileName += ".xls";
-			}
 		}
+		
+		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
+		fileName += fileFormat.getExtention();
 		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);

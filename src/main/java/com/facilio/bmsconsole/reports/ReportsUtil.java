@@ -17,6 +17,7 @@ import org.apache.commons.math3.stat.StatUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -595,5 +596,21 @@ public class ReportsUtil
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		return modBean.getModule(reportFolder.getModuleId());
+	}
+	
+	// Temporary
+	public static String getReportClientUrl(String moduleName, Long reportId) {
+		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		if (moduleName.equals("workorder")) {
+			url.append("wo");
+		}
+		else if (moduleName.equals("alarm")) {
+			url.append("fa");
+		}
+		else if (moduleName.equals("energy")) {
+			url.append("em");
+		}
+		url.append("/reports/view/").append(reportId);
+		return url.toString();
 	}
 }

@@ -65,19 +65,23 @@ public class FileInfo {
 	}
 	
 	public enum FileFormat {
-		CSV(1, "CSV"),
-		XLS(2, "Excel"),
-		PDF(3, "PDF"),
-		IMAGE(4, "Image"),
-		HTML(5, "Html")
+		CSV(1, "CSV", ".csv", "application/csv"),
+		XLS(2, "Excel", ".xls", "application/xls"),
+		PDF(3, "PDF", ".pdf", "application/pdf"),
+		IMAGE(4, "Image", ".jpeg", "image/jpeg"),
+		HTML(5, "Html", ".html", "text/html")
 		;
 		
 		private int intVal;
 		private String strVal;
+		private String extention;
+		private String contentType;
 		
-		private FileFormat(int intVal, String strVal) {
+		private FileFormat(int intVal, String strVal, String extention, String contentType) {
 			this.intVal = intVal;
 			this.strVal = strVal;
+			this.extention = extention;
+			this.contentType = contentType;
 		}
 		
 		public int getIntVal() {
@@ -86,7 +90,13 @@ public class FileInfo {
 		public String getStringVal() {
 			return strVal;
 		}
-		
+		public String getExtention() {
+			return extention;
+		}
+		public String getContentType() {
+			return contentType;
+		}
+
 		public static FileFormat getFileFormat(int val) {
 			return formatMap.get(val);
 		}
