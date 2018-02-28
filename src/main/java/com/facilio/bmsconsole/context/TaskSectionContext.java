@@ -31,7 +31,7 @@ public class TaskSectionContext {
 	public Boolean getIsEditable() {
 		return isEditable;
 	}
-	public void setIsEditable(Boolean isEditable) {
+	public void setIsEditable(boolean isEditable) {
 		this.isEditable = isEditable;
 	}
 	public boolean isEditable() {

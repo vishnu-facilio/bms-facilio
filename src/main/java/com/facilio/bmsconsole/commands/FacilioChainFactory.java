@@ -981,6 +981,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getThresholdRulesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
+		c.addCommand(new GetActionListForWorkflowRulesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateWorkflowRuleAction() {
 		Chain c = new TransactionChain();
 		c.addCommand(new UpdateWorkFlowRuleAction());
@@ -1215,7 +1223,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddWorkorderTemplateChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new AddPMWorkorderTemplateCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1224,7 +1232,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
-		c.addCommand(new AddPMWorkorderTemplateCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());
 		c.addCommand(new AddPreventiveMaintenanceCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());
 		c.addCommand(new AddPMReminderCommand());
@@ -1255,7 +1263,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
-		c.addCommand(new AddPMWorkorderTemplateCommand());
+		c.addCommand(new CreateWorkorderTemplateCommand());
 		c.addCommand(new UpdatePreventiveMaintenanceCommand());
 		c.addCommand(new DeletePMTriggersAndTemplatesCommand());
 		c.addCommand(new AddAndSchedulePMTriggerCommand());

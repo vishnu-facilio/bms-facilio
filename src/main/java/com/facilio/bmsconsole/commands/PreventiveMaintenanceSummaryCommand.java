@@ -22,6 +22,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -67,30 +69,38 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		
-		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
-		JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
-		JSONObject woContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.WORK_ORDER);
-		
-		WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(woContent, WorkOrderContext.class);
-		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		
-		JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
+		Template template = TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
+		WorkOrderContext workorder = null;
 		Map<String, List<TaskContext>> taskMap = null;
-		if(taskContent != null) {
-			taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
-		}
-		else {
-			JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
-			if (taskJson != null) {
-				List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
-				if(tasks != null && !tasks.isEmpty()) {
-					taskMap = new HashMap<>();
-					taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+		
+		if(template instanceof JSONTemplate) {
+			JSONObject templateContent = template.getTemplate(new HashMap<String, Object>());
+			JSONObject woContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.WORK_ORDER);
+			workorder = FieldUtil.getAsBeanFromJson(woContent, WorkOrderContext.class);
+			
+			JSONObject taskContent = (JSONObject) templateContent.get(FacilioConstants.ContextNames.TASK_MAP);
+			if(taskContent != null) {
+				taskMap = PreventiveMaintenanceAPI.getTaskMapFromJson(taskContent);
+			}
+			else {
+				JSONArray taskJson = (JSONArray) templateContent.get(FacilioConstants.ContextNames.TASK_LIST);
+				if (taskJson != null) {
+					List<TaskContext> tasks = FieldUtil.getAsBeanListFromJsonArray(taskJson, TaskContext.class);
+					if(tasks != null && !tasks.isEmpty()) {
+						taskMap = new HashMap<>();
+						taskMap.put(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION, tasks);
+					}
 				}
 			}
 		}
+		else {
+			workorder = ((WorkorderTemplate)template).getWorkorder();
+			taskMap = ((WorkorderTemplate)template).getTasks();
+		}
+		
+		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if(taskMap != null && !taskMap.isEmpty()) {

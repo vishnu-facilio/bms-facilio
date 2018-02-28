@@ -89,7 +89,13 @@ public abstract class Template implements ActionTemplate {
 		PUSH_NOTIFICATION(8),
 		WEB_NOTIFICATION(9),
 		ASSIGNMENT(10),
-		SLA(11)
+		SLA(11),
+		TASK_GROUP_TASK(12),
+		PM_WORKORDER(13),
+		PM_TASK(14),
+		PM_TASK_SECTION(15),
+		WO_TASK(16),
+		WO_TASK_SECTION(17)
 		;
 
 		

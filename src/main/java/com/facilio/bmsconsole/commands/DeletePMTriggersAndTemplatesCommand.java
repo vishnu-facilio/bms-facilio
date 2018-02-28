@@ -61,7 +61,7 @@ public class DeletePMTriggersAndTemplatesCommand implements Command{
 			
 		}
 		
-		TemplateAPI.deleteTemplates(Template.Type.JSON, templateIds);
+		TemplateAPI.deleteTemplates(templateIds);
 		
 		return false;
 	}

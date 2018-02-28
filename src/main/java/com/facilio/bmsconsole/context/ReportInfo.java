@@ -92,7 +92,7 @@ public class ReportInfo {
 		String fileUrl = null;
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF) {
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), "/app/em/reports/view/"+reportContext.getId());
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), "/app/em/reports/view/"+reportContext.getId(), null);
 		}
 		else {
 			fileUrl = ExportUtil.exportData(fileFormat, getModule(), view.getFields(), records);

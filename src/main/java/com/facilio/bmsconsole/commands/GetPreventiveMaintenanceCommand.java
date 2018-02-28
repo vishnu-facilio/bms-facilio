@@ -37,9 +37,12 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table(module.getTableName())
+															.leftJoin(woTemplateModule.getTableName())
+															.on(module.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID")
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 															;

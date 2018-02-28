@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.view;
 
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
@@ -41,6 +43,22 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
 	}
+	
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+	
+	private FacilioField readingField;
+	public FacilioField getReadingField() {
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
+	}
 
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
@@ -48,5 +66,45 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
+	}
+
+	private long baselineId = -1;
+	public long getBaselineId() {
+		return baselineId;
+	}
+	public void setBaselineId(long baselineId) {
+		this.baselineId = baselineId;
+	}
+
+	private String aggregation;
+	public String getAggregation() {
+		return aggregation;
+	}
+	public void setAggregation(String aggregation) {
+		this.aggregation = aggregation;
+	}
+
+	private long dateRange = -1;
+	public long getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(long dateRange) {
+		this.dateRange = dateRange;
+	}
+
+	private String operator;
+	public String getOperator() {
+		return operator;
+	}
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	private long percentage = -1;
+	public long getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(long percentage) {
+		this.percentage = percentage;
 	}
 }

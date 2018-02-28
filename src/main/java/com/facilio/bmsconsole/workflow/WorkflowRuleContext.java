@@ -185,13 +185,6 @@ public class WorkflowRuleContext {
 				// TODO Auto-generated method stub
 				return false;
 			}
-		},
-		READING_THRESHOLD_RULE {
-			@Override
-			public boolean stopFurtherRuleExecution() {
-				// TODO Auto-generated method stub
-				return false;
-			}
 		}
 		;
 		

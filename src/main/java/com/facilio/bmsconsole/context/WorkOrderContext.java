@@ -46,14 +46,6 @@ public class WorkOrderContext extends TicketContext {
 		return null;
 	}
 	
-	private long duration = -1; //In Seconds
-	public long getDuration() {
-		return duration;
-	}
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
-	
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {

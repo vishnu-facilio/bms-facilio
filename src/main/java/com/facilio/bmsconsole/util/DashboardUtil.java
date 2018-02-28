@@ -11,6 +11,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
@@ -506,6 +509,8 @@ public class DashboardUtil {
 				ReportEnergyMeterContext energyMeterContext = FieldUtil.getAsBeanFromMap(energyMeterProps.get(0), ReportEnergyMeterContext.class);
 				reportContext.setEnergyMeter(energyMeterContext);
 			}
+			
+			reportContext.setBaseLineContexts(BaseLineAPI.getBaseLinesOfReport(reportId));
 			return reportContext;
 		}
 		return null;
@@ -893,8 +898,8 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			if (dateFilter.size() > 1) {
 
 				dateCondition.setOperator(DateOperators.BETWEEN);
-				long fromValue = DateTimeUtil.utcTimeToOrgTime((long)dateFilter.get(0));
-				long toValue = DateTimeUtil.utcTimeToOrgTime((long)dateFilter.get(1));
+				long fromValue = (long)dateFilter.get(0);
+				long toValue = (long)dateFilter.get(1);
 				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
 					toValue = DateTimeUtil.getCurrenTime();
 				}

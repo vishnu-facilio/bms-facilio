@@ -759,4 +759,33 @@ public class ModuleFactory {
 		lastReading.setTableName("Last_Reading");
 		return lastReading;
 	}
+	
+	public static FacilioModule getReportVsBaseLine() {
+		FacilioModule reportFieldModule = new FacilioModule();
+		reportFieldModule.setTableName("Report_BaseLine_Rel");
+		return reportFieldModule;
+	}
+	public static FacilioModule getWorkOrderTemplateModule() {
+		FacilioModule workOrderTemplate = new FacilioModule();
+		workOrderTemplate.setName("workordertemplate");
+		workOrderTemplate.setDisplayName("Workorder Templates");
+		workOrderTemplate.setTableName("Workorder_Template");
+		return workOrderTemplate;
+	}
+	
+	public static FacilioModule getTaskSectionTemplateModule() {
+		FacilioModule taskSectionModule = new FacilioModule();
+		taskSectionModule.setName("tasksectiontemplate");
+		taskSectionModule.setDisplayName("Task Section Template");
+		taskSectionModule.setTableName("Task_Section_Template");
+		return taskSectionModule;
+	}
+ 	
+	public static FacilioModule getTaskTemplateModule() {
+		FacilioModule taskTemplate = new FacilioModule();
+		taskTemplate.setName("tasktemplate");
+		taskTemplate.setDisplayName("Task Template");
+		taskTemplate.setTableName("Task_Template");
+		return taskTemplate;
+	}
 }

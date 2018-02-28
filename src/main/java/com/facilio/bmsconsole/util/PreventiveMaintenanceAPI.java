@@ -294,11 +294,13 @@ public class PreventiveMaintenanceAPI {
 	
 	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
-														.table(module.getTableName())
+														.table(module.getTableName()).leftJoin(woTemplateModule.getTableName())
+														.on(module.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID")
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
 														;

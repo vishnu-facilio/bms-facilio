@@ -325,6 +325,8 @@ public class WorkflowAPI {
 					case READING_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
+						((ReadingRuleContext)workflow).setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
+						((ReadingRuleContext)workflow).setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
 						break;
 					default:
 						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

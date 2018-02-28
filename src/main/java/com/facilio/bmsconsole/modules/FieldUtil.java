@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class FieldUtil {
+	
+	public static Map<String, Object> getLookedUpProp(long id) {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("id", id);
+		return prop;
+	}
 	
 	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FieldType type, Object value) throws SQLException {
 		
