@@ -92,6 +92,9 @@ public class UnModeledDataCommand implements Command {
 
 	private void insertUnmodeledData(List<Map<String, Object>> records) throws SQLException {
 
+		if(records.isEmpty()) {
+			return;
+		}
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getUnmodeledDataFields())
 				.table("Unmodeled_Data")

@@ -34,7 +34,6 @@ public class TimeSeriesAPI {
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
-		
 		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
 		insertRecords(moduleVsReading);
 	}
