@@ -417,7 +417,7 @@ public class DashboardAction extends ActionSupport {
 				int oprId =  this.dateFilter != null ? DashboardUtil.predictDateOpperator(this.dateFilter) : reportContext.getDateFilter().getOperatorId();
 				if(getIsHeatMap()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
-					reportContext.setChartType(ReportChartType.heatMap.getValue());
+					reportContext.setChartType(ReportChartType.HEATMAP.getValue());
 				}
 				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
