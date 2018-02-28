@@ -505,7 +505,8 @@ public class ReportContext {
 		AREA (7, "area", 1, 1),
 		FUNNEL (8, "funel", 1, 1),
 		PROGRESS (9, "progress", 1, 1),
-		GAUGE (10, "gauge", 1, 1);
+		GAUGE (10, "gauge", 1, 1),
+		HEATMAP(11,"heatMap",1,1);
 		
 		private int value;
 		private String name;
