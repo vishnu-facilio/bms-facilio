@@ -9,13 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -240,5 +245,20 @@ public class FieldUtil {
 		else {
 			return null;
 		}
+	}
+	
+	public static List<Map<String, Object>> getLastReading(Iterable<Long> resourceList, Iterable<Long> fieldList) throws Exception {
+		 
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getLastReadingFields())
+				.table(ModuleFactory.getLastReadingModule().getTableName())
+				.andCustomWhere("ORGID=?",orgId)
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", StringUtils.join(resourceList, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldList, ","), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> stats = builder.get();	
+		return stats;
 	}
 }

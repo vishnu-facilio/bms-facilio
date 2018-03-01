@@ -384,6 +384,7 @@ public class FacilioConstants {
 		public static final String DEVICE_DATA="deviceData";
 		public static final String PAY_LOAD = "payLoad";
 		public static final String MODELED_DATA="modeledData";
+		public static final String LAST_READINGS = "lastReadings";
 		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
