@@ -7,8 +7,14 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class DeltaCalculationCommand implements Command {
 
@@ -38,20 +44,32 @@ public class DeltaCalculationCommand implements Command {
 			return false;
 		}
 
+		
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> allFields= bean.getAllFields(moduleName);
+		Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
+		
 		for(ReadingContext reading:readings) {
-			setDelta("totalEnergyConsumption", reading,lastReadingsMap);
-			setDelta("phaseEnergyR",reading,lastReadingsMap);
-			setDelta("phaseEnergyY",reading,lastReadingsMap);
-			setDelta("phaseEnergyB",reading,lastReadingsMap);
+			setDelta(fieldMap.get("totalEnergyConsumption"), reading,lastReadingsMap);
+			setDelta(fieldMap.get("phaseEnergyR"),reading,lastReadingsMap);
+			setDelta(fieldMap.get("phaseEnergyY"),reading,lastReadingsMap);
+			setDelta(fieldMap.get("phaseEnergyB"),reading,lastReadingsMap);
 		}
 
 		return false;
 	}
 
 
-	private void setDelta( String fieldName,ReadingContext reading,Map<String, Map<String,Object>> lastReadingsMap ) {
+	private void setDelta( FacilioField field,ReadingContext reading,Map<String, Map<String,Object>> lastReadingsMap ) {
 			
-			double currentReading=(double)reading.getReading(fieldName);
+			String fieldName= field.getName();
+			FieldType type=field.getDataTypeEnum();
+			Object readingVal=reading.getReading(fieldName);
+			Object deltaVal=reading.getReading(fieldName+"Delta");
+			if(readingVal==null || deltaVal!=null) {//no such reading meters or delta already set in reading
+				return;
+			}
+			
 			long currentTimestamp=reading.getTtime();
 			long resourceId=reading.getParentId();
 			
@@ -61,15 +79,20 @@ public class DeltaCalculationCommand implements Command {
 			}
 			
 			double lastReading=(double)oldStats.get("value");
-			double lastTimestamp=(double)oldStats.get("ttime");
-			double delta=0;
-			if(currentTimestamp<=lastTimestamp || lastReading==-1) {
+			long lastTimestamp=(long)oldStats.get("ttime");
+			
+			if(currentTimestamp<lastTimestamp)  {
 				//timestamp check .. for ignoring historical data..
-				//lastReading  check.. for very first reading & no such reading meters
+				return;
+			}
+			double delta=0;
+			if(lastReading==-1) {
+				//lastReading  check.. for very first reading 
+				reading.addReading(fieldName+"Delta", delta);
 				return;
 			}
 			
-
+			double currentReading=(double) FieldUtil.castOrParseValueAsPerType(type, readingVal);
 			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
 				delta=currentReading-lastReading;
 				//need to think of any other rules here..

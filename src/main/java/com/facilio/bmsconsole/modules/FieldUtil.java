@@ -117,6 +117,75 @@ public class FieldUtil {
 		}
 	}
 	
+	
+	public static Object castOrParseValueAsPerType( FieldType type, Object value)  {
+
+		switch(type) {
+
+		case STRING:
+			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+				if(!(value instanceof String)) {
+					value= value.toString();
+				}
+			}
+			else {
+				value= null;
+			}
+			return value;
+		case DECIMAL:
+			Double val;
+			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+
+				if(value instanceof Double) {
+					val = (double) value;
+				}
+				else {
+					val = Double.parseDouble(value.toString());
+				}
+			}
+			else {
+				val=null;
+			}
+			return val;
+		case BOOLEAN:
+			Boolean booleanVal;
+			if(value != null) {
+				if(value instanceof Boolean) {
+					booleanVal=(Boolean)value;
+				}
+				else {
+					booleanVal=Boolean.parseBoolean(value.toString());
+				}
+			}
+			else {
+				booleanVal=null;
+			}
+			return booleanVal;
+		case LOOKUP:
+		case NUMBER:	
+		case DATE:
+		case DATE_TIME:
+			Long longVal;
+			if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+
+				if(value instanceof Long) {
+					longVal = (long) value;
+				}
+				else {
+					longVal = new Double(value.toString()).longValue();
+				}
+
+			}
+			else {
+				longVal=null;
+			}
+			return longVal;
+		case MISC:
+		default:
+			return value;
+		}
+	}
+	
 	public static ObjectMapper getMapper(Class<?> beanClass) {
 		ObjectMapper mapper =  new ObjectMapper()
 					.setSerializationInclusion(Include.NON_DEFAULT)
