@@ -556,7 +556,7 @@ public class DashboardAction extends ActionSupport {
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue()) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			if (dateFilter != null || report.getDateFilter() != null) {
 				
-				int oprId =  this.dateFilter != null ? DashboardUtil.predictDateOpperator(this.dateFilter) : report.getDateFilter().getOperatorId();
+				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				if(getIsHeatMap()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
