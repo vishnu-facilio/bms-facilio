@@ -489,7 +489,7 @@ public class DashboardAction extends ActionSupport {
 		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
 		dateFilter.setField(fieldMap.get("ttime"));
 		dateFilter.setFieldId(dateFilter.getField().getId());
-		dateFilter.setOperatorId(43);
+		dateFilter.setOperatorId(DateOperators.TODAY_UPTO_NOW.getOperatorId());
 		readingReport.setDateFilter(dateFilter);
 		
 		return readingReport;
@@ -550,21 +550,24 @@ public class DashboardAction extends ActionSupport {
 				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
-				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId()) {
+				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
 					if(report.getIsComparisionReport()) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
 					}
 				}
-				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId()) {
+				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
 					if(report.getIsComparisionReport()) {
 						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
 					}
 				}
+				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
-			if (!report.getIsHighResolutionReport()) {
+			if (getIsHeatMap() || !report.getIsHighResolutionReport()) {
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 			}
 		}
