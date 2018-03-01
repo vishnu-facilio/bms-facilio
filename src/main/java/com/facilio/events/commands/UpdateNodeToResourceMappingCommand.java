@@ -7,7 +7,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
 
-public class UpdateNodeToAssetMappingCommand implements Command {
+public class UpdateNodeToResourceMappingCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -17,12 +17,12 @@ public class UpdateNodeToAssetMappingCommand implements Command {
 			throw new IllegalArgumentException("Invalid node specified during updation of Node-Asset mapping");
 		}
 		
-		long assetId = (long) context.get(EventConstants.EventContextNames.ASSET_ID);
+		long assetId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
 		if(assetId == -1) {
 			throw new IllegalArgumentException("Invalid Asset ID specified during updation of Node-Asset mapping");
 		}
 		
-		EventAPI.updateAssetForNode(assetId, node, AccountUtil.getCurrentOrg().getOrgId());
+		EventAPI.updateResourceForNode(assetId, node, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return false;
 	}

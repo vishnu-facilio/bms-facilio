@@ -102,7 +102,7 @@
 			</result>
 		</action>
 		
-		<action name="updatenode" class="com.facilio.events.actions.EventAction" method="updateNodeWithAsset">
+		<action name="updatenode" class="com.facilio.events.actions.EventAction" method="updateNodeWithResource">
 			<param name="moduleName">alarm</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 			<result name="success" type="json">

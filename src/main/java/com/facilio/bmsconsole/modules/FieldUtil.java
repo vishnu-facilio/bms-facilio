@@ -248,7 +248,7 @@ public class FieldUtil {
 	}
 	
 	public static List<Map<String, Object>> getLastReading(Iterable<Long> resourceList, Iterable<Long> fieldList) throws Exception {
-		 
+
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -257,8 +257,13 @@ public class FieldUtil {
 				.andCustomWhere("ORGID=?",orgId)
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", StringUtils.join(resourceList, ","), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldList, ","), NumberOperators.EQUALS));
-
 		List<Map<String, Object>> stats = builder.get();	
 		return stats;
+	}
+
+	public static <E> E cloneBean(Object bean, Class<E> classObj) {
+		ObjectMapper mapper = getMapper(classObj);
+		Map<String, Object> properties = mapper.convertValue(bean, Map.class);
+		return mapper.convertValue(properties, classObj);
 	}
 }

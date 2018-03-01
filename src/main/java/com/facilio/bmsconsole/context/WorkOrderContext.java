@@ -46,6 +46,21 @@ public class WorkOrderContext extends TicketContext {
 		return null;
 	}
 	
+	private Boolean isWorkDurationChangeAllowed;
+	public Boolean getIsWorkDurationChangeAllowed() {
+		return isWorkDurationChangeAllowed;
+	}
+	public void setIsWorkDurationChangeAllowed(Boolean isWorkDurationChangeAllowed) {
+		this.isWorkDurationChangeAllowed = isWorkDurationChangeAllowed;
+	}
+	public Boolean isWorkDurationChangeAllowed() {
+		if(isWorkDurationChangeAllowed != null) {
+			return isWorkDurationChangeAllowed.booleanValue();
+		}
+		return false;
+	}
+	
+	
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
 		if(super.getId() != -1) {

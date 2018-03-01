@@ -112,30 +112,37 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
 			} else {
-				String domainName = request.getServerName();
-				int index = domainName.indexOf(".");
-				if (index != -1) {
-					String subDomain = domainName.substring(0, index);
-					String currentAccountSubDomain = "";
-					if(currentAccount != null && currentAccount.getOrg() != null){
-						currentAccountSubDomain = currentAccount.getOrg().getDomain();
+				String domainName = request.getHeader("Origin");
+				if(domainName != null) {
+					if (domainName.contains("http://")) {
+						domainName = domainName.replace("http://", "");
+					} else if (domainName.contains("https://")) {
+						domainName = domainName.replace("https://", "");
 					}
-					Organization org = null;
-					if(domainName.equalsIgnoreCase(currentAccountSubDomain)){
-						org = currentAccount.getOrg();
-					} else {
-						org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
-					}
-					if (org != null) {
-						Long portalId = org.getPortalId();
-						User user = null;
-						if (cognitoUser != null) {
-							user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
+					String[] domainArray = domainName.split("\\.");
+					if (domainArray.length > 2) {
+						String subDomain = domainArray[0];
+						String currentAccountSubDomain = "";
+						if (currentAccount != null && currentAccount.getOrg() != null) {
+							currentAccountSubDomain = currentAccount.getOrg().getDomain();
 						}
-						currentAccount = new Account(org, user);
-						AccountUtil.cleanCurrentAccount();
-						AccountUtil.setCurrentAccount(currentAccount);
-						ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
+						Organization org = null;
+						if (domainName.equalsIgnoreCase(currentAccountSubDomain)) {
+							org = currentAccount.getOrg();
+						} else {
+							org = AccountUtil.getOrgBean().getPortalOrg(subDomain);
+						}
+						if (org != null) {
+							Long portalId = org.getPortalId();
+							User user = null;
+							if (cognitoUser != null) {
+								user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
+							}
+							currentAccount = new Account(org, user);
+							AccountUtil.cleanCurrentAccount();
+							AccountUtil.setCurrentAccount(currentAccount);
+							ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
+						}
 					}
 				}
 			}

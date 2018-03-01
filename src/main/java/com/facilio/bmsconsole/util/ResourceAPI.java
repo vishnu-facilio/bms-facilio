@@ -36,6 +36,19 @@ public class ResourceAPI {
 		return null;									
 	}
 	
+	public static ResourceContext getExtendedResource(long id) throws Exception {
+		ResourceContext resource = getResource(id);
+		if (resource != null) {
+			switch (resource.getResourceTypeEnum()) {
+				case ASSET:
+					return AssetsAPI.getAssetInfo(id);
+				case SPACE:
+					return SpaceAPI.getBaseSpace(id);
+			}
+		}
+		return null;									
+	}
+	
 	public static List<ResourceContext> getAllResourcesFromSpaces(List<Long> spaceIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);

@@ -9,15 +9,15 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
-public class UpdateEventAssetsMappingCommand implements Command {
+public class UpdateEventResourcesMappingCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String node = (String) context.get(EventConstants.EventContextNames.NODE);
-		long assetId = (long) context.get(EventConstants.EventContextNames.ASSET_ID);
+		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
 		EventContext event = new EventContext();
-		event.setAssetId(assetId);
+		event.setResourceId(resourceId);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(EventConstants.EventFieldFactory.getEventFields())
 														.table(EventConstants.EventModuleFactory.getEventModule().getTableName())

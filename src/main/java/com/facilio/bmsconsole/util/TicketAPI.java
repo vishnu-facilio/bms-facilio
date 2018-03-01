@@ -494,4 +494,19 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 		return new CalendarColorContext();
 	}
+	
+	public static long getEstimatedWorkDuration (TicketContext ticket) {
+		long duration = -1;
+		long currentTimeInSec = System.currentTimeMillis()/1000;
+		if (ticket.getResumedWorkStart() != -1 && ticket.getEstimatedWorkDuration() != -1) {
+			duration = ticket.getEstimatedWorkDuration();
+			duration += (currentTimeInSec - (ticket.getResumedWorkStart()/1000));
+		}
+		else if (ticket.getActualWorkStart() != -1) {
+			duration = currentTimeInSec - (ticket.getActualWorkStart()/1000);
+		}
+		
+		return duration;
+	}
+	
 }

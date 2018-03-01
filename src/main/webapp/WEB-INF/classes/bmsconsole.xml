@@ -1601,6 +1601,15 @@
 				<param name="root">activities</param>
 			</result>
 		</action> 
+		
+		<action name="getEstimatedWorkDuration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getEstimatedWorkDuration">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">estimatedDuration</param>
+			</result>
+		</action>
+		
 	</package>
 
 	<package name="workOrderRequest" namespace="/app/workorderrequest"
@@ -2837,8 +2846,8 @@
 			</result>
 		</action>
 		
-		<action name="updateAlarmAsset" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="updateAlarmAsset">
+		<action name="updateAlarmResource" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="updateAlarmResource">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -3192,6 +3201,12 @@
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportData.*,^reportContext.*,^relatedAlarms.*,^baseLineComparisionDiff.*</param>
+			</result>
+		</action>
+		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^relatedAlarms.*</param>
 			</result>
 		</action>
 		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">

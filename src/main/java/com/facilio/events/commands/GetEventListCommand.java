@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
@@ -55,12 +57,23 @@ public class GetEventListCommand implements Command {
 			}
 	
 			List<Map<String, Object>> eventList = selectBuider.get();
-			
+			List<Long> resourceIds = new ArrayList<>();
 			for(Map<String, Object> eventMap : eventList)
 			{
-				EventContext event = new EventContext();
-				BeanUtils.populate(event, eventMap);
+				EventContext event = FieldUtil.getAsBeanFromMap(eventMap, EventContext.class);
 				events.add(event);
+				
+				if (event.getResourceId() != -1) {
+					resourceIds.add(event.getResourceId());
+				}
+			}
+			
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds);
+			
+			for (EventContext event : events) {
+				if (event.getResourceId() != -1) {
+					event.setResource(resources.get(event.getResourceId()));
+				}
 			}
 		}
 		catch (Exception e) {

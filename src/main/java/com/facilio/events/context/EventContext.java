@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -39,13 +40,21 @@ public class EventContext {
 	public void setNode(String node) {
 		this.node = node;
 	}
-
-	private long assetId = -1;
-	public long getAssetId() {
-		return assetId;
+	
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
 	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
 	}
 
 	private String eventMessage;
