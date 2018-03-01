@@ -461,7 +461,7 @@ public class DashboardAction extends ActionSupport {
 		
 		ReportFieldContext yAxis = new ReportFieldContext();
 		yAxis.setModuleField(readingField);
-		xAxis.setModuleFieldId(yAxis.getModuleField().getId());
+		yAxis.setModuleFieldId(yAxis.getModuleField().getId());
 		if(yLabel != null && !yLabel.isEmpty()) {
 			yAxis.setFieldLabel(yLabel);
 		}
