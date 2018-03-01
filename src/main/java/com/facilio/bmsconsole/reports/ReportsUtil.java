@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.StatUtils;
 import org.json.simple.JSONObject;
@@ -19,6 +20,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -441,9 +444,6 @@ public class ReportsUtil
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for(EnergyMeterContext meter : virtualMeters) {
 			try {
-				InsertRecordBuilder<ReadingContext> insertBuilder = new InsertRecordBuilder<ReadingContext>()
-						.fields(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
-						.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				
 				GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 																	.select(FieldFactory.getVirtualMeterRelFields())
@@ -457,11 +457,15 @@ public class ReportsUtil
 					}
 					ReadingContext virtualMeterReading = evaluateChildExpression(meter, childMeterIds, startTime, endTime);
 					if(virtualMeterReading != null) {
-						insertBuilder.addRecord(virtualMeterReading);
+						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
+						context.put(FacilioConstants.ContextNames.READING, virtualMeterReading);
+						Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+						//not adding in bulk to maintain the added sequence, 
+						//so that even a Virtual meter can be added in the virtual meter formula
+						addReading.execute(context);
 					}
 				}
-				
-				insertBuilder.save();
 			}
 			catch(Exception e) {
 				logger.log(Level.WARNING, "Exception occurred during calculation of energy data for meter : "+meter.getId(), e);
