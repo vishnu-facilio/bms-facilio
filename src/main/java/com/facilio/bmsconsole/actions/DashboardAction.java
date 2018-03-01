@@ -362,7 +362,11 @@ public class DashboardAction extends ActionSupport {
 		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
+		
+		FacilioModule module = reportModule;
+		if (module == null) {
+			module = modBean.getModule(reportFolder.getModuleId());
+		}
 		
 //		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -429,11 +433,21 @@ public class DashboardAction extends ActionSupport {
 		this.parentId = parentId;
 	}
 	
+	private FacilioModule reportModule;
+	public FacilioModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(FacilioModule reportModule) {
+		this.reportModule = reportModule;
+	}
+	
 	public String getReadingReportData() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getField(readingFieldId);
 		FacilioModule module = readingField.getModule();
 		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
+		reportContext = readingReport;
+		reportModule = module;
 		return getData(readingReport, module, dateFilter, null, baseLineId, -1, null);
 	}
 	
@@ -1067,7 +1081,7 @@ public class DashboardAction extends ActionSupport {
 		else {
 //			if(!report.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
-				if (report.getId().equals(301l)) {
+				if (report.getId() != null && report.getId().equals(301l)) {
 					report.getxAxisField().getField().setColumnName("PARENT_METER_ID");
 					report.getxAxisField().getField().setDisplayName("Building");
 					report.getxAxisField().getField().setName("building");
