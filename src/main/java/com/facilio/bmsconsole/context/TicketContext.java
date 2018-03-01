@@ -113,6 +113,9 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setSourceType(SourceType type) {
 		this.sourceType = type;
 	}
+	public SourceType getSourceTypeEnum() {
+		return sourceType;
+	}
 	
 	public static final long DEFAULT_DURATION = 3*24*60*60*1000; //3 days in milliseconds
 	
@@ -369,7 +372,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		EMAIL(2, "E Mail"),
 		SMS(3, "SMS"),
 		ALARM(4, "Alarm"),
-		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance")
+		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance"),
+		THRESHOLD_ALARM(6, "Threshold Alarm")
 		;
 		
 		private int intVal;

@@ -170,28 +170,11 @@ public class EventToAlarmCommand implements Command {
 
 		JSONObject additionalInfo = event.getAdditionInfo();
 		if(additionalInfo != null && additionalInfo.size() > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
-
-			JSONObject data = new JSONObject();
-			for(FacilioField field : alarmFields) {
-				if(additionalInfo.containsKey(field.getName())) {
-					if(field.isDefault()) {
-						json.put(field.getName(), additionalInfo.remove(field.getName()));
-					}
-					else {
-						data.put(field.getName(), additionalInfo.remove(field.getName()));
-					}
-				}
-			}
-			if(data.size() > 0) {
-				json.put("data", data);
-			}
+			json.putAll(additionalInfo);
 		}
-		json.put("additionInfo", additionalInfo);
 
 		JSONObject content = new JSONObject();
-		content.put("alarm", json);
+		content.put("alarmInfo", json);
 
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");

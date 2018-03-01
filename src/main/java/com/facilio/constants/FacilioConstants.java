@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -86,6 +87,7 @@ public class FacilioConstants {
 	public static class ContextNames {
 		
 		public static final String SIGNUP_INFO = "signupinfo";
+		public static final String CURRENT_RECORD = "currentRecord";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_ID = "recordId";
@@ -145,6 +147,7 @@ public class FacilioConstants {
 		
 		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
+		public static final String READING_ALARM = "readingalarm";
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		
@@ -353,6 +356,7 @@ public class FacilioConstants {
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
 		public static final String WORKFLOW_RULE="workflowRule";
+		public static final String CURRENT_WORKFLOW_RULE="currentWorkflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
 		public static final String READING_RULE_LIST ="readingRules";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
@@ -401,6 +405,7 @@ public class FacilioConstants {
 			classMap.put(WORK_ORDER_REQUEST, WorkOrderRequestContext.class);
 			classMap.put(ALARM_SEVERITY, AlarmSeverityContext.class);
 			classMap.put(ALARM, AlarmContext.class);
+			classMap.put(READING_ALARM, ReadingAlarmContext.class);
 			classMap.put(RESOURCE, ResourceContext.class);
 			classMap.put(BASE_SPACE, BaseSpaceContext.class);
 			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);

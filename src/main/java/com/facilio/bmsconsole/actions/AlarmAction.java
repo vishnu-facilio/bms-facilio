@@ -49,13 +49,25 @@ public class AlarmAction extends ActionSupport {
 	
 	public String addAlarmFromEvent() throws Exception {
 		
-		if(alarm != null) {
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
-			setAlarmId(bean.addAlarm(alarm));
-		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
+		
+		Chain addAlarmChain = FacilioChainFactory.getAddAlarmFromEventChain();
+		addAlarmChain.execute(context);
+		alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
+		alarmId = alarm.getId();
+		
 		return SUCCESS;
 	}
 	
+	private JSONObject alarmInfo;
+	public JSONObject getAlarmInfo() {
+		return alarmInfo;
+	}
+	public void setAlarmInfo(JSONObject alarmInfo) {
+		this.alarmInfo = alarmInfo;
+	}
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

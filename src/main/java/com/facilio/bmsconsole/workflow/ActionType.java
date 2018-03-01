@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.text.WordUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,10 +21,14 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -31,10 +36,14 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -197,7 +206,7 @@ public enum ActionType {
 	ADD_ALARM(6){
 		@Override
 		public void performAction(JSONObject obj, Context context) {
-			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
+//			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
 					if(obj.containsKey("alarmType")) {
@@ -208,15 +217,102 @@ public enum ActionType {
 						obj.put("message", subject);
 					}
 					obj.put("alarmType", 5);
-					FacilioContext context1 = new FacilioContext();
-					context1.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+					
+					WorkflowRuleContext currentRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.CURRENT_WORKFLOW_RULE);
+					if (currentRule instanceof ReadingRuleContext) {
+						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) context.get(FacilioConstants.ContextNames.CURRENT_RECORD));
+					}
+					
+					FacilioContext addEventContext = new FacilioContext();
+					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-					getAddEventChain.execute(context1);
+					getAddEventChain.execute(addEventContext);
 				}
 				catch(Exception e) {
 					e.printStackTrace();
 				}
 			}
+		}
+		
+		private void addReadingAlarmProps(JSONObject obj, ReadingRuleContext rule, ReadingContext reading) throws Exception {
+			obj.put("readingFieldId", rule.getReadingFieldId());
+			
+			if (rule.getBaselineId() != -1) {
+				obj.put("baselineId", rule.getBaselineId());
+			}
+			obj.put("sourceType", 6);
+			DateRange range = null;
+			if (rule.getAggregation() != null) {
+				range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange()));
+				obj.put("startTime", range.getStartTime());
+				obj.put("endTime", range.getEndTime());
+			}
+			else {
+				obj.put("startTime", reading.getTtime());
+				range.setStartTime(reading.getTtime());
+			}
+			obj.put("readingMessage", getMessage(rule, range));
+		}
+		
+		private String getMessage(ReadingRuleContext rule, DateRange range) throws Exception {
+			StringBuilder msgBuilder = new StringBuilder();
+			if (rule.getAggregation() != null) {
+				msgBuilder.append(WordUtils.capitalize(rule.getAggregation()))
+							.append(" of ");
+			}
+			
+			msgBuilder.append(rule.getReadingField().getDisplayName());
+			
+			NumberOperators operator = (NumberOperators) FieldType.NUMBER.getOperator(rule.getOperator());
+			
+			switch (operator) {
+				case EQUALS:
+					msgBuilder.append(" is ");
+					break;
+				case NOT_EQUALS:
+					msgBuilder.append(" is not ");
+					break;
+				case LESS_THAN:
+				case LESS_THAN_EQUAL:
+					msgBuilder.append(" is beneath ");
+					break;
+				case GREATER_THAN:
+				case GREATER_THAN_EQUAL:
+					msgBuilder.append(" exceeded ");
+					break;
+			}
+			
+			if (rule.getBaselineId() != -1) {
+				BaseLineContext bl = BaseLineAPI.getBaseLine(rule.getBaselineId());
+				msgBuilder.append("the ");
+				if (rule.getPercentage() != 0) {
+					msgBuilder.append(rule.getPercentage())
+							.append("% mark of ");
+				}
+				msgBuilder.append("base line ")
+							.append("\"")
+							.append(bl.getName())
+							.append("\"");
+			}
+			else {
+				msgBuilder.append(rule.getPercentage());
+				if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
+					msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
+				}
+			}
+			
+			if (range.getEndTime() != -1) {
+				msgBuilder.append(" between ")
+						.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT))
+						.append(" and ")
+						.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+			}
+			else {
+				msgBuilder.append(" at ")
+							.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+			}
+			
+			return msgBuilder.toString();
 		}
 	},
 	PUSH_NOTIFICATION(7) {

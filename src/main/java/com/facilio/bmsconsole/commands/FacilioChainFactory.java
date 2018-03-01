@@ -376,11 +376,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddAlarmFromEventChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ProcessAlarmCommand());
+		c.addCommand(getAddAlarmChain());
+		return c;
+	}
+	
 	public static Chain getAddAlarmChain() {
 		Chain c = new TransactionChain();
 //		c.addCommand(getAddTicketChain());
 		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddAlarmCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new AddAlarmFollowersCommand());
