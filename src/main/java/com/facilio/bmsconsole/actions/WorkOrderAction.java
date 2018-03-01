@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -470,6 +469,9 @@ public class WorkOrderAction extends ActionSupport {
 		
 		workorder = new WorkOrderContext();
 		workorder.setStatus(TicketAPI.getStatus("Closed")); //We shouldn't allow close to be edited
+		if (actualWorkDuration != -1) {
+			workorder.setActualWorkDuration(actualWorkDuration);
+		}
 		
 		return updateWorkOrder(context);
 	}
@@ -497,17 +499,6 @@ public class WorkOrderAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
-		// updating start time, end time when workorder status changes
-		if (workorder.getStatus() != null) {
-			
-			TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workorder.getStatus().getId());
-			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
-				workorder.setActualWorkStart(System.currentTimeMillis());
-			}
-			else if ("Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-				workorder.setActualWorkEnd(System.currentTimeMillis());
-			} 
-		}
 		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -776,6 +767,40 @@ public class WorkOrderAction extends ActionSupport {
 	}
 	public void setActivities(List<TicketActivity> activities) {
 		this.activities = activities;
+	}
+	
+	private long actualWorkDuration = -1;
+	public long getActualWorkDuration() {
+		return actualWorkDuration;
+	}
+	public void setActualWorkDuration(long actualWorkDuration) {
+		this.actualWorkDuration = actualWorkDuration;
+	}
+	
+	private long estimatedDuration = -1;
+	public long getEstimatedDuration() {
+		return estimatedDuration;
+	}
+	public void setEstimatedDuration(long estimatedDuration) {
+		this.estimatedDuration = estimatedDuration;
+	}
+	
+	public String getEstimatedWorkDuration() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
+		
+		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDataChain();
+		getWorkOrderChain.execute(context);
+		
+		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
+		
+		if(workorder != null) {
+			long duration = TicketAPI.getEstimatedWorkDuration(workorder);
+			setEstimatedDuration(duration);
+		}
+		
+		return SUCCESS;
 	}
 
 }

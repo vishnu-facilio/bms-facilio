@@ -295,6 +295,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getWorkOrderDataChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getWorkOrderListChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());

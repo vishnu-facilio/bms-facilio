@@ -283,6 +283,30 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.actualWorkEnd = actualWorkEnd;
 	}
 	
+	private long resumedWorkStart = -1;
+	public long getResumedWorkStart() {
+		return resumedWorkStart;
+	}
+	public void setResumedWorkStart(long resumedWorkStart) {
+		this.resumedWorkStart = resumedWorkStart;
+	}
+
+	private long estimatedWorkDuration = -1;	// in seconds
+	public long getEstimatedWorkDuration() {
+		return estimatedWorkDuration;
+	}
+	public void setEstimatedWorkDuration(long estimatedWorkDuration) {
+		this.estimatedWorkDuration = estimatedWorkDuration;
+	}
+	
+	private long actualWorkDuration = -1;	// in seconds
+	public long getActualWorkDuration() {
+		return actualWorkDuration;
+	}
+	public void setActualWorkDuration(long actualWorkDuration) {
+		this.actualWorkDuration = actualWorkDuration;
+	}
+
 	private ResourceContext resource;
 	public ResourceContext getResource() {
 		return resource;

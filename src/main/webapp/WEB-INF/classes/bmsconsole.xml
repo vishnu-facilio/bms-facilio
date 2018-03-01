@@ -1601,6 +1601,15 @@
 				<param name="root">activities</param>
 			</result>
 		</action> 
+		
+		<action name="getEstimatedWorkDuration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getEstimatedWorkDuration">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">estimatedDuration</param>
+			</result>
+		</action>
+		
 	</package>
 
 	<package name="workOrderRequest" namespace="/app/workorderrequest"

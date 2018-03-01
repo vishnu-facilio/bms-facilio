@@ -241,4 +241,10 @@ public class FieldUtil {
 			return null;
 		}
 	}
+	
+	public static <E> E cloneBean(Object bean, Class<E> classObj) {
+		ObjectMapper mapper = getMapper(classObj);
+		Map<String, Object> properties = mapper.convertValue(bean, Map.class);
+		return mapper.convertValue(properties, classObj);
+	}
 }

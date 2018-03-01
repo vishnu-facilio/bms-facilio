@@ -1,18 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -34,32 +36,81 @@ public class UpdateWorkOrderCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			
+			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, module);
+			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
+			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
+			
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
 				workOrder.setStatus(TicketAPI.getStatus("Assigned"));
 			}
-			
-			if(workOrder.getStatus() != null) {
-				if(workOrder.getStatus().getId() == TicketAPI.getStatus("Closed").getId()) {
-					workOrder.setActualWorkEnd(System.currentTimeMillis());
+			else if(workOrder.getStatus() != null) {
+				TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
+				
+				for(WorkOrderContext oldWo: oldWos) {
+					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
+					newWo.setId(oldWo.getId());
+					newWos.add(newWo);
+					
+					if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
+						if (oldWo.getActualWorkStart() != -1) {
+							newWo.setResumedWorkStart(System.currentTimeMillis());
+						}
+						else {
+							newWo.setActualWorkStart(System.currentTimeMillis());
+						}
+					}
+					else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
+							|| ("Closed".equalsIgnoreCase(statusObj.getStatus()) && oldWo.getStatus().getId() != TicketAPI.getStatus("Resolved").getId()) ) {
+
+						long estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldWo);
+						
+						if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
+							newWo.setActualWorkEnd(System.currentTimeMillis());
+							if(newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()) ) {
+								long actualDuration = newWo.getActualWorkDuration() != -1 ? newWo.getActualWorkDuration() : newWo.getEstimatedWorkDuration();
+								newWo.setActualWorkDuration(actualDuration);
+								if (estimatedDuration == -1 && actualDuration != -1){
+									estimatedDuration = newWo.getActualWorkDuration();
+								}
+							}
+							else {
+								newWo.setActualWorkDuration(estimatedDuration);
+							}
+						}
+						
+						if (estimatedDuration != -1) {
+							newWo.setEstimatedWorkDuration(estimatedDuration);
+						}
+					}
 				}
 			}
 			
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (newWos.isEmpty()) {
+				newWos.add(workOrder);
+			}
 			
-			String ids = StringUtils.join(recordIds, ",");
-			Condition idCondition = new Condition();
-			idCondition.setField(FieldFactory.getIdField(module));
-			idCondition.setOperator(NumberOperators.EQUALS);
-			idCondition.setValue(ids);
+			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldWos);
 			
-			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, getOldWOs(idCondition, fields));
+			int rowsUpdated = 0;
+			int woCount = newWos.size();
+			for (WorkOrderContext wo : newWos) {
+				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+						.moduleName(moduleName)
+						.table(dataTableName)
+						.fields(fields);
+				
+				if (woCount > 1) {
+					updateBuilder.andCondition(CriteriaAPI.getIdCondition(wo.getId(), module));
+				}
+				else {
+					updateBuilder.andCondition(idCondition);
+				}
+				rowsUpdated += updateBuilder.update(wo);
+			}
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-																		.moduleName(moduleName)
-																		.table(dataTableName)
-																		.fields(fields)
-																		.andCondition(idCondition);
-			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(workOrder));
 			
 			if(ActivityType.ASSIGN_TICKET == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) || ActivityType.CLOSE_WORK_ORDER == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
