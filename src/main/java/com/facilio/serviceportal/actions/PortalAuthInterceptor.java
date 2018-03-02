@@ -107,7 +107,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		Account currentAccount = null;
 		try {
 			cognitoUser = AuthenticationUtil.getCognitoUser(request);
-			currentAccount = (Account) ActionContext.getContext().getSession().get("CURRENT_PORTAL_ACCOUNT");
 			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
@@ -141,7 +140,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							currentAccount = new Account(org, user);
 							AccountUtil.cleanCurrentAccount();
 							AccountUtil.setCurrentAccount(currentAccount);
-							ActionContext.getContext().getSession().put("CURRENT_PORTAL_ACCOUNT", currentAccount);
 						}
 					}
 				}
