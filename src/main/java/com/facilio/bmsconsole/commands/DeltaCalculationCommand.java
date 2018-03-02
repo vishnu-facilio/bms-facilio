@@ -22,12 +22,6 @@ public class DeltaCalculationCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		if(!moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)){
-			return false;
-		}
-
 		List<ReadingContext> readings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
 		if(readings == null) {
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
@@ -36,6 +30,11 @@ public class DeltaCalculationCommand implements Command {
 			}
 		}
 		if(readings == null || readings.isEmpty()) {
+			return false;
+		}
+		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		if(moduleName==null || !moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)){
 			return false;
 		}
 
@@ -78,8 +77,12 @@ public class DeltaCalculationCommand implements Command {
 				return;
 			}
 			
-			double lastReading=(double)oldStats.get("value");
-			long lastTimestamp=(long)oldStats.get("ttime");
+			Double lastReading=(Double)oldStats.get("value");
+			Long lastTimestamp=(Long)oldStats.get("ttime");
+			if(lastReading==null || lastTimestamp==null) {
+				
+				return;
+			}
 			
 			if(currentTimestamp<lastTimestamp)  {
 				//timestamp check .. for ignoring historical data..

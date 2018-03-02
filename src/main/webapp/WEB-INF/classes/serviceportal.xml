@@ -61,6 +61,16 @@
 
 	</action>
 
+        <action name="changePassword" class="com.facilio.integration.actions.Home"
+                method="changePortalPassword">
+            <result name="success" type="json">
+                <param name="includeProperties">jsonresponse.*</param>
+            </result>
+            <result name="error" type="json">
+                <param name="includeProperties">jsonresponse.*</param>
+            </result>
+        </action>
+
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="portalAccount">
 			<result name="success" type="json">
@@ -70,7 +80,33 @@
 
    <action name="samllogin" class="com.facilio.customerportal.actions.Authentication" method="samllogin">
 			<result >/service/samllogin.jsp</result>
-		</action>     
+		</action>
+
+		<action name="addRequest"
+				class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="addWorkOrderRequest">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequestId</param>
+			</result>
+		</action>
+
+		<action name="myrequests"
+				class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">all</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
+			</result>
+		</action>
+        <action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+                method="apiLogout">
+            <result name="success" type="json">
+                <param name="includeProperties">^account.*</param>
+            </result>
+        </action>
+
 	</package>
 	
 		

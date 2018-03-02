@@ -45,7 +45,7 @@ public class EnergyMeterContext extends AssetContext {
 	public Boolean getIsVirtual() {
 		return isVirtual;
 	}
-	public void setIsVirtual(Boolean isVirtual) {
+	public void setIsVirtual(boolean isVirtual) {
 		this.isVirtual = isVirtual;
 	}
 	public boolean isVirtual() {
