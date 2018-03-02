@@ -61,6 +61,16 @@
 
 	</action>
 
+        <action name="changePassword" class="com.facilio.integration.actions.Home"
+                method="changePortalPassword">
+            <result name="success" type="json">
+                <param name="includeProperties">jsonresponse.*</param>
+            </result>
+            <result name="error" type="json">
+                <param name="includeProperties">jsonresponse.*</param>
+            </result>
+        </action>
+
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="portalAccount">
 			<result name="success" type="json">
