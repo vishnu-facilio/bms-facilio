@@ -15,7 +15,11 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStore() {
-		return getFileStore(AccountUtil.getCurrentUser().getId());
+		if(AccountUtil.getCurrentUser() != null) {
+			return getFileStore(AccountUtil.getCurrentUser().getId());
+		} else {
+			return getFileStore(-1);
+		}
 	}
 	
 	public FileStore getFileStore(long ouid) {
