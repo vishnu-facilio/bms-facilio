@@ -23,8 +23,8 @@ import com.facilio.events.commands.GetEventListCommand;
 import com.facilio.events.commands.GetEventRulesCommand;
 import com.facilio.events.commands.InsertEventCommand;
 import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
-import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
 import com.facilio.events.commands.UpdateEventCommand;
+import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
 import com.facilio.events.commands.UpdateEventRulesCommand;
 import com.facilio.events.commands.UpdateNodeToResourceMappingCommand;
 
