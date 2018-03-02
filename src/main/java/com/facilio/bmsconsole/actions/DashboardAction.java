@@ -557,7 +557,7 @@ public class DashboardAction extends ActionSupport {
 			if (dateFilter != null || report.getDateFilter() != null) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
-				if(getIsHeatMap() || reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) {
+				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) ) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
@@ -581,7 +581,7 @@ public class DashboardAction extends ActionSupport {
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
-			if (getIsHeatMap() || reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()) || !report.getIsHighResolutionReport()) {
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
 			}
 		}
