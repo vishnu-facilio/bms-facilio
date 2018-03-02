@@ -26,7 +26,7 @@ public class ModeledDataCommand implements Command {
 		
 		
 		Map<String, Map<String,String>> deviceData =(Map<String, Map<String,String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
-		long timeStamp=(long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
+		Long timeStamp=(Long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
