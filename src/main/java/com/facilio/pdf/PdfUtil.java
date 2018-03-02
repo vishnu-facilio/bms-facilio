@@ -28,7 +28,7 @@ public class PdfUtil {
         }
         if(directoryExits){
             try {
-                String token = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+1*60*60000);
+                String token = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+1*60*60000,false);
                 File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
                 String serverName = SERVER_NAME;
