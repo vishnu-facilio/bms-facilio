@@ -38,11 +38,11 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String addSpaceReading() throws Exception {
+	public String addSpaceCategoryReading() throws Exception {
 		return addCategoryReading(FacilioConstants.ContextNames.SPACE_CATEGORY, ModuleFactory.getSpaceCategoryReadingRelModule());
 	}
 	
-	public String addAssetReading() throws Exception {
+	public String addAssetCategoryReading() throws Exception {
 		return addCategoryReading(FacilioConstants.ContextNames.ASSET_CATEGORY, ModuleFactory.getAssetCategoryReadingRelModule());
 	}
 	
@@ -59,6 +59,32 @@ public class ReadingAction extends ActionSupport {
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setReadingId(module.getModuleId());
 		
+		return SUCCESS;
+	}
+	
+	public String addSpaceReading () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+		
+		Chain addSpaceReadingChain = FacilioChainFactory.addSpaceReadingChain();
+		addSpaceReadingChain.execute(context);
+		
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setReadingId(module.getModuleId());
+		
+		return SUCCESS;
+	}
+	
+	public String getSpaceSpecificReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
+		
+		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+		getSpaceSpecifcReadingsChain.execute(context);
+		
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		return SUCCESS;
 	}
 	

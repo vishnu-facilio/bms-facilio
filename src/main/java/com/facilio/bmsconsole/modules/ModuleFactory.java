@@ -788,4 +788,12 @@ public class ModuleFactory {
 		taskTemplate.setTableName("Task_Template");
 		return taskTemplate;
 	}
+	
+	public static FacilioModule getBasespaceReadingsModule() {
+		FacilioModule baseSpaceReadings = new FacilioModule();
+		baseSpaceReadings.setName("basespacereadings");
+		baseSpaceReadings.setDisplayName("Basespace Readings");
+		baseSpaceReadings.setTableName("BaseSpace_Readings");
+		return baseSpaceReadings;
+	}
 }

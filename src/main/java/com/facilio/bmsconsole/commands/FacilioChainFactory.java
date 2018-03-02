@@ -1589,7 +1589,25 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
+		c.addCommand(new GetCategoryResourcesCommand());
 		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addSpaceReadingChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(getAddReadingChain());
+		c.addCommand(new AddSpaceReadingRelCommand());
+		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSpaceReadingsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetSpaceSpecifcReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

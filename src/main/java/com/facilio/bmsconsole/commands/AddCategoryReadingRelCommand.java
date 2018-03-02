@@ -36,7 +36,7 @@ public class AddCategoryReadingRelCommand implements Command {
 			insertBuilder.save();
 		}
 		else {
-			throw new IllegalAccessException("Parent Category ID cannot be null during addition of reading for category");
+			throw new IllegalArgumentException("Parent Category ID cannot be null during addition of reading for category");
 		}
 		return false;
 	}

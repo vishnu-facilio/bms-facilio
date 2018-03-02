@@ -112,6 +112,7 @@ public class FacilioConstants {
 		
 		public static final String ID = "Id";
 		public static final String PARENT_ID = "parentId";
+		public static final String PARENT_ID_LIST = "parentIds";
 		
 		public static final String TICKET_ID = "ticketId";
 		

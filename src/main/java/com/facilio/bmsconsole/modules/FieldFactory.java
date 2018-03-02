@@ -3057,7 +3057,17 @@ public class FieldFactory {
 		
 		return fields;
 	}
-
+	
+	public static List<FacilioField> getBasespaceReadingsFields() {
+		FacilioModule module = ModuleFactory.getBasespaceReadingsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("readingId", "READING_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);
 	}
