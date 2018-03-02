@@ -23,7 +23,7 @@ public class EnergyMeterContext extends AssetContext {
 	public Boolean getRoot() {
 		return root;
 	}
-	public void setRoot(Boolean root) {
+	public void setRoot(boolean root) {
 		this.root = root;
 	}
 	public boolean isRoot() {
@@ -45,7 +45,7 @@ public class EnergyMeterContext extends AssetContext {
 	public Boolean getIsVirtual() {
 		return isVirtual;
 	}
-	public void setIsVirtual(boolean isVirtual) {
+	public void setIsVirtual(Boolean isVirtual) {
 		this.isVirtual = isVirtual;
 	}
 	public boolean isVirtual() {
