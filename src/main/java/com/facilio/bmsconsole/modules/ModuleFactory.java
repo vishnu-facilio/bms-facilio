@@ -713,6 +713,13 @@ public class ModuleFactory {
 		alarmentity.setTableName("Alarm_Entity");
 		return alarmentity;
 	}
+	public static FacilioModule getReportEntityModule() {
+		FacilioModule alarmentity = new FacilioModule();
+		alarmentity.setName("reportentity");
+		alarmentity.setDisplayName("Report Entity");
+		alarmentity.setTableName("Report_Entity");
+		return alarmentity;
+	}
 	public static FacilioModule getExpressionModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Expression");

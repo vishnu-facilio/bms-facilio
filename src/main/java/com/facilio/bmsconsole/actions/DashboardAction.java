@@ -297,7 +297,10 @@ public class DashboardAction extends ActionSupport {
 			ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
 			reportContext.setParentFolderId(defaultFolder.getId());
 		}
-
+		reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		reportContext.setModuleId(module.getModuleId());
 		DashboardUtil.addReport(reportContext);
 		
 		return SUCCESS;
@@ -359,13 +362,12 @@ public class DashboardAction extends ActionSupport {
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 		}
-		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule module = reportModule;
 		if (module == null) {
-			module = modBean.getModule(reportFolder.getModuleId());
+			module = modBean.getModule(reportContext.getModuleId());
 		}
 		
 //		FacilioContext context = new FacilioContext();
@@ -495,7 +497,6 @@ public class DashboardAction extends ActionSupport {
 		if(yAggr != -1) {
 			readingReport.setY1AxisaggregateFunction(yAggr);
 		}
-		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), PickListOperators.IS));
 		readingReport.setCriteria(criteria);
@@ -516,10 +517,8 @@ public class DashboardAction extends ActionSupport {
 			// generate preview report
 		}
 		
-		ReportFolderContext reportFolder = DashboardUtil.getReportFolderContext(reportContext.getParentFolderId());
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(reportFolder.getModuleId());
+		FacilioModule module = modBean.getModule(reportContext.getModuleId());
 		return getData(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 	}
 	
@@ -993,7 +992,7 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 				else {
 		 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
-		 					if(report.getId().equals(300l) || report.getId().equals(301l)) {
+		 					if(report.getId() == 300l || report.getId() == 301l) {
 		 						continue;
 		 					}
 		 					JSONObject value = new JSONObject();
@@ -1021,7 +1020,7 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 			}
 			 	}
-				if(report.getId().equals(300l)) {
+				if(report.getId() == 300l) {
 					report.getxAxisField().getField().setColumnName("PARENT_METER_ID");
 					report.getxAxisField().getField().setDisplayName("Building");
 					report.getxAxisField().getField().setName("building");
@@ -1084,7 +1083,7 @@ public class DashboardAction extends ActionSupport {
 		else {
 //			if(!report.getIsComparisionReport()) {
 				JSONArray res = new JSONArray();
-				if (report.getId() != null && report.getId().equals(301l)) {
+				if (report.getId() != -1 && report.getId() == 301l) {
 					report.getxAxisField().getField().setColumnName("PARENT_METER_ID");
 					report.getxAxisField().getField().setDisplayName("Building");
 					report.getxAxisField().getField().setName("building");

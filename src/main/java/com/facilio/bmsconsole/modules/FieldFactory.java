@@ -2253,6 +2253,8 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReport();
 
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
 		
 		FacilioField parentFolderId = new FacilioField();
 		parentFolderId.setName("parentFolderId");
@@ -2260,6 +2262,13 @@ public class FieldFactory {
 		parentFolderId.setColumnName("REPORT_FOLDER_ID");
 		parentFolderId.setModule(module);
 		fields.add(parentFolderId);
+		
+		FacilioField reportEntityId = new FacilioField();
+		reportEntityId.setName("reportEntityId");
+		reportEntityId.setDataType(FieldType.NUMBER);
+		reportEntityId.setColumnName("REPORT_ENTITY_ID");
+		reportEntityId.setModule(module);
+		fields.add(reportEntityId);
 		
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -2931,6 +2940,16 @@ public class FieldFactory {
 		
 		fields.add(getOrgIdField(module));
 		fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReportEntityFields() {
+		FacilioModule module = ModuleFactory.getReportEntityModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getOrgIdField(module));
+		fields.add(getIdField(module));
 		
 		return fields;
 	}

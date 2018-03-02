@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
@@ -510,6 +509,22 @@ public class DashboardUtil {
 				reportContext.setEnergyMeter(energyMeterContext);
 			}
 			
+			if(reportContext.getParentFolderId() != null) {
+				selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getReportFields())
+						.table(ModuleFactory.getReport().getTableName())
+						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_ENTITY_ID = ?", reportContext.getReportEntityId())
+						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID IS NULL");
+				
+				List<Map<String, Object>> compReportProps = selectBuilder.get();
+				if (compReportProps != null && !compReportProps.isEmpty()) {
+					for(Map<String, Object> compReportProp:compReportProps) {
+						ReportContext compReportContext = FieldUtil.getAsBeanFromMap(compReportProp, ReportContext.class);
+						reportContext.addComparingReportContext(compReportContext);
+					}
+				}
+			}
+			
 			reportContext.setBaseLineContexts(BaseLineAPI.getBaseLinesOfReport(reportId));
 			return reportContext;
 		}
@@ -613,6 +628,19 @@ public class DashboardUtil {
 		
 		if (reportContext != null) {
 			List<FacilioField> fields = FieldFactory.getReportFields();
+			
+			if(reportContext.getParentFolderId() != null && reportContext.getReportEntityId() == null) {
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportEntityModule().getTableName())
+						.fields(FieldFactory.getReportEntityFields());
+				
+				Map<String, Object> props = new HashMap<>();
+				props.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+				
+				reportContext.setReportEntityId((Long)props.get("id"));
+			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReport().getTableName())
