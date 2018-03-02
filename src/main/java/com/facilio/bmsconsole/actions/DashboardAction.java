@@ -686,6 +686,9 @@ public class DashboardAction extends ActionSupport {
 		if(criteria != null) {
 			builder.andCriteria(criteria);
 		}
+		if(report.getCriteria() != null) {
+			builder.andCriteria(report.getCriteria());
+		}
 		
 		String energyMeterValue = "";
 		JSONObject buildingVsMeter = new JSONObject();
