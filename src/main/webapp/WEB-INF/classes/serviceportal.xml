@@ -90,6 +90,12 @@
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
 			</result>
 		</action>
+        <action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+                method="apiLogout">
+            <result name="success" type="json">
+                <param name="includeProperties">^account.*</param>
+            </result>
+        </action>
 
 	</package>
 	
