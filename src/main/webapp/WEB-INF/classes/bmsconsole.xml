@@ -2849,7 +2849,11 @@
 				<param name="includeProperties">workOrderId</param>
 			</result>
 		</action>
-
+		
+		<action name="migration">
+			<result name="success">/jsps/Migration.jsp</result>
+		</action>
+		
 		<action name="addAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="addAlarmFromEvent">
 			<result name="success" type="json">
