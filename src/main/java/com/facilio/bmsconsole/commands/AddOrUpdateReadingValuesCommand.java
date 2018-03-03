@@ -46,6 +46,12 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			
 			return false;
 		}
+		
+		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
+		if (updateLastReading == null) {
+			updateLastReading = true;
+		}
+		
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -66,33 +72,37 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				readingsToBeAdded.add(reading);
 			}
 			else {
-				updateReading(module, fields, reading,lastReadingMap);
+				updateReading(module, fields, reading,lastReadingMap, updateLastReading);
 			}
 		}
-		addReadings(module, fields, readingsToBeAdded,lastReadingMap);
+		addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, readingsToBeAdded);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		return false;
 	}
 	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
-			Map<String, Map<String,Object>> lastReadingMap ) throws Exception {
+			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
 																	.addRecords(readings);
 		readingBuilder.save();
-		updateLastReading(fields,readings,lastReadingMap);
+		if (isUpdateLastReading) {
+			updateLastReading(fields,readings,lastReadingMap);
+		}
 	}
 	
 	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading,
-			Map<String, Map<String,Object>> lastReadingMap) throws Exception {
+			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
 		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
 																	.andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
 		updateBuilder.update(reading);
-		updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
+		if (isUpdateLastReading) {
+			updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
+		}
 	}
 	
 	

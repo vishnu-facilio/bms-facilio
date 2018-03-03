@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -19,6 +20,7 @@ public class AddFieldsCommand implements Command {
 		
 		//Have to be converted to batch insert
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
+		
 		if(fields != null && !fields.isEmpty()) {
 			FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

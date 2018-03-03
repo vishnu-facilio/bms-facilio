@@ -41,6 +41,17 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		this.values.addAll(values);
 		return this;
 	}
+	
+	@Override
+	public long insert (Map<String, Object> value) throws Exception {
+		addRecord(value);
+		save();
+		Long id = (Long) value.get("id");
+		if (id != null) {
+			return id;
+		}
+		return -1; 
+	}
 
 	@Override
 	public List<Map<String, Object>> getRecords() {

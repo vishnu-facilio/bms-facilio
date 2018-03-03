@@ -271,7 +271,8 @@ public class FacilioField implements Serializable {
 		LOOKUP_SIMPLE(10, null), 
 		LOOKUP_POPUP(11, null),
 		LOOKUP_SECTION(12, null),
-		DECIMAL(13, "number")
+		DECIMAL(13, "number"),
+		ENPI(14, "enpi") //Temp hack
 		;
 		
 		private int intVal;

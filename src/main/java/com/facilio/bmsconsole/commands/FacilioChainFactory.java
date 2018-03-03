@@ -1790,6 +1790,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addENPIChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(addSpaceReadingChain());
+		c.addCommand(new AddENPICommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllENPIsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllENPIsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase

@@ -3068,6 +3068,22 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getENPIFields() {
+		FacilioModule module = ModuleFactory.getENPIModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("expressionId", "EXPRESSION_ID", module, FieldType.LOOKUP));
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
 	public static FacilioField getField(String name, String colName, FieldType type) {
 		return getField(name, colName, null, type);
 	}

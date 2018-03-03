@@ -1298,6 +1298,20 @@
 				<param name="includeProperties">readingAndValue.*</param>
 			</result>
 		</action>
+		
+		<action name="addenpi" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addENPI">
+			<result name="success" type="json">
+				<param name="root">enpi</param>
+			</result>
+		</action>
+		
+		<action name="allenpis" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="allENPIs">
+			<result name="success" type="json">
+				<param name="root">enpiList</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="photosApi" namespace="/api/photos" extends="home">

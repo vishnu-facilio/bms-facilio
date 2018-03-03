@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,11 +12,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -399,4 +402,50 @@ public class ReadingAction extends ActionSupport {
 	public void setModuleMap(Map<Long, List<FacilioModule>> moduleMap) {
 		this.moduleMap = moduleMap;
 	}
-}
+	
+	private EnergyPerformanceIndicatorContext enpi;
+	public EnergyPerformanceIndicatorContext getEnpi() {
+		return enpi;
+	}
+	public void setEnpi(EnergyPerformanceIndicatorContext enpi) {
+		this.enpi = enpi;
+	}
+
+	public String addENPI() throws Exception {
+		FacilioField field = new FacilioField();
+		field.setDisplayName(enpi.getName());
+		field.setDataType(FieldType.DECIMAL);
+		field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
+		enpi.setReadingField(field);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READING_NAME, enpi.getName());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD, enpi.getReadingField());
+		context.put(FacilioConstants.ContextNames.PARENT_ID, enpi.getSpaceId());
+		context.put(FacilioConstants.ContextNames.ENPI, enpi);
+		
+		Chain addEnpiChain = FacilioChainFactory.addENPIChain();
+		addEnpiChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private List<EnergyPerformanceIndicatorContext> enpiList;
+	public List<EnergyPerformanceIndicatorContext> getEnpiList() {
+		return enpiList;
+	}
+	public void setEnpiList(List<EnergyPerformanceIndicatorContext> enpiList) {
+		this.enpiList = enpiList;
+	}
+
+	public String allENPIs() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		Chain getAllENPIsChain = FacilioChainFactory.getAllENPIsChain();
+		getAllENPIsChain.execute(context);
+		
+		enpiList = (List<EnergyPerformanceIndicatorContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);
+		
+		return SUCCESS;
+	}
+ }

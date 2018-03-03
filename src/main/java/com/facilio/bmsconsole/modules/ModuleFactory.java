@@ -796,4 +796,12 @@ public class ModuleFactory {
 		baseSpaceReadings.setTableName("BaseSpace_Readings");
 		return baseSpaceReadings;
 	}
+	
+	public static FacilioModule getENPIModule() {
+		FacilioModule enpi = new FacilioModule();
+		enpi.setName("energyperformanceindicator");
+		enpi.setDisplayName("Energy Performance Indicators");
+		enpi.setTableName("EnergyPerformanceIndicator");
+		return enpi;
+	}
 }

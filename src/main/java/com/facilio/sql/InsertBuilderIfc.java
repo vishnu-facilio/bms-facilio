@@ -16,6 +16,8 @@ public interface InsertBuilderIfc<E> {
 	
 	public List<E> getRecords();
 	
+	public long insert(E value) throws Exception;
+	
 	public void save() throws Exception;
 	
 }
