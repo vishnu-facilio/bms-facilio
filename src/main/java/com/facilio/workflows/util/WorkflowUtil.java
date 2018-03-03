@@ -23,7 +23,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddWorkflowRuleCommand;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -40,6 +42,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.ExpressionAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
@@ -97,6 +100,31 @@ public class WorkflowUtil {
 		workflowString = validateAndFillParameters(workflowString,paramMap);
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
 		return workflowContext.executeWorkflow();
+	}
+	
+	public static Long AddWorkflow(String workflowString) throws Exception {
+		WorkflowContext workflowContext = new WorkflowContext();
+		workflowContext.setWorkflowString(workflowString);
+		return addWorkflow(workflowContext);
+	}
+	
+	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
+
+		if(workflowContext.getWorkflowString() == null) {
+			workflowContext.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+		}
+		
+		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getWorkflowModule().getTableName())
+				.fields(FieldFactory.getWorkflowFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		workflowContext.setId((Long) props.get("id"));
+		return (Long) props.get("id");
 	}
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
