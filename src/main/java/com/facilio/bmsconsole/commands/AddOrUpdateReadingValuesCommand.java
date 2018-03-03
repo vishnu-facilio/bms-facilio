@@ -104,6 +104,10 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 
 	private int updateLastReading(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, Map<String,Object>> lastReadingMap) throws SQLException {
 
+
+		if(readingList==null || readingList.isEmpty()) {
+			return 0;
+		}
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
 			Set<Long> resources= new HashSet<Long>();
@@ -123,7 +127,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 					FacilioField fField=fieldMap.get(reading.getKey());
 					long fieldId=fField.getFieldId();
 					Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fieldId);
-					
 					if(oldStats!=null)
 					{
 						Double lastReading=(Double)oldStats.get("value");
@@ -140,6 +143,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				}
 			}
 
+			if(timeBuilder.length()<=0 || valueBuilder.length()<=0) {
+				return 0;
+			}
 			String resourceList=StringUtils.join(resources, ",");
 			String fieldList=StringUtils.join(fields, ",");
 			String sql = "UPDATE Last_Reading SET TTIME= CASE "+timeBuilder.toString()+ " END , "
