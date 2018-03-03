@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +87,23 @@ public class ReadingAction extends ActionSupport {
 		getSpaceSpecifcReadingsChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		return SUCCESS;
+	}
+	
+	public String getSpaceSpecificLatestReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, count);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestSpaceReadingValuesChain();
+		addCurrentOccupancy.execute(context);
+		
+		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		
+		readingAndValue = new JSONObject();
+		readingAndValue.put("readingData", readingData);
+		readingAndValue.put("readings", readings);
 		return SUCCESS;
 	}
 	

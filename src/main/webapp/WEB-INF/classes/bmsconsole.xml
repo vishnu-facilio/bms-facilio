@@ -1238,6 +1238,14 @@
 			</result>
 		</action>
 		
+		<action name="getspacespecificlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getSpaceSpecificLatestReadingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">readingAndValue.*</param>
+			</result>
+		</action>
+		
 		<action name="getallspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllSpaceReadings">
 			<result name="success" type="json">

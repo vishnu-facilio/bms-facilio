@@ -1628,6 +1628,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getGetLatestSpaceReadingValuesChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(getSpaceReadingsChain());
+		c.addCommand(new GetLatestCategoryReadingValuesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getCategoryReadingsChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetCategoryReadingsCommand());
