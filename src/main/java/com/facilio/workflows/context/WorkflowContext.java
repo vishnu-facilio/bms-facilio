@@ -79,18 +79,18 @@ public class WorkflowContext {
 		this.resultEvaluator = resultEvaluator;
 	}
 	
-	public Object getResult() throws Exception {
+	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
 		
 		if(getResultEvaluator() == null && isSingleExpression()) {
-			return expressions.get(0).getResult();
+			return expressions.get(0).executeExpression();
 		}
 		else {
 			Map<String,String> variableToExpresionMap = new HashMap<String,String>();
 			for(ExpressionContext expressionContext:expressions) {
 				
-				Object res = expressionContext.getResult();
+				Object res = expressionContext.executeExpression();
 				if(res != null) {
 					String subExpResult = res.toString();
 					variableToExpresionMap.put(expressionContext.getName(), subExpResult);

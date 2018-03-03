@@ -2744,6 +2744,23 @@ public class FieldFactory {
 
 	}
 	
+	public static List<FacilioField> getExpressionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getExpressionModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+
+		FacilioField selectFieldId = new FacilioField();
+		selectFieldId.setName("expressionString");
+		selectFieldId.setDataType(FieldType.STRING);
+		selectFieldId.setColumnName("EXPRESSION_STRING");
+		selectFieldId.setModule(module);
+		fields.add(selectFieldId);
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getWorkflowFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWorkflowModule();

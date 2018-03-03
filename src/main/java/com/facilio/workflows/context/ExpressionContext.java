@@ -71,26 +71,26 @@ public class ExpressionContext {
 	public ExpressionAggregateOperator getAggregateOpperator() {
 		return ExpressionAggregateOperator.getExpressionAggregateOperator(getAggregateString());
 	}
-	public FacilioField getFacilioField() throws Exception {
-		if(this.facilioField == null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			this.facilioField = modBean.getField(fieldName, moduleName);
-		}
-		return facilioField;
-	}
+//	public FacilioField getFacilioField() throws Exception {
+//		if(this.facilioField == null) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			this.facilioField = modBean.getField(fieldName, moduleName);
+//		}
+//		return facilioField;
+//	}
 	public void setFacilioField(FacilioField facilioField) {
 		this.facilioField = facilioField;
 	}
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-	public FacilioModule getModule() throws Exception {
-		if(this.module == null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			this.module = modBean.getModule(getModuleName());
-		}
-		return this.module;
-	}
+//	public FacilioModule getModule() throws Exception {
+//		if(this.module == null) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			this.module = modBean.getModule(getModuleName());
+//		}
+//		return this.module;
+//	}
 	public void setAggregateString(String aggregateString) {
 		this.aggregateString = aggregateString;
 	}
@@ -101,7 +101,7 @@ public class ExpressionContext {
 		this.criteria = criteria;
 	}
 	
-	public Object getResult() throws Exception {
+	public Object executeExpression() throws Exception {
 		
 		if(getConstant() != null) {
 			return getConstant();
@@ -120,7 +120,7 @@ public class ExpressionContext {
 		if(fieldName != null) {
 			List<FacilioField> selectFields = new ArrayList<>();
 			
-			FacilioField select = getFacilioField();
+			FacilioField select = modBean.getField(fieldName, moduleName);
 			select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
 			select.setExtendedModule(null);
 			select.setModule(null);
