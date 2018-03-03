@@ -96,7 +96,7 @@ public class WorkflowUtil {
 		
 		workflowString = validateAndFillParameters(workflowString,paramMap);
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
-		return workflowContext.getResult();
+		return workflowContext.executeWorkflow();
 	}
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
