@@ -10,12 +10,12 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DashboardUtil;
 
 
-public class ReportContext {
+public class ReportContext extends ModuleBaseWithCustomFields {
 	
-	Long Id;
 	Long parentFolderId;
 	String name;
 	String description;
@@ -47,7 +47,35 @@ public class ReportContext {
 	String groupByUnit;
 	Integer groupByFieldAggregateFunction;
 	Integer limit;
+	Long reportEntityId;
 	
+	public Long getReportEntityId() {
+		return reportEntityId;
+	}
+
+	public void setReportEntityId(Long reportEntityId) {
+		this.reportEntityId = reportEntityId;
+	}
+
+
+	List<ReportContext> comparingReportContexts;
+	
+
+	public List<ReportContext> getComparingReportContexts() {
+		return comparingReportContexts;
+	}
+
+	public void setComparingReportContexts(List<ReportContext> comparingReportContexts) {
+		this.comparingReportContexts = comparingReportContexts;
+	}
+	
+	public void addComparingReportContext(ReportContext comparingReportContext) {
+		if(this.comparingReportContexts == null) {
+			this.comparingReportContexts = new ArrayList<>();
+		}
+		this.comparingReportContexts.add(comparingReportContext);
+	}
+
 	public String getOrderBy() {
 		return orderBy;
 	}
@@ -322,16 +350,6 @@ public class ReportContext {
 		return null;
 	}
 	
-	public Long getId() {
-		return Id;
-	}
-
-
-	public void setId(Long id) {
-		Id = id;
-	}
-
-
 	public Long getParentFolderId() {
 		return parentFolderId;
 	}
