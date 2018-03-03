@@ -200,6 +200,17 @@
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
+		
+		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="fetchReadingAlarms">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">readingAlarms,readingAlarms\[\d+\],readingAlarms\[\d+\].*</param>
+			</result>
+		</action>
+		
 		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="viewList">
 			<result name="success" type="json">
@@ -520,6 +531,19 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="readingAlarmApi" namespace="/api/readingalarm" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="fetchReadingAlarms">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">readingAlarms,readingAlarms\[\d+\],readingAlarms\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
+	
 	<package name="alarmEntityApi" namespace="/api/alarmentity" extends="home">
 		<action name="alarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="alarmList">
