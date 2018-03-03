@@ -102,7 +102,7 @@ public class AlarmAPI {
 		}
 		
 		ResourceContext resource = sourceAlarm.getResource();
-		if(resource != null) {
+		if(resource != null && resource.getId() != -1) {
 			resource = ResourceAPI.getResource(resource.getId());
 			switch (resource.getResourceTypeEnum()) {
 				case SPACE:
