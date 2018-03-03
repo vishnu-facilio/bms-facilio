@@ -51,7 +51,7 @@ public class InsertLastReadingForNewReadingCommand implements Command {
 				lastReading.put("resourceId", parentId);
 				lastReading.put("fieldId", fieldId);
 				lastReading.put("ttime", timestamp);
-				lastReading.put("value", -1);
+				lastReading.put("value", "-1");
 				builder.addRecord(lastReading);
 			}
 		}

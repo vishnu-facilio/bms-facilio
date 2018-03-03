@@ -3034,7 +3034,7 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
-		fields.add(getField("value", "VALUE", module, FieldType.DECIMAL));
+		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		return fields;
 	}
 	

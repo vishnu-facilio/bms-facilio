@@ -106,10 +106,13 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	}
 	
 	
-	private String getCase(long resource,long field, Object value) {
+	private String getCase(long resource,long field, Object value, boolean insertQuote) {
 
-		return " WHEN RESOURCE_ID="+resource+" AND FIELD_ID="+field+" THEN "+value;
-
+		String caseString= " WHEN RESOURCE_ID="+resource+" AND FIELD_ID="+field+" THEN ";
+		if(insertQuote) {
+			return caseString+"'"+value+"'";
+		}
+		return caseString+value;
 	}
 
 	private int updateLastReading(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, Map<String,Object>> lastReadingMap) throws SQLException {
@@ -139,17 +142,17 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 					Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fieldId);
 					if(oldStats!=null)
 					{
-						Double lastReading=(Double)oldStats.get("value");
+						String lastReading=(String)oldStats.get("value");
 						Long lastTimeStamp=(Long)oldStats.get("ttime");
 						if (lastReading!=null && lastTimeStamp!=null && 
-								lastReading!=-1 && timeStamp<lastTimeStamp) {
+								lastReading!="-1" && timeStamp<lastTimeStamp) {
 							continue;
 						}
 					}
 					fields.add(fieldId);
 					String value= reading.getValue().toString();
-					timeBuilder.append(getCase(resourceId,fieldId,timeStamp));
-					valueBuilder.append(getCase(resourceId,fieldId,value));
+					timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
+					valueBuilder.append(getCase(resourceId,fieldId,value,true));
 				}
 			}
 

@@ -77,9 +77,9 @@ public class DeltaCalculationCommand implements Command {
 				return;
 			}
 			
-			Double lastReading=(Double)oldStats.get("value");
+			String lastReadingVal=(String)oldStats.get("value");
 			Long lastTimestamp=(Long)oldStats.get("ttime");
-			if(lastReading==null || lastTimestamp==null) {
+			if(lastReadingVal==null || lastTimestamp==null) {
 				
 				return;
 			}
@@ -88,6 +88,7 @@ public class DeltaCalculationCommand implements Command {
 				//timestamp check .. for ignoring historical data..
 				return;
 			}
+			double lastReading =(double)FieldUtil.castOrParseValueAsPerType(type, lastReadingVal);
 			double delta=0;
 			if(lastReading==-1) {
 				//lastReading  check.. for very first reading 
