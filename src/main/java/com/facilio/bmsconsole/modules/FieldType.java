@@ -66,6 +66,22 @@ public enum FieldType {
 	public static FieldType getCFType(int value) {
 		return typeMap.get(value);
 	}
+
+	private static final Map<String, FieldType> typeStringMap = Collections.unmodifiableMap(initTypeStringMap());
+	
+	private static Map<String, FieldType> initTypeStringMap() {
+		Map<String, FieldType> typeMap = new HashMap<>();
+		for(FieldType type : values()) {
+			typeMap.put(type.getTypeAsString(), type);
+		}
+		return typeMap;
+	}
+	
+	public static FieldType getCFType(String value) {
+		return typeStringMap.get(value);
+	}
+
+	
 	public String toString()
 	{
 		return typeString;

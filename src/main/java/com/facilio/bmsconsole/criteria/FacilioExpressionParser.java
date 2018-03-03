@@ -407,7 +407,8 @@ public class FacilioExpressionParser {
 		AVERAGE(2,"avg","avg({$place_holder$})"),
 		SUM(3,"sum","sum({$place_holder$})"),
 		MIN(4,"min","min({$place_holder$})"),
-		MAX(5,"max","max({$place_holder$})");
+		MAX(5,"max","max({$place_holder$})"),
+		LAST_VALUE(6,"lastValue","{$place_holder$}");
 		
 		private Integer value;
 		private String name;

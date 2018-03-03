@@ -11,6 +11,22 @@ import com.udojava.evalex.Expression;
 
 public class WorkflowContext {
 
+	List<ParameterContext> parameters;
+	public List<ParameterContext> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(List<ParameterContext> parameters) {
+		this.parameters = parameters;
+	}
+	
+	public void addParamater(ParameterContext parameter) {
+		if(this.parameters == null) {
+			this.parameters = new ArrayList<>();
+		}
+		this.parameters.add(parameter);
+	}
+
 	List<ExpressionContext> expressions;
 	
 	String resultEvaluator;

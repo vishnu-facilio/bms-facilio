@@ -26,9 +26,11 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class WorkflowUtil {
@@ -63,6 +65,8 @@ public class WorkflowUtil {
 		return ARITHMETIC_OPPERATORS;
 	}
 	
+	static final String PARAMETER_STRING =  "parameter";
+	static final String TYPE_STRING =  "type";
 	static final String EXPRESSION_STRING =  "expression";
 	static final String NAME_STRING =  "name";
 	static final String VALUE_STRING =  "value";
@@ -75,9 +79,105 @@ public class WorkflowUtil {
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
 	
-	public static Object getWorkflowExpressionResult(String workflow) throws Exception {
-		return parseStringToWorkflowObject(workflow).getResult();
+	
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
+		
+		workflowString = validateAndFillParameters(workflowString,paramMap);
+		
+		return parseStringToWorkflowObject(workflowString).getResult();
 	}
+	
+	public static String validateAndFillParameters(String workflowString,Map<String,Object> paramMap) throws Exception {
+		
+		List<ParameterContext> paramterContexts = getParameterListFromWorkflowString(workflowString);
+		
+		if(!paramterContexts.isEmpty()) {
+			if(paramMap == null || paramMap.isEmpty()) {
+				throw new Exception("No paramters match found");
+			}
+			if(paramterContexts.size() != paramMap.size()) {
+				throw new Exception("No. of arguments mismatched");
+			}
+			for(ParameterContext parameterContext:paramterContexts) {
+				Object value = paramMap.get(parameterContext.getName());
+				
+				checkType(parameterContext,value);
+				parameterContext.setValue(value);
+				
+				workflowString = replaceParameters(workflowString,parameterContext);
+			}
+		}
+		
+		return workflowString;
+	}
+	
+	public static String replaceParameters(String workflowString,ParameterContext parameterContext) {
+		
+		String variableName = "\\$\\{"+parameterContext.getName()+"\\}";
+		
+		workflowString = workflowString.replaceAll(variableName, parameterContext.getValue().toString());
+		
+		return workflowString;
+	}
+	
+	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {
+		
+		FieldType type =  parameterContext.getType();
+		
+		switch(type) {
+			case STRING : 
+				if(value instanceof String) {
+					return true;
+				}
+				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+			case BOOLEAN:
+				if(value instanceof Boolean) {
+					return true;
+				}
+				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+			case NUMBER:
+				if(value instanceof Integer || value instanceof Long) {
+					return true;
+				}
+				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+			case DECIMAL:
+				if(value instanceof Double) {
+					return true;
+				}
+				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+		}
+		return false;
+	}
+	
+	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
+		
+		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-8"));
+    	
+    	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    	Document doc = dBuilder.parse(stream);
+        doc.getDocumentElement().normalize();
+        
+        List<ParameterContext> paramterContexts = new ArrayList<>();
+        NodeList parameterNodes = doc.getElementsByTagName(PARAMETER_STRING);
+        for(int i=0;i<parameterNodes.getLength();i++) {
+        	
+        	Node parameterNode = parameterNodes.item(i);
+        	if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
+        		ParameterContext parameterContext = new ParameterContext();
+        		Element parameter = (Element) parameterNode;
+        		
+        		String name = parameter.getAttribute(NAME_STRING);
+        		String type = parameter.getAttribute(TYPE_STRING);
+        		parameterContext.setName(name);
+        		parameterContext.setTypeString(type);
+        		
+        		paramterContexts.add(parameterContext);
+        	}
+        }
+        return paramterContexts;
+	}
+	
 	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {
     	
 		WorkflowContext workflowContext = new WorkflowContext();
@@ -89,6 +189,22 @@ public class WorkflowUtil {
     	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     	Document doc = dBuilder.parse(stream);
         doc.getDocumentElement().normalize();
+        
+        NodeList parameterNodes = doc.getElementsByTagName(PARAMETER_STRING);
+        for(int i=0;i<parameterNodes.getLength();i++) {
+        	
+        	Node parameterNode = parameterNodes.item(i);
+        	if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
+        		ParameterContext parameterContext = new ParameterContext();
+        		Element parameter = (Element) parameterNode;
+        		
+        		String name = parameter.getAttribute(NAME_STRING);
+        		String type = parameter.getAttribute(TYPE_STRING);
+        		parameterContext.setName(name);
+        		parameterContext.setTypeString(type);
+        		workflowContext.addParamater(parameterContext);
+        	}
+        }
         
         NodeList expressionNodes = doc.getElementsByTagName(EXPRESSION_STRING);
         
