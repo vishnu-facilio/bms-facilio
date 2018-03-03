@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -46,22 +47,22 @@ public class EnergyPerformanceIndicatorContext {
 		this.description = description;
 	}
 
-	private long expressionId = -1;
-	public long getExpressionId() {
-		return expressionId;
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
 	}
-	public void setExpressionId(long expressionId) {
-		this.expressionId = expressionId;
-	}
-	
-	private ExpressionContext expression;
-	public ExpressionContext getExpression() {
-		return expression;
-	}
-	public void setExpression(ExpressionContext expression) {
-		this.expression = expression;
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
 	}
 	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+
 	private ScheduleInfo schedule;
 	public ScheduleInfo getSchedule() {
 		return schedule;

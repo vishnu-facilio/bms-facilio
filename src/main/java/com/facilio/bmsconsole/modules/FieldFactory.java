@@ -3112,7 +3112,7 @@ public class FieldFactory {
 		fields.add(getOrgIdField(module));
 		fields.add(getNameField(module));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-		fields.add(getField("expressionId", "EXPRESSION_ID", module, FieldType.LOOKUP));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));

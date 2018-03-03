@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.FacilioExpressionParser;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -18,6 +18,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class EnergyPerformanceIndicatiorAPI {
 	
@@ -44,8 +45,8 @@ public class EnergyPerformanceIndicatiorAPI {
 	}
 	
 	private static void updateChildIds(EnergyPerformanceIndicatorContext enpi) throws Exception {
-		long expressionId = ExpressionAPI.addExpression(enpi.getExpression());
-		enpi.setExpressionId(expressionId);
+		long workflowId = WorkflowUtil.addWorkflow(enpi.getWorkflow());
+		enpi.setWorkflowId(workflowId);
 		enpi.setOrgId(AccountUtil.getCurrentOrg().getId());
 		enpi.setReadingFieldId(enpi.getReadingField().getId());
 	}
@@ -68,8 +69,11 @@ public class EnergyPerformanceIndicatiorAPI {
 	}
 	
 	public static ReadingContext calculateENPI(EnergyPerformanceIndicatorContext enpi, long startTime, long endTime) throws Exception {
-		FacilioExpressionParser parser = new FacilioExpressionParser(enpi.getExpression().getExpressionString());
-		double resultVal = (double) parser.getResult();
+		Map<String, Object> params = new HashMap<>();
+		params.put("startTime", startTime);
+		params.put("endTime", endTime);
+		
+		double resultVal = (double) WorkflowUtil.getWorkflowExpressionResult(enpi.getWorkflow().getWorkflowString(), params);
 		
 		ReadingContext reading = new ReadingContext();
 		reading.setParentId(enpi.getSpaceId());
@@ -98,7 +102,7 @@ public class EnergyPerformanceIndicatiorAPI {
 			for (Map<String, Object> prop : props) {
 				EnergyPerformanceIndicatorContext enpi = FieldUtil.getAsBeanFromMap(prop, EnergyPerformanceIndicatorContext.class);
 				enpi.setReadingField(modBean.getField(enpi.getReadingFieldId()));
-				enpi.setExpression(ExpressionAPI.getExpressionContext(enpi.getExpressionId()));
+				enpi.setWorkflow(WorkflowUtil.getWorkflowContext(enpi.getWorkflowId()));
 				enpiList.add(enpi);
 			}
 			return enpiList;
