@@ -166,20 +166,20 @@ public class EventRule {
 		this.thresholdOverSeconds = thresholdOverSeconds;
 	}
 	
-	private String coRelExpression;
-	public String getCoRelExpression() {
-		return coRelExpression;
+	private String coRelWorkflowXml;
+	public String getCoRelWorkflowXml() {
+		return coRelWorkflowXml;
 	}
-	public void setCoRelExpression(String coRelExpression) {
-		this.coRelExpression = coRelExpression;
+	public void setCoRelWorkflowXml(String coRelWorkflowXml) {
+		this.coRelWorkflowXml = coRelWorkflowXml;
 	}
 
-	private long coRelExpressionId = -1;
-	public long getCoRelExpressionId() {
-		return coRelExpressionId;
+	private long coRelWorkflowId = -1;
+	public long getCoRelWorkflowId() {
+		return coRelWorkflowId;
 	}
-	public void setCoRelExpressionId(long coRelExpressionId) {
-		this.coRelExpressionId = coRelExpressionId;
+	public void setCoRelWorkflowId(long coRelWorkflowId) {
+		this.coRelWorkflowId = coRelWorkflowId;
 	}
 
 	private JSONObject coRelTransformTemplate;

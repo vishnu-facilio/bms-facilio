@@ -141,6 +141,7 @@ public class WorkflowUtil {
 		if (props != null && !props.isEmpty()) {
 			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
 		}
+		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString());
 		return workflowContext;
 	}
 	
@@ -322,6 +323,7 @@ public class WorkflowUtil {
 	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {
     	
 		WorkflowContext workflowContext = new WorkflowContext();
+		workflowContext.setWorkflowString(workflow);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-8"));

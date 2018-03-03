@@ -395,7 +395,7 @@ public class EventConstants {
 			clearCriteriaOverseconds.setModule(module);
 			fields.add(clearCriteriaOverseconds);
 			
-			fields.add(FieldFactory.getField("coRelExpressionId", "CO_REL_EXPRESSION_ID", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("coRelWorkflowId", "CO_REL_WORKFLOW_ID", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("colRelAction", "CO_REL_ACTION", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("coRelTransformTemplateId", "CO_REL_TRANSFORM_TEMPLATE_ID", module, FieldType.NUMBER));
 			

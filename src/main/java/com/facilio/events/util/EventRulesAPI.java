@@ -15,6 +15,8 @@ import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class EventRulesAPI {
 	public static final EventRule getEventRule(long orgId, long eventRuleId) throws Exception {
@@ -90,15 +92,19 @@ public class EventRulesAPI {
 			eventRule.setThresholdCriteriaId(criteriaId);
 		}
 		
-		if(eventRule.getCoRelExpression() != null) {
+		if(eventRule.getCoRelWorkflowXml() != null) {
 			if(eventRule.getColRelActionEnum() == null) {
 				throw new IllegalArgumentException("Co Relation action cannot be null when co relation expression exists");
 			}
 			
-			ExpressionContext expression = new ExpressionContext();
-			expression.setExpressionString(eventRule.getCoRelExpression());
-			long expressionId = ExpressionAPI.addExpression(expression);
-			eventRule.setCoRelExpressionId(expressionId);
+//			ExpressionContext expression = new ExpressionContext();
+//			expression.setExpressionString(eventRule.getCoRelExpression());
+//			long expressionId = ExpressionAPI.addExpression(expression);
+//			eventRule.setCoRelExpressionId(expressionId);
+			WorkflowContext workFlow = new WorkflowContext();
+			workFlow.setWorkflowString(eventRule.getCoRelWorkflowXml());
+			long workflowId = WorkflowUtil.addWorkflow(workFlow);
+			eventRule.setCoRelWorkflowId(workflowId);
 			
 			if(eventRule.getCoRelTransformTemplate() != null) {
 				JSONTemplate coRelTemplate = new JSONTemplate();
