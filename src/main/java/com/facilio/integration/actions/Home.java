@@ -156,6 +156,7 @@ state = PORTAL-yogendrababu
 
 	public String validatelogin() throws Exception
 	{
+		boolean portaluser=false;
 		if(username != null && password != null) {
 			try {
 				System.out.println("validatelogin() : username : " + username + "; password : " + password + " portal id : " + portalId());
@@ -163,6 +164,7 @@ state = PORTAL-yogendrababu
 				boolean validPassword = false;
 				if (portalId() > 0) {
 					validPassword = verifyPortalPassword(username, encryptedPass, portalId());
+					portaluser =true;
 				} else {
 					validPassword = verifyPassword(username, encryptedPass);
 				}
@@ -170,7 +172,7 @@ state = PORTAL-yogendrababu
 					System.out.print(">>>>> verifyPassword :" + username);
 					return ERROR;
 				}
-				String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000);
+				String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
 				System.out.println("Response token is " + jwt);
 				setJsonresponse("token", jwt);
 				setJsonresponse("username", username);
@@ -391,7 +393,7 @@ Pragma: no-cache
 	public String generateAuthToken()
 	{
 		System.out.println("generateAuthToken() : username :"+username);
-		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
+		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000,false);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
 		setJsonresponse("username",username);

@@ -13,4 +13,6 @@
 	 <job name='AfterPMReminder' classname = 'com.facilio.bmsconsole.jobs.AfterPMReminderJob' />
 	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' />
 	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' />
+	 <job name='ENPICalculatior' classname = 'com.facilio.bmsconsole.jobs.ENPICalculatiorJob' />
+	 <job name='HistoricalENPICalculatior' classname = 'com.facilio.bmsconsole.jobs.HistoricalENPICalculatiorJob' />
 </scheduler>

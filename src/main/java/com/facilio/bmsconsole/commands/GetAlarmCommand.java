@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -59,6 +60,7 @@ public class GetAlarmCommand implements Command {
 			builder.andCondition(idCondition);
 
 			List<AlarmContext> alarms = builder.get();
+			AlarmAPI.loadExtendedAlarms(alarms);
 			TicketAPI.loadTicketLookups(alarms);
 			context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
 		}

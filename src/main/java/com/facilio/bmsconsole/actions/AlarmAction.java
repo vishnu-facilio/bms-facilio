@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -21,6 +22,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -233,8 +236,8 @@ public class AlarmAction extends ActionSupport {
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
 	}
-
-	public String alarmList() throws Exception {
+	
+	private FacilioContext constructChainContext() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		if(getFilters() != null)
@@ -268,6 +271,11 @@ public class AlarmAction extends ActionSupport {
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		System.out.println("PAGINATION ####### "+ pagination);
  		
+ 		return context;
+	}
+
+	public String alarmList() throws Exception {
+ 		FacilioContext context = constructChainContext();
  		context.put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, entityId);
  		
  		System.out.println("View Name : "+getViewName());
@@ -581,5 +589,21 @@ public class AlarmAction extends ActionSupport {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	private List<ReadingAlarmContext> readingAlarms;
+	public List<ReadingAlarmContext> getReadingAlarms() {
+		return readingAlarms;
+	}
+	public void setReadingAlarms(List<ReadingAlarmContext> readingAlarms) {
+		this.readingAlarms = readingAlarms;
+	}
+	
+	public String fetchReadingAlarms() throws Exception {
+		FacilioContext context = constructChainContext();
+		Chain getReadingAlarmsChain = FacilioChainFactory.getReadingAlarmsChain();
+		getReadingAlarmsChain.execute(context);
+		readingAlarms = (List<ReadingAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		return SUCCESS;
 	}
 }

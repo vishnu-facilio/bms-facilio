@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -44,14 +42,14 @@ public class ReportScheduler extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.FILE_FORMAT, prop.get("fileFormat"));
 				String filter = (String) prop.get("dateFilter");
 				JSONArray dateFilter = null;
-				if (filter != null) {
+				/*if (filter != null) {
 					JSONParser parser = new JSONParser();
 					try {
 						dateFilter =  (JSONArray) parser.parse(filter);
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-				}
+				}*/
 				context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
 				
 				EMailTemplate template  = (EMailTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getId(), (long)prop.get("templateId"));

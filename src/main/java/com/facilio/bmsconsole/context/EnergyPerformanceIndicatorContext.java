@@ -1,0 +1,107 @@
+package com.facilio.bmsconsole.context;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.tasker.executor.ScheduleInfo;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+public class EnergyPerformanceIndicatorContext {
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	private long expressionId = -1;
+	public long getExpressionId() {
+		return expressionId;
+	}
+	public void setExpressionId(long expressionId) {
+		this.expressionId = expressionId;
+	}
+	
+	private ExpressionContext expression;
+	public ExpressionContext getExpression() {
+		return expression;
+	}
+	public void setExpression(ExpressionContext expression) {
+		this.expression = expression;
+	}
+	
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
+	}
+	
+	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
+		}
+		return null;
+	}
+	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+	}
+	
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
+	
+	private FacilioField readingField;
+	public FacilioField getReadingField() {
+		return readingField;
+	}
+	public void setReadingField(FacilioField readingField) {
+		this.readingField = readingField;
+	}
+	
+	private long spaceId = -1;
+	public long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(long spaceId) {
+		this.spaceId = spaceId;
+	}
+}

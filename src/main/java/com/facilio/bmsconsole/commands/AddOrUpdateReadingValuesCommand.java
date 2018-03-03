@@ -31,6 +31,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -41,53 +42,67 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				readings = Collections.singletonList(reading);
 			}
 		}
-		
-		if(readings != null && !readings.isEmpty()) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
+		if(readings == null || readings.isEmpty()) {
 			
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-			List<ReadingContext> readingsToBeAdded = new ArrayList<>();
-			for(ReadingContext reading : readings) {
-				if(reading.getTtime() == -1) {
-					reading.setTtime(System.currentTimeMillis());
-				}
-				if(reading.getParentId() == -1) {
-					throw new IllegalArgumentException("Invalid parent id for readings of module : "+moduleName);
-				}
-				
-				if(reading.getId() == -1) {
-					readingsToBeAdded.add(reading);
-				}
-				else {
-					updateReading(module, fields, reading);
-				}
-			}
-			addReadings(module, fields, readingsToBeAdded);
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, readingsToBeAdded);
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			return false;
 		}
+		
+		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
+		if (updateLastReading == null) {
+			updateLastReading = true;
+		}
+		
+		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+
+		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
+		for(ReadingContext reading : readings) {
+			if(reading.getTtime() == -1) {
+				reading.setTtime(System.currentTimeMillis());
+			}
+			if(reading.getParentId() == -1) {
+				throw new IllegalArgumentException("Invalid parent id for readings of module : "+moduleName);
+			}
+
+			if(reading.getId() == -1) {
+				readingsToBeAdded.add(reading);
+			}
+			else {
+				updateReading(module, fields, reading,lastReadingMap, updateLastReading);
+			}
+		}
+		addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, readingsToBeAdded);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		return false;
 	}
 	
-	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings) throws Exception {
+	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
+			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
 																	.addRecords(readings);
 		readingBuilder.save();
-		updateLastReading(fields,readings);
+		if (isUpdateLastReading) {
+			updateLastReading(fields,readings,lastReadingMap);
+		}
 	}
 	
-	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading) throws Exception {
+	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading,
+			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
 		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
 																	.andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
-		
 		updateBuilder.update(reading);
+		if (isUpdateLastReading) {
+			updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
+		}
 	}
 	
 	
@@ -97,8 +112,12 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 
 	}
 
-	private int updateLastReading(List<FacilioField> fieldsList,List<ReadingContext> readingList) throws SQLException {
+	private int updateLastReading(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, Map<String,Object>> lastReadingMap) throws SQLException {
 
+
+		if(readingList==null || readingList.isEmpty()) {
+			return 0;
+		}
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
 			Set<Long> resources= new HashSet<Long>();
@@ -117,6 +136,16 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 
 					FacilioField fField=fieldMap.get(reading.getKey());
 					long fieldId=fField.getFieldId();
+					Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fieldId);
+					if(oldStats!=null)
+					{
+						Double lastReading=(Double)oldStats.get("value");
+						Long lastTimeStamp=(Long)oldStats.get("ttime");
+						if (lastReading!=null && lastTimeStamp!=null && 
+								lastReading!=-1 && timeStamp<lastTimeStamp) {
+							continue;
+						}
+					}
 					fields.add(fieldId);
 					String value= reading.getValue().toString();
 					timeBuilder.append(getCase(resourceId,fieldId,timeStamp));
@@ -124,6 +153,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 				}
 			}
 
+			if(timeBuilder.length()<=0 || valueBuilder.length()<=0) {
+				return 0;
+			}
 			String resourceList=StringUtils.join(resources, ",");
 			String fieldList=StringUtils.join(fields, ",");
 			String sql = "UPDATE Last_Reading SET TTIME= CASE "+timeBuilder.toString()+ " END , "

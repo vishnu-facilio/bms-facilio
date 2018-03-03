@@ -257,44 +257,71 @@ public enum ActionType {
 		private String getMessage(ReadingRuleContext rule, DateRange range) throws Exception {
 			StringBuilder msgBuilder = new StringBuilder();
 			if (rule.getAggregation() != null) {
-				msgBuilder.append(WordUtils.capitalize(rule.getAggregation()))
-							.append(" of ");
+				if(rule.getDateRange() == 1) {
+					msgBuilder.append("Hourly ")
+								.append(rule.getAggregation());
+				}
+				else {
+					msgBuilder.append(WordUtils.capitalize(rule.getAggregation()));
+				}
+				msgBuilder.append(" of ");
 			}
 			
-			msgBuilder.append(rule.getReadingField().getDisplayName());
+			msgBuilder.append("'")
+					.append(rule.getReadingField().getDisplayName())
+					.append("' ");
 			
 			NumberOperators operator = (NumberOperators) FieldType.NUMBER.getOperator(rule.getOperator());
 			
-			switch (operator) {
-				case EQUALS:
-					msgBuilder.append(" is ");
-					break;
-				case NOT_EQUALS:
-					msgBuilder.append(" is not ");
-					break;
-				case LESS_THAN:
-				case LESS_THAN_EQUAL:
-					msgBuilder.append(" is beneath ");
-					break;
-				case GREATER_THAN:
-				case GREATER_THAN_EQUAL:
-					msgBuilder.append(" exceeded ");
-					break;
-			}
-			
 			if (rule.getBaselineId() != -1) {
+				switch (operator) {
+					case EQUALS:
+						msgBuilder.append("was along ");
+						updatePercentage(rule.getPercentage(), msgBuilder);
+						break;
+					case NOT_EQUALS:
+						msgBuilder.append("wasn't alone ");
+						updatePercentage(rule.getPercentage(), msgBuilder);
+						break;
+					case LESS_THAN:
+					case LESS_THAN_EQUAL:
+						msgBuilder.append("went ");
+						updatePercentage(rule.getPercentage(), msgBuilder);
+						msgBuilder.append("lower than ");
+						break;
+					case GREATER_THAN:
+					case GREATER_THAN_EQUAL:
+						msgBuilder.append("went ");
+						updatePercentage(rule.getPercentage(), msgBuilder);
+						msgBuilder.append("higher than ");
+						break;
+				}
+				
 				BaseLineContext bl = BaseLineAPI.getBaseLine(rule.getBaselineId());
 				msgBuilder.append("the ");
-				if (rule.getPercentage() != 0) {
-					msgBuilder.append(rule.getPercentage())
-							.append("% mark of ");
-				}
 				msgBuilder.append("base line ")
-							.append("\"")
+							.append("'")
 							.append(bl.getName())
-							.append("\"");
+							.append("'");
 			}
 			else {
+				switch (operator) {
+					case EQUALS:
+						msgBuilder.append("was ");
+						break;
+					case NOT_EQUALS:
+						msgBuilder.append("wasn't ");
+						break;
+					case LESS_THAN:
+					case LESS_THAN_EQUAL:
+						msgBuilder.append("went below ");
+						break;
+					case GREATER_THAN:
+					case GREATER_THAN_EQUAL:
+						msgBuilder.append("exceeded ");
+						break;
+				}
+				
 				msgBuilder.append(rule.getPercentage());
 				if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
 					msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
@@ -313,6 +340,13 @@ public enum ActionType {
 			}
 			
 			return msgBuilder.toString();
+		}
+		
+		private void updatePercentage(long percentage, StringBuilder msgBuilder) {
+			if (percentage != 0) {
+				msgBuilder.append(percentage)
+							.append("% ");
+			}
 		}
 	},
 	PUSH_NOTIFICATION(7) {

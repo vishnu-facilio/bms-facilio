@@ -457,6 +457,20 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getReadingAlarmsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForReadingAlarm());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getNewTaskChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTask());
@@ -1048,6 +1062,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1327,6 +1342,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
@@ -1589,7 +1605,25 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(getAddReadingChain());
 		c.addCommand(new AddCategoryReadingRelCommand());
+		c.addCommand(new GetCategoryResourcesCommand());
 		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addSpaceReadingChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(getAddReadingChain());
+		c.addCommand(new AddSpaceReadingRelCommand());
+		c.addCommand(new InsertLastReadingForNewReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getSpaceReadingsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetSpaceSpecifcReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1768,6 +1802,21 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new DeleteExistingReportBaseLineCommand());
 		c.addCommand(new AddReportBaseLinesCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain addENPIChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(addSpaceReadingChain());
+		c.addCommand(new AddENPICommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAllENPIsChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllENPIsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

@@ -26,6 +26,7 @@ import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
 import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -54,18 +55,24 @@ public class CognitoUtil {
 	private static AmazonCognitoIdentity IDENTITY_CLIENT = null;
 	
 	public static void main(String args[]) {
-		String s = createJWT("id", "auth0", "Hello world", System.currentTimeMillis());
+		String s = createJWT("id", "auth0", "yoge@facilio.com", System.currentTimeMillis(),true);
 		System.out.println("Encoded JWT \n"+s);
 		
-		validateJWT(s,"auth0");
+		//DecodedJWT jwt = validateJWT(s,"auth0");
+		
+		CognitoUser user = verifiyFacilioToken(s);
+		System.out.println("Cognito User "+user);
 	}
-	public  static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+	public  static String createJWT(String id, String issuer, String subject, long ttlMillis,boolean isPortalUser) {
 		 
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
-		    String token = JWT.create().withSubject(subject)
-		        .withIssuer(issuer)
-		        .sign(algorithm);
+		    
+		    JWTCreator.Builder builder = JWT.create().withSubject(subject)
+	        .withIssuer(issuer);
+		    builder = builder.withClaim("portaluser", isPortalUser);
+		    
+		    String token =builder.sign(algorithm);
 		    return token;
 		} catch (UnsupportedEncodingException exception){
 		    //UTF-8 encoding not supported
@@ -75,7 +82,7 @@ public class CognitoUtil {
 		return null;
 	}
 	
-	public static String  validateJWT(String token ,String issuer)
+	public static DecodedJWT  validateJWT(String token ,String issuer)
 	{
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
@@ -85,7 +92,9 @@ public class CognitoUtil {
 
 		    DecodedJWT jwt = verifier.verify(token);
 		    System.out.println("\ndecoded "+jwt.getSubject());
-		    return jwt.getSubject();
+		    System.out.println("\ndecoded "+jwt.getClaims());
+		    
+		    return jwt;
 		} catch (UnsupportedEncodingException exception){
 		    //UTF-8 encoding not supported
 			return null;
@@ -238,12 +247,12 @@ public class CognitoUtil {
 	{
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
-			String decodedtoken = validateJWT(idToken, "auth0");
-			System.out.println("verifiyFacilioToken() : decodedtoken : "+decodedtoken);
+			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
+			System.out.println("verifiyFacilioToken() : decodedtoken : "+decodedjwt);
 			CognitoUser faciliouser = new CognitoUser();
-			faciliouser.setEmail(decodedtoken);
+			faciliouser.setEmail(decodedjwt.getSubject());
 			faciliouser.setFacilioauth(true);
-			// faciliouser.setCognitoId("145c6962-75cc-4908-8a7f-d038571c7dd4");
+			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 			System.out.println("verifiyFacilioToken() : faciliouser  " +faciliouser);
 			return faciliouser;
 		} catch (Exception e) {
@@ -328,7 +337,7 @@ public class CognitoUtil {
 		
 		public String toString()
 		{
-			return "CognitoUser() : userName = "+userName +" ; email = "+ email+" ; faciliouser = "+facilioauth;
+			return "CognitoUser() : userName = "+userName +" ; email = "+ email+" ; faciliouser = "+facilioauth+" ; portaluser = " +portaluser;
 		}
 		private String cognitoId = "";
 		private String userName;
@@ -340,6 +349,15 @@ public class CognitoUtil {
 		private String locale;
 		private String timezone;
 		private JSONObject additionalProps;
+		
+		public boolean isPortaluser() {
+			return portaluser;
+		}
+
+		public void setPortaluser(boolean portaluser) {
+			this.portaluser = portaluser;
+		}
+		private boolean portaluser=false;
 		
 		public boolean isFacilioauth() {
 			return facilioauth;

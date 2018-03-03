@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -111,7 +113,7 @@ public class ViewFactory {
 		views.put("open", getOpenWorkorderRequests().setOrder(order++));
 		views.put("all", getAllWorkRequests().setOrder(order++));
 		views.put("rejected", getRejectedWorkorderRequests().setOrder(order++));
-		viewsMap.put("workorderrequest", views);
+		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -129,12 +131,12 @@ public class ViewFactory {
 		views.put("all", getAllWorkOrders().setOrder(order++));
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
-		viewsMap.put("workorder", views);
+		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("my", getMyTasks().setOrder(order++));
-		viewsMap.put("task",views);
+		viewsMap.put(FacilioConstants.ContextNames.TASK,views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -142,7 +144,7 @@ public class ViewFactory {
 		views.put("hvac", getAssets("HVAC").setOrder(order++));
 		views.put("active", getAssetsByState("Active").setOrder(order++));
 		views.put("retired", getAssetsByState("Retired").setOrder(order++));
-		viewsMap.put("asset", views);
+		viewsMap.put(FacilioConstants.ContextNames.ASSET, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -166,12 +168,32 @@ public class ViewFactory {
 		views.put("myalarms", getMyAlarms().setOrder(order++));
 		views.put("unassigned", getUnassignedAlarms().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
-		viewsMap.put("alarm", views);
+		viewsMap.put(FacilioConstants.ContextNames.ALARM, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("report", getReportView().setOrder(order++));
-		viewsMap.put("energydata", views);
+		viewsMap.put(FacilioConstants.ContextNames.ENERGY_DATA_READING, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		FacilioView preventiveView = getAllPreventiveWorkOrders().setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getStatusPreventiveWorkOrders("active", "Active", true).setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getTypePreventiveWorkOrders("preventive", "Preventive", "Preventive").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getTypePreventiveWorkOrders("corrective", "Corrective", "Corrective").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getTypePreventiveWorkOrders("rounds", "Rounds", "Rounds").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getTypePreventiveWorkOrders("breakdown", "Breakdown", "Breakdown").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getTypePreventiveWorkOrders("compliance", "Compliance", "Compliance").setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		preventiveView = getStatusPreventiveWorkOrders("inactive", "Inactive", false).setOrder(order++);
+		views.put(preventiveView.getName(),preventiveView);
+		viewsMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE,views);
 		
 		return viewsMap;
 	}
@@ -994,6 +1016,67 @@ public class ViewFactory {
 		return allView;
 	}
 	
+	private static FacilioView getAllPreventiveWorkOrders() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		
+		return allView;
+	}
+	
+	private static FacilioView getTypePreventiveWorkOrders(String name, String displayName, String type) {
+		
+		List<FacilioField> templateFields = FieldFactory.getWorkOrderTemplateFields();
+		Map<String,FacilioField> fieldProps = FieldFactory.getAsMap(templateFields);
+		LookupField typeIdField = (LookupField) fieldProps.get("typeId");
+		
+		FacilioModule typeModule = ModuleFactory.getTicketTypeModule();
+		FacilioField nameField = FieldFactory.getField("name", "NAME", typeModule, FieldType.STRING);
+		Condition nameCondition = CriteriaAPI.getCondition(nameField, type,StringOperators.IS);
+		Criteria crit = new Criteria();
+		crit.addAndCondition(nameCondition);
+		
+		Condition typeCondition = CriteriaAPI.getCondition(typeIdField, crit,LookupOperator.LOOKUP);
+		Condition statusCondition = getPreventiveStatusCondition(true);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(typeCondition);
+		criteria.addAndCondition(statusCondition);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		
+		return view;
+	}
+	
+	private static FacilioView getStatusPreventiveWorkOrders(String name, String displayName, boolean status) {
+		
+		Condition statusCondition = getPreventiveStatusCondition(status);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(statusCondition);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		
+		return view;
+	}
+	
+	private static Condition getPreventiveStatusCondition(boolean status) {
+		List<FacilioField> preventiveFields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String,FacilioField> fieldProps = FieldFactory.getAsMap(preventiveFields);
+		FacilioField statusField = (FacilioField) fieldProps.get("status");
+		
+		Condition statusCondition = CriteriaAPI.getCondition(statusField, String.valueOf(status),BooleanOperators.IS);
+		
+		return statusCondition;
+	}
+	
 	// View for reports. Not shown in ui list
 	private static FacilioView getReportView() {
 		
@@ -1003,4 +1086,5 @@ public class ViewFactory {
 		
 		return reportView;
 	}
+
 }

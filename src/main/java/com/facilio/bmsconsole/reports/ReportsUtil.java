@@ -36,7 +36,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -605,13 +604,13 @@ public class ReportsUtil
 	// Temporary
 	public static String getReportClientUrl(String moduleName, Long reportId) {
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals("workorder")) {
+		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
 		}
-		else if (moduleName.equals("alarm")) {
+		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
 			url.append("fa");
 		}
-		else if (moduleName.equals("energydata")) {
+		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 			url.append("em");
 		}
 		url.append("/reports/view/").append(reportId);

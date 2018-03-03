@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -32,6 +33,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
@@ -296,6 +298,7 @@ public class PreventiveMaintenanceAPI {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
@@ -315,39 +318,78 @@ public class PreventiveMaintenanceAPI {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		if(props != null && !props.isEmpty()) {
+		/*if(props != null && !props.isEmpty()) {
 			List<PreventiveMaintenance> pms = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				pms.add(FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class));
+				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
+				pm.setWoTemplate(FieldUtil.getAsBeanFromMap(prop, WorkorderTemplate.class));
+				pms.add(pm);
 			}
 			return pms;
 		}
-		return null;
+		return null;*/
+		
+		return getPMFromProps(props, false);
+
 	}
 	
-	public static List<PreventiveMaintenance> getPMs(List<Long> ids) throws Exception {
+	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
+		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
+														.innerJoin(woTemplateModule.getTableName())
+														.on(module.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID")
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 														;
 		
 		if(ids != null && !ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
 		
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		List<PreventiveMaintenance> pms = new ArrayList<>();
-		if(props != null && !props.isEmpty()) {
-			for (Map<String, Object> prop : props) {
-				pms.add(FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class));
-			}
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
 		}
-		return pms;
+		
+		List<Map<String, Object>> pmProps = selectBuilder.get();
+		
+		return getPMFromProps(pmProps, true);
+	}
+	
+	private static List<PreventiveMaintenance> getPMFromProps(List<Map<String, Object>> pmProps, boolean setTriggers) throws Exception {
+		List<Long> resourceIds = new ArrayList<>();
+		
+		if(pmProps != null && !pmProps.isEmpty()) {
+			List<PreventiveMaintenance> pms = new ArrayList<>();
+			
+			for(Map<String, Object> prop : pmProps) {
+				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
+				pm.setWoTemplate(FieldUtil.getAsBeanFromMap(prop, WorkorderTemplate.class));
+				pms.add(pm);
+			}
+			
+			Map<Long, List<PMTriggerContext>> pmTriggers = null;
+			if (setTriggers) {
+				pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(pms);
+			}
+			
+			for(PreventiveMaintenance pm : pms) {
+				if (setTriggers) {
+					pm.setTriggers(pmTriggers.get(pm.getId()));
+				}
+				resourceIds.add(pm.getWoTemplate().getResourceId());
+			}
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			for(PreventiveMaintenance pm : pms) {
+				pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
+			}
+			return pms;
+		}
+		return null;
 	}
 	
 	public static void setPMInActive(long pmId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {

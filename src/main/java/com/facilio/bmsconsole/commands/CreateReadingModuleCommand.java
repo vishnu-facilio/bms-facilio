@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -18,6 +20,16 @@ public class CreateReadingModuleCommand implements Command {
 		// TODO Auto-generated method stub
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
+		
+		if (fields == null) {
+			FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
+			if (field != null) {
+				fields = new ArrayList<>();
+				fields.add(field);
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+			}
+		}
+		
 		if(readingName != null && !readingName.isEmpty() && fields != null && !fields.isEmpty()) {
 			FacilioModule module = new FacilioModule();
 			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));

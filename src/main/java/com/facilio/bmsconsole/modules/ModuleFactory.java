@@ -369,6 +369,22 @@ public class ModuleFactory {
 		return ticketCategoryModule;
 	}
 	
+	public static FacilioModule getTicketTypeModule() {
+		FacilioModule ticketTypeModule = new FacilioModule();
+		ticketTypeModule.setName(FacilioConstants.ContextNames.TICKET_TYPE);
+		ticketTypeModule.setDisplayName("Ticket Type");
+		ticketTypeModule.setTableName("TicketType");
+		return ticketTypeModule;
+	}
+	
+	public static FacilioModule getTicketPriorityModule() {
+		FacilioModule ticketTypeModule = new FacilioModule();
+		ticketTypeModule.setName(FacilioConstants.ContextNames.TICKET_PRIORITY);
+		ticketTypeModule.setDisplayName("Ticket Priority");
+		ticketTypeModule.setTableName("TicketPriority");
+		return ticketTypeModule;
+	}
+	
 	public static FacilioModule getTicketsModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
 		ticketStatusModule.setName(FacilioConstants.ContextNames.TICKET);
@@ -720,6 +736,11 @@ public class ModuleFactory {
 		alarmentity.setTableName("Report_Entity");
 		return alarmentity;
 	}
+	public static FacilioModule getWorkflowModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Workflow");
+		return dashboardWigetModule;
+	}
 	public static FacilioModule getExpressionModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Expression");
@@ -794,5 +815,21 @@ public class ModuleFactory {
 		taskTemplate.setDisplayName("Task Template");
 		taskTemplate.setTableName("Task_Template");
 		return taskTemplate;
+	}
+	
+	public static FacilioModule getBasespaceReadingsModule() {
+		FacilioModule baseSpaceReadings = new FacilioModule();
+		baseSpaceReadings.setName("basespacereadings");
+		baseSpaceReadings.setDisplayName("Basespace Readings");
+		baseSpaceReadings.setTableName("BaseSpace_Readings");
+		return baseSpaceReadings;
+	}
+	
+	public static FacilioModule getENPIModule() {
+		FacilioModule enpi = new FacilioModule();
+		enpi.setName("energyperformanceindicator");
+		enpi.setDisplayName("Energy Performance Indicators");
+		enpi.setTableName("EnergyPerformanceIndicator");
+		return enpi;
 	}
 }

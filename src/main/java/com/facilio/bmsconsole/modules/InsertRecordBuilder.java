@@ -179,6 +179,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return moduleProps;
 	}
 	
+	@Override
 	public long insert(E bean) throws Exception {
 		addRecord(bean);
 		save();
