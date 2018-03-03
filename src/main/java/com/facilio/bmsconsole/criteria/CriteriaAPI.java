@@ -170,4 +170,12 @@ public class CriteriaAPI {
 		condition.setValue(valueList);
 		return condition;
 	}
+	
+	public static Condition getCondition (FacilioField field,Criteria value,Operator operator) {
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(operator);
+		condition.setCriteriaValue(value);
+		return condition;
+	}
 }

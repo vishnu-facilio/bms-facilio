@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,6 +54,9 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(moduleName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE)) {
+			moduleName = gePreventiveMaintenanceModule(fieldName);
+		}
 		FacilioField field = modBean.getField(fieldName, moduleName);
 		JSONArray value = (JSONArray) fieldJson.get("value");
 		int operatorId;
@@ -101,6 +105,14 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 			}
 			conditionList.add(condition);
 		}
+	}
+	
+	private String gePreventiveMaintenanceModule(String fieldName) {
+		List<String> templateFields = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId");
+		if (templateFields.contains(fieldName)) {
+			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
+		}
+		return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
 	}
 
 }

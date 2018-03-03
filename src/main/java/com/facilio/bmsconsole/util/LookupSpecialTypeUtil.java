@@ -31,6 +31,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
+				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				;
 	}
 	
@@ -260,6 +261,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return ModuleFactory.getPreventiveMaintenancetModule();
 		}
+		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
+			return ModuleFactory.getWorkOrderTemplateModule();
+		}
 		return null;
 	}
 	
@@ -280,6 +284,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return FieldFactory.getPreventiveMaintenanceFields();
+		}
+		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
+			return FieldFactory.getWorkOrderTemplateFields();
 		}
 		return null;
 	}

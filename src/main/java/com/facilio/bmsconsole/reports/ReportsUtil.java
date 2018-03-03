@@ -604,13 +604,13 @@ public class ReportsUtil
 	// Temporary
 	public static String getReportClientUrl(String moduleName, Long reportId) {
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals("workorder")) {
+		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
 		}
-		else if (moduleName.equals("alarm")) {
+		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
 			url.append("fa");
 		}
-		else if (moduleName.equals("energydata")) {
+		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 			url.append("em");
 		}
 		url.append("/reports/view/").append(reportId);

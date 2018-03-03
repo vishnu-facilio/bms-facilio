@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance {
@@ -164,6 +165,14 @@ public class PreventiveMaintenance {
 	}
 	public void setTypeId(long typeId) {
 		this.typeId = typeId;
+	}
+	
+	WorkorderTemplate woTemplate; 
+	public WorkorderTemplate getWoTemplate() {
+		return woTemplate;
+	}
+	public void setWoTemplate(WorkorderTemplate woTemplate) {
+		this.woTemplate = woTemplate;
 	}
 
 	private List<WorkOrderContext> workorders;

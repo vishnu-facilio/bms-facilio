@@ -39,6 +39,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								reading.setId(completeRecord.getReadingDataId());
 								reading.setParentId(completeRecord.getResource().getId());
 								reading.addReading(field.getName(), task.getInputValue());
+								reading.setTtime(task.getInputTime());
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 								context.put(FacilioConstants.ContextNames.READING, reading);
 								break;

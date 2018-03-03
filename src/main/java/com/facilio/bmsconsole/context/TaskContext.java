@@ -104,6 +104,14 @@ public class TaskContext extends TicketContext {
 		this.inputValue = inputValue;
 	}
 	
+	private long inputTime = -1;
+	public long getInputTime() {
+		return inputTime;
+	}
+	public void setInputTime(long inputTime) {
+		this.inputTime = inputTime;
+	}
+
 	private List<String> inputValues;
 	public List<String> getInputValues() {
 		return inputValues;

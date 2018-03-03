@@ -1561,24 +1561,6 @@
 				<param name="root">preventivemaintenance</param>
 			</result>
 		</action>
-
-		<action name="getAllPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getAllPreventiveMaintenance">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="root">pms</param>
-			</result>
-		</action>
-
-		<action name="getActivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getActivePreventiveMaintenance">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="root">pms</param>
-			</result>
-		</action>
 		
 		<action name="getUpcomingPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getUpcomingPreventiveMaintenance">
@@ -1587,15 +1569,6 @@
 			<result name="success" type="json">
 				<param name="excludeProperties">pms\[\d+\].left,pms\[\d+\].right</param>
 				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*</param>
-			</result>
-		</action>
-
-		<action name="getInactivePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getInactivePreventiveMaintenance">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="root">pms</param>
 			</result>
 		</action>
 
@@ -1709,7 +1682,7 @@
 		extends="home">
 
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getPlannedMaintenance">
+			method="plannedMaintenanceList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->

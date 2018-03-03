@@ -1342,6 +1342,7 @@ public class FacilioChainFactory {
 	
 	public static Chain getGetPreventiveMaintenanceListChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		addCleanUpCommand(c);
