@@ -522,6 +522,16 @@ public class DashboardAction extends ActionSupport {
 		return getData(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 	}
 	
+	private String[] meterIds;
+	
+	public void setMeterIds(String[] meterIds) {
+		this.meterIds = meterIds;
+	}
+	
+	public String[] getMeterIds() {
+		return this.meterIds;
+	}
+	
 	private String getData(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
 //		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.REPORT, report);
@@ -1193,6 +1203,10 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 			}
+		}
+		
+		if (energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim())) {
+			this.meterIds = energyMeterValue.split(",");
 		}
 		
 		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport()) {
