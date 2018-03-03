@@ -729,9 +729,9 @@ public class ModuleFactory {
 		alarmentity.setTableName("Alarm_Entity");
 		return alarmentity;
 	}
-	public static FacilioModule getExpressionModule() {
+	public static FacilioModule getWorkflowModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Expression");
+		dashboardWigetModule.setTableName("Workflow");
 		return dashboardWigetModule;
 	}
 	

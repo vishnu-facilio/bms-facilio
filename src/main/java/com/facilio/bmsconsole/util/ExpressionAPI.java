@@ -19,8 +19,8 @@ public class ExpressionAPI {
 	public static Long addExpression(ExpressionContext expressionContext) throws Exception {
 		expressionContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getExpressionModule().getTableName())
-				.fields(FieldFactory.getExpressionFields());
+				.table(ModuleFactory.getWorkflowModule().getTableName())
+				.fields(FieldFactory.getWorkflowFields());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(expressionContext);
 		insertBuilder.addRecord(props);
@@ -31,12 +31,12 @@ public class ExpressionAPI {
 	}
 	
 	public static ExpressionContext getExpressionContext(Long expressionId) throws Exception  {
-		FacilioModule module = ModuleFactory.getExpressionModule(); 
+		FacilioModule module = ModuleFactory.getWorkflowModule(); 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getExpressionFields())
+				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere(ModuleFactory.getExpressionModule().getTableName()+".ID = ?", expressionId);
+				.andCustomWhere(ModuleFactory.getWorkflowModule().getTableName()+".ID = ?", expressionId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

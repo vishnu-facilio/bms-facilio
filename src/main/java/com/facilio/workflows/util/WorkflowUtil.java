@@ -27,12 +27,20 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.FacilioExpressionParser;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.ExpressionAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -88,9 +96,32 @@ public class WorkflowUtil {
 		
 		workflowString = validateAndFillParameters(workflowString,paramMap);
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
-		System.out.println(getXmlStringFromWorkflow(workflowContext));
 		return workflowContext.getResult();
 	}
+	
+	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
+		FacilioModule module = ModuleFactory.getWorkflowModule(); 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(ModuleFactory.getWorkflowModule().getTableName()+".ID = ?", workflowId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		WorkflowContext workflowContext = null;
+		if (props != null && !props.isEmpty()) {
+			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
+		}
+		return workflowContext;
+	}
+	
+	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
+		
+		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
+		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap);
+	}
+
 	
 	public static String validateAndFillParameters(String workflowString,Map<String,Object> paramMap) throws Exception {
 		

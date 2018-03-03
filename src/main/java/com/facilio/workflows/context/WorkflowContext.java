@@ -11,7 +11,37 @@ import com.udojava.evalex.Expression;
 
 public class WorkflowContext {
 
+	Long id;
+	Long orgId;
+	String workflowString;
 	List<ParameterContext> parameters;
+	List<ExpressionContext> expressions;
+	String resultEvaluator;
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+	public String getWorkflowString() {
+		return workflowString;
+	}
+
+	public void setWorkflowString(String workflowString) {
+		this.workflowString = workflowString;
+	}
+
 	public List<ParameterContext> getParameters() {
 		return parameters;
 	}
@@ -26,10 +56,6 @@ public class WorkflowContext {
 		}
 		this.parameters.add(parameter);
 	}
-
-	List<ExpressionContext> expressions;
-	
-	String resultEvaluator;
 
 	public List<ExpressionContext> getExpressions() {
 		return expressions;
