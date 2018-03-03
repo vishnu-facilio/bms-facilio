@@ -21,7 +21,7 @@ public class ExpressionContext {
 	Criteria criteria;
 	FacilioModule module;
 	FacilioField facilioField;
-	Object value;
+	Object constant;
 	Object exprResult;
 	
 	private static final String RESULT_STRING = "result";
@@ -35,17 +35,17 @@ public class ExpressionContext {
 	}
 
 	public boolean getIsOnlyValueExpression() {
-		if(value != null) {
+		if(constant != null) {
 			return true;
 		}
 		return false;
 	}
 	
-	public Object getValue() {
-		return value;
+	public Object getConstant() {
+		return constant;
 	}
-	public void setValue(Object value) {
-		this.value = value;
+	public void setConstant(Object constant) {
+		this.constant = constant;
 	}
 	public String getName() {
 		return name;
@@ -103,8 +103,8 @@ public class ExpressionContext {
 	
 	public Object getResult() throws Exception {
 		
-		if(getValue() != null) {
-			return getValue();
+		if(getConstant() != null) {
+			return getConstant();
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -170,7 +170,7 @@ public class ExpressionContext {
 		result = result +"module -- "+getModuleName() +"\n";
 		result = result +"field -- "+getFieldName() +"\n";
 		result = result +"aggregate -- "+getAggregateString() +"\n";
-		result = result +"value -- "+getValue() +"\n";
+		result = result +"constant -- "+getConstant() +"\n";
 		return result;
 	}
 }

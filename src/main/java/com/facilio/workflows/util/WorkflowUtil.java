@@ -2,7 +2,6 @@ package com.facilio.workflows.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +11,17 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
@@ -25,7 +30,6 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
@@ -64,12 +68,12 @@ public class WorkflowUtil {
 	public static List<String> getArithmeticOpperator() {
 		return ARITHMETIC_OPPERATORS;
 	}
-	
+	static final String WORKFLOW_STRING =  "workflow";
 	static final String PARAMETER_STRING =  "parameter";
 	static final String TYPE_STRING =  "type";
 	static final String EXPRESSION_STRING =  "expression";
 	static final String NAME_STRING =  "name";
-	static final String VALUE_STRING =  "value";
+	static final String CONSTANT_STRING =  "constant";
 	static final String MODULE_STRING =  "module";
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
@@ -83,8 +87,9 @@ public class WorkflowUtil {
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		
 		workflowString = validateAndFillParameters(workflowString,paramMap);
-		
-		return parseStringToWorkflowObject(workflowString).getResult();
+		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		System.out.println(getXmlStringFromWorkflow(workflowContext));
+		return workflowContext.getResult();
 	}
 	
 	public static String validateAndFillParameters(String workflowString,Map<String,Object> paramMap) throws Exception {
@@ -149,6 +154,83 @@ public class WorkflowUtil {
 		return false;
 	}
 	
+	public static String getXmlStringFromWorkflow(WorkflowContext workflowContext) throws Exception {
+		 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		 Document doc = dBuilder.newDocument();
+		 
+		 Element workflowElement = doc.createElement(WORKFLOW_STRING);
+		 
+		 if(workflowContext.getParameters() != null) {
+			 
+			 for(ParameterContext parameterContext : workflowContext.getParameters()) {
+				 Element parameterElement = doc.createElement(PARAMETER_STRING);
+				 parameterElement.setAttribute(NAME_STRING, parameterContext.getName());
+				 parameterElement.setAttribute(TYPE_STRING, parameterContext.getTypeString());
+				 workflowElement.appendChild(parameterElement);
+			 }
+		 }
+
+		 if(workflowContext.getExpressions() != null) {
+			 
+			 for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
+				 
+				 Element expressionElement = doc.createElement(EXPRESSION_STRING);
+				 expressionElement.setAttribute(NAME_STRING, expressionContext.getName());
+				 
+				 if(expressionContext.getConstant() != null) {
+					 Element valueElement = doc.createElement(CONSTANT_STRING);
+					 valueElement.setTextContent(expressionContext.getConstant().toString());
+					 expressionElement.appendChild(valueElement);
+				 }
+				 else {
+					 Element moduleElement = doc.createElement(MODULE_STRING);
+					 moduleElement.setAttribute(NAME_STRING, expressionContext.getModuleName());
+					 expressionElement.appendChild(moduleElement);
+					 
+					 
+					 Element criteriaElement = doc.createElement(CRITERIA_STRING);
+					 criteriaElement.setAttribute(PATTERN_STRING, expressionContext.getCriteria().getPattern());
+					 
+					 Map<Integer, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
+					 for(Integer key:conditionMap.keySet()) {
+						 
+						 Condition condition = conditionMap.get(key);
+						 Element conditionElement = doc.createElement(CONDITION_STRING);
+						 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
+						 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 criteriaElement.appendChild(conditionElement);
+					 }
+					 expressionElement.appendChild(criteriaElement);
+					 
+					 if(expressionContext.getFieldName() != null) {
+						 Element fieldElement = doc.createElement(FIELD_STRING);
+						 fieldElement.setAttribute(NAME_STRING, expressionContext.getFieldName());
+						 if(expressionContext.getAggregateString() != null) {
+							 fieldElement.setAttribute(AGGREGATE_STRING, expressionContext.getAggregateString());
+						 }
+						 expressionElement.appendChild(fieldElement);
+					 }
+				 }
+				 workflowElement.appendChild(expressionElement);
+			 }
+			 
+			 if(workflowContext.getResultEvaluator() != null) {
+				 Element resultElement = doc.createElement(RESULT_STRING);
+				 resultElement.setTextContent(workflowContext.getResultEvaluator());
+				 workflowElement.appendChild(resultElement);
+			 }
+		 }
+		 
+		 doc.appendChild(workflowElement);
+		 
+		 DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+		 LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		 
+		 String result = lsSerializer.writeToString(doc);
+		 System.out.println("result -- "+result);
+		 return result;
+	}
 	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
 		
 		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-8"));
@@ -221,14 +303,14 @@ public class WorkflowUtil {
                 
                 expressionContext.setName(expressionName);
                 
-                NodeList valueNodes = expression.getElementsByTagName(VALUE_STRING);
+                NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
                 
                 if(valueNodes.getLength() > 0 ) {
                 	Node valueNode =  valueNodes.item(0);
                 	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
                 		Element value = (Element) valueNode;
                 		String valueString = value.getTextContent();
-                		expressionContext.setValue(valueString);
+                		expressionContext.setConstant(valueString);
                 	}
                 }
                 else {
