@@ -70,8 +70,8 @@ public class EnergyPerformanceIndicatiorAPI {
 	
 	public static ReadingContext calculateENPI(EnergyPerformanceIndicatorContext enpi, long startTime, long endTime) throws Exception {
 		Map<String, Object> params = new HashMap<>();
-		params.put("startTime", startTime);
-		params.put("endTime", endTime);
+		params.put("startTime", startTime * 1000);
+		params.put("endTime", endTime * 1000);
 		
 		double resultVal = (double) WorkflowUtil.getWorkflowExpressionResult(enpi.getWorkflow().getWorkflowString(), params);
 		
