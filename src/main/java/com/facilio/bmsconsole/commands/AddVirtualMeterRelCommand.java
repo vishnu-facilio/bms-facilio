@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 
 public class AddVirtualMeterRelCommand implements Command {
 	
@@ -44,6 +45,7 @@ public class AddVirtualMeterRelCommand implements Command {
 				insertBuilder.addRecord(relProp);
 			}
 			insertBuilder.save();
+			FacilioTimer.scheduleOneTimeJob(meter.getId(), "HistoricalVMCalculation", 30, "facilio");
 		}
 		return false;
 	}

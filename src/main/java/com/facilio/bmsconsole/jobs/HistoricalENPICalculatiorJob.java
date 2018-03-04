@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 
@@ -14,9 +16,10 @@ import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.wms.endpoints.SessionManager;
 
 public class HistoricalENPICalculatiorJob extends FacilioJob {
-
+	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
@@ -46,7 +49,7 @@ public class HistoricalENPICalculatiorJob extends FacilioJob {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
