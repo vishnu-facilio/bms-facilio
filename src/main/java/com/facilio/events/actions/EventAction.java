@@ -147,6 +147,26 @@ public class EventAction extends ActionSupport {
 		this.eventRule = eventRule;
 	}
 	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public String fetchEventRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		
+		Chain getEventRuleChain = EventConstants.EventChainFactory.getEventRuleChain();
+		getEventRuleChain.execute(context);
+		
+		eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
+		
+		return SUCCESS;
+	}
+	
 	public String addEventRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

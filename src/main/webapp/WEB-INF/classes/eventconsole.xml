@@ -94,6 +94,14 @@
 			</result>
 		</action>
 		
+		<action name="geteventrule" class="com.facilio.events.actions.EventAction" method="fetchEventRule">
+			<param name="moduleName">alarm</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="root">eventRule</param>
+			</result>
+		</action>
+		
 		<action name="nodes" class="com.facilio.events.actions.EventAction" method="getAllNodes">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>

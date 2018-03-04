@@ -4,6 +4,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
@@ -20,10 +22,11 @@ public class UpdateEventRulesCommand implements Command {
 			long orgId =  AccountUtil.getCurrentOrg().getOrgId();
 			EventRulesAPI.updateEventRuleChildIds(eventRule, orgId);
 			
-			
+			FacilioModule module = EventConstants.EventModuleFactory.getEventRuleModule();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-															.table(EventConstants.EventModuleFactory.getEventRuleModule().getTableName())
+															.table(module.getTableName())
 															.fields(EventConstants.EventFieldFactory.getEventRuleFields())
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCustomWhere("EVENT_RULE_ID = ?", eventRule.getEventRuleId());
 			
 			updateBuilder.update(FieldUtil.getAsProperties(eventRule));

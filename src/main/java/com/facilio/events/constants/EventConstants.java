@@ -82,6 +82,13 @@ public class EventConstants {
 			return c;
 		}
 		
+		public static Chain getEventRuleChain() {
+			Chain c = new ChainBase();
+			c.addCommand(new GetEventRuleCommand());
+			addCleanUpCommand(c);
+			return c;
+		}
+		
 		public static Chain addEventRuleChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new AddEventRuleCommand());

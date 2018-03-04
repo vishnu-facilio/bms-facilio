@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ExpressionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -123,5 +127,44 @@ public class EventRulesAPI {
 														.andCustomWhere("ORGID = ?", orgId);
 		
 		return FieldUtil.getAsBeanFromMap(selectBuilder.get().get(0), EventProperty.class);
+	}
+
+	public static EventRule getCompleteEventRule(long id) throws Exception {
+		// TODO Auto-generated method stub
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		EventRule eventRule = getEventRule(orgId, id);
+		if (eventRule != null) {
+			if (eventRule.getBaseCriteriaId() != -1) {
+				eventRule.setBaseCriteria(CriteriaAPI.getCriteria(orgId, eventRule.getBaseCriteriaId()));
+			}
+			
+			if (eventRule.getTransformCriteriaId() != -1) {
+				eventRule.setTransformCriteria(CriteriaAPI.getCriteria(orgId, eventRule.getTransformCriteriaId()));
+				
+				if (eventRule.getTransformAlertTemplateId() != -1) {
+					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, eventRule.getTransformAlertTemplateId());
+					JSONParser parser = new JSONParser();
+					eventRule.setTransformTemplate((JSONObject) parser.parse(template.getContent()));
+				}
+			}
+			
+			if (eventRule.getThresholdCriteriaId() != -1) {
+				eventRule.setThresholdCriteria(CriteriaAPI.getCriteria(orgId, eventRule.getThresholdCriteriaId()));
+			}
+			
+			if (eventRule.getCoRelWorkflowId() != -1) {
+				WorkflowContext workFlow = WorkflowUtil.getWorkflowContext(eventRule.getCoRelWorkflowId());
+				eventRule.setCoRelWorkflowXml(workFlow.getWorkflowString());
+				
+				if(eventRule.getCoRelTransformTemplateId() != -1) {
+					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, eventRule.getCoRelTransformTemplateId());
+					JSONParser parser = new JSONParser();
+					eventRule.setCoRelTransformTemplate((JSONObject) parser.parse(template.getContent()));
+				}
+			}
+			
+			return eventRule;
+		}
+		return null;
 	}
 }
