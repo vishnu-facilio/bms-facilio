@@ -164,7 +164,7 @@ public class WorkflowUtil {
 			if(paramMap == null || paramMap.isEmpty()) {
 				throw new Exception("No paramters match found");
 			}
-			if(paramterContexts.size() != paramMap.size()) {
+			if(paramterContexts.size() > paramMap.size()) {
 				throw new Exception("No. of arguments mismatched");
 			}
 			for(ParameterContext parameterContext:paramterContexts) {
@@ -422,7 +422,15 @@ public class WorkflowUtil {
                     			Matcher matcher = condtionStringpattern.matcher(conditionString);
             					while (matcher.find()) {
             						String fieldName = matcher.group(2);
-            						FacilioField field = modBean.getField(fieldName, expressionContext.getModuleName());
+            						FacilioField field = null;
+            						if (fieldName.equals("id")) {
+            							FacilioModule module = modBean.getModule(expressionContext.getModuleName());
+            							field = FieldFactory.getIdField(module);
+            						}
+            						else {
+            							field = modBean.getField(fieldName, expressionContext.getModuleName());
+            						}
+            						
             						Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
             						String conditionValue = matcher.group(6);
             						
