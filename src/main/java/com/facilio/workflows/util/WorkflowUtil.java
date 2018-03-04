@@ -103,7 +103,6 @@ public class WorkflowUtil {
 		return workflowContext.executeWorkflow();
 	}
 	
-	public static Long AddWorkflow(String workflowString) throws Exception {
 	public static Long addWorkflow(String workflowString) throws Exception {
 		WorkflowContext workflowContext = new WorkflowContext();
 		workflowContext.setWorkflowString(workflowString);
