@@ -1623,6 +1623,7 @@ public class FacilioChainFactory {
 	public static Chain getSpaceReadingsChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new GetSpaceSpecifcReadingsCommand());
+		c.addCommand(new GetCategoryReadingsCommand());
 		c.addCommand(new GetReadingFieldsCommand());
 		addCleanUpCommand(c);
 		return c;
