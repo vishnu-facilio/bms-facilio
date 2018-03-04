@@ -30,7 +30,7 @@
   <filter-class>com.facilio.filters.FacilioCorsFilter</filter-class>
   <init-param>
     <param-name>cors.allowed.origins</param-name>
-    <param-value>http://localhost:9090,https://facilio.ae,https://fazilio.com,https://192.168.0.93:9090,http://192.168.0.93:9090,https://facilio.com,https://facilio.in,https://facilstack.com</param-value>
+    <param-value>http://localhost:9090,https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com</param-value>
   </init-param>
   <init-param>
     <param-name>cors.allowed.methods</param-name>
