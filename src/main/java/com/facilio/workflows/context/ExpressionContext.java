@@ -14,6 +14,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ExpressionContext {
 	
+	String expressionString;
 	String name;
 	String moduleName;
 	String fieldName;
@@ -25,6 +26,14 @@ public class ExpressionContext {
 	Object exprResult;
 	
 	private static final String RESULT_STRING = "result";
+	
+	public String getExpressionString() {
+		return expressionString;
+	}
+
+	public void setExpressionString(String expressionString) {
+		this.expressionString = expressionString;
+	}
 	
 	public Object getExprResult() {
 		return exprResult;
@@ -44,7 +53,7 @@ public class ExpressionContext {
 	public Object getConstant() {
 		return constant;
 	}
-	public void setConstant(Object constant) {
+	public void setConstant(String constant) {
 		this.constant = constant;
 	}
 	public String getName() {

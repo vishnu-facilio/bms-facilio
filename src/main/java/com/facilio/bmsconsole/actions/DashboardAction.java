@@ -72,6 +72,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -277,6 +279,21 @@ public class DashboardAction extends ActionSupport {
 	}
 	private ReportThreshold reportThreshold;
 	
+	
+	WorkflowContext workflowContext;
+	
+	public WorkflowContext getWorkflowContext() {
+		return workflowContext;
+	}
+	public void setWorkflowContext(WorkflowContext workflowContext) {
+		this.workflowContext = workflowContext;
+	}
+	
+	public String addWorkflow() throws Exception {
+		
+		WorkflowUtil.addWorkflow(workflowContext);
+		return SUCCESS;
+	}
 	public String addThreshold() throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
