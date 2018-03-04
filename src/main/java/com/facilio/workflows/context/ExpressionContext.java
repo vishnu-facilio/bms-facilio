@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.FacilioExpressionParser.ExpressionAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -140,6 +143,18 @@ public class ExpressionContext {
 				select = expAggregateOpp.getSelectField(select);
 				if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
 					selectBuilder.limit(1);
+				}
+				else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
+					String parentIdString = null;
+					Map<Integer, Condition> conditions = criteria.getConditions();
+					for(Integer key:conditions.keySet()) {
+						Condition condition = conditions.get(key);
+						if(condition.getColumnName().contains("PARENT_METER_ID")) {
+							parentIdString = condition.getValue();
+						}
+					}
+					exprResult = ReadingsAPI.getLastReadingValue(AccountUtil.getCurrentOrg().getId(), Long.parseLong(parentIdString), select);
+					return exprResult;
 				}
 			}
 			selectFields.add(select);
