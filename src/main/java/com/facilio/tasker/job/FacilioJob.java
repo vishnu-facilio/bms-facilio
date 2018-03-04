@@ -48,8 +48,11 @@ public abstract class FacilioJob implements Runnable {
 			else {
 				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 			}
+			
+			executor.removeJob(jc);
 		}
 		catch(Exception e) {
+			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
 			e.printStackTrace();
 			reschedule();

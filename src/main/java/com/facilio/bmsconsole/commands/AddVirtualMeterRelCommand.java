@@ -45,7 +45,7 @@ public class AddVirtualMeterRelCommand implements Command {
 				insertBuilder.addRecord(relProp);
 			}
 			insertBuilder.save();
-			FacilioTimer.scheduleOneTimeJob(meter.getId(), "HistoricalVMCalculation", 30, "facilio");
+			FacilioTimer.scheduleOneTimeJob(meter.getId(), "HistoricalVMCalculation", 30, "priority");
 		}
 		return false;
 	}

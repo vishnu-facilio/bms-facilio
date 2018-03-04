@@ -1,5 +1,7 @@
 package com.facilio.tasker.executor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +20,7 @@ public class Executor implements Runnable {
 	private String name = null;
 	private int bufferPeriod;
 	private int maxRetry = MAX_RETRY;
+	private List<String> currentJobs = Collections.synchronizedList(new ArrayList<>());
 	
 	public Executor(String name, int noOfThreads, int bufferPeriod) {
 		// TODO Auto-generated constructor stub
@@ -51,7 +54,11 @@ public class Executor implements Runnable {
 				
 				for(JobContext jc : jobs) {
 					try {
-						scheduleJob(jc);
+						String uniqueJobId = jc.getJobId()+"_"+jc.getJobName();
+						if (!currentJobs.contains(uniqueJobId)) {
+							scheduleJob(jc);
+							currentJobs.add(uniqueJobId);
+						}
 					}
 					catch(Exception e) {
 						System.err.println("Unable to schedule job : "+jc.getJobName());
@@ -79,6 +86,10 @@ public class Executor implements Runnable {
 		else {
 			System.err.println(String.format("No such Job with jobname : %s", jc.getJobName()));
 		}
+	}
+	
+	public void removeJob(JobContext jc) {
+		currentJobs.remove(jc.getJobId()+"_"+jc.getJobName());
 	}
 	
 	public void schedule(FacilioJob job, long delay) {

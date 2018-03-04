@@ -39,7 +39,7 @@ public class DeviceAPI
 {
 	private static Logger logger = Logger.getLogger(DeviceAPI.class.getName());
 	
-	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -30;
+	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -90;
 
 	public static List<ControllerSettingsContext> getAllControllers() throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
