@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.tasker.executor.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -56,6 +57,7 @@ public class EnergyPerformanceIndicatorContext {
 	}
 	
 	private WorkflowContext workflow;
+	@JsonIgnore
 	public WorkflowContext getWorkflow() {
 		return workflow;
 	}

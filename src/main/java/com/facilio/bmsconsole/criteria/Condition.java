@@ -161,10 +161,10 @@ public class Condition {
 		return null;
 	}
 	
-	public Predicate getPredicate() {
-		return getPredicate(null);
+	public Predicate computePredicate() {
+		return computePredicate(null);
 	}
-	public Predicate getPredicate(Map<String, Object> placeHolders) {
+	public Predicate computePredicate(Map<String, Object> placeHolders) {
 		if(operator != null) {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();

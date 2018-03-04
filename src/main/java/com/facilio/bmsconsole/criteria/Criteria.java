@@ -123,7 +123,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		// TODO Auto-generated method stub
 		Condition condition = conditions.get(Integer.parseInt(operand));
 		if(condition != null) {
-			return condition.getPredicate(variables);
+			return condition.computePredicate(variables);
 		}
 		return null;
 	}

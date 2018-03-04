@@ -110,16 +110,20 @@ public class WorkflowUtil {
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
+		WorkflowContext workflow = new WorkflowContext();
 		if(workflowContext.getWorkflowString() == null) {
-			workflowContext.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+			workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
 		}
+		else {
+			workflow.setWorkflowString(workflowContext.getWorkflowString());
+		}
+		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
-		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
 				.fields(FieldFactory.getWorkflowFields());
 
-		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
+		Map<String, Object> props = FieldUtil.getAsProperties(workflow);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 
@@ -253,9 +257,10 @@ public class WorkflowUtil {
 					 criteriaElement.setAttribute(PATTERN_STRING, expressionContext.getCriteria().getPattern());
 					 
 					 Map<Integer, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
-					 for(Integer key:conditionMap.keySet()) {
+					 for(Map.Entry<Integer, Condition> conditionEntry : conditionMap.entrySet()) {
 						 
-						 Condition condition = conditionMap.get(key);
+						 Condition condition = conditionEntry.getValue();
+						 Object key = conditionEntry.getKey();
 						 Element conditionElement = doc.createElement(CONDITION_STRING);
 						 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
 						 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());

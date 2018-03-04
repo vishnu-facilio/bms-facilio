@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface Operator<E> {
 	public int getOperatorId();
 	
@@ -12,6 +14,7 @@ public interface Operator<E> {
 	
 	public String getWhereClause(String columnName, E value);
 	
+	@JsonIgnore
 	public FacilioModulePredicate getPredicate(String fieldName, E value);
 	
 	public boolean isDynamicOperator();
