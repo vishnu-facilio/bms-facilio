@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.FacilioExpressionParser.ExpressionAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -120,9 +121,12 @@ public class ExpressionContext {
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		FacilioModule module = modBean.getModule(moduleName); 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(modBean.getModule(moduleName).getTableName())
-				.andCriteria(criteria);
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCriteria(criteria)
+				;
 		
 		if(modBean.getModule(moduleName).getExtendModule() != null) {
 			selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
@@ -149,7 +153,7 @@ public class ExpressionContext {
 					Map<Integer, Condition> conditions = criteria.getConditions();
 					for(Integer key:conditions.keySet()) {
 						Condition condition = conditions.get(key);
-						if(condition.getColumnName().contains("PARENT_METER_ID")) {
+						if(condition.getFieldName().contains("parentId")) {
 							parentIdString = condition.getValue();
 						}
 					}

@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -428,6 +429,10 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
+		
+		if (fieldName.equals("id")) {
+			return FieldFactory.getIdField(module);
+		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
