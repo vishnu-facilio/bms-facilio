@@ -2,6 +2,7 @@ package com.facilio.workflows.context;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.udojava.evalex.Expression;
 
 public class WorkflowContext {
+	
+	public static String VARIABLE_PLACE_HOLDER = "\\$\\{.+\\}";
 
 	Long id;
 	Long orgId;
@@ -83,29 +86,57 @@ public class WorkflowContext {
 		
 		Object result = null;
 		
-		if(getResultEvaluator() == null && isSingleExpression()) {
-			return expressions.get(0).executeExpression();
-		}
-		else {
-			Map<String,String> variableToExpresionMap = new HashMap<String,String>();
-			for(ExpressionContext expressionContext:expressions) {
-				
-				Object res = expressionContext.executeExpression();
-				if(res != null) {
-					String subExpResult = res.toString();
-					variableToExpresionMap.put(expressionContext.getName(), subExpResult);
-				}
-				else {
-					variableToExpresionMap.put(expressionContext.getName(), "0");
-				}
+		Map<String,String> variableToExpresionMap = new HashMap<String,String>();
+		for(int i=0; i<expressions.size(); i++) {
+			
+			ExpressionContext expressionContext = expressions.get(i);
+			
+			expressionContext = fillParamterAndParseExpressionContext(expressionContext);
+			
+			if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
+				return expressionContext.executeExpression();
 			}
-			System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
-			result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
-			System.out.println("result --- "+result);
-			return result;
+			
+			Object res = expressionContext.executeExpression();
+			if(res != null) {
+				String subExpResult = res.toString();
+				variableToExpresionMap.put(expressionContext.getName(), subExpResult);
+			}
+			else {
+				variableToExpresionMap.put(expressionContext.getName(), "0");
+			}
+			
+			ParameterContext parameterContext = new ParameterContext();
+			parameterContext.setName(expressionContext.getName());
+			parameterContext.setValue(variableToExpresionMap.get(expressionContext.getName()));
+			this.addParamater(parameterContext);
 		}
+		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
+		result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
+		System.out.println("result --- "+result);
+		return result;
 	}
 	
+	private ExpressionContext fillParamterAndParseExpressionContext(ExpressionContext expressionContext) throws Exception {
+		
+		String expressionString = expressionContext.getExpressionString();
+		System.out.println("BEFORE STRING --- "+expressionString);
+		
+		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
+			for(ParameterContext parameter :parameters) {
+				String var = "${"+parameter.getName()+"}";
+				String varRegex = "\\$\\{"+parameter.getName()+"\\}";
+				if(expressionString.contains(var)) {
+					expressionString = expressionString.replaceAll(varRegex, parameter.getValue().toString());
+				}
+			}
+		}
+		System.out.println("AFTER STRING --- "+expressionString);
+		expressionContext = WorkflowUtil.getExpressionContextFromExpressionString(expressionString);
+		
+		return expressionContext;
+	}
+
 	public Object evaluateExpression(String exp,Map<String,String> variablesMap) {
 		Expression expression = new Expression(exp);
 		for(String key : variablesMap.keySet()) {

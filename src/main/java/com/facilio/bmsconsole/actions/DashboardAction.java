@@ -279,21 +279,6 @@ public class DashboardAction extends ActionSupport {
 	}
 	private ReportThreshold reportThreshold;
 	
-	
-	WorkflowContext workflowContext;
-	
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
-	}
-	
-	public String addWorkflow() throws Exception {
-		
-		WorkflowUtil.addWorkflow(workflowContext);
-		return SUCCESS;
-	}
 	public String addThreshold() throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

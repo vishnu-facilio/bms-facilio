@@ -97,12 +97,14 @@ public class WorkflowUtil {
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		
-		workflowString = validateAndFillParameters(workflowString,paramMap);
 		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
+		workflowContext.setParameters(parameterContexts);
 		return workflowContext.executeWorkflow();
 	}
 	
 	public static Long AddWorkflow(String workflowString) throws Exception {
+	public static Long addWorkflow(String workflowString) throws Exception {
 		WorkflowContext workflowContext = new WorkflowContext();
 		workflowContext.setWorkflowString(workflowString);
 		return addWorkflow(workflowContext);
@@ -119,6 +121,11 @@ public class WorkflowUtil {
 		}
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
+		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		
+		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
+		
+		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
 				.fields(FieldFactory.getWorkflowFields());
@@ -156,9 +163,7 @@ public class WorkflowUtil {
 	}
 
 	
-	public static String validateAndFillParameters(String workflowString,Map<String,Object> paramMap) throws Exception {
-		
-		List<ParameterContext> paramterContexts = getParameterListFromWorkflowString(workflowString);
+	public static List<ParameterContext> validateAndGetParameters(List<ParameterContext> paramterContexts,Map<String,Object> paramMap) throws Exception {
 		
 		if(!paramterContexts.isEmpty()) {
 			if(paramMap == null || paramMap.isEmpty()) {
@@ -171,22 +176,12 @@ public class WorkflowUtil {
 				Object value = paramMap.get(parameterContext.getName());
 				
 				checkType(parameterContext,value);
-				parameterContext.setValue(value);
 				
-				workflowString = replaceParameters(workflowString,parameterContext);
+				parameterContext.setValue(value);
 			}
 		}
+		return paramterContexts;
 		
-		return workflowString;
-	}
-	
-	public static String replaceParameters(String workflowString,ParameterContext parameterContext) {
-		
-		String variableName = "\\$\\{"+parameterContext.getName()+"\\}";
-		
-		workflowString = workflowString.replaceAll(variableName, parameterContext.getValue().toString());
-		
-		return workflowString;
 	}
 	
 	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {
@@ -298,7 +293,7 @@ public class WorkflowUtil {
 	}
 	public static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
 		
-		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-8"));
+		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
     	
     	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -325,34 +320,130 @@ public class WorkflowUtil {
         return paramterContexts;
 	}
 	
+	public static ExpressionContext getExpressionContextFromExpressionString(String expressionString) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		InputStream stream = new ByteArrayInputStream(expressionString.getBytes("UTF-16"));
+		
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    	Document doc = dBuilder.parse(stream);
+        doc.getDocumentElement().normalize();
+        
+        NodeList expressionNodes = doc.getElementsByTagName(EXPRESSION_STRING);
+        Node expressionNode = expressionNodes.item(0);
+		
+		if (expressionNode.getNodeType() == Node.ELEMENT_NODE) {
+			
+			ExpressionContext expressionContext = new ExpressionContext();
+			expressionContext.setExpressionString(expressionString);
+       	 
+            Element expression = (Element) expressionNode;
+            String expressionName = expression.getAttribute(NAME_STRING);
+            
+            expressionContext.setName(expressionName);
+            
+            NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
+            
+            if(valueNodes.getLength() > 0 ) {
+            	Node valueNode =  valueNodes.item(0);
+            	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) valueNode;
+            		String valueString = value.getTextContent();
+            		expressionContext.setConstant(valueString);
+            	}
+            }
+            else {
+            	NodeList moduleNodes = expression.getElementsByTagName(MODULE_STRING);
+                Node moduleNode = moduleNodes.item(0);
+                if (moduleNode.getNodeType() == Node.ELEMENT_NODE) {
+                	 Element module = (Element) moduleNode;
+                	 String moduleName = module.getAttribute(NAME_STRING);
+                	 expressionContext.setModuleName(moduleName);
+                }
+                
+                NodeList fieldNodes = expression.getElementsByTagName(FIELD_STRING);
+                if(fieldNodes.getLength() > 0) {
+                    Node fieldNode = fieldNodes.item(0);
+                    if (fieldNode.getNodeType() == Node.ELEMENT_NODE) {
+                    	 
+                    	 Element field = (Element) fieldNode;
+    	            	 String fieldName = field.getAttribute(NAME_STRING);
+    	            	 expressionContext.setFieldName(fieldName);
+    	            	 String aggregate = field.getAttribute(AGGREGATE_STRING);
+    	            	 expressionContext.setAggregateString(aggregate);
+                    }
+                }
+                
+                NodeList criteriaNodes = expression.getElementsByTagName(CRITERIA_STRING);
+                Node criteriaNode = criteriaNodes.item(0);
+                if (criteriaNode.getNodeType() == Node.ELEMENT_NODE) {
+                	Element criteria  = (Element) criteriaNode;
+                	String pattern = criteria.getAttribute(PATTERN_STRING);
+                	Criteria criteria1 = new Criteria();
+                	criteria1.setPattern(pattern);
+                	Map<Integer, Condition> conditions = new HashMap<>();
+                	NodeList conditionNodes = criteria.getElementsByTagName(CONDITION_STRING);
+                	for(int j=0;j<conditionNodes.getLength();j++) {
+                		Condition condition1 = null;
+                		Node conditionNode = conditionNodes.item(j);
+                		if(conditionNode.getNodeType() == Node.ELEMENT_NODE) {
+                			Element condition  = (Element) conditionNode;
+                			String sequence = condition.getAttribute(SEQUENCE_STRING);
+                			String conditionString = condition.getTextContent();
+                			Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
+                			
+                			Matcher matcher = condtionStringpattern.matcher(conditionString);
+        					while (matcher.find()) {
+        						String fieldName = matcher.group(2);
+        						FacilioField field = modBean.getField(fieldName, expressionContext.getModuleName());
+        						Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
+        						String conditionValue = matcher.group(6);
+        						
+        						if (matcher.group(3) != null) {
+        							if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
+        								BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+        								condition1 = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+        							}
+        							else {
+        								throw new IllegalArgumentException("BaseLine is not supported for this operator");
+        							}
+        						}
+        						else {
+        							condition1 = new Condition();
+        							condition1.setField(field);
+        							condition1.setOperator(operator);
+        							condition1.setValue(conditionValue);
+        						}
+        					}
+                			conditions.put(Integer.parseInt(sequence), condition1);
+                		}
+                	}
+                	criteria1.setConditions(conditions);
+                	expressionContext.setCriteria(criteria1);
+                }
+            }
+            return expressionContext;
+        }
+		return null;
+	}
+	
 	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {
     	
 		WorkflowContext workflowContext = new WorkflowContext();
 		workflowContext.setWorkflowString(workflow);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-8"));
+		InputStream stream = new ByteArrayInputStream(workflow.getBytes("UTF-16"));
     	
     	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     	Document doc = dBuilder.parse(stream);
         doc.getDocumentElement().normalize();
         
-        NodeList parameterNodes = doc.getElementsByTagName(PARAMETER_STRING);
-        for(int i=0;i<parameterNodes.getLength();i++) {
-        	
-        	Node parameterNode = parameterNodes.item(i);
-        	if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
-        		ParameterContext parameterContext = new ParameterContext();
-        		Element parameter = (Element) parameterNode;
-        		
-        		String name = parameter.getAttribute(NAME_STRING);
-        		String type = parameter.getAttribute(TYPE_STRING);
-        		parameterContext.setName(name);
-        		parameterContext.setTypeString(type);
-        		workflowContext.addParamater(parameterContext);
-        	}
-        }
+        workflowContext.setParameters(getParameterListFromWorkflowString(workflow));
+        
         
         NodeList expressionNodes = doc.getElementsByTagName(EXPRESSION_STRING);
         
@@ -360,104 +451,14 @@ public class WorkflowUtil {
         	
         	ExpressionContext expressionContext = new ExpressionContext();
         	
-        	 Node expressionNode = expressionNodes.item(i);
+        	Node expressionNode = expressionNodes.item(i);
+        	 
+        	Document document = expressionNode.getOwnerDocument();
+        	DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
+        	LSSerializer serializer = domImplLS.createLSSerializer();
+        	String str = serializer.writeToString(expressionNode);
+        	expressionContext.setExpressionString(str);
              
-             if (expressionNode.getNodeType() == Node.ELEMENT_NODE) {
-            	 
-                Element expression = (Element) expressionNode;
-                String expressionName = expression.getAttribute(NAME_STRING);
-                
-                expressionContext.setName(expressionName);
-                
-                NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
-                
-                if(valueNodes.getLength() > 0 ) {
-                	Node valueNode =  valueNodes.item(0);
-                	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
-                		Element value = (Element) valueNode;
-                		String valueString = value.getTextContent();
-                		expressionContext.setConstant(valueString);
-                	}
-                }
-                else {
-                	NodeList moduleNodes = expression.getElementsByTagName(MODULE_STRING);
-                    Node moduleNode = moduleNodes.item(0);
-                    if (moduleNode.getNodeType() == Node.ELEMENT_NODE) {
-                    	 Element module = (Element) moduleNode;
-                    	 String moduleName = module.getAttribute(NAME_STRING);
-                    	 expressionContext.setModuleName(moduleName);
-                    }
-                    
-                    NodeList fieldNodes = expression.getElementsByTagName(FIELD_STRING);
-                    if(fieldNodes.getLength() > 0) {
-	                    Node fieldNode = fieldNodes.item(0);
-	                    if (fieldNode.getNodeType() == Node.ELEMENT_NODE) {
-	                    	 
-	                    	 Element field = (Element) fieldNode;
-	    	            	 String fieldName = field.getAttribute(NAME_STRING);
-	    	            	 expressionContext.setFieldName(fieldName);
-	    	            	 String aggregate = field.getAttribute(AGGREGATE_STRING);
-	    	            	 expressionContext.setAggregateString(aggregate);
-	                    }
-                    }
-                    
-                    NodeList criteriaNodes = expression.getElementsByTagName(CRITERIA_STRING);
-                    Node criteriaNode = criteriaNodes.item(0);
-                    if (criteriaNode.getNodeType() == Node.ELEMENT_NODE) {
-                    	Element criteria  = (Element) criteriaNode;
-                    	String pattern = criteria.getAttribute(PATTERN_STRING);
-                    	Criteria criteria1 = new Criteria();
-                    	criteria1.setPattern(pattern);
-                    	Map<Integer, Condition> conditions = new HashMap<>();
-                    	NodeList conditionNodes = criteria.getElementsByTagName(CONDITION_STRING);
-                    	for(int j=0;j<conditionNodes.getLength();j++) {
-                    		Condition condition1 = null;
-                    		Node conditionNode = conditionNodes.item(j);
-                    		if(conditionNode.getNodeType() == Node.ELEMENT_NODE) {
-                    			Element condition  = (Element) conditionNode;
-                    			String sequence = condition.getAttribute(SEQUENCE_STRING);
-                    			String conditionString = condition.getTextContent();
-                    			Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
-                    			
-                    			Matcher matcher = condtionStringpattern.matcher(conditionString);
-            					while (matcher.find()) {
-            						String fieldName = matcher.group(2);
-            						FacilioField field = null;
-            						if (fieldName.equals("id")) {
-            							FacilioModule module = modBean.getModule(expressionContext.getModuleName());
-            							field = FieldFactory.getIdField(module);
-            						}
-            						else {
-            							field = modBean.getField(fieldName, expressionContext.getModuleName());
-            						}
-            						
-            						Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
-            						String conditionValue = matcher.group(6);
-            						
-            						if (matcher.group(3) != null) {
-            							if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
-            								BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
-            								condition1 = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
-            							}
-            							else {
-            								throw new IllegalArgumentException("BaseLine is not supported for this operator");
-            							}
-            						}
-            						else {
-            							condition1 = new Condition();
-            							condition1.setField(field);
-            							condition1.setOperator(operator);
-            							condition1.setValue(conditionValue);
-            						}
-            					}
-                    			conditions.put(Integer.parseInt(sequence), condition1);
-                    		}
-                    	}
-                    	criteria1.setConditions(conditions);
-                    	expressionContext.setCriteria(criteria1);
-                    }
-                }
-            }
             workflowContext.addExpression(expressionContext);
         }
         
