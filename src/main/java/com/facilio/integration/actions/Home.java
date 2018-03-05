@@ -15,6 +15,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -196,7 +197,8 @@ state = PORTAL-yogendrababu
 				response.addCookie(authmodel);
 			} catch (Exception e) {
 				e.printStackTrace();
-				throw e;
+				setJsonresponse("message", "Error while validating user name and password");
+				return ERROR;
 			}
 			return SUCCESS;
 		}
@@ -336,16 +338,20 @@ Pragma: no-cache
 			pstmt.setString(4, password);
 			pstmt.executeUpdate();
 
-		} catch(SQLException | RuntimeException e) {
+		} catch (MySQLIntegrityConstraintViolationException e){
+			setJsonresponse("message", "Username exists for this portal");
+			return ERROR;
+		} catch (SQLException | RuntimeException e) {
 			e.printStackTrace();
-			throw e;
+			setJsonresponse("message", "Error during signup");
+			return ERROR;
 		} finally {
 			DBUtil.closeAll(conn, pstmt);
 		}
 		return validatelogin();
 	}
 
-	public  String AddNewUserDB(String username, String password, String emailaddress) throws Exception
+	public String AddNewUserDB(String username, String password, String emailaddress) throws Exception
 	{
 		System.out.println("### AddNewUserDB() :"+emailaddress);
 		Connection conn = null;
@@ -362,7 +368,8 @@ Pragma: no-cache
 		}catch(SQLException | RuntimeException e)
 		{
 			e.printStackTrace();
-			throw e;
+			setJsonresponse("message", "Error during signup");
+			return ERROR;
 		}
 		finally
 		{
