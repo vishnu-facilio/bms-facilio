@@ -11,10 +11,6 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,13 +21,11 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.AddWorkflowRuleCommand;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.FacilioExpressionParser;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -40,7 +34,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
-import com.facilio.bmsconsole.util.ExpressionAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -138,6 +131,10 @@ public class WorkflowUtil {
 	}
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
+		return getWorkflowContext(workflowId,false);
+	}
+	public static WorkflowContext getWorkflowContext(Long workflowId,boolean isWithExpParsed) throws Exception  {
+		
 		FacilioModule module = ModuleFactory.getWorkflowModule(); 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
@@ -152,6 +149,18 @@ public class WorkflowUtil {
 			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
 		}
 		workflowContext = parseStringToWorkflowObject(workflowContext.getWorkflowString());
+		
+		if(isWithExpParsed) {
+			List<ExpressionContext> temp= new ArrayList<>();
+			if(workflowContext.getExpressions() != null) {
+				for(ExpressionContext expressionContext:workflowContext.getExpressions()) {
+					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString());
+					temp.add(expressionContext);
+				}
+				workflowContext.setExpressions(temp);
+			}
+		}
+		
 		return workflowContext;
 	}
 	

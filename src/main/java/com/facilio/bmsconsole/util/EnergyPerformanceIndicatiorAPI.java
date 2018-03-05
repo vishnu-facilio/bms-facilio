@@ -103,7 +103,7 @@ public class EnergyPerformanceIndicatiorAPI {
 			for (Map<String, Object> prop : props) {
 				EnergyPerformanceIndicatorContext enpi = FieldUtil.getAsBeanFromMap(prop, EnergyPerformanceIndicatorContext.class);
 				enpi.setReadingField(modBean.getField(enpi.getReadingFieldId()));
-				enpi.setWorkflow(WorkflowUtil.getWorkflowContext(enpi.getWorkflowId()));
+				enpi.setWorkflow(WorkflowUtil.getWorkflowContext(enpi.getWorkflowId(),true));
 				enpiList.add(enpi);
 			}
 			return enpiList;
