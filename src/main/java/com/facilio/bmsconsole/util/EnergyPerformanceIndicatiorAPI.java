@@ -78,6 +78,7 @@ public class EnergyPerformanceIndicatiorAPI {
 		ReadingContext reading = new ReadingContext();
 		reading.setParentId(enpi.getSpaceId());
 		reading.addReading(enpi.getReadingField().getName(), resultVal);
+		reading.setTtime(endTime);
 		
 		return reading;
 	}
