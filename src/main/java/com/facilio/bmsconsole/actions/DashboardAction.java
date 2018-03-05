@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
@@ -556,7 +557,12 @@ public class DashboardAction extends ActionSupport {
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
-			dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
+			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
+				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
+			}
+			else {
+				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
+			}
 			dummyField.setName("dummyField");
 			fields.add(dummyField);
 		}
@@ -614,7 +620,9 @@ public class DashboardAction extends ActionSupport {
 		fields.add(xAxisField);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+				;
 		if ("WorkOrders".equals(module.getTableName())){
 			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
 		}
@@ -645,7 +653,9 @@ public class DashboardAction extends ActionSupport {
 		}
 			
 		builder.select(fields);
-		builder.groupBy(groupByString);
+		if (report.getY1AxisAggregateOpperator() != FormulaContext.DateAggregateOperator.ACTUAL) {
+			builder.groupBy(groupByString);
+		}
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
