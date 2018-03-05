@@ -35,11 +35,11 @@ public class TimeSeriesAPI {
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
-		insertRecords(moduleVsReading);
+		insertRecords(moduleVsReading,true);
 	}
 	
 
-	private static void insertRecords(Map<String,List<ReadingContext>> moduleVsReading)
+	private static void insertRecords(Map<String,List<ReadingContext>> moduleVsReading, boolean updateLastReading)
 			throws InstantiationException, IllegalAccessException, Exception {
 		
 		for(Map.Entry<String, List<ReadingContext>> map:moduleVsReading.entrySet()) {
@@ -49,6 +49,8 @@ public class TimeSeriesAPI {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 			context.put(FacilioConstants.ContextNames.READINGS, readingsList);
+			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,updateLastReading);
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !updateLastReading);
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
 		}
@@ -74,45 +76,18 @@ public class TimeSeriesAPI {
 	}
 
 	
-	
-
-public static List<Map<String, Object>> fetchUnmodeledData(String deviceList) throws Exception {
-	
-	List<Map<String, Object>> result=null;
-	if(deviceList==null) {
-		return result;
+	@SuppressWarnings({ "unchecked"})
+	public static void processHistoricalData(List<String>deviceList) throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
+		Chain processDataChain = FacilioChainFactory.getProcessHistoricalDataChain();
+		processDataChain.execute(context);
+		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
+		insertRecords(moduleVsReading,false);
 	}
-	List<FacilioField> fields = new ArrayList<>();
-	FacilioField timeFld = ReportsUtil.getField("ttime","TTIME",FieldType.NUMBER);
-	FacilioField deviceFld = ReportsUtil.getField("device","DEVICE_NAME",FieldType.STRING);
-	FacilioField instanceFld = ReportsUtil.getField("instance","INSTANCE_NAME",FieldType.STRING);
-	FacilioField valueFld = ReportsUtil.getField("value","VALUE",FieldType.STRING);
 	
 	
-	fields.add(timeFld);
-	fields.add(deviceFld);
-	fields.add(instanceFld);
-	fields.add(valueFld);
-	
-	 long orgId = AccountUtil.getCurrentOrg().getOrgId();
-     GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Unmodeled_Instance")
-				.innerJoin("Unmodeled_Data")
-				.on("Unmodeled_Instance.ID=Unmodeled_Data.INSTANCE_ID")
-             .andCustomWhere("ORGID=?",orgId)
-				.andCondition(CriteriaAPI.getCondition("DEVICE_NAME","DEVICE_NAME", deviceList, StringOperators.IS))
-				.orderBy("TTIME ASC");
-		try {
-			result = builder.get();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		return result;
-}
-
-
 	public static Map<String, List<String>> getAllDevices() throws Exception {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()

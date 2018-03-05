@@ -1115,6 +1115,14 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getProcessHistoricalDataChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new HistoricalReadingsCommand());
+		c.addCommand(new BulkModeledReadingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 		
 	public static Chain getEnergyMeterListChain() {
 		Chain c = new ChainBase();

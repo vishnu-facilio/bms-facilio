@@ -6,8 +6,6 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -25,8 +23,7 @@ public class TimeSeries extends ActionSupport {
 	
 	public String migrateData() throws Exception{
 		
-		List<Map<String, Object>> result=TimeSeriesAPI.fetchUnmodeledData(getDeviceList());
-		//TimeSeriesAPI.migrateUnmodeledData(result);
+		TimeSeriesAPI.processHistoricalData(deviceList);
 		return SUCCESS;
 	}
 	
@@ -46,55 +43,13 @@ public class TimeSeries extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String insertVirtualMeterReadings() throws Exception{
-		
-		if(deviceList==null) {
-		DeviceAPI.insertVirtualMeterReadings(startTime, endTime, interval);
-		}
-		else {
-			List<EnergyMeterContext> virtualMeters =DeviceAPI.getVirtualMeters(deviceList);
-			DeviceAPI.insertVirtualMeterReadings(virtualMeters,startTime, endTime, interval);
-		}
-		return SUCCESS;
-	}
-	
+
+
 	public String getDefaultFieldMap() throws Exception {
 		setFieldMap(TimeSeriesAPI.getDefaultInstanceFieldMap());
 		return SUCCESS;
 	}
 	
-	private long startTime;
-	private long endTime;
-	private int interval;
-
-	public void setStartTime(long time) {
-
-		this.startTime=time;
-	}
-
-	public void setEndTime(long time) {
-		this.endTime=time;
-	}
-
-	public void setInterval(int minInterval) {
-
-		this.interval=minInterval;
-	}
-
-	public long getStartTime() {
-		return startTime;
-
-	}
-	
-	public long getEndTime() {
-		
-		return endTime;
-	}
-	
-	public int getInterval() {
-		
-		return interval;
-	}
 	long timestamp;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
@@ -115,16 +70,17 @@ public class TimeSeries extends ActionSupport {
 		return deviceData;
 	}
 	
-	private String deviceList = null;
-	public void setDeviceList(String deviceList) 
+	private List<String> deviceList = null;
+	public void setDeviceList(List<String> deviceList) 
 	{
 		this.deviceList = deviceList;
 	}
 	
-	public String getDeviceList() {
+	public List<String> getDeviceList() {
 		
 		return deviceList;
 	}
+	
 	
 	private JSONObject reportData = null;
 	public JSONObject getReportData() {

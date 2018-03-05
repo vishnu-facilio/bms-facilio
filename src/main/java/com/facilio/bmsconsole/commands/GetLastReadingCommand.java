@@ -24,6 +24,10 @@ public class GetLastReadingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		
+		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+		if (historyReading == null || historyReading==true) {
+			return false;
+		}
 		List<ReadingContext> readings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
 		if(readings == null) {
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);

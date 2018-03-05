@@ -38,6 +38,11 @@ public class DeltaCalculationCommand implements Command {
 			return false;
 		}
 
+		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+		if (historyReading == null || historyReading==true) {
+			return false;
+		}
+		
 		Map<String, Map<String,Object>> lastReadingsMap = (Map<String, Map<String,Object>>) context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		if(lastReadingsMap==null || lastReadingsMap.isEmpty()) {
 			return false;

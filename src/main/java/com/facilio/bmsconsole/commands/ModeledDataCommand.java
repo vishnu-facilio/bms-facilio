@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -38,7 +39,7 @@ public class ModeledDataCommand implements Command {
 			while(instanceList.hasNext()) {
 				String instanceName=instanceList.next();
 				String instanceVal=instanceMap.get(instanceName);
-				Map<String, Object> stat = getInstanceMapping(deviceName, instanceName);
+				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName);
 				if(stat==null || instanceVal.equalsIgnoreCase("NaN"))  {
 					//need to decide whether  Nan can be ignored..
 					continue;
@@ -80,22 +81,5 @@ public class ModeledDataCommand implements Command {
 		return false;
 	}
 
-	private static Map<String, Object> getInstanceMapping(String deviceName, String instanceName) throws Exception {
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getInstanceMappingFields())
-				.table("Instance_To_Asset_Mapping")
-				.andCustomWhere("ORGID=?",orgId)
-				.andCustomWhere("DEVICE_NAME= ?",deviceName)
-				.andCustomWhere("INSTANCE_NAME=?",instanceName);
-
-		List<Map<String, Object>> stats = builder.get();	
-		if(stats!=null && !stats.isEmpty()) {
-
-			return stats.get(0); 
-		}
-		return null;
-	}
 	
 }
