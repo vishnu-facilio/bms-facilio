@@ -122,7 +122,7 @@ public class TenantBillingAPI {
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM Assets where NAME = ?");
+			pstmt = conn.prepareStatement("SELECT * FROM Resources where NAME = ?");
 			pstmt.setString(1, meterName);
 			rs = pstmt.executeQuery();
 			while(rs.next())
