@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.time.Month;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -13,7 +15,16 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
+import org.docx4j.openpackaging.parts.SpreadsheetML.WorkbookPart;
+import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 
+import com.aspose.cells.Cells;
+import com.aspose.cells.SaveFormat;
+import com.aspose.cells.Workbook;
+import com.aspose.cells.Worksheet;
+import com.aspose.cells.WorksheetCollection;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
@@ -49,9 +60,8 @@ public class GenerateUsageRecordCommand implements Command {
 		long fileId = excelobject.getExcelFileId();
 		try(InputStream ins = fs.readFile(fileId)) {
 			System.out.println("##### file read stream #####");
-			//Workbook workbook = WorkbookFactory.create(ins);
-			XSSFWorkbook workbook = new XSSFWorkbook(ins);
-			
+			//XSSFWorkbook workbook = new XSSFWorkbook(ins);
+			Workbook workbook = new Workbook(ins);
 			System.out.println("##### workbook created #####");
 			for(String cellfinder : placeHolders.keySet())
 			{
@@ -62,7 +72,7 @@ public class GenerateUsageRecordCommand implements Command {
 					String meterName = meterInfo.substring(0,meterInfo.indexOf("."));
 					String paramName = meterInfo.substring(meterInfo.indexOf(".")+1, meterInfo.indexOf("#")); 
 					String dataRequired = meterInfo.substring(meterInfo.indexOf("#")+1, meterInfo.length());
-					long meterId = TenantBillingAPI.GetMeterId(meterName);
+					//long meterId = TenantBillingAPI.GetMeterId(meterName);
 
 					String sheetName = cellfinder.substring(cellfinder.indexOf("S_")+2, cellfinder.indexOf("_R"));
 					String rowNumStr = cellfinder.substring(cellfinder.indexOf("_R_")+3, cellfinder.indexOf("_C"));
@@ -70,24 +80,29 @@ public class GenerateUsageRecordCommand implements Command {
 					
 					int rowN = Integer.parseInt(rowNumStr);
 					int cellN = Integer.parseInt(colNumStr);
-					Sheet sheet = workbook.getSheet(sheetName);
-					Row row = sheet.getRow(rowN);
-					Cell cell = row.getCell(cellN);
+//					Sheet sheet = workbook.getSheet(sheetName);
+//					Row row = sheet.getRow(rowN);
+//					Cell cell = row.getCell(cellN);
+					WorksheetCollection worksheets = workbook.getWorksheets();
+					Worksheet worksheet = worksheets.get(sheetName);
+					Cells cells = worksheet.getCells();
+					com.aspose.cells.Cell cell =  cells.get(rowN, cellN);
 					double reading = 0.0;
-					if(dataRequired.equalsIgnoreCase("OR"))
-					{
-						reading = TenantBillingAPI.GetMeterOpenReading(meterId,paramName,startTime);
-					}
-					else if(dataRequired.equalsIgnoreCase("CR"))
-					{
-						reading = TenantBillingAPI.GetMeterCloseReading(meterId,paramName,endTime );
-					}
-					else
-					{
-						reading = TenantBillingAPI.GetMeterRun(meterId,paramName,startTime, endTime );		
-					}
+//					if(dataRequired.equalsIgnoreCase("OR"))
+//					{
+//						reading = TenantBillingAPI.GetMeterOpenReading(meterId,paramName,startTime);
+//					}
+//					else if(dataRequired.equalsIgnoreCase("CR"))
+//					{
+//						reading = TenantBillingAPI.GetMeterCloseReading(meterId,paramName,endTime );
+//					}
+//					else
+//					{
+//						reading = TenantBillingAPI.GetMeterRun(meterId,paramName,startTime, endTime );		
+//					}
 					System.out.println("##### Reading Before cell set : "+reading);
-					cell.setCellValue(reading);
+					//cell.setCellValue(reading);
+					cell.setValue(1000);
 				}			
 			}
 			HashMap<String, Object> timeData = DateTimeUtil.getTimeData(endTime); 	
@@ -98,18 +113,34 @@ public class GenerateUsageRecordCommand implements Command {
 			String namePrefix = fileName.substring(0,fileName.indexOf("."));
 			String namesufix = fileName.substring(fileName.indexOf("."),fileName.length());
 			
-			String generatedFileName = namePrefix+"_"+monthstr+"_"+yearStr+namesufix;
-			System.out.println("##### ouput file name  #####"+generatedFileName);
-			FileOutputStream fileOut = new FileOutputStream(generatedFileName);
-			workbook.write(fileOut);
-			fileOut.close();	    
-			File file = new File(generatedFileName);
+			String generatedFileName = System.getProperty("user.home")+"/"+namePrefix+"_"+monthstr+"_"+yearStr+namesufix;
+			String storedFileName = namePrefix+"_"+monthstr+"_"+yearStr+namesufix;
+			workbook.save(storedFileName, SaveFormat.XLSX);
+			System.out.println("##### ouput file name  #####"+storedFileName);
+			//FileOutputStream fileOut = new FileOutputStream(generatedFileName);
+			//workbook.write(fileOut);
+			//fileOut.close();	    
+			File file = new File(storedFileName);
+			////////// docx4j ////////////
+//			SpreadsheetMLPackage xlsxPkg = SpreadsheetMLPackage.load(file);
+//			WorkbookPart workbookPart = xlsxPkg.getWorkbookPart();
+//			List<org.xlsx4j.sml.Sheet> sheets;
+//			try {
+//                sheets = workbookPart.getContents().getSheets().getSheet();
+//        } catch (Docx4JException e1) {
+//                e1.printStackTrace();
+//        } 
+//			
+//			
+			//////// docx4j ends /////////
 			//File file = new File(excelName);
 			System.out.println("##### ouput file created #####");
 			long generatedFileId = fs.addFile(file.getPath(), file, "application/xlsx");
 			System.out.println("##### output file Id : "+generatedFileId);
 			fileURL = fs.getPrivateUrl(generatedFileId);		
 		}
+		
+		
 		System.out.println(">>>>> fileURL :"+fileURL);
 		return fileURL;
 	}
