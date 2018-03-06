@@ -112,6 +112,14 @@ public class ScheduleInfo {
 		values.add(value);
 	}
 	
+	private int yearlyDayValue = -1;
+	public int getYearlyDayValue() {
+		return yearlyDayValue;
+	}
+	public void setYearlyDayValue(int yearlyDayValue) {
+		this.yearlyDayValue = yearlyDayValue;
+	}
+	
 	public List<Long> nextExecutionTimes(long startTime, long endTime) {
 		List<Long> nextExecutionTimes = new ArrayList<>();
 		long flag = nextExecutionTime(startTime);
@@ -256,13 +264,16 @@ public class ScheduleInfo {
 					throw new IllegalArgumentException("Invalid value range of Months");
 				}
 				addAndSortValue(zdt.getMonthValue());
-				if(!values.contains(zdt.getMonthValue()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
+				if(!values.contains(zdt.getMonthValue()) || (yearlyDayValue != -1 && yearlyDayValue <= zdt.getDayOfMonth()) || zdt.toLocalTime().isAfter(times.get(times.size() - 1))) {
 					zdt = incrementYear(zdt, 1);
 				}
 				nextZdt = compareHourAndMinute(zdt);
 				if(nextZdt == null) {
 					zdt = incrementYear(zdt, frequency);
 					nextZdt = compareHourAndMinute(zdt);
+				}
+				if (yearlyDayValue != -1) {
+					nextZdt = nextZdt.withDayOfMonth(yearlyDayValue);
 				}
 				break;
 		}
@@ -357,6 +368,7 @@ public class ScheduleInfo {
 			if(currentMonth < value) {
 				newZdt = zdt.with(LocalTime.of(0, 0)).withMonth(value);
 				increaseYear = false;
+				break;
 			}
 		}
 		
