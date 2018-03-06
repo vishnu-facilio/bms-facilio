@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,10 @@ public class TimeSeries extends ActionSupport {
 		long assetId = (long) object.get("assetId");
 		Map<String,Long> instanceFieldMap = (Map<String, Long>) object.get("instanceFieldMap");
 		TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, instanceFieldMap);
+		if (doMigration) {
+			setDeviceList(Collections.singletonList(deviceName));
+			migrateData();
+		}
 		return SUCCESS;
 	}
 	
@@ -112,5 +117,13 @@ public class TimeSeries extends ActionSupport {
 	}
 	public void setFieldMap(Map<String, Long> fieldMap) {
 		this.fieldMap = fieldMap;		
+	}
+	
+	private boolean doMigration;
+	public boolean getDoMigration() {
+		return doMigration;
+	}
+	public void setDoMigration(boolean doMigration) {
+		this.doMigration = doMigration;
 	}
 }
