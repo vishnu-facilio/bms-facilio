@@ -57,10 +57,13 @@ public class StoreExcelFileCommand implements Command {
 		//XSSFWorkbook workbook = new XSSFWorkbook(file);
 		//Above is working code. 
 		Map<String,String> placeHolders = new HashMap();
+		long sttime = System.currentTimeMillis();
 		Workbook workbook = new Workbook(new FileInputStream(file));
+		System.out.println("#### StoreExcelFileCommand.HandlePlaceHolders : fileName : "+file.getName());
 		WorksheetCollection worksheetCollection = workbook.getWorksheets();
 		for(Object worksheetObj : worksheetCollection){
 			Worksheet worksheet = (Worksheet) worksheetObj;
+			System.out.println("#### worksheet : "+worksheet.getName());
 			Cells cells = worksheet.getCells();
 			FindOptions opt = new FindOptions();
             opt.setSeachOrderByRows(true);
@@ -77,13 +80,16 @@ public class StoreExcelFileCommand implements Command {
             		{
             			//Column column1 = cells.getColumn(column);
             			com.aspose.cells.Cell cell = cells.get(row, column);
+            			
             			if(cell.getType() == CellValueType.IS_STRING)
             			{
             				String cellvalue = cell.getStringValue();
             				if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
             				{
+            					System.out.println("##### inside required cell ####");
             					String cellfinder = "S_"+worksheet.getName()+"_R_"+row+"_C_"+column;
             					String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
+            					System.out.println("#### cellfinder : "+cellfinder +", meterInfo : "+meterInfo);
             					placeHolders.put(cellfinder, meterInfo);
             				}
             				
@@ -92,7 +98,8 @@ public class StoreExcelFileCommand implements Command {
             }
            
 		}
-		
+		long endtime = System.currentTimeMillis();
+		System.out.println("### Time taken for this file : "+ (endtime - sttime));
 		
 //		Map<String,String> placeHolders = new HashMap();
 //		ArrayList sheets = new ArrayList();
