@@ -27,7 +27,7 @@ import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
@@ -61,7 +61,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
 				}
 				if (trigger.getReadingRuleId() != -1) {
-					ReadingRuleContext rule = WorkflowAPI.getReadingRule(trigger.getReadingRuleId());
+					ReadingRuleContext rule = WorkflowRuleAPI.getReadingRule(trigger.getReadingRuleId());
 					trigger.setReadingFieldId(rule.getReadingFieldId());
 					trigger.setReadingInterval(rule.getInterval());
 					trigger.setStartReading(rule.getStartValue());

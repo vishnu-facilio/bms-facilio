@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.constants.FacilioConstants;
@@ -45,7 +45,7 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 			trigger.setPmId(pm.getId());
 			trigger.setOrgId(AccountUtil.getCurrentOrg().getId());
 			if (trigger.getReadingRule() != null) {
-				long ruleId = WorkflowAPI.addWorkflowRule(trigger.getReadingRule());
+				long ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
 				trigger.setReadingRuleId(ruleId);
 				
 				ActionContext action = new ActionContext();

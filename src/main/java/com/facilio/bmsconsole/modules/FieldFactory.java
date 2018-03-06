@@ -444,7 +444,7 @@ public class FieldFactory {
 		criteriaId.setModule(module);
 		fields.add(criteriaId);
 		
-		fields.add(getField("expressionId", "EXPRESSION_ID", module, FieldType.NUMBER));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
 
 		FacilioField executionOrder = new FacilioField();
 		executionOrder.setName("executionOrder");

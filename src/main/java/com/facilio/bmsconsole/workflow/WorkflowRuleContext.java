@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.workflow;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.context.ExpressionContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class WorkflowRuleContext {
 	
@@ -71,20 +71,20 @@ public class WorkflowRuleContext {
 		this.criteria = criteria;
 	}
 	
-	private long expressionId = -1;
-	public long getExpressionId() {
-		return expressionId;
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
 	}
-	public void setExpressionId(long expressionId) {
-		this.expressionId = expressionId;
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
 	}
-	
-	private ExpressionContext expression;
-	public ExpressionContext getExpression() {
-		return expression;
+
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
 	}
-	public void setExpression(ExpressionContext expression) {
-		this.expression = expression;
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
 	}
 
 	private int executionOrder = -1;

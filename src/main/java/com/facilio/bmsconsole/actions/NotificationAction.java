@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -234,7 +234,7 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(false);
-			WorkflowAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
+			WorkflowRuleAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
 			setResult("success");
 		}
 		return SUCCESS;
@@ -244,7 +244,7 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(true);
-			WorkflowAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
+			WorkflowRuleAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
 			setResult("success");
 		}
 		return SUCCESS;

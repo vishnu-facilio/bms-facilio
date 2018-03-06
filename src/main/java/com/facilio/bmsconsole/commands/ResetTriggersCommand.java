@@ -22,7 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
@@ -108,7 +108,7 @@ public class ResetTriggersCommand implements Command {
 						if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
 							long latestValue = getLatestReading(trigger.getReadingRuleId());
 							if(latestValue != -1) {
-								WorkflowAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
+								WorkflowRuleAPI.updateLastValueInReadingRule(trigger.getReadingRuleId(), latestValue);
 							}
 						}
 						break;
@@ -120,7 +120,7 @@ public class ResetTriggersCommand implements Command {
 	}
 	
 	private long getLatestReading(long readingRuleId) throws Exception {
-		ReadingRuleContext rule = (ReadingRuleContext) WorkflowAPI.getWorkflowRule(readingRuleId);
+		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
 		WorkflowEventContext event = rule.getEvent();
 		
 		Criteria criteria = rule.getCriteria();

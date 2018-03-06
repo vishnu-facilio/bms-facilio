@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -182,7 +182,7 @@ public class ModuleAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioModule mod = modBean.getModule(getModuleName());
 		
-		List<WorkflowEventContext> workflowEvents = WorkflowAPI.getWorkflowEvents(orgId, mod.getModuleId());
+		List<WorkflowEventContext> workflowEvents = WorkflowRuleAPI.getWorkflowEvents(orgId, mod.getModuleId());
 		
 		JSONObject meta = new JSONObject();
 		meta.put("name", getModuleName());

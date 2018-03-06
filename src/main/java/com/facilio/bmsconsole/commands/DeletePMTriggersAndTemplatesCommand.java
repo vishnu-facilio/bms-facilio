@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 
@@ -47,7 +47,7 @@ public class DeletePMTriggersAndTemplatesCommand implements Command{
 			templateIds.addAll(pmJobs.stream().map(PMJobsContext::getTemplateId).collect(Collectors.toList()));
 			
 			if (!ruleIds.isEmpty()) {
-				WorkflowAPI.deleteWorkFlowRules(ruleIds);
+				WorkflowRuleAPI.deleteWorkFlowRules(ruleIds);
 			}
 			
 			FacilioModule triggerModule = ModuleFactory.getPMTriggersModule();

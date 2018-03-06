@@ -30,8 +30,9 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
-public class WorkflowAPI {
+public class WorkflowRuleAPI {
 	
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
@@ -69,9 +70,9 @@ public class WorkflowAPI {
 			long criteriaId = CriteriaAPI.addCriteria(workflowRuleContext.getCriteria(),orgId);
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
-		if(workflowRuleContext.getExpression() != null) {
-			long expressionId = ExpressionAPI.addExpression(workflowRuleContext.getExpression());
-			workflowRuleContext.setExpressionId(expressionId);
+		if(workflowRuleContext.getWorkflow() != null) {
+			long workflowId = WorkflowUtil.addWorkflow(workflowRuleContext.getWorkflow());
+			workflowRuleContext.setWorkflowId(workflowId);
 		}
 		
 		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
@@ -338,9 +339,9 @@ public class WorkflowAPI {
 					workflow.setCriteria(CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId));
 				}
 				
-				long expressionId = workflow.getExpressionId();
-				if (expressionId != -1) {
-					workflow.setExpression(ExpressionAPI.getExpressionContext(expressionId));
+				long workflowId = workflow.getWorkflowId();
+				if (workflowId != -1) {
+					workflow.setWorkflow(WorkflowUtil.getWorkflowContext(workflowId));
 				}
 				
 				if(isEvent) {

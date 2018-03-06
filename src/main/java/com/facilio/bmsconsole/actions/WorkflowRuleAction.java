@@ -20,7 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.FormulaAPI;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
@@ -49,7 +49,7 @@ public class WorkflowRuleAction extends ActionSupport {
 
 	public String assignmentRules() throws Exception 
 	{
-		setRules(WorkflowAPI.getWorkflowRules());
+		setRules(WorkflowRuleAPI.getWorkflowRules());
 	    return "assignmentRules";
 	}
 	
@@ -80,7 +80,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		
 		workflowRuleContext.getCriteria().setFormulaId(workflowRuleContext.getCriteria().getFormulaContext().getId());
 		
-		WorkflowAPI.addWorkflowRule(workflowRuleContext);
+		WorkflowRuleAPI.addWorkflowRule(workflowRuleContext);
 		return SUCCESS;
 	}
 	public String runThroughFilters() throws Exception {

@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.WorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -32,7 +32,7 @@ public class GetReadingRulesFromFieldsCommand implements Command{
 			criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", StringUtils.join(fieldIds,","), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.READING_RULE.getIntVal()), NumberOperators.EQUALS));
 			
-			List<ReadingRuleContext> readingRules = WorkflowAPI.getReadingRules(criteria);
+			List<ReadingRuleContext> readingRules = WorkflowRuleAPI.getReadingRules(criteria);
 			if (readingRules != null && !readingRules.isEmpty()) {
 				Map<Long, ReadingRuleContext> rules = new HashMap<>();
 				rules = readingRules.stream()
