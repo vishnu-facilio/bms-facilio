@@ -1,12 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.impl.OrgBeanImpl;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;
@@ -77,7 +84,35 @@ public class UserAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+
+	public String portalUserList() throws Exception {
+		setSetup(SetupLayout.getUsersListLayout());
+		setUsers(AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		return SUCCESS;
+	}
+
+	public String deletePortalUser() throws Exception {
+		System.out.println("### Delete portal user :"+user.getEmail());
+		Connection conn = null;
+		Statement statement = null;
+		try	{
+			Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			statement = conn.createStatement();
+			String sql = "delete from faciliorequestors where PORTALID="+org.getPortalId() +" and  email = '"+ user.getEmail()+"';";
+			System.out.println(sql);
+			statement.execute(sql);
+		} catch (SQLException | RuntimeException e) {
+			e.printStackTrace();
+			result = "User cannot be deleted.";
+			return ERROR;
+		} finally {
+			DBUtil.closeAll(conn, statement);
+		}
+		portalUserList();
+		return SUCCESS;
+	}
+
 	private Map<Long, String> roles;
 	public Map<Long, String> getRoles() {
 		return roles;

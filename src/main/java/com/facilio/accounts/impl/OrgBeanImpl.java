@@ -144,8 +144,41 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return org;
 	}
-	
-	@Override
+
+    @Override
+    public List<User> getOrgPortalUsers(long orgId) throws Exception {
+		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		FacilioField portalId = new FacilioField();
+		portalId.setName("portalId");
+		portalId.setDataType(FieldType.NUMBER);
+		portalId.setColumnName("PORTALID");
+		portalId.setModule(portalInfoModule);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(portalId);
+		fields.addAll(AccountConstants.getPortalUserFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(portalUsersModule.getTableName())
+				.innerJoin(portalInfoModule.getTableName())
+				.on(portalUsersModule.getTableName()+".PORTALID = PortalInfo.PORTALID")
+				.andCustomWhere("PortalInfo.ORGID="+ orgId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+				user.setFacilioAuth(true);
+				users.add(user);
+			}
+			return users;
+		}
+        return null;
+    }
+
+    @Override
 	public List<User> getAllOrgUsers(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
