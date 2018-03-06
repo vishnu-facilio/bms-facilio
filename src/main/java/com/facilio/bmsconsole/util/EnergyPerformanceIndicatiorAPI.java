@@ -22,7 +22,19 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class EnergyPerformanceIndicatiorAPI {
 	
-	public static final int HISTORICAL_CALCULATION_INTERVAL = -90;
+	public static long getStartTimeForHistoricalCalculation(EnergyPerformanceIndicatorContext enpi) {
+		switch (enpi.getFrequencyEnum()) {
+			case DAILY:
+			case WEEKLY:
+			case MONTHLY:
+				return DateTimeUtil.getMonthStartTime(-3, true);
+			case HALF_YEARLY:
+			case QUARTERTLY:
+				return DateTimeUtil.getYearStartTime(-1, true);
+			default:
+				return -1;
+		}
+	}
 	
 	public static long addENPI (EnergyPerformanceIndicatorContext enpi) throws Exception {
 		updateChildIds(enpi);
@@ -70,15 +82,15 @@ public class EnergyPerformanceIndicatiorAPI {
 	
 	public static ReadingContext calculateENPI(EnergyPerformanceIndicatorContext enpi, long startTime, long endTime) throws Exception {
 		Map<String, Object> params = new HashMap<>();
-		params.put("startTime", startTime * 1000);
-		params.put("endTime", endTime * 1000);
+		params.put("startTime", startTime);
+		params.put("endTime", endTime);
 		
 		double resultVal = (double) WorkflowUtil.getWorkflowExpressionResult(enpi.getWorkflow().getWorkflowString(), params);
 		
 		ReadingContext reading = new ReadingContext();
 		reading.setParentId(enpi.getSpaceId());
 		reading.addReading(enpi.getReadingField().getName(), resultVal);
-		reading.setTtime(endTime * 1000);
+		reading.setTtime(endTime);
 		
 		return reading;
 	}

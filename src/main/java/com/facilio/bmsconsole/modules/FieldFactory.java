@@ -3132,6 +3132,7 @@ public class FieldFactory {
 		fields.add(getNameField(module));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));

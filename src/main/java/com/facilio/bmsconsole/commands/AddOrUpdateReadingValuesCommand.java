@@ -1,33 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 
@@ -89,7 +80,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.addRecords(readings);
 		readingBuilder.save();
 		if (isUpdateLastReading) {
-			updateLastReading(fields,readings,lastReadingMap);
+			ReadingsAPI.updateLastReading(fields,readings,lastReadingMap);
 		}
 	}
 	
@@ -101,83 +92,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
 		updateBuilder.update(reading);
 		if (isUpdateLastReading) {
-			updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
+			ReadingsAPI.updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
 		}
 	}
-	
-	
-	private String getCase(long resource,long field, Object value, boolean insertQuote) {
-
-		String caseString= " WHEN RESOURCE_ID="+resource+" AND FIELD_ID="+field+" THEN ";
-		if(insertQuote) {
-			return caseString+"'"+value+"'";
-		}
-		return caseString+value;
-	}
-
-	private int updateLastReading(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, Map<String,Object>> lastReadingMap) throws SQLException {
-
-
-		if(readingList==null || readingList.isEmpty()) {
-			return 0;
-		}
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
-			Set<Long> resources= new HashSet<Long>();
-			Set<Long> fields= new HashSet<Long>();
-			StringBuilder timeBuilder= new StringBuilder();
-			StringBuilder valueBuilder= new StringBuilder();
-			long orgId=AccountUtil.getCurrentOrg().getOrgId();
-
-			for(ReadingContext readingContext:readingList) {
-				long resourceId=readingContext.getParentId();
-				resources.add(resourceId);
-				long timeStamp=readingContext.getTtime();
-
-				Map<String,Object> readings=  readingContext.getReadings();
-				for(Map.Entry<String, Object> reading :readings.entrySet()) {
-
-					FacilioField fField=fieldMap.get(reading.getKey());
-					long fieldId=fField.getFieldId();
-					Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fieldId);
-					if(oldStats!=null)
-					{
-						String lastReading=(String)oldStats.get("value");
-						Long lastTimeStamp=(Long)oldStats.get("ttime");
-						if (lastReading!=null && lastTimeStamp!=null && 
-								lastReading!="-1" && timeStamp<lastTimeStamp) {
-							continue;
-						}
-					}
-					fields.add(fieldId);
-					String value= reading.getValue().toString();
-					timeBuilder.append(getCase(resourceId,fieldId,timeStamp,false));
-					valueBuilder.append(getCase(resourceId,fieldId,value,true));
-				}
-			}
-
-			if(timeBuilder.length()<=0 || valueBuilder.length()<=0) {
-				return 0;
-			}
-			String resourceList=StringUtils.join(resources, ",");
-			String fieldList=StringUtils.join(fields, ",");
-			String sql = "UPDATE Last_Reading SET TTIME= CASE "+timeBuilder.toString()+ " END , "
-					+ "VALUE= CASE "+valueBuilder.toString()
-					+" END WHERE ORGID="+orgId+" AND RESOURCE_ID IN ("+resourceList+") AND FIELD_ID IN ("+fieldList+")";
-			if(sql != null && !sql.isEmpty()) {
-				System.out.println("################ sql: "+sql);
-				try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-					int rowCount = pstmt.executeUpdate();
-					return rowCount;
-				}
-			}
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			throw e;
-		}
-
-		return 0;
-	}
-
 }

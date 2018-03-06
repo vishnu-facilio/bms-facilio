@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,6 +64,23 @@ public class EnergyPerformanceIndicatorContext {
 	}
 	public void setWorkflow(WorkflowContext workflow) {
 		this.workflow = workflow;
+	}
+	
+	private FacilioFrequency frequency;
+	public int getFrequency() {
+		if (frequency != null) {
+			return frequency.getValue();
+		}
+		return -1;
+	}
+	public void setFrequency(int frequency) {
+		this.frequency = FacilioFrequency.valueOf(frequency);
+	}
+	public void setFrequency(FacilioFrequency frequency) {
+		this.frequency = frequency;
+	}
+	public FacilioFrequency getFrequencyEnum() {
+		return frequency;
 	}
 
 	private ScheduleInfo schedule;
