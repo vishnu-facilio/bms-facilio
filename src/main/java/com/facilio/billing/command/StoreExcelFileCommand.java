@@ -1,6 +1,7 @@
 package com.facilio.billing.command;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
+
+import com.aspose.cells.*;
 
 public class StoreExcelFileCommand implements Command {
 
@@ -52,42 +55,77 @@ public class StoreExcelFileCommand implements Command {
 		return false;
 	}
 	
-	public void HandlePlaceHolders(File file, long templateId) throws InvalidFormatException, IOException, SQLException, RuntimeException
+	public void HandlePlaceHolders(File file, long templateId) throws Exception
 	{
-		XSSFWorkbook workbook = new XSSFWorkbook(file);
-		
-//		Workbook workbook = WorkbookFactory.create(file);
-//		final OPCPackage pkg = OPCPackage.open(file);
-//		final XSSFWorkbook workbook = new XSSFWorkbook(pkg);
-		
+		//XSSFWorkbook workbook = new XSSFWorkbook(file);
+		//Above is working code. 
 		Map<String,String> placeHolders = new HashMap();
-		ArrayList sheets = new ArrayList();
-		for(int i = 0; i<workbook.getNumberOfSheets();i++)
-		{
-			String sheetName =  workbook.getSheetName(i);
-			Sheet sheet = workbook.getSheet(sheetName);
-			Iterator<Row> rowIterator = sheet.iterator();
-			while(rowIterator.hasNext())
-			{
-				Row row = rowIterator.next();
-				Iterator<Cell> cellIterator = row.cellIterator();
-				while(cellIterator.hasNext())
-				{
-					Cell cell = cellIterator.next();
-					if(cell.getCellType() == Cell.CELL_TYPE_STRING)
-					{
-						String cellvalue = cell.getStringCellValue();
-						 if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
-				            {
-				            		String cellfinder = "S_"+sheet.getSheetName()+"_R_"+row.getRowNum()+"_C_"+cell.getColumnIndex();
-				            		String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
-				            		placeHolders.put(cellfinder, meterInfo);
-				            }
-					}
-				}
-			}
+		Workbook workbook = new Workbook(new FileInputStream(file));
+		WorksheetCollection worksheetCollection = workbook.getWorksheets();
+		for(Object worksheetObj : worksheetCollection){
+			Worksheet worksheet = (Worksheet) worksheetObj;
+			Cells cells = worksheet.getCells();
+			FindOptions opt = new FindOptions();
+            opt.setSeachOrderByRows(true);
+            opt.setSearchNext(true);
+            opt.setLookInType(LookInType.VALUES);
+            opt.setCaseSensitive(true);
+            opt.setRegexKey(false);
+            opt.setLookAtType(LookAtType.CONTAINS);
+            int rows = cells.getMaxRow();
+            int columns = cells.getMaxColumn();
+            for(int row = cells.getMinRow(); row <= rows; row++) {
+            	//com.aspose.cells.Row row1 = cells.getRow(row);
+            		for(int column = cells.getMinColumn(); column <= columns; column++)
+            		{
+            			//Column column1 = cells.getColumn(column);
+            			com.aspose.cells.Cell cell = cells.get(row, column);
+            			if(cell.getType() == CellValueType.IS_STRING)
+            			{
+            				String cellvalue = cell.getStringValue();
+            				if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
+            				{
+            					String cellfinder = "S_"+worksheet.getName()+"_R_"+row+"_C_"+column;
+            					String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
+            					placeHolders.put(cellfinder, meterInfo);
+            				}
+            				
+            			}
+            		}
+            }
+           
 		}
-		workbook.close();
+		
+		
+//		Map<String,String> placeHolders = new HashMap();
+//		ArrayList sheets = new ArrayList();
+//		for(int i = 0; i<workbook.getNumberOfSheets();i++)
+//		{
+//			String sheetName =  workbook.getSheetName(i);
+//			Sheet sheet = workbook.getSheet(sheetName);
+//			Iterator<Row> rowIterator = sheet.iterator();
+//			while(rowIterator.hasNext())
+//			{
+//				Row row = rowIterator.next();
+//				Iterator<Cell> cellIterator = row.cellIterator();
+//				while(cellIterator.hasNext())
+//				{
+//					Cell cell = cellIterator.next();
+//					if(cell.getCellType() == Cell.CELL_TYPE_STRING)
+//					{
+//						String cellvalue = cell.getStringCellValue();
+//						 if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
+//				            {
+//				            		String cellfinder = "S_"+sheet.getSheetName()+"_R_"+row.getRowNum()+"_C_"+cell.getColumnIndex();
+//				            		String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
+//				            		placeHolders.put(cellfinder, meterInfo);
+//				            }
+//					}
+//				}
+//			}
+//		}
+//		workbook.close();
+		
 		TenantBillingAPI.InsertPlaceHolders(placeHolders,templateId);
 	}
 }

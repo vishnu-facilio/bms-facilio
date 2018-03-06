@@ -454,8 +454,7 @@ Pragma: no-cache
 	
 	public static void InsertOrgInfo( long orgId, String name, String value) throws Exception
 	{
-	
-		if (GetOrgInfo(orgId, name) == null) {
+			if (GetOrgInfo(orgId, name) == null) {
 		
 		    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 		            .table(AccountConstants.getOrgInfoModule().getTableName())
@@ -471,7 +470,6 @@ Pragma: no-cache
 		}
 		else {
 			// update
-			
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getOrgInfoModule().getTableName()).fields(AccountConstants.getOrgInfoFields())
 					.andCustomWhere("OrgID = ? AND NAME = ?", orgId, name );
@@ -512,7 +510,7 @@ Pragma: no-cache
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();	
 		}
 			HashMap<String, Object> subscription = (HashMap<String, Object>) this.getContent().get("subscription");
 			String PlanId = (String) subscription.get("plan_id");
@@ -526,9 +524,16 @@ Pragma: no-cache
 			for (int i = 0; i < addons.size(); i++) {
 				HashMap<String, Object> addon = (HashMap<String, Object>) addons.get(i);
 				String Name = (String) addon.get("id");
+				if (Name.equals("staff-basic") || Name.equals("staff-professional")){
+					Name = "staff";
+			    }
+			    if (Name.equals("buildings") || Name.equals("building-professional")){
+			    	Name = "building";
+			    }
 				String Value = addon.get("quantity").toString();	
 			
 			try {
+				System.out.println(Name);
 				InsertOrgInfo(orgId,Name,Value);
 				
 			} catch (Exception e) {
