@@ -15,10 +15,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
-import org.docx4j.openpackaging.parts.SpreadsheetML.WorkbookPart;
-import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 
 import com.aspose.cells.Cells;
 import com.aspose.cells.SaveFormat;
@@ -72,7 +68,7 @@ public class GenerateUsageRecordCommand implements Command {
 					String meterName = meterInfo.substring(0,meterInfo.indexOf("."));
 					String paramName = meterInfo.substring(meterInfo.indexOf(".")+1, meterInfo.indexOf("#")); 
 					String dataRequired = meterInfo.substring(meterInfo.indexOf("#")+1, meterInfo.length());
-					//long meterId = TenantBillingAPI.GetMeterId(meterName);
+					long meterId = TenantBillingAPI.GetMeterId(meterName);
 
 					String sheetName = cellfinder.substring(cellfinder.indexOf("S_")+2, cellfinder.indexOf("_R"));
 					String rowNumStr = cellfinder.substring(cellfinder.indexOf("_R_")+3, cellfinder.indexOf("_C"));
@@ -88,22 +84,21 @@ public class GenerateUsageRecordCommand implements Command {
 					Cells cells = worksheet.getCells();
 					com.aspose.cells.Cell cell =  cells.get(rowN, cellN);
 					double reading = 0.0;
-//					if(dataRequired.equalsIgnoreCase("OR"))
-//					{
-//						reading = TenantBillingAPI.GetMeterOpenReading(meterId,paramName,startTime);
-//					}
-//					else if(dataRequired.equalsIgnoreCase("CR"))
-//					{
-//						reading = TenantBillingAPI.GetMeterCloseReading(meterId,paramName,endTime );
-//					}
-//					else
-//					{
-//						reading = TenantBillingAPI.GetMeterRun(meterId,paramName,startTime, endTime );		
-//					}
+					if(dataRequired.equalsIgnoreCase("OR"))
+					{
+						reading = TenantBillingAPI.GetMeterOpenReading(meterId,paramName,startTime);
+					}
+					else if(dataRequired.equalsIgnoreCase("CR"))
+					{
+						reading = TenantBillingAPI.GetMeterCloseReading(meterId,paramName,endTime );
+					}
+					else
+					{
+						reading = TenantBillingAPI.GetMeterRun(meterId,paramName,startTime, endTime );
+					}
 					System.out.println("##### Reading Before cell set : "+reading);
-					//cell.setCellValue(reading);
-					cell.setValue(1000);
-				}			
+					cell.setValue(reading);
+				}
 			}
 			HashMap<String, Object> timeData = DateTimeUtil.getTimeData(endTime); 	
 			String monthstr = Month.of((int)timeData.get("month")).name();
