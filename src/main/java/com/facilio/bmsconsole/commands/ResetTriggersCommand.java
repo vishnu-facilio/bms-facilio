@@ -28,7 +28,7 @@ import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
-import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
 public class ResetTriggersCommand implements Command {
 

@@ -21,7 +21,7 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 

@@ -8,7 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 

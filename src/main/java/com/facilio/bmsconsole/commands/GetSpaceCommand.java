@@ -8,7 +8,6 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;

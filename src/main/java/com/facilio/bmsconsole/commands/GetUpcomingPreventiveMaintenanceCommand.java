@@ -23,7 +23,7 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.PMTriggerContext;
-import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo;
 
 public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 

@@ -15,7 +15,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -29,6 +28,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class Home extends ActionSupport {

@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -22,7 +21,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;

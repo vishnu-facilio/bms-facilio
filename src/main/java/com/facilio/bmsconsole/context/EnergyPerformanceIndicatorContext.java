@@ -9,7 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;

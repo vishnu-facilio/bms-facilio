@@ -6,8 +6,7 @@ import java.sql.SQLException;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.tasker.executor.ScheduleInfo;
-import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 import com.fasterxml.jackson.core.JsonParseException;

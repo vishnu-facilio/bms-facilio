@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo;
 
 public class ReportInfo {
 	

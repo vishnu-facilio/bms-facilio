@@ -31,7 +31,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;

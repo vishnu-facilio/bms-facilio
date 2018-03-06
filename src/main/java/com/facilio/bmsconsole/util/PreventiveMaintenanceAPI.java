@@ -42,7 +42,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.executor.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.facilio.tasker.executor;
+package com.facilio.tasker;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;

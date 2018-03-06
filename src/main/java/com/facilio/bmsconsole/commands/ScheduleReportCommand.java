@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.executor.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo;
 
 public class ScheduleReportCommand implements Command {
 
