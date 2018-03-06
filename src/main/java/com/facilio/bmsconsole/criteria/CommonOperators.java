@@ -48,7 +48,20 @@ public enum CommonOperators implements Operator<String> {
 			}
 			return null;
 		}
+	},
+	LAST_N_READINGS(49, "last N values") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			return null;
+		}
+
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			return null;
+		}
 	};
+	
+	
 	
 	@Override
 	public abstract String getWhereClause(String columnName, String value);

@@ -6,15 +6,19 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.FacilioExpressionParser.ExpressionAggregateOperator;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext {
 	
@@ -114,23 +118,110 @@ public class ExpressionContext {
 		this.criteria = criteria;
 	}
 	
+	public boolean getIsLastNValuesExpression() {
+		Criteria criteria = this.getCriteria();
+		if(criteria != null) {
+			Map<Integer, Condition> conditions = criteria.getConditions();
+			if(conditions != null) {
+				
+				for(Integer key :conditions.keySet()) {
+					
+					Condition condition = conditions.get(key);
+					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	public String getLastNValuesInnerQuery() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(this.getModuleName());
+		
+		Condition parentIdCondition = null,lastNreadingsCondition=null;
+		Criteria criteria = this.getCriteria();
+		if(criteria != null) {
+			Map<Integer, Condition> conditions = criteria.getConditions();
+			if(conditions != null) {
+				
+				for(Integer key :conditions.keySet()) {
+					
+					Condition condition = conditions.get(key);
+					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS)) {
+						lastNreadingsCondition = condition;
+					}
+					else if(condition.getFieldName().contains("parentId")) {
+						parentIdCondition = condition;
+					}
+					
+				}
+			}
+		}
+		
+		String s = "select ID from "+module.getTableName()+" Where "+parentIdCondition.getComputedWhereClause()+" order by TTIME desc limit "+lastNreadingsCondition.getValue();
+		System.out.println("getLastNValuesInnerQuery -- "+s);
+		return s;
+	}
+	
+	public List<Condition> getLastNValuesRemainingCondition() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<Condition> conditionList = new ArrayList<>();
+		Criteria criteria = this.getCriteria();
+		if(criteria != null) {
+			Map<Integer, Condition> conditions = criteria.getConditions();
+			if(conditions != null) {
+				
+				for(Integer key :conditions.keySet()) {
+						
+					Condition condition = conditions.get(key);
+					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS) || condition.getFieldName().contains("parentId")) {
+					}
+					else {
+						conditionList.add(condition);
+					}
+				}
+			}
+		}
+		return conditionList;
+	}
+	
 	public Object executeExpression() throws Exception {
 		
+		GenericSelectRecordBuilder selectBuilder = null;
 		if(getConstant() != null) {
 			return getConstant();
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
 		FacilioModule module = modBean.getModule(moduleName); 
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCriteria(criteria)
-				;
 		
-		if(modBean.getModule(moduleName).getExtendModule() != null) {
-			selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
-			.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
+		if(getIsLastNValuesExpression()) {
+			
+			String innerQuery = getLastNValuesInnerQuery();
+			selectBuilder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.innerJoin("("+ innerQuery + ") b")
+					.on(module.getTableName()+".ID=b.ID")
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+			
+			for(Condition condition:getLastNValuesRemainingCondition()) {
+				selectBuilder.andCondition(condition);
+			}
+		}
+		else {
+			selectBuilder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCriteria(criteria)
+					;
+			
+			if(modBean.getModule(moduleName).getExtendModule() != null) {
+				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
+				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
+			}
 		}
 		
 		if(fieldName != null) {
