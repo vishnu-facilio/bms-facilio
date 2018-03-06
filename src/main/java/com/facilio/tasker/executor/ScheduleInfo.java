@@ -124,7 +124,7 @@ public class ScheduleInfo {
 	}
 	
 	public long nextExecutionTime(long startTime) {
-		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime, true);
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(startTime+1, true);
 //		zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
 		if(times == null || times.isEmpty()) {
 			addTime(zdt.toLocalTime().truncatedTo(ChronoUnit.MINUTES));
@@ -266,7 +266,7 @@ public class ScheduleInfo {
 				}
 				break;
 		}
-		return nextZdt.toEpochSecond();
+		return nextZdt.toEpochSecond() - 1;
 	}
 	
 	private ZonedDateTime incrementMonthlyWeek(ZonedDateTime zdt, int frequency) {
@@ -368,8 +368,8 @@ public class ScheduleInfo {
 
 	private ZonedDateTime compareHourAndMinute(ZonedDateTime zdt) {
 		for(LocalTime time : times) {
-			if(time.isAfter(zdt.toLocalTime())) {
-				return zdt.with(time);
+			if(time.isAfter(zdt.toLocalTime()) || time.equals(zdt.toLocalTime())) {
+				return zdt.with(time).plusSeconds(1);
 			}
 		}
 		return null;
