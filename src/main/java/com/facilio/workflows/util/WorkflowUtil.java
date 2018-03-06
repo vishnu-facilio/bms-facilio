@@ -84,7 +84,11 @@ public class WorkflowUtil {
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
 	static final String CRITERIA_STRING =  "criteria";
+	static final String ORDER_BY_STRING =  "orderBy";
+	static final String SORT_STRING =  "sort";
+	static final String LIMIT_STRING =  "limit";
 	static final String CONDITION_STRING =  "condition";
+	static final String CONDITIONS_STRING =  "conditions";
 	static final String PATTERN_STRING =  "pattern";
 	static final String SEQUENCE_STRING =  "sequence";
 	static final String RESULT_STRING =  "result";
@@ -383,6 +387,17 @@ public class WorkflowUtil {
     	            	 expressionContext.setFieldName(fieldName);
     	            	 String aggregate = field.getAttribute(AGGREGATE_STRING);
     	            	 expressionContext.setAggregateString(aggregate);
+    	            	 
+    	            	 NodeList aggreagteConditionNodes = field.getElementsByTagName(CONDITION_STRING);
+    	            	 for(int j=0;j<aggreagteConditionNodes.getLength();j++) {
+    	            		 
+    	            		 Node aggreagteConditionNode = aggreagteConditionNodes.item(j); 
+    	            		 if (aggreagteConditionNode.getNodeType() == Node.ELEMENT_NODE) {
+    	            			 Element condition = (Element) aggreagteConditionNode;
+    	            			 Condition condition1 = getConditionObjectFromConditionString(condition.getTextContent(),expressionContext.getModuleName());
+    	            			 expressionContext.addAggregateCondition(condition1);
+    	            		 }
+    	            	 }
                     }
                 }
                 
@@ -401,42 +416,69 @@ public class WorkflowUtil {
                 		if(conditionNode.getNodeType() == Node.ELEMENT_NODE) {
                 			Element condition  = (Element) conditionNode;
                 			String sequence = condition.getAttribute(SEQUENCE_STRING);
-                			String conditionString = condition.getTextContent();
-                			Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
-                			
-                			Matcher matcher = condtionStringpattern.matcher(conditionString);
-        					while (matcher.find()) {
-        						String fieldName = matcher.group(2);
-        						FacilioField field = modBean.getField(fieldName, expressionContext.getModuleName());
-        						Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
-        						String conditionValue = matcher.group(6);
-        						
-        						if (matcher.group(3) != null) {
-        							if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
-        								BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
-        								condition1 = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
-        							}
-        							else {
-        								throw new IllegalArgumentException("BaseLine is not supported for this operator");
-        							}
-        						}
-        						else {
-        							condition1 = new Condition();
-        							condition1.setField(field);
-        							condition1.setOperator(operator);
-        							condition1.setValue(conditionValue);
-        						}
-        					}
+                			condition1 = getConditionObjectFromConditionString(condition.getTextContent(),expressionContext.getModuleName());
                 			conditions.put(Integer.parseInt(sequence), condition1);
                 		}
                 	}
                 	criteria1.setConditions(conditions);
                 	expressionContext.setCriteria(criteria1);
                 }
+                
+                NodeList orderByNodes = expression.getElementsByTagName(ORDER_BY_STRING);
+                Node orderByNode = orderByNodes.item(0);
+               
+                if(orderByNode != null && orderByNode.getNodeType() == Node.ELEMENT_NODE) {
+                	Element orderBy  = (Element) orderByNode;
+                	String orderByFieldName = orderBy.getAttribute(NAME_STRING);
+                	String sortString = orderBy.getAttribute(SORT_STRING);
+                	expressionContext.setOrderByFieldName(orderByFieldName);
+                	expressionContext.setSortBy(sortString);
+                }
+                NodeList limitNodes = expression.getElementsByTagName(LIMIT_STRING);
+                Node limitNode = limitNodes.item(0);
+                
+                if(limitNode != null && limitNode.getNodeType() == Node.ELEMENT_NODE) {
+                	
+                	Element limit  = (Element) limitNode;
+                	expressionContext.setLimit(limit.getTextContent());
+                }
             }
             return expressionContext;
         }
 		return null;
+	}
+	
+	public static Condition getConditionObjectFromConditionString(String conditionString,String moduleName) throws Exception {
+
+		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Matcher matcher = condtionStringpattern.matcher(conditionString);
+		Condition condition = null;
+		while (matcher.find()) {
+			String fieldName = matcher.group(2);
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
+			String conditionValue = matcher.group(6);
+			
+			condition = new Condition();
+			if (matcher.group(3) != null) {
+				if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
+					BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+				}
+				else {
+					throw new IllegalArgumentException("BaseLine is not supported for this operator");
+				}
+			}
+			else {
+				condition = new Condition();
+				condition.setField(field);
+				condition.setOperator(operator);
+				condition.setValue(conditionValue);
+			}
+		}
+		return condition;
 	}
 	
 	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {

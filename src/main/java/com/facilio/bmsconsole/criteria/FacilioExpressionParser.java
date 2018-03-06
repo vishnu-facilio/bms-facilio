@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.criteria;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.udojava.evalex.Expression;
 
 public class FacilioExpressionParser {
@@ -398,56 +398,6 @@ public class FacilioExpressionParser {
 
 		public void setFieldMap(Map<String, FacilioField> fieldMap) {
 			this.fieldMap = fieldMap;
-		}
-	}
-	public enum ExpressionAggregateOperator {
-		
-		FIRST_VALUE(0,"[0]","{$place_holder$}"),
-		COUNT(1,"count","count({$place_holder$})"),
-		AVERAGE(2,"avg","avg({$place_holder$})"),
-		SUM(3,"sum","sum({$place_holder$})"),
-		MIN(4,"min","min({$place_holder$})"),
-		MAX(5,"max","max({$place_holder$})"),
-		LAST_VALUE(6,"lastValue","{$place_holder$}");
-		
-		private Integer value;
-		private String name;
-		private String stringValue;
-		
-		public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getValue() {
-			return value;
-		}
-		public String getStringValue() {
-			return stringValue;
-		}
-		ExpressionAggregateOperator(Integer value,String name,String stringValue) {
-			this.value = value;
-			this.name= name;
-			this.stringValue = stringValue;
-		}
-		public static ExpressionAggregateOperator getExpressionAggregateOperator(String name) {
-			return EXP_AGGREGATE_OPERATOR_MAP_BY_NAME.get(name);
-		}
-		static final Map<String, ExpressionAggregateOperator> EXP_AGGREGATE_OPERATOR_MAP_BY_NAME = Collections.unmodifiableMap(initTypeMap());
-		static Map<String, ExpressionAggregateOperator> initTypeMap() {
-			Map<String, ExpressionAggregateOperator> typeMap = new HashMap<>();
-			for(ExpressionAggregateOperator type : ExpressionAggregateOperator.values()) {
-				typeMap.put(type.getName(), type);
-			}
-			return typeMap;
-		}
-		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
-			field.setColumnName(selectFieldString);
-			
-			return field;
 		}
 	}	
 }
