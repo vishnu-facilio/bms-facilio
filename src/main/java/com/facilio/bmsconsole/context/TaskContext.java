@@ -63,6 +63,14 @@ public class TaskContext extends TicketContext {
 		this.readingDataId = readingDataId;
 	}
 	
+	private Object lastReading;
+	public Object getLastReading() {
+		return lastReading;
+	}
+	public void setLastReading(Object lastReading) {
+		this.lastReading = lastReading;
+	}
+	
 	private long sectionId = -1;
 	public long getSectionId() {
 		return sectionId;

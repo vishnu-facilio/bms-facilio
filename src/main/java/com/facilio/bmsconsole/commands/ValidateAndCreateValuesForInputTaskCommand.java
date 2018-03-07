@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -13,6 +14,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -30,6 +32,9 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 				if(recordIds != null && recordIds.size() == 1) {
 					TaskContext completeRecord = getTask(recordIds.get(0));
 					if(completeRecord != null) {
+						if(task.getInputTime() == -1) {
+							task.setInputTime(System.currentTimeMillis());
+						}
 						switch(completeRecord.getInputTypeEnum()) {
 							case READING:
 								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -40,6 +45,10 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								reading.setParentId(completeRecord.getResource().getId());
 								reading.addReading(field.getName(), task.getInputValue());
 								reading.setTtime(task.getInputTime());
+								if (completeRecord.getLastReading() == null) {
+									Object lastreading = ReadingsAPI.getLastReadingValue(AccountUtil.getCurrentOrg().getId(), completeRecord.getResource().getId(), field);
+									task.setLastReading(lastreading != null ? lastreading : -1);
+								}
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 								context.put(FacilioConstants.ContextNames.READING, reading);
 								break;

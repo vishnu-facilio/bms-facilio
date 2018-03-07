@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -150,7 +151,8 @@ public class TicketAPI {
 	
 	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception 
 	{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		List<FacilioField> fields = modBean.getAllFields("task");
 		
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
@@ -161,7 +163,13 @@ public class TicketAPI {
 				.andCustomWhere("PARENT_TICKET_ID = ?", ticketId)
 				.orderBy("ID");
 
-		List<TaskContext> tasks = builder.get();	
+		List<TaskContext> tasks = builder.get();
+		for(TaskContext task: tasks) {
+			if (task.getLastReading() == null && task.getInputTypeEnum() == InputType.READING && task.getResource() != null) {
+				FacilioField readingField = modBean.getField(task.getReadingFieldId());
+				task.setLastReading(ReadingsAPI.getLastReadingValue(orgId, task.getResource().getId(), readingField));
+			}
+		}
 		return tasks;
 	}
 	

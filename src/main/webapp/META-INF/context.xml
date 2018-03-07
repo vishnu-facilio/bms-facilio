@@ -9,7 +9,7 @@
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
 		user="root" 
-		password=""
+		password="root"
 		explicitUrl="true"
         url="jdbc:mysql://localhost:3306/bms"
 		/>
@@ -33,7 +33,7 @@
     	  removeAbandonedTimeout="55"
     	  username="root"
     	  user="root"
-    	  password=""
+    	  password="root"
     	  databaseName="bms"
     	  driverClassName="com.mysql.jdbc.Driver"
 		  dataSourceJNDI="BmsXA"
