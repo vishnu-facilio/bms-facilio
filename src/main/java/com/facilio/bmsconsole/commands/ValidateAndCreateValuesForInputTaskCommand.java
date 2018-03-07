@@ -46,7 +46,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 								reading.addReading(field.getName(), task.getInputValue());
 								reading.setTtime(task.getInputTime());
 								if (completeRecord.getLastReading() == null) {
-									Object lastreading = ReadingsAPI.getLastReadingValue(AccountUtil.getCurrentOrg().getId(), completeRecord.getResource().getId(), field);
+									Object lastreading = ReadingsAPI.getLastReadingValue(completeRecord.getResource().getId(), field);
 									task.setLastReading(lastreading != null ? lastreading : -1);
 								}
 								context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());

@@ -273,7 +273,7 @@ public class ExpressionContext {
 							parentIdString = condition.getValue();
 						}
 					}
-					exprResult = ReadingsAPI.getLastReadingValue(AccountUtil.getCurrentOrg().getId(), Long.parseLong(parentIdString), select);
+					exprResult = ReadingsAPI.getLastReadingValue(Long.parseLong(parentIdString), select);
 					return exprResult;
 				}
 			}

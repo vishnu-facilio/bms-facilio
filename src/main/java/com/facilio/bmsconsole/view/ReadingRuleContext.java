@@ -107,4 +107,81 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void setPercentage(long percentage) {
 		this.percentage = percentage;
 	}
+	
+	private ThresholdType thresholdType;
+	public int getThresholdType() {
+		if (thresholdType != null) {
+			return thresholdType.getValue();
+		}
+		return -1;
+	}
+	public void setThresholdType(int thresholdType) {
+		this.thresholdType = ThresholdType.valueOf(thresholdType);
+	}
+	public ThresholdType getThresholdTypeEnum() {
+		return thresholdType;
+	}
+	public void setThresholdType(ThresholdType thresholdType) {
+		this.thresholdType = thresholdType;
+	}
+	
+	private int flapCount = -1;
+	public int getFlapCount() {
+		return flapCount;
+	}
+	public void setFlapCount(int flapCount) {
+		this.flapCount = flapCount;
+	}
+	
+	private long flapInterval = -1;
+	public long getFlapInterval() {
+		return flapInterval;
+	}
+	public void setFlapInterval(long flapInterval) {
+		this.flapInterval = flapInterval;
+	}
+
+	private double minFlapValue = -1;
+	public double getMinFlapValue() {
+		return minFlapValue;
+	}
+	public void setMinFlapValue(double minFlapValue) {
+		this.minFlapValue = minFlapValue;
+	}
+
+	private double maxFlapValue = -1;
+	public double getMaxFlapValue() {
+		return maxFlapValue;
+	}
+	public void setMaxFlapValue(double maxFlapValue) {
+		this.maxFlapValue = maxFlapValue;
+	}
+
+	private int flapFrequency = -1;
+	public int getFlapFrequency() {
+		return flapFrequency;
+	}
+	public void setFlapFrequency(int flapFrequency) {
+		this.flapFrequency = flapFrequency;
+	}
+
+	public enum ThresholdType {
+		SIMPLE,
+		AGGREGATION,
+		BASE_LINE,
+		FLAPPING,
+		ADVANCED
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public static ThresholdType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 }

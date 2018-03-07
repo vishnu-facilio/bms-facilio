@@ -510,6 +510,12 @@ public class FieldFactory {
 		fields.add(getField("operator", "OPERATOR", module, FieldType.STRING));
 		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.NUMBER));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("thresholdType", "THRESHOLD_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("flapCount", "FLAP_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("flapInterval", "FLAP_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("minFlapValue", "MIN_FLAP_VAL", module, FieldType.NUMBER));
+		fields.add(getField("maxFlapValue", "MAX_FLAP_VAL", module, FieldType.NUMBER));
+		fields.add(getField("flapFrequency", "FLAP_FREQUENCY", module, FieldType.NUMBER));
 
 		return fields;
 	}
@@ -3136,6 +3142,17 @@ public class FieldFactory {
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getReadingRuleFlapsFields() {
+		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("flapTime", "FLAP_TIME", module, FieldType.DATE_TIME));
 		
 		return fields;
 	}

@@ -167,7 +167,7 @@ public class TicketAPI {
 		for(TaskContext task: tasks) {
 			if (task.getLastReading() == null && task.getInputTypeEnum() == InputType.READING && task.getResource() != null) {
 				FacilioField readingField = modBean.getField(task.getReadingFieldId());
-				task.setLastReading(ReadingsAPI.getLastReadingValue(orgId, task.getResource().getId(), readingField));
+				task.setLastReading(ReadingsAPI.getLastReadingValue(task.getResource().getId(), readingField));
 			}
 		}
 		return tasks;

@@ -44,6 +44,7 @@ import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.view.ReadingRuleContext.ThresholdType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -241,17 +242,34 @@ public enum ActionType {
 				obj.put("baselineId", rule.getBaselineId());
 			}
 			obj.put("sourceType", 6);
-			DateRange range = null;
-			if (rule.getAggregation() != null) {
-				range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange()));
-				obj.put("startTime", range.getStartTime());
+			DateRange range = getRange(rule, reading);
+			obj.put("startTime", range.getStartTime());
+			if (range.getEndTime() != -1) {
 				obj.put("endTime", range.getEndTime());
 			}
-			else {
-				obj.put("startTime", reading.getTtime());
-				range.setStartTime(reading.getTtime());
-			}
+			
 			obj.put("readingMessage", getMessage(rule, range));
+		}
+		
+		private DateRange getRange(ReadingRuleContext rule, ReadingContext reading) {
+			DateRange range = null;
+			switch (rule.getThresholdTypeEnum()) {
+				case SIMPLE:
+					range = new DateRange();
+					range.setStartTime(reading.getTtime());
+					break;
+				case AGGREGATION:
+				case BASE_LINE:
+					range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange()));
+					break;
+				case FLAPPING:
+				case ADVANCED:
+					range = new DateRange();
+					range.setEndTime(reading.getTtime());
+					range.setStartTime(range.getEndTime() - rule.getFlapInterval());
+					break;
+			}
+			return range;
 		}
 		
 		private String getMessage(ReadingRuleContext rule, DateRange range) throws Exception {
@@ -304,7 +322,7 @@ public enum ActionType {
 							.append(bl.getName())
 							.append("'");
 			}
-			else {
+			else if (rule.getThresholdTypeEnum() != ThresholdType.FLAPPING){
 				switch (operator) {
 					case EQUALS:
 						msgBuilder.append("was ");
@@ -326,6 +344,14 @@ public enum ActionType {
 				if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
 					msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
 				}
+			}
+			else {
+				msgBuilder.append("flapped ")
+							.append(rule.getFlapFrequency())
+							.append(" times from ")
+							.append(rule.getMinFlapValue())
+							.append(" to ")
+							.append(rule.getMaxFlapValue());
 			}
 			
 			if (range.getEndTime() != -1) {

@@ -36,14 +36,15 @@ import com.facilio.transaction.FacilioConnectionPool;
 
 public class ReadingsAPI {
 	
-	public static Object getLastReadingValue(Long orgId,Long resourceId,FacilioField field) throws Exception {
+	public static Object getLastReadingValue(Long resourceId,FacilioField field) throws Exception {
+		FacilioModule module = ModuleFactory.getLastReadingModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getLastReadingFields())
 				.table(ModuleFactory.getLastReadingModule().getTableName())
-				.andCustomWhere(ModuleFactory.getLastReadingModule().getTableName()+".ORGID = ?", orgId)
-				.andCustomWhere(ModuleFactory.getLastReadingModule().getTableName()+".RESOURCE_ID = ?", resourceId)
-				.andCustomWhere(ModuleFactory.getLastReadingModule().getTableName()+".FIELD_ID = ?", field.getFieldId());
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId)
+				.andCustomWhere(module.getTableName()+".FIELD_ID = ?", field.getFieldId());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
@@ -189,7 +190,7 @@ public class ReadingsAPI {
 					FacilioField fField=fieldMap.get(reading.getKey());
 					long fieldId=fField.getFieldId();
 					if (lastReadingMap != null) {
-						Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fieldId);
+						Map<String,Object> oldStats= lastReadingMap.get(resourceId+"_"+fField.getName());
 						if(oldStats!=null)
 						{
 							String lastReading=(String)oldStats.get("value");

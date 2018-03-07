@@ -832,4 +832,13 @@ public class ModuleFactory {
 		enpi.setTableName("EnergyPerformanceIndicator");
 		return enpi;
 	}
+	
+	public static FacilioModule getReadingRuleFlapsModule() {
+		FacilioModule readingRuleFlaps = new FacilioModule();
+		readingRuleFlaps.setName("readingRuleFlaps");
+		readingRuleFlaps.setDisplayName("Reading Rule Flaps");
+		readingRuleFlaps.setTableName("Reading_Rule_Flaps");
+		
+		return readingRuleFlaps;
+	}
 }
