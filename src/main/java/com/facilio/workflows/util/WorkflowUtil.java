@@ -272,7 +272,12 @@ public class WorkflowUtil {
 						 Object key = conditionEntry.getKey();
 						 Element conditionElement = doc.createElement(CONDITION_STRING);
 						 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
-						 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 if (condition.getOperator() instanceof DateOperators && workflowContext.getBaseLineConditions() != null &&  workflowContext.getBaseLineConditions().containsKey(key)) {
+							 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + workflowContext.getBaseLineConditions().get(key) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 }
+						 else {
+							 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 }
 						 criteriaElement.appendChild(conditionElement);
 					 }
 					 expressionElement.appendChild(criteriaElement);
