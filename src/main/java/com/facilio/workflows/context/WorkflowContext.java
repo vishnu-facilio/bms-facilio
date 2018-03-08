@@ -18,8 +18,17 @@ public class WorkflowContext {
 	String workflowString;
 	List<ParameterContext> parameters;
 	List<ExpressionContext> expressions;
+	Map<String,Object> variableResultMap;
 	String resultEvaluator;
 	
+	public Map<String, Object> getVariableResultMap() {
+		return variableResultMap;
+	}
+
+	public void setVariableResultMap(Map<String, Object> variableToExpresionMap) {
+		this.variableResultMap = variableToExpresionMap;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -80,12 +89,21 @@ public class WorkflowContext {
 	public void setResultEvaluator(String resultEvaluator) {
 		this.resultEvaluator = resultEvaluator;
 	}
+
+	private Map<Integer, Long> baseLineConditions;
+	public void setBaseLineConditions(Map<Integer, Long> baseLineConditions) {
+		this.baseLineConditions = baseLineConditions;
+	}
+	
+	public Map<Integer, Long> getBaseLineConditions() {
+		return this.baseLineConditions;
+	}
 	
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
 		
-		Map<String,String> variableToExpresionMap = new HashMap<String,String>();
+		Map<String,Object> variableToExpresionMap = new HashMap<String,Object>();
 		for(int i=0; i<expressions.size(); i++) {
 			
 			ExpressionContext expressionContext = expressions.get(i);
@@ -110,6 +128,7 @@ public class WorkflowContext {
 			parameterContext.setValue(variableToExpresionMap.get(expressionContext.getName()));
 			this.addParamater(parameterContext);
 		}
+		setVariableResultMap(variableToExpresionMap);
 		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
 		result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
 		System.out.println("result --- "+result);
@@ -136,10 +155,15 @@ public class WorkflowContext {
 		return expressionContext;
 	}
 
-	public Object evaluateExpression(String exp,Map<String,String> variablesMap) {
+	public Object evaluateExpression(String exp,Map<String,Object> variablesMap) {
+
+		System.out.println("EXPRESSION STRING IS -- "+exp);
+		if(exp == null) {
+			return null;
+		}
 		Expression expression = new Expression(exp);
 		for(String key : variablesMap.keySet()) {
-			String value = variablesMap.get(key);
+			String value = (String) variablesMap.get(key);
 			expression.with(""+key, value);
 		}
 		BigDecimal result = expression.eval();

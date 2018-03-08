@@ -103,6 +103,21 @@ public class WorkflowUtil {
 		return workflowContext.executeWorkflow();
 	}
 	
+	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap) throws Exception {
+		
+		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext.getParameters(),paramMap);
+		workflowContext.setParameters(parameterContexts);
+		workflowContext.executeWorkflow();
+		return workflowContext.getVariableResultMap();
+	}
+	
+	public static Map<String, Object> getExpressionResultMap(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
+		
+		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
+		return getExpressionResultMap(workflowContext.getWorkflowString(),paramMap);
+	}
+	
 	public static Long addWorkflow(String workflowString) throws Exception {
 		WorkflowContext workflowContext = new WorkflowContext();
 		workflowContext.setWorkflowString(workflowString);
@@ -187,7 +202,6 @@ public class WorkflowUtil {
 		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap);
 	}
-
 	
 	public static List<ParameterContext> validateAndGetParameters(List<ParameterContext> paramterContexts,Map<String,Object> paramMap) throws Exception {
 		
@@ -284,7 +298,12 @@ public class WorkflowUtil {
 						 Object key = conditionEntry.getKey();
 						 Element conditionElement = doc.createElement(CONDITION_STRING);
 						 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
-						 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 if (condition.getOperator() instanceof DateOperators && workflowContext.getBaseLineConditions() != null &&  workflowContext.getBaseLineConditions().containsKey(key)) {
+							 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + workflowContext.getBaseLineConditions().get(key) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 }
+						 else {
+							 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+						 }
 						 criteriaElement.appendChild(conditionElement);
 					 }
 					 expressionElement.appendChild(criteriaElement);
