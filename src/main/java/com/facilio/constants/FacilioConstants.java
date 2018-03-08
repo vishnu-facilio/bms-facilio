@@ -398,6 +398,7 @@ public class FacilioConstants {
 		public static final String HISTORY_READINGS = "historyReadings";
 		
 		public static final String PORTALINFO = "portalInfo";
+		public static final String MARKED_READINGS = "markedReadings";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

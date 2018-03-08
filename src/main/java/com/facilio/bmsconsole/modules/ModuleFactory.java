@@ -856,4 +856,12 @@ public class ModuleFactory {
 		repSpaceFilter.setTableName("Report_SpaceFilter");
 		return repSpaceFilter;
 	}
+	
+	public static FacilioModule getMarkedReadingModule() {
+		FacilioModule markedReading = new FacilioModule();
+		markedReading.setName("markedReading");
+		markedReading.setDisplayName("Marked Reading");
+		markedReading.setTableName("Marked_Reading");
+		return markedReading;
+	}
 }

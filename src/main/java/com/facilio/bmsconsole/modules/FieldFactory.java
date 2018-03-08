@@ -3271,28 +3271,44 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getInstanceMappingFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("assetId", "ASSET_ID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("fieldId", "FIELD_ID",FieldType.NUMBER ));
+		fields.add(getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(getField("device", "DEVICE_NAME",FieldType.STRING ));
+		fields.add(getField("instance", "INSTANCE_NAME",FieldType.STRING ));
+		fields.add(getField("assetId", "ASSET_ID",FieldType.NUMBER ));
+		fields.add(getField("fieldId", "FIELD_ID",FieldType.NUMBER ));
 		return fields;
 	}
 
 	public static List<FacilioField> getUnmodeledDataFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("instanceId", "INSTANCE_ID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("ttime", "TTIME",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("value", "VALUE",FieldType.STRING ));
+		fields.add(getField("instanceId", "INSTANCE_ID",FieldType.NUMBER ));
+		fields.add(getField("ttime", "TTIME",FieldType.NUMBER ));
+		fields.add(getField("value", "VALUE",FieldType.STRING ));
 		return fields;
 	}
 
 	public static List<FacilioField> getUnmodeledInstanceFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("orgId", "ORGID",FieldType.NUMBER ));
-		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
-		fields.add(FieldFactory.getField("instance", "INSTANCE_NAME",FieldType.STRING ));
+		fields.add(getField("orgId", "ORGID",FieldType.NUMBER ));
+		fields.add(getField("device", "DEVICE_NAME",FieldType.STRING ));
+		fields.add(getField("instance", "INSTANCE_NAME",FieldType.STRING ));
 		return fields;
 	}
 	
+	
+	public static List<FacilioField> getMarkedReadingFields() {
+		FacilioModule module = ModuleFactory.getMarkedReadingModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("dataId", "DATA_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		fields.add(getField("actualValue", "ACTUAL_VALUE", module, FieldType.STRING));
+		fields.add(getField("modifiedValue", "MODIFIED_VALUE", module, FieldType.STRING));
+		return fields;
+	}
 }
