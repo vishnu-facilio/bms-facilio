@@ -128,7 +128,7 @@ public class DeltaCalculationCommand implements Command {
 			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
 				delta=currentReading-lastReading;
 				
-				if(delta!=0 && lastDelta!=0 && ((currentTimestamp-lastDeltaTimestamp) <=(dataInterval+rearmInterval))) {
+				if(delta>=1 && lastDelta>=1 && ((currentTimestamp-lastDeltaTimestamp) <=(dataInterval+rearmInterval))) {
 					//if current delta or lastDelta  is zero no point in coming here..
 					//if the time interval is less than or equals dataInterval+ adjuster range minutes we can check the below rule..
 					if(delta >= 5*lastDelta) {
