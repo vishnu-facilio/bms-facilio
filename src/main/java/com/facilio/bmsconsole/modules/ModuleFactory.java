@@ -849,4 +849,11 @@ public class ModuleFactory {
 		enpi.setTableName("PortalInfo");
 		return enpi;
 	}
+	public static FacilioModule getReportSpaceFilterModule() {
+		FacilioModule repSpaceFilter = new FacilioModule();
+		repSpaceFilter.setName("reportspacefilter");
+		repSpaceFilter.setDisplayName("Report Space Filter");
+		repSpaceFilter.setTableName("Report_SpaceFilter");
+		return repSpaceFilter;
+	}
 }

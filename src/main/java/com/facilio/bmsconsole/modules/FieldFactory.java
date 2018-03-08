@@ -2575,6 +2575,51 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getReportSpaceFilterFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReportSpaceFilterModule();
+
+		fields.add(getIdField(module));
+		
+		FacilioField reportId = new FacilioField();
+		reportId.setName("reportId");
+		reportId.setDataType(FieldType.NUMBER);
+		reportId.setColumnName("REPORT_ID");
+		reportId.setModule(module);
+		fields.add(reportId);
+		
+		FacilioField siteId = new FacilioField();
+		siteId.setName("siteId");
+		siteId.setDataType(FieldType.NUMBER);
+		siteId.setColumnName("SITE_ID");
+		siteId.setModule(module);
+		fields.add(siteId);
+		
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setDataType(FieldType.NUMBER);
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(module);
+		fields.add(buildingId);
+		
+		FacilioField floorId = new FacilioField();
+		floorId.setName("floorId");
+		floorId.setDataType(FieldType.NUMBER);
+		floorId.setColumnName("FLOOR_ID");
+		floorId.setModule(module);
+		fields.add(floorId);
+		
+		FacilioField groupBy = new FacilioField();
+		groupBy.setName("groupBy");
+		groupBy.setDataType(FieldType.STRING);
+		groupBy.setColumnName("GROUP_BY");
+		groupBy.setModule(module);
+		fields.add(groupBy);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getReportFormulaFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getReportFormulaField();

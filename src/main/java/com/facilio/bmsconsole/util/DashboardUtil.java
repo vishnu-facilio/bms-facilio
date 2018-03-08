@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
@@ -521,6 +522,17 @@ public class DashboardUtil {
 						reportContext.addComparingReportContext(compReportContext);
 					}
 				}
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportSpaceFilterFields())
+					.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+					.andCustomWhere(ModuleFactory.getReportSpaceFilterModule().getTableName()+".REPORT_ID = ?", reportId);
+			
+			List<Map<String, Object>> spaceFilterProps = selectBuilder.get();
+			if (spaceFilterProps != null && !spaceFilterProps.isEmpty()) {
+				ReportSpaceFilterContext spaceFilterContext = FieldUtil.getAsBeanFromMap(spaceFilterProps.get(0), ReportSpaceFilterContext.class);
+				reportContext.setReportSpaceFilterContext(spaceFilterContext);
 			}
 			
 			reportContext.setBaseLineContexts(BaseLineAPI.getBaseLinesOfReport(reportId));
