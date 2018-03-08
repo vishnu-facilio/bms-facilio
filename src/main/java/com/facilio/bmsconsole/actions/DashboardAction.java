@@ -56,6 +56,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -73,6 +74,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -81,6 +84,14 @@ public class DashboardAction extends ActionSupport {
 
 	Long baseLineComparisionDiff;
 	
+	Long reportEntityId;
+	
+	public Long getReportEntityId() {
+		return reportEntityId;
+	}
+	public void setReportEntityId(Long reportEntityId) {
+		this.reportEntityId = reportEntityId;
+	}
 	public Long getBaseLineComparisionDiff() {
 		return baseLineComparisionDiff;
 	}
@@ -306,7 +317,6 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
 	public String addReportFolder() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -454,6 +464,15 @@ public class DashboardAction extends ActionSupport {
 		return getData(readingReport, module, dateFilter, null, baseLineId, -1, null);
 	}
 	
+	public String addComparisionReport() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField readingField = modBean.getField(readingFieldId);
+		FacilioModule module = readingField.getModule();
+		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
+		this.reportContext = readingReport;
+		return addReport();
+	}
+	
 	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -507,6 +526,10 @@ public class DashboardAction extends ActionSupport {
 		dateFilter.setFieldId(dateFilter.getField().getId());
 		dateFilter.setOperatorId(DateOperators.TODAY_UPTO_NOW.getOperatorId());
 		readingReport.setDateFilter(dateFilter);
+		
+		if(reportEntityId != null) {
+			readingReport.setReportEntityId(reportEntityId);
+		}
 		
 		return readingReport;
 	}
