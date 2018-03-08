@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 
-public class AddENPICommand implements Command {
+public class AddEnPICommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -17,7 +17,7 @@ public class AddENPICommand implements Command {
 		EnergyPerformanceIndicatorContext enpi = (EnergyPerformanceIndicatorContext) context.get(FacilioConstants.ContextNames.ENPI);
 		
 		if (enpi == null) {
-			throw new IllegalArgumentException("ENPI cannot be null during addition");
+			throw new IllegalArgumentException("EnPI cannot be null during addition");
 		}
 		
 		if (enpi.getFrequencyEnum() != FacilioFrequency.CUSTOM) {
@@ -25,12 +25,12 @@ public class AddENPICommand implements Command {
 		}
 		
 		if (enpi.getSchedule() == null) {
-			throw new IllegalArgumentException("Schedule cannot be null during ENPI addition");
+			throw new IllegalArgumentException("Schedule cannot be null during EnPI addition");
 		}
 		
-		long enpiId = EnergyPerformanceIndicatiorAPI.addENPI(enpi);
+		long enpiId = EnergyPerformanceIndicatiorAPI.addEnPI(enpi);
 		
-		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalENPICalculatior", 60, "priority");
+		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalENPICalculatior", 30, "priority");
 		
 		return false;
 	}

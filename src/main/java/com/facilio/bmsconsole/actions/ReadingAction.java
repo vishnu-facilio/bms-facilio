@@ -440,8 +440,48 @@ public class ReadingAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, enpi.getSpaceId());
 		context.put(FacilioConstants.ContextNames.ENPI, enpi);
 		
-		Chain addEnpiChain = FacilioChainFactory.addENPIChain();
+		Chain addEnpiChain = FacilioChainFactory.addEnPIChain();
 		addEnpiChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String editEnPI() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ENPI, enpi);
+		
+		Chain updateEnPIChain = FacilioChainFactory.updateEnPIChain();
+		updateEnPIChain.execute(context);
+		
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		
+		return SUCCESS;
+	}
+	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String deleteEnPI() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		
+		Chain deleteEnPIChain = FacilioChainFactory.deleteEnPIChain();
+		deleteEnPIChain.execute(context);
+		
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		
 		return SUCCESS;
 	}
@@ -457,7 +497,7 @@ public class ReadingAction extends ActionSupport {
 	public String allENPIs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain getAllENPIsChain = FacilioChainFactory.getAllENPIsChain();
+		Chain getAllENPIsChain = FacilioChainFactory.getAllEnPIsChain();
 		getAllENPIsChain.execute(context);
 		
 		enpiList = (List<EnergyPerformanceIndicatorContext>) context.get(FacilioConstants.ContextNames.ENPI_LIST);

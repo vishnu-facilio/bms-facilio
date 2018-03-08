@@ -3174,8 +3174,8 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getENPIFields() {
-		FacilioModule module = ModuleFactory.getENPIModule();
+	public static List<FacilioField> getEnPIFields() {
+		FacilioModule module = ModuleFactory.getEnPIModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));

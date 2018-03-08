@@ -825,7 +825,7 @@ public class ModuleFactory {
 		return baseSpaceReadings;
 	}
 	
-	public static FacilioModule getENPIModule() {
+	public static FacilioModule getEnPIModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("energyperformanceindicator");
 		enpi.setDisplayName("Energy Performance Indicators");

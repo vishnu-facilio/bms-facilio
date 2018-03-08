@@ -41,6 +41,8 @@ public interface ModuleBean extends RootBean {
 	
 	public int deleteFields(List<Long> fieldIds) throws Exception;
 	
+	public int deleteModule(String moduleName) throws Exception;
+	
 	public long addModule(FacilioModule module) throws Exception;
 	
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception;

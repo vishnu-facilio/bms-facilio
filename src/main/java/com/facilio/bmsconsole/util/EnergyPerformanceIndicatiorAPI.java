@@ -36,17 +36,17 @@ public class EnergyPerformanceIndicatiorAPI {
 		}
 	}
 	
-	public static long addENPI (EnergyPerformanceIndicatorContext enpi) throws Exception {
+	public static long addEnPI (EnergyPerformanceIndicatorContext enpi) throws Exception {
 		updateChildIds(enpi);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.table(ModuleFactory.getENPIModule().getTableName())
-														.fields(FieldFactory.getENPIFields())
+														.table(ModuleFactory.getEnPIModule().getTableName())
+														.fields(FieldFactory.getEnPIFields())
 														;
 		
 		long id = insertBuilder.insert(FieldUtil.getAsProperties(enpi));
 		if (id == -1) {
-			throw new RuntimeException("Unable to add ENPI");
+			throw new RuntimeException("Unable to add EnPI");
 		}
 		else {
 			enpi.setId(id);
@@ -64,10 +64,10 @@ public class EnergyPerformanceIndicatiorAPI {
 	}
 	
 	public static EnergyPerformanceIndicatorContext getENPI(long enpiId) throws Exception {
-		FacilioModule module = ModuleFactory.getENPIModule();
+		FacilioModule module = ModuleFactory.getEnPIModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getENPIFields())
+														.select(FieldFactory.getEnPIFields())
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(enpiId, module))
@@ -96,10 +96,10 @@ public class EnergyPerformanceIndicatiorAPI {
 	}
 	
 	public static List<EnergyPerformanceIndicatorContext> getAllENPIs() throws Exception {
-		FacilioModule module = ModuleFactory.getENPIModule();
+		FacilioModule module = ModuleFactory.getEnPIModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getENPIFields())
+														.select(FieldFactory.getEnPIFields())
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;

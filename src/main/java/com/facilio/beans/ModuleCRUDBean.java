@@ -25,4 +25,6 @@ public interface ModuleCRUDBean {
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
 	
 	public WorkOrderContext addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
+	
+	public void deleteAllData (String moduleName) throws Exception;
 }

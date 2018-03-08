@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -548,6 +549,26 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		else {
 			throw new IllegalArgumentException("Invalid fieldIds for Deletion");
+		}
+	}
+	
+	@Override
+	public int deleteModule(String moduleName) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule module = getMod(moduleName);
+		List<FacilioField> fields = getAllFields(moduleName);
+		List<Long> fieldIds = fields.stream().map(FacilioField::getId).collect(Collectors.toList());
+		deleteFields(fieldIds);
+		
+		String sql = "DELETE FROM Modules WHERE ORGID = ? AND MODULEID = ?";
+		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, module.getModuleId());
+			
+			return pstmt.executeUpdate();
+		}
+		catch (Exception e) {
+			throw e;
 		}
 	}
 	

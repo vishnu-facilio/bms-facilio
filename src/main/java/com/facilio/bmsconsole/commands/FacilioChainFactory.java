@@ -1830,17 +1830,31 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addENPIChain() {
+	public static Chain addEnPIChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(addSpaceReadingChain());
-		c.addCommand(new AddENPICommand());
+		c.addCommand(new AddEnPICommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain getAllENPIsChain() {
+	public static Chain getAllEnPIsChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new GetAllENPIsCommand());
+		c.addCommand(new GetAllEnPIsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateEnPIChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateEnPICommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain deleteEnPIChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteEnPICommand());
 		addCleanUpCommand(c);
 		return c;
 	}

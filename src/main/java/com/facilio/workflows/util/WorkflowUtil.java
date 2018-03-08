@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
@@ -106,6 +107,17 @@ public class WorkflowUtil {
 		WorkflowContext workflowContext = new WorkflowContext();
 		workflowContext.setWorkflowString(workflowString);
 		return addWorkflow(workflowContext);
+	}
+	
+	public static void deleteWorkflow(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowModule();
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		deleteBuilder.delete();
 	}
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {

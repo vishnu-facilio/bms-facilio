@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -34,6 +35,8 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
@@ -243,6 +246,25 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 														.addRecord(relProp);
 		
 		insertBuilder.save();
+	}
+
+	@Override
+	public void deleteAllData(String moduleName) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		FacilioModule extendedModule = module.getExtendModule();
+		while(extendedModule != null) {
+			module = extendedModule;
+			extendedModule = extendedModule.getExtendModule();
+		}
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+														;
+		deleteBuilder.delete();
 	}
 
 }

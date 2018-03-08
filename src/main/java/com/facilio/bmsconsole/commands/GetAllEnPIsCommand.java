@@ -6,7 +6,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAllENPIsCommand implements Command {
+public class GetAllEnPIsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
