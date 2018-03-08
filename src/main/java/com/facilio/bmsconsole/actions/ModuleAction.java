@@ -206,6 +206,7 @@ public class ModuleAction extends ActionSupport {
 	
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		List<FacilioField> workorderFields = new ArrayList<>();
+//		List<FacilioField> alarmFields = new ArrayList<>();
 		if(FacilioConstants.ContextNames.WORK_ORDER.equals(getModuleName()))
 		{
 			for(FacilioField field : fields)
@@ -228,7 +229,30 @@ public class ModuleAction extends ActionSupport {
 				workorderFields.add(field);
 			}
 			setFields(workorderFields);
-		}else
+		}
+//		else if(FacilioConstants.ContextNames.ALARM.equals(getModuleName()))
+//		{
+//			for(FacilioField field : fields)
+//			{
+//				if(field.getName().equals("acknowledgedBy")
+//				|| field.getName().equals("acknowledgedTime")
+//				|| field.getName().equals("createdTime")
+//				|| field.getName().equals("acknowledgedBy")
+//				|| field.getName().equals("isAcknowledged")
+//				|| field.getName().equals("alarmType")
+//				|| field.getName().equals("modifiedTime")
+//				|| field.getName().equals("clearedTime")
+//				|| field.getName().equals("serialNumber")
+//				|| field.getName().equals("sourceType")
+//				|| field.getName().equals("assignmentGroup")
+//				|| field.getName().equals("createdTime"))
+//				{
+//					continue;
+//				}
+//				alarmFields.add(field);
+//			}
+//		}
+		else
 		{
 			setFields(fields);
 		}

@@ -840,5 +840,13 @@ public class ModuleFactory {
 		readingRuleFlaps.setTableName("Reading_Rule_Flaps");
 		
 		return readingRuleFlaps;
+		
+	}
+	public static FacilioModule getServicePortalModule() {
+		FacilioModule enpi = new FacilioModule();
+		enpi.setName("serviceportal");
+		enpi.setDisplayName("Service Portal");
+		enpi.setTableName("PortalInfo");
+		return enpi;
 	}
 }

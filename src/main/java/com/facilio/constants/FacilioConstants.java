@@ -397,6 +397,8 @@ public class FacilioConstants {
 		public static final String ENPI_LIST = "energyPerformanceIndicatorList";
 		public static final String HISTORY_READINGS = "historyReadings";
 		
+		public static final String PORTALINFO = "portalInfo";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

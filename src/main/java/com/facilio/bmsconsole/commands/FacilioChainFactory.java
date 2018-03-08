@@ -567,6 +567,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain updatePortalInfoChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new HandlePortalInfoCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getAllLocationsCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForLocation());

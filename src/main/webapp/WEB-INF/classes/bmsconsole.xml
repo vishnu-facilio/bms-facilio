@@ -313,6 +313,16 @@
 			</result>
 		</action>
 	</package>
+	<package name="servicePortalAPI" namespace="/api/serviceportal" extends="home">
+		<action name="changesignup" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction"
+			method="changeSignUp">
+			<param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
+			</result>
+		</action>
+	</package>
 	<package name="locationApi" namespace="/api/location" extends="home">
 		<action name="locationlist" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
