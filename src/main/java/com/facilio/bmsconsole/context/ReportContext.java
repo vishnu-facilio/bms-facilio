@@ -37,10 +37,10 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	Long y3Axis;
 	ReportFieldContext y3AxisField;
 	Integer y3AxisaggregateFunction;
-	
+	ReportEnergyMeterContext energyMeter;
 	String orderBy;
 	Integer orderByFunction;
-	
+	ReportSpaceFilterContext reportSpaceFilterContext;
 	Long groupBy;
 	ReportFieldContext groupByField;
 	String groupByLabel;
@@ -48,6 +48,7 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	Integer groupByFieldAggregateFunction;
 	Integer limit;
 	Long reportEntityId;
+	List<ReportContext> comparingReportContexts;
 	
 	public Long getReportEntityId() {
 		return reportEntityId;
@@ -57,9 +58,13 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		this.reportEntityId = reportEntityId;
 	}
 
+	public ReportSpaceFilterContext getReportSpaceFilterContext() {
+		return reportSpaceFilterContext;
+	}
 
-	List<ReportContext> comparingReportContexts;
-	
+	public void setReportSpaceFilterContext(ReportSpaceFilterContext reportSpaceFilterContext) {
+		this.reportSpaceFilterContext = reportSpaceFilterContext;
+	}
 
 	public List<ReportContext> getComparingReportContexts() {
 		return comparingReportContexts;
@@ -646,8 +651,6 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public ReportDateFilterContext getDateFilter() {
 		return this.dateFilter;
 	}
-	
-	private ReportEnergyMeterContext energyMeter;
 	
 	public void setEnergyMeter(ReportEnergyMeterContext energyMeter) {
 		this.energyMeter = energyMeter;

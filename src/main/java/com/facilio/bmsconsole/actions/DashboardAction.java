@@ -541,6 +541,7 @@ public class DashboardAction extends ActionSupport {
 //		context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, userFilterValues);
 //		Chain addDashboardChain = FacilioChainFactory.getReportData();
 //		addDashboardChain.execute(context);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
 		report.setxAxisField(reportXAxisField);
@@ -614,8 +615,6 @@ public class DashboardAction extends ActionSupport {
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
-		fields.add(y1AxisField);
-		fields.add(xAxisField);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
@@ -650,7 +649,6 @@ public class DashboardAction extends ActionSupport {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		builder.select(fields);
 		if (report.getY1AxisAggregateOpperator() != FormulaContext.DateAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
@@ -776,7 +774,6 @@ public class DashboardAction extends ActionSupport {
 					report.setGroupBy(-1L);
 				}
 				else if ("space".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					SelectRecordsBuilder<EnergyMeterContext> builder12 = new SelectRecordsBuilder<EnergyMeterContext>()
 							.table(modBean.getModule("energymeter").getTableName())
 							.moduleName("energymeter")
@@ -928,6 +925,28 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
+		else if(report.getReportSpaceFilterContext() != null) {
+			if(report.getReportSpaceFilterContext().getGroupBy() != null) {
+				
+				FacilioModule baseSpaceModule = modBean.getModule("basespace");
+				builder.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
+				
+				String groupBy = report.getReportSpaceFilterContext().getGroupBy();
+				if(groupBy.equalsIgnoreCase("building")) {
+					xAxisField.setColumnName("BUILDING_ID");
+					xAxisField.setModule(baseSpaceModule);
+					
+					xAxisField.setExtendedModule(null);
+					
+					report.getxAxisField().getField().setDisplayName("Building");
+//					report.getxAxisField().getField().setName("building");
+				}
+			}
+		}
+		fields.add(y1AxisField);
+		fields.add(xAxisField);
+		builder.select(fields);
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
 		}
@@ -1012,9 +1031,6 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 				else {
 		 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
-		 					if(report.getId() == 300l || report.getId() == 301l) {
-		 						continue;
-		 					}
 		 					JSONObject value = new JSONObject();
 			 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 			 				if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
@@ -1040,54 +1056,6 @@ public class DashboardAction extends ActionSupport {
 		 				}
 		 			}
 			 	}
-				if(report.getId() == 300l) {
-					report.getxAxisField().getField().setColumnName("PARENT_METER_ID");
-					report.getxAxisField().getField().setDisplayName("Building");
-					report.getxAxisField().getField().setName("building");
-					report.getGroupByField().getField().setDataType(FieldType.STRING);
-					
-					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-					for(BuildingContext building:buildings) {
-						
-						if(building.getId() == 457 || building.getId() == 458) {
-							continue;
-						}
-						System.out.println("building.getBuildingId() -- "+building.getId());
-						List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
-						System.out.println("spaceList -- "+spaceList);
-						spaceList.add(building.getBuildingId());
-						long planned = 0;
-						long unplanned = 0;
-						for(Map<String, Object> prop:rs) {
-							if(spaceList.contains((Long)prop.get("label"))) {
-								System.out.println("passed prop -- "+prop);
-								if(prop.get("groupBy") != null && "5".equals(prop.get("groupBy").toString())) {
-									System.out.println("planned -- "+prop.get("value"));
-									planned = planned+(Long)prop.get("value");
-								}
-								else {
-									if(prop.get("value") != null) {
-										System.out.println("unplaned -- "+prop.get("value"));
-										System.out.println(prop.get("value"));
-										unplanned = unplanned+(Long)prop.get("value");
-									}
-								}
-							}
-						}
-						System.out.println("planned - - "+planned);
-						System.out.println("unplanned - - "+unplanned);
-						JSONObject plannedJson = new JSONObject();
-						plannedJson.put("label", "Planned");
-						plannedJson.put("value", planned);
-						
-						JSONObject unPlannedJson = new JSONObject();
-						unPlannedJson.put("label", "Unplanned");
-						unPlannedJson.put("value", unplanned);
-						
-						res.put(building.getId(), plannedJson);
-						res.put(building.getId(), unPlannedJson);
-					}
-			}
 			JSONArray finalres = new JSONArray();
 			for(Object key : res.keySet()) {
 				JSONObject j1 = new JSONObject();
@@ -1101,100 +1069,70 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		else {
-//			if(!report.getIsComparisionReport()) {
-				JSONArray res = new JSONArray();
-				if (report.getId() != -1 && report.getId() == 301l) {
-					report.getxAxisField().getField().setColumnName("PARENT_METER_ID");
-					report.getxAxisField().getField().setDisplayName("Building");
-					report.getxAxisField().getField().setName("building");
-					
-					List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-					for(BuildingContext building:buildings) {
-						
-						if(building.getId() == 457 || building.getId() == 458) {
-							continue;
-						}
-						System.out.println("building.getBuildingId() -- "+building.getId());
-						List<Long> spaceList = SpaceAPI.getSpaceIdListForBuilding(building.getId());
-						System.out.println("spaceList -- "+spaceList);
-						spaceList.add(building.getBuildingId());
-						long count = 0;
-						for(Map<String, Object> prop:rs) {
-							if(spaceList.contains((Long)prop.get("label"))) {
-								count = count+(Long)prop.get("value");
-							}
-						}
-						JSONObject component = new JSONObject();
-						component.put("label", building.getId());
-						component.put("value", count);
-						res.add(component);
-	 				}
-				}
-				else {
-					JSONObject purposeIndexMapping = new JSONObject();
-					//setResultVariance(DashboardUtil.getStandardVariance(rs));
-					for(int i=0;i<rs.size();i++) {
-						boolean newPurpose = false;
-			 			Map<String, Object> thisMap = rs.get(i);
-			 			JSONObject component = new JSONObject();
-			 			if(thisMap!=null) {
+			JSONArray res = new JSONArray();
+			
+			JSONObject purposeIndexMapping = new JSONObject();
+			//setResultVariance(DashboardUtil.getStandardVariance(rs));
+			for(int i=0;i<rs.size();i++) {
+				boolean newPurpose = false;
+	 			Map<String, Object> thisMap = rs.get(i);
+	 			JSONObject component = new JSONObject();
+	 			if(thisMap!=null) {
 //			 				if(thisMap.get("label") == null) {
 //			 					continue;
 //			 				}
-			 				if(thisMap.get("dummyField") != null) {
-			 					component.put("label", thisMap.get("dummyField"));
-			 				}
-			 				else {
-			 					Object lbl = thisMap.get("label");
-			 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
-			 						lbl = buildingVsMeter.get(thisMap.get("label"));
-			 					}
-			 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
-			 						lbl = purposeVsMeter1.get(thisMap.get("label"));
-			 						if (!purposeIndexMapping.containsKey(lbl)) {
-			 							purposeIndexMapping.put(lbl, res.size());
-			 							newPurpose = true;
-			 						}
-			 					}
-			 					component.put("label", lbl);
-			 				}
-			 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
-			 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
-			 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						Double concatVal = d + (Double) tmpComp.get("orig_value");
-			 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
-			 						tmpComp.put("orig_value", concatVal);
-			 					}
-			 					else {
-			 						Double d = (Double) thisMap.get("value");
-			 						Double concatVal = d + (Double) tmpComp.get("value");
-			 						tmpComp.put("value", thisMap.get("value"));
-			 					}
-			 				}
-			 				else {
-			 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						component.put("value", d*ReportsUtil.unitCost);
-			 						component.put("orig_value", d);
-			 					}
-			 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
-			 						Double d = (Double) thisMap.get("value");
-			 						
-			 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
-			 						double eui = ReportsUtil.getEUI(d, buildingArea);
-			 						component.put("value", eui);
-			 						component.put("orig_value", d);
-			 					}
-			 					else {
-			 						component.put("value", thisMap.get("value"));
-			 					}
-			 					res.add(component);
-			 				}
-			 			}
-				 	}
-				}
-//			}
+	 				if(thisMap.get("dummyField") != null) {
+	 					component.put("label", thisMap.get("dummyField"));
+	 				}
+	 				else {
+	 					Object lbl = thisMap.get("label");
+	 					if (buildingVsMeter.containsKey(thisMap.get("label"))) {
+	 						lbl = buildingVsMeter.get(thisMap.get("label"));
+	 					}
+	 					else if (purposeVsMeter1.containsKey(thisMap.get("label"))) {
+	 						lbl = purposeVsMeter1.get(thisMap.get("label"));
+	 						if (!purposeIndexMapping.containsKey(lbl)) {
+	 							purposeIndexMapping.put(lbl, res.size());
+	 							newPurpose = true;
+	 						}
+	 					}
+	 					component.put("label", lbl);
+	 				}
+	 				if (!newPurpose && purposeIndexMapping.containsKey(component.get("label"))) {
+	 					JSONObject tmpComp = (JSONObject) res.get((Integer) purposeIndexMapping.get(component.get("label")));
+	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
+	 						Double d = (Double) thisMap.get("value");
+	 						Double concatVal = d + (Double) tmpComp.get("orig_value");
+	 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
+	 						tmpComp.put("orig_value", concatVal);
+	 					}
+	 					else {
+	 						Double d = (Double) thisMap.get("value");
+	 						Double concatVal = d + (Double) tmpComp.get("value");
+	 						tmpComp.put("value", thisMap.get("value"));
+	 					}
+	 				}
+	 				else {
+	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
+	 						Double d = (Double) thisMap.get("value");
+	 						component.put("value", d*ReportsUtil.unitCost);
+	 						component.put("orig_value", d);
+	 					}
+	 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
+	 						Double d = (Double) thisMap.get("value");
+	 						
+	 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
+	 						double eui = ReportsUtil.getEUI(d, buildingArea);
+	 						component.put("value", eui);
+	 						component.put("orig_value", d);
+	 					}
+	 					else {
+	 						component.put("value", thisMap.get("value"));
+	 					}
+	 					res.add(component);
+	 				}
+	 			}
+		 	}
 			System.out.println("res -- "+res);
 			setReportData(res);
 		}
