@@ -314,7 +314,30 @@ public class WorkflowUtil {
 						 if(expressionContext.getAggregateString() != null) {
 							 fieldElement.setAttribute(AGGREGATE_STRING, expressionContext.getAggregateString());
 						 }
+						 
+						 if(expressionContext.getAggregateCondition() != null) {
+							 for(Condition condition : expressionContext.getAggregateCondition()) {
+								 
+								 Element conditionElement = doc.createElement(CONDITION_STRING);
+								 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
+								 fieldElement.appendChild(conditionElement);
+							 }
+						 }
+						 
 						 expressionElement.appendChild(fieldElement);
+					 }
+					 if(expressionContext.getOrderByFieldName() != null) {
+						 Element orderElement = doc.createElement(ORDER_BY_STRING);
+						 orderElement.setAttribute(NAME_STRING, expressionContext.getOrderByFieldName());
+						 if(expressionContext.getSortBy() != null) {
+							 orderElement.setAttribute(SORT_STRING, expressionContext.getSortBy());
+						 }
+						 expressionElement.appendChild(orderElement);
+					 }
+					 if(expressionContext.getLimit() != null) {
+						 Element limitElement = doc.createElement(LIMIT_STRING);
+						 limitElement.setTextContent(expressionContext.getLimit());
+						 expressionElement.appendChild(limitElement);
 					 }
 				 }
 				 workflowElement.appendChild(expressionElement);
