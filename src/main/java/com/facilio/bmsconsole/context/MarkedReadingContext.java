@@ -58,6 +58,24 @@ public class MarkedReadingContext  {
 		this.dataId = dataId;
 	}
 	
+	private MarkType markType;
+	public int getMarkType() {
+		if (markType != null) {
+			return markType.getValue();
+		}
+		return -1;
+	}
+	public void setMarkType(int markType) {
+		this.markType = MarkType.valueOf(markType);
+	}
+	public MarkType getMarkTypeEnum() {
+		return markType;
+	}
+	public void setMarkType(MarkType markType) {
+		this.markType = markType;
+	}
+	
+	
 	private ReadingContext reading;
 	public ReadingContext getReading() {
 		return this.reading;
@@ -85,6 +103,26 @@ public class MarkedReadingContext  {
 	}
 	public void setModifiedValue(String modifiedValue) {
 		this.modifiedValue = modifiedValue;
+	}
+	
+	public enum MarkType {
+		NEGATIVE_VALUE,
+		ZERO_VALUE,
+		DECREMENTAL_VALUE,
+		HIGH_VALUE,
+		TOO_HIGH_VALUE
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public static MarkType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 	
 } 

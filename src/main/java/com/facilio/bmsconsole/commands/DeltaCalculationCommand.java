@@ -11,11 +11,13 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -73,7 +75,7 @@ public class DeltaCalculationCommand implements Command {
 			Map<String,Object>> lastReadingsMap,List<MarkedReadingContext> markedList ) {
 			
 			FacilioField readingField=fieldMap.get(fieldName);
-			FieldType type=readingField.getDataTypeEnum();
+			FieldType dataType=readingField.getDataTypeEnum();
 			Object readingVal=reading.getReading(fieldName);
 			Object deltaVal=reading.getReading(fieldName+"Delta");
 			if(readingVal==null || deltaVal!=null) {//no such reading meters or delta already set in reading
@@ -107,8 +109,8 @@ public class DeltaCalculationCommand implements Command {
 				lastDeltaTimestamp=(Long)oldStats.get("ttime");
 			}
 			
-			double lastReading =(double)FieldUtil.castOrParseValueAsPerType(type, lastReadingVal);
-			Double lastDeltaReading =(Double)FieldUtil.castOrParseValueAsPerType(type, lastDeltaReadingVal);
+			double lastReading =(double)FieldUtil.castOrParseValueAsPerType(dataType, lastReadingVal);
+			Double lastDeltaReading =(Double)FieldUtil.castOrParseValueAsPerType(dataType, lastDeltaReadingVal);
 			double delta=0;
 			if(lastReading==-1) {
 				//lastReading  check.. for very first reading 
@@ -119,27 +121,33 @@ public class DeltaCalculationCommand implements Command {
 			if(lastDeltaReading!=null) {
 				
 				lastDelta=lastDeltaReading;
+				lastDelta=ReportsUtil.roundOff(lastDelta, 4);
 			}
 			long dataInterval=15*60*1000;//this we should get from jace interval from org settings in future
 			long rearmInterval=1*60*1000;//this is an adjuster to consider little above than the given range..
+			double leastMargin=50;// this is the least value above which the delta rule can be considered..
+			MarkType type= MarkType.DECREMENTAL_VALUE;
 			
-			double currentReading=(double) FieldUtil.castOrParseValueAsPerType(type, readingVal);
+			double currentReading=(double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
 			
 			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
 				delta=currentReading-lastReading;
+				delta=ReportsUtil.roundOff(delta, 4);
 				
-				if(delta>=1 && lastDelta>=1 && ((currentTimestamp-lastDeltaTimestamp) <=(dataInterval+rearmInterval))) {
+				if(delta>=leastMargin && lastDelta>=leastMargin && ((currentTimestamp-lastDeltaTimestamp) <=(dataInterval+rearmInterval))) {
 					//if current delta or lastDelta  is zero no point in coming here..
 					//if the time interval is less than or equals dataInterval+ adjuster range minutes we can check the below rule..
 					if(delta >= 5*lastDelta) {
 						//too high.. need to be marked & reading reset also done..
 						reading.addReading(fieldName, lastReading);
 						delta=0;
-						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,currentReading,lastReading));
+						type=MarkType.TOO_HIGH_VALUE;
+						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId, type, currentReading,lastReading));
 					}
 					else if (delta >= 2*lastDelta) {
 						//bit high.. only marking done but reading reset not done..
-						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId, currentReading,currentReading));
+						type=MarkType.HIGH_VALUE;
+						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
 					}
 					
 					//need to think of any other rules here..
@@ -148,18 +156,26 @@ public class DeltaCalculationCommand implements Command {
 			else {//here current reading equals zero or lesser than last reading scenario..
 
 				reading.addReading(fieldName, lastReading);
-				markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,currentReading,lastReading));
+				if(currentReading==0) {
+					type=MarkType.ZERO_VALUE;
+				}
+				else if(currentReading<0) {
+					type=MarkType.NEGATIVE_VALUE;
+				}
+				
+				markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type,currentReading,lastReading));
 			}
 			reading.addReading(fieldName+"Delta", delta);
 	}
 	
 	
-	private MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, Object currentReading, Object lastReading) {
+	private MarkedReadingContext getMarkedReading(ReadingContext reading,long fieldId,long moduleId, MarkType markType, Object currentReading, Object lastReading) {
 		
 		MarkedReadingContext mReading= new MarkedReadingContext();
 		mReading.setReading(reading);
 		mReading.setFieldId(fieldId);
 		mReading.setModuleId(moduleId);
+		mReading.setMarkType(markType);
 		mReading.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		mReading.setActualValue(String.valueOf(currentReading));
 		mReading.setModifiedValue(String.valueOf(lastReading));

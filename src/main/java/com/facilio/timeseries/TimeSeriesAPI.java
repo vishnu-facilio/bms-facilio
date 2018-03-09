@@ -12,7 +12,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -140,5 +144,16 @@ public class TimeSeriesAPI {
 		return fieldMap;
 	}
 	
+	
 
+	public static List<Map<String,Object>> getMarkedReadings(Criteria criteria) throws Exception {
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getMarkedReadingFields())
+				.table(ModuleFactory.getMarkedReadingModule().getTableName())
+				.andCriteria(criteria);
+		return builder.get();
+				
+	}
+	
 }

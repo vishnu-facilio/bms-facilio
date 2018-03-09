@@ -3301,6 +3301,8 @@ public class FieldFactory {
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
 		fields.add(getField("actualValue", "ACTUAL_VALUE", module, FieldType.STRING));
 		fields.add(getField("modifiedValue", "MODIFIED_VALUE", module, FieldType.STRING));
+		fields.add(getField("markType", "MARK_TYPE", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 }

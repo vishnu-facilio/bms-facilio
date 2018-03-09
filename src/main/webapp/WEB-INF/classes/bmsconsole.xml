@@ -3172,6 +3172,12 @@
 				<param name="root">fieldMap</param>
 			</result>
 		</action>
+		<action name="getMarkedReadings" class="com.facilio.bmsconsole.actions.TimeSeries"
+			method="markedReadings">
+			<result name="success" type="json">
+				<param name="root">markedData</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="campus" namespace="/app/campus" extends="home">
