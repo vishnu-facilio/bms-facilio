@@ -265,4 +265,11 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 		}
 	}
 	
+	public boolean isEmpty() {
+		
+		if(pattern==null ) {
+			return true;
+		}
+		return pattern.isEmpty();
+	}
 }

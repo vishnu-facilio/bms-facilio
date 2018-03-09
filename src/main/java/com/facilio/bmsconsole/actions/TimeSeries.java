@@ -196,8 +196,6 @@ public class TimeSeries extends ActionSupport {
 		criteria.addAndCondition(CriteriaAPI.getCondition("MARK_TYPE","MARK_TYPE", 
 				StringUtils.join(markTypeList,","), NumberOperators.EQUALS));
 		}
-		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "ORGID",
-				""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS));
 		
 		return criteria;
 	}

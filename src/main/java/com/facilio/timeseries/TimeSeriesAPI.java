@@ -151,7 +151,10 @@ public class TimeSeriesAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getMarkedReadingFields())
 				.table(ModuleFactory.getMarkedReadingModule().getTableName())
-				.andCriteria(criteria);
+				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
+		if(!criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
 		return builder.get();
 				
 	}
