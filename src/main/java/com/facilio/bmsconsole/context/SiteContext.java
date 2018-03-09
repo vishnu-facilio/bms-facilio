@@ -59,6 +59,30 @@ public class SiteContext extends BaseSpaceContext {
 		}
 		return null;
 	}
+	
+	private String weatherStation;
+	public String getWeatherStation() {
+		return weatherStation;
+	}
+	public void setWeatherStation(String weatherStation) {
+		this.weatherStation = weatherStation;
+	}
+	
+	private double cddBaseTemperature;
+	public double getCddBaseTemperature() {
+		return cddBaseTemperature;
+	}
+	public void setCddBaseTemperature(double cddBaseTemperature) {
+		this.cddBaseTemperature = cddBaseTemperature;
+	}
+	
+	private double hddBaseTemperature;
+	public double getHddBaseTemperature() {
+		return hddBaseTemperature;
+	}
+	public void setHddBaseTemperature(double hddBaseTemperature) {
+		this.hddBaseTemperature = hddBaseTemperature;
+	}
 
 	public enum SiteType {
 		COMMON(1, "Common"),
