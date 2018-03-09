@@ -57,6 +57,7 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -308,8 +309,10 @@ public class DashboardAction extends ActionSupport {
 		}
 		reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		reportContext.setModuleId(module.getModuleId());
+		if(reportContext.getModuleId() == -1) {
+			FacilioModule module = modBean.getModule(moduleName);
+			reportContext.setModuleId(module.getModuleId());
+		}
 		DashboardUtil.addReport(reportContext);
 		
 		return SUCCESS;
@@ -476,6 +479,10 @@ public class DashboardAction extends ActionSupport {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		ReportContext readingReport = new ReportContext();
+		
+		readingReport.setModuleId(module.getModuleId());
+		readingReport.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
 		ReportFieldContext xAxis = new ReportFieldContext();
 		xAxis.setModuleField(fieldMap.get("ttime"));
 		xAxis.setModuleFieldId(xAxis.getModuleField().getId());
@@ -554,6 +561,7 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	private String getData(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
+		
 //		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.REPORT, report);
 //		context.put(FacilioConstants.ContextNames.MODULE, module);
@@ -693,7 +701,7 @@ public class DashboardAction extends ActionSupport {
 		Condition dateCondition = null;
 		Criteria criteria = null;
 		if(baseLineId != -1) {
-			BaseLineContext baseLineContext = report.getBaseLineContext(baseLineId);
+			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 			DateRange dateRange;
 			if(dateFilter != null) {
 				System.out.println("dateFilter --- "+dateFilter);
@@ -971,8 +979,9 @@ public class DashboardAction extends ActionSupport {
 			builder.andCondition(buildingCondition);
 		}
 		List<Map<String, Object>> rs = builder.get();
+		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
 		System.out.println("builder --- "+builder);
-		System.out.println("rs1 -- "+rs);
+//		System.out.println("rs1 -- "+rs);
 		
 		if(report.getGroupBy() != null) {
 			
@@ -1084,7 +1093,7 @@ public class DashboardAction extends ActionSupport {
 				finalres.add(j1);
 			}
 				
-			System.out.println("finalres -- "+finalres);
+//			System.out.println("finalres -- "+finalres);
 			setReportData(finalres);
 			}
 		}
@@ -1153,14 +1162,11 @@ public class DashboardAction extends ActionSupport {
 	 				}
 	 			}
 		 	}
-			System.out.println("res -- "+res);
+//			System.out.println("res -- "+res);
 			setReportData(res);
 		}
 		
-		System.out.println("rs after -- "+rs);
-		List<List<Map<String, Object>>> comparisionRs = new ArrayList<>();
-		Multimap<String,Map<String, Object>> comparisonresult = ArrayListMultimap.create();
-		
+//		System.out.println("rs after -- "+rs);
 		if (report.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
 			if(module.getName().equals("energydata") && criteria != null) {
