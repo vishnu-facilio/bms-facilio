@@ -1426,14 +1426,6 @@ public class FieldFactory {
 		pattern.setColumnName("PATTERN");
 		pattern.setModule(module);
 		fields.add(pattern);
-		
-		FacilioField formulaId = new FacilioField();
-		formulaId.setName("formulaId");
-		formulaId.setDataType(FieldType.NUMBER);
-		formulaId.setColumnName("FORMULA_ID");
-		formulaId.setModule(module);
-		fields.add(formulaId);
-
 		return fields;
 	}
 

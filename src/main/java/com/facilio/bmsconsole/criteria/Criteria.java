@@ -21,22 +21,6 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	
 	private long criteriaId = -1;
-	private FormulaContext formulaContext;
-	public FormulaContext getFormulaContext() {
-		return formulaContext;
-	}
-	public void setFormulaContext(FormulaContext formulaContext) {
-		this.formulaContext = formulaContext;
-	}
-
-	private Long formulaId;
-
-	public Long getFormulaId() {
-		return formulaId;
-	}
-	public void setFormulaId(Long formulaId) {
-		this.formulaId = formulaId;
-	}
 	public long getCriteriaId() {
 		return criteriaId;
 	}

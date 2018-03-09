@@ -73,16 +73,6 @@ public class WorkflowRuleAction extends ActionSupport {
 	public void setPayload(JSONObject payload) {
 		this.payload = payload;
 	}
-	public String addReadingThresholdRulesWithFormula() throws Exception {
-		workflowRuleContext = this.workflowRuleContext;
-		FormulaAPI.addFormula(workflowRuleContext.getCriteria().getFormulaContext());
-		
-		
-		workflowRuleContext.getCriteria().setFormulaId(workflowRuleContext.getCriteria().getFormulaContext().getId());
-		
-		WorkflowRuleAPI.addWorkflowRule(workflowRuleContext);
-		return SUCCESS;
-	}
 	public String runThroughFilters() throws Exception {
 		
 		String moduleName = (String) payload.get("module");
