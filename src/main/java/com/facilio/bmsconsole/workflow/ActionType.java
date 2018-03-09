@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -289,7 +290,7 @@ public enum ActionType {
 					.append(rule.getReadingField().getDisplayName())
 					.append("' ");
 			
-			NumberOperators operator = (NumberOperators) FieldType.NUMBER.getOperator(rule.getOperator());
+			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
 			
 			if (rule.getBaselineId() != -1) {
 				switch (operator) {

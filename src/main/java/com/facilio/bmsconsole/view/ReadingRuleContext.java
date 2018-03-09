@@ -92,12 +92,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.dateRange = dateRange;
 	}
 
-	private String operator;
-	public String getOperator() {
-		return operator;
+	private int operatorId;
+	public int getOperatorId() {
+		return operatorId;
 	}
-	public void setOperator(String operator) {
-		this.operator = operator;
+	public void setOperatorId(int operatorId) {
+		this.operatorId = operatorId;
 	}
 
 	private long percentage = -1;
