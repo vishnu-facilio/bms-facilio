@@ -21,7 +21,6 @@ public class HandlePortalInfoCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		
 		Map<String, Object> servicePortalMap  = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PORTALINFO);
-		System.out.println(servicePortalMap);
 		FacilioModule module = ModuleFactory.getServicePortalModule();
 		
 		List<FacilioField> fields = FieldFactory.getServicePortalFields();

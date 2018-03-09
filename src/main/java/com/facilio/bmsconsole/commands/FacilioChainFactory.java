@@ -575,6 +575,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getPortalInfoChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new LoadPortalInfoCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain updatePortalInfoChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new HandlePortalInfoCommand());

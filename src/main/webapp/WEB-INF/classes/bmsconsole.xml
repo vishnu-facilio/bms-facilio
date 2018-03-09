@@ -320,12 +320,20 @@
 		</action>
 	</package>
 	<package name="servicePortalAPI" namespace="/api/serviceportal" extends="home">
-		<action name="changesignup" class="com.facilio.bmsconsole.actions.ServicePortalSetupAction"
-			method="changeSignUp">
+		<action name="updateserviceportal" class="com.facilio.bmsconsole.actions.PortalInfoAction"
+			method="updateServicePortal">
 			<param name="moduleName">setup</param>
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">
-				<param name="includeProperties">spaceCategories,spaceCategories\[\d+\],spaceCategories\[\d+\].*</param>
+				<param name="includeProperties">signup_allowed</param>
+			</result>
+		</action>
+		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
+			method="getPortalInfo">
+			<param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^protalInfo.*</param>
 			</result>
 		</action>
 	</package>

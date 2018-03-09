@@ -11,8 +11,11 @@ import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ModelDriven;
+import com.opensymphony.xwork2.ActionSupport;
+
 
 public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> implements ModelDriven{
+//public class ServicePortalSetupAction extends ActionSupport {
 
 	public String servicePortal() throws Exception {
 
@@ -54,37 +57,4 @@ public class ServicePortalSetupAction extends SetupActions<ServicePortalInfo> im
 			return data;
 		}
 		
-		public String changeSignUp() throws Exception {
-			System.out.println(">>>>>>>>> signup_allowed : "+test);
-			FacilioContext context = new FacilioContext();
-			Map<String,Object> portalInfoMap = new HashMap<>();
-			portalInfoMap.put("signup_allowed",signupAllowed);
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceportal");
-			context.put(FacilioConstants.ContextNames.PORTALINFO, portalInfoMap);
-			Chain updateUserSignUpPrivilage = FacilioChainFactory.updatePortalInfoChain();
-			updateUserSignUpPrivilage.execute(context);
-			
-			return SUCCESS;
-		}
-		
-		private int test = -1;
-		
-		
-	public int getTest() {
-			return test;
-		}
-
-		public void setTest(int test) {
-			this.test = test;
-		}
-	Boolean signupAllowed;
-	
-	public Boolean getSignupAllowed() {
-		return signupAllowed;
-	}
-
-	public void setSignupAllowed(Boolean signupAllowed) {
-		this.signupAllowed = signupAllowed;
-	}
-	
 }

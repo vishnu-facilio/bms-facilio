@@ -1078,7 +1078,7 @@ INSERT INTO LookupFields (FIELDID, SPECIAL_TYPE) VALUES ((SELECT LAST_INSERT_ID(
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'createdTime', 'Created Time', 7, 'CREATED_TIME', 6, false, false, true);
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'isWorkDurationChangeAllowed', 'Allow user to enter Work Hour', 5, 'IS_WORKDURATION_CHANGE_ALLOWED', 4, false, false, true);
 
-INSERT INTO PortalInfo (ORGID,PORTALTYPE) VALUES (${orgId},0);
+INSERT INTO PortalInfo (ORGID,PORTALTYPE,SIGNUP_ALLOWED,GMAILLOGIN_ALLOWED,IS_PUBLIC_CREATE_ALLOWED,IS_ANYDOMAIN_ALLOWED,SAML_ENABLED,LOGIN_URL,LOGOUT_URL,PASSWORD_URL) VALUES (${orgId},0,false,false,false,false,false,'http://orgdomainname.facilstack.com/idplogin','http://orgdomainname.facilstack.com/idplogout','http://orgdomainname.facilstack.com/idppassword');
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID) VALUES (${orgId}, 'workorderrequest', 'Work Order Requests', 'WorkOrderRequests', @TICKET_MODULE_ID);
 SET @WORK_ORDER_REQUEST_MODULE_ID := (SELECT LAST_INSERT_ID());
