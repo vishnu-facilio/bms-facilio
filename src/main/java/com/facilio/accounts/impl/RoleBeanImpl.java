@@ -7,8 +7,10 @@ import java.util.Map;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -85,6 +87,7 @@ public class RoleBeanImpl implements RoleBean {
 				.fields(AccountConstants.getRoleFields())
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		
+		deletePermission(roleId);
 		Map<String, Object> props = FieldUtil.getAsProperties(role);
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
@@ -157,7 +160,11 @@ public class RoleBeanImpl implements RoleBean {
 		if (props != null && !props.isEmpty()) {
 			List<Role> roles = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				roles.add(FieldUtil.getAsBeanFromMap(prop, Role.class));
+				Role roleObj = FieldUtil.getAsBeanFromMap(prop, Role.class);
+				List<Permissions> permissions = getPermissions(roleObj.getId());
+				roleObj.setPermissions(permissions);
+				roles.add(roleObj);
+//				roles.add(FieldUtil.getAsBeanFromMap(prop, Role.class));
 			}
 			return roles;
 		}
@@ -213,6 +220,13 @@ public class RoleBeanImpl implements RoleBean {
 		insertBuilder.save();
 		
 		return true;
+	}
+	
+	private void deletePermission(long roleId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getPermissionModule().getTableName())
+				.andCustomWhere("ROLE_ID = ?", roleId);
+		builder.delete();
 	}
 	
 }

@@ -212,6 +212,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getUpdateRoleCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateRoleCommand());
+		c.addCommand(new AddPermissionsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getDeleteGroupCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteGroupCommand());

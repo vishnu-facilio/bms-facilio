@@ -75,6 +75,17 @@ public class RoleAction extends ActionSupport {
 			return SUCCESS;
 	}
 	
+	public String updateRole() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ROLE, getRole());
+		context.put(FacilioConstants.ContextNames.PERMISSIONS, getPermissions());
+
+		Command updateRole = FacilioChainFactory.getUpdateRoleCommand();
+		updateRole.execute(context);
+		
+		return SUCCESS;
+	}
 	private List<Permissions> permissions;
 	public List<Permissions> getPermissions() {
 		return permissions;

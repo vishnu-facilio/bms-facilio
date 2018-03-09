@@ -281,6 +281,18 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="updaterole" class="com.facilio.bmsconsole.actions.RoleAction" method="updateRole">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+			<result name="success" type="json">
+				<param name="includeProperties">roleId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 		<action name="addalarmemail" class="com.facilio.bmsconsole.actions.NotificationAction" method="addAlarmEMailNotifier">
             <param name="moduleName">setup</param>
 			<param name="permission">ALARM_SETTINGS</param>
