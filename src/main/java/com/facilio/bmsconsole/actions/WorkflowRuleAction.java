@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
-import com.facilio.bmsconsole.util.FormulaAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -133,6 +132,20 @@ public class WorkflowRuleAction extends ActionSupport {
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		Chain addRule = FacilioChainFactory.getAddReadingRuleChain();
 		addRule.execute(facilioContext);
+		
+		return SUCCESS;
+	}
+	
+	public String updateReadingRule() throws Exception {
+		readingRule.setActions(actions);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
+		
+		Chain updateRule = FacilioChainFactory.updateReadingRuleChain();
+		updateRule.execute(context);
+		
+		readingRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		
 		return SUCCESS;
 	}

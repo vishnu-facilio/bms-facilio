@@ -234,7 +234,8 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(false);
-			WorkflowRuleAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
+			workFlow.setId(workflowId);
+			WorkflowRuleAPI.updateWorkflowRule(workFlow);
 			setResult("success");
 		}
 		return SUCCESS;
@@ -244,7 +245,8 @@ public class NotificationAction extends ActionSupport {
 		if(workflowId != -1) {
 			WorkflowRuleContext workFlow = new WorkflowRuleContext();
 			workFlow.setStatus(true);
-			WorkflowRuleAPI.updateWorkflowRule(AccountUtil.getCurrentOrg().getOrgId(), workFlow, workflowId);
+			workFlow.setId(workflowId);
+			WorkflowRuleAPI.updateWorkflowRule(workFlow);
 			setResult("success");
 		}
 		return SUCCESS;

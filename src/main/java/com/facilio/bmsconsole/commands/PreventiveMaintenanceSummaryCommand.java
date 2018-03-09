@@ -61,7 +61,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
 				}
 				if (trigger.getReadingRuleId() != -1) {
-					ReadingRuleContext rule = WorkflowRuleAPI.getReadingRule(trigger.getReadingRuleId());
+					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getReadingRuleId());
 					trigger.setReadingFieldId(rule.getReadingFieldId());
 					trigger.setReadingInterval(rule.getInterval());
 					trigger.setStartReading(rule.getStartValue());

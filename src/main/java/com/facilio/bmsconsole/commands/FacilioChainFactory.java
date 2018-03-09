@@ -1410,6 +1410,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain updateReadingRuleChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new UpdateWorkflowRuleCommand());
+		c.addCommand(new DeleterOldRuleActionsCommand());
+		c.addCommand(new AddActionsForWorkflowRule());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain addAssignmentRuleChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddWorkflowRuleCommand());

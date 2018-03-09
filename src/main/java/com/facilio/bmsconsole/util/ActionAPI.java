@@ -157,14 +157,20 @@ public class ActionAPI {
 				.andCondition(CriteriaAPI.getCondition(ruleField,workflowRuleIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = actionBuilder.get();
-		List<Long> actionIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
+			List<Long> actionIds = new ArrayList<>();
+			List<Long> templateIds = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				long actionId = (long) prop.get("actionId");
 				actionIds.add(actionId);
+				Long templateId = (Long) prop.get("templateId");
+				if (templateId != null) {
+					templateIds.add(templateId);
+				}
 			}
 			
 			deleteActions(actionIds);
+			TemplateAPI.deleteTemplates(templateIds);
 		}
 		
 	}

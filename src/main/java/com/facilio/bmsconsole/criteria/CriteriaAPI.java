@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -78,6 +81,17 @@ public class CriteriaAPI {
 		else {
 			throw new IllegalArgumentException("Condition can not be empty for a Criteria");
 		}
+	}
+	
+	public static void deleteCriteria (long id) throws SQLException {
+		FacilioModule module = ModuleFactory.getCriteriaModule();
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition("CRITERIAID", "criteriaId", String.valueOf(id), NumberOperators.EQUALS))
+														;
+		deleteBuilder.delete();
 	}
 	
 	public static Criteria getCriteria(long orgId, long criteriaId) throws Exception {
