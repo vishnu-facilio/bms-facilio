@@ -20,7 +20,7 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			long vmId = jc.getJobId();
 			EnergyMeterContext meter = DeviceAPI.getEnergyMeter(vmId);
 			long endTime = System.currentTimeMillis();
-			long startTime = DateTimeUtil.getDayStartTime(DeviceAPI.VM_HISTORICAL_DATA_CALCULATION_INTERVAL);
+			long startTime = DateTimeUtil.getMonthStartTime(DeviceAPI.VM_HISTORICAL_DATA_CALCULATION_INTERVAL);
 			
 			long processStartTime = System.currentTimeMillis();
 			DeviceAPI.insertVirtualMeterReadings(Collections.singletonList(meter), startTime, endTime, 15);

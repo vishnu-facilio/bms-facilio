@@ -3,8 +3,7 @@ version: 0.1
 phases:
   build:
     commands:
-      - aws s3 cp s3://repo.facilstack.com/maven_settings.xml ~/.m2/maven_settings.xml
-      - mvn -s ~/.m2/maven_settings.xml package
+      - mvn package
 artifacts:
   files:
     - target/ROOT.war

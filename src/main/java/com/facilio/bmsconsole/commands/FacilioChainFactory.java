@@ -1129,6 +1129,18 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain updateEnergyMeterChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateAdditionalPropsForEnergyMeterCommand());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new AddVirtualMeterRelCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getProcessDataChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ProcessDataCommand());

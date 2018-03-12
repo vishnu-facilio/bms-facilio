@@ -23,7 +23,7 @@ public class AddVirtualMeterRelCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EnergyMeterContext meter = (EnergyMeterContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(meter != null && meter.isVirtual()) {
+		if(meter != null && meter.getChildMeterExpression() != null) {
 			String expression = meter.getChildMeterExpression();
 			if(expression == null || expression.isEmpty()) {
 				throw new IllegalArgumentException("Formula expression cannot be null while adding virtual meter");
@@ -45,6 +45,8 @@ public class AddVirtualMeterRelCommand implements Command {
 				insertBuilder.addRecord(relProp);
 			}
 			insertBuilder.save();
+			
+			FacilioTimer.deleteJob(meter.getId(), "HistoricalVMCalculation");
 			FacilioTimer.scheduleOneTimeJob(meter.getId(), "HistoricalVMCalculation", 30, "priority");
 		}
 		return false;

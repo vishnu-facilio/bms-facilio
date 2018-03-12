@@ -179,6 +179,7 @@ public class ActionAPI {
 		FacilioModule actionModule = ModuleFactory.getActionModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(actionModule.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
 				.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
 		deleteBuilder.delete();
 	}

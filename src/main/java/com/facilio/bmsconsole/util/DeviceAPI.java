@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.ExpressionEvaluator;
 
@@ -39,7 +40,7 @@ public class DeviceAPI
 {
 	private static Logger logger = Logger.getLogger(DeviceAPI.class.getName());
 	
-	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -90;
+	public static final int VM_HISTORICAL_DATA_CALCULATION_INTERVAL = -3;
 
 	public static List<ControllerSettingsContext> getAllControllers() throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -250,6 +251,21 @@ public class DeviceAPI
 		return selectBuilder.get();
 	}
 	
+	public static void deleteEnergyData(long meterId, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING));
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(fields.get("parentId"), String.valueOf(meterId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(fields.get("ttime"), startTime+", "+endTime, DateOperators.BETWEEN))
+														;
+		
+		deleteBuilder.delete();
+	}
 	
 	public static List<EnergyMeterContext> getAllVirtualMeters() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -314,6 +330,8 @@ public class DeviceAPI
 															.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
 			List<Map<String, Object>> childProps = childMeterBuilder.get();
 			if(childProps != null && !childProps.isEmpty()) {
+				deleteEnergyData(meter.getId(), startTime, endTime);
+				
 				List<Long> childMeterIds = new ArrayList<>();
 				for(Map<String, Object> childProp : childProps) {
 					childMeterIds.add((Long) childProp.get("childMeterId"));
