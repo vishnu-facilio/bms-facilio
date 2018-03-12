@@ -1,17 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.ActionSupport;
 
 

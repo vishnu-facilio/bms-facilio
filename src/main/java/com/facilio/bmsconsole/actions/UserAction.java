@@ -10,15 +10,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.impl.OrgBeanImpl;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
@@ -30,6 +27,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.LoginUtil;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 

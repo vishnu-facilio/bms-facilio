@@ -79,12 +79,10 @@ public class FacilioModule implements Serializable {
 		;
 		
 		private int intVal;
-		
 		private SubModuleType(int type) {
 			// TODO Auto-generated constructor stub
 			this.intVal = type;
 		}
-		
 		public int getIntVal() {
 			return intVal;
 		}
