@@ -14,6 +14,7 @@ public class UpdateWorkflowRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		rule.setRuleType(null); //Type is not allowed to be changed
 		if (rule instanceof ReadingRuleContext) {
 			rule = WorkflowRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
 		}

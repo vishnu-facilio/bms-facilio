@@ -37,21 +37,14 @@ public class WorkflowRuleAction extends ActionSupport {
 	{
 	    return SUCCESS;
 	}
-	WorkflowRuleContext workflowRuleContext;
-	public WorkflowRuleContext getWorkflowRuleContext() {
-		return workflowRuleContext;
+	WorkflowRuleContext rule;
+	public WorkflowRuleContext getRule() {
+		return rule;
+	}
+	public void setRule(WorkflowRuleContext rule) {
+		this.rule = rule;
 	}
 
-	public void setWorkflowRuleContext(WorkflowRuleContext workflowRuleContext) {
-		this.workflowRuleContext = workflowRuleContext;
-	}
-
-	public String assignmentRules() throws Exception 
-	{
-		setRules(WorkflowRuleAPI.getWorkflowRules());
-	    return "assignmentRules";
-	}
-	
 	public String newAssignmentRule() throws Exception 
 	{
 //		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(orgId, true);
@@ -130,7 +123,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		//readingRule.setResourceId(getAssetId());
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
-		Chain addRule = FacilioChainFactory.getAddReadingRuleChain();
+		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		
 		return SUCCESS;
@@ -142,7 +135,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, actions);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, readingRule);
 		
-		Chain updateRule = FacilioChainFactory.updateReadingRuleChain();
+		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(context);
 		
 		readingRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
@@ -153,72 +146,67 @@ public class WorkflowRuleAction extends ActionSupport {
 	public String addAssignmentRule() throws Exception
 	{
 		FacilioContext facilioContext = new FacilioContext();
-		workflowRuleContext.setRuleType(RuleType.ASSIGNMENT_RULE);
-		//ActionContext assignmentAction = actions.get(0);
+		rule.setRuleType(RuleType.ASSIGNMENT_RULE);
 		ActionContext assignmentAction = new ActionContext();
 		assignmentAction.setActionType(ActionType.ASSIGNMENT_ACTION);
-		assignmentTemplate.setName(workflowRuleContext.getName()+"_AssignmentTemplate");
+		assignmentTemplate.setName(rule.getName()+"_AssignmentTemplate");
 		assignmentAction.setTemplate(assignmentTemplate);
 		List<ActionContext> assignActions = new ArrayList<>();
 		assignActions.add(assignmentAction);
-		//actions.add(assignmentAction);
-		//workflowRuleContext.setActions(actions);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, assignActions);
-		Chain addRule = FacilioChainFactory.addAssignmentRuleChain();
+		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
 	}
 	
-	public Criteria getSLACriteria() throws Exception
-	{
-		Criteria obj = new Criteria();
-		//obj.setPattern("1");
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioField assignmentgroup = modBean.getField("assignmentGroup", FacilioConstants.ContextNames.WORK_ORDER);	
-		Condition condition1 = new Condition();
-		condition1.setField(assignmentgroup);		
-		condition1.setValue("1,2");
-		condition1.setOperatorId(36);
-		obj.addAndCondition(condition1);
-		
-		FacilioField space = modBean.getField("resource", FacilioConstants.ContextNames.WORK_ORDER);		
-		Condition condition2 = new Condition();
-		condition2.setField(space);		
-		condition2.setValue("1,2");
-		condition2.setOperatorId(36);
-		obj.addAndCondition(condition2);
-		
-		FacilioField category = modBean.getField("category", FacilioConstants.ContextNames.WORK_ORDER);		
-		Condition condition3 = new Condition();
-		condition3.setField(space);		
-		condition3.setValue("1");
-		condition3.setOperatorId(36);
-		obj.addAndCondition(condition3);
-		
-		return obj;
-	}
+//	public Criteria getSLACriteria() throws Exception
+//	{
+//		Criteria obj = new Criteria();
+//		//obj.setPattern("1");
+//		
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		
+//		FacilioField assignmentgroup = modBean.getField("assignmentGroup", FacilioConstants.ContextNames.WORK_ORDER);	
+//		Condition condition1 = new Condition();
+//		condition1.setField(assignmentgroup);		
+//		condition1.setValue("1,2");
+//		condition1.setOperatorId(36);
+//		obj.addAndCondition(condition1);
+//		
+//		FacilioField space = modBean.getField("resource", FacilioConstants.ContextNames.WORK_ORDER);		
+//		Condition condition2 = new Condition();
+//		condition2.setField(space);		
+//		condition2.setValue("1,2");
+//		condition2.setOperatorId(36);
+//		obj.addAndCondition(condition2);
+//		
+//		FacilioField category = modBean.getField("category", FacilioConstants.ContextNames.WORK_ORDER);		
+//		Condition condition3 = new Condition();
+//		condition3.setField(space);		
+//		condition3.setValue("1");
+//		condition3.setOperatorId(36);
+//		obj.addAndCondition(condition3);
+//		
+//		return obj;
+//	}
 	
 
 	public String addSLARule() throws Exception
 	{
-		System.out.println(">>>>>>>> workflowRuleContext : "+workflowRuleContext);
+		System.out.println(">>>>>>>> workflowRuleContext : "+rule);
 		System.out.println(">>>>>>>slaTemplate : "+slaTemplate);
 		FacilioContext facilioContext = new FacilioContext();
-		workflowRuleContext.setRuleType(RuleType.SLA_RULE);
-		//workflowRuleContext.setCriteria(getSLACriteria());
+		rule.setRuleType(RuleType.SLA_RULE);
 		ActionContext slaAction = new ActionContext();
 		slaAction.setActionType(ActionType.SLA_ACTION);
-		//slaTemplate.setSlaPolicyJson("{1:200000,2:600000}"); //Hardcoding Duration here. This will be configured from the UI
-		slaTemplate.setName(workflowRuleContext.getName()+"_SLATemplate");
+		slaTemplate.setName(rule.getName()+"_SLATemplate");
 		slaAction.setTemplate(slaTemplate);
 		List<ActionContext> slaActions = new ArrayList<>();
 		slaActions.add(slaAction);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, slaActions);
-		Chain addRule = FacilioChainFactory.addSLARuleChain();
+		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
 	}
@@ -291,27 +279,35 @@ public class WorkflowRuleAction extends ActionSupport {
 		this.readingRules = readingRules;
 	}
 	
-	public String getAssetThresholdRules() throws Exception {
+	public String fetchWorkflowRulesOfType() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.READING_RULE);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
 		
-		Chain thresholdRules = FacilioChainFactory.getThresholdRulesChain();
-		thresholdRules.execute(context);
-		setRules((List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
+		workflowRuleType.execute(context);
+		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
 		return SUCCESS;
 	}
 	
-	public String getWorkflowRules() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE, this.module);
-		Chain workflowRulesChain = FacilioChainFactory.getWorkflowRulesChain();
-		workflowRulesChain.execute(context);
-		
-		setRules((List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
-		
-		return SUCCESS;
+	private List<WorkflowRuleContext> workflowRuleList;
+	public List<WorkflowRuleContext> getWorkflowRuleList() {
+		return workflowRuleList;
 	}
+	public void setWorkflowRuleList(List<WorkflowRuleContext> workflowRuleList) {
+		this.workflowRuleList = workflowRuleList;
+	}
+	
+	private RuleType ruleType;
+	public int getRuleType() {
+		if(ruleType != null) {
+			return ruleType.getIntVal();
+		}
+		return -1;
+	}
+	public void setRuleType(int ruleType) {
+		this.ruleType = RuleType.valueOf(ruleType);;
+	}
+	
 	public String addWorkflowRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -338,15 +334,6 @@ public class WorkflowRuleAction extends ActionSupport {
 		this.form = form;
 	}
 	
-	WorkflowRuleContext rule;
-	public WorkflowRuleContext getRule() {
-		return rule;
-	}
-	
-	public void setRule(WorkflowRuleContext rule) {
-		this.rule = rule;
-	}
-	
 	private List<ActionContext> actions;
 	public List<ActionContext> getActions() {
 		return this.actions;
@@ -354,14 +341,6 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	public void setActions(List<ActionContext> actions) {
 		this.actions = actions;
-	}
-	
-	private List<WorkflowRuleContext> rules = null;
-	public List<WorkflowRuleContext> getRules() {
-		return rules;
-	}
-	public void setRules(List<WorkflowRuleContext> rules) {
-		this.rules = rules;
 	}
 	
 	private long orgId = 0;

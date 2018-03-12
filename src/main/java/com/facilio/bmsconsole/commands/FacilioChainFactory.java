@@ -1422,41 +1422,16 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddWorkflowRuleChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new AddTemplateCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddReadingRuleChain() {
-		Chain c = new ChainBase();
 		c.addCommand(new AddWorkflowRuleCommand());
 		c.addCommand(new AddActionsForWorkflowRule());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
-	public static Chain updateReadingRuleChain() {
+	public static Chain updateWorkflowRuleChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateWorkflowRuleCommand());
 		c.addCommand(new DeleterOldRuleActionsCommand());
-		c.addCommand(new AddActionsForWorkflowRule());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain addAssignmentRuleChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddWorkflowRuleCommand());
-		c.addCommand(new AddActionsForWorkflowRule());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain addSLARuleChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddWorkflowRuleCommand());
 		c.addCommand(new AddActionsForWorkflowRule());
 		addCleanUpCommand(c);
 		return c;
