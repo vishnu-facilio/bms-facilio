@@ -65,7 +65,21 @@
 				<param name="root">rule</param>
 			</result>
 		</action>
+		<action name="updateAssignmentRule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateAssignmentRule">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">rule</param>
+			</result>
+		</action>
 		<action name="addSLARule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addSLARule">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">rule</param>
+			</result>
+		</action>
+		<action name="updateSLARule" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateSLARule">
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS</param>
 			<result name="success" type="json">

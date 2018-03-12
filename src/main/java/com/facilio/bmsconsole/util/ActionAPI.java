@@ -159,28 +159,40 @@ public class ActionAPI {
 		List<Map<String, Object>> props = actionBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<Long> actionIds = new ArrayList<>();
-			List<Long> templateIds = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				long actionId = (long) prop.get("actionId");
 				actionIds.add(actionId);
+			}
+			deleteActions(actionIds);
+		}
+		
+	}
+	
+	public static void deleteActions(List<Long> actionIds) throws Exception {
+		FacilioModule module = ModuleFactory.getActionModule();
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getActionFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(actionIds, module));
+		
+		List<Map<String, Object>> props = actionBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<Long> templateIds = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
 				Long templateId = (Long) prop.get("templateId");
 				if (templateId != null) {
 					templateIds.add(templateId);
 				}
 			}
 			
-			deleteActions(actionIds);
+			FacilioModule actionModule = ModuleFactory.getActionModule();
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(actionModule.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
+					.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
+			deleteBuilder.delete();
 			TemplateAPI.deleteTemplates(templateIds);
 		}
-		
-	}
-	
-	public static void deleteActions(List<Long> actionIds) throws SQLException {
-		FacilioModule actionModule = ModuleFactory.getActionModule();
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(actionModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
-				.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
-		deleteBuilder.delete();
 	}
 }

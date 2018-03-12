@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -143,17 +143,36 @@ public class WorkflowRuleAction extends ActionSupport {
 	{
 		FacilioContext facilioContext = new FacilioContext();
 		rule.setRuleType(RuleType.ASSIGNMENT_RULE);
-		ActionContext assignmentAction = new ActionContext();
-		assignmentAction.setActionType(ActionType.ASSIGNMENT_ACTION);
-		assignmentTemplate.setName(rule.getName()+"_AssignmentTemplate");
-		assignmentAction.setTemplate(assignmentTemplate);
-		List<ActionContext> assignActions = new ArrayList<>();
-		assignActions.add(assignmentAction);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, assignActions);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(true));
 		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
+	}
+	
+	public String updateAssignmentRule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+		rule.setRuleType(RuleType.ASSIGNMENT_RULE);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructAssignmentAction(false));
+		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		updateRule.execute(facilioContext);
+		return SUCCESS;
+	}
+	
+	private List<ActionContext> constructAssignmentAction(boolean isAdd) {
+		if (assignmentTemplate != null) {
+			ActionContext assignmentAction = new ActionContext();
+			assignmentAction.setActionType(ActionType.ASSIGNMENT_ACTION);
+			assignmentTemplate.setName(rule.getName()+"_AssignmentTemplate");
+			assignmentAction.setTemplate(assignmentTemplate);
+			List<ActionContext> assignActions = Collections.singletonList(assignmentAction);
+			return assignActions;
+		}
+		else if (isAdd) {
+			throw new IllegalArgumentException("Assignment Template cannot be null during addition of Assignment rule");
+		}
+		return null;
 	}
 	
 //	public Criteria getSLACriteria() throws Exception
@@ -188,41 +207,53 @@ public class WorkflowRuleAction extends ActionSupport {
 //	}
 	
 
-	public String addSLARule() throws Exception
-	{
-		System.out.println(">>>>>>>> workflowRuleContext : "+rule);
-		System.out.println(">>>>>>>slaTemplate : "+slaTemplate);
+	public String addSLARule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		rule.setRuleType(RuleType.SLA_RULE);
-		ActionContext slaAction = new ActionContext();
-		slaAction.setActionType(ActionType.SLA_ACTION);
-		slaTemplate.setName(rule.getName()+"_SLATemplate");
-		slaAction.setTemplate(slaTemplate);
-		List<ActionContext> slaActions = new ArrayList<>();
-		slaActions.add(slaAction);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, slaActions);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(true));
 		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
 		return SUCCESS;
 	}
 	
-	SLATemplate slaTemplate;
+	public String updateSLARule() throws Exception {
+		FacilioContext facilioContext = new FacilioContext();
+		rule.setRuleType(RuleType.SLA_RULE);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(false));
+		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
+		updateRule.execute(facilioContext);
+		return SUCCESS;
+	}
 	
+	private List<ActionContext> constructSLAAction(boolean isAdd) {
+		if (slaTemplate != null) {
+			ActionContext slaAction = new ActionContext();
+			slaAction.setActionType(ActionType.SLA_ACTION);
+			slaTemplate.setName(rule.getName()+"_SLATemplate");
+			slaAction.setTemplate(slaTemplate);
+			List<ActionContext> slaActions = Collections.singletonList(slaAction);
+			return slaActions;
+		}
+		else if (isAdd) {
+			throw new IllegalArgumentException("SLA Template cannot be null during addition of SLA rule");
+		}
+		return null;
+	}
+	
+	SLATemplate slaTemplate;
 	public SLATemplate getSlaTemplate() {
 		return slaTemplate;
 	}
-
 	public void setSlaTemplate(SLATemplate slaTemplate) {
 		this.slaTemplate = slaTemplate;
 	}
+	
 	AssignmentTemplate assignmentTemplate;
-	
-	
 	public AssignmentTemplate getAssignmentTemplate() {
 		return assignmentTemplate;
 	}
-
 	public void setAssignmentTemplate(AssignmentTemplate assignmentTemplate) {
 		this.assignmentTemplate = assignmentTemplate;
 	}
