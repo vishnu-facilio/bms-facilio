@@ -381,6 +381,8 @@ public class FacilioConstants {
 		public static final String DATE_FILTER = "dateFilter";
 		public static final String START_TIME = "startTime";
 		public static final String SCHEDULE_INFO = "schedule";
+		public static final String END_TIME = "endTime";
+		public static final String MAX_COUNT = "maxCount";
 		
 		public static final String BASE_LINE = "baseLine";
 		public static final String BASE_LINE_LIST = "baseLines";

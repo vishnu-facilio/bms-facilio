@@ -389,7 +389,7 @@ public class WorkflowRuleAPI {
 				
 				long workflowId = workflow.getWorkflowId();
 				if (workflowId != -1) {
-					workflow.setWorkflow(WorkflowUtil.getWorkflowContext(workflowId));
+					workflow.setWorkflow(WorkflowUtil.getWorkflowContext(workflowId, true));
 				}
 				
 				if(isEvent) {
