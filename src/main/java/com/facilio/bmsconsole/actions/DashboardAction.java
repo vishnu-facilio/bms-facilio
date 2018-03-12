@@ -73,7 +73,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
-import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -1752,7 +1751,6 @@ public class DashboardAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
 		
 		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
-		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
@@ -1766,12 +1764,15 @@ public class DashboardAction extends ActionSupport {
 		
 		emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 		
+		// TODO...pojo
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
-		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		emailTemplate.setName("Report");
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
  		
 		Chain mailReportChain = ReportsChainFactory.getReportScheduleChain();
@@ -1796,6 +1797,21 @@ public class DashboardAction extends ActionSupport {
 		this.startTime = startTime;
 	}
 	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	
+	private int maxCount = -1;
+	public int getMaxCount() {
+		return maxCount;
+	}
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
 	private EMailTemplate emailTemplate;
 	public EMailTemplate getEmailTemplate() {
 		return emailTemplate;

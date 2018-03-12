@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -58,7 +61,18 @@ public class SendReportMailCommand implements Command {
 		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
- 		AwsUtil.sendEmail(eMailTemplate.getTemplate(placeHolders), Collections.singletonMap(fileName, fileUrl));
+		
+		JSONObject template = eMailTemplate.getTemplate(placeHolders);
+		String toList;
+		if (template.get("to") instanceof JSONArray) {
+			JSONArray array = (JSONArray) template.get("to");
+			toList = StringUtils.join(array, ",");
+		}
+		else {
+			toList = (String) template.get("to");
+		}
+		template.replace("to", toList);
+ 		AwsUtil.sendEmail(template, Collections.singletonMap(fileName, fileUrl));
  		
 		return false;
 	}
