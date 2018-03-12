@@ -281,7 +281,7 @@ public class JobStore {
 				System.out.println("Deletion failed with Job ID : "+jobId+" and Jobname : "+jobName);
 			}
 			else {
-				System.out.println("Successfully job with Job ID : "+jobId+" and Jobname : "+jobName);
+				System.out.println("Successfully deleted job with Job ID : "+jobId+" and Jobname : "+jobName);
 			}
 			
 			
