@@ -69,6 +69,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -642,6 +643,43 @@ public class DashboardAction extends ActionSupport {
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
+	
+	public String deleteReport() throws Exception {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
+		.andCustomWhere("ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		return SUCCESS;
+	}
+	
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
