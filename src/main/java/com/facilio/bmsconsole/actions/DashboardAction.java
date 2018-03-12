@@ -643,43 +643,6 @@ public class DashboardAction extends ActionSupport {
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
-	
-	public String deleteReport() throws Exception {
-		
-		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		
-		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
-		.andCustomWhere("ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		return SUCCESS;
-	}
-	
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
@@ -1287,6 +1250,42 @@ public class DashboardAction extends ActionSupport {
 			JSONArray relatedAlarms = getAlarmReturnFormat(alarmProps);
 			setRelatedAlarms(relatedAlarms);
 		}
+		return SUCCESS;
+	}
+	
+	public String deleteReport() throws Exception {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
+		.andCustomWhere("ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
 		return SUCCESS;
 	}
 	
