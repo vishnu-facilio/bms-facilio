@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
@@ -36,6 +37,26 @@ public class TemplateAction extends ActionSupport {
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
 		addTemplate.execute(context);
+		
+		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		
+		return SUCCESS;
+	}
+	
+	private TaskSectionTemplate taskGroup;
+	public TaskSectionTemplate getTaskGroup() {
+		return taskGroup;
+	}
+	public void setTaskGroup(TaskSectionTemplate taskGroup) {
+		this.taskGroup = taskGroup;
+	}
+	
+	public String addTaskGroupTemplate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TEMPLATE, taskGroup);
+		
+		Chain addTaskGroup = FacilioChainFactory.addTaskGroupTemplateChain();
+		addTaskGroup.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		

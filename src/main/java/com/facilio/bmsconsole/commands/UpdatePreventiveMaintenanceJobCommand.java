@@ -118,7 +118,7 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 		WorkorderTemplate woTemplate = new WorkorderTemplate();
 		woTemplate.setWorkorder(wo);
 		woTemplate.setTasks(taskMap);
-		newTemplateId = TemplateAPI.addPMWorkOrderTemplate(AccountUtil.getCurrentOrg().getId(), woTemplate);
+		newTemplateId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
 		return newTemplateId;
 	}
 }

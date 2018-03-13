@@ -1941,6 +1941,15 @@
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
+		
+		<action name="addtaskgrouptemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addTaskGroupTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
 
 		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="addSms">

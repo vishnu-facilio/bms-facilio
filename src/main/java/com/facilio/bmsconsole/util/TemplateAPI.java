@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -240,7 +241,7 @@ public class TemplateAPI {
 				}
 			}break;
 			case TASK_GROUP:{
-				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getTaskSectionModule(), FieldFactory.getTaskSectionTemplateFields(), id);
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					return getTaskGroupTemplateFromMap(templateMap);
@@ -653,15 +654,39 @@ public class TemplateAPI {
 		return addJsonTemplate(orgId, template, Template.Type.JSON);
 	}
 	
-	public static long addPMWorkOrderTemplate (long orgId, WorkorderTemplate template) throws Exception {
-		return addWorkOrderTemplate(orgId, template, Type.PM_WORKORDER, Type.PM_TASK, Type.PM_TASK_SECTION);
+	private static TaskTemplate constructTaskTemplate(TaskContext task, long sectionId, long woTemplateId, Type type) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		TaskTemplate taskTemplate = new TaskTemplate();
+		taskTemplate.setTask(task);
+		taskTemplate.setSectionId(sectionId);
+		taskTemplate.setParentTemplateId(woTemplateId);
+		taskTemplate.setType(type);
+		taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
+		return taskTemplate;
 	}
 	
-	public static long addWorkOrderTemplate (long orgId, WorkorderTemplate template) throws Exception {
-		return addWorkOrderTemplate(orgId, template, Type.WORKORDER, Type.WO_TASK, Type.WO_TASK_SECTION);
+	public static long addTaskGroupTemplate (TaskSectionTemplate template) throws Exception {
+		template.setType(Type.TASK_GROUP);
+		template.setOrgId(AccountUtil.getCurrentOrg().getId());
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		long sectionId = insertTemplateWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templateProps);
+		List<TaskContext> taskList = template.getTasks();
+		List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
+		for (TaskContext task : taskList) {
+			taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, -1, Type.TASK_GROUP_TASK)));
+		}
+		insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
+		return sectionId;
 	}
 	
-	private static long addWorkOrderTemplate(long orgId, WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
+	public static long addPMWorkOrderTemplate (WorkorderTemplate template) throws Exception {
+		return addWorkOrderTemplate(template, Type.PM_WORKORDER, Type.PM_TASK, Type.PM_TASK_SECTION);
+	}
+	
+	public static long addWorkOrderTemplate (WorkorderTemplate template) throws Exception {
+		return addWorkOrderTemplate(template, Type.WORKORDER, Type.WO_TASK, Type.WO_TASK_SECTION);
+	}
+	
+	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
 		template.setType(woType);
 		template.setOrgId(AccountUtil.getCurrentOrg().getId());
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
@@ -678,13 +703,7 @@ public class TemplateAPI {
 				}
 				List<TaskContext> taskList = entry.getValue();
 				for (TaskContext task : taskList) {
-					TaskTemplate taskTemplate = new TaskTemplate();
-					taskTemplate.setTask(task);
-					taskTemplate.setSectionId(sectionId);
-					taskTemplate.setParentTemplateId(templateId);
-					taskTemplate.setType(taskType);
-					taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
-					taskTemplateProps.add(FieldUtil.getAsProperties(taskTemplate));
+					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, templateId, taskType)));
 				}
 			}
 			insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
@@ -734,27 +753,6 @@ public class TemplateAPI {
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
 		return addJsonTemplate(orgId, template, Template.Type.ALARM);
-	}
-	
-	public static long addTaskGroupTemplate(long orgId, TaskSectionTemplate template) throws Exception {
-		template.setType(Type.TASK_GROUP);
-		template.setOrgId(AccountUtil.getCurrentOrg().getId());
-		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
-		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templateProps);
-		List<TaskContext> tasks = template.getTasks();
-		
-		List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
-		for (TaskContext task : tasks) {
-			TaskTemplate taskTemplate = new TaskTemplate();
-			taskTemplate.setTask(task);
-			taskTemplate.setSectionId(templateId);
-			taskTemplate.setType(Type.TASK_GROUP_TASK);
-			taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
-			taskTemplateProps.add(FieldUtil.getAsProperties(taskTemplate));
-		}
-		insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps);
-		
-		return templateId;
 	}
 	
 	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {

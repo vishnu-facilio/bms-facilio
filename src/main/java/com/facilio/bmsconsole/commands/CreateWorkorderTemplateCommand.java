@@ -29,10 +29,10 @@ public class CreateWorkorderTemplateCommand implements Command {
 		
 		long templateId = -1; 
 		if (type == Template.Type.PM_WORKORDER) {
-			templateId = TemplateAPI.addPMWorkOrderTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
+			templateId = TemplateAPI.addPMWorkOrderTemplate(workorderTemplate);
 		}
 		else {
-			templateId = TemplateAPI.addWorkOrderTemplate(AccountUtil.getCurrentOrg().getOrgId(), workorderTemplate);
+			templateId = TemplateAPI.addWorkOrderTemplate(workorderTemplate);
 		}
 		context.put(FacilioConstants.ContextNames.RECORD_ID, templateId);
 		return false;

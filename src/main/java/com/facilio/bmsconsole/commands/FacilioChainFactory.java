@@ -1300,6 +1300,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addTaskGroupTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new CreateTaskGroupTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddPreventiveMaintenanceChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new ValidatePMTriggersCommand());
