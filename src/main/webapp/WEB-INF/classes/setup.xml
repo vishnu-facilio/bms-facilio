@@ -373,22 +373,6 @@
 			</result>
 		</action>	
 		
-		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
-			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
-			<result name="success" type="json">
-				<param name="root">templates</param>
-			</result>
-		</action>
-		
-		<action name="gettemplate" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
-			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
-			<result name="success" type="json">
-				<param name="root">template</param>
-			</result>
-		</action>	
-		
 		<action name="alarmnotifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showAlarmsNotificationSettings">
 			
 			<result name="success" type="json">

@@ -1924,6 +1924,33 @@
 	</package>
 
 	<package name="templateApi" namespace="/api/template" extends="home">
+		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">templates</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="id">{1}</param>
+			<result name="success" type="json">
+				<param name="root">template</param>
+				<param name="excludeProperties">taskTemplates, sectionTemplates</param>
+			</result>
+		</action>	
+		
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="deleteTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
 		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="addEmail">
 			<param name="moduleName">setup</param>
@@ -1942,8 +1969,26 @@
 			</result>
 		</action>
 		
+		<action name="updatewotemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="updateWorkOrderTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
 		<action name="addtaskgrouptemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="addTaskGroupTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
+		<action name="updatetaskgrouptemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="updateTaskGroupTemplate">
 			<param name="moduleName">workorder</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">

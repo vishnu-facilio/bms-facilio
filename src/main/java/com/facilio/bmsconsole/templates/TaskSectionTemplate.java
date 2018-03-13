@@ -6,6 +6,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.TaskContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TaskSectionTemplate extends Template {
 	
@@ -46,7 +47,16 @@ public class TaskSectionTemplate extends Template {
 	public void setTasks(List<TaskContext> tasks) {
 		this.tasks = tasks;
 	}
-
+	
+	@JsonIgnore
+	private List<TaskTemplate> taskTemplates;
+	public List<TaskTemplate> getTaskTemplates() {
+		return taskTemplates;
+	}
+	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
+		this.taskTemplates = taskTemplates;
+	}
+	
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub

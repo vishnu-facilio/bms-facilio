@@ -29,6 +29,26 @@ public class TemplateAction extends ActionSupport {
 		this.id = id;
 	}
 	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public String deleteTemplate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		
+		Chain deleteTemplateChain = FacilioChainFactory.deleteTemplateChain();
+		deleteTemplateChain.execute(context);
+		
+		result = "success";
+		
+		return SUCCESS;
+	}
+	
 	public String addWorkOrderTemplate() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
@@ -36,6 +56,21 @@ public class TemplateAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
 		
 		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
+		addTemplate.execute(context);
+		
+		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		
+		return SUCCESS;
+	}
+	
+	public String updateWorkOrderTemplate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
+		
+		Chain addTemplate = FacilioChainFactory.updateWorkorderTemplateChain();
 		addTemplate.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -56,6 +91,19 @@ public class TemplateAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TEMPLATE, taskGroup);
 		
 		Chain addTaskGroup = FacilioChainFactory.addTaskGroupTemplateChain();
+		addTaskGroup.execute(context);
+		
+		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		
+		return SUCCESS;
+	}
+	
+	public String updateTaskGroupTemplate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		context.put(FacilioConstants.ContextNames.TEMPLATE, taskGroup);
+		
+		Chain addTaskGroup = FacilioChainFactory.updateTaskGroupTemplateChain();
 		addTaskGroup.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);

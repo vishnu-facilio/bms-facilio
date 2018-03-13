@@ -273,10 +273,34 @@ public class TemplateAPI {
 	public static void deleteTemplate(long id) throws Exception {
 		Template template = getTemplate(id);
 		
+		List<Long> ids = new ArrayList<>();
+		ids.add(id);
 		switch (template.getTypeEnum()) {
 			case ALARM:
 			case JSON:
 				deleteJSONTemplate((JSONTemplate)template);
+				break;
+			case WORKORDER:
+			case PM_WORKORDER:
+				WorkorderTemplate woTemplate = (WorkorderTemplate) template;
+				if (woTemplate.getTaskTemplates() != null) {
+					for (TaskTemplate taskTemplate : woTemplate.getTaskTemplates()) {
+						ids.add(taskTemplate.getId());
+					}
+				}
+				if (woTemplate.getSectionTemplates() != null) {
+					for (TaskSectionTemplate sectionTemplate : woTemplate.getSectionTemplates()) {
+						ids.add(sectionTemplate.getId());
+					}
+				}
+				break;
+			case TASK_GROUP:
+				TaskSectionTemplate sectionTemplate = (TaskSectionTemplate) template;
+				if (sectionTemplate.getTaskTemplates() != null) {
+					for (TaskTemplate taskTemplate : sectionTemplate.getTaskTemplates()) {
+						ids.add(taskTemplate.getId());
+					}
+				}
 				break;
 			default: break;
 		}
@@ -285,7 +309,7 @@ public class TemplateAPI {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(id, module));
+													.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		builder.delete();
 	}
 	
@@ -537,39 +561,45 @@ public class TemplateAPI {
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
 		
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate.getId());
-		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate.getId(), sectionMap));
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate);
+		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap));
 		
 		return woTemplate;
 	}
 	
-	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(long woId) throws Exception {
+	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
 		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
-		List<Map<String, Object>> sectionProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woId), PickListOperators.IS));
+		List<Map<String, Object>> sectionProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woTemplate.getId()), PickListOperators.IS));
 		
 		if (sectionProps != null && !sectionProps.isEmpty()) {
 			Map<Long, TaskSectionTemplate> sections = new HashMap<>();
+			List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : sectionProps) {
 				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
 				sections.put(sectionTemplate.getId(), sectionTemplate);
+				sectionTemplates.add(sectionTemplate);
 			}
+			woTemplate.setSectionTemplates(sectionTemplates);
 			return sections;
 		}
 		return null;
 	}
 	
-	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(long woId, Map<Long, TaskSectionTemplate> sectionMap) throws Exception {
+	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
-		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woId), PickListOperators.IS));
+		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woTemplate.getId()), PickListOperators.IS));
 		
 		if (taskProps != null && !taskProps.isEmpty()) {
 			Map<String, List<TaskContext>> taskMap = new HashMap<>();
+			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
+				taskTemplates.add(template);
+				
 				TaskContext task = template.getTask();
 				
 				String sectionName = null;
@@ -588,6 +618,7 @@ public class TemplateAPI {
 				}
 				tasks.add(task);
 			}
+			woTemplate.setTaskTemplates(taskTemplates);
 			return taskMap;
 		}
 		return null;
@@ -615,23 +646,26 @@ public class TemplateAPI {
 	
 	private static TaskSectionTemplate getTaskGroupTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		TaskSectionTemplate template = FieldUtil.getAsBeanFromMap(templateMap, TaskSectionTemplate.class);
-		template.setTasks(getTasksFromSection(template.getId()));
+		template.setTasks(getTasksFromSection(template));
 		return template;
 	}
 	
-	private static List<TaskContext> getTasksFromSection(long sectionId) throws Exception {
+	private static List<TaskContext> getTasksFromSection(TaskSectionTemplate sectionTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		FacilioField sectionIdField = FieldFactory.getAsMap(fields).get("sectionId");
-		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(sectionIdField, String.valueOf(sectionId), PickListOperators.IS));
+		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(sectionIdField, String.valueOf(sectionTemplate.getId()), PickListOperators.IS));
 		
 		if (taskProps != null && !taskProps.isEmpty()) {
 			List<TaskContext> tasks = new ArrayList<>();
+			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
 				TaskContext task = template.getTask();
 				tasks.add(task);
+				taskTemplates.add(template);
 			}
+			sectionTemplate.setTaskTemplates(taskTemplates);
 			return tasks;
 		}
 		return null;

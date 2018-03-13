@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {
 	
@@ -210,6 +211,23 @@ public class WorkorderTemplate extends Template {
 		this.tasks = tasks;
 	}
 	
+	@JsonIgnore
+	private List<TaskTemplate> taskTemplates;
+	public List<TaskTemplate> getTaskTemplates() {
+		return taskTemplates;
+	}
+	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
+		this.taskTemplates = taskTemplates;
+	}
+	
+	@JsonIgnore
+	private List<TaskSectionTemplate> sectionTemplates;
+	public List<TaskSectionTemplate> getSectionTemplates() {
+		return sectionTemplates;
+	}
+	public void setSectionTemplates(List<TaskSectionTemplate> sectionTemplates) {
+		this.sectionTemplates = sectionTemplates;
+	}
 	@Override
 	public JSONObject getTemplate(Map<String, Object> placeHolders) {
 		// TODO Auto-generated method stub

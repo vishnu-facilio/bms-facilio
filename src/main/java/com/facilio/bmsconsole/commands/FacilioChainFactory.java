@@ -1293,15 +1293,45 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddWorkorderTemplateChain() {
+	public static Chain getTemplateChain() {
 		Chain c = new ChainBase();
+		c.addCommand(new GetTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain deleteTemplateChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddWorkorderTemplateChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new CreateWorkorderTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateWorkorderTemplateChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteTemplateCommand());
 		c.addCommand(new CreateWorkorderTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain addTaskGroupTemplateChain() {
-		Chain c = new ChainBase();
+		Chain c = new TransactionChain();
+		c.addCommand(new CreateTaskGroupTemplateCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateTaskGroupTemplateChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new DeleteTemplateCommand());
 		c.addCommand(new CreateTaskGroupTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -1413,21 +1443,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getTemplateChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new GetTemplateCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getAddTemplateChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new AddTemplateCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
-	public static Chain getAddActionChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddTemplateCommand());
 		addCleanUpCommand(c);
