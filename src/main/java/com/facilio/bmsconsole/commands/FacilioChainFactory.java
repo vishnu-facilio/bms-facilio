@@ -1399,9 +1399,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAllWOTemplatesChain() {
+	public static Chain getTemplatesOfTypeChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new GetAllWOTemplatesCommand());
+		c.addCommand(new GetTemplatesOfTypeCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getTemplateChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetTemplateCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

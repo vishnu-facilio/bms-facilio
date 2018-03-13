@@ -122,19 +122,6 @@ public class WorkOrderAction extends ActionSupport {
 		return addWorkOrder(workorder);
 	}
 	
-	public String addWorkOrderTemplate() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
-		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
-		
-		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
-		addTemplate.execute(context);
-		
-		return SUCCESS;
-	}
-	
 	public String addPreventiveMaintenance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

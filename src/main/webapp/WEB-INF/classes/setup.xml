@@ -373,11 +373,19 @@
 			</result>
 		</action>	
 		
-		<action name="wotemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="getWOTemplates">
+		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
 			<param name="moduleName">setup</param>
 			<param name="permission">WORKORDER_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="includeProperties">workorderTemplates.*</param>
+				<param name="root">templates</param>
+			</result>
+		</action>
+		
+		<action name="gettemplate" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">template</param>
 			</result>
 		</action>	
 		

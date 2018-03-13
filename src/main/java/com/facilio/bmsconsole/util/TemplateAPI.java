@@ -22,6 +22,7 @@ import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -49,6 +50,82 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TemplateAPI {
+	
+	public static List<Template> getTemplatesOfType(Type type) throws Exception {
+		FacilioModule module = ModuleFactory.getTemplatesModule();
+		List<FacilioField> fields = FieldFactory.getTemplateFields();
+		FacilioField typeField = FieldFactory.getAsMap(fields).get("type");
+		
+		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
+														;
+		List<Map<String, Object>> props = selectBuider.get();
+		if(props != null && !props.isEmpty()) {
+			List<Template> templates = new ArrayList<>();
+			Class<? extends Template> templateClass = getClassOfType(type);
+			for (Map<String, Object> prop : props) {
+				templates.add(FieldUtil.getAsBeanFromMap(prop, templateClass));
+			}
+			return templates;
+		}
+		return null;
+	}
+	
+	private static Class<? extends Template> getClassOfType(Type type) {
+		switch (type) {
+			case EMAIL:
+				return EMailTemplate.class;
+			case SMS:
+				return SMSTemplate.class;
+			case JSON:
+			case ALARM:
+				return JSONTemplate.class;
+			case EXCEL:
+				return ExcelTemplate.class;
+			case WORKORDER:
+			case PM_WORKORDER:
+				return WorkorderTemplate.class;
+			case TASK_GROUP_TASK:
+			case PM_TASK:
+			case WO_TASK:
+				return TaskTemplate.class;
+			case TASK_GROUP:
+			case PM_TASK_SECTION:
+			case WO_TASK_SECTION:
+				return TaskSectionTemplate.class;
+			case PUSH_NOTIFICATION:
+				return PushNotificationTemplate.class;
+			case WEB_NOTIFICATION:
+				return WebNotificationTemplate.class;
+			case ASSIGNMENT:
+				return AssignmentTemplate.class;
+			case SLA:
+				return SLATemplate.class;
+			default:
+				return null;
+		}
+	}
+	
+	public static Template getTemplate(long orgId, long id) throws Exception {
+		FacilioModule module = ModuleFactory.getTemplatesModule();
+		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+													.select(FieldFactory.getTemplateFields())
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(id, module))
+													;
+		
+		List<Map<String, Object>> templates = selectBuider.get();
+		
+		if(templates != null && !templates.isEmpty()) {
+			Map<String, Object> templateMap = templates.get(0);
+			return getExtendedTemplate(templateMap);
+		}
+		return null;
+	}
 	
 	public static List<ExcelTemplate> getAllExcelTemplates() throws Exception {
 		List<FacilioField> fields = FieldFactory.getTemplateFields();
@@ -190,21 +267,6 @@ public class TemplateAPI {
 				;
 		
 		return selectBuider.get();
-	}
-	
-	public static Template getTemplate(long orgId, long id) throws Exception {
-		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getTemplateFields())
-													.table("Templates")
-													.andCustomWhere("Templates.ORGID = ? AND Templates.ID = ?", orgId, id);
-		
-		List<Map<String, Object>> templates = selectBuider.get();
-		
-		if(templates != null && !templates.isEmpty()) {
-			Map<String, Object> templateMap = templates.get(0);
-			return getExtendedTemplate(templateMap);
-		}
-		return null;
 	}
 	
 	public static void deleteTemplate(long id) throws Exception {

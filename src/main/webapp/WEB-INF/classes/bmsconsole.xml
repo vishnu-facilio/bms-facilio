@@ -1629,15 +1629,6 @@
 			</result>
 		</action>
 
-		<action name="saveTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="addWorkOrderTemplate">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^workorder.*</param>
-			</result>
-		</action>
-
 		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addPreventiveMaintenance">
 			<param name="moduleName">planned</param>
@@ -1939,6 +1930,15 @@
 			<param name="permission">GENERAL</param>
 			<result name="success" type="json">
 				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addwotemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addWorkOrderTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
 			</result>
 		</action>
 

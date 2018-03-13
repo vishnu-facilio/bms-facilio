@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAllWOTemplatesCommand implements Command {
+public class GetTemplateCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<JSONTemplate> woTemplates = TemplateAPI.getAllWOTemplates();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE_LIST, woTemplates);
+		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		if (id != -1) {
+			context.put(FacilioConstants.ContextNames.TEMPLATE, TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getId(), id));
+		}
 		return false;
 	}
-	
+
 }
