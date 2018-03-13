@@ -42,7 +42,7 @@ public class GenerateUsageRecordCommand implements Command {
 	public String HandleBillGeneration(Map<String,String> placeHolders,long templateId,long startTime, long endTime) throws Exception
 	{
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		ExcelTemplate excelobject = (ExcelTemplate)TemplateAPI.getTemplate(orgId, templateId);
+		ExcelTemplate excelobject = (ExcelTemplate)TemplateAPI.getTemplate(templateId);
 		String excelName = excelobject.getName();
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		String fileURL = null;

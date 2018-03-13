@@ -140,7 +140,7 @@ public class EventRulesAPI {
 				eventRule.setTransformCriteria(CriteriaAPI.getCriteria(orgId, eventRule.getTransformCriteriaId()));
 				
 				if (eventRule.getTransformAlertTemplateId() != -1) {
-					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, eventRule.getTransformAlertTemplateId());
+					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(eventRule.getTransformAlertTemplateId());
 					JSONParser parser = new JSONParser();
 					eventRule.setTransformTemplate((JSONObject) parser.parse(template.getContent()));
 				}
@@ -155,7 +155,7 @@ public class EventRulesAPI {
 				eventRule.setCoRelWorkflowXml(workFlow.getWorkflowString());
 				
 				if(eventRule.getCoRelTransformTemplateId() != -1) {
-					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(orgId, eventRule.getCoRelTransformTemplateId());
+					JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(eventRule.getCoRelTransformTemplateId());
 					JSONParser parser = new JSONParser();
 					eventRule.setCoRelTransformTemplate((JSONObject) parser.parse(template.getContent()));
 				}

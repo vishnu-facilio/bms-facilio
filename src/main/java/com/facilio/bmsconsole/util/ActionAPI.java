@@ -133,7 +133,7 @@ public class ActionAPI {
 			for(Map<String, Object> prop : props) {
 				ActionContext action = FieldUtil.getAsBeanFromMap(prop, ActionContext.class);
 				if(action.getTemplateId() != -1) {
-					action.setTemplate(TemplateAPI.getTemplate(action.getOrgId(), action.getTemplateId())); //Template should be obtained from some api
+					action.setTemplate(TemplateAPI.getTemplate(action.getTemplateId())); //Template should be obtained from some api
 					
 					if(action.getTemplate() == null) {
 						throw new IllegalArgumentException("Invalid template ID for action : "+action.getId());

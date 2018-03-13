@@ -77,7 +77,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 												WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
 												clonedPM.setAssignedToid(wo.getAssignedTo().getId());*/
 												
-												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pmJob.getTemplateId());
+												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pmJob.getTemplateId());
 												clonedPM.setWoTemplate(template);
 												
 												Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, clonedPM);

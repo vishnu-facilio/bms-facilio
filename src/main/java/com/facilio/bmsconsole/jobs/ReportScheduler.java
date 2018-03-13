@@ -51,7 +51,7 @@ public class ReportScheduler extends FacilioJob {
 				}
 				context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);*/
 				
-				EMailTemplate template  = (EMailTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getId(), (long)prop.get("templateId"));
+				EMailTemplate template  = (EMailTemplate) TemplateAPI.getTemplate((long)prop.get("templateId"));
 				context.put(FacilioConstants.Workflow.TEMPLATE, template);
 				
 				Long reportId = (long) prop.get("reportId");

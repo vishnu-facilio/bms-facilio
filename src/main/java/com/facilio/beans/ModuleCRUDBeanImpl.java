@@ -172,7 +172,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			if(templateId == -1) {
 				templateId = pm.getTemplateId();
 			}
-			Template template = TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), templateId);
+			Template template = TemplateAPI.getTemplate(templateId);
 			WorkOrderContext wo = null;
 			Map<String, List<TaskContext>> taskMap = null;
 			

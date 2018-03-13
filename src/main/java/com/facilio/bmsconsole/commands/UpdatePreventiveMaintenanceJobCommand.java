@@ -79,7 +79,7 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 	}
 	
 	private long addWOTemplate(long templateId, long resourceId) throws Exception {
-		Template template = TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), templateId);
+		Template template = TemplateAPI.getTemplate(templateId);
 		long newTemplateId = -1;
 		WorkOrderContext wo = null;
 		Map<String, List<TaskContext>> taskMap = null;
