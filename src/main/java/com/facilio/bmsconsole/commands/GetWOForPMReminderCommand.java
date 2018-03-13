@@ -37,7 +37,7 @@ public class GetWOForPMReminderCommand implements Command {
 			case BEFORE:
 				long templateId = pm.getTemplateId();
 				long currentExecutionTime = (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
-				JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), templateId);
+				JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(templateId);
 				JSONObject content = template.getTemplate(null);
 				wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);

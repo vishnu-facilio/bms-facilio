@@ -69,7 +69,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		
-		Template template = TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pm.getTemplateId());
+		Template template = TemplateAPI.getTemplate(pm.getTemplateId());
 		WorkOrderContext workorder = null;
 		Map<String, List<TaskContext>> taskMap = null;
 		

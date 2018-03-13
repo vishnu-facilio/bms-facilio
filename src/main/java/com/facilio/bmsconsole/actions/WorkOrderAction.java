@@ -113,7 +113,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrderFromTemplate() throws Exception {
 		
-		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), getTemplateId());
+		JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(getTemplateId());
 		JSONParser parser = new JSONParser();
 		JSONObject content = (JSONObject) parser.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
 		

@@ -109,7 +109,7 @@ public class TemplateAPI {
 		}
 	}
 	
-	public static Template getTemplate(long orgId, long id) throws Exception {
+	public static Template getTemplate(long id) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getTemplateFields())
@@ -270,7 +270,7 @@ public class TemplateAPI {
 	}
 	
 	public static void deleteTemplate(long id) throws Exception {
-		Template template = getTemplate(AccountUtil.getCurrentOrg().getId(), id);
+		Template template = getTemplate(id);
 		
 		switch (template.getTypeEnum()) {
 			case ALARM:

@@ -14,7 +14,7 @@ public class GetTemplateCommand implements Command {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (id != -1) {
-			context.put(FacilioConstants.ContextNames.TEMPLATE, TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getId(), id));
+			context.put(FacilioConstants.ContextNames.TEMPLATE, TemplateAPI.getTemplate(id));
 		}
 		return false;
 	}
