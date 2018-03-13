@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
@@ -468,7 +470,7 @@ public class DashboardAction extends ActionSupport {
 		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
 		reportContext = readingReport;
 		reportModule = module;
-		return getData(readingReport, module, dateFilter, null, baseLineId, -1, null);
+		return getDataForReadings(readingReport, module, dateFilter, null, baseLineId, -1, null);
 	}
 	
 	public String addComparisionReport() throws Exception {
@@ -558,7 +560,13 @@ public class DashboardAction extends ActionSupport {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(reportContext.getModuleId());
-		return getData(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
+		if(module.getName().equals("workorder")) {
+			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
+		}
+		else {
+			getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
+		}
+		return SUCCESS;
 	}
 	
 	private String[] meterIds;
@@ -571,25 +579,24 @@ public class DashboardAction extends ActionSupport {
 		return this.meterIds;
 	}
 	
-	private String getData(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
-		
-//		FacilioContext context = new FacilioContext();
-//		context.put(FacilioConstants.ContextNames.REPORT, report);
-//		context.put(FacilioConstants.ContextNames.MODULE, module);
-//		context.put(FacilioConstants.ContextNames.REPORT_DATE_FILTER, dateFilter);
-//		context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, userFilterValues);
-//		Chain addDashboardChain = FacilioChainFactory.getReportData();
-//		addDashboardChain.execute(context);
+	private String getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+				;
+		
+		if(module.getExtendModule() != null) {
+			builder.innerJoin(module.getExtendModule().getTableName())
+				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+		}
 		
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
 		report.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
-		
-		boolean isEnergyDataWithTimeFrame = false;
-		if(xAxisField.getColumnName().contains("TTIME") && module.getName().equals("energydata")) {
-			isEnergyDataWithTimeFrame = true;
-		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
@@ -608,8 +615,8 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue()) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
-			if (dateFilter != null || report.getDateFilter() != null) {
+		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) ) {
@@ -637,7 +644,22 @@ public class DashboardAction extends ActionSupport {
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
 			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+				
 				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
+				
+				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
+					
+					FacilioModule baseSpaceModule = modBean.getModule("basespace");
+					
+					builder.innerJoin(baseSpaceModule.getTableName())
+					.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
+					
+					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
+						
+						report.getxAxisField().getField().setDisplayName("Building");
+						report.getxAxisField().getField().setName("building");
+					}
+				}
 			}
 		}
 		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
@@ -654,15 +676,318 @@ public class DashboardAction extends ActionSupport {
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
+
+		if ("WorkOrders".equals(module.getTableName())){
+			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
+		}
+		
+		if(userFilterValues != null && report.getReportUserFilters() != null) {
+			for(ReportUserFilterContext userFilter : report.getReportUserFilters()) {
+				if(userFilterValues.containsKey(userFilter.getId().toString())) {
+					Object userFilterValue = userFilterValues.get(userFilter.getId().toString());
+					if(userFilterValue instanceof JSONArray) {
+						JSONArray userFilterJsonValue = (JSONArray) userFilterValue;
+						builder.andCustomWhere(userFilter.getWhereClause(), userFilterJsonValue.get(0),userFilterJsonValue.get(1));
+					}
+					else {
+						builder.andCustomWhere(userFilter.getWhereClause(), userFilterValue);
+					}
+				}
+			}
+		}
+		String groupByString = "label";
+		
+		if(report.getGroupBy() != null) {
+			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(report.getGroupByField());
+			report.setGroupByField(reportGroupByField);
+			FacilioField groupByField = reportGroupByField.getField();
+			groupByField.setName("groupBy");
+			fields.add(groupByField);
+			builder.groupBy("groupBy");
+			groupByString = groupByString + ",groupBy";
+		}
+			
+		if (report.getY1AxisAggregateOpperator() != FormulaContext.DateAggregateOperator.ACTUAL) {
+			builder.groupBy(groupByString);
+		}
+		
+		if(report.getLimit() != null) {
+			builder.limit(report.getLimit());
+		}
+		
+		if(report.getOrderBy() != null) {
+			if(report.getOrderByFunc() != null) {
+				builder.orderBy(report.getOrderBy() +" "+report.getOrderByFunc().getStringValue());
+			}
+			else {
+				builder.orderBy(report.getOrderBy());
+			}
+		}
+		
+		Condition dateCondition = null;
+		Criteria criteria = null;
+		if(baseLineId != -1) {
+			BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+			DateRange dateRange;
+			if(dateFilter != null) {
+				System.out.println("dateFilter --- "+dateFilter);
+				dateRange = new DateRange((long)dateFilter.get(0), (long)dateFilter.get(1));
+			}
+			else {
+				dateRange = report.getDateFilter().getOperator().getRange(null);
+			}
+			System.out.println("start -- "+dateRange.getStartTime() +" end -- "+dateRange.getEndTime());
+			Condition condition = baseLineContext.getBaseLineCondition(report.getDateFilter().getField(), dateRange);
+			String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
+			this.baseLineComparisionDiff = dateRange.getStartTime() - Long.parseLong(baseLineStartValue);
+			System.out.println(condition);
+			builder.andCondition(condition);
+		}
+		else if(report.getDateFilter() != null) {
+			dateCondition = DashboardUtil.getDateCondition(report, dateFilter, module);
+			builder.andCondition(dateCondition);
+		}
+		
+		if(criteriaId != -1) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), criteriaId);
+		}
+		else if(report.getReportCriteriaContexts() != null) {
+			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
+		}
+		if(criteria != null) {
+			builder.andCriteria(criteria);
+		}
+		if(report.getCriteria() != null) {
+			builder.andCriteria(report.getCriteria());
+		}
+		
+		fields.add(y1AxisField);
+		fields.add(xAxisField);
+		builder.select(fields);
+		List<Map<String, Object>> rs = builder.get();
+		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
+		System.out.println("builder --- "+builder);
+		
+		System.out.println("res 1-- "+rs);
+		
+		if(report.getGroupBy() != null) {
+			
+			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
+			
+			for(int i=0;i<rs.size();i++) {
+	 			Map<String, Object> thisMap = rs.get(i);
+	 			if(thisMap!=null) {
+	 				
+	 					String strLabel = (thisMap.get("label") != null) ? thisMap.get("label").toString() : "Unknown";
+	 					JSONObject value = new JSONObject();
+		 				value.put("label", thisMap.get("groupBy"));
+		 				value.put("value", thisMap.get("value"));
+		 				
+		 				Object xlabel = thisMap.get("label");
+		 				if(thisMap.get("dummyField") != null) {
+		 					xlabel = thisMap.get("dummyField");
+		 				}
+		 				res.put(xlabel, value);
+	 			}
+		 	}
+			JSONArray finalres = new JSONArray();
+			for(Object key : res.keySet()) {
+				JSONObject j1 = new JSONObject();
+				j1.put("label", key);
+				j1.put("value", res.get(key));
+				finalres.add(j1);
+			}
+				
+			setReportData(finalres);
+		}
+		else {
+			JSONArray res = new JSONArray();
+			
+			for(int i=0;i<rs.size();i++) {
+
+				Map<String, Object> thisMap = rs.get(i);
+	 			JSONObject component = new JSONObject();
+	 			if(thisMap!=null) {
+	 				if(thisMap.get("dummyField") != null) {
+	 					component.put("label", thisMap.get("dummyField"));
+	 				}
+	 				else {
+	 					Object lbl = thisMap.get("label");
+	 					component.put("label", lbl);
+	 				}
+ 					component.put("value", thisMap.get("value"));
+ 					res.add(component);
+	 			}
+		 	}
+			System.out.println("res -- "+res);
+			setReportData(res);
+		}
+		
+		return SUCCESS;
+	
+	}
+	
+	public String deleteReport() throws Exception {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
+		.andCustomWhere("ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		return SUCCESS;
+	}
+	
+	
+	private String getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
-		if ("WorkOrders".equals(module.getTableName())){
-			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
+		
+		if(module.getExtendModule() != null) {
+			builder.innerJoin(module.getExtendModule().getTableName())
+				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 		}
 		
+		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
+		report.setxAxisField(reportXAxisField);
+		FacilioField xAxisField = reportXAxisField.getField();
+		
+		GenericSelectRecordBuilder subBuilder = null;
+		FacilioModule energyMeterModule = modBean.getModule("energymeter");
+		
+		if(!module.getName().equals(xAxisField.getModule().getName())) {
+			subBuilder = new GenericSelectRecordBuilder();
+			subBuilder.table(energyMeterModule.getTableName());
+			
+			xAxisField.setColumnName("PARENT_METER_ID");
+			xAxisField.setName("parentId");
+			xAxisField.setModule(module);
+		}
+		
+		boolean isEnergyDataWithTimeFrame = false;
+		if(xAxisField.getColumnName().contains("TTIME") && module.getName().equals("energydata")) {
+			isEnergyDataWithTimeFrame = true;
+		}
+		
+		List<FacilioField> fields = new ArrayList<>();
+		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
+			FacilioField dummyField = new FacilioField();
+			dummyField.setColumnName(xAxisField.getColumnName());
+			if (report.getXAxisAggregateOpperator() == FormulaContext.DateAggregateOperator.ACTUAL) {
+				dummyField = DateAggregateOperator.ACTUAL.getSelectField(dummyField);
+			}
+			else {
+				dummyField = NumberAggregateOperator.MAX.getSelectField(dummyField);
+			}
+			dummyField.setName("dummyField");
+			fields.add(dummyField);
+		}
+		
+		FacilioField y1AxisField = null;
+		ReportFieldContext reportY1AxisField;
+		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
+		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
+				
+				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
+				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) ) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
+					report.setChartType(ReportChartType.HEATMAP.getValue());
+				}
+				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+				}
+				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					if(report.getIsComparisionReport()) {
+						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					}
+				}
+				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					if(report.getIsComparisionReport()) {
+						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					}
+				}
+				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
+					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+				}
+				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
+			}
+			
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+				
+				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
+					
+					FacilioModule baseSpaceModule = modBean.getModule("basespace");
+					
+					subBuilder.innerJoin(baseSpaceModule.getTableName())
+					.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
+					.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+					
+					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
+						
+						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = 1 and Name=\"Main\")");
+						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1 ");
+						
+						report.getxAxisField().getField().setDisplayName("Building");
+						report.getxAxisField().getField().setName("building");
+					}
+				}
+				else {
+					xAxisField = xAggregateOpperator.getSelectField(xAxisField);
+				}
+			}
+		}
+		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
+			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
+			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
+			y1AxisField = reportY1AxisField.getField();
+			if(y1AggregateOpperator != null) {
+				y1AxisField = y1AggregateOpperator.getSelectField(y1AxisField);
+			}
+		}
+		else {
+			y1AxisField = NumberAggregateOperator.COUNT.getSelectField(xAxisField);
+			reportY1AxisField = new ReportFieldContext();
+			reportY1AxisField.setModuleField(y1AxisField);
+		}
+		xAxisField.setName("label");
+		y1AxisField.setName("value");
+		report.setY1AxisField(reportY1AxisField);
+
 		if(userFilterValues != null && report.getReportUserFilters() != null) {
 			for(ReportUserFilterContext userFilter : report.getReportUserFilters()) {
 				if(userFilterValues.containsKey(userFilter.getId().toString())) {
@@ -683,8 +1008,35 @@ public class DashboardAction extends ActionSupport {
 			report.setGroupByField(reportGroupByField);
 			FacilioField groupByField = reportGroupByField.getField();
 			groupByField.setName("groupBy");
+			
+			if(!groupByField.getModule().getName().equals(module.getName())) {
+				
+				groupByField.setColumnName("PARENT_METER_ID");
+				groupByField.setModule(module);
+				
+				subBuilder = new GenericSelectRecordBuilder();
+				subBuilder.table(energyMeterModule.getTableName());
+				
+				if(report.getGroupByAggregateOpperator() instanceof SpaceAggregateOperator) {
+					
+					FacilioModule baseSpaceModule = modBean.getModule("basespace");
+					
+					subBuilder.innerJoin(baseSpaceModule.getTableName())
+					.on(baseSpaceModule.getTableName()+".ID=Energy_Meter.PURPOSE_SPACE_ID")
+					.andCustomWhere(baseSpaceModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
+					
+					if(report.getGroupByAggregateOpperator().equals(SpaceAggregateOperator.BUILDING)) {
+						
+						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = 1 and Name=\"Main\")");
+						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1");
+						
+						report.getGroupByField().setFieldLabel("Building");
+					}
+				}
+			}
+			
 			fields.add(groupByField);
-			builder.groupBy("groupBy");
 			groupByString = groupByString + ",groupBy";
 		}
 			
@@ -692,10 +1044,6 @@ public class DashboardAction extends ActionSupport {
 			builder.groupBy(groupByString);
 		}
 		
-		if(module.getExtendModule() != null) {
-			builder.innerJoin(module.getExtendModule().getTableName())
-				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
-		}
 		if(report.getLimit() != null) {
 			builder.limit(report.getLimit());
 		}
@@ -756,6 +1104,38 @@ public class DashboardAction extends ActionSupport {
 		}
 		Condition buildingCondition = null;
 		Multimap<Long,EnergyMeterContext> energyMeterMap =  ArrayListMultimap.create();
+		
+		if(subBuilder != null) {
+			List<FacilioField> subFields = new ArrayList<>(); 
+			
+			FacilioField facilioField = new FacilioField();
+			facilioField.setColumnName("ID");
+			facilioField.setModule(energyMeterModule);
+			facilioField.setName("id");
+			subFields.add(facilioField);
+			
+			FacilioField facilioField1 = new FacilioField();
+			facilioField1.setColumnName("PURPOSE_SPACE_ID");
+			facilioField1.setModule(energyMeterModule);
+			facilioField1.setName("purposeSpace");
+			
+			subFields.add(facilioField1);
+			subBuilder.select(subFields);
+			
+			List<Map<String, Object>> props = subBuilder.get();
+			System.out.println("subBuilder -- "+subBuilder);
+			if(props != null && !props.isEmpty()) {
+				
+				List<Long> meterIds = new ArrayList<Long>();
+				for(Map<String, Object> prop:props) {
+					meterIds.add((long) prop.get("id"));
+					buildingVsMeter.put((long) prop.get("id"), (long) prop.get("purposeSpace"));
+				}
+				String meterIdStr = StringUtils.join(meterIds, ",");
+				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
+			}
+		}
+		
 		if (report.getEnergyMeter() != null) {
 			if (report.getEnergyMeter().getSubMeterId() != null) {
 				energyMeterValue = report.getEnergyMeter().getSubMeterId() + "";
@@ -812,7 +1192,7 @@ public class DashboardAction extends ActionSupport {
 					
 					report.setGroupBy(-1L);
 				}
-				else if ("space".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+				else if ("floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 					SelectRecordsBuilder<EnergyMeterContext> builder12 = new SelectRecordsBuilder<EnergyMeterContext>()
 							.table(modBean.getModule("energymeter").getTableName())
 							.moduleName("energymeter")
@@ -964,25 +1344,6 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
-		else if(report.getReportSpaceFilterContext() != null) {
-			if(report.getReportSpaceFilterContext().getGroupBy() != null) {
-				
-				FacilioModule baseSpaceModule = modBean.getModule("basespace");
-				builder.innerJoin(baseSpaceModule.getTableName())
-				.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
-				
-				String groupBy = report.getReportSpaceFilterContext().getGroupBy();
-				if(groupBy.equalsIgnoreCase("building")) {
-					xAxisField.setColumnName("BUILDING_ID");
-					xAxisField.setModule(baseSpaceModule);
-					
-					xAxisField.setExtendedModule(null);
-					
-					report.getxAxisField().getField().setDisplayName("Building");
-//					report.getxAxisField().getField().setName("building");
-				}
-			}
-		}
 		fields.add(y1AxisField);
 		fields.add(xAxisField);
 		builder.select(fields);
@@ -1002,7 +1363,7 @@ public class DashboardAction extends ActionSupport {
 			
 			HashMap<String, Object> purposeMapping = new HashMap<>();
 			
-			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getEnergyMeter().getBuildingId() != null && "space".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getEnergyMeter().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
 				System.out.println("lables -- "+lables);
@@ -1112,15 +1473,11 @@ public class DashboardAction extends ActionSupport {
 			JSONArray res = new JSONArray();
 			
 			JSONObject purposeIndexMapping = new JSONObject();
-			//setResultVariance(DashboardUtil.getStandardVariance(rs));
 			for(int i=0;i<rs.size();i++) {
 				boolean newPurpose = false;
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			JSONObject component = new JSONObject();
 	 			if(thisMap!=null) {
-//			 				if(thisMap.get("label") == null) {
-//			 					continue;
-//			 				}
 	 				if(thisMap.get("dummyField") != null) {
 	 					component.put("label", thisMap.get("dummyField"));
 	 				}
@@ -1264,41 +1621,6 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String deleteReport() throws Exception {
-		
-		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		
-		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
-		.andCustomWhere("ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		return SUCCESS;
-	}
 	
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
