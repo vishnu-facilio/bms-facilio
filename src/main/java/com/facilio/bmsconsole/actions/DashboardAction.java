@@ -100,6 +100,13 @@ public class DashboardAction extends ActionSupport {
 	public boolean getIsHeatMap() {
 		return isHeatMap;
 	}
+	String reportName;
+	public String getReportName() {
+		return reportName;
+	}
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
+	}
 	public void setIsHeatMap(boolean isHeatMap) {
 		this.isHeatMap = isHeatMap;
 	}
@@ -533,6 +540,10 @@ public class DashboardAction extends ActionSupport {
 		
 		if(reportEntityId != null) {
 			readingReport.setReportEntityId(reportEntityId);
+		}
+		
+		if(reportName != null) {
+			readingReport.setName(reportName);
 		}
 		
 		return readingReport;

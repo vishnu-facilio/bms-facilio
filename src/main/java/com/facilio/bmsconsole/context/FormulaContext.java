@@ -124,6 +124,9 @@ public class FormulaContext {
 			for(AggregateOperator type : DateAggregateOperator.values()) {
 				typeMap.put(type.getValue(), type);
 			}
+			for(AggregateOperator type : SpaceAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
 			return typeMap;
 		}
 		public Integer getValue();
@@ -235,6 +238,44 @@ public class FormulaContext {
 			selectField.setColumnName(selectFieldString);
 			
 			return selectField;
+		}
+	}
+	
+	public enum SpaceAggregateOperator implements AggregateOperator {
+		
+		SITE(21,BaseSpaceContext.SpaceType.SITE.getStringVal(),"SITE_ID"),
+		BUILDING(22,BaseSpaceContext.SpaceType.BUILDING.getStringVal(),"BUILDING_ID"),
+		FLOOR(23,BaseSpaceContext.SpaceType.FLOOR.getStringVal(),"FLOOR_ID");
+		
+		private Integer value;
+		private String stringValue;
+		private String columnName;
+		
+		public Integer getValue() {
+			return value;
+		}
+		public String getStringValue() {
+			return stringValue;
+		}
+		public String getcolumnName() {
+			return columnName;
+		}
+		SpaceAggregateOperator(Integer value,String stringValue,String columnName) {
+			this.value = value;
+			this.stringValue = stringValue;
+			this.columnName = columnName;
+		}
+		
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule baseSpaceModule = modBean.getModule("basespace");
+			
+			field.setColumnName(getcolumnName());
+			field.setModule(baseSpaceModule);
+			
+			field.setExtendedModule(null);
+			
+			return field;
 		}
 	}
 }
