@@ -1673,7 +1673,7 @@ INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, PERIOD, NEXT_EX
 
 INSERT INTO FeatureLicense(ORGID,MODULE) VALUES(${orgId},15);
 
-INSERT INTO Role (ORGID, NAME, DESCRIPTION) VALUES(${orgId}, 'Super Admin', 'Super Admin');
+INSERT INTO Role (ORGID, NAME, DESCRIPTION) VALUES(${orgId}, 'Super Administrator', 'Super Administrator');
 INSERT INTO Role (ORGID, NAME, DESCRIPTION) VALUES(${orgId}, 'Administrator', 'Administrator');
 --SET @ADD_ROLE_ID := (SELECT LAST_INSERT_ID());
 --INSERT INTO Permission (ROLE_ID, MODULE_NAME, PERMISSION) VALUES (@ADD_ROLE_ID, 'setup', 61);
