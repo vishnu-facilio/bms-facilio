@@ -530,7 +530,9 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		PROGRESS (9, "progress", 1, 1),
 		GAUGE (10, "gauge", 1, 1),
 		HEATMAP(11,"heatMap",1,1),
-		TIMESERIES (12,"timeseries",1,1);
+		TIMESERIES (12,"timeseries",1,1),
+		MATRIX (13,"matrix",1,1),
+		TABULAR (14,"tabular",1,1);
 		
 		private int value;
 		private String name;
