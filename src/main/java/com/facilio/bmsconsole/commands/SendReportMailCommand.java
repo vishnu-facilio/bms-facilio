@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,18 +45,22 @@ public class SendReportMailCommand implements Command {
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
 		
-		String fileUrl = null;
+		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
+		Map<String, String> files = new HashMap<>();
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId());
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId(), fileFormat);
+			String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			files.put(fileName + fileFormat.getExtention(), fileUrl);
+			if (fileFormat == FileFormat.IMAGE) {
+				String fileUrl2 = ExportUtil.exportData(FileFormat.CSV, module, view.getFields(), records);
+				files.put(fileName + FileFormat.CSV.getExtention(), fileUrl2);
+			}
 		}
 		else {
-			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+			String fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+			files.put(fileName + fileFormat.getExtention(), fileUrl);
 		}
-		
-		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
-		fileName += fileFormat.getExtention();
 		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
@@ -72,7 +75,7 @@ public class SendReportMailCommand implements Command {
 			toList = (String) template.get("to");
 		}
 		template.replace("to", toList);
- 		AwsUtil.sendEmail(template, Collections.singletonMap(fileName, fileUrl));
+ 		AwsUtil.sendEmail(template, files);
  		
 		return false;
 	}

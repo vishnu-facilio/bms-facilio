@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.view.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext.RuleType;
@@ -101,6 +102,7 @@ public class ValidatePMTriggersCommand implements Command {
 		rule.setStartValue(trigger.getStartReading());
 		rule.setInterval(trigger.getReadingInterval());
 		rule.setReadingFieldId(trigger.getReadingFieldId());
+		rule.setThresholdType(ThresholdType.SIMPLE);
 		
 		Condition condition = new Condition();
 		condition.setField(field);
