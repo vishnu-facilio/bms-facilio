@@ -4,7 +4,6 @@ public class ReportEnergyMeterContext {
 	
 	private Long id;
 	private Long reportId;
-	private Long buildingId;
 	private Long serviceId;
 	private Long subMeterId;
 	private String groupBy;
@@ -20,12 +19,6 @@ public class ReportEnergyMeterContext {
 	}
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
-	}
-	public Long getBuildingId() {
-		return buildingId;
-	}
-	public void setBuildingId(Long buildingId) {
-		this.buildingId = buildingId;
 	}
 	public Long getServiceId() {
 		return serviceId;

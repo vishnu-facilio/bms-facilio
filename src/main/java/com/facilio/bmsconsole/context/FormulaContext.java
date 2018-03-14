@@ -127,6 +127,9 @@ public class FormulaContext {
 			for(AggregateOperator type : SpaceAggregateOperator.values()) {
 				typeMap.put(type.getValue(), type);
 			}
+			for(AggregateOperator type : EnergyPurposeAggregateOperator.values()) {
+				typeMap.put(type.getValue(), type);
+			}
 			return typeMap;
 		}
 		public Integer getValue();
@@ -264,6 +267,42 @@ public class FormulaContext {
 			this.value = value;
 			this.stringValue = stringValue;
 			this.columnName = columnName;
+		}
+		
+		public FacilioField getSelectField(FacilioField field) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule baseSpaceModule = modBean.getModule("basespace");
+			
+			field.setColumnName(getcolumnName());
+			field.setModule(baseSpaceModule);
+			
+			field.setExtendedModule(null);
+			
+			return field;
+		}
+	}
+	
+	public enum EnergyPurposeAggregateOperator implements AggregateOperator {
+		
+		PURPOSE(24);
+		
+		private Integer value;
+		private String stringValue;
+		private String columnName;
+		
+		public Integer getValue() {
+			return value;
+		}
+		public String getStringValue() {
+			return stringValue;
+		}
+		public String getcolumnName() {
+			return columnName;
+		}
+		EnergyPurposeAggregateOperator(Integer value) {
+			this.value = value;
+//			this.stringValue = stringValue;
+//			this.columnName = columnName;
 		}
 		
 		public FacilioField getSelectField(FacilioField field) throws Exception {

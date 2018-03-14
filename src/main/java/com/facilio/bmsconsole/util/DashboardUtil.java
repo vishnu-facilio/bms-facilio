@@ -814,8 +814,11 @@ public class DashboardUtil {
 		highResReport.setY1AxisUnit("kw");
 		
 		ReportEnergyMeterContext energyMeterFilter = new ReportEnergyMeterContext();
-		energyMeterFilter.setBuildingId(buildingId);
 		highResReport.setEnergyMeter(energyMeterFilter);
+		
+		ReportSpaceFilterContext reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		highResReport.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
 		dateFilter.setFieldId(ttimeFld.getId());
@@ -845,9 +848,12 @@ public class DashboardUtil {
 		endUseBreakdown.setY1AxisUnit("kwh");
 		
 		ReportEnergyMeterContext endUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		endUseEnergyMeterFilter.setBuildingId(buildingId);
 		endUseEnergyMeterFilter.setGroupBy("service");
 		endUseBreakdown.setEnergyMeter(endUseEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		endUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext endUseDateFilter = new ReportDateFilterContext();
 		endUseDateFilter.setFieldId(ttimeFld.getId());
@@ -877,9 +883,12 @@ public class DashboardUtil {
 		costUseBreakdown.setY1AxisUnit("cost");
 		
 		ReportEnergyMeterContext costUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		costUseEnergyMeterFilter.setBuildingId(buildingId);
 		costUseEnergyMeterFilter.setGroupBy("service");
 		costUseBreakdown.setEnergyMeter(costUseEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext costUseDateFilter = new ReportDateFilterContext();
 		costUseDateFilter.setFieldId(ttimeFld.getId());
@@ -909,8 +918,11 @@ public class DashboardUtil {
 		dailyBreakdown.setY1AxisUnit("kwh");
 		
 		ReportEnergyMeterContext dailyEnergyMeterFilter = new ReportEnergyMeterContext();
-		dailyEnergyMeterFilter.setBuildingId(buildingId);
 		dailyBreakdown.setEnergyMeter(dailyEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext dailyDateFilter = new ReportDateFilterContext();
 		dailyDateFilter.setFieldId(ttimeFld.getId());
