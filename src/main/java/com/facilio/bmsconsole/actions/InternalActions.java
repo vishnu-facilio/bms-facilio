@@ -1,0 +1,121 @@
+package com.facilio.bmsconsole.actions;
+
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.fw.BeanFactory;
+import com.opensymphony.xwork2.ActionSupport;
+
+public class InternalActions extends ActionSupport {
+	//All actions in this should be done via a bean
+	
+	public String addAlarmFromEvent() throws Exception {
+		
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", (Long) alarmInfo.get("orgId"));
+		alarm = bean.processAlarm(alarmInfo);
+		alarmId = alarm.getId();
+		
+		return SUCCESS;
+	}
+	
+	public String updateAlarmPriority() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.updateAlarmPriority(priority, id);
+		return SUCCESS;
+	}
+	
+	public String updateAlarmResource() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.updateAlarmResource(resourceId, node);
+		return SUCCESS;
+	}
+	
+	public String deleteAlarm() throws Exception {
+		
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		rowsUpdated = bean.deleteAlarm(id);
+		return SUCCESS;
+	}
+	
+	public String updateAlarmFromEvent() throws Exception {
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
+		rowsUpdated = bean.updateAlarm(alarm, id);
+		return SUCCESS;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+	
+	private String priority;
+	public String getPriority() {
+		return priority;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+	
+	private String node;
+	public String getNode() {
+		return node;
+	}
+	public void setNode(String node) {
+		this.node = node;
+	}
+	
+	private long resourceId = -1;
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+	
+	private int rowsUpdated;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
+	}
+	
+	private AlarmContext alarm;
+	public AlarmContext getAlarm() {
+		return alarm;
+	}
+	public void setAlarm(AlarmContext alarm) {
+		this.alarm = alarm;
+	}
+	
+	private long alarmId = -1;
+	public long getAlarmId() {
+		return alarmId;
+	}
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
+	}
+	
+	private JSONObject alarmInfo;
+	public JSONObject getAlarmInfo() {
+		return alarmInfo;
+	}
+	public void setAlarmInfo(JSONObject alarmInfo) {
+		this.alarmInfo = alarmInfo;
+	}
+
+	private long orgId = -1;
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+}

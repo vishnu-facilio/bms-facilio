@@ -16,13 +16,11 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -32,102 +30,12 @@ import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AlarmAction extends ActionSupport {
-	public String addAlarm() throws Exception {
-		getAlarmFromParams(alarm);
-		if(alarm != null) {
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
-			setAlarmId(bean.addAlarm(alarm));
-		}
-		return SUCCESS;
-	}
-	
-	public String addAlarmFromEvent() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
-		
-		Chain addAlarmChain = FacilioChainFactory.getAddAlarmFromEventChain();
-		addAlarmChain.execute(context);
-		alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
-		alarmId = alarm.getId();
-		
-		return SUCCESS;
-	}
-	
-	private JSONObject alarmInfo;
-	public JSONObject getAlarmInfo() {
-		return alarmInfo;
-	}
-	public void setAlarmInfo(JSONObject alarmInfo) {
-		this.alarmInfo = alarmInfo;
-	}
-
-	private long orgId = -1;
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-
-	private long alarmTemplateId = -1;
-	public long getAlarmTemplateId() {
-		return alarmTemplateId;
-	}
-	public void setAlarmTemplateId(long alarmTemplateId) {
-		this.alarmTemplateId = alarmTemplateId;
-	}
-	
-	public String addWorkOrderTemplate() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ALARM, alarm);
-		
-		Chain addTemplate = FacilioChainFactory.getAddAlarmTemplateChain();
-		addTemplate.execute(context);
-		setAlarmTemplateId((long) context.get(FacilioConstants.ContextNames.RECORD_ID));
-		
-		return SUCCESS;
-	}
-
-	private long alarmId = -1;
-	public long getAlarmId() {
-		return alarmId;
-	}
-	public void setAlarmId(long alarmId) {
-		this.alarmId = alarmId;
-	}
-
-	private JSONObject alarmParams;
-	public JSONObject getAlarmParams() {
-		return alarmParams;
-	}
-	public void setAlarmParams(JSONObject alarmParams) {
-		this.alarmParams = alarmParams;
-	}
-	private AlarmContext getAlarmFromParams(AlarmContext alarm) throws Exception {
-		//Process alarm params
-		if (alarm == null) {
-			alarm = new AlarmContext();
-			alarm.setAlarmType(AlarmContext.AlarmType.MAINTENANCE);
-
-			TicketContext ticket = new TicketContext();
-			ticket.setSubject("Alarm "+Math.round(Math.random()*100));
-			ticket.setDescription("Alarm Testing");
-		}
-		alarm.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		alarm.setSourceType(TicketContext.SourceType.ALARM);
-		alarm.setIsAcknowledged(false);
-		return alarm;
-	}
-
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {
 		return alarm;
@@ -156,56 +64,6 @@ public class AlarmAction extends ActionSupport {
 		return updateAlarm(context);
 	}
 	
-	public String updateAlarmPriority() throws Exception {
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		rowsUpdated = bean.updateAlarmPriority(priority, id);
-		return SUCCESS;
-	}
-	
-	public String updateAlarmResource() throws Exception {
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		rowsUpdated = bean.updateAlarmResource(resourceId, node);
-		return SUCCESS;
-	}
-	
-	public String deleteAlarm() throws Exception {
-		
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		rowsUpdated = bean.deleteAlarm(id);
-		return SUCCESS;
-	}
-	
-	private long resourceId = -1;
-	public long getResourceId() {
-		return resourceId;
-	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
-	}
-
-	private String node;
-	public String getNode() {
-		return node;
-	}
-	public void setNode(String node) {
-		this.node = node;
-	}
-
-	private String priority;
-	public String getPriority() {
-		return priority;
-	}
-
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
-	
-	public String updateAlarmFromEvent() throws Exception {
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
-		rowsUpdated = bean.updateAlarm(alarm, id);
-		return SUCCESS;
-	}
-
 	private String updateAlarm(FacilioContext context) throws Exception {
 		//		System.out.println(id);
 		//		System.out.println(alarm);

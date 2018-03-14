@@ -60,17 +60,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public long addAlarm(AlarmContext alarm) throws Exception {
+	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception {
 		// TODO Auto-generated method stub
-		if (alarm != null) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ALARM, alarm);
-
-			Chain addAlarmChain = FacilioChainFactory.getAddAlarmChain();
-			addAlarmChain.execute(context);
-			return alarm.getId();
-		}
-		return -1;
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
+		
+		Chain addAlarmChain = FacilioChainFactory.getAddAlarmFromEventChain();
+		addAlarmChain.execute(context);
+		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
+		return alarm;
 	}
 
 	@Override
