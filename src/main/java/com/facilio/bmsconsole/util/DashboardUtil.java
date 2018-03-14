@@ -671,6 +671,9 @@ public class DashboardUtil {
 			}
 			else {
 				parentReportContext = getParentReportForEntitiyId(reportContext.getReportEntityId());
+				if(parentReportContext != null && parentReportContext.getIsComparisionReport()) {
+					reportContext.setIsComparisionReport(parentReportContext.getIsComparisionReport());
+				}
 			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -685,6 +688,7 @@ public class DashboardUtil {
 				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
 			}
 			
+
 			Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
