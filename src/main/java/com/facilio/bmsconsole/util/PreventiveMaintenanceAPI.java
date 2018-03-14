@@ -512,7 +512,7 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 	
-	public static List<PMReminder> getPMReminders(long pmId) throws Exception {
+	public static List<PMReminder> getPMReminders(List<Long> pmIds) throws Exception {
 		FacilioModule module = ModuleFactory.getPMReminderModule();
 		List<FacilioField> fields = FieldFactory.getPMReminderFields();
 		Map<String, FacilioField> fieldProps = FieldFactory.getAsMap(fields);
@@ -522,7 +522,7 @@ public class PreventiveMaintenanceAPI {
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(pmIdField,String.valueOf(pmId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> reminderProps = selectBuilder.get();
 		List<PMReminder> reminders = new ArrayList<>();

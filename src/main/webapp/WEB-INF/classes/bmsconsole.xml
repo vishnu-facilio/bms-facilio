@@ -1646,6 +1646,15 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
+		
+		<action name="deletepm" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="deletePreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="updatePreventiveMaintenanceJob" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="updatePreventiveMaintenanceJob">

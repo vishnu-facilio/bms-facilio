@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class DeletePMRemindersCommand implements Command {
 		List<PMReminder> newReminders = (List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS);
 		if(pm != null && pm.getId() != -1 && newReminders != null) {
 			
-			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pm.getId());
+			List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(Collections.singletonList(pm.getId()));
 			
 			List<Long> actionIds = new ArrayList<>();
 			actionIds.addAll(reminders.stream().map(PMReminder::getActionId).collect(Collectors.toList()));

@@ -10,7 +10,6 @@ import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -257,6 +256,7 @@ public class WorkOrderAction extends ActionSupport {
 		
 		Chain deletePM = FacilioChainFactory.getDeletePreventiveMaintenanceChain();
 		deletePM.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
 		return SUCCESS;
 	}

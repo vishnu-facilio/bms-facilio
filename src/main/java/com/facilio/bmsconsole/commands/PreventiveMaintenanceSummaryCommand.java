@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		
-		List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(pm.getId());
+		List<PMReminder> reminders = PreventiveMaintenanceAPI.getPMReminders(Collections.singletonList(pm.getId()));
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		
 		return false;

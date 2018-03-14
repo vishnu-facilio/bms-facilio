@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 
@@ -18,25 +21,13 @@ public class DeletePreventiveMaintenanceCommand implements Command {
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {
 			
-			String condition = "ID IN (";
-			for (int i=0; i< recordIds.size(); i++) {
-				if (i != 0) {
-					condition += ",";
-				}
-				condition += "?";
-			}
-			condition += ")";
-			
+			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table("Preventive_Maintenance")
-					.andCustomWhere(condition, recordIds.toArray());
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
-			
-			/*GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
-					.table("Jobs")
-					.andCustomWhere(condition + " AND JOBNAME = ?", recordIds.toArray(), "PreventiveMaintenance");
-			deletebuilder.delete();*/
+
 		}
 		return false;
 	}
