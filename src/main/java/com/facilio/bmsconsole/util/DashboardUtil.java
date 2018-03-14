@@ -634,12 +634,30 @@ public class DashboardUtil {
 		return false;
 	}
 	
+	public static ReportContext getParentReportForEntitiyId(Long entityId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportFields())
+				.table(ModuleFactory.getReport().getTableName())
+				.andCustomWhere(ModuleFactory.getReport().getTableName()+"REPORT_ENTITY_ID = "+entityId)
+				.andCustomWhere(ModuleFactory.getReport().getTableName()+"REPORT_FOLDER_ID is not null");
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			return getReportContext((long)props.get(0).get("id"));
+		}
+		return null;
+	}
+	
 	public static boolean addReport(ReportContext reportContext) throws Exception {
 		
+		boolean isSubReport = true;
+		ReportContext parentReportContext = null;
 		if (reportContext != null) {
 			List<FacilioField> fields = FieldFactory.getReportFields();
 			
 			if(reportContext.getParentFolderId() != null && reportContext.getReportEntityId() == null) {
+				isSubReport = false;
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getReportEntityModule().getTableName())
 						.fields(FieldFactory.getReportEntityFields());
@@ -650,6 +668,9 @@ public class DashboardUtil {
 				insertBuilder.save();
 				
 				reportContext.setReportEntityId((Long)props.get("id"));
+			}
+			else {
+				parentReportContext = getParentReportForEntitiyId(reportContext.getReportEntityId());
 			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -718,6 +739,20 @@ public class DashboardUtil {
 						.fields(FieldFactory.getReportDateFilterFields());
 				
 				insertBuilder.addRecord(prop).save();
+			}
+			else if(isSubReport) {
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("fieldId", reportContext.getxAxisField().getField().getId());
+				prop.put("operatorId", parentReportContext.getDateFilter().getOperatorId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportDateFilter().getTableName())
+						.fields(FieldFactory.getReportDateFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
+				
+				System.out.println("sssssaaaa --- "+prop);
 			}
 			if(reportContext.getEnergyMeter() != null) {
 				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
