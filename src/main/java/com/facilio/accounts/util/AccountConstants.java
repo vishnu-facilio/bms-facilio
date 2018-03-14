@@ -1227,6 +1227,13 @@ public class AccountConstants {
 		description.setColumnName("DESCRIPTION");
 		description.setModule(module);
 		fields.add(description);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(module);
+		fields.add(createdTime);
 
 		return fields;
 	}
