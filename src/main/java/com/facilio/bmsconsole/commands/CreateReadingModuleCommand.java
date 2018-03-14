@@ -8,7 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.SubModuleType;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 
@@ -34,9 +34,8 @@ public class CreateReadingModuleCommand implements Command {
 			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			module.setDisplayName(readingName);
 			module.setTableName("Readings");
+			module.setType(ModuleType.READING);
 			context.put(FacilioConstants.ContextNames.MODULE, module);
-			context.put(FacilioConstants.ContextNames.SUB_MODULE_TYPE, SubModuleType.READING);
-			
 			fields.addAll(FieldFactory.getDefaultReadingFields(module));
 		}
 		else {

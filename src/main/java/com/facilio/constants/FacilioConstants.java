@@ -176,7 +176,6 @@ public class FacilioConstants {
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String PARENT_MODULE = "parentModule";
-		public static final String SUB_MODULE_TYPE = "subModuleType";
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
 		public static final String MODULE_LIST = "modules";

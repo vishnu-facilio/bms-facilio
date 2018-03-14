@@ -60,7 +60,39 @@ public class FacilioModule implements Serializable {
 	public void setFields(List<FacilioField> fields) {
 		this.fields = fields;
 	}
-
+	
+	private ModuleType type;
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = ModuleType.valueOf(type);
+	}
+	public ModuleType getTypeEnum() {
+		return type;
+	}
+	public void setType(ModuleType type) {
+		this.type = type;
+	}
+	
+	private Boolean trashEnabled;
+	public Boolean getTrashEnabled() {
+		return trashEnabled;
+	}
+	public void setTrashEnabled(Boolean trashEnabled) {
+		this.trashEnabled = trashEnabled;
+	}
+	public boolean isTrashEnabled() {
+		if (trashEnabled != null) {
+			return trashEnabled.booleanValue();
+		}
+		return false;
+	}
+	
+	
 	@Override
 	public boolean equals(Object obj) {
 
@@ -70,21 +102,24 @@ public class FacilioModule implements Serializable {
 		return false;
 	}
 	
-	public static enum SubModuleType {
-		MISC(1),
-		READING(2),
-		PHOTOS(3),
-		NOTES(4),
-		ATTACHMENTS(5)
+	public static enum ModuleType {
+		BASE_ENTITY,
+		PICK_LIST,
+		READING,
+		PHOTOS,
+		NOTES,
+		ATTACHMENTS
 		;
 		
-		private int intVal;
-		private SubModuleType(int type) {
-			// TODO Auto-generated constructor stub
-			this.intVal = type;
+		public int getValue() {
+			return ordinal()+1;
 		}
-		public int getIntVal() {
-			return intVal;
+		
+		public static ModuleType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
 		}
 	}
 }

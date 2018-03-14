@@ -64,6 +64,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setName(rs.getString("NAME"));
 			currentModule.setDisplayName(rs.getString("DISPLAY_NAME"));
 			currentModule.setTableName(rs.getString("TABLE_NAME"));
+			currentModule.setType(rs.getInt("MODULE_TYPE"));
+			currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
 			if(prevModule != null) {
 				prevModule.setExtendModule(currentModule);
 			}
@@ -85,7 +87,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
+			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
 			
@@ -114,7 +116,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
 			
@@ -192,13 +194,13 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public List<FacilioModule> getSubModules(long moduleId, FacilioModule.SubModuleType type) throws Exception {
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE SubModulesRel.SUB_TYPE = ?";
+	public List<FacilioModule> getSubModules(long moduleId, FacilioModule.ModuleType type) throws Exception {
+		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE = ?";
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
-			pstmt.setInt(3, type.getIntVal());
+			pstmt.setInt(3, type.getValue());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
@@ -219,13 +221,13 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.SubModuleType type) throws Exception {
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE SubModulesRel.SUB_TYPE = ?";
+	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.ModuleType type) throws Exception {
+		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE = ?";
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
-			pstmt.setInt(3, type.getIntVal());
+			pstmt.setInt(3, type.getValue());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
@@ -634,16 +636,10 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception {
-		addSubModule(parentModuleId, childModuleId, FacilioModule.SubModuleType.MISC);
-	}
-	
-	@Override
-	public void addSubModule(long parentModuleId, long childModuleId, FacilioModule.SubModuleType type) throws Exception {
-		String sql = "INSERT INTO SubModulesRel (PARENT_MODULE_ID, CHILD_MODULE_ID, SUB_TYPE) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO SubModulesRel (PARENT_MODULE_ID, CHILD_MODULE_ID) VALUES (?, ?)";
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, parentModuleId);
 			pstmt.setLong(2, childModuleId);
-			pstmt.setInt(3, type.getIntVal());
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Sub Module");
