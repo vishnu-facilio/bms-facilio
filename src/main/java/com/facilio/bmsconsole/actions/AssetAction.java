@@ -72,7 +72,11 @@ public class AssetAction extends ActionSupport {
 	
 	public String deleteAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
+		AssetContext asset = new AssetContext();
+		asset.setDeleted(true);
+		
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
@@ -147,7 +151,7 @@ public class AssetAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
- 	
+	
 	private List<AssetContext> assets;
 	public List<AssetContext> getAssets() {
 		return assets;

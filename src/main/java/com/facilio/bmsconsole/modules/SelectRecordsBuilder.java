@@ -7,8 +7,10 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +32,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private int maxLevel = LEVEL;
 	private String moduleName;
 	private FacilioModule module;
+	private boolean fetchDeleted = false;
 	private WhereBuilder where = new WhereBuilder();
 	//Need where condition builder for custom field
 	
@@ -146,7 +149,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-
 	public SelectRecordsBuilder<E> moduleName(String moduleName) {
 		this.moduleName = moduleName;
 		return this;
@@ -159,6 +161,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	public SelectRecordsBuilder<E> beanClass(Class<E> beanClass) {
 		this.beanClass = beanClass;
+		return this;
+	}
+	
+	public SelectRecordsBuilder<E> fetchDeleted() {
+		fetchDeleted = true;
 		return this;
 	}
 	
@@ -307,19 +314,22 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
-		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
-		
-		Condition orgCondition = new Condition();
-		orgCondition.setField(orgIdField);
-		orgCondition.setOperator(NumberOperators.EQUALS);
-		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(orgCondition);
 		
-		Condition moduleCondition = new Condition();
-		moduleCondition.setField(moduleIdField);
-		moduleCondition.setOperator(NumberOperators.EQUALS);
-		moduleCondition.setValue(String.valueOf(module.getModuleId()));
+		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
+		
+		if (module.isTrashEnabled()) {
+			FacilioField isDeletedField = FieldFactory.getIsDeletedField();
+			selectFields.add(isDeletedField);
+			
+			if (!fetchDeleted) {
+				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
+			}
+		}
+		
+		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 		
 		builder.table(module.getTableName());
 		

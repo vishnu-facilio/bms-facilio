@@ -78,7 +78,7 @@ public class ResourceAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds (List<Long> resourceIds) throws Exception {
+	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds (List<Long> resourceIds, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
@@ -88,6 +88,10 @@ public class ResourceAPI {
 																		.module(module)
 																		.beanClass(ResourceContext.class)
 																		.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
+		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
 		
 		List<ResourceContext> resources = selectBuilder.get();
 		Map<Long, ResourceContext> resourceMap = new HashMap<>();
@@ -109,8 +113,8 @@ public class ResourceAPI {
 				}
 			}
 			
-			Map<Long, BaseSpaceContext> spaceMap = getSpaces(spaceIds);
-			Map<Long, AssetContext> assetMap = getAssets(assetIds);
+			Map<Long, BaseSpaceContext> spaceMap = getSpaces(spaceIds, fetchDeleted);
+			Map<Long, AssetContext> assetMap = getAssets(assetIds, fetchDeleted);
 			
 			for(ResourceContext resource : resources) {
 				switch (resource.getResourceTypeEnum()) {
@@ -135,7 +139,7 @@ public class ResourceAPI {
 		return resourceMap;
 	}
 	
-	private static Map<Long, BaseSpaceContext> getSpaces(List<Long> spaceIds) throws Exception {
+	private static Map<Long, BaseSpaceContext> getSpaces(List<Long> spaceIds, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -145,11 +149,13 @@ public class ResourceAPI {
 																	.module(module)
 																	.beanClass(BaseSpaceContext.class)
 																	.andCondition(CriteriaAPI.getIdCondition(spaceIds, module));
-		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
 		return selectBuilder.getAsMap();
 	}
 	
-	private static Map<Long, AssetContext> getAssets(List<Long> assetIds) throws Exception {
+	private static Map<Long, AssetContext> getAssets(List<Long> assetIds, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
@@ -159,7 +165,9 @@ public class ResourceAPI {
 																	.module(module)
 																	.beanClass(AssetContext.class)
 																	.andCondition(CriteriaAPI.getIdCondition(assetIds, module));
-		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
 		return selectBuilder.getAsMap();
 	}
 }

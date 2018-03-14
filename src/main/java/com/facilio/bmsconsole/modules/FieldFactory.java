@@ -324,6 +324,10 @@ public class FieldFactory {
 
 		return name;
 	}
+	
+	public static FacilioField getIsDeletedField() {
+		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
+	}
 
 	public static List<FacilioField> getCategoryReadingsFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
