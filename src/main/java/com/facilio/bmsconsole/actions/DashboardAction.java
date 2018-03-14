@@ -324,6 +324,8 @@ public class DashboardAction extends ActionSupport {
 		}
 		DashboardUtil.addReport(reportContext);
 		
+		reportContext = DashboardUtil.getReportContext(reportContext.getId());
+		
 		return SUCCESS;
 	}
 	public String addReportFolder() throws Exception {
