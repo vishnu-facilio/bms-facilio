@@ -6,7 +6,7 @@ import java.util.List;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
-public enum FacilioFrequency {
+public enum EnPIFrequency {
 	DAILY {
 		@Override
 		public ScheduleInfo getScheduleInfo() {
@@ -104,7 +104,7 @@ public enum FacilioFrequency {
 		return ordinal()+1;
 	}
 	
-	public static FacilioFrequency valueOf(int value) {
+	public static EnPIFrequency valueOf(int value) {
 		if (value > 0 && value <= values().length) {
 			return values()[value - 1];
 		}
