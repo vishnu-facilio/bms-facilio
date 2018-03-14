@@ -2,6 +2,8 @@ package com.facilio.beans;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -12,7 +14,7 @@ public interface ModuleCRUDBean {
 	
 	public long addWorkOrderRequest(WorkOrderRequestContext workOrderRequest) throws Exception;
 	
-	public long addAlarm(AlarmContext alarm) throws Exception;
+	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
 	
 	public int deleteAlarm(List<Long> id) throws Exception;
 	
