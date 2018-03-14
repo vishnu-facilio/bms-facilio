@@ -28,7 +28,7 @@ public class HandlePortalSSOCommand implements Command{
 		File publicKeyFile = (File)context.get(FacilioConstants.ContextNames.PUBLICKEYFILE);
 		PortalInfoContext servicePortal  = (PortalInfoContext) context.get(FacilioConstants.ContextNames.PORTALINFO);
 		String fileName = (String)context.get(FacilioConstants.ContextNames.PUBLICKEYFILENAME);
-		String contentType = (String)context.get(FacilioConstants.ContextNames.PUBLICKEYFILENAMETYPE);
+		String contentType = (String)context.get(FacilioConstants.ContextNames.PUBLICKEYFILETYPE);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 
 		servicePortal.setPublicKey(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName,publicKeyFile,contentType));
