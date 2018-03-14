@@ -18,7 +18,6 @@ public class HandlePortalInfoCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
 		Map<String, Object> servicePortalMap  = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PORTALINFO);
 		FacilioModule module = ModuleFactory.getServicePortalModule();
 		

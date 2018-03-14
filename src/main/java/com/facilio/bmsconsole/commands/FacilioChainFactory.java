@@ -588,6 +588,13 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	public static Chain updatePortalSSOChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new HandlePortalSSOCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	
 	public static Command getAllLocationsCommand() {
 		Chain c = new ChainBase();
