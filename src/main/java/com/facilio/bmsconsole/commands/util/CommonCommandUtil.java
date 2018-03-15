@@ -9,9 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
@@ -262,5 +267,65 @@ public class CommonCommandUtil {
 		
 		recordBuilder.save();
 		return (long) props.get("id");
+	}
+	
+	public static void emailException(String msg, Throwable e) {
+		try {
+			JSONObject json = new JSONObject();
+			
+			json.put("sender", "error@facilio.com");
+			json.put("to", "manthosh@facilio.com");
+			StringBuilder subject = new StringBuilder();
+			
+			if(AwsUtil.getConfig("app.url").contains("localhost")) {
+				subject.append("Local - ");
+			}
+			else {
+				subject.append("Prod - ");
+			}
+			
+			if (msg != null) {
+				subject.append(msg)
+						.append(" - ");
+			}
+			
+			subject.append(e.getMessage());
+			json.put("subject", subject.toString());
+			
+			StringBuilder body = new StringBuilder();
+			
+			Organization org = AccountUtil.getCurrentOrg();
+			if(org != null) {
+				body.append(org);
+			}
+			
+			body.append("\n\nMsg : ")
+				.append(msg)
+				.append("\n\nApp Url : ")
+				.append(AwsUtil.getConfig("app.url"))
+				.append("\n\nTrace : \n--------\n")
+				.append(ExceptionUtils.getStackTrace(e));
+			checkDB(e.getMessage(), body);
+			
+			json.put("message", body.toString());
+			AwsUtil.sendEmail(json);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private static void checkDB(String msg, StringBuilder body) {
+		if (msg != null && msg.toLowerCase().contains("deadlock")) {
+			String sql = "show engine innodb status";
+			try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+				rs.first();
+				body.append("\n\nInno DB Status : \n------------\n\n")
+					.append(rs.getString("Status"));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }

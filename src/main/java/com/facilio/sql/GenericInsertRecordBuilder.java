@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -98,6 +99,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			//System.out.println("Added records with IDs : "+ids);
 		}
 		catch(SQLException | RuntimeException e) {
+			CommonCommandUtil.emailException("Insertion failed - ", e);
 			e.printStackTrace();
 			throw e;
 		}

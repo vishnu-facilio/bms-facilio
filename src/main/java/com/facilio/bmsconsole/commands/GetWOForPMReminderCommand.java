@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -37,9 +38,8 @@ public class GetWOForPMReminderCommand implements Command {
 			case BEFORE:
 				long templateId = pm.getTemplateId();
 				long currentExecutionTime = (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
-				JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(templateId);
-				JSONObject content = template.getTemplate(null);
-				wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
+				WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+				wo = template.getWorkorder();
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setCreatedTime((currentExecutionTime+pmReminder.getDuration())*1000);
 				break;

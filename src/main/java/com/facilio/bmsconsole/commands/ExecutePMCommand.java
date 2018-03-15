@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -31,6 +32,7 @@ public class ExecutePMCommand implements Command {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
+				CommonCommandUtil.emailException("PM Execution failed", e);
 			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

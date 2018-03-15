@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -60,6 +61,7 @@ public class PMToWorkOrder extends FacilioJob {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			CommonCommandUtil.emailException("VM Calculation failed", e);
 			e.printStackTrace();
 		}
 	}
