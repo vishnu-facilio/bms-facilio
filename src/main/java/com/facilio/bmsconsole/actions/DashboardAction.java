@@ -1424,7 +1424,7 @@ public class DashboardAction extends ActionSupport {
 			
 			HashMap<String, Object> purposeMapping = new HashMap<>();
 			
-			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getReportSpaceFilterContext().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
 				System.out.println("lables -- "+lables);
@@ -1464,7 +1464,7 @@ public class DashboardAction extends ActionSupport {
 		 			Map<String, Object> thisMap = rs.get(i);
 		 			if(thisMap!=null) {
 		 				
-		 				if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && (report.getReportSpaceFilterContext().getBuildingId() == null || report.getReportSpaceFilterContext().getBuildingId() <= 0) && "service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+		 				if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null&& report.getReportSpaceFilterContext() != null && (report.getReportSpaceFilterContext().getBuildingId() == null || report.getReportSpaceFilterContext().getBuildingId() <= 0) && "service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 		 					Object xlabel = thisMap.get("label");
 		 					if(thisMap.get("dummyField") != null) {
 			 					xlabel = thisMap.get("dummyField");
