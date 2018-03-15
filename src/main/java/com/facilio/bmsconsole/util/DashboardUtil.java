@@ -176,6 +176,9 @@ public class DashboardUtil {
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("id", dashboard.getId());
 			dashboardJson.put("label", dashboardName);
+			if(dashboard.getReportSpaceFilterContext() != null) {
+				dashboardJson.put("spaceFilter", "building");
+			}
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
 			result.add(dashboardJson);
@@ -246,7 +249,23 @@ public class DashboardUtil {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			dashboard.setDashboardWidgets(dashbaordWidgets);
+			dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 			return dashboard;
+		}
+		return null;
+	}
+	
+	public static ReportSpaceFilterContext getDashboardSpaceFilter(Long dashboardId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportSpaceFilterFields())
+				.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			ReportSpaceFilterContext dashboardSpaceFilterContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportSpaceFilterContext.class);
+			return dashboardSpaceFilterContext;
 		}
 		return null;
 	}
@@ -814,8 +833,11 @@ public class DashboardUtil {
 		highResReport.setY1AxisUnit("kw");
 		
 		ReportEnergyMeterContext energyMeterFilter = new ReportEnergyMeterContext();
-		energyMeterFilter.setBuildingId(buildingId);
 		highResReport.setEnergyMeter(energyMeterFilter);
+		
+		ReportSpaceFilterContext reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		highResReport.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
 		dateFilter.setFieldId(ttimeFld.getId());
@@ -845,9 +867,12 @@ public class DashboardUtil {
 		endUseBreakdown.setY1AxisUnit("kwh");
 		
 		ReportEnergyMeterContext endUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		endUseEnergyMeterFilter.setBuildingId(buildingId);
 		endUseEnergyMeterFilter.setGroupBy("service");
 		endUseBreakdown.setEnergyMeter(endUseEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		endUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext endUseDateFilter = new ReportDateFilterContext();
 		endUseDateFilter.setFieldId(ttimeFld.getId());
@@ -877,9 +902,12 @@ public class DashboardUtil {
 		costUseBreakdown.setY1AxisUnit("cost");
 		
 		ReportEnergyMeterContext costUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		costUseEnergyMeterFilter.setBuildingId(buildingId);
 		costUseEnergyMeterFilter.setGroupBy("service");
 		costUseBreakdown.setEnergyMeter(costUseEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext costUseDateFilter = new ReportDateFilterContext();
 		costUseDateFilter.setFieldId(ttimeFld.getId());
@@ -909,8 +937,11 @@ public class DashboardUtil {
 		dailyBreakdown.setY1AxisUnit("kwh");
 		
 		ReportEnergyMeterContext dailyEnergyMeterFilter = new ReportEnergyMeterContext();
-		dailyEnergyMeterFilter.setBuildingId(buildingId);
 		dailyBreakdown.setEnergyMeter(dailyEnergyMeterFilter);
+		
+		reportSpaceFilterContext = new ReportSpaceFilterContext();
+		reportSpaceFilterContext.setBuildingId(buildingId);
+		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
 		
 		ReportDateFilterContext dailyDateFilter = new ReportDateFilterContext();
 		dailyDateFilter.setFieldId(ttimeFld.getId());

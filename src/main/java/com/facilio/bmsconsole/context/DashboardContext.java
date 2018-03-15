@@ -10,6 +10,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 
 	private String dashboardName;
 	
+	private ReportSpaceFilterContext reportSpaceFilterContext;
+	
+	public ReportSpaceFilterContext getReportSpaceFilterContext() {
+		return reportSpaceFilterContext;
+	}
+	public void setReportSpaceFilterContext(ReportSpaceFilterContext reportSpaceFilterContext) {
+		this.reportSpaceFilterContext = reportSpaceFilterContext;
+	}
 	public String getDashboardName() {
 		return dashboardName;
 	}

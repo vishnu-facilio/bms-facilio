@@ -67,8 +67,8 @@ public class GetReportUnderlyingDataCommand implements Command {
 			if (reportContext.getEnergyMeter().getSubMeterId() != null) {
 				builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", reportContext.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS));
 			}
-			else if (reportContext.getEnergyMeter().getBuildingId() != null) {
-				List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getEnergyMeter().getBuildingId()+"");
+			else if (reportContext.getReportSpaceFilterContext().getBuildingId() != null) {
+				List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(reportContext.getReportSpaceFilterContext().getBuildingId()+"");
 				if (meters != null && meters.size() > 0) {
 					List<Long> meterIds = new ArrayList<Long>();
 					for (EnergyMeterContext meter : meters) {

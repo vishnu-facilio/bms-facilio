@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext;
@@ -34,6 +35,7 @@ import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -249,7 +251,14 @@ public class DashboardAction extends ActionSupport {
 	public void setDateFilter(JSONArray dateFilter) {
 		this.dateFilter = dateFilter;
 	}
+	ReportSpaceFilterContext reportSpaceFilterContext;
 	
+	public ReportSpaceFilterContext getReportSpaceFilterContext() {
+		return reportSpaceFilterContext;
+	}
+	public void setReportSpaceFilterContext(ReportSpaceFilterContext reportSpaceFilterContext) {
+		this.reportSpaceFilterContext = reportSpaceFilterContext;
+	}
 	ReportEnergyMeterContext energyMeterFilter;
 	public ReportEnergyMeterContext getEnergyMeterFilter() {
 		return energyMeterFilter;
@@ -472,7 +481,7 @@ public class DashboardAction extends ActionSupport {
 		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
 		reportContext = readingReport;
 		reportModule = module;
-		return getDataForReadings(readingReport, module, dateFilter, null, baseLineId, -1, null);
+		return getDataForReadings(readingReport, module, dateFilter, null, baseLineId, -1);
 	}
 	
 	public String addComparisionReport() throws Exception {
@@ -562,11 +571,23 @@ public class DashboardAction extends ActionSupport {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(reportContext.getModuleId());
+		
+		if(reportSpaceFilterContext != null) {
+			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
+		}
+		else if(buildingId != null) {
+			reportSpaceFilterContext = new ReportSpaceFilterContext();
+			reportSpaceFilterContext.setBuildingId(buildingId);
+			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
+		}
 		if(module.getName().equals("workorder")) {
 			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
 		else {
-			getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
+			if(energyMeterFilter != null) {
+				reportContext.setEnergyMeter(energyMeterFilter);
+			}
+			getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId);
 		}
 		return SUCCESS;
 	}
@@ -873,7 +894,7 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	
-	private String getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
+	private String getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -896,6 +917,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioModule energyMeterModule = modBean.getModule("energymeter");
 		
 		if(!module.getName().equals(xAxisField.getModule().getName())) {
+
 			subBuilder = new GenericSelectRecordBuilder();
 			subBuilder.table(energyMeterModule.getTableName());
 			
@@ -926,6 +948,7 @@ public class DashboardAction extends ActionSupport {
 		FacilioField y1AxisField = null;
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
+		boolean isGroupBySpace = false;
 		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
 			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
@@ -934,7 +957,7 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
-				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId() || oprId == DateOperators.TODAY_UPTO_NOW.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
@@ -958,7 +981,7 @@ public class DashboardAction extends ActionSupport {
 			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
 				
 				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
-					
+					isGroupBySpace = true;
 					FacilioModule baseSpaceModule = modBean.getModule("basespace");
 					
 					subBuilder.innerJoin(baseSpaceModule.getTableName())
@@ -974,6 +997,17 @@ public class DashboardAction extends ActionSupport {
 						report.getxAxisField().getField().setDisplayName("Building");
 						report.getxAxisField().getField().setName("building");
 					}
+				}
+				else if(xAggregateOpperator instanceof EnergyPurposeAggregateOperator) {
+					
+					FacilioModule energyMeterPurposeModule = modBean.getModule("energymeterpurpose");
+					
+					subBuilder.innerJoin(energyMeterPurposeModule.getTableName())
+					.on(energyMeterPurposeModule.getTableName()+".ID=Energy_Meter.PURPOSE_ID")
+					.andCustomWhere(energyMeterPurposeModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+					.andCustomWhere("Energy_Meter.IS_ROOT = 1 ")
+					.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"Main\"");
+					
 				}
 				else {
 					xAxisField = xAggregateOpperator.getSelectField(xAxisField);
@@ -1027,6 +1061,8 @@ public class DashboardAction extends ActionSupport {
 				subBuilder.table(energyMeterModule.getTableName());
 				
 				if(report.getGroupByAggregateOpperator() instanceof SpaceAggregateOperator) {
+					
+					isGroupBySpace = true;
 					
 					FacilioModule baseSpaceModule = modBean.getModule("basespace");
 					
@@ -1108,9 +1144,6 @@ public class DashboardAction extends ActionSupport {
 		Map<Long,Double> buildingVsArea = null;
 		HashMap <Long, ArrayList<Long>> purposeVsMeter= new HashMap<Long,ArrayList<Long>>();
 		JSONObject purposeVsMeter1 = new JSONObject();
-		if (energyMeterFilter != null) {
-			report.setEnergyMeter(energyMeterFilter);
-		}
 		Condition buildingCondition = null;
 		Multimap<Long,EnergyMeterContext> energyMeterMap =  ArrayListMultimap.create();
 		
@@ -1127,8 +1160,14 @@ public class DashboardAction extends ActionSupport {
 			facilioField1.setColumnName("PURPOSE_SPACE_ID");
 			facilioField1.setModule(energyMeterModule);
 			facilioField1.setName("purposeSpace");
-			
 			subFields.add(facilioField1);
+			
+			FacilioField facilioField2 = new FacilioField();
+			facilioField2.setColumnName("PURPOSE_ID");
+			facilioField2.setModule(energyMeterModule);
+			facilioField2.setName("purpose");
+			
+			subFields.add(facilioField2);
 			subBuilder.select(subFields);
 			
 			List<Map<String, Object>> props = subBuilder.get();
@@ -1137,8 +1176,21 @@ public class DashboardAction extends ActionSupport {
 				
 				List<Long> meterIds = new ArrayList<Long>();
 				for(Map<String, Object> prop:props) {
+					
 					meterIds.add((long) prop.get("id"));
-					buildingVsMeter.put((long) prop.get("id"), (long) prop.get("purposeSpace"));
+					
+					if(isGroupBySpace) {
+						buildingVsMeter.put((long) prop.get("id"), (long) prop.get("purposeSpace"));
+					}
+					
+					ArrayList<Long> meterList = purposeVsMeter.get((long) prop.get("purpose"));
+					if (meterList == null) {
+						meterList = new ArrayList<Long>();
+					}
+					meterList.add((long) prop.get("id"));
+					purposeVsMeter.put((long) prop.get("purpose"), meterList);
+					
+					purposeVsMeter1.put((long) prop.get("id"), (long) prop.get("purpose"));
 				}
 				String meterIdStr = StringUtils.join(meterIds, ",");
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
@@ -1150,8 +1202,8 @@ public class DashboardAction extends ActionSupport {
 				energyMeterValue = report.getEnergyMeter().getSubMeterId() + "";
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", report.getEnergyMeter().getSubMeterId()+"", NumberOperators.EQUALS);
 			}
-			else if (report.getEnergyMeter().getBuildingId() != null && report.getEnergyMeter().getServiceId() != null) {
-				List<EnergyMeterContext> meters = DeviceAPI.getAllEnergyMeters(report.getEnergyMeter().getBuildingId(), report.getEnergyMeter().getServiceId());
+			else if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null && report.getEnergyMeter().getServiceId() != null) {
+				List<EnergyMeterContext> meters = DeviceAPI.getAllEnergyMeters(report.getReportSpaceFilterContext().getBuildingId(), report.getEnergyMeter().getServiceId());
 				if (meters != null && meters.size() > 0) {
 					List<Long> meterIds = new ArrayList<Long>();
 					for (EnergyMeterContext meter : meters) {
@@ -1169,10 +1221,10 @@ public class DashboardAction extends ActionSupport {
 					buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","PARENT_METER_ID", meterIdStr, NumberOperators.EQUALS);
 				}
 			}
-			else if (report.getEnergyMeter().getBuildingId() != null) {
+			else if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null) {
 				if ("service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 					
-					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getEnergyMeter().getBuildingId()+"");
+					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -1210,7 +1262,7 @@ public class DashboardAction extends ActionSupport {
 							.innerJoin(modBean.getModule("basespace").getTableName())
 							.on(modBean.getModule("basespace").getTableName()+".ID = "+modBean.getModule("energymeter").getTableName()+".PURPOSE_SPACE_ID")
 							.andCustomWhere(modBean.getModule("basespace").getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
-							.andCustomWhere(modBean.getModule("basespace").getTableName()+".BUILDING_ID="+ report.getEnergyMeter().getBuildingId())
+							.andCustomWhere(modBean.getModule("basespace").getTableName()+".BUILDING_ID="+ report.getReportSpaceFilterContext().getBuildingId())
 							.andCustomWhere(modBean.getModule("basespace").getTableName()+".FLOOR_ID>0");
 					
 					
@@ -1256,7 +1308,7 @@ public class DashboardAction extends ActionSupport {
 					report.setGroupBy(-1L);
 				}
 				else {
-					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getEnergyMeter().getBuildingId()+"");
+					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -1372,7 +1424,7 @@ public class DashboardAction extends ActionSupport {
 			
 			HashMap<String, Object> purposeMapping = new HashMap<>();
 			
-			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getEnergyMeter().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+			if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && report.getReportSpaceFilterContext().getBuildingId() != null && "floor".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
 				System.out.println("lables -- "+lables);
@@ -1412,7 +1464,7 @@ public class DashboardAction extends ActionSupport {
 		 			Map<String, Object> thisMap = rs.get(i);
 		 			if(thisMap!=null) {
 		 				
-		 				if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && (report.getEnergyMeter().getBuildingId() == null || report.getEnergyMeter().getBuildingId() <= 0) && "service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
+		 				if (report.getEnergyMeter() != null && report.getEnergyMeter().getGroupBy() != null && (report.getReportSpaceFilterContext().getBuildingId() == null || report.getReportSpaceFilterContext().getBuildingId() <= 0) && "service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 		 					Object xlabel = thisMap.get("label");
 		 					if(thisMap.get("dummyField") != null) {
 			 					xlabel = thisMap.get("dummyField");

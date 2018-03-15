@@ -2541,13 +2541,6 @@ public class FieldFactory {
 		reportId.setModule(module);
 		fields.add(reportId);
 		
-		FacilioField buildingId = new FacilioField();
-		buildingId.setName("buildingId");
-		buildingId.setDataType(FieldType.NUMBER);
-		buildingId.setColumnName("BUILDING_ID");
-		buildingId.setModule(module);
-		fields.add(buildingId);
-		
 		FacilioField serviceId = new FacilioField();
 		serviceId.setName("serviceId");
 		serviceId.setDataType(FieldType.NUMBER);
@@ -2584,6 +2577,13 @@ public class FieldFactory {
 		reportId.setColumnName("REPORT_ID");
 		reportId.setModule(module);
 		fields.add(reportId);
+		
+		FacilioField dashboardId = new FacilioField();
+		dashboardId.setName("dashboardId");
+		dashboardId.setDataType(FieldType.NUMBER);
+		dashboardId.setColumnName("DASHBOARD_ID");
+		dashboardId.setModule(module);
+		fields.add(dashboardId);
 		
 		FacilioField siteId = new FacilioField();
 		siteId.setName("siteId");
