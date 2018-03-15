@@ -39,13 +39,9 @@ public class DeviceAction extends ActionSupport
 	    try {
 		    Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID);
 		    if (orgInfo != null) {
-		    		Map<String, Object> orgInfo2 = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID_CREATED_TIME);
-		    		long time = Long.parseLong((String) orgInfo2.get("value"));
-		    		if (System.currentTimeMillis() / 1000 <= (time * 6 * 24 * 60 * 60)) {
-		    			long fileId = Long.parseLong((String) orgInfo.get("value"));
-		    			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		    			url = fs.getPrivateUrl(fileId);
-		    		}
+	    			long fileId = Long.parseLong((String) orgInfo.get("value"));
+	    			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+	    			url = fs.getPrivateUrl(fileId);
 		    }
 	    }
 	    catch (Exception e) {
@@ -69,7 +65,6 @@ public class DeviceAction extends ActionSupport
 				long id = fs.addFile(file.getName(), file, "application/octet-stream");
 				url = fs.getPrivateUrl(id);
 				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, String.valueOf(id));
-				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID_CREATED_TIME, String.valueOf(System.currentTimeMillis() / 1000));
 	
 			} catch (Exception e) {
 				e.printStackTrace();
