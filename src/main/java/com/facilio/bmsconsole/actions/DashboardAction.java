@@ -775,6 +775,7 @@ public class DashboardAction extends ActionSupport {
 		if(report.getGroupBy() != null) {
 			
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
+			HashMap<String, Object> labelMapping = new HashMap<>();
 			
 			for(int i=0;i<rs.size();i++) {
 	 			Map<String, Object> thisMap = rs.get(i);
@@ -788,6 +789,12 @@ public class DashboardAction extends ActionSupport {
 		 				Object xlabel = thisMap.get("label");
 		 				if(thisMap.get("dummyField") != null) {
 		 					xlabel = thisMap.get("dummyField");
+		 				}
+		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
+		 					xlabel = labelMapping.get(thisMap.get("label").toString());
+		 				}
+		 				else {
+		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
 		 				}
 		 				res.put(xlabel, value);
 	 			}
