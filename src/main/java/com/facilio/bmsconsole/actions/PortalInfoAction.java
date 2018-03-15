@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.chain.Chain;
+import org.apache.struts2.json.JSONException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -35,11 +37,14 @@ public class PortalInfoAction extends ActionSupport
 		
 		JSONParser parser = new JSONParser();
 		JSONObject json = (JSONObject) parser.parse(portalInfoStr);
-		setProtalInfo(FieldUtil.getAsBeanFromJson(json, PortalInfoContext.class));
+		setPortalInfoMap(jsonToMap(json));
+		//setProtalInfo(FieldUtil.getAsBeanFromJson(json, PortalInfoContext.class));
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceportal");
-		context.put(FacilioConstants.ContextNames.PORTALINFO, getProtalInfo());
+		//context.put(FacilioConstants.ContextNames.PORTALINFO, getProtalInfo());
+		System.out.println("$$$$$$$$$$$$$ :"+portalInfoMap);
+		context.put(FacilioConstants.ContextNames.PORTALINFO, portalInfoMap);
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILE, publicKeyFile);
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILETYPE, publicKeyFileContentType);
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILENAME, publicKeyFileFileName);
@@ -60,6 +65,43 @@ public class PortalInfoAction extends ActionSupport
 		updatePortalInfoChain.execute(context);
 		
 		return SUCCESS;
+	}
+	
+	
+	public static Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+	    Map<String, Object> map = new HashMap<String, Object>();
+
+	    Iterator<String> keysItr = object.keySet().iterator();
+	    while(keysItr.hasNext()) {
+	        String key = keysItr.next();
+	        Object value = object.get(key);
+
+	        if(value instanceof JSONArray) {
+	            value = jsonToList((JSONArray) value);
+	        }
+
+	        else if(value instanceof JSONObject) {
+	            value = jsonToMap((JSONObject) value);
+	        }
+	        map.put(key, value);
+	    }
+	    return map;
+	}
+
+	public static List<Object> jsonToList(JSONArray array) throws JSONException {
+	    List<Object> list = new ArrayList<Object>();
+	    for(int i = 0; i < array.size(); i++) {
+	        Object value = array.get(i);
+	        if(value instanceof JSONArray) {
+	            value = jsonToList((JSONArray) value);
+	        }
+
+	        else if(value instanceof JSONObject) {
+	            value = jsonToMap((JSONObject) value);
+	        }
+	        list.add(value);
+	    }
+	    return list;
 	}
 	
 	private String portalInfoStr;
