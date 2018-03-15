@@ -1,21 +1,21 @@
 package com.facilio.billing.command;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.aspose.cells.CellValueType;
-import com.aspose.cells.Cells;
-import com.aspose.cells.FindOptions;
-import com.aspose.cells.LookAtType;
-import com.aspose.cells.LookInType;
-import com.aspose.cells.Workbook;
-import com.aspose.cells.Worksheet;
-import com.aspose.cells.WorksheetCollection;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
@@ -52,84 +52,42 @@ public class StoreExcelFileCommand implements Command {
 		return false;
 	}
 	
-	public void HandlePlaceHolders(File file, long templateId) throws Exception
+	public void HandlePlaceHolders(File file, long templateId) throws InvalidFormatException, IOException, SQLException, RuntimeException
 	{
-		//XSSFWorkbook workbook = new XSSFWorkbook(file);
-		//Above is working code. 
+		XSSFWorkbook workbook = new XSSFWorkbook(file);
+		
+//		Workbook workbook = WorkbookFactory.create(file);
+//		final OPCPackage pkg = OPCPackage.open(file);
+//		final XSSFWorkbook workbook = new XSSFWorkbook(pkg);
+		
 		Map<String,String> placeHolders = new HashMap();
-		long sttime = System.currentTimeMillis();
-		Workbook workbook = new Workbook(new FileInputStream(file));
-		System.out.println("#### StoreExcelFileCommand.HandlePlaceHolders : fileName : "+file.getName());
-		WorksheetCollection worksheetCollection = workbook.getWorksheets();
-		for(Object worksheetObj : worksheetCollection){
-			Worksheet worksheet = (Worksheet) worksheetObj;
-			System.out.println("#### worksheet : "+worksheet.getName());
-			Cells cells = worksheet.getCells();
-			FindOptions opt = new FindOptions();
-            opt.setSeachOrderByRows(true);
-            opt.setSearchNext(true);
-            opt.setLookInType(LookInType.VALUES);
-            opt.setCaseSensitive(true);
-            opt.setRegexKey(false);
-            opt.setLookAtType(LookAtType.CONTAINS);
-            int rows = cells.getMaxRow();
-            int columns = cells.getMaxColumn();
-            for(int row = cells.getMinRow(); row <= rows; row++) {
-            	//com.aspose.cells.Row row1 = cells.getRow(row);
-            		for(int column = cells.getMinColumn(); column <= columns; column++)
-            		{
-            			//Column column1 = cells.getColumn(column);
-            			com.aspose.cells.Cell cell = cells.get(row, column);
-            			
-            			if(cell.getType() == CellValueType.IS_STRING)
-            			{
-            				String cellvalue = cell.getStringValue();
-            				if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
-            				{
-            					System.out.println("##### inside required cell ####");
-            					String cellfinder = "S_"+worksheet.getName()+"_R_"+row+"_C_"+column;
-            					String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
-            					System.out.println("#### cellfinder : "+cellfinder +", meterInfo : "+meterInfo);
-            					placeHolders.put(cellfinder, meterInfo);
-            				}
-            				
-            			}
-            		}
-            }
-           
+		ArrayList sheets = new ArrayList();
+		for(int i = 0; i<workbook.getNumberOfSheets();i++)
+		{
+			String sheetName =  workbook.getSheetName(i);
+			Sheet sheet = workbook.getSheet(sheetName);
+			Iterator<Row> rowIterator = sheet.iterator();
+			while(rowIterator.hasNext())
+			{
+				Row row = rowIterator.next();
+				Iterator<Cell> cellIterator = row.cellIterator();
+				while(cellIterator.hasNext())
+				{
+					Cell cell = cellIterator.next();
+					if(cell.getCellType() == Cell.CELL_TYPE_STRING)
+					{
+						String cellvalue = cell.getStringCellValue();
+						 if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
+				            {
+				            		String cellfinder = "S_"+sheet.getSheetName()+"_R_"+row.getRowNum()+"_C_"+cell.getColumnIndex();
+				            		String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
+				            		placeHolders.put(cellfinder, meterInfo);
+				            }
+					}
+				}
+			}
 		}
-		long endtime = System.currentTimeMillis();
-		System.out.println("### Time taken for this file : "+ (endtime - sttime));
-		
-//		Map<String,String> placeHolders = new HashMap();
-//		ArrayList sheets = new ArrayList();
-//		for(int i = 0; i<workbook.getNumberOfSheets();i++)
-//		{
-//			String sheetName =  workbook.getSheetName(i);
-//			Sheet sheet = workbook.getSheet(sheetName);
-//			Iterator<Row> rowIterator = sheet.iterator();
-//			while(rowIterator.hasNext())
-//			{
-//				Row row = rowIterator.next();
-//				Iterator<Cell> cellIterator = row.cellIterator();
-//				while(cellIterator.hasNext())
-//				{
-//					Cell cell = cellIterator.next();
-//					if(cell.getCellType() == Cell.CELL_TYPE_STRING)
-//					{
-//						String cellvalue = cell.getStringCellValue();
-//						 if((cellvalue.startsWith("${"))&&(cellvalue.endsWith("}")))
-//				            {
-//				            		String cellfinder = "S_"+sheet.getSheetName()+"_R_"+row.getRowNum()+"_C_"+cell.getColumnIndex();
-//				            		String meterInfo = cellvalue.substring(2,cellvalue.lastIndexOf("}"));
-//				            		placeHolders.put(cellfinder, meterInfo);
-//				            }
-//					}
-//				}
-//			}
-//		}
-//		workbook.close();
-		
+		workbook.close();
 		TenantBillingAPI.InsertPlaceHolders(placeHolders,templateId);
 	}
 }
