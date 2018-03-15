@@ -2578,6 +2578,13 @@ public class FieldFactory {
 		reportId.setModule(module);
 		fields.add(reportId);
 		
+		FacilioField dashboardId = new FacilioField();
+		dashboardId.setName("dashboardId");
+		dashboardId.setDataType(FieldType.NUMBER);
+		dashboardId.setColumnName("DASHBOARD_ID");
+		dashboardId.setModule(module);
+		fields.add(dashboardId);
+		
 		FacilioField siteId = new FacilioField();
 		siteId.setName("siteId");
 		siteId.setDataType(FieldType.NUMBER);

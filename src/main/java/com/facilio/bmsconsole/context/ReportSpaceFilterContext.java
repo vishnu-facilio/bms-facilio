@@ -3,8 +3,15 @@ package com.facilio.bmsconsole.context;
 public class ReportSpaceFilterContext {
 
 	Long id;
-	Long reportId,siteId,buildingId,floorId;
+	Long reportId,siteId,buildingId,floorId,dashboardId;
+	
 	String groupBy;
+	public Long getDashboardId() {
+		return dashboardId;
+	}
+	public void setDashboardId(Long dashboardId) {
+		this.dashboardId = dashboardId;
+	}
 	
 	public Long getId() {
 		return id;

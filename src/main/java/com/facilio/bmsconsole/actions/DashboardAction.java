@@ -575,6 +575,11 @@ public class DashboardAction extends ActionSupport {
 		if(reportSpaceFilterContext != null) {
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
+		else if(buildingId != null) {
+			reportSpaceFilterContext = new ReportSpaceFilterContext();
+			reportSpaceFilterContext.setBuildingId(buildingId);
+			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
+		}
 		if(module.getName().equals("workorder")) {
 			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
@@ -952,7 +957,7 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
-				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId() || oprId == DateOperators.TODAY_UPTO_NOW.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {

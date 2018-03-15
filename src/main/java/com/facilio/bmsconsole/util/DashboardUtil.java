@@ -176,6 +176,9 @@ public class DashboardUtil {
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("id", dashboard.getId());
 			dashboardJson.put("label", dashboardName);
+			if(dashboard.getReportSpaceFilterContext() != null) {
+				dashboardJson.put("spaceFilter", "building");
+			}
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
 			result.add(dashboardJson);
@@ -246,7 +249,23 @@ public class DashboardUtil {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			dashboard.setDashboardWidgets(dashbaordWidgets);
+			dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 			return dashboard;
+		}
+		return null;
+	}
+	
+	public static ReportSpaceFilterContext getDashboardSpaceFilter(Long dashboardId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReportSpaceFilterFields())
+				.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			ReportSpaceFilterContext dashboardSpaceFilterContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportSpaceFilterContext.class);
+			return dashboardSpaceFilterContext;
 		}
 		return null;
 	}
