@@ -15,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -383,7 +384,8 @@ public class DeviceAPI
 				}
 			}
 			catch(Exception e) {
-				logger.log(Level.WARNING, "Exception occurred during calculation of energy data for meter : "+meter.getId(), e);
+				logger.log(Level.WARNING, "Exception occurred during calculation of energy data for VM : "+meter.getId(), e);
+				CommonCommandUtil.emailException("Exception occurred during calculation of energy data for VM : "+meter.getId(), e);
 			}
 		}
 	}

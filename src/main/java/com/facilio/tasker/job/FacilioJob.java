@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.transaction.FacilioTransactionManager;
 
@@ -55,6 +56,7 @@ public abstract class FacilioJob implements Runnable {
 			executor.removeJob(jc);
 			System.out.println("Exception occurred during execution of job : "+jc);
 			e.printStackTrace();
+			CommonCommandUtil.emailException("Job execution failed", e);
 			reschedule();
 		}
 	}

@@ -126,4 +126,26 @@ public class Organization {
 	public void setPortalId(long portalId) {
 		this.portalId = portalId;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		StringBuilder orgInfo = new StringBuilder();
+		orgInfo.append("ORG ID : ").append(orgId)
+				.append("\nName : ").append(name)
+				.append("\nDomain : ").append(domain)
+				.append("\nLogo ID : ").append(logoId)
+				.append("\nPhone : ").append(phone)
+				.append("\nMobile : ").append(mobile)
+				.append("\nFax : ").append(fax)
+				.append("\nStreet : ").append(street)
+				.append("\nCity : ").append(city)
+				.append("\nState : ").append(state)
+				.append("\nZip : ").append(zip)
+				.append("\nCountry : ").append(country)
+				.append("\ntimezone : ").append(timezone)
+				.append("\nCreated Time : ").append(createdTime)
+				.append("\nPortal ID : ").append(portalId);
+		return orgInfo.toString();
+	}
 }

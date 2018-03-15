@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.tasker.job.FacilioJob;
@@ -27,6 +28,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			CommonCommandUtil.emailException("VM Calculation failed", e);
 		}
 	}
 }
