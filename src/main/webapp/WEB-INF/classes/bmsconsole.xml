@@ -620,6 +620,14 @@
 				<param name="root">energyMeters</param>
 			</result>
 		</action>
+		<action name="insertvmeterreadings" class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="insertVirtualMeterReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getEnergyMeterList">
 			<param name="moduleName">setup</param>

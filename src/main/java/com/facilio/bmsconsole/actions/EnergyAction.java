@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -40,6 +41,13 @@ public class EnergyAction extends ActionSupport {
 		
 		Chain updateChain = FacilioChainFactory.updateEnergyMeterChain();
 		updateChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String insertVirtualMeterReadings() throws Exception {
+		
+		DeviceAPI.insertVirtualMeterReadings(startTime, endTime, interval, vmList);
 		
 		return SUCCESS;
 	}
@@ -158,4 +166,38 @@ public String addEnergyData() throws Exception {
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
+	
+	private long startTime;
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	private long endTime;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	private int interval;
+	public int getInterval() {
+		return interval;
+	}
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+	
+	private List<Long> vmList;
+	public List<Long> getVmList() {
+		return vmList;
+	}
+	public void setVmList(List<Long> vmList) {
+		this.vmList = vmList;
+	}
+	
 }

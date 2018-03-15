@@ -283,7 +283,7 @@ public class DeviceAPI
 		return virtualMeters;
 	}
 	
-	public static List<EnergyMeterContext> getVirtualMeters(String deviceList) throws Exception {
+	public static List<EnergyMeterContext> getVirtualMeters(List<Long> deviceList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
@@ -318,6 +318,15 @@ public class DeviceAPI
 	
 	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval) throws Exception {
 		insertVirtualMeterReadings(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	}
+	
+	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval, List<Long> vmList) throws Exception {
+		if(vmList == null || vmList.isEmpty()) {
+			insertVirtualMeterReadings(startTime,endTime, minutesInterval);
+		}
+		else {
+			insertVirtualMeterReadings(getVirtualMeters(vmList), startTime,endTime, minutesInterval);
+		}
 	}
 	
 	
