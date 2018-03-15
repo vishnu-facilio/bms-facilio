@@ -790,11 +790,11 @@ public class DashboardAction extends ActionSupport {
 		 				if(thisMap.get("dummyField") != null) {
 		 					xlabel = thisMap.get("dummyField");
 		 				}
-		 				if (labelMapping.containsKey(thisMap.get("label").toString())) {
-		 					xlabel = labelMapping.get(thisMap.get("label").toString());
+		 				if (labelMapping.containsKey(strLabel)) {
+		 					xlabel = labelMapping.get(strLabel);
 		 				}
 		 				else {
-		 					labelMapping.put(thisMap.get("label").toString(), xlabel);
+		 					labelMapping.put(strLabel, xlabel);
 		 				}
 		 				res.put(xlabel, value);
 	 			}
