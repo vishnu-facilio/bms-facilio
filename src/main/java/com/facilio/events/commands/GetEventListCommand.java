@@ -68,7 +68,7 @@ public class GetEventListCommand implements Command {
 				}
 			}
 			
-			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds);
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			
 			for (EventContext event : events) {
 				if (event.getResourceId() != -1) {

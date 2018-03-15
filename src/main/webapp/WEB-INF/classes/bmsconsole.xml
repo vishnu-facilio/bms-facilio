@@ -328,6 +328,14 @@
 				<param name="includeProperties">signup_allowed</param>
 			</result>
 		</action>
+		<action name="savessoconfig" class="com.facilio.bmsconsole.actions.PortalInfoAction"
+			method="saveSSOConfiguration">
+			<param name="moduleName">setup</param>
+			<param name="permission">ORG_ACCESS_ADMINISTER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">signup_allowed</param>
+			</result>
+		</action>	
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
 			<param name="moduleName">setup</param>
@@ -508,14 +516,6 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
-			</result>
-		</action>
-		<action name="add" class="com.facilio.bmsconsole.actions.AlarmAction"
-			method="addAlarm">
-			<param name="moduleName">alarm</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">alarm.*</param>
 			</result>
 		</action>
 		<action name="createWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
@@ -3068,35 +3068,35 @@
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
 		
-		<action name="addAlarm" class="com.facilio.bmsconsole.actions.AlarmAction"
+		<action name="addAlarm" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="addAlarmFromEvent">
 			<result name="success" type="json">
 				<param name="includeProperties">alarmId</param>
 			</result>
 		</action>
 		
-		<action name="updateAlarmFromEvent" class="com.facilio.bmsconsole.actions.AlarmAction"
+		<action name="updateAlarmFromEvent" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="updateAlarmFromEvent">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 
-		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.AlarmAction"
+		<action name="updateAlarmPriority" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="updateAlarmPriority">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 		
-		<action name="updateAlarmResource" class="com.facilio.bmsconsole.actions.AlarmAction"
+		<action name="updateAlarmResource" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="updateAlarmResource">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
 
-		<action name="addAlarmTemplate" class="com.facilio.bmsconsole.actions.AlarmAction"
+		<action name="addAlarmTemplate" class="com.facilio.bmsconsole.actions.InternalActions"
 			method="addAlarmTemplate">
 			<result name="success" type="json">
 				<param name="includeProperties">alarmTemplateId</param>

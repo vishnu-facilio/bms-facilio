@@ -324,6 +324,10 @@ public class FieldFactory {
 
 		return name;
 	}
+	
+	public static FacilioField getIsDeletedField() {
+		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
+	}
 
 	public static List<FacilioField> getCategoryReadingsFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
@@ -3195,11 +3199,15 @@ public class FieldFactory {
 		fields.add(getField("gmailLogin_allowed", "GMAILLOGIN_ALLOWED", module, FieldType.BOOLEAN));
 		fields.add(getField("is_public_create_allowed", "IS_PUBLIC_CREATE_ALLOWED", module, FieldType.BOOLEAN));
 		fields.add(getField("is_anyDomain_allowed", "IS_ANYDOMAIN_ALLOWED", module, FieldType.BOOLEAN));
+		fields.add(getField("captcha_enabled", "CAPTCHA_ENABLED", module, FieldType.BOOLEAN));
+		fields.add(getField("customDomain", "CUSTOM_DOMAIN", module, FieldType.STRING));
 		fields.add(getField("whiteListed_domains", "WHITELISTED_DOMAINS", module, FieldType.STRING));
 		fields.add(getField("saml_enabled", "SAML_ENABLED", module, FieldType.BOOLEAN));
 		fields.add(getField("login_url", "LOGIN_URL", module, FieldType.STRING));
 		fields.add(getField("logout_url", "LOGOUT_URL", module, FieldType.STRING));
 		fields.add(getField("password_url", "PASSWORD_URL", module, FieldType.STRING));
+		fields.add(getField("publicKey", "PUBLICKEY", module, FieldType.NUMBER));
+		fields.add(getField("algorithm", "ALGORITHM", module, FieldType.STRING));
 		
 		return fields;
 	}

@@ -477,7 +477,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 											.filter(ticket -> ticket.getResource() != null)
 											.map(ticket -> ticket.getResource().getId())
 											.collect(Collectors.toList());
-			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds);
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			if(resources != null && !resources.isEmpty()) {
 				for(TicketContext ticket : tickets) {
 					ResourceContext resource = ticket.getResource();

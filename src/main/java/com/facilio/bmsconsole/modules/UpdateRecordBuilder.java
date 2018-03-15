@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -126,29 +127,31 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.remove("moduleId");
 			moduleProps.remove("id");
 			
-			WhereBuilder whereCondition = new WhereBuilder();
-			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+			FacilioField orgIdField = FieldFactory.getOrgIdField(module);
+			FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 			
-			Condition orgCondition = new Condition();
-			orgCondition.setField(FieldFactory.getOrgIdField(module));
-			orgCondition.setOperator(NumberOperators.EQUALS);
-			orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+			WhereBuilder whereCondition = new WhereBuilder();
+			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(orgCondition);
 			
-			Condition moduleCondition = new Condition();
-			moduleCondition.setField(FieldFactory.getModuleIdField(module));
-			moduleCondition.setOperator(NumberOperators.EQUALS);
-			moduleCondition.setValue(String.valueOf(module.getModuleId()));
+			Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(moduleCondition);
 			
+			whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
 			where = whereCondition;
 			
 			updateLookupFields(moduleProps);
 			
 			List<FacilioField> updateFields = new ArrayList<>();
-			updateFields.add(FieldFactory.getOrgIdField(module));
-			updateFields.add(FieldFactory.getModuleIdField(module));
+			updateFields.add(orgIdField);
+			updateFields.add(moduleIdField);
 			updateFields.add(FieldFactory.getIdField(module));
+			
+			if (module.isTrashEnabled()) {
+				FacilioField isDeletedField = FieldFactory.getIsDeletedField();
+				updateFields.add(isDeletedField);
+			}
+			
 			updateFields.addAll(fields);
 			builder.fields(updateFields);
 			

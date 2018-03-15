@@ -33,6 +33,20 @@ public class ModuleBaseWithCustomFields {
 		this.id = id;
 	}
 	
+	private Boolean deleted;
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public boolean isDeleted() {
+		if (deleted != null) {
+			return deleted.booleanValue();
+		}
+		return false;
+	}
+
 	@Element( value = java.lang.String.class )
 	private Map<String, Object> data = null;
 	

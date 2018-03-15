@@ -1841,7 +1841,10 @@ public class DashboardAction extends ActionSupport {
 		
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			String url = ReportsUtil.getReportClientUrl(module.getName(), reportId);
+			String url = ReportsUtil.getReportClientUrl(module.getName(), reportId, fileFormat);
+			if(dateFilter != null && dateFilter.size() > 0) {
+				url += "?daterange=" + dateFilter.toJSONString();
+			}
 			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 		}
 		else {

@@ -9,7 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.EnPIFrequency;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -66,7 +66,7 @@ public class EnergyPerformanceIndicatorContext {
 		this.workflow = workflow;
 	}
 	
-	private FacilioFrequency frequency;
+	private EnPIFrequency frequency;
 	public int getFrequency() {
 		if (frequency != null) {
 			return frequency.getValue();
@@ -74,12 +74,12 @@ public class EnergyPerformanceIndicatorContext {
 		return -1;
 	}
 	public void setFrequency(int frequency) {
-		this.frequency = FacilioFrequency.valueOf(frequency);
+		this.frequency = EnPIFrequency.valueOf(frequency);
 	}
-	public void setFrequency(FacilioFrequency frequency) {
+	public void setFrequency(EnPIFrequency frequency) {
 		this.frequency = frequency;
 	}
-	public FacilioFrequency getFrequencyEnum() {
+	public EnPIFrequency getFrequencyEnum() {
 		return frequency;
 	}
 

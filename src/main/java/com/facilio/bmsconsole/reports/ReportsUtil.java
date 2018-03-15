@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -454,7 +455,7 @@ public class ReportsUtil
 	}
 	
 	// Temporary
-	public static String getReportClientUrl(String moduleName, Long reportId) {
+	public static String getReportClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
@@ -466,6 +467,9 @@ public class ReportsUtil
 			url.append("em");
 		}
 		url.append("/reports/view/").append(reportId);
+		if(fileFormat == FileFormat.IMAGE) {
+			url.append("/show");
+		}
 		return url.toString();
 	}
 }

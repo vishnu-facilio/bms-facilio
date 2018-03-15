@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class PortalInfoContext  {
@@ -11,11 +12,16 @@ public class PortalInfoContext  {
 	private boolean gmailLogin_allowed = false;
 	private boolean is_public_create_allowed = false;
 	private boolean is_anyDomain_allowed = false;
+	private boolean captcha_enabled = false;
+	private String customDomain;
 	private ArrayList whiteListed_domains;
-	private boolean saml_enabled = false;
+	private boolean saml_enabled = true;
 	private String login_url = "http://orgdomainname.facilstack.com/idplogin";
 	private String logout_url = "http://orgdomainname.facilstack.com/idplogout";
 	private String password_url = "http://orgdomainname.facilstack.com/idppassword";
+	private long publicKey = -1;
+	private File publicKeyFile;
+	private String algorithm  = null;
 	
 	public String toString()
 	{
@@ -65,6 +71,13 @@ public class PortalInfoContext  {
 	public void setIs_anyDomain_allowed(boolean is_anyDomain_allowed) {
 		this.is_anyDomain_allowed = is_anyDomain_allowed;
 	}
+	public boolean isCaptcha_enabled() {
+		return captcha_enabled;
+	}
+
+	public void setCaptcha_enabled(boolean captcha_enabled) {
+		this.captcha_enabled = captcha_enabled;
+	}
 	public ArrayList getWhiteListed_domains() {
 		return whiteListed_domains;
 	}
@@ -94,6 +107,38 @@ public class PortalInfoContext  {
 	}
 	public void setPassword_url(String password_url) {
 		this.password_url = password_url;
+	}
+
+	public long getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(long publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public File getPublicKeyFile() {
+		return publicKeyFile;
+	}
+
+	public void setPublicKeyFile(File publicKeyFile) {
+		this.publicKeyFile = publicKeyFile;
+	}
+
+	public String getCustomDomain() {
+		return customDomain;
+	}
+
+	public void setCustomDomain(String customDomain) {
+		this.customDomain = customDomain;
+	}
+
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
 	}
 	
 	
