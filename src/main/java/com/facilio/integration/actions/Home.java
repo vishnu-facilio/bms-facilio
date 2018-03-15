@@ -247,6 +247,7 @@ Pragma: no-cache
 				
 		}catch(SQLException | RuntimeException e)
 		{
+			e.printStackTrace();
 			throw e;
 		}
 		finally
