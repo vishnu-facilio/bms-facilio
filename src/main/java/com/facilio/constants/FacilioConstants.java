@@ -144,6 +144,8 @@ public class FacilioConstants {
 		public static final String CONTROLLER = "controller";
 		public static final String CONTROLLER_LIST = "controllerSetting";
 		public static final String CONTROLLER_SETTINGS = "controllerSettings";
+		public static final String FEDGE_CERT_FILE_ID = "fedgeCertFileId";
+		public static final String FEDGE_CERT_FILE_ID_CREATED_TIME = "fedgeCertFielIdlCreatedTime";
 		
 		public static final String WORK_ORDER_REQUEST = "workorderrequest";
 		public static final String WORK_ORDER_REQUEST_LIST = "workorderrequests";

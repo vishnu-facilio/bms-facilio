@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -11,6 +12,8 @@ import java.util.zip.ZipOutputStream;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.kinesis.KinesisProcessor;
@@ -30,31 +33,50 @@ public class DeviceAction extends ActionSupport
 		this.url = url;
 	}
 
-	public String configureOrg() {
+	public String downloadCertificate() {
 	    long orgId = AccountUtil.getCurrentOrg().getOrgId();
-
-		String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
-		String fileName = AwsUtil.getIotKinesisTopic(orgName);
-		String directoryName = "facilio/";
-
-		File file = new File(System.getProperty("user.home")+"/fedge.zip");
-		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-
-			addToZip(out,directoryName + "facilio.crt", certificateResult.getCertificatePem());
-			addToZip(out,directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-			addToZip(out,directoryName + "facilio-public.key", certificateResult.getKeyPair().getPublicKey());
-			out.finish();
-			out.flush();
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			long id = fs.addFile(file.getName(), file, "application/octet-stream");
-			url = fs.getPrivateUrl(id);
-
-		} catch (Exception e) {
-			e.printStackTrace();
+	    
+	    try {
+		    Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID);
+		    if (orgInfo != null) {
+		    		Map<String, Object> orgInfo2 = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID_CREATED_TIME);
+		    		long time = Long.parseLong((String) orgInfo2.get("value"));
+		    		if (System.currentTimeMillis() / 1000 <= (time * 6 * 24 * 60 * 60)) {
+		    			long fileId = Long.parseLong((String) orgInfo.get("value"));
+		    			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		    			url = fs.getPrivateUrl(fileId);
+		    		}
+		    }
+	    }
+	    catch (Exception e) {
+			logger.log(Level.SEVERE, "Exception in downloading certificate while getting orginfo details for " + FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, e);
 		}
-
-		KinesisProcessor.startProcessor(orgId, orgName);
+	    if (url == null) {
+			String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
+			CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
+			String fileName = AwsUtil.getIotKinesisTopic(orgName);
+			String directoryName = "facilio/";
+	
+			File file = new File(System.getProperty("user.home")+"/fedge.zip");
+			try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
+	
+				addToZip(out,directoryName + "facilio.crt", certificateResult.getCertificatePem());
+				addToZip(out,directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
+				addToZip(out,directoryName + "facilio-public.key", certificateResult.getKeyPair().getPublicKey());
+				out.finish();
+				out.flush();
+				FileStore fs = FileStoreFactory.getInstance().getFileStore();
+				long id = fs.addFile(file.getName(), file, "application/octet-stream");
+				url = fs.getPrivateUrl(id);
+				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, String.valueOf(id));
+				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID_CREATED_TIME, String.valueOf(System.currentTimeMillis() / 1000));
+	
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	
+			KinesisProcessor.startProcessor(orgId, orgName);
+	    }
 
 		logger.info("Started event processor for org : " + orgId);
 		return SUCCESS;

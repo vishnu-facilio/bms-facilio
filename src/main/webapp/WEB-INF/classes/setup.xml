@@ -129,7 +129,7 @@
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>
-		<action name="configureOrg" class="com.facilio.bmsconsole.actions.DeviceAction" method="configureOrg">
+		<action name="downloadCertificate" class="com.facilio.bmsconsole.actions.DeviceAction" method="downloadCertificate">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 			<result name="success" type="json">

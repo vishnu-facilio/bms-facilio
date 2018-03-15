@@ -37,6 +37,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -327,5 +328,47 @@ public class CommonCommandUtil {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static void insertOrgInfo( long orgId, String name, String value) throws Exception
+	{
+		if (getOrgInfo(orgId, name) == null) {
+		
+		    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+		            .table(AccountConstants.getOrgInfoModule().getTableName())
+		            .fields(AccountConstants.getOrgInfoFields());
+		
+		    Map<String, Object> properties = new HashMap<>();
+		    properties.put("orgId", orgId);
+		    properties.put("name", name);
+		    properties.put("value", value);
+		    insertRecordBuilder.addRecord(properties);
+		    insertRecordBuilder.save();
+		}
+		else {
+			// update
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getOrgInfoModule().getTableName()).fields(AccountConstants.getOrgInfoFields())
+					.andCustomWhere("OrgID = ? AND NAME = ?", orgId, name );
+			Map<String, Object> props = new HashMap<>();
+			props.put("name", name);
+		    props.put("value", value);
+		    updateBuilder.update(props);
+		    
+		}
+	}
+	
+    public static Map<String, Object> getOrgInfo(long orgId, String name) throws Exception {
+    	
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgInfoFields())
+				.table(AccountConstants.getOrgInfoModule().getTableName())
+				.andCustomWhere("ORGID = ? AND NAME = ?", orgId, name);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return props.get(0);
+		}
+		return null;		
 	}
 }

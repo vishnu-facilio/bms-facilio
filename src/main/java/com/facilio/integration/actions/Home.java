@@ -22,6 +22,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.LoginAction;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -452,53 +453,6 @@ Pragma: no-cache
 		return this.content;
 	}
 	
-	public static void InsertOrgInfo( long orgId, String name, String value) throws Exception
-	{
-			if (GetOrgInfo(orgId, name) == null) {
-		
-		    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-		            .table(AccountConstants.getOrgInfoModule().getTableName())
-		            .fields(AccountConstants.getOrgInfoFields());
-		
-		    Map<String, Object> properties = new HashMap<>();
-		    properties.put("orgId", orgId);
-		    properties.put("name", name);
-		    properties.put("value", value);
-		    insertRecordBuilder.addRecord(properties);
-		    insertRecordBuilder.save();
-//		    System.out.println("Inserted Successfully");
-		}
-		else {
-			// update
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getOrgInfoModule().getTableName()).fields(AccountConstants.getOrgInfoFields())
-					.andCustomWhere("OrgID = ? AND NAME = ?", orgId, name );
-			Map<String, Object> props = new HashMap<>();
-			props.put("name", name);
-		    props.put("value", value);
-		    updateBuilder.update(props);
-		    
-//		    System.out.println("Updated " + name +" Successfully");
-		   
-		}
-			
-	}
-	
-    public static Map<String, Object> GetOrgInfo(long orgId, String name) throws Exception {
-    	
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgInfoFields())
-				.table(AccountConstants.getOrgInfoModule().getTableName())
-				.andCustomWhere("ORGID = ? AND NAME = ?", orgId, name);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;		
-	}
-
-	
 	public String confirmPayment() {
 		// Org id details through the customer email 
 		HashMap<String, Object> customer = (HashMap<String, Object>) this.getContent().get("customer");
@@ -515,7 +469,7 @@ Pragma: no-cache
 			HashMap<String, Object> subscription = (HashMap<String, Object>) this.getContent().get("subscription");
 			String PlanId = (String) subscription.get("plan_id");
 		try {
-				InsertOrgInfo(orgId,"Plan_id",PlanId);
+				CommonCommandUtil.insertOrgInfo(orgId,"Plan_id",PlanId);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -534,7 +488,7 @@ Pragma: no-cache
 			
 			try {
 				System.out.println(Name);
-				InsertOrgInfo(orgId,Name,Value);
+				CommonCommandUtil.insertOrgInfo(orgId,Name,Value);
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
