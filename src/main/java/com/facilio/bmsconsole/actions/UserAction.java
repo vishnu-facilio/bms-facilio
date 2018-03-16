@@ -137,6 +137,12 @@ public class UserAction extends ActionSupport {
 		String value = LoginUtil.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
 
+		if(user.getRoleId() <=0 )
+		{
+			addFieldError("role", "This user already exists in your organization.");
+			return ERROR;
+
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);

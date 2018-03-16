@@ -48,6 +48,9 @@
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
 	</action>
 
 	<action name="acceptOpInvite" class="com.facilio.integration.actions.Home"
