@@ -8,9 +8,9 @@
 		type="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
 		factory="com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory"
 		user="faciliouser" 
-		password="zxcv1212"
+		password="facilio96"
 		explicitUrl="true"
-        url="jdbc:mysql://production.cawlzpaoeevi.us-west-2.rds.amazonaws.com:3306/bms"
+        url="jdbc:mysql://production.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms"
 		/>
     
     
@@ -32,7 +32,7 @@
     	  removeAbandonedTimeout="55"
     	  username="faciliouser"
     	  user="faciliouser"
-    	  password="zxcv1212"
+    	  password="facilio96"
     	  databaseName="bms"
     	  driverClassName="com.mysql.jdbc.Driver"
 		  dataSourceJNDI="BmsXA"
