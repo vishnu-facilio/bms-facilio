@@ -657,8 +657,8 @@ public class DashboardUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFields())
 				.table(ModuleFactory.getReport().getTableName())
-				.andCustomWhere(ModuleFactory.getReport().getTableName()+"REPORT_ENTITY_ID = "+entityId)
-				.andCustomWhere(ModuleFactory.getReport().getTableName()+"REPORT_FOLDER_ID is not null");
+				.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_ENTITY_ID = "+entityId)
+				.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID is not null");
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
