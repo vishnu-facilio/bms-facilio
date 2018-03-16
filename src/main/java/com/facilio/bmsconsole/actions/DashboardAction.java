@@ -584,7 +584,7 @@ public class DashboardAction extends ActionSupport {
 			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
 		else {
-			if(energyMeterFilter != null) {
+			if(energyMeterFilter != null && (energyMeterFilter.getGroupBy() != null || energyMeterFilter.getSubMeterId() != null || energyMeterFilter.getServiceId() != null)) {
 				reportContext.setEnergyMeter(energyMeterFilter);
 			}
 			getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId);
@@ -1007,7 +1007,11 @@ public class DashboardAction extends ActionSupport {
 					.andCustomWhere(energyMeterPurposeModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
 					.andCustomWhere("Energy_Meter.IS_ROOT = 1 ")
 					.andCustomWhere(energyMeterPurposeModule.getTableName()+".Name!=\"Main\"");
-					
+					if(reportContext.getReportSpaceFilterContext() != null && reportContext.getReportSpaceFilterContext().getBuildingId() != null) {
+						subBuilder.andCustomWhere(energyMeterModule.getTableName()+".PURPOSE_SPACE_ID="+reportContext.getReportSpaceFilterContext().getBuildingId());
+					}
+					report.getxAxisField().getField().setDisplayName("Service");
+					report.getxAxisField().getField().setName("Service");
 				}
 				else {
 					xAxisField = xAggregateOpperator.getSelectField(xAxisField);
@@ -1099,6 +1103,8 @@ public class DashboardAction extends ActionSupport {
 			else {
 				builder.orderBy(report.getOrderBy());
 			}
+		}
+		else {
 			
 		}
 		
