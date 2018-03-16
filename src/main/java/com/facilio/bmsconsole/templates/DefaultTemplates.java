@@ -125,13 +125,13 @@ public enum DefaultTemplates implements ActionTemplate {
 		JSONObject json = new JSONObject();
 		switch(templateVal) {
 			case 1:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New Workorder Assigned");
 				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 2:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "shivaraj@thingscient.com");
 				json.put("subject", "Workorder Follow");
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.");
@@ -141,13 +141,13 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order.\n${workorder.url}");
 				break;
 			case 4:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${ticket.assignedTo.email:-}");
 				json.put("subject", "New Comment added");
 				json.put("message", "A new comment has been added in your WorkOrder.");
 				break;
 			case 5:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				JSONArray emails = new JSONArray();
 				emails.add("${org.superAdmin.email:-}");
 				json.put("to", emails);
@@ -191,19 +191,19 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("id", "${user.id:-}");
 				break;
 			case 10:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New WorkOrder will be created on ${workorder.createdTimeString}");
 				json.put("message", "A new work order will be created on ${workorder.createdTimeString} and will be assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nRegards,\nTeam Facilio");
 				break;
 			case 11:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Workorder in due");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 12: 
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.requester.email:-}");
 				json.put("subject", "New Workrequest");
 				json.put("message", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -231,7 +231,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("body", "The following work request assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 16:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Approve Workrequest");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -254,7 +254,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 18:
 				break;
 			case 20:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Reject Workrequest");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -277,7 +277,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 22:
 				break;
 			case 24:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Work order completed");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -300,7 +300,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 26:
 				break;
 			case 28:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Work order closed");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -323,7 +323,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 30:
 				break;
 			case 32:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New Workorder");
 				json.put("message", "The following work order assigned to you is still in due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -359,7 +359,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 36:
 				break;
 			case 38:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New Workorder Assigned");
 				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
@@ -399,7 +399,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 43:
 				break;
 			case 45:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${ticket.assignedTo.email:-}");
 				json.put("subject", "New Task added");
 				json.put("message", "A new Task has been added in your WorkOrder.");
@@ -422,7 +422,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 47:
 				break;
 			case 49:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${ticket.assignedTo.email:-}");
 				json.put("subject", "Task Updated");
 				json.put("message", "A Task has been Updated in your WorkOrder.");
@@ -446,7 +446,7 @@ public enum DefaultTemplates implements ActionTemplate {
 			case 51:
 				break;
 			case 53:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${ticket.assignedTo.email:-}");
 				json.put("subject", "Task closed");
 				json.put("message", "A Task has been closed in your WorkOrder.");
@@ -487,7 +487,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("id", "${workorder.assignedTo.id:-}");
 				break;
 			case 60:
-				json.put("sender", "support@facilio.com");
+				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "Workorder in due");
 				json.put("message", "The following work order assigned to you is over due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
