@@ -37,6 +37,9 @@
     	  databaseName="bms"
     	  driverClassName="com.mysql.jdbc.Driver"
 		  dataSourceJNDI="BmsXA"
+		  jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+			org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
+		  defaultTransactionIsolation="READ_COMMITTED" 
      />
     
     <!-- Transaction Configuration 
