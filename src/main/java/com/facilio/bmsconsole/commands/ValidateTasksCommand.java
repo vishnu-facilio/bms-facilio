@@ -34,28 +34,30 @@ public class ValidateTasksCommand implements Command {
 			}
 		}
 		
-		for(TaskContext task : tasks) {
-			if (task.getInputTypeEnum() == null) {
-				task.setInputType(TaskContext.InputType.NONE);
-			}
-			else {
-				switch(task.getInputTypeEnum()) {
-					case READING:
-						if (task.getResource() == null || task.getResource().getId() == -1) {
-							throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
-						}
-						if(task.getReadingFieldId() == -1) {
-							throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
-						}
-						break;
-					case CHECKBOX:
-					case RADIO:
-						if(task.getOptions() == null || task.getOptions().size() < 2) {
-							throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
-						}
-						break;
-					default:
-						break;
+		if (tasks != null && !tasks.isEmpty()) {
+			for(TaskContext task : tasks) {
+				if (task.getInputTypeEnum() == null) {
+					task.setInputType(TaskContext.InputType.NONE);
+				}
+				else {
+					switch(task.getInputTypeEnum()) {
+						case READING:
+							if (task.getResource() == null || task.getResource().getId() == -1) {
+								throw new IllegalArgumentException("Resource cannot be null when reading is enabled for task");
+							}
+							if(task.getReadingFieldId() == -1) {
+								throw new IllegalArgumentException("Reading ID cannot be null when reading is enabled for task");
+							}
+							break;
+						case CHECKBOX:
+						case RADIO:
+							if(task.getOptions() == null || task.getOptions().size() < 2) {
+								throw new IllegalArgumentException("Minimum two options has to be added for CHECKBOX/ RADIO task");
+							}
+							break;
+						default:
+							break;
+					}
 				}
 			}
 		}
