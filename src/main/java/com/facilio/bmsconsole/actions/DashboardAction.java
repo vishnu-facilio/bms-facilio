@@ -2202,13 +2202,13 @@ public class DashboardAction extends ActionSupport {
 	
 	public String scheduleReport() throws Exception {
 		
-		emailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
+		emailTemplate.setName("Report");
+		emailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
 		// TODO...pojo
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
-		emailTemplate.setName("Report");
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
