@@ -9,7 +9,7 @@
 		user="root" 
 		password="zxcv1212"
 		explicitUrl="true"
-        url="jdbc:mysql://facilio-in.cawlzpaoeevi.us-west-2.rds.amazonaws.com:3306/faciliodb"
+        url="jdbc:mysql://stage.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/faciliodb"
 		/>
     
     
