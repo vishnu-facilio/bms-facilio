@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domains>
+<domain host="test.com" orgdomain="facilio3"/>
+<domain host="test2.com" orgdomain="facilio2"/>
+<domain host="test3.com" orgdomain="facilio4"/>
+</domains>

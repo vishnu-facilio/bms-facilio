@@ -1,5 +1,7 @@
 package com.facilio.serviceportal.actions;
 
+import java.util.HashMap;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,10 +20,13 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 public class PortalAuthInterceptor extends AbstractInterceptor {
 
+	private HashMap customdomains = null;
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
 		super.init();
+		ServletContext context = ServletActionContext.getServletContext();
+ customdomains = (HashMap) context.getAttribute("customdomains");
 	
 	}
 	
@@ -52,7 +57,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		initHost();
 		
 		
-		String subdomian =  RequestUtil.getDomainName();
+		//String subdomian =  RequestUtil.getDomainName();
 		
 		try {
 
@@ -112,12 +117,25 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				AccountUtil.setCurrentAccount(currentAccount);
 			} else {
 				String domainName = request.getHeader("Origin");
+				
+				// Check if this is custom domain
+				
+				if(customdomains!=null)
+				{
+				  String orgdomain = (String)customdomains.get(domainName);
+				  if(orgdomain!=null)
+				  {
+					  domainName = "https://"+orgdomain+".facilstack.com";
+				  }
+				}
+				
 				if(domainName != null) {
 					if (domainName.contains("http://")) {
 						domainName = domainName.replace("http://", "");
 					} else if (domainName.contains("https://")) {
 						domainName = domainName.replace("https://", "");
 					}
+					
 					String[] domainArray = domainName.split("\\.");
 					if (domainArray.length > 2) {
 						String subDomain = domainArray[0];

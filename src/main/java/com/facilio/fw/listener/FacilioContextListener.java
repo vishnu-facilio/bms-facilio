@@ -1,16 +1,26 @@
 package com.facilio.fw.listener;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.flywaydb.core.Flyway;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
@@ -50,6 +60,13 @@ public class FacilioContextListener implements ServletContextListener {
 		//	FacilioTransactionManager.INSTANCE.getTransactionManager();
 			
 			RedisManager.getInstance().connect(); // creating redis connection pool
+			HashMap customdomains = getCustomDomains();
+			
+			if(customdomains!=null)
+			{
+				event.getServletContext().setAttribute("customdomains", customdomains);
+				System.out.println("Custom domains loaded" + customdomains);
+			}
 			
 			File file = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/leedconsole.sql").getFile());
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
@@ -144,6 +161,41 @@ public class FacilioContextListener implements ServletContextListener {
 		finally {
 			DBUtil.closeAll(conn, stmt, rs);
 		}
+	}
+	
+	private HashMap getCustomDomains()
+	{
+		File beansxml = new File(this.getClass().getClassLoader().getResource("conf/customdomains.xml").getFile());
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+
+			Document doc = dBuilder.parse(beansxml);
+			NodeList nList = doc.getElementsByTagName("domain");
+
+			HashMap customdomains = new HashMap();
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				Node nNode = nList.item(temp);
+
+				Element eElement = (Element) nNode;
+				String customdomain = eElement.getAttribute("host");
+				String orgdomain = eElement.getAttribute("orgdomain");
+				customdomains.put(customdomain,orgdomain);
+			}
+			return customdomains;
+
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return null;
 	}
 
 }
