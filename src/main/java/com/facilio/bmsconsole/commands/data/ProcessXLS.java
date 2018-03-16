@@ -40,70 +40,6 @@ public class ProcessXLS implements Command {
 	
 	public boolean execute(Context context) throws Exception {
 		
-		/*
-		try {
-			String FILE_NAME  =null;
-          
-            Workbook workbook = WorkbookFactory.create(new File(FILE_NAME));
-            Sheet datatypeSheet = workbook.getSheetAt(0);
-            Iterator<Row> iterator = datatypeSheet.iterator();
-
-            boolean columnheading = true;
-            while (iterator.hasNext()) {
-
-                Row currentRow = iterator.next();
-                if(isRowEmpty(currentRow))
-                {
-                	continue;
-                }
-                Iterator<Cell> cellIterator = currentRow.iterator();
-                if(columnheading)
-                {
-                	// process header
-                	columnheading = false;
-                	continue;
-                }
-                else
-                {
-                	// process columns
-                }
-
-                while (cellIterator.hasNext()) {
-                	
-                	if(columnheading )
-                	{
-                		// parse the column heading
-                		columnheading = false;
-                	}
-                	else
-                	{
-                		// parse the data
-                	}
-                	
-                    Cell currentCell = cellIterator.next();
-                    //getCellTypeEnum shown as deprecated for version 3.15
-                    //getCellTypeEnum ill be renamed to getCellType starting from version 4.0
-                    if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-                        System.out.print(currentCell.getStringCellValue() + "--");
-                    } else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                        System.out.print(currentCell.getNumericCellValue() + "--");
-                    }
-
-                }
-                System.out.println();
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-		finally
-		{
-			//workbook.
-		}
-		 */
-		
 		return false;
 
 	}
@@ -301,3 +237,13 @@ public class ProcessXLS implements Command {
 	
 	
 }
+
+
+
+
+
+
+
+
+
+

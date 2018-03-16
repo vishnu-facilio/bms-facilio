@@ -3190,7 +3190,7 @@
 		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="upload">
-				<param name="moduleName">setup</param>
+				<!--  <param name="moduleName">setup</param> -->
 				<param name="permission">DATA_ADMINISTRATION</param>
 				<result name="success" type="json">
 				<param name="includeProperties">metainfo.*</param>
@@ -3198,7 +3198,7 @@
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="processImport">
-				<param name="moduleName">setup</param>
+				<!--  <param name="moduleName">setup</param> -->
 				<param name="permission">DATA_ADMINISTRATION</param>
 				<result name="success" type="json">
 				<param name="statusCode">200</param>

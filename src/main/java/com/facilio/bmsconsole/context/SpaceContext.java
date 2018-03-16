@@ -4,6 +4,11 @@ public class SpaceContext extends BaseSpaceContext {
 	
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
+		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {
+			BuildingContext building = new BuildingContext();
+			building.setId(super.getBuildingId());
+			return building;
+		}
 		return building;
 	}
 	public void setBuilding(BuildingContext building) {
@@ -22,6 +27,11 @@ public class SpaceContext extends BaseSpaceContext {
 	
 	private FloorContext floor;
 	public FloorContext getFloor() {
+		if ((floor == null || floor.getId() == -1) && super.getFloorId() != -1) {
+			FloorContext floor = new FloorContext();
+			floor.setId(super.getFloorId());
+			return floor;
+		}
 		return floor;
 	}
 	public void setFloor(FloorContext floor) {

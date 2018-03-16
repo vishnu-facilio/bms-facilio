@@ -63,12 +63,14 @@ public class ImportMetaInfo
 			 rs = s.executeQuery("select * from ImportProcess where IMPORTID_ID="+processid);
 			if(rs.next())
 			{
+				System.out.println("-----------> checking getsites5----------->");
 				ImportMetaInfo iminfo = new ImportMetaInfo();
 				JSONParser parser = new JSONParser();
 				iminfo.columnheadings =(JSONArray)parser.parse(rs.getString("COLUMN_HEADING"));
 				System.out.println("columnheadeing"+iminfo.columnheadings);
 				int moduleId = rs.getInt("INSTANCE_ID");
 				iminfo.setFileId(rs.getLong("FILEID"));
+				System.out.println("-----------> checking getsites6----------->");
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		        FacilioModule facilioModule = modBean.getModule(moduleId);
 				iminfo.fields = getFields(facilioModule.getName());

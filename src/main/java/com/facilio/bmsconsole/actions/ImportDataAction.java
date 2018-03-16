@@ -9,13 +9,18 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.data.ProcessSpaceXLS;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -27,6 +32,7 @@ public class ImportDataAction extends ActionSupport {
 	// Upload xls , store the file and meta data(modulename/column heading/), generate importid
 	public String upload() throws Exception
 	{
+		System.out.println("-----------> checking 1----------->");
 		
 		System.out.println("entry code"+ this.hashCode());
 
@@ -82,6 +88,8 @@ public class ImportDataAction extends ActionSupport {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		Connection conn =null;
 		try {
+			System.out.println("-----------> checking 2----------->");
+			
 			JSONArray columnheadings = ProcessXLS.getColumnHeadings(fileUpload);
 						
 			setColumnheading(columnheadings.toJSONString().replaceAll("\"", "\\\""));
@@ -90,7 +98,7 @@ public class ImportDataAction extends ActionSupport {
 	        
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	        FacilioModule facilioModule = modBean.getModule(getModuleName());
-			
+			System.out.println("Module Name is  -- "+getModuleName());			
 			System.out.println("Module -- "+metainfo.getModule());
 			insert =insert.replaceAll("#module#", String.valueOf(facilioModule.getModuleId()));
 			 conn  = FacilioConnectionPool.INSTANCE.getConnection();
@@ -152,6 +160,8 @@ public class ImportDataAction extends ActionSupport {
 	
 	public String processImport() throws Exception
 	{
+		System.out.println("-----------> checking 3----------->");
+		
 		System.out.println("Meta info"+getMetainfo());
 		System.out.println("Meta info"+getMetainfo().getFieldMapping());
 		// based on the option selected in displayColumnFieldMapping, load the data from excel file and get it imported
@@ -163,13 +173,39 @@ public class ImportDataAction extends ActionSupport {
 		stmt.executeUpdate(updatequery);
 		stmt.close();
 		c.close();
+		System.out.println("-----------> checking 4----------->");
 		
 		long fileId = ImportMetaInfo.getInstance(getMetainfo().getImportprocessid()).getFileId();
 		metainfo.setFileId(fileId);
 		metainfo.setAssetId(assetId);
-		ProcessXLS.processImport(metainfo);
 		
+		System.out.println("<---------------------- Process XLS -------------------------->" + metainfo.getModule().getName());
+			
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (metainfo.getModule().getName().equals("space") || metainfo.getModule().getName().equals("Space"))
+		{
+			System.out.println("----------------------Inserting space xls------------------");	
+			ProcessSpaceXLS.processImport(metainfo);
+			
+		}
+		else
+		{
+			System.out.println("----------------------Inserting other xls------------------");	
+			ProcessXLS.processImport(metainfo);
+		}
 		return SUCCESS;
+	}
+	
+	public void getSites() throws Exception
+	{
+		List<SiteContext> sites = SpaceAPI.getAllSites();
+		JSONObject result = new JSONObject();
+		for(SiteContext site:sites) {
+			long siteId=site.getId();
+			String name=site.getName();
+			result.put(siteId,name);
+		}
+		System.out.println("The list of Sites available is "+result);
 	}
 	public String showformupload()
 	{
@@ -233,6 +269,7 @@ public class ImportDataAction extends ActionSupport {
 	
 	public void setModuleName(String module)
 	{
+		System.out.println("Setting module : " + module);
 		this.moduleName=module;
 	}
 	

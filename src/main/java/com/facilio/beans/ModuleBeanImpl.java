@@ -116,7 +116,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
+			 
 			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
 			

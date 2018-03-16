@@ -376,10 +376,40 @@ public class SpaceAPI {
 		return buildings;
 	}
 	
+	public static List<FloorContext> getAllFloors() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+		
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(FloorContext.class)
+																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.FLOOR.getIntVal());
+		List<FloorContext> floors = selectBuilder.get();
+		return floors;
+	}
+	
+	public static List<SpaceContext> getAllSpaces() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(SpaceContext.class)
+																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.SPACE.getIntVal());
+		List<SpaceContext> spaces = selectBuilder.get();
+		return spaces;
+	}
+	
 	public static List<SiteContext> getAllSites() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
 		
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
