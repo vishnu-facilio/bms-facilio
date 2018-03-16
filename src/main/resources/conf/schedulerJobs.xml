@@ -10,8 +10,8 @@
 	 <job name='PMScheduler' classname='com.facilio.bmsconsole.jobs.PMScheduler' />
 	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' />
 	 <job name='HistoricalVMCalculation' classname = 'com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob' />
-	 <job name='BeforePMReminder' classname = 'com.facilio.bmsconsole.jobs.BeforePMReminderJob' />
-	 <job name='AfterPMReminder' classname = 'com.facilio.bmsconsole.jobs.AfterPMReminderJob' />
+	 <job name='PrePMReminder' classname = 'com.facilio.bmsconsole.jobs.PrePMReminderJob' />
+	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' />
 	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' />
 	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' />
 	 <job name='ENPICalculatior' classname = 'com.facilio.bmsconsole.jobs.ENPICalculatiorJob' />

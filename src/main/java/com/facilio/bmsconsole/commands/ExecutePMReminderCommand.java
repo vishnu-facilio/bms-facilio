@@ -27,7 +27,7 @@ public class ExecutePMReminderCommand implements Command {
 		PMReminder pmReminder = (PMReminder) context.get(FacilioConstants.ContextNames.PM_REMINDER);
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		
-		if(wo != null && (pmReminder.getTypeEnum() == PMReminder.ReminderType.BEFORE || !isClosed(wo))) {
+		if(wo != null && (pmReminder.getTypeEnum() == PMReminder.ReminderType.BEFORE_EXECUTION || !isClosed(wo))) {
 			ActionContext action = ActionAPI.getAction(pmReminder.getActionId());
 			if(action != null) {
 				Map<String, Object> placeHolders = new HashMap<>();

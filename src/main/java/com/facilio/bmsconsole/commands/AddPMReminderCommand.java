@@ -8,14 +8,15 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.constants.FacilioConstants;
@@ -41,8 +42,10 @@ public class AddPMReminderCommand implements Command {
 							action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
 							
 							switch(reminder.getTypeEnum()) {
-								case BEFORE: action.setDefaultTemplateId(10);break;
-								case AFTER: action.setDefaultTemplateId(11);break;
+								case BEFORE_EXECUTION: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_PRE_REMINDER.getVal());break;
+								case AFTER_EXECUTION: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_DUE_REMINDER.getVal());break;
+								case BEFORE_DUE: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_DUE_REMINDER.getVal());break;
+								case AFTER_DUE: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_OVERDUE_REMINDER.getVal());break;
 							}
 							reminder.setAction(action);
 						}
@@ -65,32 +68,28 @@ public class AddPMReminderCommand implements Command {
 				insertBuilder.save();
 				
 				Map<Long, Long> nextExecutionTimes = (Map<Long, Long>) context.get(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES);
-				for(int i=0; i<reminders.size(); i++) {
-					long schedulerId = (long) reminderProps.get(i).get("id");
-					PMReminder reminder = reminders.get(i);
-					reminder.setId(schedulerId);
-					
-					if(reminder.getTypeEnum() == ReminderType.BEFORE) {
-						if (pm.getTriggers() == null) {
-							continue;
-						}
-						for(PMTriggerContext trigger : pm.getTriggers()) {
-							Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
-							if(nextExecutionTime != null) {
-								CommonCommandUtil.scheduleBeforePMReminder(reminder, nextExecutionTime, trigger.getId());
-							}
-						}
-					}
-				}
+				scheduleBeforePMReminders(pm, reminders, reminderProps, nextExecutionTimes);
 			}
 		}
 		return false;
 	}
 	
-	private static long getStartTimeInSecond(long startTime) {
-		long startTimeInSecond = startTime/1000;
-		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
-		
-		return startTimeInSecond;
+	private void scheduleBeforePMReminders(PreventiveMaintenance pm, List<PMReminder> reminders, List<Map<String, Object>> reminderProps, Map<Long, Long> nextExecutionTimes) throws Exception {
+		if (pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
+			for(int i=0; i<reminders.size(); i++) {
+				long schedulerId = (long) reminderProps.get(i).get("id");
+				PMReminder reminder = reminders.get(i);
+				reminder.setId(schedulerId);
+				
+				if(reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION) {
+					for(PMTriggerContext trigger : pm.getTriggers()) {
+						Long nextExecutionTime = nextExecutionTimes.get(trigger.getId());
+						if(nextExecutionTime != null) {
+							PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, nextExecutionTime, trigger.getId());
+						}
+					}
+				}
+			}
+		}
 	}
 }

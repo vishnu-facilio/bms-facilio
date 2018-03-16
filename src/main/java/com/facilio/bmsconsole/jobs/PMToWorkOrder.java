@@ -61,7 +61,7 @@ public class PMToWorkOrder extends FacilioJob {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			CommonCommandUtil.emailException("VM Calculation failed", e);
+			CommonCommandUtil.emailException("PM Execution failed", e);
 			e.printStackTrace();
 		}
 	}

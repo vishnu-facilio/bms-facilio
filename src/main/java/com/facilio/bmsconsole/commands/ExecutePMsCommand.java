@@ -23,7 +23,7 @@ public class ExecutePMsCommand implements Command {
 		List<Long> pmIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds, null);
 		if(pms != null && !pms.isEmpty()) {
-			Map<Long, Long> pmToWo = new HashMap<>();
+			Map<Long, WorkOrderContext> pmToWo = new HashMap<>();
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			List<Long> woIds = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) {
@@ -36,7 +36,7 @@ public class ExecutePMsCommand implements Command {
 				}
 				if(wo != null) {
 					woIds.add(wo.getId());
-					pmToWo.put(pm.getId(), wo.getId());
+					pmToWo.put(pm.getId(), wo);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);

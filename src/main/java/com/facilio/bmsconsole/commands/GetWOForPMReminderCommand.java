@@ -31,34 +31,32 @@ public class GetWOForPMReminderCommand implements Command {
 		PMReminder pmReminder = (PMReminder) context.get(FacilioConstants.ContextNames.PM_REMINDER);
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		
-		ReminderType type = (ReminderType) context.get(FacilioConstants.ContextNames.PM_REMINDER_TYPE);
+		boolean onlyPost = (boolean) context.get(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE);
 		WorkOrderContext wo = null;
 		
-		switch (type) {
-			case BEFORE:
-				long templateId = pm.getTemplateId();
-				long currentExecutionTime = (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
-				WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-				wo = template.getWorkorder();
-				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-				wo.setCreatedTime((currentExecutionTime+pmReminder.getDuration())*1000);
-				break;
-			case AFTER:
-				long woId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-				SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-																		.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-																		.module(woModule)
-																		.beanClass(WorkOrderContext.class)
-																		.andCondition(CriteriaAPI.getIdCondition(woId, woModule))
-																		;
-				
-				List<WorkOrderContext> woList = woBuilder.get();
-				if(woList != null && !woList.isEmpty()) {
-					wo = woList.get(0);
-				}
-				break;
+		if (onlyPost) {
+			long woId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																	.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+																	.module(woModule)
+																	.beanClass(WorkOrderContext.class)
+																	.andCondition(CriteriaAPI.getIdCondition(woId, woModule))
+																	;
+			
+			List<WorkOrderContext> woList = woBuilder.get();
+			if(woList != null && !woList.isEmpty()) {
+				wo = woList.get(0);
+			}
+		}
+		else {
+			long templateId = pm.getTemplateId();
+			long currentExecutionTime = (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
+			WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+			wo = template.getWorkorder();
+			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+			wo.setCreatedTime((currentExecutionTime+pmReminder.getDuration())*1000);
 		}
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		return false;

@@ -20,7 +20,7 @@ public enum DefaultTemplates implements ActionTemplate {
 	ALARM_UPDATION_SMS(7),
 	ALARM_CREATION_PUSH(8),
 	ALARM_UPDATION_PUSH(9),
-	PM_EMAIL_REMINDER(10),
+	PM_EMAIL_PRE_REMINDER(10),
 	PM_EMAIL_DUE_REMINDER(11),
 	NEW_WORK_REQUEST_EMAIL(12),
 	NEW_WORK_REQUEST_SMS(14),
@@ -69,7 +69,8 @@ public enum DefaultTemplates implements ActionTemplate {
 	TASK_RESOLVED_WEBL(55),
 	WO_ASSIGN_SMS(57),
 	WO_ASSIGN_PUSH(59),
-	WO_ASSIGN_WEB(58)
+	WO_ASSIGN_WEB(58),
+	PM_EMAIL_OVERDUE_REMINDER(60)
 	;
 	
 	private int val;
@@ -484,6 +485,12 @@ public enum DefaultTemplates implements ActionTemplate {
 				data.put("sound", "default");
 				json.put("data", data);
 				json.put("id", "${workorder.assignedTo.id:-}");
+				break;
+			case 60:
+				json.put("sender", "support@${org.orgDomain}.facilio.com");
+				json.put("to", "${workorder.assignedTo.email:-}");
+				json.put("subject", "Workorder in due");
+				json.put("message", "The following work order assigned to you is over due.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 				
 		}

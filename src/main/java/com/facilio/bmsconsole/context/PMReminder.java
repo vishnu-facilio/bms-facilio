@@ -30,7 +30,7 @@ public class PMReminder {
 	private ReminderType type;
 	public int getType() {
 		if(type != null) {
-			return type.getIntVal();
+			return type.getValue();
 		}
 		return -1;
 	}
@@ -38,7 +38,7 @@ public class PMReminder {
 		return type;
 	}
 	public void setType(int type) {
-		this.type = REMINDER_TYPES[type - 1];
+		this.type = ReminderType.valueOf(type);
 	}
 	public void setType(ReminderType type) {
 		this.type = type;
@@ -68,14 +68,22 @@ public class PMReminder {
 		this.action = action;
 	}
 
-	private ReminderType[] REMINDER_TYPES = ReminderType.values();
 	public static enum ReminderType {
-		BEFORE,
-		AFTER
+		BEFORE_EXECUTION,
+		AFTER_EXECUTION,
+		BEFORE_DUE,
+		AFTER_DUE
 		;
 		
-		public int getIntVal() {
+		public int getValue() {
 			return ordinal()+1;
+		}
+		
+		public static ReminderType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
 		}
 	}
 }
