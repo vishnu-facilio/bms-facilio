@@ -577,7 +577,7 @@ public class AwsUtil
 	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String,String> files) throws Exception {
 	 	String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
 	 	
-		String sender = "support@facilio.com";
+		String sender = (String) mailJson.get("sender");
 		
 		Session session = Session.getDefaultInstance(new Properties());
 		MimeMessage message = new MimeMessage(session);

@@ -43,7 +43,7 @@ public class SendReportMailCommand implements Command {
 		
 		int type = (int) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
-		eMailTemplate.setFrom("support@${org.orgDomain}.facilio.com");
+		eMailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
 		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
 		Map<String, String> files = new HashMap<>();
