@@ -41,6 +41,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowFieldContext;
 
 public class WorkflowUtil {
 
@@ -137,6 +138,8 @@ public class WorkflowUtil {
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		WorkflowContext workflow = new WorkflowContext();
 		if(workflowContext.getWorkflowString() == null) {
 			workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
@@ -144,6 +147,7 @@ public class WorkflowUtil {
 		else {
 			workflow.setWorkflowString(workflowContext.getWorkflowString());
 		}
+		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
@@ -151,6 +155,7 @@ public class WorkflowUtil {
 		System.out.println("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
 				.fields(FieldFactory.getWorkflowFields());
@@ -160,6 +165,38 @@ public class WorkflowUtil {
 		insertBuilder.save();
 
 		workflowContext.setId((Long) props.get("id"));
+		
+		for(ExpressionContext expression :workflowContext.getExpressions()) {
+			
+			String fieldName = expression.getFieldName();
+			String moduleName = expression.getModuleName();
+			
+			if(moduleName != null && fieldName != null) {
+				System.out.println("moduleName -- "+moduleName +" fieldName -- "+fieldName);
+				FacilioModule module = modBean.getModule(moduleName);
+				FacilioField field = modBean.getField(fieldName, moduleName);
+				if(field != null) {
+					WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
+					
+					workflowFieldContext.setOrgId(module.getOrgId());
+					workflowFieldContext.setModuleId(module.getModuleId());
+					workflowFieldContext.setFieldId(field.getId());
+					workflowFieldContext.setWorkflowId(workflowContext.getId());
+					
+					insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getWorkflowFieldModule().getTableName())
+							.fields(FieldFactory.getWorkflowFieldsFields());
+					
+					props = FieldUtil.getAsProperties(workflowFieldContext);
+					
+					insertBuilder.addRecord(props);
+					insertBuilder.save();
+					
+					System.out.println("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
+				}
+			}
+		}
+		
 		return (Long) props.get("id");
 	}
 	
@@ -389,8 +426,6 @@ public class WorkflowUtil {
 	}
 	
 	public static ExpressionContext getExpressionContextFromExpressionString(String expressionString) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		InputStream stream = new ByteArrayInputStream(expressionString.getBytes("UTF-16"));
 		

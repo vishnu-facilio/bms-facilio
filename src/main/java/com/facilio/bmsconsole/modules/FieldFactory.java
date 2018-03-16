@@ -2833,6 +2833,31 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowFieldsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowFieldModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+
+		FacilioField workflowId = new FacilioField();
+		workflowId.setName("workflowId");
+		workflowId.setDataType(FieldType.NUMBER);
+		workflowId.setColumnName("WORKFLOW_ID");
+		workflowId.setModule(module);
+		fields.add(workflowId);
+		
+		FacilioField fieldId = new FacilioField();
+		fieldId.setName("fieldId");
+		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setColumnName("FIELD_ID");
+		fieldId.setModule(module);
+		fields.add(fieldId);
+
+		return fields;
+	}
 
 	public static List<FacilioField> getPMReminderFields() {
 		List<FacilioField> fields = new ArrayList<>();
