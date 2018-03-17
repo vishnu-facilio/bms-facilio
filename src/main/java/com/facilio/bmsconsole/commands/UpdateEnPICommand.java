@@ -57,8 +57,8 @@ public class UpdateEnPICommand implements Command {
 				ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 				crudBean.deleteAllData(oldEnPI.getReadingField().getModule().getName());
 				
-				FacilioTimer.deleteJob(newEnPI.getId(), "HistoricalENPICalculatior");
-				FacilioTimer.scheduleOneTimeJob(newEnPI.getId(), "HistoricalENPICalculatior", 30, "priority");
+				FacilioTimer.deleteJob(newEnPI.getId(), "HistoricalENPICalculator");
+				FacilioTimer.scheduleOneTimeJob(newEnPI.getId(), "HistoricalENPICalculator", 30, "priority");
 			}
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}
