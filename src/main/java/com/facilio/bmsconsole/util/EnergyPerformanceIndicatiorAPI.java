@@ -32,7 +32,7 @@ public class EnergyPerformanceIndicatiorAPI {
 			case DAILY:
 			case WEEKLY:
 			case MONTHLY:
-				return DateTimeUtil.getMonthStartTime(-3, true);
+				return DateTimeUtil.getMonthStartTime(-60, true);
 			case HALF_YEARLY:
 			case QUARTERTLY:
 				return DateTimeUtil.getYearStartTime(-1, true);
