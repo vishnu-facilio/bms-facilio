@@ -39,8 +39,14 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			
 			List<ReadingContext> readings = new ArrayList<>();
 			while (endTime <= currentTime) {
-				ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime*1000, (endTime*1000)-1);
-				readings.add(reading);
+				try {
+					ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime*1000, (endTime*1000)-1);
+					readings.add(reading);
+				}
+				catch (Exception e) {
+					logger.log(Level.SEVERE, e.getMessage(), e);
+					CommonCommandUtil.emailException("EnPI calculation failed for : "+jc.getJobId()+" between "+startTime+" and "+endTime, e);
+				}
 				startTime = endTime;
 				endTime = enpi.getSchedule().nextExecutionTime(startTime);
 			}
