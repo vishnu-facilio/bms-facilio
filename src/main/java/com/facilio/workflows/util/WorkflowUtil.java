@@ -568,7 +568,13 @@ public class WorkflowUtil {
 			String conditionValue = matcher.group(6);
 			
 			condition = new Condition();
-			if (matcher.group(3) != null) {
+			
+			boolean isWithParamCondition = false;
+			String testString = conditionString+" test";
+			if(testString.split(WorkflowContext.VARIABLE_PLACE_HOLDER).length > 1) {
+				isWithParamCondition = true;
+			}
+			if (matcher.group(3) != null && !isWithParamCondition) {
 				if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
 					BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
 					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
