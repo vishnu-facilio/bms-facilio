@@ -108,7 +108,8 @@ public class FacilioModule implements Serializable {
 		READING,
 		PHOTOS,
 		NOTES,
-		ATTACHMENTS
+		ATTACHMENTS,
+		ENPI
 		;
 		
 		public int getValue() {

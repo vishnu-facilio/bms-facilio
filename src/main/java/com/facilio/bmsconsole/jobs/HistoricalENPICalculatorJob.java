@@ -23,7 +23,7 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
 
-public class HistoricalENPICalculatiorJob extends FacilioJob {
+public class HistoricalENPICalculatorJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	@Override
 	public void execute(JobContext jc) {

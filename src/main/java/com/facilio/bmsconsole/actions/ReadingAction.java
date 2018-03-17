@@ -436,6 +436,7 @@ public class ReadingAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, enpi.getName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, FacilioModule.ModuleType.ENPI);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, enpi.getReadingField());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, enpi.getSpaceId());
 		context.put(FacilioConstants.ContextNames.ENPI, enpi);

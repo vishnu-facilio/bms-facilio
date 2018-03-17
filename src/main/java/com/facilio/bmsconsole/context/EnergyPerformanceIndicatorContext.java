@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -124,5 +125,13 @@ public class EnergyPerformanceIndicatorContext {
 	}
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
+	}
+	
+	private List<FacilioField> dependentFields;
+	public List<FacilioField> getDependentFields() {
+		return dependentFields;
+	}
+	public void setDependentFields(List<FacilioField> dependentFields) {
+		this.dependentFields = dependentFields;
 	}
 }

@@ -34,7 +34,10 @@ public class CreateReadingModuleCommand implements Command {
 			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			module.setDisplayName(readingName);
 			module.setTableName("Readings");
-			module.setType(ModuleType.READING);
+			module.setType((ModuleType) context.get(FacilioConstants.ContextNames.MODULE_TYPE));
+			if (module.getTypeEnum() == null) {
+				module.setType(ModuleType.READING);
+			}
 			context.put(FacilioConstants.ContextNames.MODULE, module);
 			fields.addAll(FieldFactory.getDefaultReadingFields(module));
 		}

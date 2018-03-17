@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -18,6 +22,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class EnergyPerformanceIndicatiorAPI {
@@ -50,7 +55,7 @@ public class EnergyPerformanceIndicatiorAPI {
 		}
 		else {
 			enpi.setId(id);
-			FacilioTimer.scheduleCalendarJob(id, "ENPICalculatior", System.currentTimeMillis(), enpi.getSchedule(), "facilio");
+//			FacilioTimer.scheduleCalendarJob(id, "ENPICalculatior", System.currentTimeMillis(), enpi.getSchedule(), "facilio");
 		}
 		
 		return enpi.getId();
@@ -108,6 +113,22 @@ public class EnergyPerformanceIndicatiorAPI {
 		
 	}
 	
+	public static List<EnergyPerformanceIndicatorContext> getEnPIsOfType(List<Integer> types) throws Exception {
+		FacilioModule module = ModuleFactory.getEnPIModule();
+		List<FacilioField> fields = FieldFactory.getEnPIFields();
+		FacilioField frequenctField = FieldFactory.getAsMap(fields).get("frequency");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(frequenctField, StringUtils.join(types, ","), NumberOperators.EQUALS))
+														;
+		
+		return getENPIFromProps(selectBuilder.get());
+		
+	}
+	
 	private static List<EnergyPerformanceIndicatorContext> getENPIFromProps (List<Map<String, Object>> props) throws Exception {
 		if( props != null && !props.isEmpty()) {
 			List<EnergyPerformanceIndicatorContext> enpiList = new ArrayList<>();
@@ -116,6 +137,16 @@ public class EnergyPerformanceIndicatiorAPI {
 				EnergyPerformanceIndicatorContext enpi = FieldUtil.getAsBeanFromMap(prop, EnergyPerformanceIndicatorContext.class);
 				enpi.setReadingField(modBean.getField(enpi.getReadingFieldId()));
 				enpi.setWorkflow(WorkflowUtil.getWorkflowContext(enpi.getWorkflowId(),true));
+				
+				List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(enpi.getWorkflowId());
+				if (workflowFields != null && !workflowFields.isEmpty()) {
+					List<FacilioField> dependentFields = new ArrayList<>();
+					for (WorkflowFieldContext workflowField : workflowFields) {
+						dependentFields.add(modBean.getField(workflowField.getFieldId()));
+					}
+					enpi.setDependentFields(dependentFields);
+				}
+				
 				enpiList.add(enpi);
 			}
 			return enpiList;

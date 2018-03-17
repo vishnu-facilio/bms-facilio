@@ -97,7 +97,6 @@ public enum EnPIFrequency {
 		}
 	} 
 	;
-	
 	public abstract ScheduleInfo getScheduleInfo();
 	
 	public int getValue() {
