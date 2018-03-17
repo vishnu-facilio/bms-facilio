@@ -252,13 +252,13 @@ public class BaseLineContext {
 	}
 	
 	private ZonedDateTime adjustStartOfYear(WeekFields weekFields, ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {
-		int startWeekOfYear = dataStartZdt.get(weekFields.weekOfWeekBasedYear());
-		blStartZdt = blStartZdt.with(weekFields.weekOfWeekBasedYear(), startWeekOfYear);
+		int startWeekOfYear = dataStartZdt.get(weekFields.weekOfYear());
+		blStartZdt = blStartZdt.with(weekFields.weekOfYear(), startWeekOfYear);
 		return adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
 	}
 	private ZonedDateTime adjustEndOfYear(WeekFields weekFields, ZonedDateTime dataEndZdt, ZonedDateTime blEndZdt) {
-		int endWeekOfYear = dataEndZdt.get(weekFields.weekOfWeekBasedYear());
-		blEndZdt = blEndZdt.with(weekFields.weekOfWeekBasedYear(), endWeekOfYear);
+		int endWeekOfYear = dataEndZdt.get(weekFields.weekOfYear());
+		blEndZdt = blEndZdt.with(weekFields.weekOfYear(), endWeekOfYear);
 		return adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
 	}
 	

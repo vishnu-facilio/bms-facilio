@@ -516,11 +516,11 @@ public class DateTimeUtil
 		WeekFields weekFields = getWeekFields();
 		ZonedDateTime start = getDateTime(startTime);
 		ZonedDateTime end = getDateTime(endTime);
-		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfWeekBasedYear()) == end.get(weekFields.weekOfWeekBasedYear());
+		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfYear()) == end.get(weekFields.weekOfYear());
 	}
 	public static boolean isSameWeek (ZonedDateTime start, ZonedDateTime end) {
 		WeekFields weekFields = getWeekFields();
-		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfWeekBasedYear()) == end.get(weekFields.weekOfWeekBasedYear());
+		return Year.from(start).equals(Year.from(end)) && start.get(weekFields.weekOfYear()) == end.get(weekFields.weekOfYear());
 	}
 	
 	public static boolean isSameMonth (long startTime, long endTime) {
