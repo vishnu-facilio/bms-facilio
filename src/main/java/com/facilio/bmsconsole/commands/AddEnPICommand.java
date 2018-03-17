@@ -30,7 +30,7 @@ public class AddEnPICommand implements Command {
 		
 		long enpiId = EnergyPerformanceIndicatiorAPI.addEnPI(enpi);
 		
-		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalENPICalculatior", 30, "priority");
+		FacilioTimer.scheduleOneTimeJob(enpiId, "HistoricalENPICalculator", 30, "priority");
 		
 		return false;
 	}
