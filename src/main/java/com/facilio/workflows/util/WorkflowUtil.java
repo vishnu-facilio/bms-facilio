@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -166,6 +167,9 @@ public class WorkflowUtil {
 
 		workflowContext.setId((Long) props.get("id"));
 		
+		insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getWorkflowFieldModule().getTableName())
+				.fields(FieldFactory.getWorkflowFieldsFields());
 		for(ExpressionContext expression :workflowContext.getExpressions()) {
 			
 			String fieldName = expression.getFieldName();
@@ -182,22 +186,35 @@ public class WorkflowUtil {
 					workflowFieldContext.setModuleId(module.getModuleId());
 					workflowFieldContext.setFieldId(field.getId());
 					workflowFieldContext.setWorkflowId(workflowContext.getId());
-					
-					insertBuilder = new GenericInsertRecordBuilder()
-							.table(ModuleFactory.getWorkflowFieldModule().getTableName())
-							.fields(FieldFactory.getWorkflowFieldsFields());
-					
 					props = FieldUtil.getAsProperties(workflowFieldContext);
-					
 					insertBuilder.addRecord(props);
-					insertBuilder.save();
-					
 					System.out.println("ADDED WORKFLOW FIELD ID --- "+(Long) props.get("id"));
 				}
 			}
 		}
-		
-		return (Long) props.get("id");
+		insertBuilder.save();
+		return workflowContext.getId();
+	}
+	
+	public static List<WorkflowFieldContext> getWorkflowFields(long workflowId) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowFieldModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowFieldsFields();
+		FacilioField workflowIdField = FieldFactory.getAsMap(fields).get("workflowId");
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(workflowIdField, String.valueOf(workflowId), PickListOperators.IS))
+														;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<WorkflowFieldContext> workflowFields = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				workflowFields.add(FieldUtil.getAsBeanFromMap(prop, WorkflowFieldContext.class));
+			}
+			return workflowFields;
+		}
+		return null;
 	}
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {

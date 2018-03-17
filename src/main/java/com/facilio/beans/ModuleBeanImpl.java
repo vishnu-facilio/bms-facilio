@@ -587,7 +587,11 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Invalid Module Name/ Module table Name");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID) VALUES (?,?,?,?,?)";
+		if (module.getTypeEnum() == null) {
+			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
+		}
+		
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE) VALUES (?,?,?,?,?,?)";
 		ResultSet rs = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -608,6 +612,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(5, Types.BIGINT);
 			}
+			
+			pstmt.setInt(6, module.getType());
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");
