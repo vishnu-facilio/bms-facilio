@@ -161,12 +161,12 @@ public class BaseLineContext {
 		ZonedDateTime dataStartZdt = DateTimeUtil.getDateTime(dataStartTime);
 		ZonedDateTime dataEndZdt = DateTimeUtil.getDateTime(dataEndTime);
 		
-		System.out.println(dataStartZdt);
-		System.out.println(dataEndZdt);
+		System.out.println(dataStartZdt+" - "+dataStartZdt.getDayOfWeek());
+		System.out.println(dataEndZdt+" - "+dataEndZdt.getDayOfWeek());
 		
 		System.out.println("#####");
 		
-		Duration duration = Duration.between(dataStartZdt, dataEndZdt);
+		Duration dataDuration = Duration.between(dataStartZdt, dataEndZdt);
 		RangeType type = rangeType;
 		
 		if (type == RangeType.PREVIOUS) {
@@ -182,7 +182,7 @@ public class BaseLineContext {
 					case PREVIOUS_DAY:
 					{
 						blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(duration);
+						blEndZdt = blStartZdt.plus(dataDuration);
 					}break;
 					case ANY_DAY:
 					{
@@ -192,7 +192,7 @@ public class BaseLineContext {
 					case PREVIOUS_WEEK:
 					{
 						blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(duration);
+						blEndZdt = blStartZdt.plus(dataDuration);
 					}break;
 					case ANY_WEEK:
 					{
@@ -204,7 +204,7 @@ public class BaseLineContext {
 					case PREVIOUS_MONTH:
 					{
 						blStartZdt = adjustStartOfMonth(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(duration);
+						blEndZdt = blStartZdt.plus(dataDuration);
 					}break;
 					case ANY_MONTH:
 					{
@@ -216,7 +216,7 @@ public class BaseLineContext {
 					case PREVIOUS_YEAR:
 					{
 						blStartZdt = adjustStartOfYear(weekFields, dataStartZdt, blStartZdt);
-						blEndZdt = blStartZdt.plus(duration);
+						blEndZdt = blStartZdt.plus(dataDuration);
 					}break;
 					case ANY_YEAR:
 					{
@@ -229,8 +229,8 @@ public class BaseLineContext {
 					{
 						Duration blDuration = Duration.between(blStartZdt, blEndZdt);
 						blStartZdt = adjustStartOfWeek(weekFields, dataStartZdt, blStartZdt);
-						if (duration.compareTo(blDuration) < 0) {
-							blEndZdt = blStartZdt.plus(duration);
+						if (dataDuration.compareTo(blDuration) < 0) {
+							blEndZdt = blStartZdt.plus(dataDuration);
 						}
 					}break;
 					case PREVIOUS:
@@ -240,12 +240,12 @@ public class BaseLineContext {
 			else {
 				Duration blDuration = Duration.between(blStartZdt, blEndZdt);
 				blStartZdt = adjustStartTime(dataStartZdt, blStartZdt);
-				if (duration.compareTo(blDuration) < 0) {
-					blEndZdt = blStartZdt.plus(duration);
+				if (dataDuration.compareTo(blDuration) < 0) {
+					blEndZdt = blStartZdt.plus(dataDuration);
 				}
 			}
-			System.out.println(blStartZdt);
-			System.out.println(blEndZdt);
+			System.out.println(blStartZdt+" - "+blStartZdt.getDayOfWeek());
+			System.out.println(blEndZdt+" - "+blEndZdt.getDayOfWeek());
 			return blStartZdt.toInstant().toEpochMilli()+", "+blEndZdt.toInstant().toEpochMilli();
 		}
 		return null;
@@ -258,8 +258,8 @@ public class BaseLineContext {
 	}
 	private ZonedDateTime adjustEndOfYear(WeekFields weekFields, ZonedDateTime dataEndZdt, ZonedDateTime blEndZdt) {
 		int endWeekOfYear = dataEndZdt.get(weekFields.weekOfWeekBasedYear());
-		dataEndZdt = dataEndZdt.with(weekFields.weekOfWeekBasedYear(), endWeekOfYear);
-		return adjustStartOfWeek(weekFields, dataEndZdt, blEndZdt);
+		blEndZdt = blEndZdt.with(weekFields.weekOfWeekBasedYear(), endWeekOfYear);
+		return adjustEndOfWeek(weekFields, dataEndZdt, blEndZdt);
 	}
 	
 	private ZonedDateTime adjustStartOfMonth(WeekFields weekFields, ZonedDateTime dataStartZdt, ZonedDateTime blStartZdt) {

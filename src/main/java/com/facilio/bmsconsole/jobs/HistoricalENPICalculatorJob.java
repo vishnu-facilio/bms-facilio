@@ -59,9 +59,11 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReadingChain.execute(context);
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
-			ReadingsAPI.updateLastReading(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
+			if (!readings.isEmpty()) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
+				ReadingsAPI.updateLastReading(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
