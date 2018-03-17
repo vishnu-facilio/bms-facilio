@@ -11,6 +11,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -59,6 +60,7 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			CommonCommandUtil.emailException("Historical EnPI calculation failed for : "+jc.getJobId(), e);
 		}
 	}
 
