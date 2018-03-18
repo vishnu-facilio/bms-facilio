@@ -90,15 +90,6 @@ public class WorkflowContext {
 		this.resultEvaluator = resultEvaluator;
 	}
 
-	private Map<Integer, Long> baseLineConditions;
-	public void setBaseLineConditions(Map<Integer, Long> baseLineConditions) {
-		this.baseLineConditions = baseLineConditions;
-	}
-	
-	public Map<Integer, Long> getBaseLineConditions() {
-		return this.baseLineConditions;
-	}
-	
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
