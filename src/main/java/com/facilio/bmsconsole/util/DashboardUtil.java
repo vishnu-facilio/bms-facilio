@@ -532,7 +532,8 @@ public class DashboardUtil {
 						.select(FieldFactory.getReportFields())
 						.table(ModuleFactory.getReport().getTableName())
 						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_ENTITY_ID = ?", reportContext.getReportEntityId())
-						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID IS NULL");
+						.andCustomWhere(ModuleFactory.getReport().getTableName()+".REPORT_FOLDER_ID IS NULL")
+						.orderBy("REPORT_ORDER");
 				
 				List<Map<String, Object>> compReportProps = selectBuilder.get();
 				if (compReportProps != null && !compReportProps.isEmpty()) {
