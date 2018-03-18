@@ -500,7 +500,7 @@ public class WorkflowUtil {
     	            		 Node aggreagteConditionNode = aggreagteConditionNodes.item(j); 
     	            		 if (aggreagteConditionNode.getNodeType() == Node.ELEMENT_NODE) {
     	            			 Element condition = (Element) aggreagteConditionNode;
-    	            			 Condition condition1 = getConditionObjectFromConditionString(condition.getTextContent(),expressionContext.getModuleName());
+    	            			 Condition condition1 = getConditionObjectFromConditionString(expressionContext,condition.getTextContent(),expressionContext.getModuleName(),null);
     	            			 expressionContext.addAggregateCondition(condition1);
     	            		 }
     	            	 }
@@ -522,7 +522,7 @@ public class WorkflowUtil {
                 		if(conditionNode.getNodeType() == Node.ELEMENT_NODE) {
                 			Element condition  = (Element) conditionNode;
                 			String sequence = condition.getAttribute(SEQUENCE_STRING);
-                			condition1 = getConditionObjectFromConditionString(condition.getTextContent(),expressionContext.getModuleName());
+                			condition1 = getConditionObjectFromConditionString(expressionContext,condition.getTextContent(),expressionContext.getModuleName(),Integer.parseInt(sequence));
                 			conditions.put(Integer.parseInt(sequence), condition1);
                 		}
                 	}
@@ -554,7 +554,7 @@ public class WorkflowUtil {
 		return null;
 	}
 	
-	public static Condition getConditionObjectFromConditionString(String conditionString,String moduleName) throws Exception {
+	private static Condition getConditionObjectFromConditionString(ExpressionContext expressionContext,String conditionString,String moduleName,Integer sequence) throws Exception {
 
 		Pattern condtionStringpattern = Pattern.compile(CONDITION_FORMATTER);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -578,6 +578,9 @@ public class WorkflowUtil {
 				if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
 					BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
 					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
+					if(sequence != null) {
+						expressionContext.addConditionSeqVsBaselineId(sequence, baseLine.getId());
+					}
 				}
 				else {
 					throw new IllegalArgumentException("BaseLine is not supported for this operator");
@@ -588,6 +591,14 @@ public class WorkflowUtil {
 				condition.setField(field);
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);
+				if(matcher.group(3) != null && sequence != null) {
+					
+					if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
+						if(matcher.group(4) != null) {
+							expressionContext.addConditionSeqVsBaselineId(sequence,Long.parseLong(matcher.group(4)));
+						}
+					}
+				}
 			}
 		}
 		return condition;

@@ -1,6 +1,7 @@
 package com.facilio.workflows.context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,21 @@ public class ExpressionContext {
 	String orderByFieldName;
 	String sortBy;
 	String limit;
+	Map<Integer,Long> conditionSeqVsBaselineId;
 	
+	public Map<Integer, Long> getConditionSeqVsBaselineId() {
+		return conditionSeqVsBaselineId;
+	}
+	public void addConditionSeqVsBaselineId(Integer conditionSeq,Long baselineId) {
+		if(conditionSeqVsBaselineId == null) {
+			conditionSeqVsBaselineId = new HashMap<Integer, Long>();
+		}
+		conditionSeqVsBaselineId.put(conditionSeq, baselineId);
+	}
+	public void setConditionSeqVsBaselineId(Map<Integer, Long> conditionSeqVsBaselineId) {
+		this.conditionSeqVsBaselineId = conditionSeqVsBaselineId;
+	}
+
 	private static final String RESULT_STRING = "result";
 	
 	public String getOrderByFieldName() {
@@ -158,77 +173,6 @@ public class ExpressionContext {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-	
-//	public boolean getIsLastNValuesExpression() {
-//		Criteria criteria = this.getCriteria();
-//		if(criteria != null) {
-//			Map<Integer, Condition> conditions = criteria.getConditions();
-//			if(conditions != null) {
-//				
-//				for(Integer key :conditions.keySet()) {
-//					
-//					Condition condition = conditions.get(key);
-//					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS)) {
-//						return true;
-//					}
-//				}
-//			}
-//		}
-//		return false;
-//	}
-//	public String getLastNValuesInnerQuery() throws Exception {
-//		
-//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//		FacilioModule module = modBean.getModule(this.getModuleName());
-//		
-//		Condition parentIdCondition = null,lastNreadingsCondition=null;
-//		Criteria criteria = this.getCriteria();
-//		if(criteria != null) {
-//			Map<Integer, Condition> conditions = criteria.getConditions();
-//			if(conditions != null) {
-//				
-//				for(Integer key :conditions.keySet()) {
-//					
-//					Condition condition = conditions.get(key);
-//					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS)) {
-//						lastNreadingsCondition = condition;
-//					}
-//					else if(condition.getFieldName().contains("parentId")) {
-//						parentIdCondition = condition;
-//					}
-//					
-//				}
-//			}
-//		}
-//		
-//		String s = "select ID from "+module.getTableName()+" Where "+parentIdCondition.getComputedWhereClause()+" order by TTIME desc limit "+lastNreadingsCondition.getValue();
-//		System.out.println("getLastNValuesInnerQuery -- "+s);
-//		return s;
-//	}
-	
-//	public List<Condition> getLastNValuesRemainingCondition() throws Exception {
-//		
-//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//		
-//		List<Condition> conditionList = new ArrayList<>();
-//		Criteria criteria = this.getCriteria();
-//		if(criteria != null) {
-//			Map<Integer, Condition> conditions = criteria.getConditions();
-//			if(conditions != null) {
-//				
-//				for(Integer key :conditions.keySet()) {
-//						
-//					Condition condition = conditions.get(key);
-//					if(condition.getOperator().equals(CommonOperators.LAST_N_READINGS) || condition.getFieldName().contains("parentId")) {
-//					}
-//					else {
-//						conditionList.add(condition);
-//					}
-//				}
-//			}
-//		}
-//		return conditionList;
-//	}
 	
 	public Object executeExpression() throws Exception {
 		
