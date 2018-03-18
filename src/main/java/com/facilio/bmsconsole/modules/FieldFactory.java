@@ -2454,6 +2454,20 @@ public class FieldFactory {
 		orderByFunction.setModule(module);
 		fields.add(orderByFunction);
 		
+		FacilioField excludeBaseline = new FacilioField();
+		excludeBaseline.setName("excludeBaseline");
+		excludeBaseline.setDataType(FieldType.BOOLEAN);
+		excludeBaseline.setColumnName("EXCLUDE_BASELINE");
+		excludeBaseline.setModule(module);
+		fields.add(excludeBaseline);
+		
+		FacilioField reportOrder = new FacilioField();
+		reportOrder.setName("reportOrder");
+		reportOrder.setDataType(FieldType.NUMBER);
+		reportOrder.setColumnName("REPORT_ORDER");
+		reportOrder.setModule(module);
+		fields.add(reportOrder);
+		
 		return fields;
 	}
 	public static List<FacilioField> getReportFieldFields() {

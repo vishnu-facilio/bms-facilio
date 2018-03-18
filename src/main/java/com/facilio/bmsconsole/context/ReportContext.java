@@ -140,6 +140,26 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	}
 
 
+	Boolean excludeBaseline;
+	Integer reportOrder;
+	
+	public Boolean getExcludeBaseline() {
+		return excludeBaseline;
+	}
+
+	public void setExcludeBaseline(Boolean excludeBaseline) {
+		this.excludeBaseline = excludeBaseline;
+	}
+
+	public Integer getReportOrder() {
+		return reportOrder;
+	}
+
+	public void setReportOrder(Integer reportOrder) {
+		this.reportOrder = reportOrder;
+	}
+
+
 	Boolean isComparisionReport;
 	Boolean isHighResolutionReport;
 	String xAxisLegend;
