@@ -1202,7 +1202,7 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("CEIL((UNIX_TIMESTAMP(CURDATE())-(")
+				builder.append("FLOOR((UNIX_TIMESTAMP(CURDATE())-(")
 						.append(columnName)
 						.append("/1000))/(24*3600)) = ")
 						.append(value);
@@ -1512,11 +1512,11 @@ public enum DateOperators implements Operator<String> {
 	private static String greaterOrLessThan(String columnName, String operator, String value) {
 		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 			StringBuilder builder = new StringBuilder();
-			builder.append("CEIL(")
+			builder.append("FLOOR(")
 					.append(columnName)
 					.append("/1000)")
 					.append(operator)
-					.append("CEIL(")
+					.append("FLOOR(")
 					.append(value)
 					.append("/1000)");
 			
@@ -1532,18 +1532,18 @@ public enum DateOperators implements Operator<String> {
 			
 			if(values != null && values.length > 1) {
 			StringBuilder builder = new StringBuilder();
-				builder.append("CEIL(")
+				builder.append("FLOOR(")
 						.append(columnName)
 						.append("/1000)");
 				if(isNot) {
 					builder.append(" NOT ");
 				}
 				builder.append(" BETWEEN ")
-						.append("CEIL(")
+						.append("FLOOR(")
 						.append(values[0])
 						.append("/1000)")
 						.append(" AND ")
-						.append("CEIL(")
+						.append("FLOOR(")
 						.append(values[1])
 						.append("/1000)");
 				return builder.toString();
