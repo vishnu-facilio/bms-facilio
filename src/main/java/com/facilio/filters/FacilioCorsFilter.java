@@ -1,6 +1,7 @@
 package com.facilio.filters;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.servlet.Filter;
@@ -34,6 +35,8 @@ public class FacilioCorsFilter implements Filter {
     private static final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
 
     private static final boolean SUPPORTS_CREDENTIALS = true;
+    
+    private static  HashMap customdomains ;
 
     private static String allowedHeaderString = "";
     private static String exposedHeaderString = "";
@@ -68,6 +71,11 @@ public class FacilioCorsFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String corsRequestType = getCorsRequestType(request);
+        
+        if(customdomains==null)
+        {
+        	customdomains = (HashMap)(request.getServletContext()).getAttribute("customdomains");
+        }
 
         switch (corsRequestType) {
             case CORS :
@@ -225,6 +233,11 @@ public class FacilioCorsFilter implements Filter {
 
         if(ORIGINS.isEmpty()){
             return true;
+        }
+        
+        if(customdomains != null && customdomains.containsKey(originHeader))
+        {
+          return true;
         }
 
         String[] domains = originHeader.split("\\.");

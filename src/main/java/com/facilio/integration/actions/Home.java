@@ -172,6 +172,7 @@ state = PORTAL-yogendrababu
 				}
 				if (!validPassword) {
 					System.out.print(">>>>> verifyPassword :" + username);
+					setJsonresponse("errorcode", "1");
 					return ERROR;
 				}
 				String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
