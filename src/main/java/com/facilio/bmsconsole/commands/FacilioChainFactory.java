@@ -1910,6 +1910,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addTabularReportChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new AddComparisonReportsCommand());
+		c.addCommand(new AddReportColumnsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateReportColumnSequence() {
+		Chain c = new TransactionChain();
+		c.addCommand(new UpdateReportColumnSequence());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase

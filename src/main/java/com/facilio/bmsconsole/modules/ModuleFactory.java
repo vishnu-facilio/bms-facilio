@@ -869,4 +869,12 @@ public class ModuleFactory {
 		markedReading.setTableName("Marked_Reading");
 		return markedReading;
 	}
+	
+	public static FacilioModule getReportColumnsModule() {
+		FacilioModule reportColumns = new FacilioModule();
+		reportColumns.setName("reportColumns");
+		reportColumns.setDisplayName("Report Columns");
+		reportColumns.setTableName("Report_Columns");
+		return reportColumns;
+	}
 }

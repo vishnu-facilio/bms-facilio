@@ -3492,6 +3492,18 @@
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
+		<action name="addTabularReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addTabularReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		
+		<action name="updateTabularSequence" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateSequence">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>

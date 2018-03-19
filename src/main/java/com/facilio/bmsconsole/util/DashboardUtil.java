@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
@@ -674,6 +676,13 @@ public class DashboardUtil {
 		boolean isSubReport = true;
 		ReportContext parentReportContext = null;
 		if (reportContext != null) {
+			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if(reportContext.getModuleId() == -1) {
+				FacilioModule module = modBean.getModule(reportContext.getModuleName());
+				reportContext.setModuleId(module.getModuleId());
+			}
+			
 			List<FacilioField> fields = FieldFactory.getReportFields();
 			
 			if(reportContext.getParentFolderId() != null && reportContext.getReportEntityId() == null) {
@@ -1019,5 +1028,19 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
 		}
 		return dateCondition;
+	}
+	
+	public static void addReportColumns (List<ReportColumnContext> reportColumns) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+													.table(ModuleFactory.getReportColumnsModule().getTableName())
+													.fields(FieldFactory.getReportColumnFields());
+		
+		for(int i = 0; i < reportColumns.size(); i++) {
+			ReportColumnContext reportColumn = reportColumns.get(i);
+			reportColumn.setOrgId(AccountUtil.getCurrentOrg().getId());
+			reportColumn.setSequence(i+1);
+			insertBuilder.addRecord(FieldUtil.getAsProperties(reportColumn));
+		}
+		insertBuilder.save();
 	}
 }

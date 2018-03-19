@@ -325,11 +325,8 @@ public class DashboardAction extends ActionSupport {
 			ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
 			reportContext.setParentFolderId(defaultFolder.getId());
 		}
-		reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(reportContext.getModuleId() == -1) {
-			FacilioModule module = modBean.getModule(moduleName);
-			reportContext.setModuleId(module.getModuleId());
+			reportContext.setModuleName(moduleName);
 		}
 		DashboardUtil.addReport(reportContext);
 		
@@ -337,6 +334,55 @@ public class DashboardAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	private List<ReportContext> reports;
+	public List<ReportContext> getReports() {
+		return reports;
+	}
+	public void setReports(List<ReportContext> reports) {
+		this.reports = reports;
+	}
+	
+	public String addTabularReport() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		Chain addTabularReportChain = FacilioChainFactory.addTabularReportChain();
+		addTabularReportChain.execute(context);
+		reportContext = DashboardUtil.getReportContext((Long) context.get(FacilioConstants.ContextNames.RECORD_ID));
+		
+		return SUCCESS;
+	}
+	
+	private List<Long> id;
+	public List<Long> getId() {
+		return id;
+	}
+	public void setId(List<Long> id) {
+		this.id = id;
+	}
+	
+	private String result;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public String updateSequence() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, id);
+		
+		Chain updateSequence = FacilioChainFactory.updateReportColumnSequence();
+		updateSequence.execute(context);
+		
+		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
+		
+		return SUCCESS;
+	}
+	
 	public String addReportFolder() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

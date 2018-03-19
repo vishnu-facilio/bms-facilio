@@ -739,4 +739,20 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	public void setGroupByUnit(String groupByUnit) {
 		this.groupByUnit = groupByUnit;
 	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	private long baseLineId = -1;
+	public long getBaseLineId() {
+		return baseLineId;
+	}
+	public void setBaseLineId(long baseLineId) {
+		this.baseLineId = baseLineId;
+	}
 }

@@ -3258,45 +3258,6 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static FacilioField getField(String name, String colName, FieldType type) {
-		return getField(name, colName, null, type);
-	}
-	
-	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
-		FacilioField columnFld = null;
-		switch (type) {
-			case NUMBER:
-			case DECIMAL:
-				columnFld = new NumberField();
-				break;
-			case LOOKUP:
-				columnFld = new LookupField();
-				break;
-			default:
-				columnFld = new FacilioField();
-				break;
-		}
-		columnFld.setName(name);
-		columnFld.setColumnName(colName);
-		columnFld.setDataType(type);
-		if(module != null) {
-			columnFld.setModule(module);
-		}
-		return columnFld;
-	}
-	
-	public static Map<String, FacilioField> getAsMap(List<FacilioField> fields) {
-		return fields.stream()
-				.collect(
-						Collectors.toMap(FacilioField::getName, 
-										Function.identity(), 
-										(prevValue, curValue) -> {
-											return prevValue;
-										}
-									)
-						);
-	}
-	
 	public static List<FacilioField> getCalendarColorFields() {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -3351,5 +3312,60 @@ public class FieldFactory {
 		fields.add(getField("markType", "MARK_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
+	}
+	
+	public static List<FacilioField> getReportColumnFields() {
+		FacilioModule module = ModuleFactory.getReportColumnsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("entityId", "REPORT_ENTITY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportId", "REPORT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("baseLineId", "BASE_LINE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("baseLineAdjust", "BASE_LINE_ADJUST", module, FieldType.BOOLEAN));
+		fields.add(getField("sequence", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
+	
+	public static FacilioField getField(String name, String colName, FieldType type) {
+		return getField(name, colName, null, type);
+	}
+	
+	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
+		FacilioField columnFld = null;
+		switch (type) {
+			case NUMBER:
+			case DECIMAL:
+				columnFld = new NumberField();
+				break;
+			case LOOKUP:
+				columnFld = new LookupField();
+				break;
+			default:
+				columnFld = new FacilioField();
+				break;
+		}
+		columnFld.setName(name);
+		columnFld.setColumnName(colName);
+		columnFld.setDataType(type);
+		if(module != null) {
+			columnFld.setModule(module);
+		}
+		return columnFld;
+	}
+	
+	public static Map<String, FacilioField> getAsMap(List<FacilioField> fields) {
+		return fields.stream()
+				.collect(
+						Collectors.toMap(FacilioField::getName, 
+										Function.identity(), 
+										(prevValue, curValue) -> {
+											return prevValue;
+										}
+									)
+						);
 	}
 }
