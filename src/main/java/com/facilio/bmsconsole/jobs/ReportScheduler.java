@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.ReportContext;
@@ -62,6 +61,7 @@ public class ReportScheduler extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 				context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
 				context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+				context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
 								
 				Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 				mailReportChain.execute(context);

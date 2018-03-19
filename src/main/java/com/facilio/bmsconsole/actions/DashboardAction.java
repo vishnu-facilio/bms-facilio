@@ -1854,6 +1854,7 @@ public class DashboardAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
 		List<ModuleBaseWithCustomFields> records = getRawData(context, module);
 		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
@@ -2189,6 +2190,7 @@ public class DashboardAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
 		
 		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);

@@ -81,7 +81,12 @@ public class GetReportUnderlyingDataCommand implements Command {
 			}
 		}
 		
-		builder.limit(200); // 200 records max
+		int limit = 200;
+		if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+			limit = (int) context.get(FacilioConstants.ContextNames.LIMIT_VALUE);
+		}
+		
+		builder.limit(limit);
 		
 		List<? extends ModuleBaseWithCustomFields> list = builder.get();
 		if (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
