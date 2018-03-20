@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
@@ -73,7 +74,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -524,10 +524,10 @@ public class DashboardAction extends ActionSupport {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField readingField = modBean.getField(readingFieldId);
 		FacilioModule module = readingField.getModule();
-		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
-		reportContext = readingReport;
+		reportContext = constructReportObjectForReadingReport(module, readingField);
 		reportModule = module;
-		return getDataForReadings(readingReport, module, dateFilter, null, baseLineId, -1);
+		reportData = getDataForReadings(reportContext, module, dateFilter, null, baseLineId, -1);
+		return SUCCESS;
 	}
 	
 	public String addComparisionReport() throws Exception {
@@ -608,6 +608,39 @@ public class DashboardAction extends ActionSupport {
 		return readingReport;
 	}
 	
+	private List<ReportColumnContext> reportColumns;
+	public List<ReportColumnContext> getReportColumns() {
+		return reportColumns;
+	}
+	public void setReportColumns(List<ReportColumnContext> reportColumns) {
+		this.reportColumns = reportColumns;
+	}
+	
+	public String getTabularData() throws Exception {
+		reportContext = DashboardUtil.getReportContext(reportId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		reportColumns = reportContext.getReportColumns();
+		reportContext.setReportColumns(null);
+		for (ReportColumnContext column : reportColumns) {
+			if (column.getReportId() == reportContext.getId()) {
+				column.setReport(reportContext);
+			}
+			else {
+				column.setReport(DashboardUtil.getReportContext(column.getReportId()));
+			}
+			FacilioModule module = modBean.getModule(column.getReport().getModuleId());
+			
+			if(module.getName().equals("workorder")) {
+				column.setData(getDataForTickets(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1, null));
+			}
+			else {
+				column.setData(getDataForReadings(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1));
+			}
+		}
+		return SUCCESS;
+	}
+	
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
@@ -626,14 +659,14 @@ public class DashboardAction extends ActionSupport {
 			reportSpaceFilterContext.setBuildingId(buildingId);
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
-		if(module.getName().equals("workorder") || module.getName().equals("alarm")) {
-			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
+		if(module.getName().equals("workorder")) {
+			reportData = getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
 		else {
 			if(energyMeterFilter != null && (energyMeterFilter.getGroupBy() != null || energyMeterFilter.getSubMeterId() != null || energyMeterFilter.getServiceId() != null)) {
 				reportContext.setEnergyMeter(energyMeterFilter);
 			}
-			getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId);
+			reportData = getDataForReadings(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId);
 		}
 		return SUCCESS;
 	}
@@ -648,8 +681,8 @@ public class DashboardAction extends ActionSupport {
 		return this.meterIds;
 	}
 	
-	private String getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
-
+	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
+		JSONArray ticketData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -873,8 +906,7 @@ public class DashboardAction extends ActionSupport {
 				j1.put("value", res.get(key));
 				finalres.add(j1);
 			}
-				
-			setReportData(finalres);
+			ticketData = finalres;
 		}
 		else {
 			JSONArray res = new JSONArray();
@@ -896,52 +928,19 @@ public class DashboardAction extends ActionSupport {
 	 			}
 		 	}
 			System.out.println("res -- "+res);
-			setReportData(res);
+			ticketData = res;
 		}
-		
-		return SUCCESS;
-	
+		return ticketData;
 	}
 	
 	public String deleteReport() throws Exception {
-		
-		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		
-		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
-		.andCustomWhere("REPORT_ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
-		.andCustomWhere("ID = ?", reportId);
-		deleteRecordBuilder.delete();
-		
+		DashboardUtil.deleteReport(reportId);
 		return SUCCESS;
 	}
 	
 	
-	private String getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
-		
+	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
+		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -1516,7 +1515,7 @@ public class DashboardAction extends ActionSupport {
 					}
 				}
 				System.out.println("totalconsumptionBySpace -- "+totalconsumptionBySpace);
-				setReportData(totalconsumptionBySpace);
+				readingData = totalconsumptionBySpace;
 			}
 			else {
 				for(int i=0;i<rs.size();i++) {
@@ -1586,7 +1585,7 @@ public class DashboardAction extends ActionSupport {
 			}
 				
 //			System.out.println("finalres -- "+finalres);
-			setReportData(finalres);
+			readingData = finalres;
 			}
 		}
 		else {
@@ -1651,7 +1650,7 @@ public class DashboardAction extends ActionSupport {
 	 			}
 		 	}
 //			System.out.println("res -- "+res);
-			setReportData(res);
+			readingData = res;
 		}
 		
 //		System.out.println("rs after -- "+rs);
@@ -1738,7 +1737,7 @@ public class DashboardAction extends ActionSupport {
 			JSONArray relatedAlarms = getAlarmReturnFormat(alarmProps);
 			setRelatedAlarms(relatedAlarms);
 		}
-		return SUCCESS;
+		return readingData;
 	}
 	
 	

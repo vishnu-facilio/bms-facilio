@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import org.json.simple.JSONArray;
+
 public class ReportColumnContext {
 	private long id = -1;
 	public long getId() {
@@ -33,6 +35,22 @@ public class ReportColumnContext {
 		this.reportId = reportId;
 	}
 	
+	private ReportContext report;
+	public ReportContext getReport() {
+		return report;
+	}
+	public void setReport(ReportContext report) {
+		this.report = report;
+	}
+	
+	private JSONArray data;
+	public JSONArray getData() {
+		return data;
+	}
+	public void setData(JSONArray data) {
+		this.data = data;
+	}
+
 	private long baseLineId = -1;
 	public long getBaseLineId() {
 		return baseLineId;
