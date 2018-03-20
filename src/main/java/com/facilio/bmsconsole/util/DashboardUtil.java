@@ -631,10 +631,11 @@ public class DashboardUtil {
 		}
 		else {
 			
-			if (reportFieldContext.getModuleFieldId() == -1) {
+			if (reportFieldContext.getModuleFieldId() == null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField field = modBean.getField(reportFieldContext.getModuleField().getName(), moduleName);
 				reportFieldContext.setModuleFieldId(field.getFieldId());
+				reportFieldContext.setModuleField(field);
 			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
