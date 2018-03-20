@@ -1965,6 +1965,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getHistoricalVMCalculationFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getHistoricalVMModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("intervalValue", "INTERVAL_VALUE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getPmToWoRelFields() {
 		List<FacilioField> fields = new ArrayList<>();

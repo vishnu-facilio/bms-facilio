@@ -47,8 +47,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String insertVirtualMeterReadings() throws Exception {
 		
-		DeviceAPI.insertVirtualMeterReadings(startTime, endTime, interval, vmList);
-		
+		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, vmList);
 		return SUCCESS;
 	}
 	

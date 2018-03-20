@@ -11,9 +11,10 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
 
 public class AddVirtualMeterRelCommand implements Command {
 	
@@ -46,10 +47,14 @@ public class AddVirtualMeterRelCommand implements Command {
 			}
 			insertBuilder.save();
 			
-			FacilioTimer.deleteJob(meter.getId(), "HistoricalVMCalculation");
-			FacilioTimer.scheduleOneTimeJob(meter.getId(), "HistoricalVMCalculation", 30, "priority");
+			long startTime=DateTimeUtil.getMonthStartTime(DeviceAPI.VM_HISTORICAL_DATA_CALCULATION_INTERVAL);
+			long endTime=System.currentTimeMillis();
+			int interval=15;//ideally this value should be fetched from org settings.
+			DeviceAPI.addHistoricalVMCalculationJob(meter.getId(),startTime,endTime,interval);
 		}
 		return false;
 	}
+
+	
 
 }

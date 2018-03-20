@@ -156,6 +156,14 @@ public class TimeSeries extends ActionSupport {
 		return moduleList;
 	}
 	
+	private List<Long> resourceList;
+	public void setResourceList(List<Long> resourceList) {
+		this.resourceList=resourceList;
+	}
+	public List<Long> getResourceList(){
+		return resourceList;
+	}
+	
 	private List<Long> fieldList;
 	public void setFieldList(List<Long> fieldList) {
 		this.fieldList=fieldList;
@@ -174,28 +182,9 @@ public class TimeSeries extends ActionSupport {
 	}
 	
 	private Criteria getCriteria() {
-		Criteria criteria = new Criteria(); 
-		if(timeRange!=null && !timeRange.isEmpty()) {
-			criteria.addAndCondition(CriteriaAPI.getCondition("TTIME","TTIME", 
-					StringUtils.join(timeRange, ","),DateOperators.BETWEEN));
-		}
-		if(deviceList!=null && !deviceList.isEmpty()) {
-			criteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_ID","RESOURCE_ID", 
-					StringUtils.join(deviceList,","), NumberOperators.EQUALS));
-		}
-		if(moduleList!=null && !moduleList.isEmpty()) {
-		criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","MODULEID", 
-				StringUtils.join(moduleList,","), NumberOperators.EQUALS));
-		}
-		if(fieldList!=null && !fieldList.isEmpty()) {
-		criteria.addAndCondition(CriteriaAPI.getCondition("FIELD_ID","FIELD_ID", 
-				StringUtils.join(fieldList,","), NumberOperators.EQUALS));
-		}
-		if(markTypeList!=null && !markTypeList.isEmpty()) {
-		criteria.addAndCondition(CriteriaAPI.getCondition("MARK_TYPE","MARK_TYPE", 
-				StringUtils.join(markTypeList,","), NumberOperators.EQUALS));
-		}
+		return TimeSeriesAPI.getCriteria(timeRange, resourceList, moduleList, fieldList, markTypeList);
 		
-		return criteria;
 	}
+	
+	
 }

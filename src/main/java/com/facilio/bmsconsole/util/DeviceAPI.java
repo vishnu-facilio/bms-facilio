@@ -34,7 +34,9 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.ExpressionEvaluator;
 
 public class DeviceAPI 
@@ -316,21 +318,45 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval) throws Exception {
-		insertVirtualMeterReadings(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval) throws Exception {
+		
+		GenericInsertRecordBuilder historyVMBuilder = new GenericInsertRecordBuilder()
+				.fields(FieldFactory.getHistoricalVMCalculationFields())
+				.table(ModuleFactory.getHistoricalVMModule().getTableName());
+		Map<String, Object> jobProp = new HashMap<>();
+		jobProp.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+		jobProp.put("meterId",meterId);
+		jobProp.put("startTime", startTime);
+		jobProp.put("endTime",endTime);
+		jobProp.put("intervalValue", interval);
+		long jobId= historyVMBuilder.insert(jobProp);
+		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "priority");
 	}
 	
-	public static void insertVirtualMeterReadings(long startTime, long endTime, int minutesInterval, List<Long> vmList) throws Exception {
+	
+	public static void addVMReadingsJob(long startTime, long endTime, int minutesInterval) throws Exception {
+		addVMReadingsJob(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	}
+	
+	public static void addVirtualMeterReadingsJob(long startTime, long endTime, int minutesInterval, List<Long> vmList) throws Exception {
 		if(vmList == null || vmList.isEmpty()) {
-			insertVirtualMeterReadings(startTime,endTime, minutesInterval);
+			addVMReadingsJob(startTime,endTime, minutesInterval);
+			return;
 		}
-		else {
-			insertVirtualMeterReadings(getVirtualMeters(vmList), startTime,endTime, minutesInterval);
-		}
+		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime, minutesInterval);
 	}
 	
 	
-    public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime, int minutesInterval) throws Exception {
+	private static void addVMReadingsJob(List<EnergyMeterContext> virtualMeters, long startTime, long endTime,
+			int minutesInterval) throws Exception {
+
+		for(EnergyMeterContext meter : virtualMeters) {
+
+			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval);
+		}
+	}
+
+	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime, int minutesInterval) throws Exception {
 		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		
 		for(EnergyMeterContext meter : virtualMeters) {
@@ -339,29 +365,32 @@ public class DeviceAPI
 															.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
 															.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
 			List<Map<String, Object>> childProps = childMeterBuilder.get();
-			if(childProps != null && !childProps.isEmpty()) {
-				deleteEnergyData(meter.getId(), startTime, endTime);
-				
-				List<Long> childMeterIds = new ArrayList<>();
-				for(Map<String, Object> childProp : childProps) {
-					childMeterIds.add((Long) childProp.get("childMeterId"));
+			if(childProps == null || childProps.isEmpty()) {
+				return;
+			}
+			deleteEnergyData(meter.getId(), startTime, endTime);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields= modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			
+			List<Long> childMeterIds = new ArrayList<>();
+			for(Map<String, Object> childProp : childProps) {
+				childMeterIds.add((Long) childProp.get("childMeterId"));
+			}
+			List<ReadingContext> readings = new ArrayList<>();
+			for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
+				ReadingContext virtualMeterReading = calculateVMReading(meter, childMeterIds,fields, map.getKey(), map.getValue());
+				if(virtualMeterReading != null) {
+					readings.add(virtualMeterReading);
 				}
-				List<ReadingContext> readings = new ArrayList<>();
-				for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-					ReadingContext virtualMeterReading = calculateVMReading(meter, childMeterIds, map.getKey(), map.getValue());
-					if(virtualMeterReading != null) {
-						readings.add(virtualMeterReading);
-					}
-				}
-				
-				if (!readings.isEmpty()) {
-					FacilioContext context = new FacilioContext();
-					context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
-					context.put(FacilioConstants.ContextNames.READINGS, readings);
-					context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-					Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-					addReading.execute(context);
-				}
+			}
+
+			if (!readings.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
+				context.put(FacilioConstants.ContextNames.READINGS, readings);
+				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+				Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+				addReading.execute(context);
 			}
 		}
 	}
@@ -399,11 +428,19 @@ public class DeviceAPI
 		}
 	}
 	
-	public static ReadingContext calculateVMReading(EnergyMeterContext meter, List<Long> childIds, long startTime, long endTime) throws Exception {
+	
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<Long> childIds, long startTime, long endTime) throws Exception {
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields= modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		return calculateVMReading(meter,childIds,fields, startTime,endTime);
+	}
+	
+	
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<Long> childIds, List<FacilioField> fields, long startTime, long endTime) throws Exception {
 		SelectRecordsBuilder<ReadingContext> getReadings = new SelectRecordsBuilder<ReadingContext>()
 																.beanClass(ReadingContext.class)
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING))
+																.select(fields)
 																.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
 																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN));
