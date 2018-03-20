@@ -9,11 +9,13 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -49,6 +51,20 @@ public class CriteriaAPI {
 			
 			for(Map.Entry<Integer, Condition> conditionEntry : conditions.entrySet()) {
 				Condition condition = conditionEntry.getValue();
+				
+				if (condition.getFieldName() == null || condition.getFieldName().isEmpty()) {
+					throw new IllegalArgumentException("Field Name cannot be null in Condition");
+				}
+				if (condition.getColumnName() == null || condition.getColumnName().isEmpty()) {
+					if (condition.getModuleName() != null && !condition.getModuleName().isEmpty()) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						FacilioField field = modBean.getField(condition.getFieldName(), condition.getFieldName());
+						condition.setColumnName(field.getColumnName());
+					}
+					else {
+						throw new IllegalArgumentException("Both module name and fieldName cannot be null in Condition");
+					}
+				}
 				
 				int sequence = -1;
 				Object key = conditionEntry.getKey();
