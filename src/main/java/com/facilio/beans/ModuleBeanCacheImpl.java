@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.cache.CacheUtil;
+import com.facilio.fw.LRUCache;
 
 /**
  *  Cache Logic:
@@ -158,13 +159,15 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
 		
-		ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
-		
+		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
+		LRUCache cache = 	LRUCache.getFieldCache();
+		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		if (fields == null) {
 			
 			fields = super.getAllFields(moduleName);
 			
 			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
+			cache.put(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
 			
 			LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName);
 		}
@@ -207,7 +210,10 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		
 		if (fieldId > 0) {
 			// clearing primary field and all fields of this module from cache
-			CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
+		//	CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
+		
+			LRUCache cache = 	LRUCache.getFieldCache();
+			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 		}
 		return fieldId;
 	}
