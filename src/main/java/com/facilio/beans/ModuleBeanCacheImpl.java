@@ -160,6 +160,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	public ArrayList<FacilioField> getAllFields(String moduleName) throws Exception {
 		
 		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
+		long begintime = System.currentTimeMillis();
 		LRUCache cache = 	LRUCache.getFieldCache();
 		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		if (fields == null) {
@@ -169,10 +170,10 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
 			cache.put(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
 			
-			LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName);
+			LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		else {
-			LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName);
+			LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		return fields;
 	}
