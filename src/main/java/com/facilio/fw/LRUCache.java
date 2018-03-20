@@ -25,6 +25,11 @@ public class LRUCache<K, V>{
             this.key = key;
             this.value = value;
         }
+        
+        public String toString()
+        {
+        	return "\n"+key +":" +value;
+        }
     }
 
     private HashMap<K, Node<K, V>> cache;
