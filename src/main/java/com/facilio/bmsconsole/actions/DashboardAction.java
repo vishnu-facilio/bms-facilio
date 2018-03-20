@@ -950,6 +950,8 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
+		builder.orderBy("TTIME");
+		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
 				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
