@@ -4,14 +4,18 @@ import java.util.HashMap;
 
 public class LRUCache<K, V>{
 
-	public static LRUCache<Integer, Object> getFieldCache() {
+	public static LRUCache<Integer, Object> getModuleFieldsCache() {
 		return fieldCache;
 	}
-
+	public static LRUCache<Integer, Object> getFieldsCache() {
+		return fieldCache;
+	}
 	public String toString() {
 		 return (" The current size "+currentSize+"\n"+cache);
 	}
 	private static LRUCache<Integer,Object> fieldCache = new LRUCache<Integer,Object>(300);
+	private static LRUCache<Integer,Object> modulefieldCache = new LRUCache<Integer,Object>(300);
+
     // Define Node with pointers to the previous and next items and a key, value pair
     class Node<T, U> {
         Node<T, U> previous;

@@ -161,7 +161,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		
 		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		long begintime = System.currentTimeMillis();
-		LRUCache cache = 	LRUCache.getFieldCache();
+		LRUCache cache = 	LRUCache.getModuleFieldsCache();
 		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		if (fields == null) {
 			
@@ -181,13 +181,19 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getField(long fieldId) throws Exception {
 		
-		FacilioField field = (FacilioField) CacheUtil.get(CacheUtil.FIELD_KEY(getOrgId(), fieldId));
+		LRUCache cache = 	LRUCache.getFieldsCache();
+
+		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
+		FacilioField field = (FacilioField)cache.get(key);
+		
+		//FacilioField field = (FacilioField) CacheUtil.get(CacheUtil.FIELD_KEY(getOrgId(), fieldId));
 		
 		if (field == null) {
 			
 			field = super.getField(fieldId);
 			
-			CacheUtil.set(CacheUtil.FIELD_KEY(getOrgId(), fieldId), field);
+			//CacheUtil.set(CacheUtil.FIELD_KEY(getOrgId(), fieldId), field);
+			cache.put(key, field);
 			
 			LOGGER.log(Level.INFO, "getField result from DB for Id: "+fieldId);
 		}
@@ -213,8 +219,10 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			// clearing primary field and all fields of this module from cache
 		//	CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 		
-			LRUCache cache = 	LRUCache.getFieldCache();
+			LRUCache cache = 	LRUCache.getModuleFieldsCache();
 			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
+			//cache.remove(CacheUtil.FIELD_KEY(getOrgId(), field.getFieldId()));
+
 		}
 		return fieldId;
 	}
