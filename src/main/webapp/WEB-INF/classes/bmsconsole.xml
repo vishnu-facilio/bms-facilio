@@ -101,8 +101,6 @@
 		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="attachmentList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
