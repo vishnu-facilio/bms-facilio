@@ -997,7 +997,7 @@ public class DashboardAction extends ActionSupport {
 		ReportFieldContext reportY1AxisField;
 		AggregateOperator xAggregateOpperator = report.getXAxisAggregateOpperator();
 		boolean isGroupBySpace = false;
-		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue())) {
+		if(!xAggregateOpperator.getValue().equals(NumberAggregateOperator.COUNT.getValue()) && xAggr == -1) {
 			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
