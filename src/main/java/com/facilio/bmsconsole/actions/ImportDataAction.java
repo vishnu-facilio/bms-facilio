@@ -44,13 +44,13 @@ public class ImportDataAction extends ActionSupport {
 			//Here: We are checking whether the field mapping exists for the same column headings..
 			//if already exists.. setting the old fieldMapping to display the mappings in the form set with old mappings 
 			// when users upload similar set of data with same mapping frequently..
-			long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			long orgUserId = AccountUtil.getCurrentUser().getId();
 			String checkQuery="select FIELD_MAPPING from ImportProcess where FIELD_MAPPING IS NOT NULL AND ORG_USERID=? AND COLUMN_HEADING=? AND INSTANCE_ID=? ORDER BY IMPORT_TIME DESC LIMIT 1";
 
 			try(Connection conn  = FacilioConnectionPool.INSTANCE.getConnection();
 					PreparedStatement pstmtCheck=conn.prepareStatement(checkQuery))
 			{
-				pstmtCheck.setObject(1, orgId);
+				pstmtCheck.setObject(1, orgUserId);
 				pstmtCheck.setObject(2, getColumnheading());
 				pstmtCheck.setObject(3, metainfo.getModule().getModuleId());
 				//getColumnheading is used instead of metainfo.columnheading to avoid unnecesssary JSONParsing.
