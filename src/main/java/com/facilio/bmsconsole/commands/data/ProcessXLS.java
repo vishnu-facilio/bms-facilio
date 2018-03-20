@@ -22,14 +22,25 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ImportBuildingAction;
+import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportMetaInfo;
+import com.facilio.bmsconsole.actions.ImportSiteAction;
+import com.facilio.bmsconsole.actions.ImportSpaceAction;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -100,11 +111,10 @@ public class ProcessXLS implements Command {
 				HashMap<String, Object> colVal = new HashMap<>();
 
 				Iterator<Cell> cellItr = row.cellIterator();
-				int cellIndex = 0;
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
 
-					String cellName = colIndex.get(cellIndex);
+					String cellName = colIndex.get(cell.getColumnIndex());
 					if (cellName == null) {
 						continue;
 					}
@@ -121,18 +131,148 @@ public class ProcessXLS implements Command {
 					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
 						val = cell.getBooleanCellValue();
 					}
+					else {
+						val = null;
+					}
 					colVal.put(cellName, val);
 
-					cellIndex++;
 				}
 				System.out.println("Finished loading data from file  "+row_no +" rows . "+metainfo+" \n" + new Date(System.currentTimeMillis()));
+				
+				System.out.println("colVal ---= "+colVal);
 
 				HashMap <String, Object> props = new LinkedHashMap<String,Object>();
+				
+				if(metainfo.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+					
+					String siteName = (String) colVal.get("site");
+					String buildingName = (String) colVal.get("building");
+					String floorName = (String) colVal.get("floor");
+					String spaceName = (String) colVal.get("spaceName");
+					
+					
+					ImportSiteAction siteMeta =new ImportSiteAction();
+					ImportBuildingAction buildingMeta =new ImportBuildingAction();
+					ImportFloorAction floorMeta =new ImportFloorAction();
+					ImportSpaceAction spaceMeta =new ImportSpaceAction();
+					
+					Long siteId = null;
+					Long buildingId = null;
+					Long floorId = null;
+					Long spaceId = null;
+					 
+					 List<SiteContext> sites = SpaceAPI.getAllSites();
+					 HashMap<String, Long> siteMap = new HashMap();
+					 for(SiteContext siteContext : sites)	
+					 {
+						 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
+					 }
+					 if(siteMap.containsKey(siteName.trim().toLowerCase()))
+					 {
+						siteId = siteMeta.getSiteId(siteName);
+					 }
+					 else
+					 {
+						 siteId = siteMeta.addSite(siteName);
+					 }
+					 if(siteId != null) {
+						 spaceId = siteId;
+					 }
+					 
+					 if(buildingName != null && !buildingName.equals("")) {
+						 if(siteId != null) {
+							 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
+						 }
+						 else {
+							 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+							 HashMap<String, Long> buildingMap = new HashMap();
+							 for (BuildingContext buildingContext : buildings)
+							 {
+								 buildingMap.put(buildingContext.getName().trim().toLowerCase(), buildingContext.getId());
+							 }
+							 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
+							 {
+								 buildingId = buildingMeta.getBuildingId(buildingName);
+							 }
+						 }
+						 if(buildingId == null)
+						 {
+							 buildingId = buildingMeta.addBuilding(buildingName, siteId);
+						 }
+						 
+						 if(buildingId != null) {
+							 spaceId = buildingId;
+						 }
+					 }
+					 if(floorName != null && !floorName.equals("")) {
+						if(buildingId != null) {
+							floorId = floorMeta.getFloorId(buildingId,floorName);
+						}
+						else {
+							
+							 List<FloorContext> floors = SpaceAPI.getAllFloors();
+							 HashMap<String, Long> floorMap = new HashMap();
+							 for (FloorContext floorContext : floors)
+							 {
+								 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
+							 }
+							 if(floorMap.containsKey(floorName.trim()))
+							 {
+								 floorId = floorMeta.getFloorId(floorName);
+							 }
+						}
+					    if(floorId == null)
+					    {
+					    	floorId = floorMeta.addFloor(floorName, siteId, buildingId);
+					    }
+					    if(floorId != null) {
+							 spaceId = floorId;
+						 }
+					 }
+			
+					 if(spaceName != null && !spaceName.equals("")) {
+						 spaceId = null;
+						 if(floorId != null) {
+							 spaceId = spaceMeta.getSpaceId(floorId,spaceName);
+						 }
+						 else {
+							 List<SpaceContext> spaces = SpaceAPI.getAllSpaces();
+							 HashMap<String, Long> spaceMap = new HashMap();
+							 for (SpaceContext spaceContext : spaces)
+							 {
+								 spaceMap.put(spaceContext.getName().trim().toLowerCase(), spaceContext.getId());
+							 }
+							 if(spaceMap.containsKey(spaceName.trim().toLowerCase()))
+							 {
+								 spaceId = spaceMeta.getSpaceId(spaceName);
+							 }
+						}
+						if(spaceId == null) {
+							 if (floorName == null)
+							 {
+								 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId);
+							 }
+							 else
+							 {
+							 spaceId = spaceMeta.addSpace(spaceName, siteId, buildingId, floorId);
+							 }
+						}
+					 }
+					 props.put("space", spaceId);
+					 props.put("resourceType", ResourceType.ASSET.getValue());
+					 
+					colVal.remove("site");
+					colVal.remove("building");
+					colVal.remove("floor");
+					colVal.remove("spaceName");
+				}
+				
 				fieldMapping.forEach((key,value) -> 
 				{
 					Object cellValue=colVal.get(value);
 					boolean isfilledByLookup = false;
-					if(cellValue != null) {
+					if(cellValue != null && !cellValue.toString().equals("")) {
+						
 						FacilioField facilioField = metainfo.getFacilioFieldMapping(metainfo.getModule().getName()).get(key);
 						if(facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)) {
 							LookupField lookupField = (LookupField) facilioField;
@@ -149,7 +289,7 @@ public class ProcessXLS implements Command {
 					}
 				});
 				System.out.println("Loading  ReadingContext   . "+metainfo + new Date(System.currentTimeMillis()));
-
+				System.out.println("prpposss ----- "+props+"\n\n\n");
 				ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 				reading.setParentId(metainfo.getAssetId());
 				readingsList.add(reading);

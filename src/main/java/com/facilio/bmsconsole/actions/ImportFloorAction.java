@@ -87,4 +87,30 @@ public class ImportFloorAction {
 		
 	}
 	
+	public Long getFloorId(Long buildingId,String floorName) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.FLOOR);
+		FacilioField field1 = modBean.getField("building", FacilioConstants.ContextNames.FLOOR);
+		
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(FloorContext.class)
+																	.andCondition(CriteriaAPI.getCondition(field, floorName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
+																	;
+		List<FloorContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0).getId();
+		}
+		return null;
+		
+	}
+	
 }

@@ -123,6 +123,31 @@ public class ImportSpaceAction {
 		return null;
 		
 	}
+	public Long getSpaceId(Long floorId,String spaceName) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.SPACE);
+		FacilioField field1 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(SpaceContext.class)
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field1, ""+floorId, StringOperators.IS))
+																	;
+		List<SpaceContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0).getId();
+		}
+		return null;
+		
+	}
 
 	public Long getSpaceId() {
 		return spaceId;

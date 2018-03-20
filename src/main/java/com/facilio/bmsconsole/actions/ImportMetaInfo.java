@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -139,6 +140,17 @@ public class ImportMetaInfo
 				{
 					fields.add(field.getName());
 				}
+			}
+			if(module.equals(FacilioConstants.ContextNames.ASSET)) {
+				
+				fields.remove("space");
+				fields.remove("localId");
+				fields.remove("resourceType");
+				
+				fields.add("site");
+				fields.add("building");
+				fields.add("floor");
+				fields.add("spaceName");
 			}
 		}
 		catch(Exception e) {

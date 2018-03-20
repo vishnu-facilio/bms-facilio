@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -74,6 +75,31 @@ public class ImportBuildingAction {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.andCondition(CriteriaAPI.getCondition(field, buildingName, StringOperators.IS))
+																	;
+		List<BuildingContext> spaces = selectBuilder.get();
+		
+		if(spaces != null && !spaces.isEmpty()) {
+			return spaces.get(0).getId();
+		}
+		return null;
+	}
+	
+	public Long getBuildingId(Long siteId,String buildingName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.BUILDING);
+		FacilioField field1 = modBean.getField("site", FacilioConstants.ContextNames.BUILDING);
+		
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(BuildingContext.class)
+																	.andCondition(CriteriaAPI.getCondition(field, buildingName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, NumberOperators.EQUALS))
 																	;
 		List<BuildingContext> spaces = selectBuilder.get();
 		
