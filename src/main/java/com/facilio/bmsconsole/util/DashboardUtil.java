@@ -602,7 +602,7 @@ public class DashboardUtil {
 			return null;
 		}
 	}
-	public static ReportFieldContext addOrGetReportfield(ReportFieldContext reportFieldContext) throws Exception {
+	public static ReportFieldContext addOrGetReportfield(ReportFieldContext reportFieldContext, String moduleName) throws Exception {
 		
 		String where;
 		if(reportFieldContext.getIsFormulaField()) {
@@ -630,6 +630,12 @@ public class DashboardUtil {
 			return reportFieldContext;
 		}
 		else {
+			
+			if (reportFieldContext.getModuleFieldId() == -1) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField(reportFieldContext.getModuleField().getName(), moduleName);
+				reportFieldContext.setModuleFieldId(field.getFieldId());
+			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReportField().getTableName())
@@ -723,6 +729,10 @@ public class DashboardUtil {
 				FacilioModule module = modBean.getModule(reportContext.getModuleName());
 				reportContext.setModuleId(module.getModuleId());
 			}
+			else {
+				FacilioModule module = modBean.getModule(reportContext.getModuleId());
+				reportContext.setModuleName(module.getName());
+			}
 			
 			List<FacilioField> fields = FieldFactory.getReportFields();
 			
@@ -750,12 +760,12 @@ public class DashboardUtil {
 					.table(ModuleFactory.getReport().getTableName())
 					.fields(fields);
 
-			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
+			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
-				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
+				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
-				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
+				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
 			}
 			
 
@@ -778,7 +788,7 @@ public class DashboardUtil {
 			}
 			if(reportContext.getReportUserFilters() != null) {
 				for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
-					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext());
+					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext(), reportContext.getModuleName());
 					Map<String, Object> prop = new HashMap<String, Object>();
 					prop.put("reportId", reportContext.getId());
 					prop.put("reportFieldId", userFilterField.getId());
