@@ -626,7 +626,7 @@ public class DashboardAction extends ActionSupport {
 			reportSpaceFilterContext.setBuildingId(buildingId);
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
-		if(module.getName().equals("workorder")) {
+		if(module.getName().equals("workorder") || module.getName().equals("alarm")) {
 			getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
 		else {
