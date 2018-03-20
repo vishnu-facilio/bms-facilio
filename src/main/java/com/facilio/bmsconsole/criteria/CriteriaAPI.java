@@ -58,7 +58,7 @@ public class CriteriaAPI {
 				if (condition.getColumnName() == null || condition.getColumnName().isEmpty()) {
 					if (condition.getModuleName() != null && !condition.getModuleName().isEmpty()) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						FacilioField field = modBean.getField(condition.getFieldName(), condition.getFieldName());
+						FacilioField field = modBean.getField(condition.getFieldName(), condition.getModuleName());
 						condition.setColumnName(field.getColumnName());
 					}
 					else {
