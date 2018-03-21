@@ -40,6 +40,18 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("tickettype", "TicketType");
 	}
 	
+	public static SetTableNamesCommand getForAssetCategory() {
+		return new SetTableNamesCommand("assetcategory", "AssetCategory");
+	}
+	
+	public static SetTableNamesCommand getForAssetDepartment() {
+		return new SetTableNamesCommand("assetdepartment", "AssetDepartment");
+	}
+	
+	public static SetTableNamesCommand getForAssetType() {
+		return new SetTableNamesCommand("assettype", "AssetType");
+	}
+	
 	public static SetTableNamesCommand getForTicket() {
 		return new SetTableNamesCommand("ticket", "Tickets");
 	}

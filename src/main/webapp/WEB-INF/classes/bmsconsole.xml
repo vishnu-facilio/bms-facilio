@@ -928,6 +928,24 @@
 				<param name="root">ticketType</param>
 			</result>
 		</action>
+		<action name="addAssetCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addAssetCategory">
+			<result name="success" type="json">
+				<param name="root">assetCategory</param>
+			</result>
+		</action>
+		<action name="addAssetDepartment" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addAssetDepartment">
+			<result name="success" type="json">
+				<param name="root">assetDepartment</param>
+			</result>
+		</action>
+		<action name="addAssetType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addAssetType">
+			<result name="success" type="json">
+				<param name="root">assetType</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="modules" namespace="/app/modules" extends="home">
