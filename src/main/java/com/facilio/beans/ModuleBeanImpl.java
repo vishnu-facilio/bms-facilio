@@ -693,4 +693,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		
 	}
+
+	@Override
+	public FacilioField getFieldFromDB(long fieldId) throws Exception {
+		return this.getField(fieldId);
+	}
 }
