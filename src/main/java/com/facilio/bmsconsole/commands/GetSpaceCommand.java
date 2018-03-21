@@ -50,7 +50,6 @@ public class GetSpaceCommand implements Command {
 				SpaceContext space = spaces.get(0);
 				long buildingId = space.getBuilding().getId();
 				long floorId = space.getFloor().getId();
-				long spaceCategoryId = space.getSpaceCategory().getId();
 				BuildingContext building = getBuildingContext(buildingId);
 				if(building != null)
 				{
@@ -61,10 +60,10 @@ public class GetSpaceCommand implements Command {
 				{
 					space.setFloor(floor);
 				}
-				SpaceCategoryContext spaceCategory = getSpaceCategoryContext(spaceCategoryId);
+				SpaceCategoryContext spaceCategory = space.getSpaceCategory();
 				if(spaceCategory != null)
 				{
-					space.setSpaceCategory(spaceCategory);
+					space.setSpaceCategory(getSpaceCategoryContext(spaceCategory.getId()));
 				}
 				context.put(FacilioConstants.ContextNames.SPACE, space);
 			}

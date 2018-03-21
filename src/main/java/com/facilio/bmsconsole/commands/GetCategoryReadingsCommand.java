@@ -62,13 +62,7 @@ public class GetCategoryReadingsCommand implements Command {
 	
 	private List<FacilioModule> getDefaultReadings() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioModule> readings = new ArrayList<>();
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.CURRENT_OCCUPANCY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.ASSIGNED_OCCUPANCY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.TEMPERATURE_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.HUMIDITY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.CO2_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.SET_POINT_READING));
+		List<FacilioModule> readings = modBean.getSubModules(FacilioConstants.ContextNames.SPACE, FacilioModule.ModuleType.READING);
 		return readings;
 	}
 
