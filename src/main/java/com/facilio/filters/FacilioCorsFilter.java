@@ -68,7 +68,7 @@ public class FacilioCorsFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    		HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String corsRequestType = getCorsRequestType(request);
         
@@ -96,8 +96,6 @@ public class FacilioCorsFilter implements Filter {
     }
 
     private void handleCors(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
-
         String requestedMethod = request.getMethod();
         requestedMethod = requestedMethod.trim();
         if(!isRequestedMethodAllowed(requestedMethod)) {
@@ -235,10 +233,15 @@ public class FacilioCorsFilter implements Filter {
             return true;
         }
         
-        if(customdomains != null && customdomains.containsKey(originHeader))
-        {
-          return true;
-        }
+        if (customdomains != null) {
+
+			String[] originHeaderdomain = originHeader.split("://");
+			if (customdomains.containsKey(originHeaderdomain[1])) {
+				return true;
+
+			}
+
+		}
 
         String[] domains = originHeader.split("\\.");
         String domain = originHeader;

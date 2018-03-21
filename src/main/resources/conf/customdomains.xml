@@ -3,4 +3,6 @@
 <domain host="test.com" orgdomain="facilio3"/>
 <domain host="test2.com" orgdomain="facilio2"/>
 <domain host="test3.com" orgdomain="facilio4"/>
+<domain host="babu.com:9090" orgdomain="dsoa"/>
+<domain host="customvelu.com:9090" orgdomain="velu"/>
 </domains>
