@@ -1,6 +1,6 @@
 package com.facilio.fw;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LRUCache<K, V>{
 
@@ -37,7 +37,7 @@ public class LRUCache<K, V>{
         }
     }
 
-    private HashMap<K, Node<K, V>> cache;
+    private ConcurrentHashMap<K, Node<K, V>> cache;
     private Node<K, V> leastRecentlyUsed;
     private Node<K, V> mostRecentlyUsed;
     private int maxSize;
@@ -50,7 +50,7 @@ public class LRUCache<K, V>{
         this.currentSize = 0;
         leastRecentlyUsed = new Node<K, V>(null, null, null, null);
         mostRecentlyUsed = leastRecentlyUsed;
-        cache = new HashMap<K, Node<K, V>>();
+        cache = new ConcurrentHashMap<K, Node<K, V>>();
     }
 
     public V get(K key){
