@@ -232,8 +232,6 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(AccountConstants.getGroupModule().getTableName())
-				.innerJoin("GroupMembers")
-				.on("Groups.GROUPID = GroupMembers.GROUPID")
 				.andCustomWhere("ORGID = ?", orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
