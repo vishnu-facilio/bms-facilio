@@ -683,7 +683,7 @@ public class DashboardAction extends ActionSupport {
 		return this.meterIds;
 	}
 	
-	private boolean excludeViolatedReadings = true;
+	private boolean excludeViolatedReadings = false;
 	
 	public void setExcludeViolatedReadings(boolean excludeViolatedReadings) {
 		this.excludeViolatedReadings = excludeViolatedReadings;
@@ -1781,7 +1781,7 @@ public class DashboardAction extends ActionSupport {
 			markType.add(MarkedReadingContext.MarkType.HIGH_VALUE_HOURLY_VIOLATION.getValue());
 		}
 		
-		if (dateFilter != null && excludeViolatedReadings && !markType.isEmpty()) {
+		if (dateFilter != null && !excludeViolatedReadings && !markType.isEmpty()) {
 			List<Long> timeRange = new ArrayList<>();
 			timeRange.add((Long) dateFilter.get(0));
 			timeRange.add((Long) dateFilter.get(1));
