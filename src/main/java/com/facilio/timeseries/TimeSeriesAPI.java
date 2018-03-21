@@ -13,6 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -184,10 +185,22 @@ public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, 
 		
 		Criteria criteria = new Criteria(); 
 		if(timeRange!=null && !timeRange.isEmpty()) {
-			//array[0]: startTime 
-			//array[1]: endTime
-			criteria.addAndCondition(CriteriaAPI.getCondition("TTIME","TTIME", 
-					StringUtils.join(timeRange, ","),DateOperators.BETWEEN));
+			if (timeRange.size() == 1) {
+				Integer operatorId = Integer.parseInt(timeRange.get(0).toString());
+				//array[0]: operator
+				Condition condition = new Condition();
+				condition.setFieldName("TTIME");
+				condition.setColumnName("TTIME");
+				condition.setOperatorId(operatorId);
+				
+				criteria.addAndCondition(condition);
+			}
+			else {
+				//array[0]: startTime 
+				//array[1]: endTime
+				criteria.addAndCondition(CriteriaAPI.getCondition("TTIME","TTIME", 
+						StringUtils.join(timeRange, ","), DateOperators.BETWEEN));
+			}
 		}
 		if(deviceList!=null && !deviceList.isEmpty()) {
 			criteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_ID","RESOURCE_ID", 

@@ -524,7 +524,7 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getReadingReportData() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField readingField = modBean.getField(readingFieldId);
+		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 		FacilioModule module = readingField.getModule();
 		reportContext = constructReportObjectForReadingReport(module, readingField);
 		reportModule = module;
@@ -534,7 +534,7 @@ public class DashboardAction extends ActionSupport {
 	
 	public String addComparisionReport() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField readingField = modBean.getField(readingFieldId);
+		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
 		FacilioModule module = readingField.getModule();
 		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField);
 		this.reportContext = readingReport;
@@ -1781,10 +1781,15 @@ public class DashboardAction extends ActionSupport {
 			markType.add(MarkedReadingContext.MarkType.HIGH_VALUE_HOURLY_VIOLATION.getValue());
 		}
 		
-		if (dateFilter != null && !excludeViolatedReadings && !markType.isEmpty()) {
+		if ((dateFilter != null || reportContext.getDateFilter() != null) && !excludeViolatedReadings && !markType.isEmpty()) {
 			List<Long> timeRange = new ArrayList<>();
-			timeRange.add((Long) dateFilter.get(0));
-			timeRange.add((Long) dateFilter.get(1));
+			if (dateFilter != null) {
+				timeRange.add((Long) dateFilter.get(0));
+				timeRange.add((Long) dateFilter.get(1));
+			}
+			else if (reportContext.getDateFilter() != null) {
+				timeRange.add(Long.parseLong(reportContext.getDateFilter().getOperatorId().toString()));
+			}
 			
 			List<Long> deviceList = new ArrayList<>();
 			if (meterIds != null) {

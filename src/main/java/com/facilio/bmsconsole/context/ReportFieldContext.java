@@ -68,7 +68,7 @@ public class ReportFieldContext {
 				return null;
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			moduleField = modBean.getField(moduleFieldId);
+			moduleField = modBean.getFieldFromDB(moduleFieldId);
 		}
 		return moduleField;
 	}

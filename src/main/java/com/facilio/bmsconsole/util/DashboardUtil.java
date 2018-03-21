@@ -325,7 +325,7 @@ public class DashboardUtil {
 		
 		if(formulaContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField selectField = formulaContext.getAggregateOperator().getSelectField(modBean.getField(formulaContext.getSelectFieldId()));
+			FacilioField selectField = formulaContext.getAggregateOperator().getSelectField(modBean.getFieldFromDB(formulaContext.getSelectFieldId()));
 			
 			List<FacilioField> selectFields = new ArrayList<>();
 			selectFields.add(selectField);
@@ -516,7 +516,7 @@ public class DashboardUtil {
 				ReportDateFilterContext dateFilterContext = FieldUtil.getAsBeanFromMap(dateFilterProps.get(0), ReportDateFilterContext.class);
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField ff = modBean.getField(dateFilterContext.getFieldId());
+				FacilioField ff = modBean.getFieldFromDB(dateFilterContext.getFieldId());
 				dateFilterContext.setField(ff);
 				
 				reportContext.setDateFilter(dateFilterContext);
@@ -574,7 +574,7 @@ public class DashboardUtil {
 		
 		if (reportField.getId() == null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField ff = modBean.getField(reportField.getModuleFieldId());
+			FacilioField ff = modBean.getFieldFromDB(reportField.getModuleFieldId());
 			reportField.setModuleField(ff);
 			return reportField;
 		}
