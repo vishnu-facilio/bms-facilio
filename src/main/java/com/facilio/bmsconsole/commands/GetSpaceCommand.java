@@ -48,17 +48,15 @@ public class GetSpaceCommand implements Command {
 			List<SpaceContext> spaces = builder.get();	
 			if(spaces.size() > 0) {
 				SpaceContext space = spaces.get(0);
-				long buildingId = space.getBuilding().getId();
-				long floorId = space.getFloor().getId();
-				BuildingContext building = getBuildingContext(buildingId);
+				BuildingContext building = space.getBuilding();
 				if(building != null)
 				{
-					space.setBuilding(building);
+					space.setBuilding(getBuildingContext(building.getId()));
 				}
-				FloorContext floor = getFloorContext(floorId);
+				FloorContext floor = space.getFloor();
 				if(floor != null)
 				{
-					space.setFloor(floor);
+					space.setFloor(getFloorContext(floor.getId()));
 				}
 				SpaceCategoryContext spaceCategory = space.getSpaceCategory();
 				if(spaceCategory != null)
