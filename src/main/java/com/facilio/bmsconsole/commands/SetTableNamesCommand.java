@@ -36,6 +36,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("ticketcategory", "TicketCategory");
 	}
 	
+	public static SetTableNamesCommand getForTicketType() {
+		return new SetTableNamesCommand("tickettype", "TicketType");
+	}
+	
 	public static SetTableNamesCommand getForTicket() {
 		return new SetTableNamesCommand("ticket", "Tickets");
 	}
