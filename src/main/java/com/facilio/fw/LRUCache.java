@@ -4,14 +4,19 @@ import java.util.HashMap;
 
 public class LRUCache<K, V>{
 
-	public static LRUCache<Integer, Object> getFieldCache() {
+	public static LRUCache<Integer, Object> getModuleFieldsCache() {
 		return fieldCache;
 	}
-
+	public static LRUCache<Integer, Object> getFieldsCache() {
+		return fieldCache;
+	}
 	public String toString() {
-		 return (" The current size "+currentSize+"\n"+cache);
+		 return (" The current size "+currentSize+"\n Cache Hit Ratio= "+ ((hitcount)/(hitcount+misscount) )*100 +"\n\n"+cache);
 	}
 	private static LRUCache<Integer,Object> fieldCache = new LRUCache<Integer,Object>(300);
+	private static LRUCache<Integer,Object> modulefieldCache = new LRUCache<Integer,Object>(300);
+    private long hitcount = 0;
+    private long misscount = 0;
     // Define Node with pointers to the previous and next items and a key, value pair
     class Node<T, U> {
         Node<T, U> previous;
@@ -37,6 +42,8 @@ public class LRUCache<K, V>{
     private Node<K, V> mostRecentlyUsed;
     private int maxSize;
     private int currentSize;
+    
+
 
     public LRUCache(int maxSize){
         this.maxSize = maxSize;
@@ -47,39 +54,49 @@ public class LRUCache<K, V>{
     }
 
     public V get(K key){
-        Node<K, V> tempNode = cache.get(key);
-        if (tempNode == null){
-            return null;
-        }
-        // If MRU leave the list as it is
-        else if (tempNode.key == mostRecentlyUsed.key){
-            return mostRecentlyUsed.value;
-        }
-
-        // Get the next and previous nodes
-        Node<K, V> nextNode = tempNode.next;
-        Node<K, V> previousNode = tempNode.previous;
-
-        // If at the left-most, we update LRU 
-        if (tempNode.key == leastRecentlyUsed.key){
-            nextNode.previous = null;
-            leastRecentlyUsed = nextNode;
-        }
-
-        // If we are in the middle, we need to update the items before and after our item
-        else if (tempNode.key != mostRecentlyUsed.key){
-            previousNode.next = nextNode;
-            nextNode.previous = previousNode;
-        }
-
-        // Finally move our item to the MRU
-        tempNode.previous = mostRecentlyUsed;
-        mostRecentlyUsed.next = tempNode;
-        mostRecentlyUsed = tempNode;
-        mostRecentlyUsed.next = null;
-
-        return tempNode.value;
-
+    	try {
+	        Node<K, V> tempNode = cache.get(key);
+	        if (tempNode == null){
+	        	misscount++;
+	            return null;
+	        }
+	        // If MRU leave the list as it is
+	        else if (tempNode.key == mostRecentlyUsed.key){
+	        	hitcount++;
+	            return mostRecentlyUsed.value;
+	        }
+	
+	        // Get the next and previous nodes
+	        Node<K, V> nextNode = tempNode.next;
+	        Node<K, V> previousNode = tempNode.previous;
+	
+	        // If at the left-most, we update LRU 
+	        if (tempNode.key == leastRecentlyUsed.key){
+	            nextNode.previous = null;
+	            leastRecentlyUsed = nextNode;
+	        }
+	        else if(nextNode==null)
+	        {
+	        	   // do nothing if this node is the recently used one ..
+	        }
+	        else if (tempNode.key != mostRecentlyUsed.key){
+		        // If we are in the middle, we need to update the items before and after our item
+	            previousNode.next = nextNode;
+	            nextNode.previous = previousNode;
+	        }
+	
+	        // Finally move our item to the MRU
+	        tempNode.previous = mostRecentlyUsed;
+	        mostRecentlyUsed.next = tempNode;
+	        mostRecentlyUsed = tempNode;
+	        mostRecentlyUsed.next = null;
+	        hitcount++;
+	        return tempNode.value;
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
     }
 
     public void put(K key, V value){

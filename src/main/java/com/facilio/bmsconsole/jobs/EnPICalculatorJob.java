@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.EnPIFrequency;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -79,28 +79,28 @@ public class EnPICalculatorJob extends FacilioJob {
 	
 	private List<Integer> getFrequencyTypesToBeFetched() {
 		List<Integer> types = new ArrayList<Integer>();
-		types.add(EnPIFrequency.DAILY.getValue());
+		types.add(FacilioFrequency.DAILY.getValue());
 		
 		ZonedDateTime zdt = DateTimeUtil.getDateTime();
 		
 		if (zdt.getDayOfWeek() == DateTimeUtil.getWeekFields().getFirstDayOfWeek()) {
-			types.add(EnPIFrequency.WEEKLY.getValue());
+			types.add(FacilioFrequency.WEEKLY.getValue());
 		}
 		
 		if (zdt.getDayOfMonth() == 1) {
-			types.add(EnPIFrequency.MONTHLY.getValue());
+			types.add(FacilioFrequency.MONTHLY.getValue());
 			
 			if (zdt.getMonth() == Month.JANUARY) {
-				types.add(EnPIFrequency.QUARTERTLY.getValue());
-				types.add(EnPIFrequency.HALF_YEARLY.getValue());
-				types.add(EnPIFrequency.ANNUALLY.getValue());
+				types.add(FacilioFrequency.QUARTERTLY.getValue());
+				types.add(FacilioFrequency.HALF_YEARLY.getValue());
+				types.add(FacilioFrequency.ANNUALLY.getValue());
 			}
 			else if (zdt.getMonth() == Month.JULY) {
-				types.add(EnPIFrequency.QUARTERTLY.getValue());
-				types.add(EnPIFrequency.HALF_YEARLY.getValue());
+				types.add(FacilioFrequency.QUARTERTLY.getValue());
+				types.add(FacilioFrequency.HALF_YEARLY.getValue());
 			}
 			else if (zdt.getMonth() == Month.APRIL || zdt.getMonth() == Month.OCTOBER) {
-				types.add(EnPIFrequency.QUARTERTLY.getValue());
+				types.add(FacilioFrequency.QUARTERTLY.getValue());
 			}
 		}
 		return types;

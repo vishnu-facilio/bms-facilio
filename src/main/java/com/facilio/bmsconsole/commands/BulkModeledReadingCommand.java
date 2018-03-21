@@ -49,6 +49,9 @@ public class BulkModeledReadingCommand implements Command {
 				Long timeStamp=data.getKey();
 				Map<String,String> instanceMap= data.getValue();
 				Map<String,Map<String,Object>> instanceMapping=  deviceMapping.get(deviceName);
+				if(instanceMapping==null) {
+					continue;
+				}
 				Iterator<String> instanceList = instanceMap.keySet().iterator();
 				while(instanceList.hasNext()) {
 					String instanceName=instanceList.next();

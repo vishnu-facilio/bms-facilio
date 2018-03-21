@@ -33,6 +33,8 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -93,7 +95,11 @@ public class ProcessXLS implements Command {
 			int row_no = 0;
 			while (itr.hasNext()) {
 				row_no++;
+				System.out.println("row_no -- "+row_no);
 				Row row = itr.next();
+				if(row.getPhysicalNumberOfCells() <= 0) {
+					break;
+				}
 				if (heading) {
 					// column heading
 					
@@ -319,7 +325,8 @@ public class ProcessXLS implements Command {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fieldsList)
 					.table(lookupField.getLookupModule().getTableName())
-					.andCustomWhere("LOWER(NAME) = ?", value.toString().toLowerCase());
+					.andCustomWhere("LOWER(NAME) = ?", value.toString().toLowerCase())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			

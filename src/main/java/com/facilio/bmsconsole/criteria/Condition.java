@@ -60,6 +60,14 @@ public class Condition {
 		this.fieldName = fieldName;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private int operatorId;
 	public int getOperatorId() {
 		if(operator != null) {

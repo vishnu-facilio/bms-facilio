@@ -451,6 +451,13 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		return Boolean.FALSE;
 	}
 
+	public List<ReportColumnContext> reportColumns;
+	public List<ReportColumnContext> getReportColumns() {
+		return reportColumns;
+	}
+	public void setReportColumns(List<ReportColumnContext> reportColumns) {
+		this.reportColumns = reportColumns;
+	}
 
 	public void setIsComparisionReport(Boolean isComparisionReport) {
 		this.isComparisionReport = isComparisionReport;

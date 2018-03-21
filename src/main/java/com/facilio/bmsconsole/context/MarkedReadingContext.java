@@ -110,7 +110,9 @@ public class MarkedReadingContext  {
 		ZERO_VALUE,
 		DECREMENTAL_VALUE,
 		HIGH_VALUE,
-		TOO_HIGH_VALUE
+		TOO_HIGH_VALUE,
+		HIGH_VALUE_HOURLY_VIOLATION,
+		HIGH_VALUE_DAILY_VIOLATION
 		;
 		
 		public int getValue() {

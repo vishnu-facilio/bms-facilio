@@ -557,6 +557,16 @@ public class ModuleFactory {
 		return virtualMeterRelModule;
 	}
 	
+	
+	public static FacilioModule getHistoricalVMModule() {
+		FacilioModule historicalVMCalModule = new FacilioModule();
+		historicalVMCalModule.setName("historicalvmcalcualtionmodule");
+		historicalVMCalModule.setDisplayName("Historical VM Calcuation");
+		historicalVMCalModule.setTableName("Historical_VM_Calculation");
+		
+		return historicalVMCalModule;
+	}
+	
 	public static FacilioModule getPmToWoRelModule() {
 		FacilioModule pmToWoRelModule = new FacilioModule();
 		pmToWoRelModule.setName("pmtoworel");

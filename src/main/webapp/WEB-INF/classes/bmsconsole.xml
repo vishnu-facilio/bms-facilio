@@ -3480,6 +3480,12 @@
 				<param name="includeProperties">^reportData.*,^reportContext.*,^relatedAlarms.*</param>
 			</result>
 		</action>
+		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="root">reportColumns</param>
+			</result>
+		</action>
 		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">reportData.*\.orgId,reportData.*\.moduleId,reportData.*\.data,reportData.*\.readings.*\.(date|week|hour|month|day)</param>

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -13,6 +14,10 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
@@ -155,6 +160,52 @@ public class TimeSeriesAPI {
 		}
 		return builder.get();
 				
+	}
+	
+	public static List<Map<String,Object>> getMarkedReadings(Criteria criteria, FacilioField label, FacilioField value) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.add(label);
+		fields.add(value);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getMarkedReadingModule().getTableName())
+				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
+		if(!criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
+		builder.groupBy(label.getName());
+		
+		return builder.get();
+	}
+	
+public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, List<Long> moduleList,List<Long> fieldList,List<Integer> markTypeList) {
+		
+		Criteria criteria = new Criteria(); 
+		if(timeRange!=null && !timeRange.isEmpty()) {
+			//array[0]: startTime 
+			//array[1]: endTime
+			criteria.addAndCondition(CriteriaAPI.getCondition("TTIME","TTIME", 
+					StringUtils.join(timeRange, ","),DateOperators.BETWEEN));
+		}
+		if(deviceList!=null && !deviceList.isEmpty()) {
+			criteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_ID","RESOURCE_ID", 
+					StringUtils.join(deviceList,","), NumberOperators.EQUALS));
+		}
+		if(moduleList!=null && !moduleList.isEmpty()) {
+		criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","MODULEID", 
+				StringUtils.join(moduleList,","), NumberOperators.EQUALS));
+		}
+		if(fieldList!=null && !fieldList.isEmpty()) {
+		criteria.addAndCondition(CriteriaAPI.getCondition("FIELD_ID","FIELD_ID", 
+				StringUtils.join(fieldList,","), NumberOperators.EQUALS));
+		}
+		if(markTypeList!=null && !markTypeList.isEmpty()) {
+		criteria.addAndCondition(CriteriaAPI.getCondition("MARK_TYPE","MARK_TYPE", 
+				StringUtils.join(markTypeList,","), NumberOperators.EQUALS));
+		}
+		return criteria;
 	}
 	
 }

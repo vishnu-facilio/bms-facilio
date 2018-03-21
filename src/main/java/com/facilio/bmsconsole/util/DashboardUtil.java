@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportCriteriaContext;
 import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
@@ -33,6 +35,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -40,6 +43,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -544,6 +548,10 @@ public class DashboardUtil {
 						reportContext.addComparingReportContext(compReportContext);
 					}
 				}
+				
+				if (reportContext.getReportChartType() == ReportChartType.TABULAR) {
+					reportContext.setReportColumns(getReportColumns(reportContext.getReportEntityId()));
+				}
 			}
 			
 			selectBuilder = new GenericSelectRecordBuilder()
@@ -594,7 +602,7 @@ public class DashboardUtil {
 			return null;
 		}
 	}
-	public static ReportFieldContext addOrGetReportfield(ReportFieldContext reportFieldContext) throws Exception {
+	public static ReportFieldContext addOrGetReportfield(ReportFieldContext reportFieldContext, String moduleName) throws Exception {
 		
 		String where;
 		if(reportFieldContext.getIsFormulaField()) {
@@ -623,6 +631,13 @@ public class DashboardUtil {
 		}
 		else {
 			
+			if (reportFieldContext.getModuleFieldId() == null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField(reportFieldContext.getModuleField().getName(), moduleName);
+				reportFieldContext.setModuleFieldId(field.getFieldId());
+				reportFieldContext.setModuleField(field);
+			}
+			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getReportField().getTableName())
 					.fields(FieldFactory.getReportFieldFields());
@@ -635,6 +650,39 @@ public class DashboardUtil {
 			
 			return reportFieldContext;
 		}
+	}
+	
+	public static void deleteReport(long reportId) throws SQLException {
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getReportThreshold().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportUserFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportCriteria().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportEnergyMeter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportDateFilter().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
+		.andCustomWhere("ID = ?", reportId);
+		deleteRecordBuilder.delete();
 	}
 	
 	public static boolean addReportFolder(ReportFolderContext reportFolder) throws Exception {
@@ -682,6 +730,10 @@ public class DashboardUtil {
 				FacilioModule module = modBean.getModule(reportContext.getModuleName());
 				reportContext.setModuleId(module.getModuleId());
 			}
+			else {
+				FacilioModule module = modBean.getModule(reportContext.getModuleId());
+				reportContext.setModuleName(module.getName());
+			}
 			
 			List<FacilioField> fields = FieldFactory.getReportFields();
 			
@@ -709,12 +761,12 @@ public class DashboardUtil {
 					.table(ModuleFactory.getReport().getTableName())
 					.fields(fields);
 
-			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField()).getId());
+			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
-				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField()).getId());
+				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
-				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField()).getId());
+				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
 			}
 			
 
@@ -737,7 +789,7 @@ public class DashboardUtil {
 			}
 			if(reportContext.getReportUserFilters() != null) {
 				for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
-					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext());
+					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext(), reportContext.getModuleName());
 					Map<String, Object> prop = new HashMap<String, Object>();
 					prop.put("reportId", reportContext.getId());
 					prop.put("reportFieldId", userFilterField.getId());
@@ -1042,5 +1094,27 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			insertBuilder.addRecord(FieldUtil.getAsProperties(reportColumn));
 		}
 		insertBuilder.save();
+	}
+	
+	public static List<ReportColumnContext> getReportColumns (long entityId) throws Exception {
+		FacilioModule module = ModuleFactory.getReportColumnsModule();
+		List<FacilioField> fields = FieldFactory.getReportColumnFields();
+		FacilioField entityField = FieldFactory.getAsMap(fields).get("entityId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(entityField, String.valueOf(entityId), PickListOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<ReportColumnContext> reportColumns = new ArrayList<>();
+			for (Map<String, Object> prop : props) {
+				reportColumns.add(FieldUtil.getAsBeanFromMap(prop, ReportColumnContext.class));
+			}
+			return reportColumns;
+		}
+		return null;
 	}
 }
