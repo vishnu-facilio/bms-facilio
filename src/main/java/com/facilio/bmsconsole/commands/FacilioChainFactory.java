@@ -1925,6 +1925,36 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddTicketCategoryChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTicketCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddTicketPriorityChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTicketPriority());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddTicketTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTicketType());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase

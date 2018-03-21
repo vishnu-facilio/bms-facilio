@@ -909,6 +909,27 @@
 		</action>
 
 	</package>
+	<package name="picklistApi" namespace="/api/picklist" extends="home">
+		<action name="addTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addTicketCategory">
+			<result name="success" type="json">
+				<param name="root">ticketCategory</param>
+			</result>
+		</action>
+		<action name="addTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addTicketPriority">
+			<result name="success" type="json">
+				<param name="root">ticketPriority</param>
+			</result>
+		</action>
+		<action name="addTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
+			method="addTicketType">
+			<result name="success" type="json">
+				<param name="root">ticketType</param>
+			</result>
+		</action>
+	</package>
+
 	<package name="modules" namespace="/app/modules" extends="home">
 		<action name="newCustomField" class="com.facilio.bmsconsole.actions.NewCFAction">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
