@@ -1955,6 +1955,36 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddAssetCategoryChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetCategory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddAssetDepartmentChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetDepartment());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getAddAssetTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetType());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericAddModuleDataCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 }
 
 class TransactionChain extends ChainBase

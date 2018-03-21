@@ -25,8 +25,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	public void init() {
 		// TODO Auto-generated method stub
 		super.init();
-		ServletContext context = ServletActionContext.getServletContext();
- customdomains = (HashMap) context.getAttribute("customdomains");
 	
 	}
 	
@@ -44,6 +42,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			}
 			
 			System.out.println("PortalAuthInterceptor loaded"+RequestUtil.HOSTNAME);
+			if(customdomains==null)
+			{
+			customdomains = (HashMap) context.getAttribute("customdomains");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,26 +86,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			return "login";
 		}
 
-	/*	try {
-			String idToken = LoginUtil.getUserCookie(request, LoginUtil.IDTOKEN_COOKIE_NAME);
-
-			CognitoUser cognitoUser = CognitoUtil.verifyIDToken(idToken);
-			UserInfo userInfo = (UserInfo) ActionContext.getContext().getSession().get("PORTAL_USER_INFO");
-			if (userInfo == null) {
-				userInfo = LoginUtil.getUserInfo(serviceportaldomain, cognitoUser);
-				ActionContext.getContext().getSession().put("PORTAL_USER_INFO", userInfo);
-			}
-			System.out.println("passing to action");
-
-			String result = arg0.invoke();
-			return result;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-
-		}
-		*/
+	
 	}
 
 	private String intercept0(){
@@ -128,7 +111,6 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 					  domainName = "https://"+orgdomain+".facilstack.com";
 				  }
 				}
-				
 				if(domainName != null) {
 					if (domainName.contains("http://")) {
 						domainName = domainName.replace("http://", "");

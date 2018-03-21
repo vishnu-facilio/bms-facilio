@@ -8,6 +8,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
@@ -102,6 +105,57 @@ public class PickListAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.RECORD, getTicketType());
 		Chain addTicketTypeChain = FacilioChainFactory.getAddTicketTypeChain();
 		addTicketTypeChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	AssetCategoryContext assetCategory;
+	public AssetCategoryContext getAssetCategory() {
+		return assetCategory;
+	}
+	public void setAssetCategory(AssetCategoryContext assetCategory) {
+		this.assetCategory = assetCategory;
+	}
+
+	public String addAssetCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetCategory());
+		Chain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();
+		addAssetCategoryChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	AssetDepartmentContext assetDepartment;
+	public AssetDepartmentContext getAssetDepartment() {
+		return assetDepartment;
+	}
+	public void setAssetDepartment(AssetDepartmentContext assetDepartment) {
+		this.assetDepartment = assetDepartment;
+	}
+
+	public String addAssetDepartment() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetDepartment());
+		Chain addAssetDepartmentChain = FacilioChainFactory.getAddAssetDepartmentChain();
+		addAssetDepartmentChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	AssetTypeContext assetType;
+	public AssetTypeContext getAssetType() {
+		return assetType;
+	}
+	public void setAssetType(AssetTypeContext assetType) {
+		this.assetType = assetType;
+	}
+
+	public String addAssetType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getAssetType());
+		Chain addAssetTypeChain = FacilioChainFactory.getAddAssetTypeChain();
+		addAssetTypeChain.execute(context);
 		
 		return SUCCESS;
 	}

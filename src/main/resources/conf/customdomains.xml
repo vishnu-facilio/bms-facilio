@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <domains>
-<domain host="test.com" orgdomain="facilio3"/>
-<domain host="test2.com" orgdomain="facilio2"/>
-<domain host="test3.com" orgdomain="facilio4"/>
+<domain host="dsofacilioportal.com" orgdomain="dsoa"/>
+<domain host="spfacilioportal.com" orgdomain="spinfocity"/>
+<domain host="faciliodemo.com" orgdomain="facilio"/>
+<domain host="babu.com:9090" orgdomain="test1"/>
+<domain host="customvelu.com:9090" orgdomain="velu"/>
 </domains>
