@@ -173,11 +173,11 @@ public class TimeSeries extends ActionSupport {
 	}
 	
 	
-	private List<Long> markTypeList;
-	public void setMarkTypeList(List<Long> markTypeList) {
+	private List<Integer> markTypeList;
+	public void setMarkTypeList(List<Integer> markTypeList) {
 		this.markTypeList=markTypeList;
 	}
-	public List<Long> getMarkTypeList(){
+	public List<Integer> getMarkTypeList(){
 		return markTypeList;
 	}
 	

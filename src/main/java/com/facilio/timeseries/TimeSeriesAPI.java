@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
@@ -161,7 +162,25 @@ public class TimeSeriesAPI {
 				
 	}
 	
-public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, List<Long> moduleList,List<Long> fieldList,List<Long> markTypeList) {
+	public static List<Map<String,Object>> getMarkedReadings(Criteria criteria, FacilioField label, FacilioField value) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.add(label);
+		fields.add(value);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getMarkedReadingModule().getTableName())
+				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
+		if(!criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
+		builder.groupBy(label.getName());
+		
+		return builder.get();
+	}
+	
+public static Criteria getCriteria(List<Long> timeRange, List<Long> deviceList, List<Long> moduleList,List<Long> fieldList,List<Integer> markTypeList) {
 		
 		Criteria criteria = new Criteria(); 
 		if(timeRange!=null && !timeRange.isEmpty()) {

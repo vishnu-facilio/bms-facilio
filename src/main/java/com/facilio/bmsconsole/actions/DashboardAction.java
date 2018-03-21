@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
@@ -78,6 +79,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.timeseries.TimeSeriesAPI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -679,6 +681,16 @@ public class DashboardAction extends ActionSupport {
 	
 	public String[] getMeterIds() {
 		return this.meterIds;
+	}
+	
+	private boolean excludeViolatedReadings = true;
+	
+	public void setExcludeViolatedReadings(boolean excludeViolatedReadings) {
+		this.excludeViolatedReadings = excludeViolatedReadings;
+	}
+	
+	public boolean getExcludeViolatedReadings() {
+		return this.excludeViolatedReadings;
 	}
 	
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
@@ -1474,6 +1486,8 @@ public class DashboardAction extends ActionSupport {
 		System.out.println("builder --- "+builder);
 //		System.out.println("rs1 -- "+rs);
 		
+		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter);
+		
 		if(report.getGroupBy() != null) {
 			
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
@@ -1597,6 +1611,20 @@ public class DashboardAction extends ActionSupport {
 	 			Map<String, Object> thisMap = rs.get(i);
 	 			JSONObject component = new JSONObject();
 	 			if(thisMap!=null) {
+	 				// checking and excluding the violated points
+	 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
+	 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
+	 					Double d = (Double) thisMap.get("value");
+	 					if (d != null) {
+	 						Double newValue = d - violatedValue;
+	 						if (newValue < 0) {
+	 							newValue = 0d;
+	 						}
+	 						thisMap.put("value", newValue);
+	 						component.put("violated_value", d);
+	 					}
+	 				}
+	 				
 	 				if(thisMap.get("dummyField") != null) {
 	 					component.put("label", thisMap.get("dummyField"));
 	 				}
@@ -1740,6 +1768,56 @@ public class DashboardAction extends ActionSupport {
 		return readingData;
 	}
 	
+	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter) throws Exception {
+		
+		Map<String, Double> violatedReadings = new HashMap<>();
+		
+		List<Integer> markType = new ArrayList<>();
+		if (reportContext.getXAxisAggregateOpperator().getValue() == DateAggregateOperator.DAYSOFMONTH.getValue() || reportContext.getXAxisAggregateOpperator().getValue() == DateAggregateOperator.FULLDATE.getValue()) {
+			markType.add(MarkedReadingContext.MarkType.HIGH_VALUE_DAILY_VIOLATION.getValue());
+			// markType.add(MarkedReadingContext.MarkType.HIGH_VALUE_HOURLY_VIOLATION.getValue());
+		}
+		else if (reportContext.getXAxisAggregateOpperator().getValue() == DateAggregateOperator.HOURSOFDAY.getValue() || reportContext.getXAxisAggregateOpperator().getValue() == DateAggregateOperator.HOURSOFDAYONLY.getValue()) {
+			markType.add(MarkedReadingContext.MarkType.HIGH_VALUE_HOURLY_VIOLATION.getValue());
+		}
+		
+		if (dateFilter != null && excludeViolatedReadings && !markType.isEmpty()) {
+			List<Long> timeRange = new ArrayList<>();
+			timeRange.add((Long) dateFilter.get(0));
+			timeRange.add((Long) dateFilter.get(1));
+			
+			List<Long> deviceList = new ArrayList<>();
+			if (meterIds != null) {
+				for (String meterId : meterIds) {
+					deviceList.add(Long.parseLong(meterId));
+				}
+			}
+			
+			List<Long> moduleList = new ArrayList<>();
+			moduleList.add(reportContext.getModuleId());
+			
+			List<Long> fieldList = new ArrayList<Long>();
+			fieldList.add(reportContext.getY1AxisField().getModuleField().getId());
+			
+			FacilioField label = new FacilioField();
+			label.setColumnName("TTIME");
+			label = reportContext.getXAxisAggregateOpperator().getSelectField(label);
+			label.setName("label");
+			
+			FacilioField value = new FacilioField();
+			value.setColumnName("ACTUAL_VALUE");
+			value = NumberAggregateOperator.SUM.getSelectField(value);
+			value.setName("value");
+			
+			List<Map<String, Object>> markedReadings = TimeSeriesAPI.getMarkedReadings(TimeSeriesAPI.getCriteria(timeRange, deviceList, moduleList, fieldList, markType), label, value);
+			if (markedReadings != null && !markedReadings.isEmpty()) {
+				for (Map<String, Object> reading : markedReadings) {
+					violatedReadings.put(reading.get("label").toString(), (Double) reading.get("value"));
+				}
+			}
+		}
+		return violatedReadings; 
+	}
 	
 	private List<String> getDistinctLabel(List<Map<String, Object>> rs) {
 		List<String> labels = new ArrayList<>();
