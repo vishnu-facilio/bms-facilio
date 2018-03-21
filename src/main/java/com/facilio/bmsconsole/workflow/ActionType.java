@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -45,12 +46,13 @@ import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
-import com.facilio.bmsconsole.view.ReadingRuleContext.ThresholdType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
@@ -249,31 +251,48 @@ public enum ActionType {
 				obj.put("endTime", range.getEndTime());
 			}
 			
-			obj.put("readingMessage", getMessage(rule, range));
+			obj.put("readingMessage", getMessage(rule, range, reading));
 		}
 		
 		private DateRange getRange(ReadingRuleContext rule, ReadingContext reading) {
 			DateRange range = null;
 			switch (rule.getThresholdTypeEnum()) {
 				case SIMPLE:
-					range = new DateRange();
-					range.setStartTime(reading.getTtime());
+					if (rule.getCriteria() != null) {
+						range = new DateRange();
+						range.setStartTime(reading.getTtime());
+					}
+					else {
+						WorkflowContext workflow = rule.getWorkflow();
+						ExpressionContext expression = workflow.getExpressions().get(0);
+						if (expression.getLimit() != null) {
+							range = new DateRange();
+							range.setStartTime(reading.getTtime());
+						}
+						else {
+							Condition condition = expression.getCriteria().getConditions().get(2);
+							range = ((DateOperators) condition.getOperator()).getRange(condition.getValue());
+						}
+					}
 					break;
 				case AGGREGATION:
 				case BASE_LINE:
 					range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(rule.getDateRange()));
 					break;
 				case FLAPPING:
-				case ADVANCED:
 					range = new DateRange();
 					range.setEndTime(reading.getTtime());
 					range.setStartTime(range.getEndTime() - rule.getFlapInterval());
+					break;
+				case ADVANCED:
+					range = new DateRange();
+					range.setStartTime(reading.getTtime());
 					break;
 			}
 			return range;
 		}
 		
-		private String getMessage(ReadingRuleContext rule, DateRange range) throws Exception {
+		private String getMessage(ReadingRuleContext rule, DateRange range, ReadingContext reading) throws Exception {
 			StringBuilder msgBuilder = new StringBuilder();
 			if (rule.getAggregation() != null) {
 				if(rule.getDateRange() == 1) {
@@ -285,74 +304,28 @@ public enum ActionType {
 				}
 				msgBuilder.append(" of ");
 			}
-			
 			msgBuilder.append("'")
-					.append(rule.getReadingField().getDisplayName())
-					.append("' ");
+						.append(rule.getReadingField().getDisplayName())
+						.append("' ");
 			
 			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
-			
-			if (rule.getBaselineId() != -1) {
-				switch (operator) {
-					case EQUALS:
-						msgBuilder.append("was along ");
-						updatePercentage(rule.getPercentage(), msgBuilder);
-						break;
-					case NOT_EQUALS:
-						msgBuilder.append("wasn't alone ");
-						updatePercentage(rule.getPercentage(), msgBuilder);
-						break;
-					case LESS_THAN:
-					case LESS_THAN_EQUAL:
-						msgBuilder.append("went ");
-						updatePercentage(rule.getPercentage(), msgBuilder);
-						msgBuilder.append("lower than ");
-						break;
-					case GREATER_THAN:
-					case GREATER_THAN_EQUAL:
-						msgBuilder.append("went ");
-						updatePercentage(rule.getPercentage(), msgBuilder);
-						msgBuilder.append("higher than ");
-						break;
-				}
-				
-				BaseLineContext bl = BaseLineAPI.getBaseLine(rule.getBaselineId());
-				msgBuilder.append("the ");
-				msgBuilder.append("base line ")
-							.append("'")
-							.append(bl.getName())
-							.append("'");
-			}
-			else if (rule.getThresholdTypeEnum() != ThresholdType.FLAPPING){
-				switch (operator) {
-					case EQUALS:
-						msgBuilder.append("was ");
-						break;
-					case NOT_EQUALS:
-						msgBuilder.append("wasn't ");
-						break;
-					case LESS_THAN:
-					case LESS_THAN_EQUAL:
-						msgBuilder.append("went below ");
-						break;
-					case GREATER_THAN:
-					case GREATER_THAN_EQUAL:
-						msgBuilder.append("exceeded ");
-						break;
-				}
-				
-				msgBuilder.append(rule.getPercentage());
-				if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
-					msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
-				}
-			}
-			else {
-				msgBuilder.append("flapped ")
-							.append(rule.getFlapFrequency())
-							.append(" times from ")
-							.append(rule.getMinFlapValue())
-							.append(" to ")
-							.append(rule.getMaxFlapValue());
+			switch (rule.getThresholdTypeEnum()) {
+				case SIMPLE:
+					appendSimpleMsg(msgBuilder, operator, rule);
+					appendOccurences(msgBuilder, rule);
+					break;
+				case AGGREGATION:
+					appendSimpleMsg(msgBuilder, operator, rule);
+					break;
+				case BASE_LINE:
+					appendBaseLineMsg(msgBuilder, operator, rule);
+					break;
+				case FLAPPING:
+					appendFlappingMsg(msgBuilder, rule);
+					break;
+				case ADVANCED:
+					appendAdvancedMsg(msgBuilder, rule, reading);
+					break;
 			}
 			
 			if (range.getEndTime() != -1) {
@@ -367,6 +340,114 @@ public enum ActionType {
 			}
 			
 			return msgBuilder.toString();
+		}
+		
+		private void appendOccurences (StringBuilder msgBuilder, ReadingRuleContext rule) {
+			WorkflowContext workflow = rule.getWorkflow();
+			if (workflow != null) {
+				ExpressionContext expression = workflow.getExpressions().get(0);
+				if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
+					msgBuilder.append(" ")
+								.append(getInWords(Integer.parseInt(workflow.getResultEvaluator().replaceAll("a==", ""))));
+					if (expression.getLimit() != null) {
+						msgBuilder.append(" consecutively");
+					}
+				}
+			}
+		}
+		
+		private void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule) {
+			switch (operator) {
+				case EQUALS:
+					msgBuilder.append("was ");
+					break;
+				case NOT_EQUALS:
+					msgBuilder.append("wasn't ");
+					break;
+				case LESS_THAN:
+				case LESS_THAN_EQUAL:
+					msgBuilder.append("went below ");
+					break;
+				case GREATER_THAN:
+				case GREATER_THAN_EQUAL:
+					msgBuilder.append("exceeded ");
+					break;
+			}
+			msgBuilder.append(rule.getPercentage());
+			appendUnit(msgBuilder, rule);
+		}
+		
+		private void appendBaseLineMsg (StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule) throws Exception {
+			switch (operator) {
+				case EQUALS:
+					msgBuilder.append("was along ");
+					updatePercentage(rule.getPercentage(), msgBuilder);
+					break;
+				case NOT_EQUALS:
+					msgBuilder.append("wasn't along ");
+					updatePercentage(rule.getPercentage(), msgBuilder);
+					break;
+				case LESS_THAN:
+				case LESS_THAN_EQUAL:
+					msgBuilder.append("went ");
+					updatePercentage(rule.getPercentage(), msgBuilder);
+					msgBuilder.append("lower than ");
+					break;
+				case GREATER_THAN:
+				case GREATER_THAN_EQUAL:
+					msgBuilder.append("went ");
+					updatePercentage(rule.getPercentage(), msgBuilder);
+					msgBuilder.append("higher than ");
+					break;
+			}
+			
+			BaseLineContext bl = BaseLineAPI.getBaseLine(rule.getBaselineId());
+			msgBuilder.append("the ");
+			msgBuilder.append("base line ")
+						.append("'")
+						.append(bl.getName())
+						.append("'");
+		}
+		
+		private String getInWords (int val) {
+			switch (val) {
+				case 1:
+					return "once";
+				case 2:
+					return "twice";
+				case 3:
+					return "thrice";
+				default:
+					return val+" times";
+			}
+		}
+		
+		private void appendFlappingMsg (StringBuilder msgBuilder, ReadingRuleContext rule) {
+			msgBuilder.append("flapped ")
+						.append(getInWords(rule.getFlapFrequency()))
+						.append(" below ")
+						.append(rule.getMinFlapValue());
+			appendUnit(msgBuilder, rule);
+			msgBuilder.append(" and beyond ")
+						.append(rule.getMaxFlapValue());
+			appendUnit(msgBuilder, rule);
+		}
+		
+		private void appendAdvancedMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
+			msgBuilder.append("recorded ")
+						.append(reading.getReading(rule.getReadingField().getName()));
+			appendUnit(msgBuilder, rule);
+			
+			msgBuilder.append(" when the complex condition set in '")
+						.append(rule.getName())
+						.append("'")
+						.append(" rule evaluated to true");
+		}
+		
+		private void appendUnit(StringBuilder msgBuilder, ReadingRuleContext rule) {
+			if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
+				msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
+			}
 		}
 		
 		private void updatePercentage(long percentage, StringBuilder msgBuilder) {
