@@ -287,22 +287,22 @@ public class WorkflowUtil {
 				if(value instanceof String) {
 					return true;
 				}
-				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
 			case BOOLEAN:
 				if(value instanceof Boolean) {
 					return true;
 				}
-				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
 			case NUMBER:
 				if(value instanceof Integer || value instanceof Long) {
 					return true;
 				}
-				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
 			case DECIMAL:
 				if(value instanceof Double) {
 					return true;
 				}
-				throw new Exception(parameterContext.getName()+" type mismatched "+value);
+				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
 		}
 		return false;
 	}
