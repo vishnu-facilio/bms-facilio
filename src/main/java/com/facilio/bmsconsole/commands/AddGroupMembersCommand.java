@@ -28,7 +28,7 @@ public class AddGroupMembersCommand implements Command {
 			
 			GroupBean groupBean = AccountUtil.getGroupBean();
 			
-			groupBean.removeGroupMember(groupId, members);
+			groupBean.removeAllGroupMembers(groupId);
 			
 			groupBean.addGroupMember(groupId, members, AccountConstants.GroupMemberRole.MEMBER);
 		}

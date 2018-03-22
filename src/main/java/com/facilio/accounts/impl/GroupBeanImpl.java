@@ -143,6 +143,20 @@ public class GroupBeanImpl implements GroupBean {
 	}
 
 	@Override
+	public boolean removeAllGroupMembers(long groupId) throws Exception {
+		
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getGroupMemberModule().getTableName())
+				.andCustomWhere("GROUPID = ?", groupId);
+		
+		int deletedRows = builder.delete();
+		if (deletedRows > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public boolean updateGroupMemberRole(long groupId, long ouid, GroupMemberRole memberRole) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

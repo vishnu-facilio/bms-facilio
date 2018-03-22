@@ -21,6 +21,8 @@ public interface GroupBean {
 	
 	public boolean removeGroupMember(long groupId, List<Long> ouidList) throws Exception;
 	
+	public boolean removeAllGroupMembers(long groupId) throws Exception;
+	
 	public boolean updateGroupMemberRole(long groupId, long ouid, GroupMemberRole memberRole) throws Exception;
 	
 	public boolean changeGroupStatus(long groupId, Group group) throws Exception;
