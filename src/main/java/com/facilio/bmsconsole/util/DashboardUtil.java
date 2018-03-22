@@ -123,6 +123,37 @@ public class DashboardUtil {
 		}
 		return dashboardWidgetContexts;
 	}
+	
+	public static DashboardWidgetContext getWidget(Long widgetId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getWidgetFields();
+		fields.addAll(FieldFactory.getWidgetChartFields());
+		fields.addAll(FieldFactory.getWidgetListViewFields());
+		fields.addAll(FieldFactory.getWidgetStaticFields());
+		fields.addAll(FieldFactory.getWidgetWebFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getWidgetModule().getTableName())
+				.leftJoin(ModuleFactory.getWidgetChartModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetListViewModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetStaticModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetWebModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
+				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+				WidgetType widgetType = WidgetType.getWidgetType((Integer) props.get(0).get("type"));
+				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(props.get(0), widgetType.getWidgetContextClass());
+				return dashboardWidgetContext;
+		}
+		return null;
+	}
+
 	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetChartFields();

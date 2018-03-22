@@ -2212,6 +2212,20 @@ public class FieldFactory {
 		staticKey.setColumnName("STATIC_KEY");
 		staticKey.setModule(module);
 		fields.add(staticKey);
+		
+		FacilioField workflowId = new FacilioField();
+		workflowId.setName("workflowId");
+		workflowId.setDataType(FieldType.NUMBER);
+		workflowId.setColumnName("WORKFLOW_ID");
+		workflowId.setModule(module);
+		fields.add(workflowId);
+		
+		FacilioField baseSpaceId = new FacilioField();
+		baseSpaceId.setName("baseSpaceId");
+		baseSpaceId.setDataType(FieldType.NUMBER);
+		baseSpaceId.setColumnName("BASE_SPACE_ID");
+		baseSpaceId.setModule(module);
+		fields.add(baseSpaceId);
 
 		return fields;
 	}

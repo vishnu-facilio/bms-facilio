@@ -82,6 +82,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.opensymphony.xwork2.ActionSupport;
@@ -619,7 +620,31 @@ public class DashboardAction extends ActionSupport {
 	public void setReportColumns(List<ReportColumnContext> reportColumns) {
 		this.reportColumns = reportColumns;
 	}
-	
+	Long widgetId;
+	public Long getWidgetId() {
+		return widgetId;
+	}
+	public void setWidgetId(Long widgetId) {
+		this.widgetId = widgetId;
+	}
+	Object cardResult;
+	public Object getCardResult() {
+		return cardResult;
+	}
+	public void setCardResult(Object cardResult) {
+		this.cardResult = cardResult;
+	}
+	public String getCardData() throws Exception {
+		if(widgetId != null) {
+			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) DashboardUtil.getWidget(widgetId);
+			;
+			
+			Map<String,Object> paramMap = new HashMap<>();
+			paramMap.put("parentId", widgetStaticContext.getBaseSpaceId());
+			cardResult = WorkflowUtil.getResult(widgetStaticContext.getWorkflowId(), paramMap);
+		}
+		return SUCCESS;
+	}
 	public String getTabularData() throws Exception {
 		reportContext = DashboardUtil.getReportContext(reportId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
