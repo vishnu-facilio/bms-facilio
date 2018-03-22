@@ -71,6 +71,9 @@ public class GetPMAndPMReminderCommand implements Command {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, prop.get("woId"));
 			}
 		}
+		else {
+			return true; //Stopping the chain from further execution
+		}
 		
 		return false;
 	}
