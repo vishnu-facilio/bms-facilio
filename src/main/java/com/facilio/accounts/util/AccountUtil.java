@@ -74,6 +74,12 @@ public class AccountUtil {
 		return roleBean;
 	}
 	
+	public static final int FEATURE_MAINTENANCE 			= 1;
+	public static final int FEATURE_ALARMS 				= 2;
+	public static final int FEATURE_ENERGY 				= 4;
+	public static final int FEATURE_SPACE_ASSET 			= 8;
+	public static final int FEATURE_WEATHER_INTEGRATION 	= 16;
+	
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
 		int module = 0;
@@ -99,5 +105,9 @@ public class AccountUtil {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}	
 		return module;
+	}
+	
+	public static boolean isFeatureEnabled(int featureId) throws Exception {
+		return (getFeatureLicense() & featureId) == featureId;
 	}
 }
