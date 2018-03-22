@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -153,30 +154,43 @@ public class TemplateAPI {
 		return excelTemplates;
 	}
 	
-	public static List<JSONTemplate> getAllWOTemplates() throws Exception {
+	public static List<WorkorderTemplate> getAllWOTemplates() throws Exception {
 		List<FacilioField> fields = FieldFactory.getTemplateFields();
-		fields.addAll(FieldFactory.getJSONTemplateFields());
+		FacilioField typeField = FieldFactory.getAsMap(fields).get("type");
+		fields.addAll(FieldFactory.getWorkOrderTemplateFields());
 		
-		FacilioModule userTemplateModule = ModuleFactory.getTemplatesModule();
+		
+		FacilioModule templateModule = ModuleFactory.getTemplatesModule();
 		FacilioModule woTemplateModule = ModuleFactory.getJSONTemplateModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													  .select(fields)
-													  .table(userTemplateModule.getTableName())
+													  .table(templateModule.getTableName())
 													  .innerJoin(woTemplateModule.getTableName())
-													  .on(userTemplateModule.getTableName()+".ID = "+woTemplateModule.getTableName()+".ID")
-													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(userTemplateModule));
+													  .on(templateModule.getTableName()+".ID = "+woTemplateModule.getTableName()+".ID")
+													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule))
+													  .andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(Type.WORKORDER.getIntVal()), NumberOperators.EQUALS))
+													  ;
 		
 		List<Map<String, Object>> templatePropList = selectBuilder.get();
-		List<JSONTemplate> woTemplates = new ArrayList<JSONTemplate>();
-		for(int i=0;i<templatePropList.size();i++)
-		{
-			Map<String,Object> templateProps = templatePropList.get(i);
-			JSONTemplate template = FieldUtil.getAsBeanFromMap(templateProps,JSONTemplate.class);
-			woTemplates.add(template);
-			
+		if (templatePropList != null && !templatePropList.isEmpty()) {
+			List<WorkorderTemplate> woTemplates = new ArrayList<>();
+			List<Long> resourceIds = new ArrayList<>();
+			for(Map<String,Object> templateProps : templatePropList)
+			{
+				WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateProps,WorkorderTemplate.class);
+				woTemplates.add(template);
+				if (template.getResourceId() != -1) {
+					resourceIds.add(template.getResourceId());
+				}
+			}
+			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			for (WorkorderTemplate template : woTemplates) {
+				template.setResource(resourceMap.get(template.getResourceId()));
+			}
+			return woTemplates;
 		}
-		return woTemplates;
+		return null;
 	}
 	
 	private static Template getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
