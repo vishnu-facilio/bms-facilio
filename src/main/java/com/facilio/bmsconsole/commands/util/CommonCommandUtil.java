@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,27 +19,24 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class CommonCommandUtil {
@@ -305,4 +303,24 @@ public class CommonCommandUtil {
 		}
 		return null;		
 	}
+    
+    public static Map<String, List<ReadingContext>> getReadingMap(FacilioContext context) {
+    	Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS_MAP);
+    	if (readingMap == null) {
+	    	List<ReadingContext> readings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
+			if(readings == null) {
+				ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
+				if(reading != null) {
+					readings = Collections.singletonList(reading);
+				}
+			}
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			
+			if (moduleName != null && !moduleName.isEmpty() && readings != null && !readings.isEmpty()) {
+				readingMap = Collections.singletonMap(moduleName, readings);
+				context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+			}
+    	}
+    	return readingMap;
+    }
 }

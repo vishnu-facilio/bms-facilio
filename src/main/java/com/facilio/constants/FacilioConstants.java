@@ -90,6 +90,7 @@ public class FacilioConstants {
 		public static final String CURRENT_RECORD = "currentRecord";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
+		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String ROWS_UPDATED = "rowsUpdated";
@@ -186,6 +187,7 @@ public class FacilioConstants {
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		public static final String PARENT_CATEGORY_IDS = "parentCategoryIds";
 		
+		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
 		public static final String READING = "reading";
 		public static final String READING_FIELDS = "readingFields";

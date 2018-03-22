@@ -1720,7 +1720,6 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetLastReadingCommand());
 		c.addCommand(new DeltaCalculationCommand());
 		c.addCommand(new AddOrUpdateReadingValuesCommand());

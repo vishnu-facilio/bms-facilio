@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -26,47 +26,37 @@ public class DeltaCalculationCommand implements Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
-		List<ReadingContext> readings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
-		if(readings == null) {
-			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
-			if(reading != null) {
-				readings = Collections.singletonList(reading);
-			}
-		}
-		if(readings == null || readings.isEmpty()) {
-			return false;
-		}
-		
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		if(moduleName==null || !moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)){
-			return false;
-		}
-
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 		if (historyReading != null && historyReading==true) {
 			return false;
 		}
-		
 		Map<String, Map<String,Object>> lastReadingsMap = (Map<String, Map<String,Object>>) context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		if(lastReadingsMap==null || lastReadingsMap.isEmpty()) {
 			return false;
 		}
-
+		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> allFields= bean.getAllFields(moduleName);
-		long moduleId=bean.getModule(moduleName).getModuleId();
-		Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
-		List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
-		
-		for(ReadingContext reading:readings) {
-			setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,lastReadingsMap,markedList);
-			setDelta(fieldMap,"phaseEnergyR",moduleId,reading,lastReadingsMap,markedList);
-			setDelta(fieldMap,"phaseEnergyY",moduleId,reading,lastReadingsMap,markedList);
-			setDelta(fieldMap,"phaseEnergyB",moduleId,reading,lastReadingsMap,markedList);
+		if (readingMap != null && !readingMap.isEmpty()) {
+			List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
+			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
+				String moduleName = entry.getKey();
+				List<ReadingContext> readings = entry.getValue();
+				if(moduleName==null || !moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)){
+					continue;
+				}
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> allFields= bean.getAllFields(moduleName);
+				long moduleId=bean.getModule(moduleName).getModuleId();
+				Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(allFields);
+				for(ReadingContext reading:readings) {
+					setDelta(fieldMap,"totalEnergyConsumption",moduleId, reading,lastReadingsMap,markedList);
+					setDelta(fieldMap,"phaseEnergyR",moduleId,reading,lastReadingsMap,markedList);
+					setDelta(fieldMap,"phaseEnergyY",moduleId,reading,lastReadingsMap,markedList);
+					setDelta(fieldMap,"phaseEnergyB",moduleId,reading,lastReadingsMap,markedList);
+				}
+			}
+			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 		}
-		context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 		return false;
 	}
 

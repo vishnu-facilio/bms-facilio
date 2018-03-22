@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -26,48 +27,41 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<ReadingContext> readings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.READINGS);
-		if(readings == null) {
-			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
-			if(reading != null) {
-				readings = Collections.singletonList(reading);
-			}
-		}
-		if(readings == null || readings.isEmpty()) {
-			
-			return false;
-		}
+		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
 		if (updateLastReading == null) {
 			updateLastReading = true;
 		}
-		
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-
-		List<ReadingContext> readingsToBeAdded = new ArrayList<>();
-		for(ReadingContext reading : readings) {
-			if(reading.getTtime() == -1) {
-				reading.setTtime(System.currentTimeMillis());
-			}
-			if(reading.getParentId() == -1) {
-				throw new IllegalArgumentException("Invalid parent id for readings of module : "+moduleName);
-			}
-
-			if(reading.getId() == -1) {
-				readingsToBeAdded.add(reading);
-			}
-			else {
-				updateReading(module, fields, reading,lastReadingMap, updateLastReading);
+		if (readingMap != null && !readingMap.isEmpty()) {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
+				String moduleName = entry.getKey();
+				List<ReadingContext> readings = entry.getValue();
+				List<FacilioField> fields= bean.getAllFields(moduleName);
+				FacilioModule module = bean.getModule(moduleName);
+		
+				List<ReadingContext> readingsToBeAdded = new ArrayList<>();
+				for(ReadingContext reading : readings) {
+					if(reading.getTtime() == -1) {
+						reading.setTtime(System.currentTimeMillis());
+					}
+					if(reading.getParentId() == -1) {
+						throw new IllegalArgumentException("Invalid parent id for readings of module : "+moduleName);
+					}
+		
+					if(reading.getId() == -1) {
+						readingsToBeAdded.add(reading);
+					}
+					else {
+						updateReading(module, fields, reading,lastReadingMap, updateLastReading);
+					}
+				}
+				addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 			}
 		}
-		addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, readingsToBeAdded);
+		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
 		return false;
 	}

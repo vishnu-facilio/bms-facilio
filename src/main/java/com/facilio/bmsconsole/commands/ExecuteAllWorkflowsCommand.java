@@ -52,52 +52,57 @@ public class ExecuteAllWorkflowsCommand implements Command
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List records = (List) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		if(records == null) {
-			Object record = context.get(FacilioConstants.ContextNames.RECORD);
-			if(record != null) {
-				records = Collections.singletonList(record);
+		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+		if (recordMap == null) {
+			List records = (List) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if(records == null) {
+				Object record = context.get(FacilioConstants.ContextNames.RECORD);
+				if(record != null) {
+					records = Collections.singletonList(record);
+				}
 			}
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			recordMap = Collections.singletonMap(moduleName, records);
 		}
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //		records = new LinkedList<>(records);
-		if(records != null && !records.isEmpty()) {
+		
+		if(recordMap != null && !recordMap.isEmpty()) {
 			Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
-			records = new LinkedList<>(records);
-			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-			if(activityType != null) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				long moduleId = modBean.getModule(moduleName).getModuleId();
-				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(activityType), ruleTypes);
-				
-				if(workflowRules != null && workflowRules.size() > 0) {
-					Map<String, Object> placeHolders = new HashMap<>();
-					CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+				String moduleName = entry.getKey();
+				List records = new LinkedList<>(entry.getValue());
+				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				if(activityType != null) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					long moduleId = modBean.getModule(moduleName).getModuleId();
+					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(activityType), ruleTypes);
 					
-					for(WorkflowRuleContext workflowRule : workflowRules) {
-						Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
-						CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
-						Iterator<Integer> it = records.iterator();
-						while (it.hasNext()) {
-							Object record = it.next();
-							if(workflowRule.getRuleTypeEnum() == RuleType.READING_RULE && ((ReadingRuleContext)workflowRule).getResourceId() != ((ReadingContext)record).getParentId()) { //Reading Rule check for specific assets used in the rule
-								continue;
-							}
-							Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
-							CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-							boolean criteriaFlag = evaluateCriteria(workflowRule, record, recordPlaceHolders);
-							boolean workflowFlag = evaluateWorkflowExpression(workflowRule, record, recordPlaceHolders);
-							boolean miscFlag = evaluateMisc(workflowRule, record, recordPlaceHolders, lastReadingMap);
-							if(criteriaFlag && workflowFlag && miscFlag) {
-								executeWorkflowActions(workflowRule, record, context, recordPlaceHolders);
-								if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-									it.remove();
+					if(workflowRules != null && workflowRules.size() > 0) {
+						Map<String, Object> placeHolders = new HashMap<>();
+						CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
+						
+						for(WorkflowRuleContext workflowRule : workflowRules) {
+							Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
+							Iterator<Integer> it = records.iterator();
+							while (it.hasNext()) {
+								Object record = it.next();
+								Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
+								CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+								boolean miscFlag = evaluateMisc(workflowRule, record, recordPlaceHolders, lastReadingMap);
+								boolean criteriaFlag = evaluateCriteria(workflowRule, record, recordPlaceHolders);
+								boolean workflowFlag = evaluateWorkflowExpression(workflowRule, record, recordPlaceHolders);
+								if(criteriaFlag && workflowFlag && miscFlag) {
+									executeWorkflowActions(workflowRule, record, context, recordPlaceHolders);
+									if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+										it.remove();
+									}
 								}
 							}
 						}
-					}
-				}	
+					}	
+				}
 			}
 		}
 		return false;
@@ -146,6 +151,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 	}
 	
 	private boolean evelauteMiscForReadingRule (ReadingRuleContext readingRule, ReadingContext record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
+		if (readingRule.getResourceId() != record.getParentId()) {
+			return false;
+		}
 		switch (readingRule.getThresholdTypeEnum()) {
 			case FLAPPING:
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
