@@ -410,6 +410,7 @@ public class FacilioConstants {
 		public static final String PUBLICKEYFILENAME = "publicKeyFileName";
 		public static final String PUBLICKEYFILETYPE = "publicKeyFileNameType";
 		public static final String MARKED_READINGS = "markedReadings";
+		public static final String WEATHER_READING = "weather";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -449,6 +450,8 @@ public class FacilioConstants {
 			classMap.put(AHU, AHUContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
+			classMap.put(WEATHER_READING, ReadingContext.class);
+
 			
 			return classMap;
 		}
@@ -524,6 +527,7 @@ public class FacilioConstants {
 	public static class User{
 		public static final String EMAIL = "email";
 	}
+	
 	public static class TableNames{
 		public static final String WORK_ORDER = "Workorders";
 		public static final String TICKET_STATUS = "TicketStatus";

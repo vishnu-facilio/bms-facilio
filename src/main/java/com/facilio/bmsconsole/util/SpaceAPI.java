@@ -406,7 +406,7 @@ public class SpaceAPI {
 		return spaces;
 	}
 	
-	public static List<SiteContext> getAllSites() throws Exception {
+	public static List<SiteContext> getAllSites(int lookupLevel) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
@@ -414,10 +414,14 @@ public class SpaceAPI {
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
 																	.module(module)
-																	.maxLevel(0)
+																	.maxLevel(lookupLevel)
 																	.beanClass(SiteContext.class);
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
+	}
+	
+	public static List<SiteContext> getAllSites() throws Exception {
+		return getAllSites(0);
 	}
 	
 	
