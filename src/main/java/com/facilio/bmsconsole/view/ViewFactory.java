@@ -1067,7 +1067,7 @@ public class ViewFactory {
 		return view;
 	}
 	
-	private static Condition getPreventiveStatusCondition(boolean status) {
+	public static Condition getPreventiveStatusCondition(boolean status) {
 		List<FacilioField> preventiveFields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String,FacilioField> fieldProps = FieldFactory.getAsMap(preventiveFields);
 		FacilioField statusField = (FacilioField) fieldProps.get("status");

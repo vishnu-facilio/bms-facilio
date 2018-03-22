@@ -2564,6 +2564,14 @@
 			<result name="success" type="json">
 			</result>
 		</action>
+		
+		<action name="updateCalendarColor" class="com.facilio.bmsconsole.actions.SetupActions"
+			method="updateCalendarColor">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+			</result>
+		</action>
 	</package>
 
 	<package name="userAvatarApi" namespace="/api/settings/users/avatar"

@@ -53,7 +53,7 @@ public class LocationContext extends ModuleBaseWithCustomFields {
 		this.country = country;
 	}
 	
-	private double lat;
+	private double lat=-1;
 	public double getLat() {
 		return lat;
 	}
@@ -61,7 +61,7 @@ public class LocationContext extends ModuleBaseWithCustomFields {
 		this.lat = lat;
 	}
 	
-	private double lng;
+	private double lng=-1;
 	public double getLng() {
 		return lng;
 	}

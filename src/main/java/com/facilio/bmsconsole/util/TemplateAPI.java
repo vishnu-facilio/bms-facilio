@@ -161,7 +161,7 @@ public class TemplateAPI {
 		
 		
 		FacilioModule templateModule = ModuleFactory.getTemplatesModule();
-		FacilioModule woTemplateModule = ModuleFactory.getJSONTemplateModule();
+		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													  .select(fields)

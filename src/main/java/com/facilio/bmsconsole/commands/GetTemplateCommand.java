@@ -4,6 +4,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -14,7 +17,14 @@ public class GetTemplateCommand implements Command {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (id != -1) {
-			context.put(FacilioConstants.ContextNames.TEMPLATE, TemplateAPI.getTemplate(id));
+			Template template = TemplateAPI.getTemplate(id);
+			if (template instanceof WorkorderTemplate) {
+				WorkorderTemplate woTemplate = (WorkorderTemplate) template;
+				if(woTemplate.getWorkorder().getResource() != null) {
+					woTemplate.setResource(ResourceAPI.getResource(woTemplate.getWorkorder().getResource().getId()));
+				}
+			}
+			context.put(FacilioConstants.ContextNames.TEMPLATE, template);
 		}
 		return false;
 	}

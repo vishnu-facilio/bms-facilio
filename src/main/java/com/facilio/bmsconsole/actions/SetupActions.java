@@ -12,12 +12,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.context.CalendarColorContext;
 import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EmailSettingContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -407,5 +409,19 @@ public String importData() throws Exception {
 	
 	public void setWorkflowRule(WorkflowRuleContext workflowRule) {
 		this.workflowRule = workflowRule;
+	}
+	
+	public String updateCalendarColor() throws Exception {
+		TicketAPI.setCalendarColor(calendarColor);
+		
+		return SUCCESS;
+	}
+	
+	private CalendarColorContext calendarColor;
+	public CalendarColorContext getCalendarColor() {
+		return calendarColor;
+	}
+	public void setCalendarColor(CalendarColorContext calendarColor) {
+		this.calendarColor = calendarColor;
 	}
 }

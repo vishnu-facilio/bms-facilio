@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -52,7 +53,8 @@ public class GetPMAndPMReminderCommand implements Command {
 															.innerJoin("Before_PM_Reminder_Trigger_Rel")
 															.on("PM_Reminders.ID = Before_PM_Reminder_Trigger_Rel.PM_REMINDER_ID")
 															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-															.andCondition(CriteriaAPI.getIdCondition(recordId, beforeReminderTriggerRelModule));
+															.andCondition(CriteriaAPI.getIdCondition(recordId, beforeReminderTriggerRelModule))
+															.andCondition(ViewFactory.getPreventiveStatusCondition(true));
 			reminderProps = selectBuilder.get();
 		}
 		
@@ -68,6 +70,9 @@ public class GetPMAndPMReminderCommand implements Command {
 			if(prop.get("woId") != null) {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, prop.get("woId"));
 			}
+		}
+		else {
+			return true; //Stopping the chain from further execution
 		}
 		
 		return false;
