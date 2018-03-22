@@ -220,7 +220,7 @@ public class ProcessSpaceXLS implements Command {
 					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
 					 
 				 }
-				 if(floorMap.containsKey(floorName.trim()))
+				 if(floorMap.containsKey(floorName.trim().toLowerCase()))
 				 {
 					 floorId = floorMeta.getFloorId(floorName);
 					 System.out.println("----------> The floor already available : "+floorId);
