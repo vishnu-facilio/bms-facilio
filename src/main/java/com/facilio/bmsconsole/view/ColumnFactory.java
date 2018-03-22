@@ -99,13 +99,10 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
-		columns.add(new ViewField("createdTime", "Created Time"));
-		columns.add(new ViewField("dueDate", "Due Date"));
 		
 		return columns;
 	}
@@ -117,7 +114,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("source", "Source"));
 		columns.add(new ViewField("node", "Entity"));
-		columns.add(new ViewField("modifiedTime", "Modified Time"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		
 		return columns;

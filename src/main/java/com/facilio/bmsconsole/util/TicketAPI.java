@@ -36,7 +36,9 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TicketAPI {
 	
@@ -559,9 +561,36 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		List<Map<String, Object>> results = selectBuilder.get();
 		if(results != null && !results.isEmpty())
 		{
-			return (CalendarColorContext) results.get(0).values().iterator().next();
+			Map<String, Object> prop = results.get(0);
+			return FieldUtil.getAsBeanFromMap(prop, CalendarColorContext.class);
 		}
 		return new CalendarColorContext();
+	}
+	
+	public static void setCalendarColor(CalendarColorContext calendarColor) throws Exception {
+		FacilioModule module = ModuleFactory.getCalendarColorModule();
+		
+		CalendarColorContext currentColor = getCalendarColor();
+		if (currentColor != null && currentColor.getId() != -1) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(module.getTableName())
+					.fields(FieldFactory.getCalendarColorFields())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+
+			Map<String, Object> prop = FieldUtil.getAsProperties(calendarColor);
+			updateBuilder.update(prop);
+		}
+		else {
+			currentColor.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			Map<String, Object> colorProp = FieldUtil.getAsProperties(currentColor);
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(module.getTableName())
+					.fields(FieldFactory.getCalendarColorFields())
+					.addRecord(colorProp);
+
+			insertBuilder.save();
+		}
 	}
 	
 	public static long getEstimatedWorkDuration (TicketContext ticket) {
