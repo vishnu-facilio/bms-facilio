@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
@@ -49,6 +51,15 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
+	
+	public static String getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+		
+		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
+			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
+			return dateTime.getYear() +" "+ dateTime.getMonth().getValue();
+		}
+		return null;
+	}
 	
 	public static JSONObject getStandardVariance(List<Map<String, Object>> props) {
 		Double min = null ,max = null,avg = null,sum = (double) 0;

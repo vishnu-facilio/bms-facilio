@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +26,12 @@ import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
@@ -640,6 +642,62 @@ public class DashboardAction extends ActionSupport {
 				column.setData(getDataForReadings(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1));
 			}
 		}
+		Multimap<String, Object> resultMap = ArrayListMultimap.create();
+		Map<String,Long> dateMap = new HashMap<>();
+		JSONArray collumns = new JSONArray();
+		JSONArray dataJsonArray = new JSONArray();
+		
+		if(reportColumns.get(0).getReport().getxAxisaggregateFunction() != null) {
+			
+			JSONObject columnJson = new JSONObject();
+			columnJson.put("label", "Month");
+			columnJson.put("width", null);
+			columnJson.put("order", "1");
+			
+			collumns.add(columnJson);
+		}
+		
+		for (ReportColumnContext column : reportColumns) {
+			
+			JSONObject columnJson = new JSONObject();
+			columnJson.put("label", column.getReport().getName());
+			columnJson.put("width", null);
+			columnJson.put("order", column.getSequence()+1);
+			
+			collumns.add(columnJson);
+			
+			JSONArray datas = column.getData();
+			Iterator dataIterator = datas.iterator();
+			while(dataIterator.hasNext()) {
+				JSONObject data = (JSONObject) dataIterator.next();
+				Long time = (Long) data.get("label");
+				String value = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
+				dateMap.put(value, time);
+				resultMap.put(value, data.get("value"));
+			}
+		}
+		
+		for(String key:resultMap.keySet()) {
+			Collection<Object> d = resultMap.get(key);
+			JSONArray data = new JSONArray();
+			data.add(dateMap.get(key));
+			for(Object s:d) {
+				data.add(s);
+			}
+			dataJsonArray.add(data);
+		}
+		
+		System.out.println("dateMap -- "+collumns);
+		System.out.println("datas --- "+dataJsonArray);
+		
+		reportData = new JSONArray();
+		
+		JSONObject result = new JSONObject();
+		result.put("columns", collumns);
+		result.put("data", dataJsonArray);
+		
+		reportData.add(result);
+		
 		return SUCCESS;
 	}
 	

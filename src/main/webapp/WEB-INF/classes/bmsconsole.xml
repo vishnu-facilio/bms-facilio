@@ -3501,7 +3501,7 @@
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="root">reportColumns</param>
+				<param name="includeProperties">^reportData.*,^reportColumns.*</param>
 			</result>
 		</action>
 		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">
