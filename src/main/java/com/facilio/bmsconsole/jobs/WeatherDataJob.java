@@ -11,6 +11,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -31,6 +32,10 @@ public class WeatherDataJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_WEATHER_INTEGRATION))
+			{
+				return;
+			}
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
 			List<ReadingContext> readings= new ArrayList<ReadingContext>();
 			for(SiteContext site:sites) {
