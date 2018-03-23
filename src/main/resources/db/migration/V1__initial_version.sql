@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	CONSTRAINT UNIQUE_EMAIL UNIQUE(EMAIL)
 );
 
-CREATE TABLE `faciliousers` (
+CREATE TABLE IF NOT EXISTS `faciliousers` (
 `id` int( 11 ) NOT NULL AUTO_INCREMENT ,
 `username` varchar( 30 ) NOT NULL ,
 `email` varchar( 50 ) NOT NULL ,
