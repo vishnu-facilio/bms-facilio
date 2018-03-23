@@ -188,53 +188,60 @@ public class ExecuteAllWorkflowsCommand implements Command
 		}
 		switch (readingRule.getThresholdTypeEnum()) {
 			case FLAPPING:
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField(readingRule.getReadingFieldId());
+				FacilioField field = readingRule.getReadingField();
 				Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), record.getReading(field.getName()));
-				if (currentReadingObj != null && currentReadingObj instanceof Number) {
-					double diff = calculateDiff(readingRule, currentReadingObj, record, field, lastReadingMap);
-					double flapRange = Math.abs(readingRule.getMaxFlapValue() - readingRule.getMinFlapValue());
-					return isFlapped(readingRule, record, diff, flapRange);
+				if (currentReadingObj != null) {
+					boolean singleFlap = false;
+					Map<String, Object> lastValMap = lastReadingMap.get(record.getParentId()+"_"+field.getName());
+					Object lastReading = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), lastValMap.get("value"));
+					if (currentReadingObj instanceof Number) {
+						double diff = calculateDiff(readingRule, currentReadingObj, record, field, (Number) lastReading);
+						double flapRange = Math.abs(readingRule.getMaxFlapValue() - readingRule.getMinFlapValue());
+						singleFlap = diff >= flapRange;
+					}
+					else if (currentReadingObj instanceof Boolean) {
+						singleFlap = currentReadingObj != (Boolean) lastReading;
+					}
+					return singleFlap && isFlappedNTimes(readingRule, record);
 				}
-				break;
+				else {
+					return false;
+				}
 			default:
 				break;
 		}
 		return true;
 	}
 	
-	private boolean isFlapped(ReadingRuleContext readingRule, ReadingContext record, double diff, double flapRange) throws Exception {
+	private boolean isFlappedNTimes(ReadingRuleContext readingRule, ReadingContext record) throws Exception {
 		boolean flapThreshold = false;
-		if (diff >= flapRange) {
-			List<Long> flapsToBeDeleted = new ArrayList<>();
-			List<Map<String, Object>> flaps = getFlaps(readingRule.getId());
-			int flapCount = 0;
-			if (flaps != null && !flaps.isEmpty()) {
-				flapCount = flaps.size();
-				for(Map<String, Object> flap : flaps) {
-					if (record.getTtime() - (long) flap.get("flapTime") > readingRule.getFlapInterval()) {
-						flapsToBeDeleted.add((Long) flap.get("id"));
-						flapCount--;
-					}
-				}
-			}
-			flapCount++;
-			flapThreshold = flapCount == readingRule.getFlapFrequency();
-			if (flapThreshold) {
-				//Reset prev flaps
-				flapsToBeDeleted.clear();
-				for(Map<String, Object> flap : flaps) {
+		List<Long> flapsToBeDeleted = new ArrayList<>();
+		List<Map<String, Object>> flaps = getFlaps(readingRule.getId());
+		int flapCount = 0;
+		if (flaps != null && !flaps.isEmpty()) {
+			flapCount = flaps.size();
+			for(Map<String, Object> flap : flaps) {
+				if (record.getTtime() - (long) flap.get("flapTime") > readingRule.getFlapInterval()) {
 					flapsToBeDeleted.add((Long) flap.get("id"));
+					flapCount--;
 				}
-				flapCount = 0;
 			}
-			else {
-				addFlap(readingRule.getId(), record.getTtime());
-			}
-			updateFlapCount(readingRule.getId(), flapCount);
-			deleteOldFlaps(flapsToBeDeleted);
-			
 		}
+		flapCount++;
+		flapThreshold = flapCount == readingRule.getFlapFrequency();
+		if (flapThreshold) {
+			//Reset prev flaps
+			flapsToBeDeleted.clear();
+			for(Map<String, Object> flap : flaps) {
+				flapsToBeDeleted.add((Long) flap.get("id"));
+			}
+			flapCount = 0;
+		}
+		else {
+			addFlap(readingRule.getId(), record.getTtime());
+		}
+		updateFlapCount(readingRule.getId(), flapCount);
+		deleteOldFlaps(flapsToBeDeleted);
 		return flapThreshold;
 	}
 	
@@ -276,11 +283,8 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return insertBuilder.insert(newFlap);
 	}
 	
-	private double calculateDiff(ReadingRuleContext rule, Object currentReadingObj, ReadingContext record, FacilioField field, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
+	private double calculateDiff(ReadingRuleContext rule, Object currentReadingObj, ReadingContext record, FacilioField field, Number lastReading) throws Exception {
 		double diff = -1;
-		Map<String, Object> lastValMap = lastReadingMap.get(record.getParentId()+"_"+field.getName());
-		Number lastReading = (Number) FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), lastValMap.get("value"));
-		
 		if (lastReading == null) {
 			return 0;
 		}
