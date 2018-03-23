@@ -130,7 +130,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			case PM_READING_RULE:
 				Map<String, Object> lastValue = lastReadingMap.get(((ReadingContext)record).getParentId()+"_"+((ReadingRuleContext)rule).getReadingField().getName());
 				if (lastValue != null) {
-					recordPlaceHolders.put("previousValue", lastValue.get("value"));
+					recordPlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(((ReadingRuleContext)rule).getReadingField().getDataTypeEnum(), lastValue.get("value")));
 				}
 				break;
 			default:
