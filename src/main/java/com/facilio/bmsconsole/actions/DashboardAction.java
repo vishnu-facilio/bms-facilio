@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaContext;
@@ -2350,6 +2351,24 @@ public class DashboardAction extends ActionSupport {
 		if (moduleName != null) {
 			dashboards = DashboardUtil.getDashboardList(moduleName);
 		}
+		return SUCCESS;
+	}
+	
+	private List<DashboardSharingContext> dashboardSharing;
+	public List<DashboardSharingContext> getDashboardSharing() {
+		return dashboardSharing;
+	}
+	public void setDashboardSharing(List<DashboardSharingContext> dashboardSharing) {
+		this.dashboardSharing = dashboardSharing;
+	}
+	
+	public String viewDashboardSharing() throws Exception {
+		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
+		return SUCCESS;
+	}
+	
+	public String applyDashboardSharing() throws Exception {
+		DashboardUtil.applyDashboardSharing(dashboardId, dashboardSharing);
 		return SUCCESS;
 	}
 	

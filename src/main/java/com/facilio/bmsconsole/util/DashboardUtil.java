@@ -17,6 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
@@ -34,7 +35,6 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -392,6 +392,46 @@ public class DashboardUtil {
 			}
 		}
 		return dashboardList;
+	}
+	
+	public static List<DashboardSharingContext> getDashboardSharing(Long dashboardId) throws Exception {
+		
+		List<DashboardSharingContext> dashboardSharingList = new ArrayList<DashboardSharingContext>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardSharingFields())
+				.table(ModuleFactory.getDashboardSharingModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+			
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				DashboardSharingContext dashboardSharing = FieldUtil.getAsBeanFromMap(prop, DashboardSharingContext.class);
+				dashboardSharingList.add(dashboardSharing);	
+			}
+		}
+		return dashboardSharingList;
+	}
+	
+	public static void applyDashboardSharing(Long dashboardId, List<DashboardSharingContext> dashboardSharingList) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getDashboardSharingModule().getTableName())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		deleteBuilder.delete();
+		
+		List<Map<String, Object>> dashboardSharingProps = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		for(DashboardSharingContext dashboardSharing : dashboardSharingList) {
+			dashboardSharing.setOrgId(orgId);
+			dashboardSharingProps.add(FieldUtil.getAsProperties(dashboardSharing));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getDashboardSharingModule().getTableName())
+					.fields(FieldFactory.getDashboardSharingFields())
+					.addRecords(dashboardSharingProps);
+		insertBuilder.save();
 	}
 	
 	public static String getWhereClauseForUserFilter(FacilioField field) {

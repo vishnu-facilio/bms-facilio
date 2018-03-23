@@ -12,7 +12,7 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	public long getDashboardId() {
 		return dashboardId;
 	}
-	public void setDashboardId(Long dashboardId) {
+	public void setDashboardId(long dashboardId) {
 		this.dashboardId = dashboardId;
 	}
 	
@@ -20,7 +20,7 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	public long getOrgUserId() {
 		return orgUserId;
 	}
-	public void setOrgUserId(Long orgUserId) {
+	public void setOrgUserId(long orgUserId) {
 		this.orgUserId = orgUserId;
 	}
 	
@@ -28,7 +28,7 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	public long getRoleId() {
 		return roleId;
 	}
-	public void setRoleId(Long roleId) {
+	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
 	
@@ -36,7 +36,7 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	public long getGroupId() {
 		return groupId;
 	}
-	public void setGroupId(Long groupId) {
+	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
 	
