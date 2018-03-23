@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

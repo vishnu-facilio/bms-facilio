@@ -3,7 +3,6 @@ package com.facilio.events.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
