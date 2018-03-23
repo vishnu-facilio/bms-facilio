@@ -1154,6 +1154,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ProcessDataCommand());
 		c.addCommand(new ModeledDataCommand());
 		c.addCommand(new UnModeledDataCommand());
+		c.addCommand(getAddOrUpdateReadingValuesChain());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -1162,6 +1163,7 @@ public class FacilioChainFactory {
 		Chain c = new TransactionChain();
 		c.addCommand(new HistoricalReadingsCommand());
 		c.addCommand(new BulkModeledReadingCommand());
+		c.addCommand(getAddOrUpdateReadingValuesChain());
 		addCleanUpCommand(c);
 		return c;
 	}
