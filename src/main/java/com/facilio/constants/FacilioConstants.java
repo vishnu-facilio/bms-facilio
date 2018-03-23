@@ -413,6 +413,8 @@ public class FacilioConstants {
 		public static final String PUBLICKEYFILETYPE = "publicKeyFileNameType";
 		public static final String MARKED_READINGS = "markedReadings";
 		public static final String WEATHER_READING = "weather";
+		public static final String CDD_READING="cdd";
+		public static final String HDD_READING="hdd";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -453,6 +455,8 @@ public class FacilioConstants {
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
+			classMap.put(CDD_READING, ReadingContext.class);
+			classMap.put(HDD_READING, ReadingContext.class);
 
 			
 			return classMap;

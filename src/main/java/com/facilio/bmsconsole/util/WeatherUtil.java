@@ -21,7 +21,7 @@ public class WeatherUtil {
 	private static String weatherURL=AwsUtil.getConfig("weather.url")+AwsUtil.getConfig("weather.key")+"/";
 	private static String weatherParams="?units=si&exclude=flags,daily,hourly,alerts";
 	
-	public static int apiCallCount=0;
+	private static int apiCallCount=0;
 	
 	public static String getResponse (HttpURLConnection connection) throws Exception {
 
@@ -49,6 +49,12 @@ public class WeatherUtil {
 					response = rawResponse;
 				}
 			}
+			
+			String apiCount=connection.getHeaderField("X-Forecast-API-Calls");
+			if(apiCount!=null) {
+				apiCallCount=Integer.valueOf(apiCount);
+			}
+			System.err.println("Weather API call count: "+apiCallCount);
 			
 		} catch (IOException e) {
 			System.err.println("Error: "+e.getMessage());		

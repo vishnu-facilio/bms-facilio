@@ -94,7 +94,7 @@ public class WeatherDataJob extends FacilioJob {
 	private ReadingContext getReading(long siteId,Map<String,Object> currentWeather) {
 		
 		
-		Double temperature=(Double)currentWeather.get("temperature");
+		Object temperature=currentWeather.get("temperature");
 		Long time=(Long)currentWeather.get("time");
 		
 		if(temperature==null) {
