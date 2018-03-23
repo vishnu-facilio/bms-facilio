@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -39,10 +41,12 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExecuteAllWorkflowsCommand implements Command 
 {
+	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
 	RuleType[] ruleTypes;
 	public ExecuteAllWorkflowsCommand(RuleType... ruleTypes) {
 		// TODO Auto-generated constructor stub
@@ -62,6 +66,11 @@ public class ExecuteAllWorkflowsCommand implements Command
 				}
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			if (moduleName == null || moduleName.isEmpty() || records == null || records.isEmpty()) {
+				logger.log(Level.WARNING, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+records);
+				return false;
+			}
+			
 			recordMap = Collections.singletonMap(moduleName, records);
 		}
 //		records = new LinkedList<>(records);
@@ -70,6 +79,12 @@ public class ExecuteAllWorkflowsCommand implements Command
 			Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 				String moduleName = entry.getKey();
+				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
+					logger.log(Level.WARNING, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
+					continue;
+				}
+				
+				
 				List records = new LinkedList<>(entry.getValue());
 				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 				if(activityType != null) {
