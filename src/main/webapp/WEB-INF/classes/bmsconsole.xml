@@ -66,6 +66,20 @@
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
+		<action name="validateRegistration" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="verifyEmail">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">invitation.*</param>
+			</result>
+		</action>
+		<action name="fresetPassword" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="resetPassword">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">invitation.*</param>
+			</result>
+		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogin">
 			<param name="auth">false</param>

@@ -19,6 +19,10 @@ public interface UserBean {
 	
 	public boolean updateUser(long ouid, User user) throws Exception;
 	
+	public boolean updateUser(User user) throws Exception;
+	
+	public boolean sendResetPassword(User user) throws Exception;
+	
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public boolean deleteUser(long ouid) throws Exception;

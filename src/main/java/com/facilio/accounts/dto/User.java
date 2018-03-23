@@ -19,6 +19,7 @@ public class User {
 	private String email;
 	private long photoId;
 	private String timezone;
+	private String password;
 	private String language;
 	private String phone;
 	private String mobile;
@@ -55,6 +56,12 @@ public class User {
 	}
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	private Boolean userVerified;
 	public Boolean getUserVerified() {

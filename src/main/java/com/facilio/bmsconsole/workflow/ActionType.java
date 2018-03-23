@@ -311,11 +311,11 @@ public enum ActionType {
 			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
 			switch (rule.getThresholdTypeEnum()) {
 				case SIMPLE:
-					appendSimpleMsg(msgBuilder, operator, rule);
+					appendSimpleMsg(msgBuilder, operator, rule, reading);
 					appendOccurences(msgBuilder, rule);
 					break;
 				case AGGREGATION:
-					appendSimpleMsg(msgBuilder, operator, rule);
+					appendSimpleMsg(msgBuilder, operator, rule, reading);
 					break;
 				case BASE_LINE:
 					appendBaseLineMsg(msgBuilder, operator, rule);
@@ -356,7 +356,7 @@ public enum ActionType {
 			}
 		}
 		
-		private void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule) {
+		private void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule, ReadingContext reading) {
 			switch (operator) {
 				case EQUALS:
 					msgBuilder.append("was ");
@@ -373,7 +373,14 @@ public enum ActionType {
 					msgBuilder.append("exceeded ");
 					break;
 			}
-			msgBuilder.append(rule.getPercentage());
+			if ("${previousValue}".equals(rule.getPercentage())) {
+				msgBuilder.append("previous value (")
+							.append(reading.getReading(rule.getReadingField().getName()))
+							.append(")");
+			}
+			else {
+				msgBuilder.append(rule.getPercentage());
+			}
 			appendUnit(msgBuilder, rule);
 		}
 		

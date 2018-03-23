@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
@@ -11,7 +10,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;

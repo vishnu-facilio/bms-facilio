@@ -5,7 +5,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
-import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 

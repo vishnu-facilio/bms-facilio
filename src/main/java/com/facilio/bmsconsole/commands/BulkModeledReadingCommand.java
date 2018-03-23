@@ -94,7 +94,9 @@ public class BulkModeledReadingCommand implements Command {
 			}
 		}
 		
-		context.put(FacilioConstants.ContextNames.MODELED_DATA,moduleVsReading);
+		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
+		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
+		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, true);
 		
 		return false;
 	}

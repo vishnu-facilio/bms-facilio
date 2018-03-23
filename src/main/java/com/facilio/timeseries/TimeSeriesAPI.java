@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -28,7 +27,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class TimeSeriesAPI {
 
 	
-	@SuppressWarnings({ "unchecked"})
 	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
@@ -37,28 +35,7 @@ public class TimeSeriesAPI {
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
 		Chain processDataChain = FacilioChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
-		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
-		insertRecords(moduleVsReading,true);
 	}
-	
-
-	private static void insertRecords(Map<String,List<ReadingContext>> moduleVsReading, boolean updateLastReading)
-			throws InstantiationException, IllegalAccessException, Exception {
-		
-		for(Map.Entry<String, List<ReadingContext>> map:moduleVsReading.entrySet()) {
-			String moduleName=map.getKey();
-			List<ReadingContext> readingsList=map.getValue();
-
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			context.put(FacilioConstants.ContextNames.READINGS, readingsList);
-			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,updateLastReading);
-			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !updateLastReading);
-			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-			addReading.execute(context);
-		}
-	}
-	
 	
 
 	private static long getTimeStamp(long ttime, JSONObject payLoad) {
@@ -79,15 +56,12 @@ public class TimeSeriesAPI {
 	}
 
 	
-	@SuppressWarnings({ "unchecked"})
 	public static void processHistoricalData(List<String>deviceList) throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
 		Chain processDataChain = FacilioChainFactory.getProcessHistoricalDataChain();
 		processDataChain.execute(context);
-		Map<String,List<ReadingContext>> moduleVsReading = (Map<String,List<ReadingContext>>)context.get(FacilioConstants.ContextNames.MODELED_DATA);
-		insertRecords(moduleVsReading,false);
 	}
 	
 	

@@ -819,6 +819,13 @@ public class AccountConstants {
 		cognitoId.setColumnName("COGNITO_ID");
 		cognitoId.setModule(module);
 		fields.add(cognitoId);
+		
+		FacilioField password = new FacilioField();
+		password.setName("password");
+		password.setDataType(FieldType.STRING);
+		password.setColumnName("PASSWORD");
+		password.setModule(module);
+		fields.add(password);
 
 		FacilioField userVerified = new FacilioField();
 		userVerified.setName("userVerified");

@@ -60,6 +60,7 @@
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
+	
 
 	<action name="opChangePassword" class="com.facilio.integration.actions.Home"
 			method="changePassword">
@@ -71,7 +72,15 @@
 		</result>
 	</action>
 
-
+	<action name="changepassword" class="com.facilio.integration.actions.Home"
+			method="changePassword">
+		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
 	<action name="apilogin" class="com.facilio.integration.actions.Home"
 	method="generateAuthToken">
 		<result name="success" type="json">
@@ -82,6 +91,9 @@
 	<action name="apisignup" class="com.facilio.integration.actions.Home"
 	method="signupUser">
 		<result name="success" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
