@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -22,6 +23,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -73,6 +75,18 @@ public class AlarmAction extends ActionSupport {
 		Chain updateAlarm = FacilioChainFactory.getUpdateAlarmChain();
 		updateAlarm.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		List<WorkOrderContext> workorders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
+		if (workorders != null && !workorders.isEmpty()) {
+			for (WorkOrderContext wo : workorders) {
+				FacilioContext woContext = new FacilioContext();
+				woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				woContext.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
+				
+				Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
+				addWorkOrder.execute(woContext);
+			}
+		}
 
 		return SUCCESS;
 	}

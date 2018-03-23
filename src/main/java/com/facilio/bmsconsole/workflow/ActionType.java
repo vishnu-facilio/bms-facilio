@@ -191,6 +191,9 @@ public enum ActionType {
 					if (toIds != null) {
 						String[] toList = toIds.trim().split(",");
 						for ( String toId : toList) {
+							if (toId.isEmpty()) {
+								continue;
+							}
 							reciepents.add(Long.valueOf(toId));
 						}
 						

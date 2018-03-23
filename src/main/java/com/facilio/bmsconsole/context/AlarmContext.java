@@ -65,6 +65,9 @@ public class AlarmContext extends TicketContext {
 		}
 		return null;
 	}
+	public AlarmType getAlarmTypeEnum() {
+		return alarmType;
+	}
 
 	private long createdTime = -1;
 	public long getCreatedTime() {

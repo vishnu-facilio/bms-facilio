@@ -90,13 +90,25 @@ public class AlarmAPI {
 	}
 	
 	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
-		//if(alarm.getType() == AlarmContext.AlarmType.LIFE_SAFETY.getIntVal()) 
-		{
-			TicketCategoryContext category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
-			if(category != null) {
-				destinationAlarm.setCategory(category);
-			}
+		
+		TicketCategoryContext category =  null;
+		switch (sourceAlarm.getAlarmTypeEnum()) {
+			case FIRE:
+				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
+				break;
+			case HVAC:
+				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "HVAC");
+				break;
+			case ENERGY:
+				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Energy");
+				break;
+			default:
+				break;
 		}
+		if(category != null) {
+			destinationAlarm.setCategory(category);
+		}
+		
 		if(sourceAlarm != destinationAlarm && destinationAlarm.getSeverity() != null) {
 			destinationAlarm.setPreviousSeverity(sourceAlarm.getSeverity());
 		}
