@@ -512,7 +512,7 @@ public class FieldFactory {
 		fields.add(getField("aggregation", "AGGREGATION", module, FieldType.STRING));
 		fields.add(getField("dateRange", "DATE_RANGE", module, FieldType.NUMBER));
 		fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
-		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.NUMBER));
+		fields.add(getField("percentage", "PERCENTAGE", module, FieldType.STRING));
 		fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("thresholdType", "THRESHOLD_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("flapCount", "FLAP_COUNT", module, FieldType.NUMBER));

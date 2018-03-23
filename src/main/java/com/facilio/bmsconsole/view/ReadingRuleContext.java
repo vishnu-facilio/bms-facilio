@@ -100,14 +100,14 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.operatorId = operatorId;
 	}
 
-	private long percentage = -1;
-	public long getPercentage() {
+	private String percentage;
+	public String getPercentage() {
 		return percentage;
 	}
-	public void setPercentage(long percentage) {
+	public void setPercentage(String percentage) {
 		this.percentage = percentage;
 	}
-	
+
 	private ThresholdType thresholdType;
 	public int getThresholdType() {
 		if (thresholdType != null) {

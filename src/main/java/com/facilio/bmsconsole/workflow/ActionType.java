@@ -457,8 +457,8 @@ public enum ActionType {
 			}
 		}
 		
-		private void updatePercentage(long percentage, StringBuilder msgBuilder) {
-			if (percentage != 0) {
+		private void updatePercentage(String percentage, StringBuilder msgBuilder) {
+			if (percentage != null && !percentage.equals("0")) {
 				msgBuilder.append(percentage)
 							.append("% ");
 			}
