@@ -3355,6 +3355,7 @@ public class FieldFactory {
 		fields.add(getField("baseLineAdjust", "BASE_LINE_ADJUST", module, FieldType.BOOLEAN));
 		fields.add(getField("sequence", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("width", "WIDTH", module, FieldType.NUMBER));
 		
 		return fields;
 	}

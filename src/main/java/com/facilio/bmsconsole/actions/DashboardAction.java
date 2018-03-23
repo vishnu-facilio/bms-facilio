@@ -680,20 +680,16 @@ public class DashboardAction extends ActionSupport {
 			JSONObject columnJson = new JSONObject();
 			if(isFirst) {
 				if(column.getReport().getxAxisaggregateFunction() != null) {
-					
 					columnJson.put("label", "Month");
-					columnJson.put("width", null);
-					columnJson.put("order", "1");
-					
-					collumns.add(columnJson);
 				}
 				isFirst = false;
-				continue;
+			}
+			else {
+				columnJson.put("label", column.getReport().getName());
 			}
 			
-			columnJson.put("label", column.getReport().getName());
-			columnJson.put("width", null);
-			columnJson.put("order", column.getSequence()+1);
+			columnJson.put("width", column.getWidth());
+			columnJson.put("order", column.getSequence());
 			
 			collumns.add(columnJson);
 			
@@ -1053,7 +1049,7 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		builder.orderBy("TTIME");
+//		builder.orderBy("TTIME");
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())

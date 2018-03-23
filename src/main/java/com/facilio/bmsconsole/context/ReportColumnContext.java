@@ -3,6 +3,16 @@ package com.facilio.bmsconsole.context;
 import org.json.simple.JSONArray;
 
 public class ReportColumnContext {
+	
+	int width;
+	
+	public int getWidth() {
+		return width;
+	}
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;
