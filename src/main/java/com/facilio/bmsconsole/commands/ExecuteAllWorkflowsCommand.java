@@ -73,7 +73,6 @@ public class ExecuteAllWorkflowsCommand implements Command
 			
 			recordMap = Collections.singletonMap(moduleName, records);
 		}
-//		records = new LinkedList<>(records);
 		
 		if(recordMap != null && !recordMap.isEmpty()) {
 			Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
@@ -103,11 +102,10 @@ public class ExecuteAllWorkflowsCommand implements Command
 							Iterator<Integer> it = records.iterator();
 							while (it.hasNext()) {
 								Object record = it.next();
-								Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
-								CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
-								boolean miscFlag = evaluateMisc(workflowRule, record, recordPlaceHolders, lastReadingMap);
-								boolean criteriaFlag = evaluateCriteria(workflowRule, record, recordPlaceHolders);
-								boolean workflowFlag = evaluateWorkflowExpression(workflowRule, record, recordPlaceHolders);
+								Map<String, Object> recordPlaceHolders = getPlaceHoldersBasedOnType(moduleName, workflowRule, record, rulePlaceHolders, lastReadingMap);
+								boolean miscFlag = evaluateMiscBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+								boolean criteriaFlag = evaluateCriteriaBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+								boolean workflowFlag = evaluateWorkflowExpressionBaseOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
 								if(criteriaFlag && workflowFlag && miscFlag) {
 									executeWorkflowActions(workflowRule, record, context, recordPlaceHolders);
 									if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
@@ -123,7 +121,26 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return false;
 	}
 	
-	private boolean evaluateWorkflowExpression (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders) throws Exception {
+	private Map<String, Object> getPlaceHoldersBasedOnType(String moduleName, WorkflowRuleContext rule, Object record, Map<String, Object> rulePlaceHolders, Map<String, Map<String, Object>> lastReadingMap) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
+		Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
+		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+		
+		switch (rule.getRuleTypeEnum()) {
+			case READING_RULE:
+			case PM_READING_RULE:
+				Map<String, Object> lastValue = lastReadingMap.get(((ReadingContext)record).getParentId()+"_"+((ReadingRuleContext)rule).getReadingField().getName());
+				if (lastValue != null) {
+					recordPlaceHolders.put("previousValue", lastValue.get("value"));
+				}
+				break;
+			default:
+				break;
+		}
+		
+		return recordPlaceHolders;
+	}
+	
+	private boolean evaluateWorkflowExpressionBaseOnType (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
 		boolean workflowFlag = true;
 		if (workflowRule.getWorkflow() != null && workflowRule.getWorkflow().isBooleanReturnWorkflow()) {
 			double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflowRule.getWorkflow().getWorkflowString(), placeHolders);
@@ -132,7 +149,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return workflowFlag;
 	}
 	
-	private boolean evaluateCriteria (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders) throws Exception {
+	private boolean evaluateCriteriaBasedOnType (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
 		boolean criteriaFlag = true;
 		Criteria criteria = workflowRule.getCriteria();
 		if(criteria != null) {
@@ -152,12 +169,12 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return criteriaFlag;
 	}
 	
-	private boolean evaluateMisc (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
+	private boolean evaluateMiscBasedOnType (WorkflowRuleContext workflowRule, Object record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
 		boolean miscFlag = true;
 		switch (workflowRule.getRuleTypeEnum()) {
 			case READING_RULE:
 			case PM_READING_RULE:
-				miscFlag = evelauteMiscForReadingRule((ReadingRuleContext)workflowRule, (ReadingContext) record, placeHolders, lastReadingMap);
+				miscFlag = evaluateMiscForReadingRule((ReadingRuleContext)workflowRule, (ReadingContext) record, placeHolders, lastReadingMap);
 				break;
 			default:
 				break;
@@ -165,7 +182,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 		return miscFlag;
 	}
 	
-	private boolean evelauteMiscForReadingRule (ReadingRuleContext readingRule, ReadingContext record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
+	private boolean evaluateMiscForReadingRule (ReadingRuleContext readingRule, ReadingContext record, Map<String, Object> placeHolders, Map<String, Map<String, Object>> lastReadingMap) throws Exception {
 		if (readingRule.getResourceId() != record.getParentId()) {
 			return false;
 		}
