@@ -646,6 +646,7 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	public String getTabularData() throws Exception {
+		
 		reportContext = DashboardUtil.getReportContext(reportId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -672,19 +673,24 @@ public class DashboardAction extends ActionSupport {
 		JSONArray collumns = new JSONArray();
 		JSONArray dataJsonArray = new JSONArray();
 		
-		if(reportColumns.get(0).getReport().getxAxisaggregateFunction() != null) {
-			
-			JSONObject columnJson = new JSONObject();
-			columnJson.put("label", "Month");
-			columnJson.put("width", null);
-			columnJson.put("order", "1");
-			
-			collumns.add(columnJson);
-		}
+		boolean isFirst = true;
 		
 		for (ReportColumnContext column : reportColumns) {
 			
 			JSONObject columnJson = new JSONObject();
+			if(isFirst) {
+				if(column.getReport().getxAxisaggregateFunction() != null) {
+					
+					columnJson.put("label", "Month");
+					columnJson.put("width", null);
+					columnJson.put("order", "1");
+					
+					collumns.add(columnJson);
+				}
+				isFirst = false;
+				continue;
+			}
+			
 			columnJson.put("label", column.getReport().getName());
 			columnJson.put("width", null);
 			columnJson.put("order", column.getSequence()+1);
@@ -707,6 +713,9 @@ public class DashboardAction extends ActionSupport {
 			JSONArray data = new JSONArray();
 			data.add(dateMap.get(key));
 			for(Object s:d) {
+				if(s == null) {
+					data.add("null");
+				}
 				data.add(s);
 			}
 			dataJsonArray.add(data);
