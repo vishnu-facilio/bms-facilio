@@ -14,7 +14,9 @@ import com.facilio.email.EmailUtil;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
-	INVITE_USER(2);
+	INVITE_USER(2),
+	EMAIL_VERIFICATION(3),
+	RESET_PASSWORD(4);
 	
 	private int val;
 	private String templateJson;
@@ -83,6 +85,18 @@ public enum AccountEmailTemplate {
 				json.put("to", "${user.email}");
 				json.put("subject", "[Facilio] ${inviter.name} has invited you to join the ${org.name} organization");
 				json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+				break;
+			case 3:
+				json.put("sender", "support@facilio.com");
+				json.put("to", "${user.email}");
+				json.put("subject", "Welcome! And confirm your email");
+				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+				break;
+			case 4:
+				json.put("sender", "support@facilio.com");
+				json.put("to", "${user.email}");
+				json.put("subject", "Reset your Facilio password");
+				json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
 				break;
 		}
 		return json;

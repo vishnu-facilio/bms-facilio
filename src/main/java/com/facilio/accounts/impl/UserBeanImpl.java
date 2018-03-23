@@ -62,10 +62,14 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-
+		sendEmailRegistration(user.getOrgId(),user);
 		return (Long) props.get("id");
 	}
 	
+	public boolean updateUser(User user) throws Exception {
+		return updateUserEntry(user.getEmail(), user);
+	}
+
 	private boolean updateUserEntry(String email, User user) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -177,6 +181,29 @@ public class UserBeanImpl implements UserBean {
 		return true;
 	}
 	
+	public boolean sendResetPassword(User user) throws Exception {
+		
+		String inviteToken = EncryptionUtil.encode(user.getEmail() + "#" + System.currentTimeMillis());
+		String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/fconfirm_reset_password/" + inviteToken;
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("invitelink", inviteLink);
+		
+		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
+		return true;
+	}
+	
+	private boolean sendEmailRegistration(long orgId, User user) throws Exception {
+			
+			String inviteToken = EncryptionUtil.encode(user.getEmail() + "#" + System.currentTimeMillis());
+			String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/emailregistration/" + inviteToken;
+			Map<String, Object> placeholders = new HashMap<>();
+			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+			placeholders.put("invitelink", inviteLink);
+			
+			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+			return true;
+		}
 	@Override
 	public boolean resendInvite(long ouid) throws Exception {
 		

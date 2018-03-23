@@ -68,6 +68,7 @@ import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.integration.actions.Home;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -451,6 +452,38 @@ public class LoginAction extends ActionSupport{
 		}
 		return invitation;
 	}
+	
+	public JSONObject acceptRegistrationInvite(String inviteToken) throws Exception {
+		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
+		String email = inviteIds[0];
+		long time = Long.parseLong(inviteIds[1]);
+
+		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
+
+		JSONObject invitation = new JSONObject();
+
+		User user = AccountUtil.getUserBean().getUser(email);
+		if ((System.currentTimeMillis() - time) > inviteLinkExpireTime) {
+			invitation.put("error", "link_expired");
+		}
+		else {
+			//boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
+			boolean acceptStatus = (user != null);
+			if (acceptStatus) {
+				user.setUserVerified(true);
+				AccountUtil.getUserBean().updateUser(user);
+				invitation.put("email", email);
+				invitation.put("accepted", true);
+			}
+			else {
+				invitation.put("accepted", false);
+			}
+		}
+		return invitation;
+	}
+	
+	
+	
 
 	public String acceptInvite() throws Exception {
 		
@@ -460,6 +493,67 @@ public class LoginAction extends ActionSupport{
 		return SUCCESS;
 	}
 	
+	public String verifyEmail() throws Exception {
+		
+		JSONObject invitation = acceptRegistrationInvite(getInviteToken());
+		ActionContext.getContext().getValueStack().set("invitation", invitation);
+		
+		return SUCCESS;
+	}
+	
+	public String resetPassword() throws Exception {
+		JSONObject invitation = new JSONObject();
+		if(getInviteToken() != null) {
+			invitation = resetPassword(getInviteToken());
+		} else {
+			User user = AccountUtil.getUserBean().getUser(getEmailaddress());
+			if(user != null) {
+				AccountUtil.getUserBean().sendResetPassword(user);
+				invitation.put("status", "success");
+			} else {
+				invitation.put("status", "failed");
+			}
+		}
+		ActionContext.getContext().getValueStack().set("invitation", invitation);
+		return SUCCESS;
+	}
+	
+	public JSONObject resetPassword(String inviteToken) throws Exception {
+		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
+		String email = inviteIds[0];
+		long time = Long.parseLong(inviteIds[1]);
+
+		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
+
+		JSONObject invitation = new JSONObject();
+
+		User user = AccountUtil.getUserBean().getUser(email);
+		if ((System.currentTimeMillis() - time) > inviteLinkExpireTime) {
+			invitation.put("error", "link_expired");
+		}
+		else {
+			//boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
+			if(user != null) {
+				String encryptedPassword = Home.cryptWithMD5(getPassword());
+				user.setPassword(encryptedPassword);
+				AccountUtil.getUserBean().updateUser(user);
+				invitation.put("status", "success");
+			}
+		}
+		return invitation;
+	}
+	
+	private String emailaddress;
+	
+	private String password;
+	
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	private String inviteToken;
 	
 	public String getInviteToken() {
@@ -745,5 +839,11 @@ public class LoginAction extends ActionSupport{
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public String getEmailaddress() {
+		return emailaddress;
+	}
+	public void setEmailaddress(String emailaddress) {
+		this.emailaddress = emailaddress;
 	}
 }

@@ -14,13 +14,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.LoginAction;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -43,6 +48,7 @@ state = PORTAL-yogendrababu
 	}
 
 	public void setUsername(String username) {
+		System.out.println("setting user name" + username);
 		this.username = username;
 	}
 
@@ -56,6 +62,35 @@ state = PORTAL-yogendrababu
 	private String username = null;
 	private String password = null;
 	private String inviteToken = null;
+	
+    public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getCompanyname() {
+		return companyname;
+	}
+	public void setCompanyname(String companyname) {
+		this.companyname = companyname;
+	}
+	public String getDomainname() {
+		return domainname;
+	}
+	public void setDomainname(String domainname) {
+		this.domainname = domainname;
+	}
+	public String getTimezone() {
+		return timezone;
+	}
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+	private String phone;
+	private String companyname;
+	private String domainname;
+	private String timezone;
 
 	public String getInviteToken() {
 		return inviteToken;
@@ -94,23 +129,13 @@ state = PORTAL-yogendrababu
 	}
 
 	public String changePassword() throws Exception {
-		boolean verifyOldPassword = verifyPassword(getEmailaddress(), cryptWithMD5(password));
+		User user = AccountUtil.getCurrentUser(); 
+		String email = user.getEmail();
+		boolean verifyOldPassword = verifyPassword(email, cryptWithMD5(password));
 		if(verifyOldPassword) {
-			Connection conn = null;
-			PreparedStatement pstmt = null;
-			try {
-				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("UPDATE faciliousers SET password = ? WHERE email= ?");
-				pstmt.setString(1, cryptWithMD5(newPassword));
-				pstmt.setString(2, emailaddress);
-				pstmt.executeUpdate();
-
-			} catch(SQLException | RuntimeException e) {
-				e.printStackTrace();
-				throw e;
-			} finally {
-				DBUtil.closeAll(conn, pstmt);
-			}
+			String encryptedPassword = Home.cryptWithMD5(getNewPassword());
+			user.setPassword(encryptedPassword);
+			AccountUtil.getUserBean().updateUser(user);
 			setJsonresponse("message", "Password changed successfully");
 			setJsonresponse("status", "success");
 			return SUCCESS;
@@ -226,7 +251,7 @@ Pragma: no-cache
 		try
 		{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT password FROM faciliousers WHERE email = ? and password=?");
+			pstmt = conn.prepareStatement("SELECT password FROM Users WHERE email = ? and password=? and USER_VERIFIED=1");
 			pstmt.setString(1, emailaddress);
 			pstmt.setString(2, password);			
 			rs = pstmt.executeQuery();
@@ -298,6 +323,8 @@ Pragma: no-cache
 	}
 
 	public String signupUser() throws Exception	{
+		
+		
 		System.out.println("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() );
 		String encryptedPass = cryptWithMD5(password);
 		
@@ -351,18 +378,46 @@ Pragma: no-cache
 
 	public String AddNewUserDB(String username, String password, String emailaddress) throws Exception
 	{
+		User userObj = AccountUtil.getUserBean().getUser(emailaddress);
+		if(userObj != null)
+		{
+			setJsonresponse("message", "Email already exists");
+			return ERROR;
+		}
+		Organization orgObj = AccountUtil.getOrgBean().getOrg(getDomainname());
+		if(orgObj != null)
+		{
+			setJsonresponse("message", "Org Domain Name already exists");
+			return ERROR;
+		}
 		System.out.println("### AddNewUserDB() :"+emailaddress);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try
 		{
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			/*conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password) VALUES(?,?,?)");
 			pstmt.setString(1, username);
 			pstmt.setString(2, emailaddress);
 			pstmt.setString(3, password);
-			pstmt.executeUpdate();
-				
+			pstmt.executeUpdate();*/
+			
+			JSONObject signupInfo = new JSONObject();
+			signupInfo.put("name", getUsername());
+			signupInfo.put("email", emailaddress);
+			signupInfo.put("cognitoId", "facilio");
+			signupInfo.put("phone", getPhone());
+			signupInfo.put("companyname", getCompanyname());
+			signupInfo.put("domainname", getDomainname());
+			signupInfo.put("isFacilioAuth", true);
+			signupInfo.put("timezone", getTimezone());
+			
+			signupInfo.put("password", password);
+			FacilioContext signupContext = new FacilioContext();
+			signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
+			
+			Chain c = FacilioChainFactory.getOrgSignupChain();
+			c.execute(signupContext);
 		}catch(SQLException | RuntimeException e)
 		{
 			e.printStackTrace();

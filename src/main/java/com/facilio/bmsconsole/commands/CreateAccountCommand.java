@@ -34,6 +34,7 @@ public class CreateAccountCommand implements Command {
 			String companyName = (String) signupInfo.get("companyname");
 			String orgDomain = (String) signupInfo.get("domainname");
 			String timezone = (String) signupInfo.get("timezone");
+			String password = (String) signupInfo.get("password");
 			
 			HttpServletRequest request = ServletActionContext.getRequest();
 			Locale locale = request.getLocale();
@@ -65,7 +66,7 @@ public class CreateAccountCommand implements Command {
 			user.setName(name);
 			user.setEmail(email);
 			user.setCognitoId(cognitoId);
-			user.setUserVerified(true);
+			user.setUserVerified(false);
 			user.setTimezone(timezone);
 			user.setLanguage(locale.getLanguage());
 			user.setCountry(locale.getCountry());
@@ -77,7 +78,7 @@ public class CreateAccountCommand implements Command {
 			user.setDefaultOrg(true);
 			user.setUserStatus(true);
 			user.setInvitedTime(System.currentTimeMillis());
-			
+			user.setPassword(password);
 			long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 			
 			context.put("orgId", orgId);
