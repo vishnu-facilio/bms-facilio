@@ -9,12 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
@@ -32,10 +35,12 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -331,15 +336,63 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
+		List<Long> dashboardIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				dashboardList.add(dashboard);
+				dashboardMap.put(dashboard.getId(), dashboard);
+				dashboardIds.add(dashboard.getId());
 			}
-			return dashboardList;
+			return getFilteredDashboards(dashboardMap, dashboardIds);
 		}
 		return null;
+	}
+	
+	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds) throws Exception {
+		
+		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+		if (!dashboardMap.isEmpty()) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDashboardSharingFields())
+					.table(ModuleFactory.getDashboardSharingModule().getTableName())
+					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+					.andCondition(CriteriaAPI.getCondition("Dashboard_Sharing.DASHBOARD_ID", "dashboardId", StringUtils.join(dashboardIds, ","), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop : props) {
+					DashboardSharingContext dashboardSharing = FieldUtil.getAsBeanFromMap(prop, DashboardSharingContext.class);
+					if (dashboardIds.contains(dashboardSharing.getDashboardId())) {
+						dashboardIds.remove(dashboardSharing.getDashboardId());
+					}
+					if(!dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
+						if (dashboardSharing.getSharingTypeEnum().equals(SharingType.USER) && dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
+						}
+						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.ROLE) && dashboardSharing.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId()) {
+							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
+						}
+						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.GROUP)) {
+							List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentAccount().getUser().getOuid());
+							for (Group group : mygroups) {
+								if (dashboardSharing.getGroupId() == group.getGroupId() && !dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
+									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
+								}
+							}
+						}
+					}
+				}
+				for (Long dashboardId : dashboardIds) {
+					dashboardList.add(dashboardMap.get(dashboardId));
+				}
+			}
+			else {
+				dashboardList.addAll(dashboardMap.values());
+			}
+		}
+		return dashboardList;
 	}
 	
 	public static String getWhereClauseForUserFilter(FacilioField field) {

@@ -887,4 +887,12 @@ public class ModuleFactory {
 		reportColumns.setTableName("Report_Columns");
 		return reportColumns;
 	}
+	
+	public static FacilioModule getDashboardSharingModule() {
+		FacilioModule dashboardSharing = new FacilioModule();
+		dashboardSharing.setName("dashboardSharing");
+		dashboardSharing.setDisplayName("Dashboard Sharing");
+		dashboardSharing.setTableName("Dashboard_Sharing");
+		return dashboardSharing;
+	}
 }
