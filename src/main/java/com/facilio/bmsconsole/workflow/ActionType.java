@@ -433,16 +433,18 @@ public enum ActionType {
 			msgBuilder.append("flapped ")
 						.append(getInWords(rule.getFlapFrequency()));
 			
-			if (rule.getReadingField().getDataTypeEnum() == FieldType.BOOLEAN) {
-				msgBuilder.append(" between true/ false");
-			}
-			else {
-				msgBuilder.append(" below ")
-							.append(rule.getMinFlapValue());
-				appendUnit(msgBuilder, rule);
-				msgBuilder.append(" and beyond ")
-							.append(rule.getMaxFlapValue());
-				appendUnit(msgBuilder, rule);
+			switch (rule.getReadingField().getDataTypeEnum()) {
+				case NUMBER:
+				case DECIMAL:
+					msgBuilder.append(" below ")
+								.append(rule.getMinFlapValue());
+					appendUnit(msgBuilder, rule);
+					msgBuilder.append(" and beyond ")
+								.append(rule.getMaxFlapValue());
+					appendUnit(msgBuilder, rule);
+					break;
+				default:
+					break;
 			}
 		}
 		
