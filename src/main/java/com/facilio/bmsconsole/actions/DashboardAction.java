@@ -381,7 +381,7 @@ public class DashboardAction extends ActionSupport {
 	
 	public String updateSequence() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, id);
+		context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
 		
 		Chain updateSequence = FacilioChainFactory.updateReportColumnSequence();
 		updateSequence.execute(context);
@@ -649,7 +649,10 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String getTabularData() throws Exception {
 		
-		reportContext = DashboardUtil.getReportContext(reportId);
+		if (reportContext == null) {
+			reportContext = DashboardUtil.getReportContext(reportId);
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		reportColumns = reportContext.getReportColumns();
@@ -672,28 +675,9 @@ public class DashboardAction extends ActionSupport {
 		}
 		Multimap<String, Object> resultMap = ArrayListMultimap.create();
 		Map<String,Long> dateMap = new HashMap<>();
-		JSONArray collumns = new JSONArray();
 		JSONArray dataJsonArray = new JSONArray();
 		
-		boolean isFirst = true;
-		
 		for (ReportColumnContext column : reportColumns) {
-			
-			JSONObject columnJson = new JSONObject();
-			if(isFirst) {
-				if(column.getReport().getxAxisaggregateFunction() != null) {
-					columnJson.put("label", "Month");
-				}
-				isFirst = false;
-			}
-			else {
-				columnJson.put("label", column.getReport().getName());
-			}
-			
-			columnJson.put("width", column.getWidth());
-			columnJson.put("order", column.getSequence());
-			
-			collumns.add(columnJson);
 			
 			JSONArray datas = column.getData();
 			Iterator dataIterator = datas.iterator();
@@ -719,16 +703,9 @@ public class DashboardAction extends ActionSupport {
 			dataJsonArray.add(data);
 		}
 		
-		System.out.println("dateMap -- "+collumns);
 		System.out.println("datas --- "+dataJsonArray);
 		
-		reportData = new JSONArray();
-		
-		JSONObject result = new JSONObject();
-		result.put("columns", collumns);
-		result.put("data", dataJsonArray);
-		
-		reportData.add(result);
+		reportData = dataJsonArray;
 		
 		return SUCCESS;
 	}
@@ -738,6 +715,11 @@ public class DashboardAction extends ActionSupport {
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 			// generate preview report
+		}
+		
+		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+			getTabularData();
+			return SUCCESS;
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
