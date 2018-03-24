@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -672,12 +673,11 @@ public class DashboardAction extends ActionSupport {
 			else {
 				column.setData(getDataForReadings(column.getReport(), module, dateFilter, null, column.getBaseLineId(), -1));
 			}
+			System.out.println(column.getReportId()+"  ----  "+column.getData());
 		}
 		Multimap<String, Object> resultMap = ArrayListMultimap.create();
 		Map<String,Long> dateMap = new HashMap<>();
 		JSONArray dataJsonArray = new JSONArray();
-		
-		Collections.sort(reportColumns);
 		
 		for (ReportColumnContext column : reportColumns) {
 			
@@ -696,20 +696,23 @@ public class DashboardAction extends ActionSupport {
 			}
 		}
 		
-		for(String key:resultMap.keySet()) {
-			Collection<Object> d = resultMap.get(key);
-			JSONArray data = new JSONArray();
-			data.add(dateMap.get(key));
-			for(Object s:d) {
-				if(s == null) {
-					data.add("null");
+		 Map<String, Long> dateTreeMap = new TreeMap<String, Long>(dateMap);
+		 
+		 System.out.println("dateTreeMap.keys -- "+dateTreeMap.keySet());
+		 for(String key:dateTreeMap.keySet()){
+			 Collection<Object> d = resultMap.get(key);
+			 JSONArray data = new JSONArray();
+				data.add(dateMap.get(key));
+				for(Object s:d) {
+					if(s == null) {
+						data.add("null");
+					}
+					data.add(s);
 				}
-				data.add(s);
-			}
-			dataJsonArray.add(data);
-		}
-		
-		System.out.println("datas --- "+dataJsonArray);
+				dataJsonArray.add(data);
+		 }
+
+		 System.out.println("datas --- "+dataJsonArray);
 		
 		reportData = dataJsonArray;
 		
