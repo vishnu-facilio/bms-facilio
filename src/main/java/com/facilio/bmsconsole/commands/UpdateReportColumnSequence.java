@@ -20,7 +20,7 @@ public class UpdateReportColumnSequence implements Command {
 		List<ReportColumnContext> columns = (List<ReportColumnContext>) context.get(FacilioConstants.ContextNames.REPORT_COLUMN_LIST);
 		if (columns != null && !columns.isEmpty()) {
 			for (int i = 0; i < columns.size(); i++) {
-				String sql = "UPDATE Report_Columns SET WIDTH = "+columns.get(i).getWidth()+", SEQUENCE = "+(i+1)+" where ID="+columns.get(i).getId();
+				String sql = "UPDATE Report_Columns SET WIDTH = "+columns.get(i).getWidth()+", SEQUENCE_NUMBER = "+(i+1)+" where ID="+columns.get(i).getId();
 				
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
 					int rowsUpdated = pstmt.executeUpdate();
