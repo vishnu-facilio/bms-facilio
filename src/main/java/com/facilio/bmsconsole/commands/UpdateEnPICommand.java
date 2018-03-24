@@ -54,11 +54,8 @@ public class UpdateEnPICommand implements Command {
 			
 			if (newEnPI.getWorkflow() != null) {
 				WorkflowUtil.deleteWorkflow(oldEnPI.getWorkflowId());
-				ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-				crudBean.deleteAllData(oldEnPI.getReadingField().getModule().getName());
 				
-				FacilioTimer.deleteJob(newEnPI.getId(), "HistoricalENPICalculator");
-				FacilioTimer.scheduleOneTimeJob(newEnPI.getId(), "HistoricalENPICalculator", 30, "priority");
+				EnergyPerformanceIndicatiorAPI.recalculateHistoricalData(newEnPI, oldEnPI.getReadingField());
 			}
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}

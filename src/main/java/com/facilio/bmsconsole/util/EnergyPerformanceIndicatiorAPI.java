@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -126,6 +128,14 @@ public class EnergyPerformanceIndicatiorAPI {
 		
 		return getENPIFromProps(selectBuilder.get());
 		
+	}
+	
+	public static void recalculateHistoricalData(EnergyPerformanceIndicatorContext enpi, FacilioField enpiField) throws Exception {
+		ModuleCRUDBean crudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+		crudBean.deleteAllData(enpiField.getModule().getName());
+		
+		FacilioTimer.deleteJob(enpi.getId(), "HistoricalENPICalculator");
+		FacilioTimer.scheduleOneTimeJob(enpi.getId(), "HistoricalENPICalculator", 30, "priority");
 	}
 	
 	private static List<EnergyPerformanceIndicatorContext> getENPIFromProps (List<Map<String, Object>> props) throws Exception {

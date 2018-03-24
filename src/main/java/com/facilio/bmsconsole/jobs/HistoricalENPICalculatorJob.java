@@ -33,6 +33,8 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			long enpiId = jc.getJobId();
 			EnergyPerformanceIndicatorContext enpi = EnergyPerformanceIndicatiorAPI.getENPI(enpiId);
 			
+			logger.log(Level.INFO, "Calculating EnPI for "+enpi.getName());
+			
 			long currentTime = DateTimeUtil.getCurrenTime(true);
 			long startTime = EnergyPerformanceIndicatiorAPI.getStartTimeForHistoricalCalculation(enpi);
 			long endTime = enpi.getSchedule().nextExecutionTime(startTime);
@@ -63,6 +65,16 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> fieldsList = modBean.getAllFields(enpi.getReadingField().getModule().getName());
 				ReadingsAPI.updateLastReading(fieldsList, Collections.singletonList(readings.get(readings.size() - 1)), null);
+			}
+			
+			List<EnergyPerformanceIndicatorContext> allEnPIs = EnergyPerformanceIndicatiorAPI.getAllENPIs();
+			for (EnergyPerformanceIndicatorContext currentEnPI : allEnPIs) {
+				if (currentEnPI.getId() != enpi.getId()) {
+					List<FacilioField> dependentFields = currentEnPI.getDependentFields();
+					if (dependentFields.contains(enpi.getReadingField())) {
+						EnergyPerformanceIndicatiorAPI.recalculateHistoricalData(currentEnPI, currentEnPI.getReadingField());
+					}
+				}
 			}
 			
 		} catch (Exception e) {
