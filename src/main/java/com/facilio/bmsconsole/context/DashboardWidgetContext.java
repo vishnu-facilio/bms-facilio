@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -23,7 +25,20 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String headerText;
 	private String headerSubText;
 	private boolean headerIsExport;
+	private List<WidgetVsWorkflowContext> widgetVsWorkflowContexts;
 	
+	public List<WidgetVsWorkflowContext> getWidgetVsWorkflowContexts() {
+		return widgetVsWorkflowContexts;
+	}
+	public void setWidgetVsWorkflowContexts(List<WidgetVsWorkflowContext> widgetVsWorkflowContexts) {
+		this.widgetVsWorkflowContexts = widgetVsWorkflowContexts;
+	}
+	public void addWidgetVsWorkflowContexts(WidgetVsWorkflowContext widgetVsWorkflowContexts) {
+		if(this.widgetVsWorkflowContexts == null) {
+			this.widgetVsWorkflowContexts = new ArrayList<>();
+		}
+		this.widgetVsWorkflowContexts.add(widgetVsWorkflowContexts);
+	}
 	public String getHeaderText() {
 		return headerText;
 	}

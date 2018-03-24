@@ -272,7 +272,12 @@ public class ExpressionContext {
 			}
 			
 			if(getFieldName() == null && getAggregateString() == null) {
-				exprResult = props;
+				if(props.size() == 1) {
+					exprResult = props.get(0);
+				}
+				else {
+					exprResult = props;
+				}
 			}
 			else if(getAggregateString() == null) {
 				List<Object> returnList = new ArrayList<>(); 
@@ -290,7 +295,7 @@ public class ExpressionContext {
 	}
 	
 	private boolean isManualAggregateQuery() {
-		if((getAggregateCondition() != null && !getAggregateCondition().isEmpty()) || getLimit() != null) {
+		if((getAggregateCondition() != null && !getAggregateCondition().isEmpty())) {
 			return true;
 		}
 		return false;

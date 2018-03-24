@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -150,12 +151,25 @@ public class DashboardUtil {
 				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		DashboardWidgetContext dashboardWidgetContext = null;
 		if (props != null && !props.isEmpty()) {
 				WidgetType widgetType = WidgetType.getWidgetType((Integer) props.get(0).get("type"));
-				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(props.get(0), widgetType.getWidgetContextClass());
-				return dashboardWidgetContext;
+				dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(props.get(0), widgetType.getWidgetContextClass());
 		}
-		return null;
+		if(dashboardWidgetContext != null) {
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getWidgetVsWorkflowFields())
+					.table(ModuleFactory.getWidgetVsWorkflowModule().getTableName())
+					.andCustomWhere(ModuleFactory.getWidgetVsWorkflowModule().getTableName()+".WIDGET_ID= ?",dashboardWidgetContext.getId());
+			 props = selectBuilder.get();
+			 if (props != null && !props.isEmpty()) {
+				 for(Map<String, Object> prop:props) {
+					 WidgetVsWorkflowContext widgetVsWorkflowContext = FieldUtil.getAsBeanFromMap(prop, WidgetVsWorkflowContext.class);
+					 dashboardWidgetContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
+				 }
+			}
+		}
+		return dashboardWidgetContext;
 	}
 
 	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {

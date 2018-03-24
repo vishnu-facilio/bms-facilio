@@ -4,25 +4,7 @@ import org.json.simple.JSONObject;
 
 public class WidgetStaticContext extends DashboardWidgetContext {
 
-	Long workflowId;
-	Long baseSpaceId;
 	
-	public Long getBaseSpaceId() {
-		return baseSpaceId;
-	}
-
-	public void setBaseSpaceId(Long baseSpaceId) {
-		this.baseSpaceId = baseSpaceId;
-	}
-
-	public Long getWorkflowId() {
-		return workflowId;
-	}
-
-	public void setWorkflowId(Long workflowId) {
-		this.workflowId = workflowId;
-	}
-
 	String staticKey;
 	
 	public void setStaticKey(String staticKey) {

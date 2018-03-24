@@ -895,4 +895,12 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Dashboard_Sharing");
 		return dashboardSharing;
 	}
+	
+	public static FacilioModule getWidgetVsWorkflowModule() {
+		FacilioModule dashboardSharing = new FacilioModule();
+		dashboardSharing.setName("widgetVsWorkflow");
+		dashboardSharing.setDisplayName("Widget Vs Workflow");
+		dashboardSharing.setTableName("Widget_Vs_Workflow");
+		return dashboardSharing;
+	}
 }

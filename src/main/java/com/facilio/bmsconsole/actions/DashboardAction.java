@@ -51,6 +51,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -641,11 +642,25 @@ public class DashboardAction extends ActionSupport {
 	}
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
-			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) DashboardUtil.getWidget(widgetId);
+			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			
-			Map<String,Object> paramMap = new HashMap<>();
-			paramMap.put("parentId", widgetStaticContext.getBaseSpaceId());
-			cardResult = WorkflowUtil.getResult(widgetStaticContext.getWorkflowId(), paramMap);
+			Map<String,Object> result = null;
+			if(dashboardWidgetContext.getWidgetVsWorkflowContexts() != null) {
+				
+				result = new HashMap<>();
+				
+				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
+					Map<String,Object> paramMap = null;
+					if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+						paramMap = new HashMap<>();
+						paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
+					}
+					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
+				}
+			}
+			System.out.println("result --- "+result);
+			setCardResult(result);
 		}
 		return SUCCESS;
 	}

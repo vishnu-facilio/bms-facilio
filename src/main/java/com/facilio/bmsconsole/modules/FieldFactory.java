@@ -2213,20 +2213,6 @@ public class FieldFactory {
 		staticKey.setModule(module);
 		fields.add(staticKey);
 		
-		FacilioField workflowId = new FacilioField();
-		workflowId.setName("workflowId");
-		workflowId.setDataType(FieldType.NUMBER);
-		workflowId.setColumnName("WORKFLOW_ID");
-		workflowId.setModule(module);
-		fields.add(workflowId);
-		
-		FacilioField baseSpaceId = new FacilioField();
-		baseSpaceId.setName("baseSpaceId");
-		baseSpaceId.setDataType(FieldType.NUMBER);
-		baseSpaceId.setColumnName("BASE_SPACE_ID");
-		baseSpaceId.setModule(module);
-		fields.add(baseSpaceId);
-
 		return fields;
 	}
 	public static List<FacilioField> getWidgetWebFields() {
@@ -3356,6 +3342,33 @@ public class FieldFactory {
 		fields.add(getField("sequence", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("width", "WIDTH", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getWidgetVsWorkflowFields() {
+		FacilioModule module = ModuleFactory.getWidgetVsWorkflowModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		
+		
+		FacilioField workflowId = new FacilioField();
+		workflowId.setName("workflowId");
+		workflowId.setDataType(FieldType.LOOKUP);
+		workflowId.setColumnName("WORKFLOW_ID");
+		workflowId.setModule(module);
+		fields.add(workflowId);
+		
+		FacilioField baseSpaceId = new FacilioField();
+		baseSpaceId.setName("baseSpaceId");
+		baseSpaceId.setDataType(FieldType.LOOKUP);
+		baseSpaceId.setColumnName("BASE_SPACE_ID");
+		baseSpaceId.setModule(module);
+		fields.add(baseSpaceId);
+		
+		fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.LOOKUP));
+		fields.add(getField("workflowName", "WORKFLOW_NAME", module, FieldType.STRING));
 		
 		return fields;
 	}
