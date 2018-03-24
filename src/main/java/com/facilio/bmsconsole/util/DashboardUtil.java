@@ -60,7 +60,7 @@ public class DashboardUtil {
 		
 		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return dateTime.getYear() +" "+ dateTime.getMonth().getValue();
+			return ""+dateTime.getMonth().getValue();
 		}
 		return null;
 	}
