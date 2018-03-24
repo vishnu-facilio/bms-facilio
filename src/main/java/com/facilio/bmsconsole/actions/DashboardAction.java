@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOpera
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
@@ -1057,7 +1059,7 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		boolean isEnergyDataWithTimeFrame = false;
-		if(xAxisField.getColumnName().contains("TTIME") && module.getName().equals("energydata")) {
+		if(xAxisField.getColumnName().contains("TTIME")) {
 			isEnergyDataWithTimeFrame = true;
 		}
 		
@@ -1755,12 +1757,20 @@ public class DashboardAction extends ActionSupport {
 //		System.out.println("rs after -- "+rs);
 		if (report.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
-			if(module.getName().equals("energydata") && criteria != null) {
+			if(criteria != null) {
 				Map<Integer, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {
-					if(condition.getColumnName().equals("Energy_Data.PARENT_METER_ID")) {
+					if(condition.getFieldName().equals("parentId")) {
 						energyMeterValue = energyMeterValue + condition.getValue() +",";
 					}
+				}
+			}
+		}
+		if(report.getCriteria() != null) {
+			Map<Integer, Condition> conditions = report.getCriteria().getConditions();
+			for(Condition condition:conditions.values()) {
+				if(condition.getFieldName().equals("parentId")) {
+					energyMeterValue = energyMeterValue + condition.getValue() +",";
 				}
 			}
 		}
@@ -1769,74 +1779,70 @@ public class DashboardAction extends ActionSupport {
 			this.meterIds = energyMeterValue.split(",");
 		}
 		
-		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport()) {
+		if(energyMeterValue != null && !"".equalsIgnoreCase(energyMeterValue.trim()) && isEnergyDataWithTimeFrame && !report.getIsComparisionReport() && report.getY1AxisField() != null) {
 			
-			List<FacilioField> alarmVsEnergyFields = new ArrayList<>();
+			JSONObject filterJson = new JSONObject();
+				
+			FacilioField field = report.getY1AxisField().getField();
 			
-			FacilioField subject = new FacilioField();
-			subject.setName("subject");
-			subject.setDataType(FieldType.STRING);
-			subject.setColumnName("SUBJECT");
-			subject.setModule(ModuleFactory.getTicketsModule()); ////alarm vs energy data
-			alarmVsEnergyFields.add(subject);
-			FacilioField modTime = new FacilioField();
-			modTime.setName("createdTime");
-			modTime.setDataType(FieldType.NUMBER);
-			modTime.setColumnName("CREATED_TIME");
-			modTime.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
-			alarmVsEnergyFields.add(modTime);
+			JSONObject fieldJson = new JSONObject();
+			fieldJson.put("operatorId", NumberOperators.EQUALS.getOperatorId());
+			JSONArray value = new JSONArray();
+			value.add(""+field.getId());
+			fieldJson.put("value", value);
 			
+			filterJson.put("readingFieldId", fieldJson);
 			
-			
-			FacilioField severity = new FacilioField();
-			severity.setName("severity");
-			severity.setDataType(FieldType.NUMBER);
-			severity.setColumnName("SEVERITY");
-			severity.setModule(ModuleFactory.getAlarmsModule()); ////alarm vs energy data
-			alarmVsEnergyFields.add(severity);
-			
-			
-			
-			FacilioField serialNumber = new FacilioField();
-			serialNumber.setName("serialNumber");
-			serialNumber.setDataType(FieldType.NUMBER);
-			serialNumber.setColumnName("SERIAL_NUMBER");
-			serialNumber.setModule(ModuleFactory.getTicketsModule());
-			alarmVsEnergyFields.add(serialNumber);
-			
-			FacilioField alarmId = new FacilioField();
-			alarmId.setName("alarmid");
-			alarmId.setDataType(FieldType.NUMBER);
-			alarmId.setColumnName("ALARM_ID");
-			alarmId.setModule(ModuleFactory.getAlarmVsEnergyData());
-			alarmVsEnergyFields.add(alarmId);
-			
-			if (energyMeterValue.endsWith(",")) {
-				energyMeterValue = energyMeterValue.substring(0, energyMeterValue.length()-1);
+			JSONObject resourceJson = new JSONObject();
+			resourceJson.put("operatorId", PickListOperators.IS.getOperatorId());
+			value = new JSONArray();
+			for(String meterId:meterIds) {
+				value.add(meterId);
 			}
+			resourceJson.put("value", value);
 			
-			GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
-					.table(ModuleFactory.getAlarmVsEnergyData().getTableName())
-					.innerJoin(ModuleFactory.getAlarmsModule().getTableName())
-					.on(ModuleFactory.getAlarmVsEnergyData().getTableName()+".ALARM_ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
-					.innerJoin(ModuleFactory.getTicketsModule().getTableName())
-					.on(ModuleFactory.getTicketsModule().getTableName()+".ID="+ModuleFactory.getAlarmsModule().getTableName()+".ID")
-					.andCustomWhere(ModuleFactory.getTicketsModule().getTableName()+".RESOURCE_ID in ("+energyMeterValue+")")
-					.andCustomWhere(ModuleFactory.getAlarmsModule().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-					.select(alarmVsEnergyFields);
+			filterJson.put("resource", resourceJson);
 			
 			if (dateCondition != null) {
-				dateCondition.setField(modTime);
-				dateCondition.setComputedWhereClause(null);
-				builder1.andCondition(dateCondition);
+				JSONObject startTimeJson = new JSONObject();
+				startTimeJson.put("operatorId", DateOperators.BETWEEN.getOperatorId());
+				if(dateCondition.getValue() != null) {
+					value = new JSONArray();
+					for(String s:dateCondition.getValue().split(",")) {
+						value.add(s);
+					}
+					startTimeJson.put("value", value);
+				}
+				else if(dateCondition.getOperator() instanceof DateOperators) {
+					DateOperators dateOperator = (DateOperators) dateCondition.getOperator();
+					DateRange range = dateOperator.getRange(null);
+					value = new JSONArray();
+					value.add(""+range.getStartTime());
+					value.add(""+range.getEndTime());
+					startTimeJson.put("value", value);
+				}
+				
+				filterJson.put("startTime", startTimeJson);
 			}
 			
-			List<Map<String, Object>> alarmVsEnergyProps = builder1.get();
-			Map<Object ,JSONArray> alarmProps=  getAlarmProps(alarmVsEnergyProps);
-			JSONArray relatedAlarms = getAlarmReturnFormat(alarmProps);
-			setRelatedAlarms(relatedAlarms);
+			AlarmAction alarmAction = new AlarmAction();
+			System.out.println("filterJson.toJSONString() -- "+filterJson.toJSONString());
+			alarmAction.setFilters(filterJson.toJSONString());
+			
+			alarmAction.fetchReadingAlarms();
+			
+			setReadingAlarms(alarmAction.getReadingAlarms());
+			
 		}
 		return readingData;
+	}
+	
+	private List<ReadingAlarmContext> readingAlarms;
+	public List<ReadingAlarmContext> getReadingAlarms() {
+		return readingAlarms;
+	}
+	public void setReadingAlarms(List<ReadingAlarmContext> readingAlarms) {
+		this.readingAlarms = readingAlarms;
 	}
 	
 	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter) throws Exception {

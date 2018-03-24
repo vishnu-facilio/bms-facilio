@@ -103,9 +103,14 @@ public class ExecuteAllWorkflowsCommand implements Command
 							while (it.hasNext()) {
 								Object record = it.next();
 								Map<String, Object> recordPlaceHolders = getPlaceHoldersBasedOnType(moduleName, workflowRule, record, rulePlaceHolders, lastReadingMap);
-								boolean miscFlag = evaluateMiscBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
-								boolean criteriaFlag = evaluateCriteriaBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
-								boolean workflowFlag = evaluateWorkflowExpressionBaseOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+								boolean miscFlag = false, criteriaFlag = false, workflowFlag = false;
+								miscFlag = evaluateMiscBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+								if (miscFlag) {
+									criteriaFlag = evaluateCriteriaBasedOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+									if (criteriaFlag) {
+										workflowFlag = evaluateWorkflowExpressionBaseOnType(workflowRule, record, recordPlaceHolders, lastReadingMap);
+									}
+								}
 								if(criteriaFlag && workflowFlag && miscFlag) {
 									executeWorkflowActions(workflowRule, record, context, recordPlaceHolders);
 									if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
@@ -156,7 +161,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			switch (workflowRule.getRuleTypeEnum()) {
 				case READING_RULE:
 				case PM_READING_RULE:
-					criteriaFlag = workflowRule.getCriteria().computePredicate(placeHolders).evaluate(record);
+					criteriaFlag = criteria.computePredicate(placeHolders).evaluate(record);
 					if(criteriaFlag) {
 						updateLastValueForReadingRule((ReadingRuleContext) workflowRule, (ReadingContext) record);
 					}
@@ -186,27 +191,25 @@ public class ExecuteAllWorkflowsCommand implements Command
 		if (readingRule.getResourceId() != record.getParentId()) {
 			return false;
 		}
+		FacilioField field = readingRule.getReadingField();
+		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), record.getReading(field.getName()));
+		if (currentReadingObj == null) {
+			return false;
+		}
 		switch (readingRule.getThresholdTypeEnum()) {
 			case FLAPPING:
-				FacilioField field = readingRule.getReadingField();
-				Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), record.getReading(field.getName()));
-				if (currentReadingObj != null) {
-					boolean singleFlap = false;
-					Map<String, Object> lastValMap = lastReadingMap.get(record.getParentId()+"_"+field.getName());
-					Object lastReading = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), lastValMap.get("value"));
-					if (currentReadingObj instanceof Number) {
-						double diff = calculateDiff(readingRule, currentReadingObj, record, field, (Number) lastReading);
-						double flapRange = Math.abs(readingRule.getMaxFlapValue() - readingRule.getMinFlapValue());
-						singleFlap = diff >= flapRange;
-					}
-					else if (currentReadingObj instanceof Boolean) {
-						singleFlap = currentReadingObj != (Boolean) lastReading;
-					}
-					return singleFlap && isFlappedNTimes(readingRule, record);
+				boolean singleFlap = false;
+				Map<String, Object> lastValMap = lastReadingMap.get(record.getParentId()+"_"+field.getName());
+				Object lastReading = FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), lastValMap.get("value"));
+				if (currentReadingObj instanceof Number) {
+					double diff = calculateDiff(readingRule, currentReadingObj, record, field, (Number) lastReading);
+					double flapRange = Math.abs(readingRule.getMaxFlapValue() - readingRule.getMinFlapValue());
+					singleFlap = diff >= flapRange;
 				}
-				else {
-					return false;
+				else if (currentReadingObj instanceof Boolean) {
+					singleFlap = currentReadingObj != (Boolean) lastReading;
 				}
+				return singleFlap && isFlappedNTimes(readingRule, record);
 			default:
 				break;
 		}

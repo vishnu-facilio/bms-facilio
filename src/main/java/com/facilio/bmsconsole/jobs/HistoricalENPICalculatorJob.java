@@ -17,9 +17,12 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.wms.endpoints.SessionManager;
@@ -37,7 +40,8 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			
 			long currentTime = DateTimeUtil.getCurrenTime(true);
 			long startTime = EnergyPerformanceIndicatiorAPI.getStartTimeForHistoricalCalculation(enpi);
-			long endTime = enpi.getSchedule().nextExecutionTime(startTime);
+			ScheduleInfo schedule = getSchedule(enpi.getFrequencyEnum());
+			long endTime = schedule.nextExecutionTime(startTime);
 			
 			List<ReadingContext> readings = new ArrayList<>();
 			while (endTime <= currentTime) {
@@ -50,7 +54,7 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 					CommonCommandUtil.emailException("EnPI calculation failed for : "+jc.getJobId()+" between "+startTime+" and "+endTime, e);
 				}
 				startTime = endTime;
-				endTime = enpi.getSchedule().nextExecutionTime(startTime);
+				endTime = schedule.nextExecutionTime(startTime);
 			}
 			
 			FacilioContext context = new FacilioContext();
@@ -81,6 +85,67 @@ public class HistoricalENPICalculatorJob extends FacilioJob {
 			// TODO Auto-generated catch block
 			logger.log(Level.SEVERE, e.getMessage(), e);
 			CommonCommandUtil.emailException("Historical EnPI calculation failed for : "+jc.getJobId(), e);
+		}
+	}
+	
+	private ScheduleInfo getSchedule (FacilioFrequency frequency) {
+		ScheduleInfo schedule = null;
+		List<Integer> values = null;
+		switch (frequency) {
+		    case DAILY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.DAILY);
+					return schedule;
+			case WEEKLY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.WEEKLY);
+					values = new ArrayList<>();
+					values.add(DateTimeUtil.getWeekFields().getFirstDayOfWeek().getValue());
+					schedule.setValues(values);
+					return schedule;
+			case MONTHLY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
+					values = new ArrayList<>();
+					values.add(1);
+					schedule.setValues(values);
+					return schedule;
+			case QUARTERTLY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.YEARLY);
+					schedule.setYearlyDayValue(1);
+					values = new ArrayList<>();
+					values.add(1);
+					values.add(4);
+					values.add(7);
+					values.add(10);
+					schedule.setValues(values);
+					return schedule;
+			case HALF_YEARLY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.YEARLY);
+					schedule.setYearlyDayValue(1);
+					values = new ArrayList<>();
+					values.add(1);
+					values.add(7);
+					schedule.setValues(values);
+					return schedule;
+			case ANNUALLY:
+					schedule = new ScheduleInfo();
+					schedule.addTime("00:00");
+					schedule.setFrequencyType(FrequencyType.YEARLY);
+					schedule.setYearlyDayValue(1);
+					values = new ArrayList<>();
+					values.add(1);
+					schedule.setValues(values);
+					return schedule;
+			default:
+					return null;
 		}
 	}
 
