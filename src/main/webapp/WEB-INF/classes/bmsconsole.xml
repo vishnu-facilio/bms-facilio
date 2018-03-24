@@ -1659,6 +1659,16 @@
 		</action>
 	</package>
 
+	<package name="fieldApi" namespace="/api/field" extends="home">
+		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="fieldDetails">
+			<param name="fieldId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^field.*</param>
+			</result>
+		</action>
+	</package>
+
 	<package name="workOrderApi" namespace="/api/workorder"
 		extends="home">
 		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"

@@ -62,6 +62,22 @@ public class ModuleAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private Long fieldId;
+	public Long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(Long fieldId) {
+		this.fieldId = fieldId;
+	}
+	
+	public String fieldDetails() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		setField(modBean.getField(fieldId));
+		
+		return SUCCESS;
+	}
+	
 	public String updateField() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
