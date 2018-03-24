@@ -56,11 +56,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
 	
-	public static String getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
 		
 		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
 			ZonedDateTime dateTime = DateTimeUtil.getDateTime(timeValue);
-			return ""+dateTime.getMonth().getValue();
+			return dateTime.getMonth().getValue();
 		}
 		return null;
 	}

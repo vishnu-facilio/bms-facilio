@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.chain.Chain;
@@ -675,8 +676,8 @@ public class DashboardAction extends ActionSupport {
 			}
 			System.out.println(column.getReportId()+"  ----  "+column.getData());
 		}
-		Multimap<String, Object> resultMap = ArrayListMultimap.create();
-		Map<String,Long> dateMap = new HashMap<>();
+		Multimap<Integer, Object> resultMap = ArrayListMultimap.create();
+		Map<Integer,Long> dateMap = new HashMap<>();
 		JSONArray dataJsonArray = new JSONArray();
 		
 		for (ReportColumnContext column : reportColumns) {
@@ -686,7 +687,7 @@ public class DashboardAction extends ActionSupport {
 			while(dataIterator.hasNext()) {
 				JSONObject data = (JSONObject) dataIterator.next();
 				Long time = (Long) data.get("label");
-				String timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
+				int timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
 				if(column.getSequence() == 1) {
 					dateMap.put(timeValue, time);
 				}
@@ -695,11 +696,10 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
-		
-		 Map<String, Long> dateTreeMap = new TreeMap<String, Long>(dateMap);
-		 
-		 System.out.println("dateTreeMap.keys -- "+dateTreeMap.keySet());
-		 for(String key:dateTreeMap.keySet()){
+		List<Integer> keys = new ArrayList<>(dateMap.keySet());
+		Collections.sort(keys);
+		System.out.println("keys --- "+ keys);
+		 for(Integer key:keys){
 			 Collection<Object> d = resultMap.get(key);
 			 JSONArray data = new JSONArray();
 				data.add(dateMap.get(key));
