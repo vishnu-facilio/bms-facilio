@@ -1241,6 +1241,8 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(entityField, String.valueOf(entityId), PickListOperators.IS));
 		
+		selectBuilder.orderBy("SEQUENCE_NUMBER");
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<ReportColumnContext> reportColumns = new ArrayList<>();
