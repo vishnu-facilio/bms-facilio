@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import org.json.simple.JSONArray;
 
-public class ReportColumnContext {
+public class ReportColumnContext implements Comparable<ReportColumnContext> {
 	
 	int width;
 	
@@ -103,5 +103,12 @@ public class ReportColumnContext {
 	}
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
+	}
+	@Override
+	public int compareTo(ReportColumnContext o) {
+		if(this.getSequence() > o.getSequence()) {
+			return 1;
+		}
+		return 0;
 	}
 }

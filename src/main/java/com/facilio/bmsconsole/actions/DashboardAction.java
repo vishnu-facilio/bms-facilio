@@ -3,8 +3,8 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -677,6 +677,8 @@ public class DashboardAction extends ActionSupport {
 		Map<String,Long> dateMap = new HashMap<>();
 		JSONArray dataJsonArray = new JSONArray();
 		
+		Collections.sort(reportColumns);
+		
 		for (ReportColumnContext column : reportColumns) {
 			
 			JSONArray datas = column.getData();
@@ -684,9 +686,13 @@ public class DashboardAction extends ActionSupport {
 			while(dataIterator.hasNext()) {
 				JSONObject data = (JSONObject) dataIterator.next();
 				Long time = (Long) data.get("label");
-				String value = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
-				dateMap.put(value, time);
-				resultMap.put(value, data.get("value"));
+				String timeValue = DashboardUtil.getDataFromValue(time, column.getReport().getXAxisAggregateOpperator());
+				if(column.getSequence() == 1) {
+					dateMap.put(timeValue, time);
+				}
+				else {
+					resultMap.put(timeValue, data.get("value"));
+				}
 			}
 		}
 		
