@@ -81,6 +81,15 @@ public class FacilioField implements Serializable {
 		this.columnName = columnName;
 	}
 	
+	public String getCompleteColumnName() {
+		if(getExtendedModule() != null) {
+			return getExtendedModule().getTableName()+"."+getColumnName();
+		}
+		else {
+			return getColumnName();
+		}
+	}
+	
 	private int sequenceNumber = -1;
 	public int getSequenceNumber() {
 		return sequenceNumber;

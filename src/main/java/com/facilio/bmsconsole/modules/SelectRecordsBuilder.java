@@ -33,6 +33,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private String moduleName;
 	private FacilioModule module;
 	private boolean fetchDeleted = false;
+	private String groupBy;
 	private WhereBuilder where = new WhereBuilder();
 	//Need where condition builder for custom field
 	
@@ -123,12 +124,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 	@Override
 	public SelectRecordsBuilder<E> groupBy(String groupBy) {
-		throw new UnsupportedOperationException("No Group By support for Bean Select Builder. Use Generic");
+		this.groupBy = groupBy;
+		return this;
 	}
 	
 	@Override
 	public SelectRecordsBuilder<E> having(String having) {
-		throw new UnsupportedOperationException("No Having support for Bean Select Builder. Use Generic");
+		builder.having(having);
+		return this;
 	}
 	
 	@Override
@@ -309,7 +312,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(orgIdField);
 		selectFields.add(moduleIdField);
-		selectFields.add(FieldFactory.getIdField(module));
+		if (groupBy == null || groupBy.isEmpty()) {
+			selectFields.add(FieldFactory.getIdField(module));
+		}
+		else {
+			StringBuilder moduleGroupBy = new StringBuilder();
+			moduleGroupBy.append(orgIdField.getCompleteColumnName())
+							.append(",")
+							.append(moduleIdField.getCompleteColumnName())
+							.append(",")
+							.append(groupBy);
+			
+			builder.groupBy(moduleGroupBy.toString());
+		}
+		
 		selectFields.addAll(select);
 		builder.select(selectFields);
 		
@@ -322,7 +338,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		if (module.isTrashEnabled()) {
 			FacilioField isDeletedField = FieldFactory.getIsDeletedField();
-			selectFields.add(isDeletedField);
+			
+			if (groupBy == null || groupBy.isEmpty()) {
+				selectFields.add(isDeletedField);
+			}
 			
 			if (!fetchDeleted) {
 				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));

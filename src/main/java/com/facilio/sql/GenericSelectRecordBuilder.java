@@ -211,11 +211,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			else {
 				sql.append(", ");
 			}
-			if(field.getExtendedModule() != null) {
-				sql.append(field.getExtendedModule().getTableName())
-					.append(".");
-			}
-			sql.append(field.getColumnName())
+			sql.append(field.getCompleteColumnName())
 				.append(" AS `")
 				.append(field.getName())
 				.append("`");
