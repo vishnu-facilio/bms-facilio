@@ -9,10 +9,19 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -290,6 +299,18 @@ public class JobStore {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	public static int deleteJobs(List<Long> jobIds, String jobName) throws Exception {
+		FacilioModule module = ModuleFactory.getJobsModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getJobFields());
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), jobIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), jobName, StringOperators.IS));
+		
+		return deleteBuilder.delete();
 	}
 	
 	public static JobContext getJob(long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {

@@ -14,10 +14,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -38,28 +40,39 @@ public class SendReportMailCommand implements Command {
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 		
 		int type = (int) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
-		String fileName = "Report-" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "-" + reportContext.getId();
+		String fileName = "Report_" + (module.getDisplayName() != null && !module.getDisplayName().isEmpty() ? module.getDisplayName() : module.getName()) + "_" + reportContext.getName();
 		Map<String, String> files = new HashMap<>();
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
-		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId(), fileFormat);
-			String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+		
+		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+			JSONArray reportData = (JSONArray) context.get(FacilioConstants.ContextNames.REPORT);
+			List<ReportColumnContext> reportColumns = (List<ReportColumnContext>) context.get(FacilioConstants.ContextNames.REPORT_COLUMN_LIST);
+			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
+			String fileUrl = ExportUtil.exportData(fileFormat, module, table);
 			files.put(fileName + fileFormat.getExtention(), fileUrl);
-			if (fileFormat == FileFormat.IMAGE) {
-				String fileUrl2 = ExportUtil.exportData(FileFormat.CSV, module, view.getFields(), records);
-				files.put(fileName + FileFormat.CSV.getExtention(), fileUrl2);
-			}
 		}
 		else {
-			String fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
-			files.put(fileName + fileFormat.getExtention(), fileUrl);
+			List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+				String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId(), fileFormat);
+				String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+				files.put(fileName + fileFormat.getExtention(), fileUrl);
+				if (fileFormat == FileFormat.IMAGE) {
+					String fileUrl2 = ExportUtil.exportData(FileFormat.CSV, module, view.getFields(), records);
+					files.put(fileName + FileFormat.CSV.getExtention(), fileUrl2);
+				}
+			}
+			else {
+				String fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+				files.put(fileName + fileFormat.getExtention(), fileUrl);
+			}
 		}
 		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();

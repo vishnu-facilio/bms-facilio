@@ -1328,6 +1328,8 @@ public class FieldFactory {
 		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("currentExecutionCount", "CURRENT_EXECUTION_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
+		/*fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));*/
 		
 		return fields;
 	}
@@ -3096,7 +3098,6 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
 		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
-		fields.add(getField("dateFilter", "DATE_FILTER", module, FieldType.STRING));
 		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
 		
 		return fields;

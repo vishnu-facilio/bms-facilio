@@ -101,6 +101,20 @@ public class ReportsChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getScheduledReportsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new ReportScheduledListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain deleteScheduledReportsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteScheduledReportsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
 
 	private static void addCleanUpCommand(Chain c)
 	{

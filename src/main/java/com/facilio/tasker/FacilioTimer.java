@@ -2,6 +2,7 @@ package com.facilio.tasker;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.json.simple.parser.ParseException;
 
@@ -106,6 +107,10 @@ public class FacilioTimer {
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		JobStore.deleteJob(jobId, jobName);
+	}
+	
+	public static void deleteJobs(List<Long> jobIds, String jobName) throws Exception {
+		JobStore.deleteJobs(jobIds, jobName);
 	}
 	
 	public static JobContext getJob(long jobId, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
