@@ -39,6 +39,17 @@ public class ExportUtil {
 		}
 		return fileUrl;
 	}
+
+	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, Map<String,Object> table) throws Exception {
+		String fileUrl = null;
+		if(fileFormat == FileFormat.XLS){
+			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, table);
+		}
+		else if(fileFormat == FileFormat.CSV){
+			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, table);
+		}
+		return fileUrl;
+	}
 	
 	@SuppressWarnings("resource")
 	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception 
@@ -99,6 +110,45 @@ public class ExportUtil {
 		return fs.getPrivateUrl(fileId);
 	}
 	
+	public static String exportDataAsXLS(FacilioModule facilioModule, Map<String,Object> table) throws Exception 
+	{
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
+		HSSFRow rowhead = sheet.createRow((short) 0);
+		
+		List<String> headers = (ArrayList<String>) table.get("headers");
+		for(int i = 0, len = headers.size(); i < len; i++) {
+			rowhead.createCell((short) i).setCellValue(headers.get(i).toString());
+		}
+		
+		List<List> records = (ArrayList<List>) table.get("records");
+		int rowCount = 1;
+		for(int i = 0, len = records.size(); i < len; i++) {
+			HSSFRow row = sheet.createRow(rowCount);
+			List record = records.get(i);
+			for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+				Object value = record.get(j);
+				if (value != null) {
+					row.createCell((short) j).setCellValue(value.toString());
+				}
+				else {
+					row.createCell((short) j).setCellValue("");
+				}
+			}
+			rowCount++;
+		}
+	
+		String fileName = facilioModule.getDisplayName() + ".xls";
+		FileOutputStream fileOut = new FileOutputStream(fileName);
+		workbook.write(fileOut);
+		fileOut.close();
+
+		File file = new File(fileName);
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+		return fs.getPrivateUrl(fileId);
+	}
+	
 	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
@@ -142,6 +192,47 @@ public class ExportUtil {
 	    		writer.append(StringUtils.stripEnd(str.toString(), ","));
 	    		writer.append('\n');
         	}
+        	writer.flush();
+        	writer.close();
+        	
+        	File file = new File(fileName);
+	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
+	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
+	    
+	    return fs.getPrivateUrl(fileId);
+    }
+	
+	public static String exportDataAsCSV(FacilioModule facilioModule, Map<String,Object> table) throws Exception
+    {
+		String fileName = facilioModule.getDisplayName() + ".csv";
+        	FileWriter writer = new FileWriter(fileName, false);
+        	
+        	StringBuilder str = new StringBuilder();
+        	List<String> headers = (ArrayList<String>) table.get("headers");
+    		for(int i = 0, len = headers.size(); i < len; i++) {
+    			str.append(headers.get(i).toString());
+    			str.append(',');
+    		}
+        	writer.append(StringUtils.stripEnd(str.toString(), ","));
+        	writer.append('\n');
+        	
+        	List<List> records = (ArrayList<List>) table.get("records");
+    		for(int i = 0, len = records.size(); i < len; i++) {
+    			str = new StringBuilder();
+    			List record = records.get(i);
+    			for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+    				Object value = record.get(j);
+    				if (value != null) {
+	    				str.append(value.toString());
+    				}
+    				else {
+    					str.append("");
+    				}
+    				str.append(',');
+    			}
+    			writer.append(StringUtils.stripEnd(str.toString(), ","));
+	    		writer.append('\n');
+    		}
         	writer.flush();
         	writer.close();
         	

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.context.ReportContext;
@@ -38,17 +39,6 @@ public class ReportScheduler extends FacilioJob {
 				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.FILE_FORMAT, prop.get("fileFormat"));
-				/*String filter = (String) prop.get("dateFilter");
-				JSONArray dateFilter = null;
-				if (filter != null) {
-					JSONParser parser = new JSONParser();
-					try {
-						dateFilter =  (JSONArray) parser.parse(filter);
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
-				context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);*/
 				
 				EMailTemplate template  = (EMailTemplate) TemplateAPI.getTemplate((long)prop.get("templateId"));
 				context.put(FacilioConstants.Workflow.TEMPLATE, template);
@@ -56,6 +46,15 @@ public class ReportScheduler extends FacilioJob {
 				Long reportId = (long) prop.get("reportId");
 				ReportContext reportContext = DashboardUtil.getReportContext(reportId);
 				context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
+				
+				// Needs to do for all report not exporting underlying data
+				if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+					DashboardAction action = new DashboardAction();
+					action.setReportContext(reportContext);
+					action.getData();
+					context.put(FacilioConstants.ContextNames.REPORT, action.getReportData());
+					context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, action.getReportColumns());
+				}
 				
 				FacilioModule module = ReportsUtil.getReportModule(reportContext);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());

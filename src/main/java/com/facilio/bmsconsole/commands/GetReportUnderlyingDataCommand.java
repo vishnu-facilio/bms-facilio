@@ -36,6 +36,11 @@ public class GetReportUnderlyingDataCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
+		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+			return false;
+		}
+		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		JSONArray dateFilter = (JSONArray)context.get(FacilioConstants.ContextNames.DATE_FILTER);
 
@@ -53,8 +58,6 @@ public class GetReportUnderlyingDataCommand implements Command {
 		builder.select(fields);
 		Criteria criteria = null;
 		
-		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
-		 
 		if (reportContext.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
 			builder.andCriteria(criteria);

@@ -13,10 +13,52 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.job.JobContext;
 
 public class ReportInfo {
 	
 	public static final String PARENT_VIEW_NAME = "report";
+	
+	private long id = -1;	// Scheduled id
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	private long reportId = -1;
+	public long getReportId() {
+		return reportId;
+	}
+	public void setReportId(long reportId) {
+		this.reportId = id;
+	}
+	
+	private FileFormat fileFormat;
+	public int getFileFormat() {
+		if (fileFormat != null) {
+			return fileFormat.getIntVal();
+		}
+		return -1;
+	}
+	public void setFileFormat(int format) {
+		this.fileFormat = FileFormat.getFileFormat(format);
+	}
+	public void setFileFormat(FileFormat fileFormat) {
+		this.fileFormat = fileFormat;
+	}
+	public FileFormat getFileFormatEnum() {
+		return fileFormat;
+	}
+	
+	private long templateId = -1;
+	public long getTemplateId() {
+		return templateId;
+	}
+	public void setTemplateId(long templateId) {
+		this.templateId = templateId;
+	}
 	
 	private ReportContext reportContext;
 	public ReportContext getReportContext() {
@@ -88,6 +130,14 @@ public class ReportInfo {
 		this.startTime = startTime;
 	}
 	
+	private JobContext job;
+	public JobContext getJob() {
+		return job;
+	}
+	public void setJob(JobContext job) {
+		this.job = job;
+	}
+	
 	public String getFileUrl(List<ModuleBaseWithCustomFields> records) throws Exception {
 		String fileUrl = null;
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
@@ -99,5 +149,4 @@ public class ReportInfo {
 		}
 		return fileUrl;
 	}
-
 }

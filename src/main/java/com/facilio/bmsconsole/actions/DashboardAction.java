@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +42,7 @@ import com.facilio.bmsconsole.context.ReportDateFilterContext;
 import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.ReportThreshold;
 import com.facilio.bmsconsole.context.ReportUserFilterContext;
@@ -69,6 +68,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.BaseLineAPI;
@@ -2089,26 +2089,33 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	public String exportData() throws Exception{
-	
-		FacilioModule module = getModule();
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-		context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
-		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
-		List<ModuleBaseWithCustomFields> records = getRawData(context, module);
-		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		FileFormat fileFormat = FileFormat.getFileFormat(type);
-		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			String url = ReportsUtil.getReportClientUrl(module.getName(), reportId, fileFormat);
-			if(dateFilter != null && dateFilter.size() > 0) {
-				url += "?daterange=" + dateFilter.toJSONString();
-			}
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+		FacilioModule module = getModule();
+	
+		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+			getData();
+			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
 		}
 		else {
-			fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+			context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+			context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
+			List<ModuleBaseWithCustomFields> records = getRawData(context, module);
+			FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+			FileFormat fileFormat = FileFormat.getFileFormat(type);
+			if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+				String url = ReportsUtil.getReportClientUrl(module.getName(), reportId, fileFormat);
+				if(dateFilter != null && dateFilter.size() > 0) {
+					url += "?daterange=" + dateFilter.toJSONString();
+				}
+				fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			}
+			else {
+				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
+			}
 		}
 		
 		return SUCCESS;
@@ -2455,6 +2462,12 @@ public class DashboardAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
+		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+			getData();
+			context.put(FacilioConstants.ContextNames.REPORT, reportData);
+			context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
+		}
+		
 		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 		mailReportChain.execute(context);
  		
@@ -2482,6 +2495,49 @@ public class DashboardAction extends ActionSupport {
  		return SUCCESS;
 	}
 	
+	public String scheduledList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain mailReportChain = ReportsChainFactory.getScheduledReportsChain();
+		mailReportChain.execute(context);
+		setScheduledReports((List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String deleteScheduledReport () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		Chain mailReportChain = ReportsChainFactory.deleteScheduledReportsChain();
+		mailReportChain.execute(context);
+		
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	public String editScheduledReport () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		Chain mailReportChain = ReportsChainFactory.deleteScheduledReportsChain();
+		mailReportChain.execute(context);
+		
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
+	private List<ReportInfo> scheduledReports;
+	public List<ReportInfo> getScheduledReports() {
+		return scheduledReports;
+	}
+	
+	public void setScheduledReports(List<ReportInfo> scheduledReports) {
+		this.scheduledReports = scheduledReports;
+	}
+	
+	// TODO...move to report info
 	private ScheduleInfo scheduleInfo;
 	public ScheduleInfo getScheduleInfo() {
 		return scheduleInfo;
@@ -2519,6 +2575,14 @@ public class DashboardAction extends ActionSupport {
 	}
 	public void setEmailTemplate(EMailTemplate emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+	
+	private int rowsUpdated = -1;
+	public int getRowsUpdated() {
+		return rowsUpdated;
+	}
+	public void setRowsUpdated(int rowsUpdated) {
+		this.rowsUpdated = rowsUpdated;
 	}
 	
 }

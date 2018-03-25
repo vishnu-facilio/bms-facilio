@@ -3609,6 +3609,21 @@
 				<param name="includeProperties">reportId</param>
 			</result>
 		</action>
+		<action name="scheduledList" class="com.facilio.bmsconsole.actions.DashboardAction" method="scheduledList">
+			<result name="success" type="json">
+				<param name="includeProperties">^scheduledReports.*</param>
+			</result>
+		</action>
+		<action name="deleteScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="editScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="editScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
 			<param name="linkName">{1}</param>
 			<result name="success" type="json">

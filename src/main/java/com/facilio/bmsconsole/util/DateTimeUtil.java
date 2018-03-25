@@ -499,6 +499,11 @@ public class DateTimeUtil
 	public static String getFormattedTime(long time) {
 		return DateTimeUtil.getZonedDateTime(time).format(FacilioConstants.READABLE_DATE_FORMAT);
 	}
+	
+	public static String getFormattedTime(long time, String format) {
+		return DateTimeUtil.getZonedDateTime(time).format(DateTimeFormatter.ofPattern(format));
+	}
+	
 	public static long getLastNHour(long currentTime,int hour) {
 		return currentTime - (hour * ONE_HOUR_MILLIS_VALUE);
 	}
