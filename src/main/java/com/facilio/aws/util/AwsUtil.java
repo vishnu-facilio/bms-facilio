@@ -304,7 +304,11 @@ public class AwsUtil
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception 
 	{
-        Destination destination = new Destination().withToAddresses(new String[] { (String) mailJson.get("to") });
+		if(AwsUtil.getConfig("app.url").contains("localhost")) {
+			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+		}
+		
+		Destination destination = new Destination().withToAddresses(new String[] { (String) mailJson.get("to") });
         Content subjectContent = new Content().withData((String) mailJson.get("subject"));
         Content bodyContent = new Content().withData((String) mailJson.get("message"));
         Body body = new Body().withText(bodyContent);
@@ -338,6 +342,10 @@ public class AwsUtil
 
         try
         {
+	        	if(AwsUtil.getConfig("app.url").contains("localhost")) {
+	    			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+	    		}
+        	
         		MimeMessage message = getEmailMessage(mailJson, files);
         		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         		message.writeTo(outputStream);
