@@ -655,6 +655,12 @@ public class DashboardAction extends ActionSupport {
 						paramMap = new HashMap<>();
 						paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
 					}
+					else if (widgetVsWorkflowContext.getId().equals(5l)){
+						paramMap = new HashMap<>();
+						DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
+						paramMap.put("startTime", rang1e.getStartTime());
+						paramMap.put("endTime", rang1e.getEndTime());
+					}
 					Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
 					result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
 				}
