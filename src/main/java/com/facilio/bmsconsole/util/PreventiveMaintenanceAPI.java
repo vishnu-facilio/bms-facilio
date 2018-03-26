@@ -370,6 +370,7 @@ public class PreventiveMaintenanceAPI {
 			for(Map<String, Object> prop : pmProps) {
 				PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(prop, PreventiveMaintenance.class);
 				pm.setWoTemplate(FieldUtil.getAsBeanFromMap(prop, WorkorderTemplate.class));
+				pm.getWoTemplate().setId(pm.getTemplateId());
 				pms.add(pm);
 			}
 			

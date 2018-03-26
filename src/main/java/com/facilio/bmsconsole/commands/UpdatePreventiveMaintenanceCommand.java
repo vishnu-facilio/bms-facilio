@@ -8,7 +8,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -43,7 +42,7 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 	}
 	
 	private static void updateDefaultProps(PreventiveMaintenance pm, Context context) {
-		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+//		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		
 		long templateId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		pm.setTemplateId(templateId);
