@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.fw.BeanFactory;
 
 public class ReportDateFilterContext {
 
@@ -26,6 +28,15 @@ public class ReportDateFilterContext {
 		this.reportId = reportId;
 	}
 	public Long getFieldId() {
+		if (this.fieldId == null && this.field != null) {
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				this.fieldId = modBean.getField(this.field.getName(), this.field.getModule().getName()).getId();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return fieldId;
 	}
 	public void setFieldId(Long fieldId) {
