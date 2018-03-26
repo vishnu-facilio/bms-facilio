@@ -3,7 +3,7 @@
 export APP_HOME="/home/ubuntu/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
-ipAddress=`hostname -I`
+ipAddress=`hostname -I|awk '{$1=$1};1'`
 logsBucket=facilio-server-logs
 servername=`grep "api.servername" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
