@@ -55,7 +55,7 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName);
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
 		if(permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}

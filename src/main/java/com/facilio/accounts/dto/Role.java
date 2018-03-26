@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.ModulePermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -88,7 +89,7 @@ public class Role {
 		permissions.add(permission);
 	}
 	
-	public Criteria permissionCriteria(String moduleName)
+	public Criteria permissionCriteria(String moduleName, String action)
 	{
 		Criteria criteria = null;
 		if(getPermissions() == null) {
@@ -101,6 +102,12 @@ public class Role {
 					boolean access = false;
 					long permissionValue = perm.getPermission();
 					for (AccountConstants.ModulePermission perms : AccountConstants.ModulePermission.values()) {
+						
+						// Temporary...
+						if (action.equals("read") && perms != ModulePermission.READ && perms != ModulePermission.READ_OWN &&  perms != ModulePermission.READ_TEAM) {
+							continue;
+						}
+						
 						access = (permissionValue & perms.getModulePermission()) == perms.getModulePermission();
 						if(access) {
 							switch(perms) {
