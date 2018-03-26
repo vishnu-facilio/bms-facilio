@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 public enum FacilioFrequency {
+	DO_NOT_REPEAT,
 	DAILY,
 	WEEKLY,
 	MONTHLY,
@@ -10,12 +11,12 @@ public enum FacilioFrequency {
 	CUSTOM
 	;
 	public int getValue() {
-		return ordinal()+1;
+		return ordinal();
 	}
 	
 	public static FacilioFrequency valueOf(int value) {
 		if (value > 0 && value <= values().length) {
-			return values()[value - 1];
+			return values()[value];
 		}
 		return null;
 	}

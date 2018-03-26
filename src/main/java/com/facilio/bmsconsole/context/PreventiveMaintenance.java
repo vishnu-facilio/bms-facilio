@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.leed.context.PMTriggerContext;
 
 public class PreventiveMaintenance {
@@ -276,6 +277,38 @@ public class PreventiveMaintenance {
 	
 	public boolean hasTriggers() {
 		return triggerType != TriggerType.NONE;
+	}
+	
+	private FacilioFrequency frequency;
+	public int getFrequency() {
+		if (frequency != null) {
+			return frequency.getValue();
+		}
+		return -1;
+	}
+	public void setFrequency(int frequency) {
+		this.frequency = FacilioFrequency.valueOf(frequency);
+	}
+	public void setFrequency(FacilioFrequency frequency) {
+		this.frequency = frequency;
+	}
+	public FacilioFrequency getFrequencyEnum() {
+		return frequency;
+	}
+	
+	private Boolean custom;
+	public Boolean getCustom() {
+		return custom;
+	}
+	public void setCustom(Boolean custom) {
+		this.custom = custom;
+	}
+
+	public boolean isCustom() {
+		if (custom != null) {
+			return custom.booleanValue();
+		}
+		return false;
 	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();

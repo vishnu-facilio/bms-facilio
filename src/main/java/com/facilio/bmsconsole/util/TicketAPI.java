@@ -373,7 +373,7 @@ public class TicketAPI {
 			ticket.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
-		if(ticket.getAssignedTo() != null && (status == null || status.getStatus().equals("Submitted"))) {
+		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (status == null || status.getStatus().equals("Submitted"))) {
 			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
 	}
@@ -557,7 +557,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getCalendarColorFields())
-														.table(module.getTableName());
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		List<Map<String, Object>> results = selectBuilder.get();
 		if(results != null && !results.isEmpty())
 		{
