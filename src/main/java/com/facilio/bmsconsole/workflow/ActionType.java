@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -247,7 +248,7 @@ public enum ActionType {
 			if (rule.getBaselineId() != -1) {
 				obj.put("baselineId", rule.getBaselineId());
 			}
-			obj.put("sourceType", 6);
+			obj.put("sourceType", SourceType.THRESHOLD_ALARM.getIntVal());
 			DateRange range = getRange(rule, reading);
 			obj.put("startTime", range.getStartTime());
 			if (range.getEndTime() != -1) {

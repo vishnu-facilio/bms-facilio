@@ -118,6 +118,19 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		return -1;
 	}
+	
+	@Override
+	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+
+		Chain updateAlarm = FacilioChainFactory.updateAlarmFromJsonChain();
+		updateAlarm.execute(context);
+
+		return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+	}
 
 	@Override
 	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception {

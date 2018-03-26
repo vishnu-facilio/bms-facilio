@@ -20,6 +20,8 @@ public interface ModuleCRUDBean {
 	
 	public int updateAlarm(AlarmContext alarm, List<Long> ids) throws Exception;
 	
+	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
+	
 	public int updateAlarmPriority(String priority, List<Long> ids) throws Exception;
 	
 	public int updateAlarmResource(long assetId, String node) throws Exception;

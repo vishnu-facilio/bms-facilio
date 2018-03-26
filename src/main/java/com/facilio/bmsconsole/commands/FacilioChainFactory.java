@@ -443,10 +443,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain updateAlarmFromJsonChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new ProcessAlarmCommand());
+		c.addCommand(getUpdateAlarmChain());
+		return c;
+	}
+	
 	public static Chain getUpdateAlarmChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateAlarmCommand());
 		c.addCommand(new AddWOFromAlarmCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());

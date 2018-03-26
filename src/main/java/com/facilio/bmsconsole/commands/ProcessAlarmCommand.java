@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +32,7 @@ public class ProcessAlarmCommand implements Command {
 			sourceType = Integer.parseInt(alarmInfo.get("sourceType").toString());
 		}
 		
-		if (sourceType == 6) {
+		if (sourceType == SourceType.THRESHOLD_ALARM.getIntVal()) {
 			fields = bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		}
 		else {

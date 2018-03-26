@@ -41,8 +41,8 @@ public class InternalActions extends ActionSupport {
 	}
 	
 	public String updateAlarmFromEvent() throws Exception {
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", alarm.getOrgId());
-		rowsUpdated = bean.updateAlarm(alarm, id);
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", (Long) alarmInfo.get("orgId"));
+		rowsUpdated = bean.updateAlarmFromJson(alarmInfo, id);
 		return SUCCESS;
 	}
 	

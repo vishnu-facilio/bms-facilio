@@ -14,7 +14,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -130,9 +132,19 @@ public class EventToAlarmCommand implements Command {
 		ids.add(alarmId);
 		alarm.put("severityString", event.getSeverity());
 		alarm.put("orgId", event.getOrgId());
+		
+		if (event.getAdditionInfo() != null) {
+			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
+			if (sourceType != null && sourceType == SourceType.THRESHOLD_ALARM.getIntVal()) {
+				alarm.put("sourceType", sourceType);
+				alarm.put("startTime", event.getAdditionInfo().get("startTime"));
+				alarm.put("endTime", event.getAdditionInfo().get("endTime"));
+				alarm.put("readingMessage", event.getAdditionInfo().get("readingMessage"));
+			}
+		}
 
 		JSONObject content = new JSONObject();
-		content.put("alarm", alarm);
+		content.put("alarmInfo", alarm);
 		content.put("id", ids);
 
 		Map<String, String> headers = new HashMap<>();

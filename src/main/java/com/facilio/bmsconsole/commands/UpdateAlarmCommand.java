@@ -13,6 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -35,13 +36,19 @@ public class UpdateAlarmCommand implements Command {
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(alarm != null && recordIds != null && !recordIds.isEmpty()) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = null;
+			String moduleName = null;
+			if (alarm instanceof ReadingAlarmContext) {
+				fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
+				moduleName = FacilioConstants.ContextNames.READING_ALARM;
+			}
+			else {
+				fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
+				moduleName = FacilioConstants.ContextNames.ALARM;
+			}
 			FacilioModule module = modBean.getModule(moduleName);
-			
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -51,7 +58,6 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(alarm.isAcknowledged()) {
 				alarm.setAcknowledgedTime(System.currentTimeMillis());
-				
 				alarm.setAcknowledgedBy(AccountUtil.getCurrentUser());
 			}
 			
@@ -90,8 +96,7 @@ public class UpdateAlarmCommand implements Command {
 			}
 			
 			UpdateRecordBuilder<AlarmContext> updateBuilder = new UpdateRecordBuilder<AlarmContext>()
-																		.moduleName(moduleName)
-																		.table(dataTableName)
+																		.module(module)
 																		.fields(fields)
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
