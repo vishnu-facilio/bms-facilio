@@ -124,23 +124,47 @@ public class DeltaCalculationCommand implements Command {
 				delta=currentReading-lastReading;
 				delta=ReportsUtil.roundOff(delta, 4);
 				
-				if(delta>=leastMargin && lastDelta>=leastMargin && ((currentTimestamp-lastDeltaTimestamp) <=(dataInterval+rearmInterval))) {
-					//if current delta or lastDelta  is zero no point in coming here..
-					//if the time interval is less than or equals dataInterval+ adjuster range minutes we can check the below rule..
-					if(delta >= 5*lastDelta) {
-						//too high.. need to be marked & reading reset also done..
-						reading.addReading(fieldName, lastReading);
-						delta=0;
-						type=MarkType.TOO_HIGH_VALUE;
-						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId, type, currentReading,lastReading));
-					}
-					else if (delta >= 2*lastDelta) {
-						//bit high.. only marking done but reading reset not done..
-						type=MarkType.HIGH_VALUE;
-						markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
-					}
+				if(delta>=leastMargin && lastDelta>=leastMargin) { 
+					//if current delta or lastDelta  is zero or smaller value no point in coming here..
 					
-					//need to think of any other rules here..
+					long timeDiff=currentTimestamp-lastDeltaTimestamp;
+					if(timeDiff <=(dataInterval+rearmInterval)) {
+						
+						//if the time diff is less than or equals dataInterval+ adjuster range minutes we can check the below rule..
+						if(delta >= 10*lastDelta) {
+							//too high.. need to be marked & reading reset also done..
+							// do we really need resetting here or just notify them??
+							reading.addReading(fieldName, lastReading);
+							delta=0;
+							type=MarkType.TOO_HIGH_VALUE;
+							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId, type, currentReading,lastReading));
+						}
+						else if (delta >= 2*lastDelta) {
+							//bit high.. only marking done but reading reset not done..
+							type=MarkType.HIGH_VALUE;
+							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
+						}
+
+						//need to think of any other rules here..
+					}
+					else {
+						//this means missing reading scenario..i.e reading coming after long interval.. 
+
+						if (delta >= 2*lastDelta) {
+							if(timeDiff<=86400000) { 
+								//missing records for 24 hrs or less..
+								//then this reading spike need not be considered for per day graphs i.e hourly plots for a day..
+								type=MarkType.HIGH_VALUE_HOURLY_VIOLATION;
+							}
+							else {
+								//missing records for more than 24 hrs .. 
+								//then this reading spike need not be considered for monthly graphs i.e  day plots for a month..
+								type=MarkType.HIGH_VALUE_DAILY_VIOLATION;
+							}
+							markedList.add(getMarkedReading(reading,readingField.getFieldId(),moduleId,type, currentReading,currentReading));
+						}
+						
+					}
 				}
 			}
 			else {//here current reading equals zero or lesser than last reading scenario..
