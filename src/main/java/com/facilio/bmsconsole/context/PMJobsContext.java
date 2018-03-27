@@ -40,4 +40,21 @@ public class PMJobsContext {
 	public void setProjected(boolean projected) {
 		this.projected = projected;
 	}
+	
+	private Boolean active;
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	public boolean isActive() {
+		if (active != null) {
+			return active.booleanValue();
+		}
+		return false;
+	}
 }

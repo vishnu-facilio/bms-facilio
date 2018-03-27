@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -15,9 +14,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -39,24 +36,11 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		PMJobsContext pmJobs = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_JOB);
+		PMJobsContext pmJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_JOB);
 		long pmId = (Long) context.get(FacilioConstants.ContextNames.PM_ID);
 		long resourceId = (Long) context.get(FacilioConstants.ContextNames.PM_RESOURCE_ID);
-		Map<String, Object> props = FieldUtil.getAsProperties(pmJobs);
 		
-		String ids = StringUtils.join(recordIds, ",");
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getIdField(ModuleFactory.getPMJobsModule()));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(ids);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getPMJobsModule().getTableName())
-				.fields(FieldFactory.getPMJobFields())
-				.andCondition(idCondition);
-		
-		if(resourceId != -1)
-		{
+		if(resourceId != -1) {
 			List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -70,10 +54,15 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 			long templateId = (long) pmProps.get(0).get("templateId");
 			long newTemplateId = addWOTemplate(templateId, resourceId);
 			
-			props.put("templateId", newTemplateId);
+			pmJob.setTemplateId(newTemplateId);
 		}
 		
-		updateBuilder.update(props);
+		FacilioModule pmModule = ModuleFactory.getPMJobsModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(pmModule.getTableName())
+				.fields(FieldFactory.getPMJobFields())
+				.andCondition(CriteriaAPI.getIdCondition(recordIds, pmModule));
+		updateBuilder.update(FieldUtil.getAsProperties(pmJob));
 		return false;
 	}
 	
