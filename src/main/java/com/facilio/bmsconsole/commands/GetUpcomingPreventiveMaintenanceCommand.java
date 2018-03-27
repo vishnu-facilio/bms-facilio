@@ -67,7 +67,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 						pmTriggerMap.put(trigger.getId(), trigger);
 						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
-								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, startTime);
+								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, startTime, false);
 								Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
 								pmPairs.add(pair);
 							}
@@ -113,7 +113,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 									break;
 								case FIXED:
 								case FLOATING:
-									PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, startTime);
+									PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, startTime, false);
 									if(pmJob.getNextExecutionTime() > endTime) {
 										virtualJobsStartTime = -1;
 									}

@@ -80,7 +80,7 @@ public class ResetTriggersCommand implements Command {
 							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
 						}
 						else {//Deleting oldJobs of other schedule triggers
-							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime);
+							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime, false);
 							PMJobsContext updatedPM = new PMJobsContext();
 							ZonedDateTime zdt = DateTimeUtil.getDateTime();
 							if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
@@ -89,12 +89,13 @@ public class ResetTriggersCommand implements Command {
 							}
 							updatedPM.setNextExecutionTime(trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond()));
 							updatedPM.setId(pmJob.getId());
-							pmJob = PreventiveMaintenanceAPI.updatePMJob(updatedPM);
+							updatedPM.setActive(true);
+							pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
 							PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
 						}
 						break;
 					case ONLY_SCHEDULE_TRIGGER:
-						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime);
+						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime, true);
 						PreventiveMaintenanceAPI.schedulePMJob(pmJob);
 					default:
 						break;

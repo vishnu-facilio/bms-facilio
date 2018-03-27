@@ -50,6 +50,7 @@ public class PMToWorkOrder extends FacilioJob {
 				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
 				pmTrigger.setId(pmJob.getPmTriggerId());
 				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !pmJob.isActive());
 				context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
 				context.put(FacilioConstants.ContextNames.TEMPLATE_ID, pmJob.getTemplateId());
 				context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());

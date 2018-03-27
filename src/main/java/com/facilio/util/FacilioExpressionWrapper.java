@@ -51,7 +51,9 @@ public class FacilioExpressionWrapper {
 	
 	public FacilioExpressionWrapper setVariablesInObject(Map<String, Object> keyValues) {
 		for(Map.Entry<String, Object> entry : keyValues.entrySet()) {
-			this.setVariable(entry.getKey(), entry.getValue().toString());
+			if (entry.getValue() != null) {
+				this.setVariable(entry.getKey(), entry.getValue().toString());
+			}
 		}
 		return this;
 	}

@@ -16,26 +16,29 @@ public class ExecutePMCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		long pmId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(pmId != -1) {
+		Long pmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		if(pmId != null && pmId != -1) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(pmId);
-			WorkOrderContext wo = null;
-			try {
-				Long templateId = (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
-				if (templateId == null) {
-					wo = bean.addWorkOrderFromPM(pm);
+			Boolean stopExecution = (Boolean) context.get(FacilioConstants.ContextNames.STOP_PM_EXECUTION);
+			if (stopExecution == null || !stopExecution) {
+				WorkOrderContext wo = null;
+				try {
+					Long templateId = (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
+					if (templateId == null) {
+						wo = bean.addWorkOrderFromPM(pm);
+					}
+					else {
+						wo = bean.addWorkOrderFromPM(pm, templateId);
+					}
 				}
-				else {
-					wo = bean.addWorkOrderFromPM(pm, templateId);
+				catch (Exception e) {
+					e.printStackTrace();
+					CommonCommandUtil.emailException("PM Execution failed", e);
 				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				CommonCommandUtil.emailException("PM Execution failed", e);
+				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			}
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		}
 		return false;
 	}
