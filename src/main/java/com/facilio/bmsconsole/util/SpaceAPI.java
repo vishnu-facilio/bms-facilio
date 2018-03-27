@@ -93,6 +93,22 @@ public class SpaceAPI {
 		return null;
 	}
 	
+	
+	public static List<SiteContext> getSiteSpace(String spaceList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(SiteContext.class)
+																	.andCondition(CriteriaAPI.getIdCondition(spaceList, module));
+		return selectBuilder.get();
+	}
+	
 	public static BuildingContext getBuildingSpace(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);

@@ -17,4 +17,5 @@
 	 <job name='EnPICalculator' classname = 'com.facilio.bmsconsole.jobs.EnPICalculatorJob' />
 	 <job name='HistoricalENPICalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalENPICalculatorJob' />
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' />
+	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' />
 </scheduler>

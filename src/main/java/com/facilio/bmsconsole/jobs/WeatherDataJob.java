@@ -40,7 +40,7 @@ public class WeatherDataJob extends FacilioJob {
 			List<ReadingContext> readings= new ArrayList<ReadingContext>();
 			for(SiteContext site:sites) {
 				
-				Map<String,Object> weatherData=getWeatherData(site);
+				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
@@ -65,30 +65,6 @@ public class WeatherDataJob extends FacilioJob {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
-	private Map<String,Object>getWeatherData(SiteContext site) throws Exception {
-		
-		LocationContext location= site.getLocation();
-		if(location==null) {
-			return null;
-		}
-		Double lat=location.getLat();
-		Double lng=location.getLng();
-		if(lat==-1 || lng==-1) {
-			return null;
-		}
-		String weatherURL=WeatherUtil.getForecastURL(lat, lng);
-		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
-		String response=WeatherUtil.getResponse(connection);
-		if(response==null){
-			System.err.println("The response is null from the weather server");
-			return null;
-		}
-		JSONParser parser = new JSONParser();
-		JSONObject weatherData= (JSONObject) parser.parse(response);
-		return (JSONObject)weatherData.get("currently");
-		
-	}
 
 
 	private ReadingContext getReading(long siteId,Map<String,Object> currentWeather) {

@@ -6,6 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -14,6 +18,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 
 public class WeatherUtil {
@@ -115,6 +128,102 @@ public class WeatherUtil {
 		return url.toString();
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	public static Map<String,Object>getWeatherData(SiteContext site) throws Exception {
+		
+		LocationContext location= site.getLocation();
+		if(location==null) {
+			return null;
+		}
+		Double lat=location.getLat();
+		Double lng=location.getLng();
+		if(lat==-1 || lng==-1) {
+			return null;
+		}
+		String weatherURL=WeatherUtil.getForecastURL(lat, lng);
+		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
+		String response=WeatherUtil.getResponse(connection);
+		if(response==null){
+			System.err.println("The response is null from the weather server");
+			return null;
+		}
+		JSONParser parser = new JSONParser();
+		JSONObject weatherData= (JSONObject) parser.parse(response);
+		return (JSONObject)weatherData.get("currently");
+		
+	}
+	
+	
+	public static Map<Long,List<Map<String,Object>>> getWeatherReadings(long startTime, long endTime) throws Exception {
+		
+		
+		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String,FacilioField>	fieldMap=FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.WEATHER_READING));
+		
+		FacilioField parentId = fieldMap.get("parentId");
+		FacilioField timeFld = fieldMap.get("ttime");
+		FacilioField temperatureFld = fieldMap.get("temperature");
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.add(parentId);
+		fields.add(timeFld);
+		fields.add(temperatureFld);
+		
+		SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
+				.select(fields)
+				.moduleName(FacilioConstants.ContextNames.WEATHER_READING)
+				.beanClass(ReadingContext.class)
+				.andCustomWhere("TTIME between ? AND ?",startTime,endTime);
+		List<Map<String,Object>> weatherReadings= builder.getAsProps();
+		
+		Map<Long,List<Map<String,Object>>> siteVsWeatherData= new HashMap<Long,List<Map<String,Object>>>();
+		for(Map<String,Object> weatherReading:weatherReadings) {
+			
+			Long siteId=(Long)weatherReading.remove("parentId");
+			List<Map<String,Object>> siteData= siteVsWeatherData.get(siteId);
+			if(siteData==null) {
+				siteData= new ArrayList<Map<String,Object>>();
+				siteVsWeatherData.put(siteId, siteData);
+			}
+			siteData.add(weatherReading);
+		}
+		return siteVsWeatherData;
+	}
+	
+	
+	public static Double getCDD(Double cddBaseTemp, List<Map<String,Object>> weatherReadings) {
+	
+		int count= weatherReadings.size();
+		Double totalTemp= new Double(0);
+		for(Map<String,Object> reading: weatherReadings){
+			
+			Double temperature=(Double)reading.get("temperature");
+			if(temperature==null || temperature < cddBaseTemp) {
+				continue;
+			}
+			totalTemp+=(temperature - cddBaseTemp);
+		}
+		Double cdd=totalTemp/count;
+		return cdd;
+	}
+	
+	public static Double getHDD(Double hddBaseTemp, List<Map<String,Object>> weatherReadings) {
+
+		int count= weatherReadings.size();
+		Double totalTemp= new Double(0);
+		for(Map<String,Object> reading: weatherReadings){
+
+			Double temperature=(Double)reading.get("temperature");
+			if(temperature==null || temperature > hddBaseTemp) {
+				continue;
+			}
+			totalTemp+=(hddBaseTemp-temperature);
+		}
+		Double hdd=totalTemp/count;
+		return hdd;
+
+	}
 	
 	public static void main (String args[]) {
 		//for unit testing..
