@@ -39,6 +39,30 @@ public class SpaceAPI {
 	
 	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
 	
+	public static List<FacilioModule> getDefaultReadings(SpaceType type) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = null;
+		switch(type) {
+			case SITE:
+				moduleName = FacilioConstants.ContextNames.SITE;
+				break;
+			case BUILDING:
+				moduleName = FacilioConstants.ContextNames.BUILDING;
+				break;
+			case FLOOR:
+				moduleName = FacilioConstants.ContextNames.FLOOR;
+				break;
+			case SPACE:
+				moduleName = FacilioConstants.ContextNames.SPACE;
+				break;
+			case ZONE:
+				moduleName = FacilioConstants.ContextNames.ZONE;
+				break;
+		}
+		List<FacilioModule> readings = modBean.getSubModules(moduleName, FacilioModule.ModuleType.READING);
+		return readings;
+	}
+	
 	public static void updateHelperFields(BaseSpaceContext space) throws Exception {
 		BaseSpaceContext updateSpace = new BaseSpaceContext();
 		switch(space.getSpaceTypeEnum()) {

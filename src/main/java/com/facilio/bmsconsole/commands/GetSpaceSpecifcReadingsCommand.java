@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -29,17 +30,16 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		
 		if (parentId != -1) {
-			String spaceModule = getSpaceModule(parentId, context);
-			if (spaceModule.equals(FacilioConstants.ContextNames.SPACE)) {
+			SpaceType type = getSpaceType(parentId, context);
+			if (type == SpaceType.SPACE) {
 				return false;
 			}
 			List<FacilioModule> readings = getSpecificReadings(parentId);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if (readings == null) {
-				readings = modBean.getSubModules(spaceModule, FacilioModule.ModuleType.READING); 
+				readings = SpaceAPI.getDefaultReadings(type); 
 			}
 			else {
-				List<FacilioModule> moduleReadings = modBean.getSubModules(spaceModule, FacilioModule.ModuleType.READING);
+				List<FacilioModule> moduleReadings = SpaceAPI.getDefaultReadings(type);
 				if (moduleReadings != null) {
 					readings.addAll(moduleReadings);
 				}
@@ -76,25 +76,14 @@ public class GetSpaceSpecifcReadingsCommand implements Command {
 		return null;
 	}
 	
-	private String getSpaceModule(long parentId, Context context) throws Exception {
+	private SpaceType getSpaceType(long parentId, Context context) throws Exception {
 		BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(parentId);
-		switch (baseSpace.getSpaceTypeEnum()) {
-			case SITE:
-				return FacilioConstants.ContextNames.SITE;
-			case BUILDING:
-				return FacilioConstants.ContextNames.BUILDING;
-			case FLOOR:
-				return FacilioConstants.ContextNames.FLOOR;
-			case SPACE:
+		if (baseSpace.getSpaceTypeEnum() == SpaceType.SPACE) {
 				SpaceContext space = SpaceAPI.getSpace(parentId);
 				context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, space.getSpaceCategory() != null?space.getSpaceCategory().getId():-1);
 				context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
-				return FacilioConstants.ContextNames.SPACE;
-			case ZONE:
-				return FacilioConstants.ContextNames.ZONE;
-			default:
-				return null;
 		}
+		return baseSpace.getSpaceTypeEnum();
 	}
 
 }

@@ -8,9 +8,11 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -39,7 +41,7 @@ public class GetCategoryReadingsCommand implements Command {
 			
 			List<FacilioModule> readings = null;
 			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				readings = getDefaultReadings();
+				readings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
 			}
 			else {
 				readings = new ArrayList<>();
@@ -54,16 +56,10 @@ public class GetCategoryReadingsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 		}
 		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, getDefaultReadings());
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
 		}
 		
 		return false;
 	}
 	
-	private List<FacilioModule> getDefaultReadings() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioModule> readings = modBean.getSubModules(FacilioConstants.ContextNames.SPACE, FacilioModule.ModuleType.READING);
-		return readings;
-	}
-
 }

@@ -9,11 +9,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -39,13 +41,7 @@ public class GetAllCategoryReadingsCommand implements Command {
 			
 			System.out.println(">>>>>>>>>>>> props : "+props);
 			
-			List<FacilioModule> readings = null;
-			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				readings = getDefaultReadings();
-			}
-			else {
-				readings = new ArrayList<>();
-			}
+			List<FacilioModule> readings = new ArrayList<>();
 			Map<Long,List<FacilioModule>> moduleMap = new HashMap();
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -61,26 +57,20 @@ public class GetAllCategoryReadingsCommand implements Command {
 					modList.add(readingModule);
 				}
 			}
+			if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
+				List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
+				readings.addAll(defaultReadings);
+				moduleMap.put(-1l, defaultReadings);
+			}
+			
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
 		}
 		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, getDefaultReadings());
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
 		}
 		
 		return false;
 	}
 	
-	private List<FacilioModule> getDefaultReadings() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioModule> readings = new ArrayList<>();
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.CURRENT_OCCUPANCY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.ASSIGNED_OCCUPANCY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.TEMPERATURE_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.HUMIDITY_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.CO2_READING));
-		readings.add(modBean.getModule(FacilioConstants.ContextNames.SET_POINT_READING));
-		return readings;
-	}
-
 }
