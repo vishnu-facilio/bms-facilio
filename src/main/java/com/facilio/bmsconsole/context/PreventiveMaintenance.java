@@ -303,6 +303,9 @@ public class PreventiveMaintenance {
 	public void setCustom(Boolean custom) {
 		this.custom = custom;
 	}
+	public void setCustom(boolean custom) {
+		this.custom = custom;
+	}
 
 	public boolean isCustom() {
 		if (custom != null) {
