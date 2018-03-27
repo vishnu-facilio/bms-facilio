@@ -82,7 +82,12 @@ public class ReportScheduledListCommand implements Command {
 		if(jobProps != null && !jobProps.isEmpty()) {
 			for(Map<String, Object> prop : jobProps) {
 				JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
-				reportsMap.get(job.getJobId()).setJob(job);
+				if (job.isActive()) {
+					reportsMap.get(job.getJobId()).setJob(job);
+				}
+				else {
+					reportsMap.remove(job.getJobId());
+				}
 			}
 		}
 		
