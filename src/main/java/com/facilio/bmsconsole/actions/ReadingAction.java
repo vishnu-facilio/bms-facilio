@@ -11,6 +11,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -20,6 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
@@ -353,6 +356,44 @@ public class ReadingAction extends ActionSupport {
 		
 	}
 	
+	public String getAllReadings() throws Exception {
+		List<Long> assetCategoryIds = getAssetCategoryIds();
+		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);
+		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		getCategoryReadingChain.execute(context);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);	
+		
+		return SUCCESS;
+	}
+	
+	public String spaceType;
+	
+	
+	public String getSpaceType() {
+		return spaceType;
+	}
+
+	public void setSpaceType(String spaceType) {
+		this.spaceType = spaceType;
+	}
+
+	public String getAllSpaceTypeReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE,getSpaceType());
+		Chain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
+		getSpaceTypeReading.execute(context);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
+		System.out.println(">>>>>>> getAllSpaceTypeReadings.readings : "+readings);
+		System.out.println(">>>>>>> getAllSpaceTypeReadings.moduleMap : "+moduleMap);
+		return SUCCESS;
+	}
+	
+	
 	public String getAllSpaceReadings() throws Exception {
 		
 		spaceCategoriesList();
@@ -369,8 +410,8 @@ public class ReadingAction extends ActionSupport {
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
-		System.out.println(">>>>>>> readings : "+readings);
-		System.out.println(">>>>>>> moduleMap : "+moduleMap);
+		System.out.println(">>>>>>> getAllSpaceReadings.readings : "+readings);
+		System.out.println(">>>>>>> getAllSpaceReadings.moduleMap : "+moduleMap);
 		return SUCCESS;
 	}
 	

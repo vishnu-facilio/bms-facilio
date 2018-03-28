@@ -238,6 +238,7 @@ public class FacilioConstants {
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
 		public static final String BUILDING_ID = "buildingId";
+		public static final String BUILDING_IDS = "buildingIds";
 		
 		public static final String FLOOR = "floor";
 		public static final String FLOOR_LIST = "floors";

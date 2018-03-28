@@ -1622,6 +1622,16 @@ public class FacilioChainFactory {
 //		return c;
 	}
 	
+/*	public static Chain getAllBuildingsChain() {
+		Chain c = new ChainBase() ;
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		addCleanUpCommand(c);
+		return c;	
+	}*/
+	
 	public static Chain addSpaceCategoryChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());
@@ -1725,6 +1735,16 @@ public class FacilioChainFactory {
 		addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getReadingsForSpaceTypeChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(new GetAllSpaceTypeReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = new TransactionChain();

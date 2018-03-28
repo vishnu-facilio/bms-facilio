@@ -1385,6 +1385,15 @@
 			</result>
 		</action>
 
+		<action name="getallspacetypereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getAllSpaceTypeReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">SPACE_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">moduleMap</param>
+			</result>
+		</action>
+		
 		<action name="getassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAssetReadings">
 			<result name="success" type="json">
