@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -65,7 +66,7 @@ public class PreventiveMaintenanceAPI {
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
 			pmJob.setProjected(!addToDb);
-			pmJob.setActive(true);
+			pmJob.setStatus(PMJobsStatus.ACTIVE);
 			pmJobs.add(pmJob);
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 			currentCount++;
@@ -90,7 +91,7 @@ public class PreventiveMaintenanceAPI {
 			PMJobsContext pmJob = new PMJobsContext();
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
-			pmJob.setActive(true);
+			pmJob.setStatus(PMJobsStatus.ACTIVE);
 			pmJob.setProjected(!addToDb);
 			
 			if (addToDb) {
@@ -110,7 +111,7 @@ public class PreventiveMaintenanceAPI {
 			PMJobsContext pmJob = new PMJobsContext();
 			pmJob.setPmTriggerId(pmTrigger.getId());
 			pmJob.setNextExecutionTime(nextExecutionTime);
-			pmJob.setActive(true);
+			pmJob.setStatus(PMJobsStatus.ACTIVE);
 			pmJobs.add(pmJob);
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 			currentCount++;
@@ -151,7 +152,14 @@ public class PreventiveMaintenanceAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(pmJob));
 	}
 	
-	public static PMJobsContext getNextPMJob(PMTriggerContext pmTrigger, long currentTime, boolean onlyActive) throws Exception {
+	public static void updatePMJobStatus(long id, PMJobsStatus status) throws Exception {
+		PMJobsContext updatedJob = new PMJobsContext();
+		updatedJob.setId(id);
+		updatedJob.setStatus(status);
+		updatePMJob(updatedJob);
+	}
+	
+	public static PMJobsContext getNextPMJob(long pmTriggerId, long currentTime, boolean onlyActive) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -160,14 +168,14 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
-														.andCondition(CriteriaAPI.getCondition(pmTriggerField, String.valueOf(pmTrigger.getId()), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(pmTriggerField, String.valueOf(pmTriggerId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(currentTime), NumberOperators.GREATER_THAN))
 														.limit(1)
 														;
 		
 		if (onlyActive) {
-			FacilioField isActive = fieldsMap.get("active");
-			selectBuilder.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(true), BooleanOperators.IS));
+			FacilioField isActive = fieldsMap.get("status");
+			selectBuilder.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(PMJobsStatus.IN_ACTIVE.getValue()), NumberOperators.NOT_EQUALS));
 		}
 		
 		List<Map<String, Object>> jobProps = selectBuilder.get();
@@ -255,6 +263,25 @@ public class PreventiveMaintenanceAPI {
 		return pmJobs;
 	}
 	
+	public static List<PMJobsContext> getPMJobs(List<Long> ids) throws Exception {
+		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
+		List<FacilioField> fields = FieldFactory.getPMJobFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(pmJobsModule.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(ids, pmJobsModule))
+														;
+		List<Map<String, Object>> jobProps = selectBuilder.get();
+		List<PMJobsContext> pmJobs = new ArrayList<>();
+		if(jobProps != null && !jobProps.isEmpty()) {
+			for (Map<String, Object> prop : jobProps) {
+				PMJobsContext pmJob = FieldUtil.getAsBeanFromMap(prop, PMJobsContext.class);
+				pmJobs.add(pmJob);
+			}
+		}
+		return pmJobs;
+	}
+	
 	private static void addPMJob(PMJobsContext pmJob) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		FacilioModule module = ModuleFactory.getPMJobsModule();
 		Map<String, Object> props = FieldUtil.getAsProperties(pmJob);
@@ -288,11 +315,13 @@ public class PreventiveMaintenanceAPI {
 	
 	public static void schedulePMJob(PMJobsContext pmJob) throws Exception {
 		FacilioTimer.scheduleOneTimeJob(pmJob.getId(), "PreventiveMaintenance", pmJob.getNextExecutionTime(), "priority");
+		updatePMJobStatus(pmJob.getId(), PMJobsStatus.SCHEDULED);
 	}
 	
 	public static void reSchedulePMJob(PMJobsContext pmJob) throws Exception {
 		FacilioTimer.deleteJob(pmJob.getId(), "PreventiveMaintenance");
 		FacilioTimer.scheduleOneTimeJob(pmJob.getId(), "PreventiveMaintenance", pmJob.getNextExecutionTime(), "priority");
+		updatePMJobStatus(pmJob.getId(), PMJobsStatus.SCHEDULED);
 	}
 	
 	private static PMJobsContext deletePMJob(long pmTriggerId) throws Exception {

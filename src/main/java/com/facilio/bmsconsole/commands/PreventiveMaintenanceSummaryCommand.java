@@ -59,7 +59,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		if(pm.hasTriggers()) {
 			for (PMTriggerContext trigger : pm.getTriggers()) {
-				PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, Instant.now().getEpochSecond(), true);
+				PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), Instant.now().getEpochSecond(), true);
 				if (pmJob == null && pm.getTriggerTypeEnum() != TriggerType.NONE && trigger.getSchedule().getFrequencyTypeEnum() != ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 					PMJobsContext lastPMJob = PreventiveMaintenanceAPI.getLastPMJob(trigger);
 					pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, lastPMJob.getNextExecutionTime(),false);

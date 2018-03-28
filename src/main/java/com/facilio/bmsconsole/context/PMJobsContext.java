@@ -41,20 +41,39 @@ public class PMJobsContext {
 		this.projected = projected;
 	}
 	
-	private Boolean active;
-	public Boolean getActive() {
-		return active;
+	private PMJobsStatus status;
+	public PMJobsStatus getStatusEnum() {
+		return status;
 	}
-	public void setActive(Boolean active) {
-		this.active = active;
+	public void setStatus(PMJobsStatus status) {
+		this.status = status;
 	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	public boolean isActive() {
-		if (active != null) {
-			return active.booleanValue();
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
 		}
-		return false;
+		return -1;
+	}
+	public void setStatus(int status) {
+		this.status = PMJobsStatus.valueOf(status);
+	}
+
+	public static enum PMJobsStatus {
+		ACTIVE,
+		SCHEDULED,
+		COMPLETED,
+		IN_ACTIVE
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public static PMJobsStatus valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 }

@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
@@ -62,6 +63,11 @@ public class ResetTriggersCommand implements Command {
 					resetPMTriggers(pm, currentTrigger, pmTriggersMap.get(pm.getId()), currentExecutionTime, nextExecutionTimes);
 				}
 			}
+			PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
+			if (currentJob != null) {
+				PreventiveMaintenanceAPI.updatePMJobStatus(currentJob.getId(), PMJobsStatus.COMPLETED);
+			}
+			
 			context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
 			context.put(FacilioConstants.ContextNames.PM_TRIGGERS, pmTriggersMap);
 		}
@@ -80,7 +86,7 @@ public class ResetTriggersCommand implements Command {
 							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
 						}
 						else {//Deleting oldJobs of other schedule triggers
-							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime, false);
+							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, false);
 							PMJobsContext updatedPM = new PMJobsContext();
 							ZonedDateTime zdt = DateTimeUtil.getDateTime();
 							if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
@@ -89,13 +95,13 @@ public class ResetTriggersCommand implements Command {
 							}
 							updatedPM.setNextExecutionTime(trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond()));
 							updatedPM.setId(pmJob.getId());
-							updatedPM.setActive(true);
+							updatedPM.setStatus(PMJobsStatus.ACTIVE);
 							pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
 							PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
 						}
 						break;
 					case ONLY_SCHEDULE_TRIGGER:
-						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger, currentExecutionTime, true);
+						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, true);
 						PreventiveMaintenanceAPI.schedulePMJob(pmJob);
 					default:
 						break;

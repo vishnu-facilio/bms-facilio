@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -50,12 +51,13 @@ public class PMToWorkOrder extends FacilioJob {
 				PMTriggerContext pmTrigger = FieldUtil.getAsBeanFromMap(prop, PMTriggerContext.class);
 				pmTrigger.setId(pmJob.getPmTriggerId());
 				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !pmJob.isActive());
+				context.put(FacilioConstants.ContextNames.STOP_PM_EXECUTION, !(pmJob.getStatusEnum() == PMJobsStatus.SCHEDULED));
 				context.put(FacilioConstants.ContextNames.RECORD_ID, pmTrigger.getPmId());
 				context.put(FacilioConstants.ContextNames.TEMPLATE_ID, pmJob.getTemplateId());
 				context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, jc.getExecutionTime());
 				context.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
 				context.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, pmTrigger);
+				context.put(FacilioConstants.ContextNames.PM_CURRENT_JOB, pmJob);
 				
 				Chain executePm = FacilioChainFactory.getExecutePreventiveMaintenanceChain();
 				executePm.execute(context);

@@ -343,7 +343,8 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_RESOURCES = "preventivemaintenanceresources";
 		public static final String INSERT_LEVEL = "insertLevel";
 		public static final String PM_RESET_TRIGGERS = "pmResetTriggers";
-		public static final String PM_CURRENT_TRIGGER = "pmCurrentTriggerId";
+		public static final String PM_CURRENT_TRIGGER = "pmCurrentTrigger";
+		public static final String PM_CURRENT_JOB = "pmCurrentJob";
 		public static final String PM_TO_WO = "pmtowo";
 		
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";

@@ -3015,7 +3015,7 @@ public class FieldFactory {
 		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
 		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATE_ID",  module, FieldType.NUMBER));
-		fields.add(getField("active", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		
 		return fields;
 	}

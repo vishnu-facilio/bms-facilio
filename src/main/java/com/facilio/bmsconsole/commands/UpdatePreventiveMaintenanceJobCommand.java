@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -23,11 +25,13 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 
 public class UpdatePreventiveMaintenanceJobCommand implements Command {
 
@@ -63,6 +67,11 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 				.fields(FieldFactory.getPMJobFields())
 				.andCondition(CriteriaAPI.getIdCondition(recordIds, pmModule));
 		updateBuilder.update(FieldUtil.getAsProperties(pmJob));
+		
+		if (pmJob.getStatusEnum() == PMJobsStatus.ACTIVE) {
+			reScheduleIfRequired(recordIds);
+		}
+		
 		return false;
 	}
 	
@@ -108,5 +117,20 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 		woTemplate.setTasks(taskMap);
 		newTemplateId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
 		return newTemplateId;
+	}
+	
+	private void reScheduleIfRequired(List<Long> ids) throws Exception {
+		List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getPMJobs(ids);
+		long currentTime = DateTimeUtil.getCurrenTime(true);
+		for (PMJobsContext pmJob : pmJobs) {
+			if (pmJob.getNextExecutionTime() > currentTime) {
+				PMJobsContext nextJob = PreventiveMaintenanceAPI.getNextPMJob(pmJob.getPmTriggerId(), pmJob.getNextExecutionTime(), true);
+				if (nextJob.getStatusEnum() == PMJobsStatus.SCHEDULED) {
+					FacilioTimer.deleteJob(nextJob.getId(), "PreventiveMaintenance");
+					PreventiveMaintenanceAPI.updatePMJobStatus(nextJob.getId(), PMJobsStatus.ACTIVE);
+					PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+				}
+			}
+		}
 	}
 }
