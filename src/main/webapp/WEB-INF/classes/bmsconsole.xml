@@ -1333,6 +1333,15 @@
 			</result>
 		</action>
 		
+		<action name="addsetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addReadings">
+				<param name="moduleName">setup</param>
+				<param name="permission">ASSET_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="includeProperties">readingId</param>
+			</result>
+		</action>
+		
 		<action name="addsetupassetreading" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addAssetCategoryReading">
 				<param name="moduleName">setup</param>

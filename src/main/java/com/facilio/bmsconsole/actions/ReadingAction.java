@@ -43,6 +43,45 @@ public class ReadingAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	String resourceType;
+	
+	
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(String resourceType) {
+		this.resourceType = resourceType;
+	}
+	
+	public String addReadings() throws Exception {
+		switch(resourceType) {
+		case "Asset":
+			 addAssetCategoryReading();
+			break;
+		case "Space":
+			 addSpaceCategoryReading();
+			break;
+		case "Building":
+		case "Floor":
+		case "Site":
+			addSpaceTypeReading();
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String addSpaceTypeReading() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		Chain addReadingChain = FacilioChainFactory.addSpaceReadingChain();
+		addReadingChain.execute(context);
+		
+		return SUCCESS;
+	}
+
 	public String addSpaceCategoryReading() throws Exception {
 		return addCategoryReading(FacilioConstants.ContextNames.SPACE_CATEGORY, ModuleFactory.getSpaceCategoryReadingRelModule());
 	}
