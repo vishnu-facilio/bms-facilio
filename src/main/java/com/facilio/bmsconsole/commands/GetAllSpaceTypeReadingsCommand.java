@@ -11,7 +11,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -47,6 +49,28 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 			}
 			spaceType = SpaceType.BUILDING;
 		}
+		else if(type.equalsIgnoreCase("Sites"))
+		{
+			List<SiteContext> sites = SpaceAPI.getAllSites();
+			for(int i=0; i<sites.size();i++)
+			{
+				SiteContext site = sites.get(i);
+				ids.add(site.getId());
+				spaces.put(site.getId(), site);
+			}
+			spaceType = SpaceType.SITE;
+		}
+		else if(type.equalsIgnoreCase("Floors"))
+		{
+			List<FloorContext> floors = SpaceAPI.getAllFloors();
+			for(int i=0; i<floors.size();i++)
+			{
+				FloorContext floor = floors.get(i);
+				ids.add(floor.getId());
+				spaces.put(floor.getId(), floor);
+			}
+			spaceType = SpaceType.FLOOR;
+		} 
 		
 		List<FacilioField> fields = FieldFactory.getBasespaceReadingsFields();
 		FacilioField spaceField = FieldFactory.getAsMap(fields).get("spaceId");
@@ -89,19 +113,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
-			/*if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-				List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(SpaceType.SPACE);
-				readings.addAll(defaultReadings);
-				moduleMap.put(-1l, defaultReadings);
-			}
-			
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
-			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
-		
-		else if(categoryReadingRelModule.getName().equals("spacecategoryreading")) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, SpaceAPI.getDefaultReadings(SpaceType.SPACE));
-		}
-		*/
+
 		return false;
 	}
 }
