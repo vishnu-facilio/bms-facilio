@@ -117,12 +117,24 @@ public class PhotosAction extends ActionSupport {
 	}
 	
 	public String getTextFromImage() throws Exception {
-		detectedTexts = ImageRecognitionUtil.getText(file.get(0));
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PHOTO, file.get(0));
+		
+		Chain getTexts = FacilioChainFactory.getTextFromImageChain();
+		getTexts.execute(context);
+		
+		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);
 		return SUCCESS;
 	}
 	
 	public String getTextFromImageFile() throws Exception {
-		detectedTexts = ImageRecognitionUtil.getText(id);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PHOTO_ID, id);
+		
+		Chain getTexts = FacilioChainFactory.getTextFromImageChain();
+		getTexts.execute(context);
+		
+		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);
 		return SUCCESS;
 	}
 	

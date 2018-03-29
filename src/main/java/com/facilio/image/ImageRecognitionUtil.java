@@ -8,9 +8,12 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.amazonaws.services.rekognition.model.DetectLabelsRequest;
+import com.amazonaws.services.rekognition.model.DetectLabelsResult;
 import com.amazonaws.services.rekognition.model.DetectTextRequest;
 import com.amazonaws.services.rekognition.model.DetectTextResult;
 import com.amazonaws.services.rekognition.model.Image;
+import com.amazonaws.services.rekognition.model.Label;
 import com.amazonaws.services.rekognition.model.S3Object;
 import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.accounts.dto.User;
@@ -21,7 +24,9 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fs.S3FileStore;
 
 public class ImageRecognitionUtil {
-	public static List<TextDetection> getText(File image) throws IOException {
+	public static final float MINIMUM_CONFIDENCE = 70;
+	
+	public static List<TextDetection> getTexts (File image) throws IOException {
 		try(FileInputStream imageStream = new FileInputStream(image)) {
 			byte[] imageBytes = IOUtils.toByteArray(imageStream);
 			return getText(new Image()
@@ -29,7 +34,7 @@ public class ImageRecognitionUtil {
 		}
 	}
 	
-	public static List<TextDetection> getText (long fileId) throws Exception {
+	public static List<TextDetection> getTexts (long fileId) throws Exception {
 		String environment = AwsUtil.getConfig("environment");
 		if (!"development".equalsIgnoreCase(environment)) {
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());

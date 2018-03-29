@@ -1796,6 +1796,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getTextFromImageChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetTextsFromImageCommand());
+		c.addCommand(new FilterTextsFromImageCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateDefaultSpacePhotoChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

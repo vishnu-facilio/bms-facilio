@@ -99,7 +99,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 						for(WorkflowRuleContext workflowRule : workflowRules) {
 							Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
 							CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(workflowRule), rulePlaceHolders);
-							Iterator<Integer> it = records.iterator();
+							Iterator it = records.iterator();
 							while (it.hasNext()) {
 								Object record = it.next();
 								Map<String, Object> recordPlaceHolders = getPlaceHoldersBasedOnType(moduleName, workflowRule, record, rulePlaceHolders, lastReadingMap);
