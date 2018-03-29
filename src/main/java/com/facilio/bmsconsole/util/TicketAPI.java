@@ -364,18 +364,57 @@ public class TicketAPI {
 	}
 	
 	public static void updateTicketStatus(TicketContext ticket) throws Exception {
-		TicketStatusContext status = ticket.getStatus();
+		updateTicketStatus(ticket, null, false);
+	}
+	
+	public static void updateTicketStatus(TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
+		TicketStatusContext statusObj = ticket.getStatus();
 		
-		if(status != null) {
-			status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), status.getId());
+		if(statusObj != null) {
+			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), statusObj.getId());
 		}
 		else {
 			ticket.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
-		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (status == null || status.getStatus().equals("Submitted"))) {
+		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
 			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
+		
+		if (oldTicket != null) {
+			if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
+				if (oldTicket.getActualWorkStart() != -1) {
+					ticket.setResumedWorkStart(System.currentTimeMillis());
+				}
+				else {
+					ticket.setActualWorkStart(System.currentTimeMillis());
+				}
+			}
+			else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
+					|| ("Closed".equalsIgnoreCase(statusObj.getStatus()) && oldTicket.getStatus().getId() != TicketAPI.getStatus("Resolved").getId()) ) {
+
+				long estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket);
+				
+				if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
+					ticket.setActualWorkEnd(System.currentTimeMillis());
+					if(isWorkDurationChangeAllowed) {
+						long actualDuration = ticket.getActualWorkDuration() != -1 ? ticket.getActualWorkDuration() : ticket.getEstimatedWorkDuration();
+						ticket.setActualWorkDuration(actualDuration);
+						if (estimatedDuration == -1 && actualDuration != -1){
+							estimatedDuration = ticket.getActualWorkDuration();
+						}
+					}
+					else {
+						ticket.setActualWorkDuration(estimatedDuration);
+					}
+				}
+				
+				if (estimatedDuration != -1) {
+					ticket.setEstimatedWorkDuration(estimatedDuration);
+				}
+			}
+		}
+		
 	}
 	
 public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
@@ -570,7 +609,9 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 	public static void setCalendarColor(CalendarColorContext calendarColor) throws Exception {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
+		calendarColor.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
+		Map<String, Object> colorProp = FieldUtil.getAsProperties(calendarColor);
 		CalendarColorContext currentColor = getCalendarColor();
 		if (currentColor != null && currentColor.getId() != -1) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -578,12 +619,9 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					.fields(FieldFactory.getCalendarColorFields())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 
-			Map<String, Object> prop = FieldUtil.getAsProperties(calendarColor);
-			updateBuilder.update(prop);
+			updateBuilder.update(colorProp);
 		}
 		else {
-			currentColor.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			Map<String, Object> colorProp = FieldUtil.getAsProperties(currentColor);
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(module.getTableName())

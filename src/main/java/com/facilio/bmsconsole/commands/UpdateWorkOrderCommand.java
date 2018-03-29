@@ -49,11 +49,18 @@ public class UpdateWorkOrderCommand implements Command {
 				TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
 				
 				for(WorkOrderContext oldWo: oldWos) {
+					
+					if (!validateWorkorderStatus(statusObj, oldWo)) {
+						throw new Exception("Please close all tasks before closing the workorder");
+					}
+					
 					WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
 					newWo.setId(oldWo.getId());
 					newWos.add(newWo);
 					
-					if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
+					TicketAPI.updateTicketStatus(newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
+					
+					/*if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
 						if (oldWo.getActualWorkStart() != -1) {
 							newWo.setResumedWorkStart(System.currentTimeMillis());
 						}
@@ -83,7 +90,7 @@ public class UpdateWorkOrderCommand implements Command {
 						if (estimatedDuration != -1) {
 							newWo.setEstimatedWorkDuration(estimatedDuration);
 						}
-					}
+					}*/
 				}
 			}
 			
@@ -137,6 +144,15 @@ public class UpdateWorkOrderCommand implements Command {
 															.orderBy("ID");
 
 		return builder.get();
+	}
+	
+	private boolean validateWorkorderStatus(TicketStatusContext statusObj , WorkOrderContext oldWo) {
+		if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
+			if (oldWo.getNoOfClosedTasks() < oldWo.getNoOfTasks()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 }

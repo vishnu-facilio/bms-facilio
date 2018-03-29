@@ -869,6 +869,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getTicketFields (FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		LookupField statusField = (LookupField) getField("status", "STATUS_ID", module, FieldType.LOOKUP);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+		fields.add(statusField);
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getTicketActivityFields() {
 		FacilioModule module = ModuleFactory.getTicketActivityModule();
