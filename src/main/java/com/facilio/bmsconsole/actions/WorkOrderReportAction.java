@@ -28,6 +28,9 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -388,6 +391,11 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		
+		if (getCriteria() != null) {	
+	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
+ 		}
+		
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
@@ -417,6 +425,11 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		
+		if (getCriteria() != null) {	
+	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
+ 		}
+		
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
@@ -440,6 +453,11 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.NUMERIC_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		
+		if (getCriteria() != null) {	
+	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
+ 		}
+		
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
@@ -522,6 +540,103 @@ public class WorkOrderReportAction extends ActionSupport {
 		return rs;
 	}
 
+	private String filters;
+	
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	public String getFilters() {
+		return this.filters;
+	}
+	
+	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioField field = modBean.getField(fieldName, moduleName);
+		JSONArray value = (JSONArray) fieldJson.get("value");
+		int operatorId;
+		String operatorName;
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+		} else {
+			operatorName = (String) fieldJson.get("operator");
+			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
+		}
+		
+		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
+			
+			Condition condition = new Condition();
+			condition.setField(field);
+			condition.setOperatorId(operatorId);
+			
+			if(value!=null && value.size()>0) {
+				StringBuilder values = new StringBuilder();
+				boolean isFirst = true;
+				Iterator<String> iterator = value.iterator();
+				while(iterator.hasNext())
+				{
+					String obj = iterator.next();
+					if(!isFirst) {
+						values.append(",");
+					}
+					else {
+						isFirst = false;
+					}
+					if (obj.indexOf("_") != -1) {
+						try {
+							String filterValue = obj.split("_")[0];
+							values.append(filterValue);
+						}
+						catch (Exception e) {
+							values.append(obj);
+						}
+					}
+					else {
+						values.append(obj);
+					}
+				}
+				condition.setValue(values.toString());
+			}
+			conditionList.add(condition);
+		}
+	}
+	
+	private Criteria getCriteria() throws Exception {
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+	 		
+	 		if (filterJson.size() > 0) {
+	 			Iterator<String> filterIterator = filterJson.keySet().iterator();
+				String moduleName = "workorder";
+				Criteria criteria = new Criteria();
+				while(filterIterator.hasNext()) {
+					String fieldName = filterIterator.next();
+					Object fieldJson = filterJson.get(fieldName);
+					List<Condition> conditionList = new ArrayList<>();
+					if(fieldJson!=null && fieldJson instanceof JSONArray) {
+						JSONArray fieldJsonArr = (JSONArray) fieldJson;
+						for(int i=0;i<fieldJsonArr.size();i++) {
+							JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
+							setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+						}
+					}
+					else if(fieldJson!=null && fieldJson instanceof JSONObject) {
+						JSONObject fieldJsonObj = (JSONObject) fieldJson;
+						setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+					}
+					criteria.groupOrConditions(conditionList);
+				}
+				
+				return criteria;
+	 		}
+		}
+		return null;
+	}
+
 	private List<Map<String, Object>> getOpenWorkOrderSummary(String filterBy) throws Exception {
 		
 		FacilioReportContext repContext = new FacilioReportContext();
@@ -545,6 +660,11 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setGroupByCols(groupByCols);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
+		
+		if (getCriteria() != null) {	
+	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
+ 		}
+		
 		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
 	 	summaryReportChain.execute(repContext);
 	 	List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);

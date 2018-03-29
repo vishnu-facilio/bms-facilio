@@ -14,6 +14,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -58,6 +59,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -740,6 +742,16 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private String filters;
+	
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	public String getFilters() {
+		return this.filters;
+	}
+	
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
@@ -795,6 +807,60 @@ public class DashboardAction extends ActionSupport {
 		return this.excludeViolatedReadings;
 	}
 	
+	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioField field = modBean.getField(fieldName, moduleName);
+		JSONArray value = (JSONArray) fieldJson.get("value");
+		int operatorId;
+		String operatorName;
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+		} else {
+			operatorName = (String) fieldJson.get("operator");
+			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
+		}
+		
+		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
+			
+			Condition condition = new Condition();
+			condition.setField(field);
+			condition.setOperatorId(operatorId);
+			
+			if(value!=null && value.size()>0) {
+				StringBuilder values = new StringBuilder();
+				boolean isFirst = true;
+				Iterator<String> iterator = value.iterator();
+				while(iterator.hasNext())
+				{
+					String obj = iterator.next();
+					if(!isFirst) {
+						values.append(",");
+					}
+					else {
+						isFirst = false;
+					}
+					if (obj.indexOf("_") != -1) {
+						try {
+							String filterValue = obj.split("_")[0];
+							values.append(filterValue);
+						}
+						catch (Exception e) {
+							values.append(obj);
+						}
+					}
+					else {
+						values.append(obj);
+					}
+				}
+				condition.setValue(values.toString());
+			}
+			conditionList.add(condition);
+		}
+	}
+	
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
 		JSONArray ticketData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -804,6 +870,36 @@ public class DashboardAction extends ActionSupport {
 				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
+		
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+	 		
+	 		if (filterJson.size() > 0) {
+	 			Iterator<String> filterIterator = filterJson.keySet().iterator();
+				String moduleName = module.getName();
+				Criteria criteria = new Criteria();
+				while(filterIterator.hasNext()) {
+					String fieldName = filterIterator.next();
+					Object fieldJson = filterJson.get(fieldName);
+					List<Condition> conditionList = new ArrayList<>();
+					if(fieldJson!=null && fieldJson instanceof JSONArray) {
+						JSONArray fieldJsonArr = (JSONArray) fieldJson;
+						for(int i=0;i<fieldJsonArr.size();i++) {
+							JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
+							setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+						}
+					}
+					else if(fieldJson!=null && fieldJson instanceof JSONObject) {
+						JSONObject fieldJsonObj = (JSONObject) fieldJson;
+						setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+					}
+					criteria.groupOrConditions(conditionList);
+				}
+				
+				builder.andCriteria(criteria);
+	 		}
+		}
 		
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())

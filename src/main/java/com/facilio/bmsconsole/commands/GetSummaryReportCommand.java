@@ -83,6 +83,11 @@ public class GetSummaryReportCommand implements Command {
 			}
 		}
 		
+		Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if (criteria != null) {
+			builder.andCriteria(criteria);
+		}
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
