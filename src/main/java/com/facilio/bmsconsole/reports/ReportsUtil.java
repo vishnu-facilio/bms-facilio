@@ -84,7 +84,15 @@ public class ReportsUtil
 			return null;
 		}
 		//later we need to calculate based on slab..
-		return costConverter(kWh*unitCost);
+		double localcost = unitCost;
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		if(orgId == 60)
+		{
+			localcost = 5;
+		}
+		
+		return costConverter(kWh*localcost);
 	}
 	
 	
