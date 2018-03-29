@@ -1555,6 +1555,27 @@
 				<param name="root">photos</param>
 			</result>
 		</action>
+		
+		<action name="textFromImage" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getTextFromImage">
+			<result name="success" type="json">
+				<param name="root">detectedTexts</param>
+			</result>
+		</action>
+		
+		<action name="justUpload" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="justUploadPhotos">
+			<result name="success" type="json">
+				<param name="root">photos</param>
+			</result>
+		</action>
+		
+		<action name="textFromImageFile" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getTextFromImageFile">
+			<result name="success" type="json">
+				<param name="root">detectedTexts</param>
+			</result>
+		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="getPhotosList">

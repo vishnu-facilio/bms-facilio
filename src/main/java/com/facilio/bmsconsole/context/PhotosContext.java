@@ -13,7 +13,7 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 		this.parentId = parentId;
 	}
 	
-	private long photoId;
+	private long photoId = -1;
 	public long getPhotoId() {
 		return photoId;
 	}

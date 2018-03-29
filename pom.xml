@@ -192,6 +192,19 @@
 		    <artifactId>aws-java-sdk-cognitoidp</artifactId>
 		    <version>1.11.136</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-rekognition -->
+		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk-rekognition</artifactId>
+		    <version>1.11.303</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
+		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk-core</artifactId>
+		    <version>1.11.303</version>
+		</dependency>
+		
 		<dependency>
 		    <groupId>com.amazonaws</groupId>
 		    <artifactId>aws-java-sdk-cognitoidentity</artifactId>

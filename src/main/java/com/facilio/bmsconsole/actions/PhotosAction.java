@@ -5,12 +5,14 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.image.ImageRecognitionUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class PhotosAction extends ActionSupport {
@@ -99,6 +101,47 @@ public class PhotosAction extends ActionSupport {
 		return uploadPhotos(module);
 	}
 	
+	public String justUploadPhotos() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
+ 		
+ 		Chain justUpload = FacilioChainFactory.justUploadPhotosChain();
+ 		justUpload.execute(context);
+ 		
+ 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
+ 		
+		return SUCCESS;
+	}
+	
+	public String getTextFromImage() throws Exception {
+		detectedTexts = ImageRecognitionUtil.getText(file.get(0));
+		return SUCCESS;
+	}
+	
+	public String getTextFromImageFile() throws Exception {
+		detectedTexts = ImageRecognitionUtil.getText(id);
+		return SUCCESS;
+	}
+	
+	private long id;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	private List<TextDetection> detectedTexts;
+	public List<TextDetection> getDetectedTexts() {
+		return detectedTexts;
+	}
+	public void setDetectedTexts(List<TextDetection> detectedTexts) {
+		this.detectedTexts = detectedTexts;
+	}
+
 	private String uploadPhotos(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -143,7 +186,7 @@ public class PhotosAction extends ActionSupport {
 		this.module = module;
 	}
 
-	private long parentId;
+	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
 	}

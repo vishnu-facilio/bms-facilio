@@ -80,6 +80,8 @@ import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.CreateStreamResult;
 import com.amazonaws.services.kinesis.model.ResourceInUseException;
+import com.amazonaws.services.rekognition.AmazonRekognition;
+import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
@@ -112,6 +114,7 @@ public class AwsUtil
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 	
 	private static AmazonS3 AWS_S3_CLIENT = null;
+	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
 	private static AWSCredentials basicCredentials = null;
 	private static AWSCredentialsProvider credentialsProvider = null;
@@ -182,6 +185,14 @@ public class AwsUtil
         	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
     	}
     	return AWS_S3_CLIENT;
+    }
+    
+    public static AmazonRekognition getAmazonRekognitionClient() {
+    	if (AWS_REKOGNITION_CLIENT == null) {
+    		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(AwsUtil.getConfig("region")).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+    	}
+    	return AWS_REKOGNITION_CLIENT;
     }
     
     public static String getSignature(String payload, String xAmzDate, String path) throws Exception
