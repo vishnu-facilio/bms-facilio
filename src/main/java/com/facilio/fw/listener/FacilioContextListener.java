@@ -2,11 +2,13 @@ package com.facilio.fw.listener;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -102,7 +104,22 @@ public class FacilioContextListener implements ServletContextListener {
 			} catch (Exception e){
 				e.printStackTrace();
 			}
+			InputStream versionfile;
+			try {
+				versionfile = SQLScriptRunner.class.getClassLoader().getResourceAsStream("version.txt");
+				//String version = FileUtils.readFileToString(versionfile);
+				Properties prop = new Properties();
+				prop.load(versionfile);
+				event.getServletContext().setAttribute("buildinfo", prop);
+				
+				System.out.println("Loaded build properties "+prop);
 
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
 
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
