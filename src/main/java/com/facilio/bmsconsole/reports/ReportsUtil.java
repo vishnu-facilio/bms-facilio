@@ -51,7 +51,16 @@ public class ReportsUtil
 		return roundOff(variance, 2);
 	}
 	
-	public static double unitCost=0.41;
+	private static double unitCost=0.41;
+	
+	public static double getUnitCost(long orgid)
+	{
+		if(orgid==60)
+		{
+			return 5;
+		}
+		return unitCost;
+	}
 
 	
 	public static String[] energyUnitConverter(Double value)
@@ -84,15 +93,11 @@ public class ReportsUtil
 			return null;
 		}
 		//later we need to calculate based on slab..
-		double localcost = unitCost;
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		if(orgId == 60)
-		{
-			localcost = 5;
-		}
+	
 		
-		return costConverter(kWh*localcost);
+		return costConverter(kWh*getUnitCost(orgId));
 	}
 	
 	

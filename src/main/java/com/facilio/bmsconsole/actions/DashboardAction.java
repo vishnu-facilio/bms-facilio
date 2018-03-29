@@ -1767,7 +1767,7 @@ public class DashboardAction extends ActionSupport {
 			 				value.put("label", buildingVsMeter.containsKey(thisMap.get("groupBy")) ? buildingVsMeter.get(thisMap.get("groupBy")) : thisMap.get("groupBy"));
 			 				if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
 			 					Double d = (Double) thisMap.get("value");
-			 					value.put("value", d*ReportsUtil.unitCost);
+			 					value.put("value", d*  ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
 			 					value.put("orig_value", d);
 			 				}
 			 				else {
@@ -1845,7 +1845,7 @@ public class DashboardAction extends ActionSupport {
 	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
 	 						Double d = (Double) thisMap.get("value");
 	 						Double concatVal = d + (Double) tmpComp.get("orig_value");
-	 						tmpComp.put("value", concatVal*ReportsUtil.unitCost);
+	 						tmpComp.put("value", concatVal*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
 	 						tmpComp.put("orig_value", concatVal);
 	 					}
 	 					else {
@@ -1857,7 +1857,7 @@ public class DashboardAction extends ActionSupport {
 	 				else {
 	 					if ("cost".equalsIgnoreCase(report.getY1AxisUnit())) {
 	 						Double d = (Double) thisMap.get("value");
-	 						component.put("value", d*ReportsUtil.unitCost);
+	 						component.put("value", d*ReportsUtil.getUnitCost(AccountUtil.getCurrentOrg().getOrgId()));
 	 						component.put("orig_value", d);
 	 					}
 	 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
