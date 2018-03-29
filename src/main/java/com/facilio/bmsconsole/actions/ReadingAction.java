@@ -63,8 +63,8 @@ public class ReadingAction extends ActionSupport {
 			 addSpaceCategoryReading();
 			break;
 		case "Building":
-		case "Floor":
-		case "Site":
+		case "floor":
+		case "site":
 			addSpaceTypeReading();
 		}
 		
