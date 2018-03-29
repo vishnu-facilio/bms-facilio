@@ -77,8 +77,11 @@ public class AddAndSchedulePMTriggerCommand implements Command {
 				case ONLY_SCHEDULE_TRIGGER:
 					long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS + 1, true) - 1;
 					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, startTime, endTime);
-					if (!pmJobs.isEmpty()) {
+					if (pmJobs != null && !pmJobs.isEmpty()) {
 						pmJob = pmJobs.get(0);
+					}
+					else {
+						pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
 					}
 					break;
 				case FIXED:

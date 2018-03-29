@@ -83,7 +83,9 @@ public class ResetTriggersCommand implements Command {
 					case FLOATING:
 						if (trigger.getId() == currentTrigger.getId()) {
 							pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
-							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+							if (pmJob != null) {
+								PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+							}
 						}
 						else {//Deleting oldJobs of other schedule triggers
 							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, false);
@@ -93,16 +95,28 @@ public class ResetTriggersCommand implements Command {
 								List<LocalTime> times = trigger.getSchedule().getTimeObjects();
 								zdt = zdt.with(times.get(times.size() - 1));
 							}
-							updatedPM.setNextExecutionTime(trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond()));
-							updatedPM.setId(pmJob.getId());
-							updatedPM.setStatus(PMJobsStatus.ACTIVE);
-							pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
-							PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
+							long nextExecutionTime = trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond());
+							if (pm.getEndTime() == -1 || updatedPM.getNextExecutionTime() < pm.getEndTime()) {
+								updatedPM.setNextExecutionTime(nextExecutionTime);
+								updatedPM.setId(pmJob.getId());
+								updatedPM.setStatus(PMJobsStatus.ACTIVE);
+								pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
+								PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
+							}
+							else {
+								updatedPM.setStatus(PMJobsStatus.IN_ACTIVE);
+								pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
+							}
 						}
 						break;
 					case ONLY_SCHEDULE_TRIGGER:
 						pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, true);
-						PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+						if (pmJob == null) {
+							pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
+						}
+						if (pmJob != null) {
+							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
+						}
 					default:
 						break;
 				}
