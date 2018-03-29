@@ -13,7 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -49,7 +49,7 @@ public class GetLastReadingCommand implements Command {
 				for(ReadingContext reading : readings) {
 					resourceList.add(reading.getParentId());
 				}
-				List<Map<String, Object>> lastReadings= FieldUtil.getLastReading( resourceList, fieldList) ;
+				List<Map<String, Object>> lastReadings= ReadingsAPI.getLastReading( resourceList, fieldList) ;
 				for(Map<String,Object> stats:lastReadings) {
 					
 					Long resourceId=(long)stats.remove("resourceId");

@@ -1,10 +1,16 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -14,17 +20,22 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 	
 	@Override
 	public void execute(JobContext jc) {
-		// TODO Auto-generated method stub
 		try {
 			List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
-			if(virtualMeters != null && !virtualMeters.isEmpty()) {
-				
-				long endTime = System.currentTimeMillis() - CALCULATION_DELAY;
-				long startTime = endTime - (jc.getPeriod()*1000);
-				
-				DeviceAPI.insertVirtualMeterReadings(virtualMeters, startTime,endTime);
+			if(virtualMeters == null || virtualMeters.isEmpty()) {
+				return;
 			}
-			
+			int period=jc.getPeriod();
+			int minutesInterval=period/60;
+			long endTime = System.currentTimeMillis() - CALCULATION_DELAY;
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			for(EnergyMeterContext meter:virtualMeters) {
+				Map<String, Object> props = (Map<String, Object>)ReadingsAPI.getLastReading(meter.getId(), deltaField.getFieldId());
+				long startTime=(long)props.get("ttime")+1;
+				DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
+			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

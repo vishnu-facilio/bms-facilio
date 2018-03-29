@@ -38,14 +38,12 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 				return;
 			}
 
-			long startTime=DateTimeUtil.getDayStartTime(-1);
-			long endTime=DateTimeUtil.getDayStartTime() -1;
-			Map<Long,List<Map<String,Object>>> siteVsReadings=WeatherUtil.getWeatherReadings(startTime, endTime);
+			Map<Long,List<Map<String,Object>>> siteVsReadings=WeatherUtil.getWeatherReadings();
 			Set<Long> siteIds= siteVsReadings.keySet();
 			if (siteIds==null || siteIds.isEmpty()) {
 				return;
 			}
-			Map<String, List<ReadingContext>> moduleVsReading = getModuleReadings(startTime, siteVsReadings, siteIds);
+			Map<String, List<ReadingContext>> moduleVsReading = getModuleReadings(siteVsReadings, siteIds);
 			persistReading(moduleVsReading);
 		}
 		catch (Exception e) {
@@ -61,7 +59,7 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 	}
 
 
-	private Map<String, List<ReadingContext>> getModuleReadings(long startTime, Map<Long, List<Map<String, Object>>> siteVsReadings,
+	private Map<String, List<ReadingContext>> getModuleReadings( Map<Long, List<Map<String, Object>>> siteVsReadings,
 			Set<Long> siteIds) throws Exception {
 		
 		
@@ -77,13 +75,13 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 
 			if(cddBaseTemp>0) {
 				Double cdd=WeatherUtil.getCDD(cddBaseTemp, weatherReadings);
-				ReadingContext cReading= getReading(siteId,"cdd",cdd,startTime);
+				ReadingContext cReading= getReading(siteId,"cdd",cdd);
 				addReading(moduleVsReading,FacilioConstants.ContextNames.CDD_READING, cReading);
 			}
 
 			if(hddBaseTemp>0) {
 				Double hdd=WeatherUtil.getHDD(hddBaseTemp, weatherReadings);
-				ReadingContext hReading= getReading(siteId,"hdd",hdd,startTime);
+				ReadingContext hReading= getReading(siteId,"hdd",hdd);
 				addReading(moduleVsReading,FacilioConstants.ContextNames.HDD_READING, hReading);
 			}
 		}
@@ -99,11 +97,11 @@ public class DegreeDaysCalculatorJob extends FacilioJob {
 		readingList.add(reading);
 	}
 	
-	private ReadingContext getReading(Long siteId,String key, Double dd, long tTime) {
+	private ReadingContext getReading(Long siteId,String key, Double dd) {
 		
 		ReadingContext reading= new ReadingContext();
 		reading.setParentId(siteId);
-		reading.setTtime(tTime);
+		reading.setTtime(DateTimeUtil.getDayStartTime(-1));
 		reading.addReading(key, dd);
 		return reading;
 	}

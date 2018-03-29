@@ -22,6 +22,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -155,7 +157,7 @@ public class WeatherUtil {
 	}
 	
 	
-	public static Map<Long,List<Map<String,Object>>> getWeatherReadings(long startTime, long endTime) throws Exception {
+	public static Map<Long,List<Map<String,Object>>> getWeatherReadings() throws Exception {
 		
 		
 		ModuleBean modBean= (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -174,7 +176,7 @@ public class WeatherUtil {
 				.select(fields)
 				.moduleName(FacilioConstants.ContextNames.WEATHER_READING)
 				.beanClass(ReadingContext.class)
-				.andCustomWhere("TTIME between ? AND ?",startTime,endTime);
+				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime",null, DateOperators.YESTERDAY));
 		List<Map<String,Object>> weatherReadings= builder.getAsProps();
 		
 		Map<Long,List<Map<String,Object>>> siteVsWeatherData= new HashMap<Long,List<Map<String,Object>>>();

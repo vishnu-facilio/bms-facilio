@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -318,7 +320,7 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval) throws Exception {
+	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval,boolean updateReading) throws Exception {
 		
 		GenericInsertRecordBuilder historyVMBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getHistoricalVMCalculationFields())
@@ -329,6 +331,7 @@ public class DeviceAPI
 		jobProp.put("startTime", startTime);
 		jobProp.put("endTime",endTime);
 		jobProp.put("intervalValue", interval);
+		jobProp.put("updateReading", updateReading);
 		long jobId= historyVMBuilder.insert(jobProp);
 		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "priority");
 	}
@@ -352,127 +355,140 @@ public class DeviceAPI
 
 		for(EnergyMeterContext meter : virtualMeters) {
 
-			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval);
+			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false);
 		}
 	}
 
-	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime, int minutesInterval) throws Exception {
+	
+
+	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
+
 		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
-		
-		for(EnergyMeterContext meter : virtualMeters) {
-			GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
-															.select(FieldFactory.getVirtualMeterRelFields())
-															.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
-															.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
-			List<Map<String, Object>> childProps = childMeterBuilder.get();
-			if(childProps == null || childProps.isEmpty()) {
-				return;
-			}
-			deleteEnergyData(meter.getId(), startTime, endTime);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> fields= modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-			
-			List<Long> childMeterIds = new ArrayList<>();
-			for(Map<String, Object> childProp : childProps) {
-				childMeterIds.add((Long) childProp.get("childMeterId"));
-			}
-			List<ReadingContext> readings = new ArrayList<>();
-			for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
-				ReadingContext virtualMeterReading = calculateVMReading(meter, childMeterIds,fields, map.getKey(), map.getValue());
-				if(virtualMeterReading != null) {
-					readings.add(virtualMeterReading);
-				}
-			}
+		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getVirtualMeterRelFields())
+				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
+				.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
+		List<Map<String, Object>> childProps = childMeterBuilder.get();
+		if(childProps == null || childProps.isEmpty()) {
+			return;
+		}
+		List<Long> childMeterIds = new ArrayList<>();
+		for(Map<String, Object> childProp : childProps) {
+			childMeterIds.add((Long) childProp.get("childMeterId"));
+		}
+		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		if(completeReadings.isEmpty()) {
+			return;
+		}
+		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
+		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
+		for(Map.Entry<Long, Long> map:intervalMap.entrySet()) {
+			long iStartTime=map.getKey();
+			long iEndTime=map.getValue();
+			for(ReadingContext reading:completeReadings) {
 
-			if (!readings.isEmpty()) {
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
-				context.put(FacilioConstants.ContextNames.READINGS, readings);
-				context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-				Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-				addReading.execute(context);
-			}
-		}
-	}
-	
-	public static void insertVirtualMeterReadings(List<EnergyMeterContext> virtualMeters, long startTime, long endTime) throws Exception {
-		for(EnergyMeterContext meter : virtualMeters) {
-			try {
-				
-				GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
-																	.select(FieldFactory.getVirtualMeterRelFields())
-																	.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
-																	.andCustomWhere("VIRTUAL_METER_ID = ?", meter.getId());
-				List<Map<String, Object>> childProps = childMeterBuilder.get();
-				if(childProps != null && !childProps.isEmpty()) {
-					List<Long> childMeterIds = new ArrayList<>();
-					for(Map<String, Object> childProp : childProps) {
-						childMeterIds.add((Long) childProp.get("childMeterId"));
-					}
-					ReadingContext virtualMeterReading = calculateVMReading(meter, childMeterIds, startTime, endTime);
-					if(virtualMeterReading != null) {
-						FacilioContext context = new FacilioContext();
-						context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
-						context.put(FacilioConstants.ContextNames.READING, virtualMeterReading);
-						Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-						//not adding in bulk to maintain the added sequence, 
-						//so that even a Virtual meter can be added in the virtual meter formula
-						addReading.execute(context);
-					}
+				long ttime=reading.getTtime();
+				if(ttime>=iStartTime && ttime<=iEndTime) {
+					intervalReadings.add(reading);
+				}
+				else {
+					break;
 				}
 			}
-			catch(Exception e) {
-				logger.log(Level.WARNING, "Exception occurred during calculation of energy data for VM : "+meter.getId(), e);
-				CommonCommandUtil.emailException("Exception occurred during calculation of energy data for VM : "+meter.getId(), e);
+			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds);
+			completeReadings.removeAll(intervalReadings);
+			if(virtualMeterReading != null) {
+				vmReadings.add(virtualMeterReading);
+				intervalReadings=new ArrayList<ReadingContext>();
+			}
+		}
+
+		if (!vmReadings.isEmpty()) {
+
+			if(!updateReading) {
+				deleteEnergyData(meter.getId(), startTime, endTime);
+			}
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
+			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
+			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+			addReading.execute(context);
+
+			if(updateReading) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+				ReadingsAPI.updateLastReading(Collections.singletonList(deltaField), Collections.singletonList(vmReadings.get(vmReadings.size() - 1)), null);
 			}
 		}
 	}
-	
-	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<Long> childIds, long startTime, long endTime) throws Exception {
-		
+
+	private static List<ReadingContext> getChildMeterReadings(List<Long> childIds, long startTime, long endTime, int minutesInterval) throws Exception{
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields= modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		return calculateVMReading(meter,childIds,fields, startTime,endTime);
+		FacilioField meterField=modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+
+		FacilioField timeField = new FacilioField();
+		timeField.setName("ttime");
+		timeField.setColumnName("MAX(TTIME)");
+		timeField.setDataType(FieldType.NUMBER);
+		
+		FacilioField deltaField = new FacilioField();
+		deltaField.setName("totalEnergyConsumptionDelta");
+		deltaField.setColumnName("SUM(TOTAL_ENERGY_CONSUMPTION_DELTA)");
+		deltaField.setDataType(FieldType.DECIMAL);
+
+		List<FacilioField> fields= new ArrayList<FacilioField>();
+
+		fields.add(timeField);
+		fields.add(meterField);
+		fields.add(deltaField);
+
+		long timeInterval=minutesInterval*60*1000;
+
+		SelectRecordsBuilder<ReadingContext> getReadings = new SelectRecordsBuilder<ReadingContext>()
+				.beanClass(ReadingContext.class)
+				.select(fields)
+				.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
+				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
+				.groupBy("PARENT_METER_ID,TTIME/"+timeInterval)
+				.orderBy("ttime");
+
+		return getReadings.get();
+
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<Long> childIds, List<FacilioField> fields, long startTime, long endTime) throws Exception {
-		SelectRecordsBuilder<ReadingContext> getReadings = new SelectRecordsBuilder<ReadingContext>()
-																.beanClass(ReadingContext.class)
-																.select(fields)
-																.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
-																.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN));
-		
-		List<ReadingContext> readings = getReadings.get();
-		if(readings != null && !readings.isEmpty()) {
-			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
-			List<Long> timestamps = new ArrayList<>();
-			for(ReadingContext reading : readings) {
-				List<ReadingContext> readingList = readingMap.get(reading.getParentId());
-				if(readingList == null) {
-					readingList = new ArrayList<>();
-					readingMap.put(reading.getParentId(), readingList);
-				}
-				readingList.add(reading);
-				timestamps.add(reading.getTtime());
-			}
-			
-			for(Long childId : childIds) {
-				if(!readingMap.containsKey(childId)) {
-					return null;
-				}
-			}
-			
-			EnergyDataEvaluator evluator = new EnergyDataEvaluator(readingMap);
-			String expression = meter.getChildMeterExpression();
-			ReadingContext virtualMeterReading = evluator.evaluateExpression(expression);
-			virtualMeterReading.setTtime(((Double)StatUtils.mean(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
-			virtualMeterReading.setParentId(meter.getId());
-			return virtualMeterReading;
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds) throws Exception {
+
+		if(readings.isEmpty()) {
+			return null;
 		}
-		return null;
+
+		Map<Long, List<ReadingContext>> readingMap = new HashMap<>();
+		List<Long> timestamps = new ArrayList<>();
+		for(ReadingContext reading : readings) {
+			List<ReadingContext> readingList = readingMap.get(reading.getParentId());
+			if(readingList == null) {
+				readingList = new ArrayList<>();
+				readingMap.put(reading.getParentId(), readingList);
+			}
+			readingList.add(reading);
+			timestamps.add(reading.getTtime());
+		}
+		for(Long childId : childIds) {
+			if(!readingMap.containsKey(childId)) {
+				return null;
+			}
+		}
+
+		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
+		String expression = meter.getChildMeterExpression();
+		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
+		virtualMeterReading.setTtime(((Double)StatUtils.mean(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
+		virtualMeterReading.setParentId(meter.getId());
+		return virtualMeterReading;
 	}
 	
     private static class EnergyDataEvaluator extends ExpressionEvaluator<ReadingContext> {
@@ -497,7 +513,7 @@ public class DeviceAPI
 			for(ReadingContext reading : readings) {
 				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
-			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.mean(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
+			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
 			return aggregatedReading;
 		}
 

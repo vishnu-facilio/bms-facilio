@@ -21,6 +21,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -56,6 +57,39 @@ public class ReadingsAPI {
 			return FieldUtil.castOrParseValueAsPerType(field.getDataTypeEnum(), value);
 		}
 		return null;
+	}
+	
+	
+	public static Map<String, Object> getLastReading(Long resourceId,long fieldId) throws Exception {
+		FacilioModule module = ModuleFactory.getLastReadingModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getLastReadingFields())
+				.table(ModuleFactory.getLastReadingModule().getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId)
+				.andCustomWhere(module.getTableName()+".FIELD_ID = ?", fieldId);
+		
+		 List<Map<String, Object>> props = selectBuilder.get();
+			
+			if(props != null && !props.isEmpty()) {
+				return props.get(0);
+			}
+			return null;
+	}
+	
+	public static List<Map<String, Object>> getLastReading(Iterable<Long> resourceList, Iterable<Long> fieldList) throws Exception {
+
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getLastReadingFields())
+				.table(ModuleFactory.getLastReadingModule().getTableName())
+				.andCustomWhere("ORGID=?",orgId)
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", StringUtils.join(resourceList, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("FIELD_ID", "fieldId", StringUtils.join(fieldList, ","), NumberOperators.EQUALS));
+		List<Map<String, Object>> stats = builder.get();	
+		return stats;
 	}
 	
 	public static void loadReadingParent(Collection<ReadingContext> readings) throws Exception {

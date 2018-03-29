@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -41,8 +42,8 @@ public class EnPICalculatorJob extends FacilioJob {
 				while (it.hasNext()) {
 					EnergyPerformanceIndicatorContext enpi = it.next();
 					if(isCalculatable(enpi, calculatedFieldIds)) {
-						List<Map<String, Object>> lastReadings = FieldUtil.getLastReading(Collections.singletonList(enpi.getSpaceId()), Collections.singletonList(enpi.getReadingFieldId()));
-						long startTime = (long) lastReadings.get(0).get("ttime") + 1;
+						Map<String, Object> lastReading = ReadingsAPI.getLastReading(enpi.getSpaceId(), enpi.getReadingFieldId());
+						long startTime = (long) lastReading.get("ttime") + 1;
 						
 						ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime, endTime);
 						
