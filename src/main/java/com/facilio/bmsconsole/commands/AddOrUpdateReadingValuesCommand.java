@@ -34,23 +34,15 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			updateLastReading = true;
 		}
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
-		
-		System.out.println("Debug insert reading : ");
-		System.out.println(readingMap);
-		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
-				
-				System.out.println("Debug insert reading moduleName : "+moduleName);
-				
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> fields= bean.getAllFields(moduleName);
 				FacilioModule module = bean.getModule(moduleName);
 		
 				List<ReadingContext> readingsToBeAdded = new ArrayList<>();
-				System.out.println("Debug insert reading values : ");
 				for(ReadingContext reading : readings) {
 					if(reading.getTtime() == -1) {
 						reading.setTtime(System.currentTimeMillis());
@@ -65,7 +57,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 					else {
 						updateReading(module, fields, reading,lastReadingMap, updateLastReading);
 					}
-					System.out.println(reading.getReadings());
 				}
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, updateLastReading);
 			}

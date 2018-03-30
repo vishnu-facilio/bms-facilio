@@ -364,7 +364,6 @@ public class DeviceAPI
 	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
 
 		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
-		System.out.println("Vm Debug interval Map : "+intervalMap);
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
 				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
@@ -378,7 +377,6 @@ public class DeviceAPI
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
 		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
-		System.out.println("Vm debug complete readings size : "+completeReadings.size());
 		if(completeReadings.isEmpty()) {
 			return;
 		}
@@ -512,13 +510,8 @@ public class DeviceAPI
 			
 			List<Double> totalConsumptions = new ArrayList<Double>();
 			for(ReadingContext reading : readings) {
-				System.out.println("Debug VM cal getOperand : ");
-				System.out.println(reading.getParentId());
-				System.out.println(reading.getReadings());
 				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
-			System.out.println("Debug VM calc getOperant : ");
-			System.out.println(totalConsumptions);
 			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
 			return aggregatedReading;
 		}
@@ -526,11 +519,6 @@ public class DeviceAPI
 		@Override
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			// TODO Auto-generated method stub
-			System.out.println("Debug VM calc Apply Op : ");
-			System.out.println("Right operand : "+rightOperand.getParentId());
-			System.out.println(rightOperand.getReadings());
-			System.out.println("Left operand : "+leftOperand.getParentId());
-			System.out.println(leftOperand.getReadings());
 			if(operator.equals("+")) {
 				ReadingContext reading = new ReadingContext();
 				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
