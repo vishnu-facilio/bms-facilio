@@ -168,7 +168,6 @@ public class EventToAlarmCommand implements Command {
 		json.put("alarmPriority", event.getPriority());
 		json.put("alarmClass", event.getAlarmClass());
 		json.put("state", event.getState());
-		json.put("alarmType", 6);
 		if(entityId != -1)
 		{
 			json.put("entityId", entityId);
