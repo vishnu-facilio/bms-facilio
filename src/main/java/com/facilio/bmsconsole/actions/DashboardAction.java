@@ -2364,6 +2364,9 @@ public class DashboardAction extends ActionSupport {
 		this.dashboard = new DashboardContext();
 		this.dashboard.setId((Long) dashboardMeta.get("id"));
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
+		if (dashboardMeta.containsKey("linkName")) {
+			this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
+		}
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
 		if (dashboardWidgets != null) {
