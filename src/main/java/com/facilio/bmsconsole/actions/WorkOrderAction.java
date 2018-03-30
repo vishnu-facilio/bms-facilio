@@ -88,7 +88,8 @@ public class WorkOrderAction extends ActionSupport {
 		return addWorkOrder(workorder);
 	}
 	
-	public String addWorkOrder(WorkOrderContext workorder) throws Exception {
+	public String addWorkOrder(WorkOrderContext workorder)  {
+		try {
 		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
@@ -99,6 +100,10 @@ public class WorkOrderAction extends ActionSupport {
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(context);
 		setWorkOrderId(workorder.getId());
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		return SUCCESS;
 	}
 	
