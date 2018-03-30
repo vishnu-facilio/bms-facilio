@@ -48,6 +48,7 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
@@ -352,7 +353,7 @@ public enum ActionType {
 				ExpressionContext expression = workflow.getExpressions().get(0);
 				if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
 					msgBuilder.append(" ")
-								.append(getInWords(Integer.parseInt(workflow.getResultEvaluator().replaceAll("a==", ""))));
+								.append(getInWords(Integer.parseInt(rule.getPercentage())));
 					if (expression.getLimit() != null) {
 						msgBuilder.append(" consecutively");
 					}
@@ -377,13 +378,24 @@ public enum ActionType {
 					msgBuilder.append("exceeded ");
 					break;
 			}
-			if ("${previousValue}".equals(rule.getPercentage())) {
+			
+			String value = null;
+			if (rule.getWorkflow() != null) {
+				ExpressionContext expr = rule.getWorkflow().getExpressions().get(0);
+				Condition aggrCondition = expr.getAggregateCondition().get(0);
+				value = aggrCondition.getValue();
+			}
+			else {
+				value = rule.getPercentage();
+			}
+			
+			if ("${previousValue}".equals(value)) {
 				msgBuilder.append("previous value (")
 							.append(reading.getReading(rule.getReadingField().getName()))
 							.append(")");
 			}
 			else {
-				msgBuilder.append(rule.getPercentage());
+				msgBuilder.append(value);
 			}
 			appendUnit(msgBuilder, rule);
 		}
