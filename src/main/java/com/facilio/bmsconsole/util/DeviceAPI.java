@@ -523,8 +523,10 @@ public class DeviceAPI
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			// TODO Auto-generated method stub
 			System.out.println("Debug VM calc Apply Op : ");
-			System.out.println(rightOperand);
-			System.out.println(leftOperand);
+			System.out.println("Right operand : "+rightOperand.getParentId());
+			System.out.println(rightOperand.getReadings());
+			System.out.println("Left operand : "+leftOperand.getParentId());
+			System.out.println(leftOperand.getReadings());
 			if(operator.equals("+")) {
 				ReadingContext reading = new ReadingContext();
 				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
