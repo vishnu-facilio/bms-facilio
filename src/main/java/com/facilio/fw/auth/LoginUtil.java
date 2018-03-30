@@ -24,7 +24,10 @@ public class LoginUtil {
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
 	public static Account getAccount(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
-		
+		if(cognitoUser==null)
+		{
+			return null;
+		}
 		User user = AccountUtil.getUserBean().getUser(cognitoUser.getEmail());
 		Organization org = null;
 		

@@ -214,7 +214,8 @@ state = PORTAL-yogendrababu
 				authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				authmodel.setPath("/");
 				authmodel.setHttpOnly(false);
-//		authmodel.setDomain(request.getServerName());
+				String parentdomain = request.getServerName().replaceAll("api.", "");
+		authmodel.setDomain(parentdomain);
 				System.out.println("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
 			} catch (Exception e) {
