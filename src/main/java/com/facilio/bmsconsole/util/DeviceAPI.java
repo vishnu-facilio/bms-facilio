@@ -511,6 +511,9 @@ public class DeviceAPI
 			
 			List<Double> totalConsumptions = new ArrayList<Double>();
 			for(ReadingContext reading : readings) {
+				System.out.println("Debug VM cal getOperand : ");
+				System.out.println(reading.getParentId());
+				System.out.println(reading.getReadings());
 				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
 			System.out.println("Debug VM calc getOperant : ");
