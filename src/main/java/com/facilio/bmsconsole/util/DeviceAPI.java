@@ -364,6 +364,7 @@ public class DeviceAPI
 	public static void insertVirtualMeterReadings(EnergyMeterContext meter, long startTime, long endTime, int minutesInterval,boolean updateReading) throws Exception {
 
 		HashMap<Long,Long> intervalMap= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
+		System.out.println("Vm Debug interval Map : "+intervalMap);
 		GenericSelectRecordBuilder childMeterBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getVirtualMeterRelFields())
 				.table(ModuleFactory.getVirtualMeterRelModule().getTableName())
@@ -377,6 +378,7 @@ public class DeviceAPI
 			childMeterIds.add((Long) childProp.get("childMeterId"));
 		}
 		List<ReadingContext> completeReadings = getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval);
+		System.out.println("Vm debug complete readings size : "+completeReadings.size());
 		if(completeReadings.isEmpty()) {
 			return;
 		}
@@ -387,8 +389,8 @@ public class DeviceAPI
 			long iEndTime=map.getValue();
 			for(ReadingContext reading:completeReadings) {
 
-				long ttime=reading.getTtime();
-				if(ttime>=iStartTime && ttime<=iEndTime) {
+				double ttime = Math.floor(reading.getTtime()/1000); //Checking only in second level
+				if(ttime >= Math.floor(iStartTime/1000) && ttime <= Math.floor(iEndTime/1000)) {
 					intervalReadings.add(reading);
 				}
 				else {
@@ -405,9 +407,7 @@ public class DeviceAPI
 
 		if (!vmReadings.isEmpty()) {
 
-			if(!updateReading) {
-				deleteEnergyData(meter.getId(), startTime, endTime);
-			}
+			deleteEnergyData(meter.getId(), startTime, endTime); //Deleting anyway to avoid duplicate entries
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
@@ -451,7 +451,8 @@ public class DeviceAPI
 				.select(fields)
 				.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
 				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
+				.andCustomWhere("TTIME BETWEEN ? AND ?", startTime, endTime)
+//				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
 				.groupBy("PARENT_METER_ID,TTIME/"+timeInterval)
 				.orderBy("ttime");
 
