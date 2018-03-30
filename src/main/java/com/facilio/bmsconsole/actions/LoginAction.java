@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
@@ -662,6 +663,8 @@ public class LoginAction extends ActionSupport{
 		Map<String, Object> config = new HashMap<>();
 		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
 		config.put("payment_endpoint", getPaymentEndpoint());
+		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+		config.put("build", buildinfo);
 		account.put("data", data);
 		account.put("config", config);
 		account.put("appProps", appProps);
