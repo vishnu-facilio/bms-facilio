@@ -410,8 +410,10 @@ public class DeviceAPI
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
+			
+			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
 
-			if(updateReading) {
+			if(updateReading || runThroughUpdate) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				ReadingsAPI.updateLastReading(Collections.singletonList(deltaField), Collections.singletonList(vmReadings.get(vmReadings.size() - 1)), null);
