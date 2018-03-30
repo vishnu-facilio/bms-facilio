@@ -119,7 +119,34 @@ public enum DefaultTemplates implements ActionTemplate {
 		}
 		return typeMap;
 	}
-	
+	public static void main(String arg[])
+	{
+		for(int i=1;i<60;i++)
+		{
+			try
+			{
+			System.out.println(formatrow(getTemplateJson(i)));
+			//System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}
+	}
+	public static String formatrow(JSONObject json)
+	{
+		StringBuffer sbf = new StringBuffer();
+	//	sbf.append(json.get("sender"));
+	//	sbf.append("\t\t");
+		sbf.append(json.get("subject"));
+		sbf.append("\t\t");
+		sbf.append(((String)json.get("message")).replaceAll("\n", "<br>"));
+	//	sbf.append("\t\t");
+	//	sbf.append(json.get("to"));
+		sbf.append("\t\n");
+		return sbf.toString();
+	}
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
 		JSONObject json = new JSONObject();

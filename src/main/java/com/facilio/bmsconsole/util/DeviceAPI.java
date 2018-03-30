@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -16,7 +15,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -387,8 +385,8 @@ public class DeviceAPI
 			long iEndTime=map.getValue();
 			for(ReadingContext reading:completeReadings) {
 
-				long ttime=reading.getTtime();
-				if(ttime>=iStartTime && ttime<=iEndTime) {
+				double ttime = Math.floor(reading.getTtime()/1000); //Checking only in second level
+				if(ttime >= Math.floor(iStartTime/1000) && ttime <= Math.floor(iEndTime/1000)) {
 					intervalReadings.add(reading);
 				}
 				else {
@@ -405,17 +403,17 @@ public class DeviceAPI
 
 		if (!vmReadings.isEmpty()) {
 
-			if(!updateReading) {
-				deleteEnergyData(meter.getId(), startTime, endTime);
-			}
+			deleteEnergyData(meter.getId(), startTime, endTime); //Deleting anyway to avoid duplicate entries
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
+			
+			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
 
-			if(updateReading) {
+			if(updateReading || runThroughUpdate) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 				ReadingsAPI.updateLastReading(Collections.singletonList(deltaField), Collections.singletonList(vmReadings.get(vmReadings.size() - 1)), null);
@@ -451,7 +449,8 @@ public class DeviceAPI
 				.select(fields)
 				.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
 				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
+				.andCustomWhere("TTIME BETWEEN ? AND ?", startTime, endTime)
+//				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
 				.groupBy("PARENT_METER_ID,TTIME/"+timeInterval)
 				.orderBy("ttime");
 
@@ -486,7 +485,7 @@ public class DeviceAPI
 		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
 		String expression = meter.getChildMeterExpression();
 		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
-		virtualMeterReading.setTtime(((Double)StatUtils.mean(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
+		virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
 	}
@@ -495,7 +494,6 @@ public class DeviceAPI
 
 		private Map<Long, List<ReadingContext>> readingMap;
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
-			// TODO Auto-generated constructor stub
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
 		}
@@ -511,13 +509,8 @@ public class DeviceAPI
 			
 			List<Double> totalConsumptions = new ArrayList<Double>();
 			for(ReadingContext reading : readings) {
-				System.out.println("Debug VM cal getOperand : ");
-				System.out.println(reading.getParentId());
-				System.out.println(reading.getReadings());
 				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
-			System.out.println("Debug VM calc getOperant : ");
-			System.out.println(totalConsumptions);
 			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
 			return aggregatedReading;
 		}
@@ -525,11 +518,6 @@ public class DeviceAPI
 		@Override
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			// TODO Auto-generated method stub
-			System.out.println("Debug VM calc Apply Op : ");
-			System.out.println("Right operand : "+rightOperand.getParentId());
-			System.out.println(rightOperand.getReadings());
-			System.out.println("Left operand : "+leftOperand.getParentId());
-			System.out.println(leftOperand.getReadings());
 			if(operator.equals("+")) {
 				ReadingContext reading = new ReadingContext();
 				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));

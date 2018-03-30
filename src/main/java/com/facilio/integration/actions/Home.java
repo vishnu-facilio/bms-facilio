@@ -204,17 +204,18 @@ state = PORTAL-yogendrababu
 				HttpServletResponse response = ServletActionContext.getResponse();
 
 				Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
-				cookie.setMaxAge(60 * 60 * 24 * 2); // Make the cookie last a year
+				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				cookie.setPath("/");
 				cookie.setHttpOnly(true);
 //		cookie.setDomain(request.getServerName());
 				response.addCookie(cookie);
 
 				Cookie authmodel = new Cookie("fc.authtype", "facilio");
-				authmodel.setMaxAge(60 * 60 * 24 * 2); // Make the cookie last a year
+				authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				authmodel.setPath("/");
 				authmodel.setHttpOnly(false);
-//		authmodel.setDomain(request.getServerName());
+				String parentdomain = request.getServerName().replaceAll("api.", "");
+		authmodel.setDomain(parentdomain);
 				System.out.println("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
 			} catch (Exception e) {
