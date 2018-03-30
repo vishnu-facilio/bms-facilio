@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
@@ -16,7 +15,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -485,7 +483,7 @@ public class DeviceAPI
 		EnergyDataEvaluator evaluator = new EnergyDataEvaluator(readingMap);
 		String expression = meter.getChildMeterExpression();
 		ReadingContext virtualMeterReading = evaluator.evaluateExpression(expression);
-		virtualMeterReading.setTtime(((Double)StatUtils.mean(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
+		virtualMeterReading.setTtime(((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue());
 		virtualMeterReading.setParentId(meter.getId());
 		return virtualMeterReading;
 	}
@@ -494,7 +492,6 @@ public class DeviceAPI
 
 		private Map<Long, List<ReadingContext>> readingMap;
 		public EnergyDataEvaluator(Map<Long, List<ReadingContext>> readingMap) {
-			// TODO Auto-generated constructor stub
 			super.setRegEx(EnergyMeterContext.EXP_FORMAT);
 			this.readingMap = readingMap;
 		}
