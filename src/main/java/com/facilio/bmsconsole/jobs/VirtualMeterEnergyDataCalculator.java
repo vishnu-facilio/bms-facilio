@@ -33,6 +33,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			for(EnergyMeterContext meter:virtualMeters) {
 				try {
 					Map<String, Object> props = (Map<String, Object>)ReadingsAPI.getLastReading(meter.getId(), deltaField.getFieldId());
+					System.out.println("Debug vm calculation : "+props);
 					long startTime=(long)props.get("ttime")+1;
 					DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
 				}

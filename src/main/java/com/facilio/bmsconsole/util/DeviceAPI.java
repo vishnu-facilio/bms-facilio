@@ -513,6 +513,8 @@ public class DeviceAPI
 			for(ReadingContext reading : readings) {
 				totalConsumptions.add((Double) reading.getReading("totalEnergyConsumptionDelta"));
 			}
+			System.out.println("Debug VM calc getOperant : ");
+			System.out.println(totalConsumptions);
 			aggregatedReading.addReading("totalEnergyConsumptionDelta", StatUtils.sum(totalConsumptions.stream().mapToDouble(Double::doubleValue).toArray()));
 			return aggregatedReading;
 		}
@@ -520,6 +522,9 @@ public class DeviceAPI
 		@Override
 		public ReadingContext applyOp(String operator, ReadingContext rightOperand, ReadingContext leftOperand) {
 			// TODO Auto-generated method stub
+			System.out.println("Debug VM calc Apply Op : ");
+			System.out.println(rightOperand);
+			System.out.println(leftOperand);
 			if(operator.equals("+")) {
 				ReadingContext reading = new ReadingContext();
 				reading.addReading("totalEnergyConsumptionDelta", ((Double)leftOperand.getReading("totalEnergyConsumptionDelta") + (Double)rightOperand.getReading("totalEnergyConsumptionDelta")));
