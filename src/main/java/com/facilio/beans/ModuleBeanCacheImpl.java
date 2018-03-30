@@ -211,19 +211,8 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
-
-		LRUCache cache = 	LRUCache.getFieldsCache();
-		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldName,moduleName);
-		FacilioField field = (FacilioField)cache.get(key);
-
-		if (field == null) {
-			field = super.getField(fieldName,moduleName);
-			cache.put(key, field);
-			LOGGER.log(Level.INFO, "getField result from DB for Id: "+fieldName+" , "+moduleName);
-		}
-		else {
-			LOGGER.log(Level.INFO, "getField result from CACHE for Id: "+fieldName+" , "+moduleName);
-		}
+		
+		FacilioField field = super.getField(fieldName, moduleName);
 		return field;
 	}
 	
