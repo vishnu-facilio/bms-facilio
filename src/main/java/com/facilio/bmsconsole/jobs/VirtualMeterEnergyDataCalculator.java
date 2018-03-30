@@ -31,9 +31,15 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			for(EnergyMeterContext meter:virtualMeters) {
-				Map<String, Object> props = (Map<String, Object>)ReadingsAPI.getLastReading(meter.getId(), deltaField.getFieldId());
-				long startTime=(long)props.get("ttime")+1;
-				DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
+				try {
+					Map<String, Object> props = (Map<String, Object>)ReadingsAPI.getLastReading(meter.getId(), deltaField.getFieldId());
+					long startTime=(long)props.get("ttime")+1;
+					DeviceAPI.insertVirtualMeterReadings(meter, startTime,endTime,minutesInterval, true);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					CommonCommandUtil.emailException("VM Calculation failed for meter : "+meter.getId(), e);
+				}
 			}
 
 		} catch (Exception e) {
