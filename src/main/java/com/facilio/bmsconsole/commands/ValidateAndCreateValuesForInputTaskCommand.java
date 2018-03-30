@@ -30,12 +30,12 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 //		if(ActivityType.ADD_TASK_INPUT == context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {
-			if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
-				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-				if(recordIds != null && recordIds.size() == 1) {
-					TaskContext completeRecord = getTask(recordIds.get(0));
-					if(completeRecord != null) {
-						checkParentTicketStatus(completeRecord.getParentTicketId());
+			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+			if(recordIds != null && recordIds.size() == 1) {
+				TaskContext completeRecord = getTask(recordIds.get(0));
+				if(completeRecord != null) {
+					checkParentTicketStatus(completeRecord.getParentTicketId());
+					if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
 						if(task.getInputTime() == -1) {
 							task.setInputTime(System.currentTimeMillis());
 						}
