@@ -264,9 +264,7 @@ public class DeviceAPI
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(fields.get("parentId"), String.valueOf(meterId), NumberOperators.EQUALS))
-														.andCondition(CriteriaAPI.getCondition(fields.get("ttime"), startTime+", "+endTime, DateOperators.BETWEEN))
-														;
-		
+														.andCustomWhere("TTIME BETWEEN ? AND ?", startTime, endTime);
 		deleteBuilder.delete();
 	}
 	
@@ -403,7 +401,9 @@ public class DeviceAPI
 
 		if (!vmReadings.isEmpty()) {
 
-			deleteEnergyData(meter.getId(), startTime, endTime); //Deleting anyway to avoid duplicate entries
+			long firstReadingTime =vmReadings.get(0).getTtime();
+			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
 			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
@@ -416,7 +416,7 @@ public class DeviceAPI
 			if(updateReading || runThroughUpdate) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				ReadingsAPI.updateLastReading(Collections.singletonList(deltaField), Collections.singletonList(vmReadings.get(vmReadings.size() - 1)), null);
+				ReadingsAPI.updateLastReading(Collections.singletonList(deltaField), Collections.singletonList(lastReading), null);
 			}
 		}
 	}

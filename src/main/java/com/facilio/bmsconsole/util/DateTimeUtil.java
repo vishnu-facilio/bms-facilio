@@ -579,16 +579,14 @@ public class DateTimeUtil
 		
 		long interval=minutesInterval*60*1000;
 		long modTime=startTime+interval;
-		int adjuster=1;
 		if(startTime>=endTime || modTime > endTime) {
 			return null;
 		}
 		HashMap<Long,Long> intervalMap = new LinkedHashMap <Long,Long>();
 		
-		
 		while(modTime<=endTime) {
-			intervalMap.put(startTime, modTime);
-			startTime=modTime+adjuster;
+			intervalMap.put(startTime+1, modTime);
+			startTime=modTime;
 			modTime=modTime+interval;
 		}
 		return intervalMap;
