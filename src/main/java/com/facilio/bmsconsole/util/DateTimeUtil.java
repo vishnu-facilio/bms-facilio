@@ -575,21 +575,38 @@ public class DateTimeUtil
 	}
 	
 	
-  public static HashMap<Long,Long> getTimeIntervals(long startTime, long endTime, int minutesInterval){
-		
+	public static HashMap<Long,Long> getTimeIntervals(long startTime, long endTime, int minutesInterval){
+
+		startTime=removeMillisPrecision(startTime, true);
+		endTime=removeMillisPrecision(endTime, false);
+
 		long interval=minutesInterval*60*1000;
 		long modTime=startTime+interval;
-		if(startTime>=endTime || modTime > endTime) {
+		if(startTime>=endTime) {
 			return null;
 		}
 		HashMap<Long,Long> intervalMap = new LinkedHashMap <Long,Long>();
-		
-		while(modTime<=endTime) {
+
+		while(modTime<endTime) {
 			intervalMap.put(startTime+1, modTime);
 			startTime=modTime;
 			modTime=modTime+interval;
 		}
+		if(startTime<endTime) {
+			intervalMap.put(startTime+1,endTime);
+		}
 		return intervalMap;
+	}
+	
+	private static Long removeMillisPrecision(long time, boolean floor) {
+		try {
+			if(floor) {
+				return (long)Math.floor(time/1000)*1000;
+			}
+			return (long) Math.ceil(time/1000)*1000;
+		}catch(Exception e) {
+			return time;
+		}
 	}
 }
 
