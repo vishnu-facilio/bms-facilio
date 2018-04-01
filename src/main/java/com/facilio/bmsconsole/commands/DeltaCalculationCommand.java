@@ -68,7 +68,7 @@ public class DeltaCalculationCommand implements Command {
 			FieldType dataType=readingField.getDataTypeEnum();
 			Object readingVal=reading.getReading(fieldName);
 			Object deltaVal=reading.getReading(fieldName+"Delta");
-			if(readingVal==null || deltaVal!=null) {//no such reading meters or delta already set in reading
+			if( deltaVal!=null) {// delta already set in reading
 				return;
 			}
 			
@@ -118,7 +118,10 @@ public class DeltaCalculationCommand implements Command {
 			double leastMargin=50;// this is the least value above which the delta rule can be considered..
 			MarkType type= MarkType.DECREMENTAL_VALUE;
 			
-			double currentReading=(double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
+			Double currentReading=(Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
+			if(currentReading==null) {
+				currentReading=new Double(0);//if the reading is null.. setting the reading as zero, to set the delta properly..
+			}
 			
 			if(currentReading>=lastReading) { // this check ensures incremental & same reading scenario
 				delta=currentReading-lastReading;
