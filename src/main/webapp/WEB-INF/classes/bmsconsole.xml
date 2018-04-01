@@ -1556,8 +1556,8 @@
 			</result>
 		</action>
 		
-		<action name="textFromImage" class="com.facilio.bmsconsole.actions.PhotosAction"
-			method="getTextFromImage">
+		<action name="readingFromImage" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getReadingFromImage">
 			<result name="success" type="json">
 				<param name="root">detectedTexts</param>
 			</result>
@@ -1570,8 +1570,8 @@
 			</result>
 		</action>
 		
-		<action name="textFromImageFile" class="com.facilio.bmsconsole.actions.PhotosAction"
-			method="getTextFromImageFile">
+		<action name="readingFromImageFile" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getReadingFromImageFile">
 			<result name="success" type="json">
 				<param name="root">detectedTexts</param>
 			</result>

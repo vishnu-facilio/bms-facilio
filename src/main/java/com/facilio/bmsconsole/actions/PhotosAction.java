@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.image.ImageRecognitionUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class PhotosAction extends ActionSupport {
@@ -116,22 +115,52 @@ public class PhotosAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String getTextFromImage() throws Exception {
+	private long readingFieldId = -1;
+	public long getReadingFieldId() {
+		return readingFieldId;
+	}
+	public void setReadingFieldId(long readingFieldId) {
+		this.readingFieldId = readingFieldId;
+	}
+	
+	private double previousValue = -1;
+	public double getPreviousValue() {
+		return previousValue;
+	}
+	public void setPreviousValue(double previousValue) {
+		this.previousValue = previousValue;
+	}
+	
+	private boolean filterValues = true;
+	public boolean isFilterValues() {
+		return filterValues;
+	}
+	public void setFilterValues(boolean filterValues) {
+		this.filterValues = filterValues;
+	}
+
+	public String getReadingFromImage() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PHOTO, file.get(0));
+		context.put(FacilioConstants.ContextNames.READING_FIELD, readingFieldId);
+		context.put(FacilioConstants.ContextNames.PREVIOUS_VALUE, previousValue);
+		context.put(FacilioConstants.ContextNames.FILTERS, filterValues);
 		
-		Chain getTexts = FacilioChainFactory.getTextFromImageChain();
+		Chain getTexts = FacilioChainFactory.getReadingFromImageChain();
 		getTexts.execute(context);
 		
 		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);
 		return SUCCESS;
 	}
 	
-	public String getTextFromImageFile() throws Exception {
+	public String getReadingFromImageFile() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PHOTO_ID, id);
+		context.put(FacilioConstants.ContextNames.READING_FIELD, readingFieldId);
+		context.put(FacilioConstants.ContextNames.PREVIOUS_VALUE, previousValue);
+		context.put(FacilioConstants.ContextNames.FILTERS, filterValues);
 		
-		Chain getTexts = FacilioChainFactory.getTextFromImageChain();
+		Chain getTexts = FacilioChainFactory.getReadingFromImageChain();
 		getTexts.execute(context);
 		
 		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);

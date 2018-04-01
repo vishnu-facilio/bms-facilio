@@ -1796,10 +1796,10 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getTextFromImageChain() {
+	public static Chain getReadingFromImageChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new GetTextsFromImageCommand());
-		c.addCommand(new FilterTextsFromImageCommand());
+		c.addCommand(new FilterReadingsFromImageCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

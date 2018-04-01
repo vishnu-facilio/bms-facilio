@@ -191,10 +191,12 @@ public class FacilioConstants {
 		public static final String READINGS = "readings";
 		public static final String READING = "reading";
 		public static final String READING_FIELDS = "readingFields";
+		public static final String READING_FIELD = "readingField";
 		public static final String PHOTOS = "photos";
 		public static final String PHOTO = "photo";
 		public static final String PHOTO_ID = "photoId";
 		public static final String PHOTO_TEXTS = "photoTexts";
+		public static final String PREVIOUS_VALUE = "previousValue";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_ID = "dashboardId";
