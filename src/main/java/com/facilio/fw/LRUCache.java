@@ -4,17 +4,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LRUCache<K, V>{
 
-	public static LRUCache<Integer, Object> getModuleFieldsCache() {
+	public static LRUCache<String, Object> getModuleFieldsCache() {
 		return modulefieldCache;
 	}
-	public static LRUCache<Integer, Object> getFieldsCache() {
+	public static LRUCache<String, Object> getFieldsCache() {
 		return fieldCache;
 	}
 	public String toString() {
 		 return (" The current size "+currentSize+"\n Cache Hit Ratio= "+ ((hitcount)/(hitcount+misscount) )*100 +"\n\n"+cache);
 	}
-	private static LRUCache<Integer,Object> fieldCache = new LRUCache<Integer,Object>(300);
-	private static LRUCache<Integer,Object> modulefieldCache = new LRUCache<Integer,Object>(300);
+	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(300);
+	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(300);
     private long hitcount = 0;
     private long misscount = 1;
     // Define Node with pointers to the previous and next items and a key, value pair
@@ -64,7 +64,8 @@ public class LRUCache<K, V>{
     	try {
 	        Node<K, V> tempNode = cache.get(key);
 	        if (tempNode == null){
-	        	misscount++;
+	         	misscount++;
+	         	//System.out.println("GET METHOD ###############No Data in cache for "+key +"\n "+cache);
 	            return null;
 	        }
 	        // If MRU leave the list as it is
@@ -107,7 +108,11 @@ public class LRUCache<K, V>{
     }
 
     public void put(K key, V value){
+     	System.out.println("PUT ###############adding data to cache "+key);
+
         if (cache.containsKey(key)){
+         	System.out.println("PUT ############### data already exist cache "+key);
+
             return;
         }
 

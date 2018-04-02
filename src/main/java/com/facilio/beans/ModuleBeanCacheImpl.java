@@ -162,13 +162,16 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		//ArrayList<FacilioField> fields = (ArrayList<FacilioField>) CacheUtil.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
 		long begintime = System.currentTimeMillis();
 		LRUCache cache = 	LRUCache.getModuleFieldsCache();
-		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(CacheUtil.FIELDS_KEY(getOrgId(), moduleName));
+		
+		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
+		
+		ArrayList<FacilioField> fields = (ArrayList<FacilioField>)cache.get(key);
 		if (fields == null) {
 			
 			fields = super.getAllFields(moduleName);
 			
 			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
-			cache.put(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), fields);
+			cache.put(key, fields);
 			
 			LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
@@ -186,19 +189,17 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
 		FacilioField field = (FacilioField)cache.get(key);
 		
-		//FacilioField field = (FacilioField) CacheUtil.get(CacheUtil.FIELD_KEY(getOrgId(), fieldId));
 		
 		if (field == null) {
 			
 			field = super.getField(fieldId);
 			
-			//CacheUtil.set(CacheUtil.FIELD_KEY(getOrgId(), fieldId), field);
 			cache.put(key, field);
 			
-			LOGGER.log(Level.INFO, "getField result from DB for Id: "+fieldId);
+			//System.out.println( "getField result from DB for Id: "+fieldId);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getField result from CACHE for Id: "+fieldId);
+			//System.out.println("getField result from CACHE for Id: "+fieldId);
 		}
 		return field;
 	}
