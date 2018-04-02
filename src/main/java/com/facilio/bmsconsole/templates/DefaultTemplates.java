@@ -155,7 +155,7 @@ public enum DefaultTemplates implements ActionTemplate {
 				json.put("sender", "support@${org.domain}.facilio.com");
 				json.put("to", "${workorder.assignedTo.email:-}");
 				json.put("subject", "New Workorder Assigned");
-				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
+				json.put("message", "A new work order has been assigned to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\n\nPlease follow ${workorder.url} to view the work order.\n\nRegards,\nTeam Facilio");
 				break;
 			case 2:
 				json.put("sender", "support@${org.domain}.facilio.com");
