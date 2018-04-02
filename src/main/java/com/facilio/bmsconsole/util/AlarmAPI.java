@@ -92,21 +92,23 @@ public class AlarmAPI {
 	public static void updateAlarmDetailsInTicket(AlarmContext sourceAlarm, AlarmContext destinationAlarm) throws Exception {
 		
 		TicketCategoryContext category =  null;
-		switch (sourceAlarm.getAlarmTypeEnum()) {
-			case FIRE:
-				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
-				break;
-			case HVAC:
-				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "HVAC");
-				break;
-			case ENERGY:
-				category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Energy");
-				break;
-			default:
-				break;
-		}
-		if(category != null) {
-			destinationAlarm.setCategory(category);
+		if (sourceAlarm.getAlarmTypeEnum() != null) {
+			switch (sourceAlarm.getAlarmTypeEnum()) {
+				case FIRE:
+					category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Fire Safety");
+					break;
+				case HVAC:
+					category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "HVAC");
+					break;
+				case ENERGY:
+					category = TicketAPI.getCategory(AccountUtil.getCurrentOrg().getOrgId(), "Energy");
+					break;
+				default:
+					break;
+			}
+			if(category != null) {
+				destinationAlarm.setCategory(category);
+			}
 		}
 		
 		if(sourceAlarm != destinationAlarm && destinationAlarm.getSeverity() != null) {
