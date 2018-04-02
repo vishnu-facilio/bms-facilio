@@ -49,7 +49,9 @@ public class WorkflowUtil {
 	static final List<String> COMPARISION_OPPERATORS = new ArrayList<>();
 	static final List<String> ARITHMETIC_OPPERATORS = new ArrayList<>();
 	
-	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
+//	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
+	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)(\\,*)(\\d*)\\}\\s*)?([^`]*)`(.*))";
+	
 	
 	static {
 		COMPARISION_OPPERATORS.add("==");
@@ -564,8 +566,8 @@ public class WorkflowUtil {
 		while (matcher.find()) {
 			String fieldName = matcher.group(2);
 			FacilioField field = modBean.getField(fieldName, moduleName);
-			Operator operator = field.getDataTypeEnum().getOperator(matcher.group(5));
-			String conditionValue = matcher.group(6);
+			Operator operator = field.getDataTypeEnum().getOperator(matcher.group(7));		// 7
+			String conditionValue = matcher.group(8);										// 8
 			
 			condition = new Condition();
 			
@@ -577,6 +579,12 @@ public class WorkflowUtil {
 			if (matcher.group(3) != null && !isWithParamCondition) {
 				if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {
 					BaseLineContext baseLine = BaseLineAPI.getBaseLine(Long.parseLong(matcher.group(4)));
+					if(matcher.group(6) != null && !matcher.group(6).equals("")) {
+						Integer isAdjust = Integer.parseInt(matcher.group(6));
+						if(isAdjust.equals(0)) {
+							baseLine.setIsAdjust(false);
+						}
+					}
 					condition = baseLine.getBaseLineCondition(field, ((DateOperators)operator).getRange(conditionValue));
 					if(sequence != null) {
 						expressionContext.addConditionSeqVsBaselineId(sequence, baseLine.getId());
