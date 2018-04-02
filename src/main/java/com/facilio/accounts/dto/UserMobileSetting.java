@@ -31,4 +31,12 @@ public class UserMobileSetting {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
 }

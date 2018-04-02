@@ -292,10 +292,13 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
 		
-		if(userMobileSetting.getUserId() == -1)
-		{
+		if(userMobileSetting.getUserId() == -1) {
 			userMobileSetting.setUserId(getUid(userMobileSetting.getEmail()));
 		}
+		if (userMobileSetting.getCreatedTime() == -1) {
+			userMobileSetting.setCreatedTime(System.currentTimeMillis());
+		}
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getUserMobileSettingModule().getTableName())
 				.fields(AccountConstants.getUserMobileSettingFields());

@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 
@@ -974,6 +975,8 @@ public class AccountConstants {
 		mobileInstanceId.setColumnName("MOBILE_INSTANCE_ID");
 		mobileInstanceId.setModule(module);
 		fields.add(mobileInstanceId);
+		
+		fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 
 		return fields;
 	}
