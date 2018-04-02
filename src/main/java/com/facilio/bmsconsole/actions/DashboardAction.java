@@ -318,6 +318,16 @@ public class DashboardAction extends ActionSupport {
 	}
 	private ReportThreshold reportThreshold;
 	
+	
+//	public String populateDefaultReports() throws Exception {
+//		
+//		FacilioContext context = new FacilioContext();
+//		context.put("orgId", AccountUtil.getCurrentOrg().getId());
+//		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
+//		adddefaultReportChain.execute(context);
+//		
+//		return SUCCESS;
+//	}
 	public String addThreshold() throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -652,12 +662,13 @@ public class DashboardAction extends ActionSupport {
 				result = new HashMap<>();
 				
 				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
+					
 					Map<String,Object> paramMap = null;
 					if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
 						paramMap = new HashMap<>();
 						paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
 					}
-					else if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)){
+					else if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l)){
 						paramMap = new HashMap<>();
 						DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
 						paramMap.put("startTime", rang1e.getStartTime());
@@ -754,6 +765,12 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getData() throws Exception {
 		
+//		FacilioContext context = new FacilioContext();
+//		context.put("orgId", AccountUtil.getCurrentOrg().getId());
+//		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
+//		adddefaultReportChain.execute(context);
+//		
+//		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 			// generate preview report
@@ -1875,11 +1892,9 @@ public class DashboardAction extends ActionSupport {
 	 				}
 	 			}
 		 	}
-//			System.out.println("res -- "+res);
 			readingData = res;
 		}
 		
-//		System.out.println("rs after -- "+rs);
 		if (report.getReportCriteriaContexts() != null) {
 			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getReportCriteriaContexts().get(0).getCriteriaId());
 			if(criteria != null) {
