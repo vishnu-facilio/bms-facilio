@@ -16,7 +16,7 @@ public class LRUCache<K, V>{
 	private static LRUCache<Integer,Object> fieldCache = new LRUCache<Integer,Object>(300);
 	private static LRUCache<Integer,Object> modulefieldCache = new LRUCache<Integer,Object>(300);
     private long hitcount = 0;
-    private long misscount = 0;
+    private long misscount = 1;
     // Define Node with pointers to the previous and next items and a key, value pair
     class Node<T, U> {
         Node<T, U> previous;
@@ -44,6 +44,13 @@ public class LRUCache<K, V>{
     private int currentSize;
     
 
+    public void purgeCache()
+    {
+    	   this.currentSize = 0;
+         leastRecentlyUsed = new Node<K, V>(null, null, null, null);
+         mostRecentlyUsed = leastRecentlyUsed;
+         cache = new ConcurrentHashMap<K, Node<K, V>>();
+    }
 
     public LRUCache(int maxSize){
         this.maxSize = maxSize;

@@ -985,6 +985,12 @@
 			method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>
 		</action>
+<action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result name="success">/jsps/admin/showCache.jsp</result>
+		</action>
+		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
+			<result name="success">/jsps/admin/showCache.jsp</result>
+		</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">
