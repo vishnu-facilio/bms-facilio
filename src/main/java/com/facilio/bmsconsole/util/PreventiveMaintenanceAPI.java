@@ -344,6 +344,14 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	public static PreventiveMaintenance getActivePM(long id) throws Exception {
+		return getPM(id, true);
+	}
+	
+	public static PreventiveMaintenance getPM(long id) throws Exception {
+		return getPM(id, false);
+	}
+	
+	private static PreventiveMaintenance getPM(long id, boolean onlyActive) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
@@ -352,8 +360,11 @@ public class PreventiveMaintenanceAPI {
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
-														.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
 														;
+		
+		if (onlyActive) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

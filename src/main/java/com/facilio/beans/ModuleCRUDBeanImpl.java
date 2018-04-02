@@ -215,6 +215,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			}
 			
 			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+			wo.setPm(pm);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
@@ -225,7 +226,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Chain addWOChain = FacilioChainFactory.getAddWorkOrderChain();
 			addWOChain.execute(context);
 
-			addToRelTable(pm.getId(), wo.getId());
 			incrementPMCount(pm);
 			return wo;
 		}
@@ -247,18 +247,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		updateBuilder.update(FieldUtil.getAsProperties(updatePm));
 	}
 	
-	private void addToRelTable(long pmId, long woId) throws SQLException, RuntimeException {
-		Map<String, Object> relProp = new HashMap<>();
-		relProp.put("pmId", pmId);
-		relProp.put("woId", woId);
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.fields(FieldFactory.getPmToWoRelFields())
-														.table(ModuleFactory.getPmToWoRelModule().getTableName())
-														.addRecord(relProp);
-		
-		insertBuilder.save();
-	}
-
 	@Override
 	public void deleteAllData(String moduleName) throws Exception {
 		// TODO Auto-generated method stub
