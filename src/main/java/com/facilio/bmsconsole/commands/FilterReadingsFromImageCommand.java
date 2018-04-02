@@ -36,7 +36,7 @@ public class FilterReadingsFromImageCommand implements Command {
 			Iterator<TextDetection> it = detectedTexts.iterator();
 			while (it.hasNext()) {
 				TextDetection text = it.next();
-				if (text.getConfidence() < ImageRecognitionUtil.MINIMUM_CONFIDENCE || !text.getType().equals("LINE") || !isNumber(text.getDetectedText())) {
+				if (text.getConfidence() < ImageRecognitionUtil.MINIMUM_CONFIDENCE || !text.getType().equals("LINE") || !isNumber(text)) {
 					it.remove();
 					continue;
 				}
@@ -54,9 +54,12 @@ public class FilterReadingsFromImageCommand implements Command {
 		return false;
 	}
 	
-	private boolean isNumber(String text) {
+	private boolean isNumber(TextDetection text) {
 		try {
-			Double.parseDouble(text);
+			String str = text.getDetectedText();
+			str = str.replaceAll("\\s*", "");
+			text.setDetectedText(str);
+			Double.parseDouble(str);
 			return true;
 		}
 		catch(Exception e) {
