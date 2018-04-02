@@ -46,6 +46,14 @@ public class WorkOrderContext extends TicketContext {
 		return null;
 	}
 	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	private Boolean isWorkDurationChangeAllowed;
 	public Boolean getIsWorkDurationChangeAllowed() {
 		return isWorkDurationChangeAllowed;
