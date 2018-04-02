@@ -11,7 +11,9 @@ public class LRUCache<K, V>{
 		return fieldCache;
 	}
 	public String toString() {
-		 return (" The current size "+currentSize+"\n Cache Hit Ratio= "+ ((hitcount)/(hitcount+misscount) )*100 +"\n\n"+cache);
+		double hitc =  ((hitcount*100)/(hitcount+misscount) );
+
+		 return (" The current size "+currentSize+"\n hitcount "+hitcount+"\n Cache Hit Ratio= "+ hitc +"\n\n"+cache);
 	}
 	private static LRUCache<String,Object> fieldCache = new LRUCache<String,Object>(300);
 	private static LRUCache<String,Object> modulefieldCache = new LRUCache<String,Object>(300);
