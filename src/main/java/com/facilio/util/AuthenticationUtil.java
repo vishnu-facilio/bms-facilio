@@ -23,8 +23,6 @@ public class AuthenticationUtil {
                 }
             }
 
-            System.out.println("auth util : The header authtoken is " + headerToken);
-            System.out.println("auth util : The facilioToken authtoken is " + facilioToken);
 
             CognitoUtil.CognitoUser cognitoUser = (facilioToken != null) ? CognitoUtil.verifiyFacilioToken(facilioToken) : CognitoUtil.verifyIDToken(headerToken);
             return cognitoUser;

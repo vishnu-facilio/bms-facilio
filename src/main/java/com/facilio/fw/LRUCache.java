@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LRUCache<K, V>{
 
 	public static LRUCache<Integer, Object> getModuleFieldsCache() {
-		return fieldCache;
+		return modulefieldCache;
 	}
 	public static LRUCache<Integer, Object> getFieldsCache() {
 		return fieldCache;
