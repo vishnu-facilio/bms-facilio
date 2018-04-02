@@ -111,14 +111,19 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String addWorkOrderRequest() throws Exception {
 		
-		System.out.println("######## attachedFile : "+attachedFile);
+		System.out.println("######## attachedFile : "+attachedFiles);
+		System.out.println("######## attachedFilesFileName : "+attachedFilesFileName);
 		System.out.println("######## workorderrequest : "+workorderrequest);
 		setWorkorder_request(workorderrequest);
 		workorder_request.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder_request.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorder_request);
-		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+// 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderRequestChain();
 		addWorkOrder.execute(context);
@@ -126,32 +131,54 @@ public class WorkOrderRequestAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	private File attachedFile;
+	private List<File> attachedFiles;
+	private List<String> attachedFilesFileName;
+	private List<String> attachedFilesContentType;
+	
+	public List<File> getAttachedFiles() {
+		return attachedFiles;
+	}
+	public void setAttachedFiles(List<File> attachedFiles) {
+		this.attachedFiles = attachedFiles;
+	}
+	public List<String> getAttachedFilesFileName() {
+		return attachedFilesFileName;
+	}
+	public void setAttachedFilesFileName(List<String> attachedFilesFileName) {
+		this.attachedFilesFileName = attachedFilesFileName;
+	}
+	public List<String> getAttachedFilesContentType() {
+		return attachedFilesContentType;
+	}
+	public void setAttachedFilesContentType(List<String> attachedFilesContentType) {
+		this.attachedFilesContentType = attachedFilesContentType;
+	}
 	
 	
-	public File getAttachedFile() {
-		return attachedFile;
-	}
-	public void setAttachedFile(File attachedFile) {
-		this.attachedFile = attachedFile;
-	}
-
-	public String attachedFileFileName;
-	public String attachedFileContentType;
-	
-	
-	public String getAttachedFileFileName() {
-		return attachedFileFileName;
-	}
-	public void setAttachedFileFileName(String attachedFileFileName) {
-		this.attachedFileFileName = attachedFileFileName;
-	}
-	public String getAttachedFileContentType() {
-		return attachedFileContentType;
-	}
-	public void setAttachedFileContentType(String attachedFileContentType) {
-		this.attachedFileContentType = attachedFileContentType;
-	}
+//	private File attachedFile;
+//	public String attachedFileFileName;
+//	public String attachedFileContentType;
+//	
+//	
+//	public File getAttachedFile() {
+//		return attachedFile;
+//	}
+//	public void setAttachedFile(File attachedFile) {
+//		this.attachedFile = attachedFile;
+//	}
+//	
+//	public String getAttachedFileFileName() {
+//		return attachedFileFileName;
+//	}
+//	public void setAttachedFileFileName(String attachedFileFileName) {
+//		this.attachedFileFileName = attachedFileFileName;
+//	}
+//	public String getAttachedFileContentType() {
+//		return attachedFileContentType;
+//	}
+//	public void setAttachedFileContentType(String attachedFileContentType) {
+//		this.attachedFileContentType = attachedFileContentType;
+//	}
 
 	private WorkOrderRequestContext workorder_request;
 	
