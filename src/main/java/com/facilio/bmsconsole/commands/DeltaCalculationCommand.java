@@ -102,7 +102,7 @@ public class DeltaCalculationCommand implements Command {
 			double lastReading =(double)FieldUtil.castOrParseValueAsPerType(dataType, lastReadingVal);
 			Double lastDeltaReading =(Double)FieldUtil.castOrParseValueAsPerType(dataType, lastDeltaReadingVal);
 			double delta=0;
-			if(lastReading==-1) {
+			if(lastReading==-1 && readingVal!=null) {
 				//lastReading  check.. for very first reading 
 				reading.addReading(fieldName+"Delta", delta);
 				return;
