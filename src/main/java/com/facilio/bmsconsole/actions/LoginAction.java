@@ -414,11 +414,14 @@ public class LoginAction extends ActionSupport{
 		}
 		else {
 			invitation.put("email", user.getEmail());
-			if(AwsUtil.getConfig("accessKeyId") != null ) {
-                invitation.put("account_exists", CognitoUtil.isEmailExists(user.getEmail()));
-            } else {
-                invitation.put("account_exists", false);
-            }
+			if(user.getPassword() == null) {
+				invitation.put("account_exists", false);
+			} else {
+				Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());				
+				invitation.put("account_exists", true);
+				invitation.put("orgname", org.getName());
+			}
+            
 		}
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
@@ -462,6 +465,7 @@ public class LoginAction extends ActionSupport{
 		JSONObject invitation = new JSONObject();
 
 		User user = AccountUtil.getUserBean().getUser(email);
+			
 		if ((System.currentTimeMillis() - time) > inviteLinkExpireTime) {
 			invitation.put("error", "link_expired");
 		}

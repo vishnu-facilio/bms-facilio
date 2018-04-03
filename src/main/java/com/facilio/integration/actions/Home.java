@@ -343,11 +343,13 @@ Pragma: no-cache
 	public String acceptOpInvite() throws Exception {
 
 		JSONObject invitation = new LoginAction().acceptUserInvite(inviteToken);
-		if((Boolean) invitation.get("accepted")) {
+		if((Boolean) invitation.get("accepted") && emailaddress != null) {
 			User user = AccountUtil.getUserBean().getUser(emailaddress);
-			user.setPassword(cryptWithMD5(password));
-			AccountUtil.getUserBean().updateUser(user);
-            return validatelogin();
+			if(user.getPassword() == null && password != null) {
+				user.setPassword(cryptWithMD5(password));
+				AccountUtil.getUserBean().updateUser(user);
+			}
+            return SUCCESS;
 		} else {
 			return ERROR;
 		}

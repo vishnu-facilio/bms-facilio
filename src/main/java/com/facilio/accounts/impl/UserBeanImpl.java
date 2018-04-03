@@ -255,8 +255,15 @@ public class UserBeanImpl implements UserBean {
 		inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
 		inviteAcceptStatus.setModule(AccountConstants.getOrgUserModule());
 		
+		FacilioField isDefaultOrg = new FacilioField();
+		isDefaultOrg.setName("isDefaultOrg");
+		isDefaultOrg.setDataType(FieldType.BOOLEAN);
+		isDefaultOrg.setColumnName("ISDEFAULT");
+		isDefaultOrg.setModule(AccountConstants.getOrgUserModule());
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(inviteAcceptStatus);
+		fields.add(isDefaultOrg);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getOrgUserModule().getTableName())
@@ -265,6 +272,7 @@ public class UserBeanImpl implements UserBean {
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("inviteAcceptStatus", true);
+		props.put("isDefaultOrg", true);
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
