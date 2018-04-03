@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -42,10 +41,10 @@ public class AddPMReminderCommand implements Command {
 							action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
 							
 							switch(reminder.getTypeEnum()) {
-								case BEFORE_EXECUTION: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_PRE_REMINDER.getVal());break;
-								case AFTER_EXECUTION: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_DUE_REMINDER.getVal());break;
-								case BEFORE_DUE: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_DUE_REMINDER.getVal());break;
-								case AFTER_DUE: action.setDefaultTemplateId(DefaultTemplates.PM_EMAIL_OVERDUE_REMINDER.getVal());break;
+								case BEFORE_EXECUTION: action.setDefaultTemplateId(10);break;
+								case AFTER_EXECUTION: action.setDefaultTemplateId(11);break;
+								case BEFORE_DUE: action.setDefaultTemplateId(11);break;
+								case AFTER_DUE: action.setDefaultTemplateId(60);break;
 							}
 							reminder.setAction(action);
 						}

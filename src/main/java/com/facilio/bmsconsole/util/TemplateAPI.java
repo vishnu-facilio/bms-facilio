@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.FileReader;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -10,12 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -32,6 +36,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
@@ -50,8 +55,44 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.wms.endpoints.SessionManager;
 
 public class TemplateAPI {
+	private static final Logger logger = Logger.getLogger(SessionManager.class.getName());
+	
+	private static final String[] LANG = new String[]{"en"};
+	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
+	private static Map<String, Map<Integer,DefaultTemplate>> loadDefaultTemplates() {
+		try {
+			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
+			JSONParser parser = new JSONParser();
+			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
+			for (String lang : LANG) {
+				JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource("conf/templates/defaultTemplates_"+lang+".json").getFile()));
+				Map<Integer, DefaultTemplate> templates = new HashMap<>();
+				for (Object key : templateJsons.keySet()) {
+					Integer templateId = Integer.parseInt(key.toString());
+					JSONObject template = (JSONObject) templateJsons.get(key);
+					String name = (String) template.remove("name");
+					templates.put(templateId, new DefaultTemplate(name, template));
+				}
+				defaultTemplates.put(lang, templates);
+			}
+			return defaultTemplates;
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "Error in Parsing default templates");
+			throw new IllegalArgumentException(e);
+		}
+	}
+	
+	private static String getLang() {
+		return "en"; //This has to be changed according to org from thread local
+	}
+	
+	public static DefaultTemplate getDefaultTemplate (int id) {
+		return DEFAULT_TEMPLATES.get(getLang()).get(id);
+	}
 	
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();

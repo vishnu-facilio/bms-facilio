@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.ActionTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplates;
+import com.facilio.bmsconsole.util.TemplateAPI;
 
 public class ActionContext {
 	private long id = -1;
@@ -57,7 +57,7 @@ public class ActionContext {
 		return defaultTemplateId;
 	}
 	public void setDefaultTemplateId(int defaultTemplateId) {
-		this.template = DefaultTemplates.getDefaultTemplate(defaultTemplateId);
+		this.template = TemplateAPI.getDefaultTemplate(defaultTemplateId);
 		if(template == null) {
 			throw new IllegalArgumentException("No DefaultTemplate exists with value : "+defaultTemplateId);
 		}
