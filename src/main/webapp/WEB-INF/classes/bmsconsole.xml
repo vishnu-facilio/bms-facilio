@@ -1818,8 +1818,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="excludeProperties">pms\[\d+\].left,pms\[\d+\].right</param>
-				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*</param>
+				<param name="includeProperties">pmJobs,pmJobs\[\d+\],pmJobs\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
 			</result>
 		</action>
 

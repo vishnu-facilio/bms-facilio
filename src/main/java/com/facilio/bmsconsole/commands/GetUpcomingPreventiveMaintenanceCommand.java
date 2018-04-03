@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -20,7 +22,6 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -47,13 +48,14 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(filterCriteria);
 		if(pms != null && !pms.isEmpty()) 
 		{
+			Map<Long, PreventiveMaintenance> pmMap = pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			List<Long> resourceIds = new ArrayList<>();
-			List<Pair<PMJobsContext, PreventiveMaintenance>> pmPairs = new ArrayList<>();
+			List<PMJobsContext> pmJobList = new ArrayList<>();
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
@@ -69,7 +71,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 							if(trigger.getStartTime() > startTime && trigger.getStartTime() <= endTime) {
 								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), startTime, false);
 								Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
-								pmPairs.add(pair);
+								pmJobList.add(pmJob);
 							}
 						}
 						else {
@@ -81,25 +83,10 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 										for(PMJobsContext pmJob : pmJobs) {
 											if(pmJob.getTemplateId() != -1)
 											{
-												Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
-												PreventiveMaintenance clonedPM =  FieldUtil.getAsBeanFromMap(pmProps, PreventiveMaintenance.class);
-												
-												/*JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(AccountUtil.getCurrentOrg().getOrgId(), pmJob.getTemplateId());
-												JSONObject content = template.getTemplate(null);
-												WorkOrderContext wo = FieldUtil.getAsBeanFromJson((JSONObject) content.get(FacilioConstants.ContextNames.WORK_ORDER), WorkOrderContext.class);
-												clonedPM.setAssignedToid(wo.getAssignedTo().getId());*/
-												
 												WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pmJob.getTemplateId());
-												clonedPM.setWoTemplate(template);
-												
-												Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, clonedPM);
-												pmPairs.add(pair);
+												pmJob.setTemplate(template);
 											}
-											else
-											{
-												Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
-												pmPairs.add(pair);
-											}
+											pmJobList.add(pmJob);
 										}
 										// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 									}
@@ -118,8 +105,7 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 										virtualJobsStartTime = -1;
 									}
 									else if(pmJob.getNextExecutionTime() > startTime) {
-										Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
-										pmPairs.add(pair);
+										pmJobList.add(pmJob);
 										virtualJobsStartTime = pmJob.getNextExecutionTime();
 									}
 									else {
@@ -129,17 +115,15 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 							}
 							if(virtualJobsStartTime != -1) {
 								List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, endTime, false);
-								for(PMJobsContext pmJob : pmJobs) {
-									Pair<PMJobsContext, PreventiveMaintenance> pair = new ImmutablePair<PMJobsContext, PreventiveMaintenance>(pmJob, pm);
-									pmPairs.add(pair);
-								}
+								pmJobList.addAll(pmJobs);
 							}
 						}
 					}
 				}
 			}
-			sortPMs(pmPairs);
-			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmPairs);
+			sortPMs(pmJobList);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pmMap);
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST, pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, ResourceAPI.getResourceAsMapFromIds(resourceIds));
 		}
@@ -147,20 +131,13 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 		return false;
 	}
 	
-	private void sortPMs(List<Pair<PMJobsContext, PreventiveMaintenance>> pms) {
-		pms.sort(new Comparator<Pair<PMJobsContext, PreventiveMaintenance>>() {
-
-			@Override
-			public int compare(Pair<PMJobsContext, PreventiveMaintenance> o1, Pair<PMJobsContext, PreventiveMaintenance> o2) {
-				if (o1.getLeft().getNextExecutionTime() < o2.getLeft().getNextExecutionTime()) {
-	                return -1;
-	            } else if (o2.getLeft().equals(o1.getLeft())) {
-	                return 0; 
-	            } else {
-	                return 1;
-	            }
-			}
-		});
+	private void sortPMs(List<PMJobsContext> pmJobs) {
+		pmJobs.sort(Comparator.comparing(PMJobsContext::getNextExecutionTime, (s1, s2) -> {
+			if(s1 == s2){
+		         return 0;
+		    }
+		    return s1 < s2 ? -1 : 1;
+		}));
 	}
 
 }

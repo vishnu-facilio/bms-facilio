@@ -343,6 +343,7 @@ public class FacilioConstants {
 		public static final String PM_ID = "pmid";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
+		public static final String PREVENTIVE_MAINTENANCE_JOBS_LIST = "preventivemaintenancejobs";
 		public static final String PREVENTIVE_MAINTENANCE_TRIGGERS_LIST = "preventivemaintenancetriggerss";
 		public static final String PREVENTIVE_MAINTENANCE_RESOURCES = "preventivemaintenanceresources";
 		public static final String INSERT_LEVEL = "insertLevel";

@@ -327,7 +327,8 @@ public class WorkOrderAction extends ActionSupport {
 		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		
-		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmMap((Map<Long,PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmJobs((List<PMJobsContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
 		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
 		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
 		
@@ -371,6 +372,22 @@ public class WorkOrderAction extends ActionSupport {
 		this.pms = pms;
 	}
 	
+	private Map<Long, PreventiveMaintenance> pmMap;
+	public Map<Long, PreventiveMaintenance> getPmMap() {
+		return pmMap;
+	}
+	public void setPmMap(Map<Long, PreventiveMaintenance> pmMap) {
+		this.pmMap = pmMap;
+	}
+	
+	private List<PMJobsContext> pmJobs;
+	public List<PMJobsContext> getPmJobs() {
+		return pmJobs;
+	}
+	public void setPmJobs(List<PMJobsContext> pmJobs) {
+		this.pmJobs = pmJobs;
+	}
+
 	private Map<Long, PMTriggerContext> pmTriggerMap;
 	public Map<Long, PMTriggerContext> getPmTriggerMap() {
 		return pmTriggerMap;
