@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFolderContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -498,12 +499,22 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		Long closedStatusId = statuses.get(0).getId();
 		
+		SelectRecordsBuilder<TicketPriorityContext> builder1 = new SelectRecordsBuilder<TicketPriorityContext>()
+				.table("TicketPriority")
+				.moduleName("ticketpriority")
+				.beanClass(TicketPriorityContext.class)
+				.select(modBean.getAllFields("ticketpriority"))
+				.andCustomWhere("PRIORITY=?", "High");
+		List<TicketPriorityContext> priorities = builder1.get();
+		
+		Long highPriorityId = priorities.get(0).getId();
+		
 		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
-			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.STATUS+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is\",\"value\":[\""+closedStatusId+"_\"]}}";
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.STATUS+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"isn't\",\"value\":[\""+closedStatusId+"_\"]}, \""+FacilioConstants.Ticket.PRIORITY+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is\",\"value\":[\""+highPriorityId+"_\"]}}";
 		}
 		else {
-			filters ="\""+FacilioConstants.Ticket.STATUS+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"!=\",\"value\":"+closedStatusId+"\"}}";
+			filters ="\""+FacilioConstants.Ticket.STATUS+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"isn't\",\"value\":[\""+closedStatusId+"_\"]}}";
 		}
 		System.out.println("filters ---- "+filters);
 		FacilioReportContext repContext = new FacilioReportContext();
