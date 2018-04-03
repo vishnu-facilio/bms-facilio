@@ -402,21 +402,17 @@ public class LoginAction extends ActionSupport{
 	
 	public String validateInviteLink() throws Exception
 	{
-		String[] inviteIds = EncryptionUtil.decode(getInviteToken()).split("_");
-		long orgId = Long.parseLong(inviteIds[0]);
-		long ouid = Long.parseLong(inviteIds[1]);
+		String[] inviteIds = EncryptionUtil.decode(getInviteToken()).split("#");
+		long ouid = Long.parseLong(inviteIds[0]);
 		
 		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
 		
 		JSONObject invitation = new JSONObject();
-		
-		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
 		User user = AccountUtil.getUserBean().getUser(ouid);
 		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
 			invitation.put("error", "link_expired");
 		}
 		else {
-			invitation.put("orgname", org.getName());
 			invitation.put("email", user.getEmail());
 			if(AwsUtil.getConfig("accessKeyId") != null ) {
                 invitation.put("account_exists", CognitoUtil.isEmailExists(user.getEmail()));
@@ -430,9 +426,9 @@ public class LoginAction extends ActionSupport{
 	}
 
 	public JSONObject acceptUserInvite(String inviteToken) throws Exception {
-		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("_");
-		long orgId = Long.parseLong(inviteIds[0]);
-		long ouid = Long.parseLong(inviteIds[1]);
+		String[] inviteIds = EncryptionUtil.decode(inviteToken).split("#");
+		long ouid = Long.parseLong(inviteIds[0]);
+		long time = Long.parseLong(inviteIds[1]);
 
 		long inviteLinkExpireTime = (7 * 24 * 60 * 60 * 1000); //7 days in seconds
 
@@ -445,6 +441,8 @@ public class LoginAction extends ActionSupport{
 		else {
 			boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
 			if (acceptStatus) {
+				user.setUserVerified(true);
+				AccountUtil.getUserBean().updateUser(user);
 				invitation.put("accepted", true);
 			}
 			else {
