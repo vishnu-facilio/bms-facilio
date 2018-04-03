@@ -3178,6 +3178,10 @@
 			</result>
 		</action>
 		
+		<action name="testSoapRequest">
+			<result name="success">/jsps/testsoaprequest.jsp</result>
+		</action>
+		
 		<action name="migration">
 			<result name="success">/jsps/Migration.jsp</result>
 		</action>
