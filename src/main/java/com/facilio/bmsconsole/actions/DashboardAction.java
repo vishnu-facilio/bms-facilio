@@ -883,6 +883,11 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
+		}
+		
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 	 		JSONObject filterJson = (JSONObject) parser.parse(getFilters());

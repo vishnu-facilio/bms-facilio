@@ -415,7 +415,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		Long nowTime = DateTimeUtil.getCurrenTime();
 		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
-			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterdaye\"}}";
+			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterday\"}}";
 		}
 		else {
 			filters ="{\""+FacilioConstants.Ticket.DUE_DATE+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"Till Yesterday\"}}";
@@ -498,6 +498,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		
 		Long closedStatusId = statuses.get(0).getId();
 		
+		String filters = "";
 		if(filterBy!=null && !filterBy.isEmpty()) {
 			filters ="{"+filterBy+",\""+FacilioConstants.Ticket.STATUS+"\":{\"module\":\""+FacilioConstants.ContextNames.WORK_ORDER+"\",\"operator\":\"is\",\"value\":[\""+closedStatusId+"_\"]}}";
 		}
