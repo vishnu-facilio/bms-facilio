@@ -1996,26 +1996,6 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getPmToWoRelFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getPmToWoRelModule();
-
-		FacilioField pmId = new FacilioField();
-		pmId.setName("pmId");
-		pmId.setDataType(FieldType.NUMBER);
-		pmId.setColumnName("PM_ID");
-		pmId.setModule(module);
-		fields.add(pmId);
-
-		FacilioField woId = new FacilioField();
-		woId.setName("woId");
-		woId.setDataType(FieldType.NUMBER);
-		woId.setColumnName("WO_ID");
-		woId.setModule(module);
-		fields.add(woId);
-		return fields;
-	}
-
 	public static List<FacilioField> getDashboardFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getDashboardModule();

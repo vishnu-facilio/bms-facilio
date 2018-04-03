@@ -28,7 +28,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			if(workOrderRequest.getRequestStatus() == -1) {
 				workOrderRequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 			}
-			
+			TicketAPI.updateTicketStatus(workOrderRequest);
 			TicketAPI.updateTicketStatus(workOrderRequest);
 			
 			InsertRecordBuilder<WorkOrderRequestContext> builder = new InsertRecordBuilder<WorkOrderRequestContext>()

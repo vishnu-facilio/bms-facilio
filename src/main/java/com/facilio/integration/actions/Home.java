@@ -344,8 +344,10 @@ Pragma: no-cache
 
 		JSONObject invitation = new LoginAction().acceptUserInvite(inviteToken);
 		if((Boolean) invitation.get("accepted")) {
-            username = emailaddress;
-			return AddNewUserDB(username, cryptWithMD5(password), emailaddress);
+			User user = AccountUtil.getUserBean().getUser(emailaddress);
+			user.setPassword(cryptWithMD5(password));
+			AccountUtil.getUserBean().updateUser(user);
+            return validatelogin();
 		} else {
 			return ERROR;
 		}

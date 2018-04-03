@@ -363,6 +363,12 @@ public class TicketAPI {
 		return 0;
 	}
 	
+	public static void updateTicketAssignedBy(TicketContext ticket) {
+		if ((ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != -1) || (ticket.getAssignmentGroup() != null && ticket.getAssignmentGroup().getId() != -1)) {
+			ticket.setAssignedBy(AccountUtil.getCurrentUser());
+		}
+	}
+	
 	public static void updateTicketStatus(TicketContext ticket) throws Exception {
 		updateTicketStatus(ticket, null, false);
 	}

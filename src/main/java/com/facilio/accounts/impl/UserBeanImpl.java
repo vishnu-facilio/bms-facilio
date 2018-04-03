@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -54,7 +55,11 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private long addUserEntry(User user) throws Exception {
-		
+		return addUserEntry(user, true);
+	}
+
+	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
+
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getUserModule().getTableName())
 				.fields(AccountConstants.getUserFields());
@@ -62,7 +67,9 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		sendEmailRegistration(user.getOrgId(),user);
+		if(emailVerificationRequired) {
+			sendEmailRegistration(user.getOrgId(), user);
+		}
 		return (Long) props.get("id");
 	}
 	
@@ -138,7 +145,7 @@ public class UserBeanImpl implements UserBean {
 		
 		long uid = getUid(user.getEmail());
 		if (uid == -1) {
-			uid = addUserEntry(user);
+			uid = addUserEntry(user, false);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
@@ -163,14 +170,18 @@ public class UserBeanImpl implements UserBean {
 
 		return ouid;
 	}
+
+	private String getEncodedToken(String value) {
+		return EncryptionUtil.encode(value + "#" + System.currentTimeMillis());
+	}
+
+	private String getUserLink(String value, String url) {
+		String inviteToken = getEncodedToken(value);
+		return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
+	}
 	
 	private boolean sendInvitation(long orgId, long ouid, User user) throws Exception {
-		
-		String inviteToken = EncryptionUtil.encode(orgId + "_" + ouid + "_" + System.currentTimeMillis());
-		String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/invitation/" + inviteToken;
-		if(user.isFacilioAuth()){
-			inviteLink = inviteLink + "?facilioAuth=true";
-		}
+		String inviteLink = getUserLink(""+ouid,  "/app/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
@@ -182,9 +193,8 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	public boolean sendResetPassword(User user) throws Exception {
-		
-		String inviteToken = EncryptionUtil.encode(user.getEmail() + "#" + System.currentTimeMillis());
-		String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/fconfirm_reset_password/" + inviteToken;
+
+		String inviteLink = getUserLink(user.getEmail(), "/app/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
@@ -194,9 +204,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private boolean sendEmailRegistration(long orgId, User user) throws Exception {
-			
-			String inviteToken = EncryptionUtil.encode(user.getEmail() + "#" + System.currentTimeMillis());
-			String inviteLink = AwsUtil.getConfig("clientapp.url") + "/app/emailregistration/" + inviteToken;
+			String inviteLink = getUserLink(user.getEmail(), "/app/emailregistration/");
 			Map<String, Object> placeholders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 			placeholders.put("invitelink", inviteLink);
@@ -472,22 +480,23 @@ public class UserBeanImpl implements UserBean {
 
 	public User getPortalUser(String email, long portalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
-
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getPortalUserFields());
-		FacilioField orgId = new FacilioField();
-		orgId.setName("orgId");
-		orgId.setDataType(FieldType.NUMBER);
-		orgId.setColumnName("ORGID");
-		orgId.setModule(portalInfoModule);
-		fields.add(orgId);
-
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("faciliorequestors")
 				.innerJoin("PortalInfo")
 				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
-				.andCustomWhere("EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
+				.innerJoin("Users")
+				.on("faciliorequestors.EMAIL = Users.EMAIL")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		System.out.println(props);

@@ -124,4 +124,7 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForSpaceCategory(){
 		return new SetTableNamesCommand("spacecategory","Space_Category");
 	}
+	public static SetTableNamesCommand getForTicketAttachment(){
+		return new SetTableNamesCommand("ticketattachments","Ticket_Attachments");
+	}
 }

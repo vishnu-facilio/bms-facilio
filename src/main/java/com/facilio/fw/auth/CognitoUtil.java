@@ -248,12 +248,10 @@ public class CognitoUtil {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
-			System.out.println("verifiyFacilioToken() : decodedtoken : "+decodedjwt);
 			CognitoUser faciliouser = new CognitoUser();
 			faciliouser.setEmail(decodedjwt.getSubject());
 			faciliouser.setFacilioauth(true);
 			faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
-			System.out.println("verifiyFacilioToken() : faciliouser  " +faciliouser);
 			return faciliouser;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

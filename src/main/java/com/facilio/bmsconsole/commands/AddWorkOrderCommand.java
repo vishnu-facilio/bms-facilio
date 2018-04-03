@@ -27,9 +27,9 @@ public class AddWorkOrderCommand implements Command {
 			}
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedTime(System.currentTimeMillis());
+			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			
 			if(workOrder.getDuration() != -1) {
@@ -37,11 +37,11 @@ public class AddWorkOrderCommand implements Command {
 			}
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
 			
+			TicketAPI.updateTicketAssignedBy(workOrder);
 			TicketAPI.updateTicketStatus(workOrder);
 			
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
-																.table(dataTableName)
 																.fields(fields);
 			
 			Integer insertLevel = (Integer) context.get(FacilioConstants.ContextNames.INSERT_LEVEL);
