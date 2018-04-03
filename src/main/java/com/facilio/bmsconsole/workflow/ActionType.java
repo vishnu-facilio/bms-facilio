@@ -669,7 +669,7 @@ public enum ActionType {
 				long priorityId = Long.parseLong((String)slaPolicy.get("priority"));
 				if(priorityId == workorderpriority)
 				{
-					duration = Long.parseLong((String)slaPolicy.get("duration"));
+					duration = Long.parseLong((String)slaPolicy.get("duration")) * 1000;
 				}
 				
 			}
