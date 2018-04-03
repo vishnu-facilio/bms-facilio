@@ -319,15 +319,16 @@ public class DashboardAction extends ActionSupport {
 	private ReportThreshold reportThreshold;
 	
 	
-//	public String populateDefaultReports() throws Exception {
-//		
-//		FacilioContext context = new FacilioContext();
-//		context.put("orgId", AccountUtil.getCurrentOrg().getId());
-//		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
-//		adddefaultReportChain.execute(context);
-//		
-//		return SUCCESS;
-//	}
+	public String populateDefaultReports() throws Exception {
+		
+		System.out.println("From here");
+		FacilioContext context = new FacilioContext();
+		context.put("orgId", AccountUtil.getCurrentOrg().getId());
+		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
+		adddefaultReportChain.execute(context);
+		
+		return SUCCESS;
+	}
 	public String addThreshold() throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -765,12 +766,6 @@ public class DashboardAction extends ActionSupport {
 	
 	public String getData() throws Exception {
 		
-//		FacilioContext context = new FacilioContext();
-//		context.put("orgId", AccountUtil.getCurrentOrg().getId());
-//		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
-//		adddefaultReportChain.execute(context);
-//		
-//		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 			// generate preview report

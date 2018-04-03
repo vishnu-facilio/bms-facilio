@@ -3535,6 +3535,8 @@
 		</action>
 	</package>
 	<package name="dashboard" namespace="/api/dashboard" extends="home">
+		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
