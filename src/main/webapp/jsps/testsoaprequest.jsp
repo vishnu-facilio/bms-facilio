@@ -32,7 +32,6 @@
 	}
 	
 	body = stringBuilder.toString();
-	System.out.println("DDDDDD" + body);
 %>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:EWSv122="http://www.schneider-electric.com/common/dataexchange/2011/05/DataExchangeInterface/Fault" xmlns:EWSv121="http://www.schneider-electric.com/common/dataexchange/2011/05">
    <SOAP-ENV:Header/>
