@@ -464,7 +464,6 @@ public class ViewFactory {
 		userField.setColumnName("REQUESTER_ID");
 		userField.setDataType(FieldType.LOOKUP);
 		userField.setModule(module);
-		userField.setExtendedModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.REQUESTER);
 		
 		Condition myUserCondition = new Condition();
