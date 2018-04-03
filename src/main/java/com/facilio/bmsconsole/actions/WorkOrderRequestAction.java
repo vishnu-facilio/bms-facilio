@@ -1,14 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -21,8 +19,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WorkOrderRequestAction extends ActionSupport {
@@ -72,7 +68,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	
 	public String approveWorkOrderRequest() throws Exception {
-		workorder_request.setRequestStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
 		FacilioContext context = new FacilioContext();
 		//set Event
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.APPROVE_WORK_ORDER_REQUEST);
@@ -80,10 +76,10 @@ public class WorkOrderRequestAction extends ActionSupport {
 	}
 	
 	public String rejectWorkOrderRequest() throws Exception {
-		if (workorder_request == null) {
-			workorder_request = new WorkOrderRequestContext();
+		if (workorderrequest == null) {
+			workorderrequest = new WorkOrderRequestContext();
 		}
-		workorder_request.setRequestStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
 		FacilioContext context = new FacilioContext();
 		//set Event
 		return updateWorkOrderRequest(context);
@@ -111,72 +107,94 @@ public class WorkOrderRequestAction extends ActionSupport {
 	
 	public String addWorkOrderRequest() throws Exception {
 		
-		System.out.println("######## attachedFile : "+attachedFile);
-		System.out.println("######## workorderrequest : "+workorderrequest);
-		setWorkorder_request(workorderrequest);
-		workorder_request.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+		System.out.println("######## attachedFile : "+attachedFiles);
+		System.out.println("######## attachedFilesFileName : "+attachedFilesFileName);
+		System.out.println("######## workorderrequest : "+workorder_request);
+		if (workorder_request != null) {
+			setWorkorderrequest(workorder_request);
+		}
+		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.REQUESTER, workorder_request.getRequester());
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorder_request);
-		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
+		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
+		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+// 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 		
 		Command addWorkOrder = FacilioChainFactory.getAddWorkOrderRequestChain();
 		addWorkOrder.execute(context);
-		setWorkOrderRequestId(workorder_request.getId());
+		setWorkOrderRequestId(workorderrequest.getId());
 		return SUCCESS;
 	}
 	
-	private File attachedFile;
+	private List<File> attachedFiles;
+	private List<String> attachedFilesFileName;
+	private List<String> attachedFilesContentType;
+	
+	public List<File> getAttachedFiles() {
+		return attachedFiles;
+	}
+	public void setAttachedFiles(List<File> attachedFiles) {
+		this.attachedFiles = attachedFiles;
+	}
+	public List<String> getAttachedFilesFileName() {
+		return attachedFilesFileName;
+	}
+	public void setAttachedFilesFileName(List<String> attachedFilesFileName) {
+		this.attachedFilesFileName = attachedFilesFileName;
+	}
+	public List<String> getAttachedFilesContentType() {
+		return attachedFilesContentType;
+	}
+	public void setAttachedFilesContentType(List<String> attachedFilesContentType) {
+		this.attachedFilesContentType = attachedFilesContentType;
+	}
 	
 	
-	public File getAttachedFile() {
-		return attachedFile;
-	}
-	public void setAttachedFile(File attachedFile) {
-		this.attachedFile = attachedFile;
-	}
+//	private File attachedFile;
+//	public String attachedFileFileName;
+//	public String attachedFileContentType;
+//	
+//	
+//	public File getAttachedFile() {
+//		return attachedFile;
+//	}
+//	public void setAttachedFile(File attachedFile) {
+//		this.attachedFile = attachedFile;
+//	}
+//	
+//	public String getAttachedFileFileName() {
+//		return attachedFileFileName;
+//	}
+//	public void setAttachedFileFileName(String attachedFileFileName) {
+//		this.attachedFileFileName = attachedFileFileName;
+//	}
+//	public String getAttachedFileContentType() {
+//		return attachedFileContentType;
+//	}
+//	public void setAttachedFileContentType(String attachedFileContentType) {
+//		this.attachedFileContentType = attachedFileContentType;
+//	}
 
-	public String attachedFileFileName;
-	public String attachedFileContentType;
-	
-	
-	public String getAttachedFileFileName() {
-		return attachedFileFileName;
-	}
-	public void setAttachedFileFileName(String attachedFileFileName) {
-		this.attachedFileFileName = attachedFileFileName;
-	}
-	public String getAttachedFileContentType() {
-		return attachedFileContentType;
-	}
-	public void setAttachedFileContentType(String attachedFileContentType) {
-		this.attachedFileContentType = attachedFileContentType;
-	}
-
-	private WorkOrderRequestContext workorder_request;
-	
-	public WorkOrderRequestContext getWorkorder_request() {
-		return workorder_request;
-	}
-	public void setWorkorder_request(WorkOrderRequestContext workorder_request) {
-		
-		this.workorder_request = workorder_request;
-	}
-	
-	public void setWorkorder_request(String workorder_request) {
-		
-		this.workorder_request = convert(workorderrequest);
-	}
-
-
-	private String workorderrequest;
-
-	public String getWorkorderrequest() {
+	private WorkOrderRequestContext workorderrequest;
+	public WorkOrderRequestContext getWorkorderrequest() {
 		return workorderrequest;
 	}
-	
-	public void setWorkorderrequest(String workorderrequest) {
+	public void setWorkorderrequest(WorkOrderRequestContext workorderrequest) {
 		this.workorderrequest = workorderrequest;
+	}
+	public void setWorkorderrequest(String workorder_request) {
+		this.workorderrequest = convert(workorder_request);
+	}
+
+	private String workorder_request;
+	public String getWorkorder_request() {
+		return workorder_request;
+	}
+	public void setWorkorder_request(String workorder_request) {
+		this.workorder_request = workorder_request;
 	}
 	
 	public WorkOrderRequestContext convert(String workOrderReqStr)
@@ -226,7 +244,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderRequestDetailsChain();
 		getWorkOrderChain.execute(context);
 		
-		setWorkorder_request((WorkOrderRequestContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		setWorkorderrequest((WorkOrderRequestContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		return SUCCESS;

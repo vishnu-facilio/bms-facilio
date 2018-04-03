@@ -55,6 +55,11 @@
   <filter-name>CorsFilter</filter-name>
   <url-pattern>/api/*</url-pattern>
 </filter-mapping>
+
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/app/*</url-pattern>
+</filter-mapping>
     <filter-mapping>
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/internal/*</url-pattern>
@@ -85,15 +90,11 @@
         <filter-name>struts2</filter-name>
         <url-pattern>/auth/api/*</url-pattern>
     </filter-mapping>
-
-    <servlet>
-        <servlet-name>app</servlet-name>
-        <jsp-file>/index.html</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>app</servlet-name>
-        <url-pattern>/app/*</url-pattern>
-    </servlet-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/app/admin/*</url-pattern>
+    </filter-mapping>
+    
 
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>

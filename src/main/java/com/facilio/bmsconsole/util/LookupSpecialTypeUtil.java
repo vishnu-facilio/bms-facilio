@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -89,6 +90,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return BusinessHoursAPI.getBusinessHours(id);
 		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return PreventiveMaintenanceAPI.getPM(id);
+		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(id);
 		}
@@ -127,6 +131,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return null; //Returning null for now
 		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return null; //Returning null for now
+		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(criteria);
 		}
@@ -155,6 +162,11 @@ public class LookupSpecialTypeUtil {
 			BusinessHoursList businessHours = new BusinessHoursList();
 			businessHours.setId(id);
 			return businessHours;
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			PreventiveMaintenance pm = new PreventiveMaintenance();
+			pm.setId(id);
+			return pm;
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			EventContext event = new EventContext();
@@ -185,6 +197,12 @@ public class LookupSpecialTypeUtil {
 			BusinessHoursList businessHours = BusinessHoursAPI.getBusinessHours(id);
 			if(businessHours != null) {
 				return businessHours.toString();
+			}
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(id);
+			if (pm != null) {
+				return pm.getTitle();
 			}
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
@@ -229,6 +247,15 @@ public class LookupSpecialTypeUtil {
 				BusinessHoursList businessHours = (BusinessHoursList)obj;
 				if(businessHours != null) {
 					idVsKey.put(businessHours.getId(), businessHours.toString());
+				}
+			}
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			
+			for(Object obj:listObjects) {
+				PreventiveMaintenance pm = (PreventiveMaintenance)obj;
+				if(pm != null) {
+					idVsKey.put(pm.getId(), pm.getTitle());
 				}
 			}
 		}

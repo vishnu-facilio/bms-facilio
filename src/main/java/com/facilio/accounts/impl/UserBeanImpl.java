@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -472,22 +473,23 @@ public class UserBeanImpl implements UserBean {
 
 	public User getPortalUser(String email, long portalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
-
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getPortalUserFields());
-		FacilioField orgId = new FacilioField();
-		orgId.setName("orgId");
-		orgId.setDataType(FieldType.NUMBER);
-		orgId.setColumnName("ORGID");
-		orgId.setModule(portalInfoModule);
-		fields.add(orgId);
-
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("faciliorequestors")
 				.innerJoin("PortalInfo")
 				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
-				.andCustomWhere("EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
+				.innerJoin("Users")
+				.on("faciliorequestors.EMAIL = Users.EMAIL")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		System.out.println(props);

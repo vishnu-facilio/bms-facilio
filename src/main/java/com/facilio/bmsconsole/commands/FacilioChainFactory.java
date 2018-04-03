@@ -345,6 +345,9 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddWorkOrderRequestCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new AddTicketActivityCommand());
+		c.addCommand(SetTableNamesCommand.getForTicketAttachment());
+		c.addCommand(getAddAttachmentChain());
 		addCleanUpCommand(c);
 		return c;
 	}

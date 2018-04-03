@@ -567,14 +567,6 @@ public class ModuleFactory {
 		return historicalVMCalModule;
 	}
 	
-	public static FacilioModule getPmToWoRelModule() {
-		FacilioModule pmToWoRelModule = new FacilioModule();
-		pmToWoRelModule.setName("pmtoworel");
-		pmToWoRelModule.setDisplayName("PM To WO Rel");
-		pmToWoRelModule.setTableName("PM_To_WO");
-		
-		return pmToWoRelModule;
-	}
 	public static FacilioModule getDashboardModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard");

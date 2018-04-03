@@ -141,7 +141,7 @@ public class ReportExportUtil {
 			switch (field.getField().getDataTypeEnum()) {
 				case DATE_TIME: {
 					if (operator == DateAggregateOperator.MONTHANDYEAR) {
-						return DateTimeUtil.getFormattedTime((long)value, "MMM YYYY");
+						return DateTimeUtil.getFormattedTime((long)value, "MMMM yyyy");
 					}
 					return DateTimeUtil.getFormattedTime((long)value);
 				}

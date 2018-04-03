@@ -60,6 +60,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assignedTo = assignedTo;
 	}
 	
+	private User assignedBy;
+	public User getAssignedBy() {
+		return assignedBy;
+	}
+	public void setAssignedBy(User assignedBy) {
+		this.assignedBy = assignedBy;
+	}
+
 	private TicketStatusContext status;
 	public TicketStatusContext getStatus() {
 		return status;

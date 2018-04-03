@@ -326,7 +326,10 @@ public class PreventiveMaintenance {
 		}
 
 		public static TriggerType valueOf(int type) {
-			return TRIGGER_TYPES[type - 1];
+			if (type > 0 && type <= TRIGGER_TYPES.length) {
+				return TRIGGER_TYPES[type - 1];
+			}
+			return null;
 		}
 	}
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.bmsconsole.util.AdminAPI;
+import com.facilio.fw.LRUCache;
 import com.facilio.tasker.FacilioTimer;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -71,5 +72,13 @@ public class AdminAction extends ActionSupport
 		{
 			logger.log(Level.SEVERE, "Exception while adding job" +e.getMessage(), e);
 		}
+	}
+	
+	public String clearCache()
+	{
+		LRUCache.getFieldsCache().purgeCache();
+		LRUCache.getModuleFieldsCache().purgeCache();
+		System.out.println("Clear cache called");
+		return SUCCESS;
 	}
 }

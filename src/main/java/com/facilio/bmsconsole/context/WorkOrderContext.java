@@ -46,6 +46,14 @@ public class WorkOrderContext extends TicketContext {
 		return null;
 	}
 	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	private Boolean isWorkDurationChangeAllowed;
 	public Boolean getIsWorkDurationChangeAllowed() {
 		return isWorkDurationChangeAllowed;
@@ -60,6 +68,13 @@ public class WorkOrderContext extends TicketContext {
 		return false;
 	}
 	
+	private PreventiveMaintenance pm;
+	public PreventiveMaintenance getPm() {
+		return pm;
+	}
+	public void setPm(PreventiveMaintenance pm) {
+		this.pm = pm;
+	}
 	
 	public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp

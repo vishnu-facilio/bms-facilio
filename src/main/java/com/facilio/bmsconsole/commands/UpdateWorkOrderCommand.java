@@ -31,7 +31,6 @@ public class UpdateWorkOrderCommand implements Command {
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(workOrder != null && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
@@ -42,6 +41,8 @@ public class UpdateWorkOrderCommand implements Command {
 			List<WorkOrderContext> oldWos = getOldWOs(idCondition, fields);
 			List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 			
+			TicketAPI.updateTicketAssignedBy(workOrder);
+			updateWODetails(workOrder);
 			if(workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
 				workOrder.setStatus(TicketAPI.getStatus("Assigned"));
 			}
@@ -59,38 +60,6 @@ public class UpdateWorkOrderCommand implements Command {
 					newWos.add(newWo);
 					
 					TicketAPI.updateTicketStatus(newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
-					
-					/*if ("Work in Progress".equalsIgnoreCase(statusObj.getStatus())) {
-						if (oldWo.getActualWorkStart() != -1) {
-							newWo.setResumedWorkStart(System.currentTimeMillis());
-						}
-						else {
-							newWo.setActualWorkStart(System.currentTimeMillis());
-						}
-					}
-					else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
-							|| ("Closed".equalsIgnoreCase(statusObj.getStatus()) && oldWo.getStatus().getId() != TicketAPI.getStatus("Resolved").getId()) ) {
-
-						long estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldWo);
-						
-						if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-							newWo.setActualWorkEnd(System.currentTimeMillis());
-							if(newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()) ) {
-								long actualDuration = newWo.getActualWorkDuration() != -1 ? newWo.getActualWorkDuration() : newWo.getEstimatedWorkDuration();
-								newWo.setActualWorkDuration(actualDuration);
-								if (estimatedDuration == -1 && actualDuration != -1){
-									estimatedDuration = newWo.getActualWorkDuration();
-								}
-							}
-							else {
-								newWo.setActualWorkDuration(estimatedDuration);
-							}
-						}
-						
-						if (estimatedDuration != -1) {
-							newWo.setEstimatedWorkDuration(estimatedDuration);
-						}
-					}*/
 				}
 			}
 			
@@ -105,7 +74,6 @@ public class UpdateWorkOrderCommand implements Command {
 			for (WorkOrderContext wo : newWos) {
 				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 						.moduleName(moduleName)
-						.table(dataTableName)
 						.fields(fields);
 				
 				if (woCount > 1) {
@@ -121,7 +89,6 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			if(ActivityType.ASSIGN_TICKET == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) || ActivityType.CLOSE_WORK_ORDER == (ActivityType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
-						.table(dataTableName)
 						.moduleName(moduleName)
 						.beanClass(WorkOrderContext.class)
 						.select(fields)
@@ -153,6 +120,10 @@ public class UpdateWorkOrderCommand implements Command {
 			}
 		}
 		return true;
+	}
+	
+	private void updateWODetails (WorkOrderContext wo) {
+		wo.setModifiedTime(System.currentTimeMillis());
 	}
 	
 }
