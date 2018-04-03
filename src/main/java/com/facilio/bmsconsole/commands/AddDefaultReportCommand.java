@@ -29,7 +29,7 @@ public class AddDefaultReportCommand implements Command {
 		
 		try {
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean",orgId);
 			FacilioModule module = modBean.getModule(ContextNames.WORK_ORDER);
 			
 			paramValues.put("workOrderModuleId", String.valueOf(module.getModuleId()));
