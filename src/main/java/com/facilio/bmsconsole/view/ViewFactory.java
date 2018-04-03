@@ -36,7 +36,6 @@ import com.facilio.events.constants.EventConstants;
 
 public class ViewFactory {
 	
-	//private static Map<String, FacilioView> views = Collections.unmodifiableMap(initViews());
 	private static Map<String,Map<String,FacilioView>> views = Collections.unmodifiableMap(initializeViews());
 	public static FacilioView getView (String moduleName, String viewName) {
 		FacilioView view = getModuleViews(moduleName).get(viewName);
@@ -55,55 +54,6 @@ public class ViewFactory {
 		}
 		return moduleViews;
 	}
-	
-	/*private static Map<String, FacilioView> initViews() {
-		
-		Map<String, FacilioView> viewMap = new HashMap<>();
-		viewMap.put("workorderrequest-open", getOpenWorkorderRequests());
-		viewMap.put("workorderrequest-rejected", getRejectedWorkorderRequests());
-		
-		viewMap.put("workorder-open", getAllOpenWorkOrders());
-		viewMap.put("workorder-overdue", getAllOverdueWorkOrders());
-		viewMap.put("workorder-duetoday", getAllDueTodayWorkOrders());
-		viewMap.put("workorder-myopen", getMyOpenWorkOrders());
-		viewMap.put("workorder-myteamopen", getMyTeamOpenWorkOrders());
-		viewMap.put("workorder-unassigned", getUnassignedWorkorders());
-		viewMap.put("workorder-closed", getAllClosedWorkOrders());
-		viewMap.put("workorder-openfirealarms", getFireSafetyWOs());
-		viewMap.put("workorder-all", getAllWorkOrders());
-		
-		viewMap.put("workorder-myoverdue", getMyOverdueWorkOrders());
-		viewMap.put("workorder-myduetoday", getMyDueTodayWorkOrders());
-		viewMap.put("workorder-my", getMyWorkOrders());
-		viewMap.put("task-my", getMyTasks());
-		
-		viewMap.put("asset-energy", getAssets("Energy"));
-		viewMap.put("asset-hvac", getAssets("HVAC"));
-		viewMap.put("asset-active", getAssetsByState("Active"));
-		viewMap.put("asset-retired", getAssetsByState("Retired"));
-		
-		viewMap.put("event-today", getEvents("Today"));
-		viewMap.put("event-yesterday", getEvents("Yesterday"));
-		viewMap.put("event-thisweek", getEvents("ThisWeek"));
-		viewMap.put("event-lastweek", getEvents("LastWeek"));
-		
-		viewMap.put("alarm-active", getSeverityAlarms("active", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false));
-		viewMap.put("alarm-cleared", getSeverityAlarms("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true));
-		viewMap.put("alarm-critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true));
-		viewMap.put("alarm-major", getSeverityAlarms("major", "Major Alarms", "Major", true));
-		viewMap.put("alarm-minor", getSeverityAlarms("minor", "Minor Alarms", "Minor", true));
-		viewMap.put("alarm-myalarms", getMyAlarms());
-		viewMap.put("alarm-unassigned", getUnassignedAlarms());
-		viewMap.put("alarm-unacknowledged", getUnacknowledgedAlarms());
-		viewMap.put("alarm-fire", getTypeAlarms("fire", "Fire Alarms", AlarmType.FIRE));
-		viewMap.put("alarm-energy", getTypeAlarms("energy", "Energy Alarms", AlarmType.ENERGY));
-		viewMap.put("alarm-hvac", getTypeAlarms("hvac", "HVAC Alarms", AlarmType.HVAC));
-		
-		
-		//Add module name in field objects
-		
-		return viewMap;
-	}*/
 	
 	private static Map<String, Map<String, FacilioView>> initializeViews() {
 		Map<String, Map<String, FacilioView>> viewsMap = new HashMap<String, Map<String, FacilioView>>();
@@ -435,8 +385,18 @@ public class ViewFactory {
 		userFieldCondition.setField(userField);
 		userFieldCondition.setOperator(CommonOperators.IS_EMPTY);
 		
+		LookupField groupField = (LookupField) FieldFactory.getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", ModuleFactory.getWorkOrdersModule(), FieldType.LOOKUP);
+		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
+		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+		
+		Condition groupFieldCondition = new Condition();
+		groupFieldCondition.setField(groupField);
+		groupFieldCondition.setOperator(CommonOperators.IS_EMPTY);
+		
 		Criteria unassignedWOCriteria = new Criteria();
 		unassignedWOCriteria.addAndCondition(userFieldCondition);
+		unassignedWOCriteria.addAndCondition(groupFieldCondition);
+		unassignedWOCriteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
 		
 		FacilioView unassignedWOView = new FacilioView();
 		unassignedWOView.setName("unassigned");

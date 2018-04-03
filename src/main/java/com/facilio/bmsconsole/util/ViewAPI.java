@@ -192,7 +192,7 @@ public class ViewAPI {
 		return columns;
 	}
 	
-	public static long checkAndAddView(String viewName, String moduleName) throws Exception {
+	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns) throws Exception {
 		long viewId = -1;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		long moduleId = modBean.getModule(moduleName).getModuleId();
@@ -207,6 +207,13 @@ public class ViewAPI {
 				view.setDefault(true);
 				view.setModuleId(moduleId);
 				viewId = ViewAPI.addView(view, orgId);
+				if (columns == null || columns.isEmpty()) {
+					columns = view.getFields();
+					for(ViewField column: columns) {
+						Long fieldId = modBean.getField(column.getName(), moduleName).getFieldId();
+						column.setFieldId(fieldId);
+					}
+				}
 			}
 			else {
 				// For report-like view,  which wont be there in view db or view factory initially
@@ -218,8 +225,13 @@ public class ViewAPI {
 				view.setHidden(true);
 				viewId = ViewAPI.addView(view, orgId);
 			}
+			
 		} else {
 			viewId = view.getId();
+		}
+		
+		if (columns != null && !columns.isEmpty()) {
+			customizeViewColumns(viewId, columns);
 		}
 		return viewId;
 	}
