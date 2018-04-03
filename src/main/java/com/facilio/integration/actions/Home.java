@@ -18,6 +18,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -367,7 +369,14 @@ Pragma: no-cache
 			pstmt.setString(3, emailaddress);
 			pstmt.setString(4, password);
 			pstmt.executeUpdate();
-
+			
+			User user = new User();
+			user.setName(username);
+			user.setEmail(emailaddress);
+			
+			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+			userBean.addRequester(AccountUtil.getCurrentOrg().getId(), user);
+			
 		} catch (MySQLIntegrityConstraintViolationException e){
 			setJsonresponse("message", "Username exists for this portal");
 			return ERROR;
