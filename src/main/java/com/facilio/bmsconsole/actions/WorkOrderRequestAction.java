@@ -109,9 +109,9 @@ public class WorkOrderRequestAction extends ActionSupport {
 		
 		System.out.println("######## attachedFile : "+attachedFiles);
 		System.out.println("######## attachedFilesFileName : "+attachedFilesFileName);
-		System.out.println("######## workorderrequest : "+workorder_request);
-		if (workorder_request != null) {
-			setWorkorderrequest(workorder_request);
+		System.out.println("######## workorderrequest : "+workOrderRequestString);
+		if (workOrderRequestString != null) {
+			setWorkorderrequest(workOrderRequestString);
 		}
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
 		FacilioContext context = new FacilioContext();
@@ -188,15 +188,14 @@ public class WorkOrderRequestAction extends ActionSupport {
 	public void setWorkorderrequest(String workorder_request) {
 		this.workorderrequest = convert(workorder_request);
 	}
-
-	private String workorder_request;
-	public String getWorkorder_request() {
-		return workorder_request;
-	}
-	public void setWorkorder_request(String workorder_request) {
-		this.workorder_request = workorder_request;
-	}
+	private String workOrderRequestString;
 	
+	public String getWorkOrderRequestString() {
+		return workOrderRequestString;
+	}
+	public void setWorkOrderRequestString(String workOrderRequestString) {
+		this.workOrderRequestString = workOrderRequestString;
+	}
 	public WorkOrderRequestContext convert(String workOrderReqStr)
 	{
 		WorkOrderRequestContext wo = null;
