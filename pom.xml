@@ -21,13 +21,13 @@
 			<url>s3://repo.facilstack.com/snapshots</url>
         </repository>
     </repositories> -->
-	<repositories>
+	<!-- <repositories>
 		<repository>
 			<id>maven.aspose.com</id>
 			<name>maven.aspose.com-releases</name>
 			<url>http://maven.aspose.com/repository/ext-release-local</url>
 		</repository>
-	</repositories>
+	</repositories> -->
 
 	<dependencies>
 		<dependency>
@@ -54,11 +54,11 @@
 			<version>2.5.10</version>
 
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.aspose</groupId>
 			<artifactId>aspose-cells</artifactId>
 			<version>18.2</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-core</artifactId>
