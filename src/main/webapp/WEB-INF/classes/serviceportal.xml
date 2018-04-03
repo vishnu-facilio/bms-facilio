@@ -94,11 +94,8 @@
 			</result>
 		</action>
 
-		<action name="myrequests"
-				class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<param name="viewName">all</param>
+		<action name="myrequests" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="viewName">myrequests</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
 			</result>

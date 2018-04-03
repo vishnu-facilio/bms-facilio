@@ -113,6 +113,7 @@ public class ViewFactory {
 		views.put("open", getOpenWorkorderRequests().setOrder(order++));
 		views.put("all", getAllWorkRequests().setOrder(order++));
 		views.put("rejected", getRejectedWorkorderRequests().setOrder(order++));
+		views.put("myrequests", getMyWorkorderRequests().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, views);
 		
 		order = 1;
@@ -443,6 +444,35 @@ public class ViewFactory {
 		unassignedWOView.setCriteria(unassignedWOCriteria);
 		
 		return unassignedWOView;
+	}
+	
+	private static FacilioView getMyWorkorderRequests() {
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyRequestCondition(ModuleFactory.getWorkOrderRequestsModule()));
+		
+		FacilioView myRequestsView = new FacilioView();
+		myRequestsView.setName("myrequests");
+		myRequestsView.setDisplayName("My Work Requests");
+		myRequestsView.setCriteria(criteria);
+		return myRequestsView;
+	}
+	
+	private static Condition getMyRequestCondition(FacilioModule module) {
+		LookupField userField = new LookupField();
+		userField.setName("requester");
+		userField.setColumnName("REQUESTER_ID");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(module);
+		userField.setExtendedModule(ModuleFactory.getTicketsModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.REQUESTER);
+		
+		Condition myUserCondition = new Condition();
+		myUserCondition.setField(userField);
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+		
+		return myUserCondition;
 	}
 	
 	private static FacilioView getOpenWorkorderRequests() {
