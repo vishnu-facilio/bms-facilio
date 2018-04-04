@@ -413,13 +413,13 @@ public class LoginAction extends ActionSupport{
 			invitation.put("error", "link_expired");
 		}
 		else {
+			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			invitation.put("email", user.getEmail());
+			invitation.put("orgname", org.getName());
 			if(user.getPassword() == null) {
 				invitation.put("account_exists", false);
 			} else {
-				Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());				
 				invitation.put("account_exists", true);
-				invitation.put("orgname", org.getName());
 			}
             
 		}
