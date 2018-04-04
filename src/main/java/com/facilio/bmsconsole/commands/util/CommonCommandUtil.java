@@ -207,7 +207,7 @@ public class CommonCommandUtil {
 			JSONObject json = new JSONObject();
 			
 			json.put("sender", "error@facilio.com");
-			json.put("to", "manthosh@facilio.com");
+			json.put("to", "error@facilio.com");
 			StringBuilder subject = new StringBuilder();
 			
 			if(AwsUtil.getConfig("app.url").contains("localhost")) {
