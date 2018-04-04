@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,7 +39,9 @@ public class SessionManager {
 	public List<UserSession> getUserSessions(long uid) {
 		return this.sessions.get(String.valueOf(uid));
 	}
-	
+	public Set<String> getActiveUsers() {
+		return this.sessions.keySet();
+	}
 	public synchronized void removeUserSession(String sessionId) {
 		
 		logger.log(Level.INFO, "User session remove called. sid: "+sessionId);
@@ -84,6 +87,41 @@ public class SessionManager {
 		else {
 			logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
 		}
+	}
+	
+	public  void broadcast(Message message) {
+		
+		logger.log(Level.INFO, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
+	//	System.out.println("Send message called. from: "+message.getFrom()+" to: "+message.getTo());
+		
+		Set<String> activeusers =  getActiveUsers() ;
+		
+		Iterator iter = activeusers.iterator();
+		while (iter.hasNext()) {
+		    String touser =(String) iter.next();
+		    System.out.println("Message sent to "+touser);
+		    
+			List<UserSession> sessionList = getUserSessions(new Long(touser));
+			if (sessionList != null) {
+				logger.log(Level.INFO, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+touser);
+				for (UserSession us : sessionList) {
+					try {
+						message.setTo(new Long(touser));
+						us.sendMessage(message);
+					}
+					catch (Exception e) {
+						logger.log(Level.WARNING, "Send message failed. from: "+message.getFrom()+" to: "+message.getTo(), e);
+					}
+				}
+			}
+			else {
+				logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+			}
+		}
+		
+		
+		
+	
 	}
 	
 	public static class UserSession {

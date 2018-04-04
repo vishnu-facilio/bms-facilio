@@ -13,5 +13,8 @@
 
 <br><a href="clearcache"> Clear Cache</a>
 
+<br><a href="reloadbrowser"> ReLoad all users</a>
+
+
 </body>
 </html>

@@ -93,8 +93,16 @@ public class AdminAction extends ActionSupport
 	public String reloadBrowser()
 	{
 		Message message = new Message(MessageType.SYSTEM);
-		JSONObject messagejson = new JSONObject();
-		message.setContent(messagejson);
+		
+		
+		message.setNamespace("system");
+		message.setAction("reload");
+		//message.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+		message.addData("time", System.currentTimeMillis());
+		message.addData("sound", false);
+		
+	//	JSONObject messagejson = new JSONObject();
+	//	message.setContent(messagejson);
 		//WmsApi.sendChatMessage(to, message);
 		try {
 			WmsApi.broadCastMessage(message);
@@ -105,7 +113,6 @@ public class AdminAction extends ActionSupport
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Clear cache called");
 		return SUCCESS;
 	}
 	

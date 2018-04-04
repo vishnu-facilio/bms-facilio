@@ -50,7 +50,8 @@ public class WmsApi
 	
 	public static void broadCastMessage( Message message) throws IOException, EncodeException
 	{
-		List<Long> toList = new ArrayList<>();
+		
+		SessionManager.getInstance().broadcast(message);
 		System.out.println("Broad cast done..");
 	}
 	
