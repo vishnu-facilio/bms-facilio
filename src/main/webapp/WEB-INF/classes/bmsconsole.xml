@@ -991,6 +991,9 @@
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
+		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
+			<result name="success">/jsps/admin/showCache.jsp</result>
+		</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">
