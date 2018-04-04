@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,12 +8,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
+import com.amazonaws.protocol.json.JsonOperationMetadata;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.wms.message.Message;
+import com.facilio.wms.message.MessageType;
+import com.facilio.wms.message.WmsChatMessage;
+import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -81,4 +89,25 @@ public class AdminAction extends ActionSupport
 		System.out.println("Clear cache called");
 		return SUCCESS;
 	}
+	
+	public String reloadBrowser()
+	{
+		Message message = new Message(MessageType.SYSTEM);
+		JSONObject messagejson = new JSONObject();
+		message.setContent(messagejson);
+		//WmsApi.sendChatMessage(to, message);
+		try {
+			WmsApi.broadCastMessage(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EncodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Clear cache called");
+		return SUCCESS;
+	}
+	
 }
+
