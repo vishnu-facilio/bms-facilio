@@ -883,8 +883,13 @@ public class DashboardAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		if (scopeCriteria != null) {
+			builder.andCriteria(scopeCriteria);
+		}
+		
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-		if(permissionCriteria != null) {
+		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
 		
