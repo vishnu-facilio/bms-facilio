@@ -1408,7 +1408,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">SPACE_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="root">moduleMap</param>
+				<param name="includeProperties">moduleMap.*,moduleMap\[\d+\],moduleMap\[\d+\].*,spaces.*,spaces\[\d+\],spaces\[\d+\].*</param>
 			</result>
 		</action>
 		

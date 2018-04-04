@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -38,18 +39,7 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 		List<Long> ids = new ArrayList();
 		Map<Long, BaseSpaceContext> spaces = new HashMap<>();
 		SpaceType spaceType = null;
-		if(type.equalsIgnoreCase("Buildings"))
-		{
-			List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
-			for(int i=0; i<buildings.size();i++)
-			{
-				BuildingContext building = buildings.get(i);
-				ids.add(building.getId());
-				spaces.put(building.getId(), building);
-			}
-			spaceType = SpaceType.BUILDING;
-		}
-		else if(type.equalsIgnoreCase("Sites"))
+		if(type.equalsIgnoreCase("Sites"))
 		{
 			List<SiteContext> sites = SpaceAPI.getAllSites();
 			for(int i=0; i<sites.size();i++)
@@ -60,12 +50,51 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 			}
 			spaceType = SpaceType.SITE;
 		}
+		else if(type.equalsIgnoreCase("Buildings"))
+		{
+			List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+			List<Long> parentIdList = new ArrayList<>();
+			for(int i=0; i<buildings.size();i++)
+			{
+				BuildingContext building = buildings.get(i);
+				Long parentId = building.getSiteId();
+				parentIdList.add(parentId);
+			}
+			Map <Long, BaseSpaceContext > parentObjList = SpaceAPI.getBaseSpaceMap(parentIdList);
+			for(int i=0; i<buildings.size();i++)
+			{
+				BuildingContext building = buildings.get(i);
+				SiteContext site = new SiteContext();
+				site.setId(building.getSiteId());
+				String siteName = ((BaseSpaceContext)parentObjList.get(building.getSiteId())).getName();
+				site.setName(siteName);
+				building.setSite(site);
+				ids.add(building.getId());
+				spaces.put(building.getId(), building);
+			}
+			spaceType = SpaceType.BUILDING;
+
+		}
 		else if(type.equalsIgnoreCase("Floors"))
 		{
 			List<FloorContext> floors = SpaceAPI.getAllFloors();
+			List<Long> parentIdList = new ArrayList<>();
 			for(int i=0; i<floors.size();i++)
 			{
 				FloorContext floor = floors.get(i);
+				Long parentId = floor.getBuildingId();
+				parentIdList.add(parentId);
+			}
+			
+			Map <Long, BaseSpaceContext > parentObjList = SpaceAPI.getBaseSpaceMap(parentIdList);
+			for(int i=0; i<floors.size();i++)
+			{
+				FloorContext floor = floors.get(i);
+				BuildingContext building = new BuildingContext();
+				building.setId(floor.getBuildingId());
+				String buildingName = ((BaseSpaceContext)parentObjList.get(floor.getBuildingId())).getName();
+				building.setName(buildingName);
+				floor.setBuilding(building);
 				ids.add(floor.getId());
 				spaces.put(floor.getId(), floor);
 			}
@@ -86,33 +115,35 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 			System.out.println(">>>>>>>>>>>> props : "+props);
 			
 			List<FacilioModule> readings = new ArrayList<>();
-			Map<String,List<FacilioModule>> moduleMap = new HashMap<>();
+			Map<Long,List<FacilioModule>> moduleMap = new HashMap<>();
 			if(props != null && !props.isEmpty()) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				for(Map<String, Object> prop : props) {
-					System.out.println(">>>>>>>>>>>> prop : "+prop.containsKey("readingId"));
 					Long readingId = (Long) prop.get("readingId");
 					FacilioModule readingModule = modBean.getModule(readingId);
 					readings.add(readingModule);
 					Long spaceId = (Long)prop.get("spaceId");
 					BaseSpaceContext baseSpace = spaces.get(spaceId);
-					String name = baseSpace.getName();
-					List<FacilioModule> modList = moduleMap.get(name);
+					//String name = baseSpace.getName();
+					Long id = baseSpace.getId();
+					List<FacilioModule> modList = moduleMap.get(id);
 					if(modList == null) {
 						modList = new ArrayList<>();
-						System.out.print("#### Name : "+name+", modList : "+modList);
-						moduleMap.put(name, modList);
+						System.out.println("#### Name : "+id+", modList : "+modList);
+						moduleMap.put(id, modList);
 					}
 					modList.add(readingModule);
 				}
 			}
 			List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType);
 			if (defaultReadings != null) {
-				moduleMap.put("All", defaultReadings);
+				//moduleMap.put("All", defaultReadings);
+				moduleMap.put(-1L, defaultReadings);
 				readings.addAll(defaultReadings);
 			}
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
 			context.put(FacilioConstants.ContextNames.MODULE_MAP, moduleMap);
+			context.put(FacilioConstants.ContextNames.SPACES, spaces);
 
 		return false;
 	}

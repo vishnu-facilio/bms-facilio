@@ -182,7 +182,8 @@ public class FacilioConstants {
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
 		public static final String MODULE_LIST = "modules";
-		public static final String MODULE_MAP = "modulemap";
+		public static final String MODULE_MAP = "modulemap";	
+		public static final String SPACES = "spaces";
 		public static final String CATEGORY_READING_PARENT_MODULE = "categoryReadingParentModule";
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		public static final String PARENT_CATEGORY_IDS = "parentCategoryIds";

@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
@@ -427,12 +428,23 @@ public class ReadingAction extends ActionSupport {
 		getSpaceTypeReading.execute(context);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
+		spaces = (Map<Long, BaseSpaceContext>)context.get(FacilioConstants.ContextNames.SPACES);
 		System.out.println(">>>>>>> getAllSpaceTypeReadings.readings : "+readings);
 		System.out.println(">>>>>>> getAllSpaceTypeReadings.moduleMap : "+moduleMap);
+		System.out.println(">>>>>>> getAllSpaceTypeReadings.spaces : "+spaces);
 		return SUCCESS;
 	}
 	
+	Map<Long, BaseSpaceContext> spaces;
 	
+	public Map<Long, BaseSpaceContext> getSpaces() {
+		return spaces;
+	}
+
+	public void setSpaces(Map<Long, BaseSpaceContext> spaces) {
+		this.spaces = spaces;
+	}
+
 	public String getAllSpaceReadings() throws Exception {
 		
 		spaceCategoriesList();
