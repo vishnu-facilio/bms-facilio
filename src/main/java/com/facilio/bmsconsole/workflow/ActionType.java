@@ -656,12 +656,17 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context) {
 			
-			JSONArray slaPolicyJson = (JSONArray)obj.get("slaPolicyJson");
-			
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			if (workOrder.getPriority() == null) {
+				return;
+			}
+			if (workOrder.getDueDate() != -1) {
+				return;
+			}
 			long workorderpriority = workOrder.getPriority().getId();
 			Long duration = null ;
 			
+			JSONArray slaPolicyJson = (JSONArray)obj.get("slaPolicyJson");
 			Iterator iter = slaPolicyJson.iterator();
 			while(iter.hasNext())
 			{

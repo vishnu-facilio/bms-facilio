@@ -152,6 +152,16 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 	
+	public static FacilioModule getSLARuleModule() {
+		FacilioModule slarule = new FacilioModule();
+		slarule.setName("slarule");
+		slarule.setDisplayName("SLA Rule");
+		slarule.setTableName("SLA_Rule");
+		slarule.setExtendModule(getWorkflowRuleModule());
+		
+		return slarule;
+	}
+	
 	public static FacilioModule getWorkflowRuleActionModule() {
 		FacilioModule workflowRuleModule = new FacilioModule();
 		workflowRuleModule.setName("workflowruleaction");

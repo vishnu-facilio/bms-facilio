@@ -524,6 +524,17 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSLARuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getSLARuleModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getActionFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getActionModule();

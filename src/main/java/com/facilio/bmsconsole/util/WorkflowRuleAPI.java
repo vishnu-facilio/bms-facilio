@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -55,6 +56,9 @@ public class WorkflowRuleAPI {
 			case READING_RULE:
 			case PM_READING_RULE:
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				break;
+			case SLA_RULE:
+				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
 			default:
 				break;
@@ -340,6 +344,9 @@ public class WorkflowRuleAPI {
 				case PM_READING_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
+				case SLA_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -376,6 +383,10 @@ public class WorkflowRuleAPI {
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 						((ReadingRuleContext)workflow).setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
 						((ReadingRuleContext)workflow).setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
+						break;
+					case SLA_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						workflow = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
 						break;
 					default:
 						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
