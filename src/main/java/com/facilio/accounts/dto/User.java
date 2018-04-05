@@ -51,12 +51,12 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getCognitoId() {
+/*	public String getCognitoId() {
 		return cognitoId;
 	}
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
-	}
+	}*/
 	public String getPassword() {
 		return password;
 	}

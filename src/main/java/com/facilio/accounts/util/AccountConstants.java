@@ -814,12 +814,12 @@ public class AccountConstants {
 		name.setModule(module);
 		fields.add(name);
 
-		FacilioField cognitoId = new FacilioField();
+	/*	FacilioField cognitoId = new FacilioField();
 		cognitoId.setName("cognitoId");
 		cognitoId.setDataType(FieldType.STRING);
 		cognitoId.setColumnName("COGNITO_ID");
 		cognitoId.setModule(module);
-		fields.add(cognitoId);
+		fields.add(cognitoId);*/
 		
 		FacilioField password = new FacilioField();
 		password.setName("password");

@@ -82,7 +82,7 @@ public class LoginUtil {
 				User createUser = new User();
 				createUser.setName(cognitoUser.getName());
 				createUser.setEmail(cognitoUser.getEmail());
-				createUser.setCognitoId(cognitoUser.getCognitoId());
+			//	createUser.setCognitoId(cognitoUser.getCognitoId());
 				createUser.setUserVerified(true);
 				createUser.setTimezone(org.getTimezone());
 				createUser.setLanguage(locale.getLanguage());

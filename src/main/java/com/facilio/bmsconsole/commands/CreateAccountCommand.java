@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -17,6 +19,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class CreateAccountCommand implements Command {
 
@@ -26,6 +29,9 @@ public class CreateAccountCommand implements Command {
 		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 		
 		System.out.println("This is the map :- "+signupInfo);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
 		try {
 			String name = (String) signupInfo.get("name");
 			String email = (String) signupInfo.get("email");
@@ -65,7 +71,7 @@ public class CreateAccountCommand implements Command {
 			User user = new User();
 			user.setName(name);
 			user.setEmail(email);
-			user.setCognitoId(cognitoId);
+			//user.setCognitoId(cognitoId);
 			user.setUserVerified(false);
 			user.setTimezone(timezone);
 			user.setLanguage(locale.getLanguage());
@@ -83,13 +89,25 @@ public class CreateAccountCommand implements Command {
 			
 			context.put("orgId", orgId);
 			context.put("ouid", ouid);
+			
+			
+			conn =FacilioConnectionPool.getInstance().getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password,USERID) VALUES(?,?,?,?)");
+			pstmt.setString(1, email);
+			pstmt.setString(2, email);
+			pstmt.setString(3, password);
+			pstmt.setLong(4, ouid);
+
+			pstmt.executeUpdate();
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{
 			// it will get closed after chain completion
-			//con.close();
+			pstmt.close();
+			conn.close();
 		}
 		return false;
 	}
