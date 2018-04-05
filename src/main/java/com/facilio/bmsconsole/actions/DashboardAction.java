@@ -53,6 +53,8 @@ import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.context.WidgetWebContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -787,7 +789,7 @@ public class DashboardAction extends ActionSupport {
 			reportSpaceFilterContext.setBuildingId(buildingId);
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
 		}
-		if(module.getName().equals("workorder") || module.getName().equals("alarm")) {
+		if(module.getName().equals("workorder") || module.getName().equals("alarm") || module.getName().equals("workorderrequest")) {
 			reportData = getDataForTickets(reportContext, module, dateFilter, userFilterValues, baseLineId, criteriaId, energyMeterFilter);
 		}
 		else {
@@ -918,7 +920,6 @@ public class DashboardAction extends ActionSupport {
 					}
 					criteria.groupOrConditions(conditionList);
 				}
-				
 				builder.andCriteria(criteria);
 	 		}
 		}
@@ -1147,16 +1148,34 @@ public class DashboardAction extends ActionSupport {
 
 				Map<String, Object> thisMap = rs.get(i);
 	 			JSONObject component = new JSONObject();
-	 			if(thisMap!=null) {
-	 				if(thisMap.get("dummyField") != null) {
-	 					component.put("label", thisMap.get("dummyField"));
+	 			if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER_REQUEST) && xAxisField.getColumnName().equals("URGENCY")) {
+	 				if(thisMap!=null) {
+	 					
+	 					Object label = thisMap.get("label");
+	 					if(label == null) {
+	 						component.put("label", "Unknown");
+	 					}
+	 					else {
+	 						Integer intval = (Integer)label;
+	 						WORUrgency urgency = WorkOrderRequestContext.WORUrgency.getWORUrgency(intval);
+	 						component.put("label", urgency.getStringVal());
+	 					}
+	 					component.put("value", thisMap.get("value"));
+	 					res.add(component);
 	 				}
-	 				else {
-	 					Object lbl = thisMap.get("label");
-	 					component.put("label", lbl);
-	 				}
- 					component.put("value", thisMap.get("value"));
- 					res.add(component);
+	 			}
+	 			else {
+	 				if(thisMap!=null) {
+		 				if(thisMap.get("dummyField") != null) {
+		 					component.put("label", thisMap.get("dummyField"));
+		 				}
+		 				else {
+		 					Object lbl = thisMap.get("label");
+		 					component.put("label", lbl);
+		 				}
+	 					component.put("value", thisMap.get("value"));
+	 					res.add(component);
+		 			}
 	 			}
 		 	}
 			System.out.println("res -- "+res);

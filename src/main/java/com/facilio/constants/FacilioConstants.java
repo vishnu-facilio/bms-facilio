@@ -507,6 +507,7 @@ public class FacilioConstants {
 	public static class WorkOrderRquest{
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String CREATED_TIME = "createdTime";
+		public static final String URGENCY = "urgency";
 	}
 	public static class Job{
 		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";
