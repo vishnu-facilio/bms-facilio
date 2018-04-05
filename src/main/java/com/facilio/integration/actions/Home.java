@@ -346,7 +346,8 @@ Pragma: no-cache
 
 		JSONObject invitation = new LoginAction().acceptUserInvite(inviteToken);
 		if((Boolean) invitation.get("accepted") && emailaddress != null) {
-			User user = AccountUtil.getUserBean().getUser(emailaddress);
+			Long userid = (Long)invitation.get("userid");
+			User user = AccountUtil.getUserBean().getUser(userid);
 			if(user.getPassword() == null && password != null) {
 				user.setPassword(cryptWithMD5(password));
 				AccountUtil.getUserBean().updateUser(user);

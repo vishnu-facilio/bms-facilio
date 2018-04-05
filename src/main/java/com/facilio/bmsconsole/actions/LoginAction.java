@@ -421,7 +421,7 @@ public class LoginAction extends ActionSupport{
 			} else {
 				invitation.put("account_exists", true);
 			}
-            
+			invitation.put("userid", ouid);
 		}
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
@@ -443,6 +443,7 @@ public class LoginAction extends ActionSupport{
 		}
 		else {
 			boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
+			invitation.put("userid", ouid);
 			if (acceptStatus) {
 				user.setUserVerified(true);
 				AccountUtil.getUserBean().updateUser(user);

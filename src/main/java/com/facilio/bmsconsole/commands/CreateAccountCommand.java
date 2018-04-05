@@ -106,7 +106,10 @@ public class CreateAccountCommand implements Command {
 		}
 		finally{
 			// it will get closed after chain completion
+			if(pstmt!= null)
+			{
 			pstmt.close();
+			}
 			conn.close();
 		}
 		return false;
