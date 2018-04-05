@@ -288,6 +288,36 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
+	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {
+		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
+		updateWorkflowRuleChildIds(rule);
+		updateSLARule(rule, rule.getId());
+		deleteChildIdsForWorkflow(oldRule, rule);
+		
+		if (rule.getName() == null) {
+			rule.setName(oldRule.getName());
+		}
+		return rule;
+	}
+	
+	public static int updateSLARule(SLARuleContext slaRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getSLARuleFields());
+		
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule slaRuleModule = ModuleFactory.getSLARuleModule();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(fields)
+														.table(slaRuleModule.getTableName())
+														.innerJoin(workflowModule.getTableName())
+														.on(slaRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
+														.andCondition(CriteriaAPI.getIdCondition(ruleId, slaRuleModule));
+		
+		return updateBuilder.update(FieldUtil.getAsProperties(slaRule));
+	}
+	
 	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule) throws Exception {
 		ReadingRuleContext oldRule = (ReadingRuleContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleChildIds(rule);
@@ -387,6 +417,7 @@ public class WorkflowRuleAPI {
 					case SLA_RULE:
 						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
 						workflow = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
+						((SLARuleContext)workflow).setResource(ResourceAPI.getResource(((SLARuleContext)workflow).getResourceId()));
 						break;
 					default:
 						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
