@@ -48,7 +48,6 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
@@ -59,7 +58,7 @@ import com.facilio.workflows.context.WorkflowContext;
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -83,7 +82,7 @@ public enum ActionType {
 	SMS_NOTIFICATION(2)
 	{
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -106,7 +105,7 @@ public enum ActionType {
 	},
 	BULK_EMAIL_NOTIFICATION(3) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -145,7 +144,7 @@ public enum ActionType {
 	BULK_SMS_NOTIFICATION(4) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -184,7 +183,7 @@ public enum ActionType {
 	WEB_NOTIFICATION(5) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -214,7 +213,7 @@ public enum ActionType {
 	},
 	ADD_ALARM(6){
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 //			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
@@ -492,7 +491,7 @@ public enum ActionType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				if (obj != null) {
@@ -569,7 +568,7 @@ public enum ActionType {
 	},
 	EXECUTE_PM(8) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				long ruleId = (long) obj.get("rule.id");
@@ -607,7 +606,7 @@ public enum ActionType {
 	ASSIGNMENT_ACTION(9) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			// TODO Auto-generated method stub
 			long assignedToUserId = -1, assignGroupId = -1;
 			
@@ -654,7 +653,7 @@ public enum ActionType {
 	},
 	SLA_ACTION(10) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, Object currentRecord) {
 			
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			if (workOrder.getPriority() == null) {
@@ -720,7 +719,7 @@ public enum ActionType {
 		return val;
 	}
 	
-	abstract public void performAction(JSONObject obj, Context context);
+	abstract public void performAction(JSONObject obj, Context context, Object currentRecord);
 	
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -741,6 +740,6 @@ public enum ActionType {
 		JSONObject json = new JSONObject();
 		json.put("to", "+919840425388");
 		json.put("message", "hello world");
-		t.performAction(json, null);
+		t.performAction(json, null, null);
 	}
 }

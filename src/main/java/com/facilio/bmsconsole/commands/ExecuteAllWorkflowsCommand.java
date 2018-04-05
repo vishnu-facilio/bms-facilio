@@ -114,7 +114,7 @@ public class ExecuteAllWorkflowsCommand implements Command
 			context.put(FacilioConstants.ContextNames.CURRENT_RECORD, record);
 			for(ActionContext action : actions)
 			{
-				action.executeAction(placeHolders, context);
+				action.executeAction(placeHolders, context, record);
 			}
 		}
 	}

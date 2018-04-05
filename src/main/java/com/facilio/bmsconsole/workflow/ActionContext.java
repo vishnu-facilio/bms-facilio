@@ -101,14 +101,14 @@ public class ActionContext {
 		return false;
 	}
 	
-	public boolean executeAction(Map<String, Object> placeHolders, Context context) {
+	public boolean executeAction(Map<String, Object> placeHolders, Context context, Object currentRecord) {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
-			actionType.performAction(actionObj, context);
+			actionType.performAction(actionObj, context, currentRecord);
 		}
 		else {
 			try {
-				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context);
+				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRecord);
 				return true;
 			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				// TODO Auto-generated catch block
