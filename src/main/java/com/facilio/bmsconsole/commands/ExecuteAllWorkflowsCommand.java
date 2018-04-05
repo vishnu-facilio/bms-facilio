@@ -110,11 +110,9 @@ public class ExecuteAllWorkflowsCommand implements Command
 		long ruleId = rule.getId();
 		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), ruleId);
 		if(actions != null) {
-			context.put(FacilioConstants.ContextNames.CURRENT_WORKFLOW_RULE, rule);
-			context.put(FacilioConstants.ContextNames.CURRENT_RECORD, record);
 			for(ActionContext action : actions)
 			{
-				action.executeAction(placeHolders, context, record);
+				action.executeAction(placeHolders, context, rule, record);
 			}
 		}
 	}

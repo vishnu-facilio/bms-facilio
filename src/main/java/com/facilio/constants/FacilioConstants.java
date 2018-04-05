@@ -87,7 +87,6 @@ public class FacilioConstants {
 	public static class ContextNames {
 		
 		public static final String SIGNUP_INFO = "signupinfo";
-		public static final String CURRENT_RECORD = "currentRecord";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
@@ -374,7 +373,6 @@ public class FacilioConstants {
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
 		public static final String WORKFLOW_RULE="workflowRule";
-		public static final String CURRENT_WORKFLOW_RULE="currentWorkflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
 		public static final String READING_RULE_LIST ="readingRules";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";

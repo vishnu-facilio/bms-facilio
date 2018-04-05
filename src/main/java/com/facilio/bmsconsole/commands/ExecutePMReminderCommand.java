@@ -35,7 +35,7 @@ public class ExecutePMReminderCommand implements Command {
 				CommonCommandUtil.appendModuleNameInKey(null, "pm", FieldUtil.getAsProperties(pm), placeHolders);
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-				action.executeAction(placeHolders, null, null);
+				action.executeAction(placeHolders, null, null, null);
 			}
 		}
 		

@@ -101,14 +101,14 @@ public class ActionContext {
 		return false;
 	}
 	
-	public boolean executeAction(Map<String, Object> placeHolders, Context context, Object currentRecord) {
+	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
-			actionType.performAction(actionObj, context, currentRecord);
+			actionType.performAction(actionObj, context, currentRule, currentRecord);
 		}
 		else {
 			try {
-				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRecord);
+				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
 				return true;
 			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				// TODO Auto-generated catch block
