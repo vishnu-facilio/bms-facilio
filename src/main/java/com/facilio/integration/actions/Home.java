@@ -351,6 +351,27 @@ Pragma: no-cache
 			if(user.getPassword() == null && password != null) {
 				user.setPassword(cryptWithMD5(password));
 				AccountUtil.getUserBean().updateUser(user);
+				
+				
+				Connection conn =FacilioConnectionPool.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password,USERID) VALUES(?,?,?,?)");
+				try {
+					pstmt.setString(1, emailaddress);
+					pstmt.setString(2, emailaddress);
+					pstmt.setString(3, cryptWithMD5(password));
+					pstmt.setLong(4, userid);
+
+					pstmt.executeUpdate();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				finally
+				{
+					pstmt.close();
+					conn.close();
+				}
+				
 			}
             return SUCCESS;
 		} else {
