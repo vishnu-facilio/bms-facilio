@@ -261,7 +261,7 @@ public class User {
 		if(getAccessibleSpace() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
 		{
 			Condition condition = new Condition();
 			condition.setColumnName("RESOURCE_ID");
