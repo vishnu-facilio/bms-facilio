@@ -264,7 +264,12 @@ public class User {
 		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
 		{
 			Condition condition = new Condition();
-			condition.setColumnName("RESOURCE_ID");
+			if (moduleName.equals("planned")) {
+				condition.setColumnName("Workorder_Template.RESOURCE_ID");
+			}
+			else {
+				condition.setColumnName("RESOURCE_ID");
+			}
 			condition.setFieldName("resourceId");
 			condition.setOperator(BuildingOperator.BUILDING_IS);
 			condition.setValue(StringUtils.join(accessibleSpace, ","));

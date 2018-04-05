@@ -40,12 +40,22 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
 		if(scopeCriteria != null) {
-			criteria.andCriteria(scopeCriteria);
+			if (criteria == null) {
+				criteria = scopeCriteria;
+			}
+			else {
+				criteria.andCriteria(scopeCriteria);
+			}
 		}
 		
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
 		if(permissionCriteria != null) {
-			criteria.andCriteria(permissionCriteria);
+			if (criteria == null) {
+				criteria = scopeCriteria;
+			}
+			else {
+				criteria.andCriteria(permissionCriteria);
+			}
 		}
 		
 		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

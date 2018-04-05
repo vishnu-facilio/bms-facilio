@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
@@ -45,6 +46,16 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			filterCriteria = new Criteria();
 		}
 		filterCriteria.addAndCondition(triggerCondition);
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
+		if(scopeCriteria != null) {
+			filterCriteria.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
+		if(permissionCriteria != null) {
+			filterCriteria.andCriteria(permissionCriteria);
+		}
+		
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(filterCriteria);
 		if(pms != null && !pms.isEmpty()) 
 		{
