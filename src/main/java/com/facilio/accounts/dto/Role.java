@@ -95,7 +95,7 @@ public class Role {
 		if(getPermissions() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
 		{	
 			for (Permissions perm : permissions) {
 				if (perm.getModuleName().equals(moduleName)) {

@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.KinesisProcessor;
+import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
@@ -119,8 +120,7 @@ public class FacilioContextListener implements ServletContextListener {
 				e.printStackTrace();
 			}
 
-			
-
+PortalAuthInterceptor.PORTALDOMAIN = event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 //			FacilioTimer.schedulePeriodicJob(2, "suresh", 30, 300, "system");
 			
 //			ScheduleInfo schedule = new ScheduleInfo();
