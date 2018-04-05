@@ -261,7 +261,7 @@ public class User {
 		if(getAccessibleSpace() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm"))
 		{
 			Condition condition = new Condition();
 			if (moduleName.equals("planned")) {
