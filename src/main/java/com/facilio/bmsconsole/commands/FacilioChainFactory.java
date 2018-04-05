@@ -492,6 +492,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new getRelatedEvents());
 		addCleanUpCommand(c);
 		return c;
 	}
