@@ -58,7 +58,7 @@ import com.facilio.workflows.context.WorkflowContext;
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -82,7 +82,7 @@ public enum ActionType {
 	SMS_NOTIFICATION(2)
 	{
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -105,7 +105,7 @@ public enum ActionType {
 	},
 	BULK_EMAIL_NOTIFICATION(3) {
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -144,7 +144,7 @@ public enum ActionType {
 	BULK_SMS_NOTIFICATION(4) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -183,7 +183,7 @@ public enum ActionType {
 	WEB_NOTIFICATION(5) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -213,7 +213,7 @@ public enum ActionType {
 	},
 	ADD_ALARM(6){
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 //			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
@@ -226,9 +226,8 @@ public enum ActionType {
 					}
 					obj.put("alarmType", 5);
 					
-					WorkflowRuleContext currentRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.CURRENT_WORKFLOW_RULE);
 					if (currentRule instanceof ReadingRuleContext) {
-						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) context.get(FacilioConstants.ContextNames.CURRENT_RECORD));
+						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) currentRecord);
 					}
 					
 					FacilioContext addEventContext = new FacilioContext();
@@ -491,7 +490,7 @@ public enum ActionType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				if (obj != null) {
@@ -568,7 +567,7 @@ public enum ActionType {
 	},
 	EXECUTE_PM(8) {
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				long ruleId = (long) obj.get("rule.id");
@@ -606,7 +605,7 @@ public enum ActionType {
 	ASSIGNMENT_ACTION(9) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			long assignedToUserId = -1, assignGroupId = -1;
 			
@@ -653,7 +652,7 @@ public enum ActionType {
 	},
 	SLA_ACTION(10) {
 		@Override
-		public void performAction(JSONObject obj, Context context, Object currentRecord) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 			if (workOrder.getPriority() == null) {
@@ -719,7 +718,7 @@ public enum ActionType {
 		return val;
 	}
 	
-	abstract public void performAction(JSONObject obj, Context context, Object currentRecord);
+	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord);
 	
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -740,6 +739,6 @@ public enum ActionType {
 		JSONObject json = new JSONObject();
 		json.put("to", "+919840425388");
 		json.put("message", "hello world");
-		t.performAction(json, null, null);
+		t.performAction(json, null, null, null);
 	}
 }
