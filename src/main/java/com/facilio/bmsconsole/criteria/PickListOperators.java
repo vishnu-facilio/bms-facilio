@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
@@ -21,7 +23,7 @@ public enum PickListOperators implements Operator<String> {
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-				if(value.contains(",")) {
+				if(value.contains(",") || value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(columnName)
 							.append(" IN (");
@@ -58,7 +60,7 @@ public enum PickListOperators implements Operator<String> {
 						.append(fieldName)
 						.append(" IS NULL OR ")
 						.append(fieldName);
-				if(value.contains(",")) {
+				if(value.contains(",") || value.trim().equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 					builder.append(" NOT IN (");
 					replaceLoggedUserInMultpleValues(builder, value);
 					builder.append(")");
@@ -105,18 +107,40 @@ public enum PickListOperators implements Operator<String> {
 		if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 			return new PickListPredicate(FacilioConstants.Criteria.LOGGED_IN_USER_ID);
 		}
+		else if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+			return new PickListPredicate(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP_ID);
+		}
 		else {
 			return new PickListPredicate(Long.parseLong(value));
 		}
 	}
 	
 	private static void replaceLoggedUserInMultpleValues(StringBuilder builder, String value) {
-		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+		if(value.contains(FacilioConstants.Criteria.LOGGED_IN_USER) || value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 			String[] values = value.trim().split("\\s*,\\s*");
 			for(int i=0; i<values.length; i++) {
 				String val = values[i];
 				if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 					val = "?";
+				}
+				else if (val.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+					StringBuilder groupBuilder = new StringBuilder();
+					try {
+						int count = 1;
+						List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+						if (groups != null && !groups.isEmpty()) {
+							count = groups.size();
+						}
+						for(int j=0; j< count; j++) {
+							if(j != 0) {
+								builder.append(", ");
+							}
+							builder.append("?");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					val = groupBuilder.toString();
 				}
 				if(i != 0) {
 					builder.append(", ");
@@ -147,6 +171,9 @@ public enum PickListOperators implements Operator<String> {
 			List<Object> objs = new ArrayList<>();
 			objs.add(AccountUtil.getCurrentUser().getId());
 			return objs;
+		}
+		else if (value.contains(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+			return (List<Object>) getLoggedInUserGroupIds();
 		}
 		else {
 			return null;
@@ -208,6 +235,9 @@ public enum PickListOperators implements Operator<String> {
 					if(id == FacilioConstants.Criteria.LOGGED_IN_USER_ID) {
 						return currentId == AccountUtil.getCurrentUser().getId();
 					}
+					else if(id == FacilioConstants.Criteria.LOGGED_IN_USER_GROUP_ID) {
+						return getLoggedInUserGroupIds().contains(currentId);
+					}
 					else {
 						return currentId == id;
 					}
@@ -218,5 +248,21 @@ public enum PickListOperators implements Operator<String> {
 			}
 			return false;
 		}
+	}
+	
+	private static List<? extends Object> getLoggedInUserGroupIds () {
+		List<Long> ids = null;
+		try {
+			List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+			if (myGroups != null && !myGroups.isEmpty()) {
+				ids = myGroups.stream().map(Group::getId).collect(Collectors.toList());
+			}
+			else {
+				ids = Collections.singletonList(-100L);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ids;
 	}
 }

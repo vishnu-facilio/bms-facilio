@@ -6,8 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -739,8 +737,8 @@ public class ViewFactory {
 		groupField.setModule(module);
 		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
 		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
-				
-		String groupIds = "";
+		
+		/*String groupIds = "";
 		try {
 			List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 			if (myGroups != null) {
@@ -757,12 +755,12 @@ public class ViewFactory {
 		}
 		if (groupIds.equals("")) {
 			groupIds = "-100";
-		}
+		}*/
 		
 		Condition myTeamCondition = new Condition();
 		myTeamCondition.setField(groupField);
 		myTeamCondition.setOperator(PickListOperators.IS);
-		myTeamCondition.setValue(groupIds);
+		myTeamCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP);
 		
 		return myTeamCondition;
 	}

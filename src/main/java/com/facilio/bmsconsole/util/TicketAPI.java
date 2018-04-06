@@ -393,6 +393,7 @@ public class TicketAPI {
 					ticket.setResumedWorkStart(System.currentTimeMillis());
 				}
 				else {
+					assignTicketToCurrentUser(ticket, oldTicket);
 					ticket.setActualWorkStart(System.currentTimeMillis());
 				}
 			}
@@ -421,6 +422,29 @@ public class TicketAPI {
 			}
 		}
 		
+	}
+	
+	private static void assignTicketToCurrentUser(TicketContext ticket, TicketContext oldTicket) {
+		if (oldTicket.getAssignedTo() == null) {
+			User currentUser = AccountUtil.getCurrentUser();
+			ticket.setAssignedTo(currentUser);
+			ticket.setAssignedBy(currentUser);
+			if (oldTicket.getAssignmentGroup() != null) {
+				List<Long> ids = new ArrayList<Long>();
+				try {
+					List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+					if (myGroups != null && !myGroups.isEmpty()) {
+						ids = myGroups.stream().map(Group::getId).collect(Collectors.toList());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				if (!ids.contains(oldTicket.getAssignmentGroup().getId())) {
+					ticket.setAssignmentGroup(new Group());
+				}
+			}
+		}
 	}
 	
 public static Map<Long, TicketContext> getTickets(String ids) throws Exception {

@@ -890,6 +890,14 @@ public class FieldFactory {
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 		fields.add(statusField);
 		
+		LookupField groupField = (LookupField) getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", module, FieldType.LOOKUP);
+		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+		fields.add(groupField);
+		
+		LookupField userField = (LookupField) getField("assignedTo", "ASSIGNED_TO_ID", module, FieldType.LOOKUP);
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(userField);
+		
 		return fields;
 	}
 
@@ -3285,6 +3293,7 @@ public class FieldFactory {
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+//		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		fields.add(getField("basedOn", "BASED_ON", module, FieldType.STRING));
 		
 		return fields;
