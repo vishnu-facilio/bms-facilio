@@ -35,7 +35,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			System.out.println("intercept() : arg0 :"+arg0);
 
 			HttpServletRequest request = ServletActionContext.getRequest();
-			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request);
+			CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request,false);
 			Account currentAccount = null;
 			if (! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				try {

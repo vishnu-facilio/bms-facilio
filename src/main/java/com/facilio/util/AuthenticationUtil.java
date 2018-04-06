@@ -9,8 +9,16 @@ import com.facilio.fw.auth.LoginUtil;
 
 public class AuthenticationUtil {
 
-    public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request) throws Exception {
-        String facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+    public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
+        String facilioToken = null;
+        if(isPortaluser)
+        {
+        	facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilioportal");
+        }
+        else
+        {
+        	facilioToken = LoginUtil.getUserCookie(request, "fc.idToken.facilio");
+        }
         String headerToken = request.getHeader("Authorization");
 
         if (facilioToken != null || headerToken != null) {

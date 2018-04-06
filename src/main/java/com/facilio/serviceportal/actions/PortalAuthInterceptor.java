@@ -94,8 +94,9 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
 		CognitoUtil.CognitoUser cognitoUser = null;
 		Account currentAccount = null;
+		System.out.println("Getting portal auth info");
 		try {
-			cognitoUser = AuthenticationUtil.getCognitoUser(request);
+			cognitoUser = AuthenticationUtil.getCognitoUser(request,true);
 			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
@@ -142,6 +143,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							AccountUtil.cleanCurrentAccount();
 							AccountUtil.setCurrentAccount(currentAccount);
 						}
+					}
+					else
+					{
+						System.out.println("Match failed ......");
 					}
 				}
 			}
