@@ -1,12 +1,18 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.ViewSharingContext;
+import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -31,7 +37,9 @@ public class ViewAPI {
 	
 	public static List<FacilioView> getAllViews(long moduleId, long orgId) throws Exception {
 		
-		List<FacilioView> views = new ArrayList<>();
+		//List<FacilioView> views = new ArrayList<>();
+		Map<Long, FacilioView> viewMap = new HashMap<>();
+		List<Long> viewIds = new ArrayList<>();
 		try 
 		{
 			FacilioModule module = ModuleFactory.getViewsModule();
@@ -50,7 +58,10 @@ public class ViewAPI {
 			List<Map<String, Object>> viewProps = builder.get();
 			for(Map<String, Object> viewProp : viewProps) 
 			{
-				views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
+				//views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
+				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
+				viewMap.put(view.getId(), view);
+				viewIds.add(view.getId());
 			}
 		} 
 		catch (Exception e) 
@@ -58,7 +69,53 @@ public class ViewAPI {
 			e.printStackTrace();
 			throw e;
 		}
-		return views;
+		return getFilteredViews(viewMap, viewIds);
+	}
+	
+	public static List<FacilioView> getFilteredViews(Map<Long, FacilioView> viewMap, List<Long> viewIds) throws Exception {
+		
+		List<FacilioView> viewList = new ArrayList<FacilioView>();
+		if (!viewMap.isEmpty()) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getViewSharingFields())
+					.table(ModuleFactory.getViewSharingModule().getTableName())
+					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+					.andCondition(CriteriaAPI.getCondition("VIEW_Sharing.VIEWID", "viewId", StringUtils.join(viewIds, ","), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop : props) {
+					ViewSharingContext viewSharing = FieldUtil.getAsBeanFromMap(prop, ViewSharingContext.class);
+					if (viewIds.contains(viewSharing.getViewId())) {
+						viewIds.remove(viewSharing.getViewId());
+					}
+					if(!viewList.contains(viewMap.get(viewSharing.getViewId()))) {
+						if (viewSharing.getSharingTypeEnum().equals(SharingType.USER) && viewSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+							viewList.add(viewMap.get(viewSharing.getViewId()));
+						}
+						else if (viewSharing.getSharingTypeEnum().equals(SharingType.ROLE) && viewSharing.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId()) {
+							viewList.add(viewMap.get(viewSharing.getViewId()));
+						}
+						else if (viewSharing.getSharingTypeEnum().equals(SharingType.GROUP)) {
+							List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentAccount().getUser().getOuid());
+							for (Group group : mygroups) {
+								if (viewSharing.getGroupId() == group.getGroupId() && !viewList.contains(viewMap.get(viewSharing.getViewId()))) {
+									viewList.add(viewMap.get(viewSharing.getViewId()));
+								}
+							}
+						}
+					}
+				}
+				for (Long viewId : viewIds) {
+					viewList.add(viewMap.get(viewId));
+				}
+			}
+			else {
+				viewList.addAll(viewMap.values());
+			}
+		}
+		return viewList;
 	}
 	
 	public static FacilioView getView(String name, long moduleId, long orgId) throws Exception {
