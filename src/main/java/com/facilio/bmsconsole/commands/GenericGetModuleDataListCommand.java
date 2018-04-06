@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -54,6 +55,12 @@ public class GenericGetModuleDataListCommand implements Command {
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 		if (searchCriteria != null) {
 			builder.andCriteria(searchCriteria);
+		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
 		}
 		
 		/*if(view != null) {

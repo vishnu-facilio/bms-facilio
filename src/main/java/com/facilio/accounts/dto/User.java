@@ -277,6 +277,16 @@ public class User {
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
 		}
+		if(moduleName.equals("asset")) {
+			Condition condition = new Condition();
+			condition.setColumnName("SPACE_ID");
+			condition.setFieldName("spaceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
 		return criteria;
 	}
 }
