@@ -375,7 +375,12 @@ public class FacilioAuthAction extends ActionSupport {
                 invitation.put("status", "success");
             }
         } else {
-            User user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
+            User user;
+            if(portalId() > 0) {
+                user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
+            } else {
+                user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
+            }
             if(user != null) {
                 AccountUtil.getUserBean().sendResetPasswordLink(user);
                 invitation.put("status", "success");
