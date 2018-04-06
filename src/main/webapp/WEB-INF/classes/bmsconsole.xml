@@ -52,7 +52,7 @@
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
-		<action name="validateInviteLink" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
 			<result name="success" type="json">
@@ -66,14 +66,14 @@
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
-		<action name="validateRegistration" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="verifyEmail">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
-		<action name="fresetPassword" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="resetPassword">
 			<param name="auth">false</param>
 			<result name="success" type="json">

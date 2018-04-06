@@ -442,7 +442,7 @@ public class LoginAction extends ActionSupport{
 			invitation.put("error", "link_expired");
 		}
 		else {
-			boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
+			boolean acceptStatus = true;//AccountUtil.getUserBean().acceptInvite(ouid, null);
 			invitation.put("userid", ouid);
 			if (acceptStatus) {
 				user.setUserVerified(true);
@@ -512,7 +512,7 @@ public class LoginAction extends ActionSupport{
 		} else {
 			User user = AccountUtil.getUserBean().getUser(getEmailaddress());
 			if(user != null) {
-				AccountUtil.getUserBean().sendResetPassword(user);
+				AccountUtil.getUserBean().sendResetPasswordLink(user);
 				invitation.put("status", "success");
 			} else {
 				invitation.put("status", "failed");

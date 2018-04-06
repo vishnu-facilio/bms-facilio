@@ -1,5 +1,8 @@
 package com.facilio.accounts.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +31,12 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class UserBeanImpl implements UserBean {
+
+	private static final long INVITE_LINK_EXPIRE_TIME = (7 * 24 * 60 * 60 * 1000L);
+	private static final String USER_TOKEN_REGEX = "#";
 
 	private long getUid(String email) throws Exception {
 		
@@ -37,16 +44,39 @@ public class UserBeanImpl implements UserBean {
 		uid.setName("uid");
 		uid.setDataType(FieldType.NUMBER);
 		uid.setColumnName("USERID");
-		uid.setModule(AccountConstants.getUserModule());
+		uid.setModule(AccountConstants.getFacilioUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(uid);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(AccountConstants.getUserModule().getTableName())
-				.andCustomWhere("EMAIL = ?", email);
+				.table(AccountConstants.getFacilioUserModule().getTableName())
+				.andCustomWhere("email = ?", email);
 		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return (long) props.get(0).get("uid");
+		}
+		return -1;
+	}
+
+	private long getPortalUid(long portalId, String email) throws Exception {
+
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.NUMBER);
+		uid.setColumnName("USERID");
+		uid.setModule(AccountConstants.getPortalUserModule());
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(uid);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(AccountConstants.getPortalUserModule().getTableName())
+				.andCustomWhere("email = ? and PORTALID = ?", email, portalId);
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("uid");
@@ -67,22 +97,56 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
+		long userId = (Long) props.get("id");
+		user.setUid(userId);
 		if(emailVerificationRequired) {
-			sendEmailRegistration(user.getOrgId(), user);
+			sendEmailRegistration(user);
 		}
-		return (Long) props.get("id");
+		addFacilioUser(user);
+		return userId;
+	}
+
+	private void addFacilioUser(User user){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = FacilioConnectionPool.getInstance().getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, password, USERID) VALUES(?,?,?,?)");
+			pstmt.setString(1, user.getEmail());
+			pstmt.setString(2, user.getEmail());
+			pstmt.setString(3, user.getPassword());
+			pstmt.setLong(4, user.getUid());
+			pstmt.executeUpdate();
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt!= null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public boolean updateUser(User user) throws Exception {
-		return updateUserEntry(user.getEmail(), user);
+		return updateUserEntry(user);
 	}
 
-	private boolean updateUserEntry(String email, User user) throws Exception {
+	private boolean updateUserEntry(User user) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getUserModule().getTableName())
 				.fields(AccountConstants.getUserFields())
-				.andCustomWhere("EMAIL = ?", email);
+				.andCustomWhere("USERID = ?", user.getUid());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
@@ -95,7 +159,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long createUser(long orgId, User user) throws Exception {
 		
-		User orgUser = getUser(orgId, user.getEmail());
+		User orgUser = getFacilioUser(orgId, user.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -124,14 +188,13 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
-		long ouid = (Long) props.get("id");
-		return ouid;
+		return (Long) props.get("id");
 	}
 
 	@Override
 	public long inviteUser(long orgId, User user) throws Exception {
 		
-		User orgUser = getUser(orgId, user.getEmail());
+		User orgUser = getFacilioUser(orgId, user.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
 				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
@@ -165,23 +228,38 @@ public class UserBeanImpl implements UserBean {
 		long ouid = (Long) props.get("id");
 		user.setOuid(ouid);
 		
-		sendInvitation(orgId, ouid, user);
+		sendInvitation(ouid, user);
 		addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 
 		return ouid;
 	}
 
-	private String getEncodedToken(String value) {
-		return EncryptionUtil.encode(value + "#" + System.currentTimeMillis());
+	private User getUserFromToken(String userToken){
+		String token = EncryptionUtil.decode(userToken);
+		String[] userObj = token.split(USER_TOKEN_REGEX);
+		User user = null;
+		if(userObj.length == 4) {
+			user = new User();
+			user.setOuid(Long.parseLong(userObj[0]));
+			user.setUid(Long.parseLong(userObj[1]));
+			user.setEmail(userObj[2]);
+			user.setInvitedTime(Long.parseLong(userObj[3]));
+		}
+		return user;
 	}
 
-	private String getUserLink(String value, String url) {
-		String inviteToken = getEncodedToken(value);
+	private String getEncodedToken(User user) {
+		return EncryptionUtil.encode(user.getOuid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+	}
+
+	private String getUserLink(User user, String url) {
+		String inviteToken = getEncodedToken(user);
 		return AwsUtil.getConfig("clientapp.url") + url + inviteToken;
 	}
 	
-	private boolean sendInvitation(long orgId, long ouid, User user) throws Exception {
-		String inviteLink = getUserLink(""+ouid,  "/app/invitation/");
+	private void sendInvitation(long ouid, User user) throws Exception {
+		user.setOuid(ouid);
+		String inviteLink = getUserLink(user,"/app/invitation/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
@@ -189,12 +267,11 @@ public class UserBeanImpl implements UserBean {
 		placeholders.put("invitelink", inviteLink);
 		
 		AccountEmailTemplate.INVITE_USER.send(placeholders);
-		return true;
 	}
 	
-	public boolean sendResetPassword(User user) throws Exception {
+	public boolean sendResetPasswordLink(User user) throws Exception {
 
-		String inviteLink = getUserLink(user.getEmail(), "/app/fconfirm_reset_password/");
+		String inviteLink = getUserLink(user, "/app/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
@@ -203,15 +280,64 @@ public class UserBeanImpl implements UserBean {
 		return true;
 	}
 	
-	private boolean sendEmailRegistration(long orgId, User user) throws Exception {
-			String inviteLink = getUserLink(user.getEmail(), "/app/emailregistration/");
-			Map<String, Object> placeholders = new HashMap<>();
-			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
-			placeholders.put("invitelink", inviteLink);
-			
-			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
-			return true;
+	private void sendEmailRegistration(User user) throws Exception {
+		String inviteLink = getUserLink(user, "/app/emailregistration/");
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("invitelink", inviteLink);
+
+		AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+	}
+
+	@Override
+	public User verifyEmail(String token){
+		User user = getUserFromToken(token);
+
+		if(user != null) {
+			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
+				try {
+					user.setUserVerified(true);
+					updateUser(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return user;
+			}
 		}
+		return null;
+	}
+
+	@Override
+	public User resetPassword(String token, String password){
+		User user = getUserFromToken(token);
+
+		if(user != null) {
+			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
+				try {
+					user.setPassword(password);
+					updateUser(user);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return user;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public User validateUserInvite(String token){
+		User user = getUserFromToken(token);
+		if(user != null){
+			try {
+				user = getUser(user.getOuid());
+			} catch (Exception e) {
+				user = null;
+			}
+		}
+		return user;
+	}
+
 	@Override
 	public boolean resendInvite(long ouid) throws Exception {
 		
@@ -240,43 +366,51 @@ public class UserBeanImpl implements UserBean {
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
-			sendInvitation(user.getOrgId(), ouid, user);
+			sendInvitation(ouid, user);
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean acceptInvite(long ouid, String cognitoId) throws Exception {
-		
-		FacilioField inviteAcceptStatus = new FacilioField();
-		inviteAcceptStatus.setName("inviteAcceptStatus");
-		inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
-		inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
-		inviteAcceptStatus.setModule(AccountConstants.getOrgUserModule());
-		
-		FacilioField isDefaultOrg = new FacilioField();
-		isDefaultOrg.setName("isDefaultOrg");
-		isDefaultOrg.setDataType(FieldType.BOOLEAN);
-		isDefaultOrg.setColumnName("ISDEFAULT");
-		isDefaultOrg.setModule(AccountConstants.getOrgUserModule());
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(inviteAcceptStatus);
-		fields.add(isDefaultOrg);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORG_USERID = ?", ouid);
+	public boolean acceptInvite(String token, String password) throws Exception {
 
-		Map<String, Object> props = new HashMap<>();
-		props.put("inviteAcceptStatus", true);
-		props.put("isDefaultOrg", true);
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
+		User user = getUserFromToken(token);
+
+		if(user != null) {
+			FacilioField inviteAcceptStatus = new FacilioField();
+			inviteAcceptStatus.setName("inviteAcceptStatus");
+			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
+			inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
+			inviteAcceptStatus.setModule(AccountConstants.getOrgUserModule());
+
+			FacilioField isDefaultOrg = new FacilioField();
+			isDefaultOrg.setName("isDefaultOrg");
+			isDefaultOrg.setDataType(FieldType.BOOLEAN);
+			isDefaultOrg.setColumnName("ISDEFAULT");
+			isDefaultOrg.setModule(AccountConstants.getOrgUserModule());
+
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(inviteAcceptStatus);
+			fields.add(isDefaultOrg);
+
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getOrgUserModule().getTableName())
+					.fields(fields)
+					.andCustomWhere("ORG_USERID = ?", user.getOuid());
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("inviteAcceptStatus", true);
+			props.put("isDefaultOrg", true);
+
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				user = AccountUtil.getUserBean().getUser(user.getUid());
+				user.setUserVerified(true);
+				user.setPassword(password);
+				updateUser(user);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -284,7 +418,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean updateUser(long ouid, User user) throws Exception {
 		
-		boolean userUpdateStatus = updateUserEntry(user.getEmail(), user);
+		boolean userUpdateStatus = updateUserEntry(user);
 		System.out.println("User status ----->"+ userUpdateStatus) ;
 		if (userUpdateStatus) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -465,7 +599,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public User getUser(String email) throws Exception {
 		
-		List<FacilioField> fields = new ArrayList<>();
+		/*List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
 		
@@ -482,6 +616,31 @@ public class UserBeanImpl implements UserBean {
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 			return user;
 //			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+		}*/
+		return null;
+	}
+
+	@Override
+	public User getFacilioUser(String email) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("faciliousers")
+				.on("Users.USERID = faciliousers.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliousers.email = ? AND DELETED_TIME = -1 and ISDEFAULT = ?", email, true);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
 		}
 		return null;
 	}
@@ -507,7 +666,6 @@ public class UserBeanImpl implements UserBean {
 				.andCustomWhere("faciliorequestors.EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println(props);
 		if (props != null && !props.isEmpty()) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), User.class);
 		}
@@ -542,7 +700,32 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
-	
+
+	@Override
+	public User getFacilioUser(long orgId, String email) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("faciliousers")
+				.on("Users.USERID = faciliousers.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORGID = ? AND faciliousers.email = ? AND DELETED_TIME = -1", orgId, email);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
+		}
+		return null;
+	}
+
 	@Override
 	public User getUser(long orgId, String email) throws Exception {
 		
@@ -607,13 +790,13 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public long addRequester(long orgId, User user) throws Exception {
-		
-		User orgUser = getUser(orgId, user.getEmail());
+
+		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
-			return orgUser.getId();
+			return orgUser.getUid();
 		}
-		
-		long uid = getUid(user.getEmail());
+
+		long uid = getPortalUid(user.getPortalId(), user.getEmail());
 		if (uid == -1) {
 			uid = addUserEntry(user);
 			user.setDefaultOrg(true);
@@ -631,7 +814,40 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 		
 		long ouid = (Long) props.get("id");
+		addFacilioRequestor(user);
 		return ouid;
+	}
+
+	private void addFacilioRequestor(User user){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = FacilioConnectionPool.getInstance().getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password, USERID) VALUES(?,?,?,?)");
+			pstmt.setLong(1, user.getPortalId());
+			pstmt.setString(2, user.getEmail());
+			pstmt.setString(3, user.getEmail());
+			pstmt.setString(4, user.getPassword());
+			pstmt.setLong(5, user.getUid());
+			pstmt.executeUpdate();
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt!= null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
