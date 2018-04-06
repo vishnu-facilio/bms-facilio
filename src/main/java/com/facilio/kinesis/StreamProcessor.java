@@ -22,13 +22,24 @@ public class StreamProcessor {
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             String workerId = clientName + InetAddress.getLocalHost().getCanonicalHostName();
+            KinesisClientLibConfiguration kinesisClientLibConfiguration;
+            if("true".equalsIgnoreCase(AwsUtil.getConfig("enable.newkinesis"))){
+                kinesisClientLibConfiguration =
+                        new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getNewAWSCredentialsProvider(), workerId)
+                                .withRegionName(AwsUtil.getRegion())
+                                .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                                .withInitialLeaseTableReadCapacity(1)
+                                .withInitialLeaseTableWriteCapacity(1);
+            } else {
+                kinesisClientLibConfiguration =
+                        new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
+                                .withRegionName(AwsUtil.getRegion())
+                                .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                                .withInitialLeaseTableReadCapacity(1)
+                                .withInitialLeaseTableWriteCapacity(1);
+            }
 
-            KinesisClientLibConfiguration kinesisClientLibConfiguration =
-                    new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
-                            .withRegionName(AwsUtil.getRegion())
-                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
-                            .withInitialLeaseTableReadCapacity(1)
-                            .withInitialLeaseTableWriteCapacity(1);
+
             if("production".equals(environment)) {
                 kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.SUMMARY);
             } else {
