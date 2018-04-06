@@ -1506,8 +1506,165 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-	}
-	;
+	},
+	
+	LAST_N_DAYS(49, "Last N Days") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getDayStartTime(1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getDayStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getDayStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getDayStartTime(1));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
+	LAST_N_WEEKS(50, "Last N Weeks") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getWeekStartTime(1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							
+							return DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getWeekStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getWeekStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getWeekStartTime(1));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	},
+	LAST_N_MONTHS(51, "Last N Months") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)))
+						.append("<=")
+						.append(columnName)
+						.append(" AND ")
+						.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getMonthStartTime(1));
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						if(object != null && object instanceof Long) {
+							long currentVal = (long) object;
+							return DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime(1);
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(DateTimeUtil.getMonthStartTime(-(Integer.valueOf(value)-1)), DateTimeUtil.getMonthStartTime(1));
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	};
 	
 	private static String greaterOrLessThan(String columnName, String operator, String value) {
 		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {

@@ -255,6 +255,7 @@ public class WorkflowUtil {
 	
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
 		
+		System.out.println("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap);
 	}

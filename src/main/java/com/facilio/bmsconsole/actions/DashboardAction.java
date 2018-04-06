@@ -668,11 +668,23 @@ public class DashboardAction extends ActionSupport {
 					
 					Map<String,Object> paramMap = null;
 					if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-						paramMap = new HashMap<>();
+						if(paramMap == null) {
+							paramMap = new HashMap<>();
+						}
 						paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
 					}
-					else if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l)){
-						paramMap = new HashMap<>();
+					if(reportSpaceFilterContext != null) {
+						if(paramMap == null) {
+							paramMap = new HashMap<>();
+						}
+						if(reportSpaceFilterContext.getBuildingId() != null) {
+							paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
+						}
+					}
+					if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l) || widgetVsWorkflowContext.getId().equals(20l)  || widgetVsWorkflowContext.getId().equals(21l)  ){
+						if(paramMap == null) {
+							paramMap = new HashMap<>();
+						}
 						DateRange rang1e = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
 						paramMap.put("startTime", rang1e.getStartTime());
 						paramMap.put("endTime", rang1e.getEndTime());
