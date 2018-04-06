@@ -29,7 +29,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("title", getHeaderText());
 		// Temprovery 
-		if(getHeaderSubText().equals("{today}")) {
+		if(getHeaderSubText() != null && getHeaderSubText().equals("{today}")) {
 			headerJson.put("subtitle", "today");
 		}
 		else {
