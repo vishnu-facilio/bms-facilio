@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
@@ -344,6 +345,15 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String deleteDashboard() throws SQLException {
+		
+		if(dashboardId != null) {
+			if(DashboardUtil.deleteDashboard(dashboardId)) {
+				return SUCCESS;
+			}
+		}
+		return ERROR;
+	}
 	public String addReport() throws Exception {
 		
 		if ((reportContext.getParentFolderId() == null || reportContext.getParentFolderId() < 0) && reportContext.getReportEntityId() == null) {

@@ -57,6 +57,32 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
 	
+	public static boolean deleteDashboard(Long dashboardId) throws SQLException {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder.table(ModuleFactory.getDashboardSharingModule().getTableName())
+		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getDashboardModule().getTableName())
+		.andCustomWhere("ID = ?", dashboardId);
+		
+		int rows = deleteRecordBuilder.delete();
+		if(rows > 0) {
+			return true;
+		}
+		return false;
+	}
 	public static Integer getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
 		
 		if(aggregateOperator.getValue().equals(10) || aggregateOperator.getValue().equals(12)) {
