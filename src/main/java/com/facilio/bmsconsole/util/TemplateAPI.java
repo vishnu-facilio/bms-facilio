@@ -326,6 +326,8 @@ public class TemplateAPI {
 					template = getWOTemplateFromMap(templateMap);
 				}
 			}break;
+			case PM_TASK_SECTION:
+			case WO_TASK_SECTION:
 			case TASK_GROUP:{
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
@@ -344,7 +346,7 @@ public class TemplateAPI {
 			default: break;
 		}
 		
-		if (template.getWorkflowId() != -1) {
+		if (template != null && template.getWorkflowId() != -1) {
 			template.setWorkflow(WorkflowUtil.getWorkflowContext(template.getWorkflowId()));
 		}
 		
