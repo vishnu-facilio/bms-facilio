@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.workflow;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.templates.ActionTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 
 public class ActionContext {
@@ -72,11 +71,11 @@ public class ActionContext {
 		this.templateId = templateId;
 	}
 	
-	public ActionTemplate template;
-	public ActionTemplate getTemplate() {
+	public Template template;
+	public Template getTemplate() {
 		return template;
 	}
-	public void setTemplate(ActionTemplate template) {
+	public void setTemplate(Template template) {
 		this.template = template;
 	}
 	JSONObject templateJson;
@@ -101,20 +100,14 @@ public class ActionContext {
 		return false;
 	}
 	
-	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
+	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			actionType.performAction(actionObj, context, currentRule, currentRecord);
 		}
 		else {
-			try {
-				actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
-				return true;
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
 		}
-		return false;
+		return true;
 	}
 }

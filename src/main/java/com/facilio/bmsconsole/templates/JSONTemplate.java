@@ -1,11 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -28,25 +23,10 @@ public class JSONTemplate extends Template {
 		this.content = content;
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		try {
-			JSONParser parser = new JSONParser();
-			return (JSONObject) parser.parse(StrSubstitutor.replace(content, placeHolders));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	@Override
 	public JSONObject getOriginalTemplate() {
 		JSONObject obj = new JSONObject();
 		obj.put("content", content);
-		
 		return obj;
 	}
 	

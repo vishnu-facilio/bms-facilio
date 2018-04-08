@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -44,19 +41,6 @@ public class WebNotificationTemplate extends Template{
 	}
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		JSONObject obj = new JSONObject();
-		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("message", StrSubstitutor.replace(message, placeHolders));
-		obj.put("activityType", placeHolders.get("rule.event.activityType"));
-		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
-		obj.put("title", StrSubstitutor.replace(title, placeHolders));
-		return obj;
 	}
 	
 	@Override

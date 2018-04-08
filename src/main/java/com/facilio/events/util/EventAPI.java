@@ -40,7 +40,7 @@ public class EventAPI {
         return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
     }
 	 
-	public static EventContext transformEvent(EventContext event, JSONTemplate template) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static EventContext transformEvent(EventContext event, JSONTemplate template) throws Exception {
 		Map<String, Object> eventProp = FieldUtil.getAsProperties(event);
 		JSONObject content = template.getTemplate(eventProp);
 		eventProp.putAll(FieldUtil.getAsProperties(content));

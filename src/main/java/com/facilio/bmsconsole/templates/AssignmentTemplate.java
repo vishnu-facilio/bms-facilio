@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Group;
@@ -90,17 +88,13 @@ public class AssignmentTemplate extends Template {
 	public Type getTypeEnum() {
 		return Type.ASSIGNMENT;
 	}
+
 	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
+	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub
 		JSONObject json = new JSONObject();
 		json.put("assignedUserId", assignedUserId);
 		json.put("assignedGroupId", assignedGroupId);
 		return json;
-	}
-	@Override
-	public JSONObject getOriginalTemplate() {
-		// TODO Auto-generated method stub
-		return getTemplate(null);
 	}
 }

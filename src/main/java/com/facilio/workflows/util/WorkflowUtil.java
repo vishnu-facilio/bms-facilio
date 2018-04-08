@@ -285,6 +285,10 @@ public class WorkflowUtil {
 		
 		FieldType type =  parameterContext.getType();
 		
+		if (value == null) {
+			return true;
+		}
+		
 		switch(type) {
 			case STRING : 
 				if(value instanceof String) {

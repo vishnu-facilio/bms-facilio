@@ -270,12 +270,6 @@ public class TaskTemplate extends Template {
 	}
 
 	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub
 		return null;

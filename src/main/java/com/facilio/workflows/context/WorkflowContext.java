@@ -95,29 +95,31 @@ public class WorkflowContext {
 		Object result = null;
 		
 		Map<String,Object> variableToExpresionMap = new HashMap<String,Object>();
-		for(int i=0; i<expressions.size(); i++) {
-			
-			ExpressionContext expressionContext = expressions.get(i);
-			
-			expressionContext = fillParamterAndParseExpressionContext(expressionContext);
-			
-			if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
-				return expressionContext.executeExpression();
+		if (expressions != null) {
+			for(int i=0; i<expressions.size(); i++) {
+				
+				ExpressionContext expressionContext = expressions.get(i);
+				
+				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
+				
+				if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
+					return expressionContext.executeExpression();
+				}
+				
+				Object res = expressionContext.executeExpression();
+				if(res != null) {
+					String subExpResult = res.toString();
+					variableToExpresionMap.put(expressionContext.getName(), subExpResult);
+				}
+				else {
+					variableToExpresionMap.put(expressionContext.getName(), "0");
+				}
+				
+				ParameterContext parameterContext = new ParameterContext();
+				parameterContext.setName(expressionContext.getName());
+				parameterContext.setValue(variableToExpresionMap.get(expressionContext.getName()));
+				this.addParamater(parameterContext);
 			}
-			
-			Object res = expressionContext.executeExpression();
-			if(res != null) {
-				String subExpResult = res.toString();
-				variableToExpresionMap.put(expressionContext.getName(), subExpResult);
-			}
-			else {
-				variableToExpresionMap.put(expressionContext.getName(), "0");
-			}
-			
-			ParameterContext parameterContext = new ParameterContext();
-			parameterContext.setName(expressionContext.getName());
-			parameterContext.setValue(variableToExpresionMap.get(expressionContext.getName()));
-			this.addParamater(parameterContext);
 		}
 		setVariableResultMap(variableToExpresionMap);
 		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
@@ -133,10 +135,12 @@ public class WorkflowContext {
 		
 		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
 			for(ParameterContext parameter :parameters) {
-				String var = "${"+parameter.getName()+"}";
-				String varRegex = "\\$\\{"+parameter.getName()+"\\}";
-				if(expressionString.contains(var)) {
-					expressionString = expressionString.replaceAll(varRegex, parameter.getValue().toString());
+				if (parameter.getValue() != null) {
+					String var = "${"+parameter.getName()+"}";
+					String varRegex = "\\$\\{"+parameter.getName()+"\\}";
+					if(expressionString.contains(var)) {
+						expressionString = expressionString.replaceAll(varRegex, parameter.getValue().toString());
+					}
 				}
 			}
 		}

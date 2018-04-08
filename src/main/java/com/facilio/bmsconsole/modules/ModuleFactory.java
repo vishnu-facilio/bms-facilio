@@ -313,16 +313,7 @@ public class ModuleFactory {
 		return excelTemplatesModule;
 	}
 	
-	public static FacilioModule getTemplatePlaceholder() {
-		FacilioModule templatePlaceholder = new FacilioModule();
-		templatePlaceholder.setName("templatePlaceholder");
-		templatePlaceholder.setDisplayName("Template Placeholder");
-		templatePlaceholder.setTableName("Template_placeholder");
-		return templatePlaceholder;
-		
-	}
-	
-		public static FacilioModule getTenantModule() {
+	public static FacilioModule getTenantModule() {
 		FacilioModule tenantModule = new FacilioModule();
 		tenantModule.setName("tenant");
 		tenantModule.setDisplayName("Tenant");

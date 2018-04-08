@@ -21,7 +21,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.templates.ActionTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -59,7 +59,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 								CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 								for(ActionContext action : actions)
 								{
-									ActionTemplate template = action.getTemplate();
+									Template template = action.getTemplate();
 									if(template != null) {
 										JSONObject actionObj = template.getTemplate(placeHolders);
 										action.getActionType().performAction(actionObj, context, workflowRule, ticket);

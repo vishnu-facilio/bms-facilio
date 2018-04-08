@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,16 +39,12 @@ public class SLATemplate extends Template {
 	public Type getTypeEnum() {
 		return Type.SLA;
 	}
+
 	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
+	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub
 		JSONObject json = new JSONObject();
 		json.put("slaPolicyJson", slaPolicyJson);
 		return json;
-	}
-	@Override
-	public JSONObject getOriginalTemplate() {
-		// TODO Auto-generated method stub
-		return getTemplate(null);
 	}
 }

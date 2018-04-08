@@ -996,6 +996,8 @@ public class FieldFactory {
 		placeholder.setColumnName("PLACEHOLDER");
 		placeholder.setModule(module);
 		fields.add(placeholder);
+		
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
@@ -1182,28 +1184,6 @@ public class FieldFactory {
 		excelFileId.setModule(module);
 		fields.add(excelFileId);
 
-		return fields;
-	}
-	
-	public static List<FacilioField> getTemplatePlaceholder() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getTemplatePlaceholder();
-		
-		FacilioField templateId = new FacilioField();
-		templateId.setName("templateId");
-		templateId.setDataType(FieldType.NUMBER);
-		templateId.setColumnName("TEMPLATE_ID");
-		templateId.setModule(module);
-		fields.add(templateId);
-		
-		FacilioField placeholder = new FacilioField();
-		placeholder.setName("placeholder");
-		placeholder.setDataType(FieldType.STRING);
-		placeholder.setDisplayName("Placeholder");
-		placeholder.setColumnName("PLACEHOLDER");
-		placeholder.setModule(module);
-		fields.add(placeholder);
-		
 		return fields;
 	}
 	

@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -57,12 +56,6 @@ public class TaskSectionTemplate extends Template {
 		this.taskTemplates = taskTemplates;
 	}
 	
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public JSONObject getOriginalTemplate() {
 		// TODO Auto-generated method stub

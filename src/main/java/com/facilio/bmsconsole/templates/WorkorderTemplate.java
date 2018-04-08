@@ -228,16 +228,11 @@ public class WorkorderTemplate extends Template {
 	public void setSectionTemplates(List<TaskSectionTemplate> sectionTemplates) {
 		this.sectionTemplates = sectionTemplates;
 	}
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public JSONObject getOriginalTemplate() {
+	public JSONObject getOriginalTemplate() throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		return FieldUtil.getAsJSON(getWorkorder());
 	}
 
 }
