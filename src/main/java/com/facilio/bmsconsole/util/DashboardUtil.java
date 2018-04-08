@@ -909,8 +909,10 @@ public class DashboardUtil {
 		boolean isSubReport = true;
 		ReportContext parentReportContext = null;
 		if (reportContext != null) {
+			
 			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
 			if(reportContext.getModuleId() == -1) {
 				FacilioModule module = modBean.getModule(reportContext.getModuleName());
 				reportContext.setModuleId(module.getModuleId());
@@ -934,6 +936,12 @@ public class DashboardUtil {
 				insertBuilder.save();
 				
 				reportContext.setReportEntityId((Long)props.get("id"));
+				if(reportContext.getComparingReportContexts() != null) {
+					for(ReportContext report :reportContext.getComparingReportContexts()) {
+						report.setReportEntityId(reportContext.getReportEntityId());
+					}
+				}
+				
 			}
 			else {
 				parentReportContext = getParentReportForEntitiyId(reportContext.getReportEntityId());
@@ -1033,6 +1041,11 @@ public class DashboardUtil {
 						.fields(FieldFactory.getReportEnergyMeterFields());
 				
 				insertBuilder.addRecord(prop).save();
+			}
+			if(reportContext.getComparingReportContexts() != null) {
+				for(ReportContext report: reportContext.getComparingReportContexts()) {
+					DashboardUtil.addReport(report);
+				}
 			}
 			return true;
 		}
