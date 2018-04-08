@@ -1042,6 +1042,19 @@ public class DashboardUtil {
 				
 				insertBuilder.addRecord(prop).save();
 			}
+			if(reportContext.getBaseLineId() != -1) {
+				
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportVsBaseLine().getTableName())
+						.fields(FieldFactory.getReportVsBaselineFields());
+				
+				Map<String, Object> prop = new HashMap<>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("baseLineId", reportContext.getBaseLineId());
+				prop.put("isAdjust", false);
+				
+				insertBuilder.addRecord(prop).save();
+			}
 			if(reportContext.getComparingReportContexts() != null) {
 				for(ReportContext report: reportContext.getComparingReportContexts()) {
 					DashboardUtil.addReport(report);
