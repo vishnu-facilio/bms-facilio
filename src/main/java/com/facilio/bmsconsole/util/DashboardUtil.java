@@ -865,6 +865,16 @@ public class DashboardUtil {
 		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getReportVsBaseLine().getTableName())
+		.andCustomWhere("REPORT_ID = ?", reportId);
+		deleteRecordBuilder.delete();
+		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getReport().getTableName())
 		.andCustomWhere("ID = ?", reportId);
 		deleteRecordBuilder.delete();
@@ -1064,6 +1074,7 @@ public class DashboardUtil {
 		}
 		return false;
 	}
+	
 	
 	public static boolean populateBuildingEnergyReports(long buildingId, String buildingName) throws Exception {
 		
