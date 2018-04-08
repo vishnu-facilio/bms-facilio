@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -41,15 +42,15 @@ public class ReportScheduledListCommand implements Command {
 		
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfoFields();
 		fields.addAll(FieldFactory.getReportFields());
-		fields.addAll(FieldFactory.getEMailTemplateFields());
+//		fields.addAll(FieldFactory.getEMailTemplateFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.innerJoin(reportModule.getTableName())
 				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
-				.innerJoin(emailModule.getTableName())
-				.on(module.getTableName()+".TEMPLATEID = "+emailModule.getTableName()+".ID")
+/*				.innerJoin(emailModule.getTableName())
+				.on(module.getTableName()+".TEMPLATEID = "+emailModule.getTableName()+".ID")*/
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(reportModule),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
 		
@@ -61,7 +62,8 @@ public class ReportScheduledListCommand implements Command {
 			for(Map<String, Object> prop : props) {
 				ReportInfo report = FieldUtil.getAsBeanFromMap(prop, ReportInfo.class);
 				report.setReportContext(FieldUtil.getAsBeanFromMap(prop, ReportContext.class));
-				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
+				report.setEmailTemplate((EMailTemplate) TemplateAPI.getTemplate(report.getTemplateId()));
+//				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
 				reportIds.add(report.getId());
 				reportsMap.put(report.getId(), report);
 			}

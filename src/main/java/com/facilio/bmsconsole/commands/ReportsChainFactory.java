@@ -79,8 +79,8 @@ public class ReportsChainFactory {
 	
 	public static Chain getSendMailReportChain() {
 		Chain c = new ChainBase();
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new GetReportUnderlyingDataCommand());
+//		c.addCommand(new LoadViewCommand());
+//		c.addCommand(new GetReportUnderlyingDataCommand());
 		c.addCommand(new SendReportMailCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -112,6 +112,15 @@ public class ReportsChainFactory {
 	public static Chain deleteScheduledReportsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new DeleteScheduledReportsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain updateScheduledReportsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new DeleteScheduledReportsCommand());
+		c.addCommand(new ScheduleReportCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

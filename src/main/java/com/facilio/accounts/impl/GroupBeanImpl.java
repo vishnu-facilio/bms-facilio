@@ -231,7 +231,7 @@ public class GroupBeanImpl implements GroupBean {
 		if (props != null && !props.isEmpty()) {
 			List<Group> groups = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				groups.add(FieldUtil.getAsBeanFromMap(props.get(0), Group.class));
+				groups.add(FieldUtil.getAsBeanFromMap(prop, Group.class));
 			}
 			return groups;
 		}

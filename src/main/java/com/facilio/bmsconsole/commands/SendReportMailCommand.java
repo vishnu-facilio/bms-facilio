@@ -18,12 +18,10 @@ import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ExportUtil;
-import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -39,7 +37,7 @@ public class SendReportMailCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+//		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 		
@@ -51,14 +49,35 @@ public class SendReportMailCommand implements Command {
 		Map<String, String> files = new HashMap<>();
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		
+		JSONArray reportData = (JSONArray) context.get(FacilioConstants.ContextNames.REPORT);
+		
+		Map<String,Object> table;
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
-			JSONArray reportData = (JSONArray) context.get(FacilioConstants.ContextNames.REPORT);
 			List<ReportColumnContext> reportColumns = (List<ReportColumnContext>) context.get(FacilioConstants.ContextNames.REPORT_COLUMN_LIST);
-			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
+			table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
 			String fileUrl = ExportUtil.exportData(fileFormat, module, table);
 			files.put(fileName + fileFormat.getExtention(), fileUrl);
 		}
 		else {
+			Long baseLineComparisionDiff = (Long) context.get(FacilioConstants.ContextNames.BASE_LINE);
+			table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff);
+		}
+		
+		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+			String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId(), fileFormat);
+			String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			files.put(fileName + fileFormat.getExtention(), fileUrl);
+			if (fileFormat == FileFormat.IMAGE) {
+				String fileUrl2 = ExportUtil.exportData(fileFormat, module, table);
+				files.put(fileName + FileFormat.CSV.getExtention(), fileUrl2);
+			}
+		}
+		else {
+			String fileUrl = ExportUtil.exportData(fileFormat, module, table);
+			files.put(fileName + fileFormat.getExtention(), fileUrl);
+		}
+		
+		/*else {
 			List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
 				String url = ReportsUtil.getReportClientUrl(moduleName, reportContext.getId(), fileFormat);
@@ -73,7 +92,7 @@ public class SendReportMailCommand implements Command {
 				String fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 				files.put(fileName + fileFormat.getExtention(), fileUrl);
 			}
-		}
+		}*/
 		
 		Map<String, Object> placeHolders = new HashMap<String,Object>();
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);

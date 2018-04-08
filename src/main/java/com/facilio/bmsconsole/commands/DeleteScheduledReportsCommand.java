@@ -15,13 +15,14 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
 public class DeleteScheduledReportsCommand implements Command {
-
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -47,15 +48,25 @@ public class DeleteScheduledReportsCommand implements Command {
 		
 		List<Long> templateIds = reports.stream().map(ReportInfo::getTemplateId).collect(Collectors.toList());
 		
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+		ActivityType type = null;
+		if (context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
+			type = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		}
 		
-		int count = builder.delete();
-		
-		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, count);
-		
-		TemplateAPI.deleteTemplates(templateIds);
+		if (type == null || type != ActivityType.EDIT) {
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+			
+			int count = builder.delete();
+			
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, count);
+			
+			TemplateAPI.deleteTemplates(templateIds);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateIds.get(0));
+		}
 		
 		FacilioTimer.deleteJobs(recordIds, "ReportScheduler");
 		

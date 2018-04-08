@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
@@ -109,7 +110,7 @@ public class LookupSpecialTypeUtil {
 			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			FacilioField field=FieldFactory.getField("groupId", "GROUPID", FieldType.NUMBER);
+			FacilioField field=FieldFactory.getField("groupId", "GROUPID",AccountConstants.getGroupModule(), FieldType.NUMBER);
 			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
 		}
 		else {
