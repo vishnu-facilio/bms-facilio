@@ -777,6 +777,29 @@ public class DashboardAction extends ActionSupport {
 	public String getFilters() {
 		return this.filters;
 	}
+	public Long getDashboardVsWidgetId() {
+		return dashboardVsWidgetId;
+	}
+	public void setDashboardVsWidgetId(Long dashboardVsWidgetId) {
+		this.dashboardVsWidgetId = dashboardVsWidgetId;
+	}
+	public Long dashboardVsWidgetId;
+	public String deleteWidgetFromDashboard() throws Exception {
+		
+		if(dashboardVsWidgetId != null) {
+			
+			if(DashboardUtil.deleteWidgetFromDashboard(dashboardVsWidgetId)) {
+				return SUCCESS;
+			}
+		}
+		else if(dashboardId != null && widgetId != null) {
+
+			if(DashboardUtil.deleteWidgetFromDashboard(dashboardId,widgetId)) {
+				return SUCCESS;
+			}
+		}
+		return ERROR;
+	}
 	
 	public String getData() throws Exception {
 		

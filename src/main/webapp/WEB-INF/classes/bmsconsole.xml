@@ -3640,6 +3640,11 @@
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
+		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
 		<action name="addComparisionReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addComparisionReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>

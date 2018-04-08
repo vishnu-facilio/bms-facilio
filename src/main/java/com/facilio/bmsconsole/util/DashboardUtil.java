@@ -66,6 +66,43 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static boolean deleteWidgetFromDashboard(Long dashboardId,Long widgetId) throws SQLException {
+		
+		if(dashboardId != null && widgetId != null) {
+			
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+			
+			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId)
+				.andCustomWhere("WIDGET_ID = ?", widgetId);
+			
+			
+			int rowsDeleted = deleteRecordBuilder.delete();
+			if(rowsDeleted > 0) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
+	public static boolean deleteWidgetFromDashboard(Long dashboardVsWidgetId) throws SQLException {
+		
+		if(dashboardVsWidgetId != null) {
+			
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+			
+			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+				.andCustomWhere("ID = ?", dashboardVsWidgetId);
+			
+			int rowsDeleted = deleteRecordBuilder.delete();
+			if(rowsDeleted > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static JSONObject getStandardVariance(List<Map<String, Object>> props) {
 		Double min = null ,max = null,avg = null,sum = (double) 0;
 		for(Map<String, Object> prop:props) {
