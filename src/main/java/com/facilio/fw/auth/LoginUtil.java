@@ -24,71 +24,28 @@ public class LoginUtil {
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
 	public static Account getAccount(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
-		if(cognitoUser==null)
-		{
+		if(cognitoUser==null) {
 			return null;
 		}
-		User user = AccountUtil.getUserBean().getUser(cognitoUser.getEmail());
+		User user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
 		Organization org = null;
 		
 		if (user == null) {
-			System.out.println("Getting email from cognitouser "+cognitoUser.getEmail());
-			JSONObject userAttributes = CognitoUtil.getUserAttributes(cognitoUser.getEmail());
-			if (userAttributes == null) {
-				throw new Exception("This user not associated with any organization.");
-			}
-			
-			String orgName = (String) userAttributes.get("custom:orgName");
-			String orgDomain = (String) userAttributes.get("custom:orgDomain");
-			if (orgName == null || orgName.equals("")) {
-				orgName = orgDomain;
-			}
-			if(cognitoUser.isFacilioauth())
-			{
-				orgDomain =  cognitoUser.getEmail().replace('@', '-');
-				orgDomain =  orgDomain.replace('.', '-');
-				orgName = orgDomain;
-			}
-			
-			org = AccountUtil.getOrgBean().getOrg(orgDomain);
-			if (org == null) {
-				JSONObject signupInfo = new JSONObject();
-				signupInfo.put("name", cognitoUser.getName());
-				signupInfo.put("email", cognitoUser.getEmail());
-				signupInfo.put("cognitoId", cognitoUser.getCognitoId());
-				signupInfo.put("phone", cognitoUser.getPhoneNumber());
-				signupInfo.put("companyname", orgName);
-				signupInfo.put("domainname", orgDomain);
-				signupInfo.put("isFacilioAuth", cognitoUser.isFacilioauth());
-				
-				FacilioContext signupContext = new FacilioContext();
-				signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
-				
-				Chain c = FacilioChainFactory.getOrgSignupChain();
-				c.execute(signupContext);
-				
-				org = AccountUtil.getOrgBean().getOrg(orgDomain);
-				user = AccountUtil.getUserBean().getUser(cognitoUser.getEmail());
-			}
-			else {
+			org = AccountUtil.getCurrentOrg();
+			if (org != null) {
 				HttpServletRequest request = ServletActionContext.getRequest();
 				Locale locale = request.getLocale();
 				if (locale == null) {
 					locale = Locale.US;
 				}
-				
-//				Role adminRole = AccountUtil.getRoleBean().getRole(org.getOrgId(), AccountConstants.DefaultRole.ADMINISTRATOR);
-				
 				User createUser = new User();
 				createUser.setName(cognitoUser.getName());
 				createUser.setEmail(cognitoUser.getEmail());
-			//	createUser.setCognitoId(cognitoUser.getCognitoId());
-				createUser.setUserVerified(true);
+				createUser.setUserVerified(false);
 				createUser.setTimezone(org.getTimezone());
 				createUser.setLanguage(locale.getLanguage());
 				createUser.setCountry(locale.getCountry());
 				createUser.setPhone(cognitoUser.getPhoneNumber());
-//				createUser.setRoleId(adminRole.getRoleId());
 				createUser.setInviteAcceptStatus(true);
 				createUser.setDefaultOrg(true);
 				createUser.setUserStatus(true);
@@ -98,8 +55,7 @@ public class LoginUtil {
 				
 				user = AccountUtil.getUserBean().getUser(ouid);
 			}
-		}
-		else {
+		} else {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		}
 		return new Account(org, user);

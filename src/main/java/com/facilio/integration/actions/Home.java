@@ -206,6 +206,10 @@ state = PORTAL-yogendrababu
 				HttpServletResponse response = ServletActionContext.getResponse();
 
 				Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+				if(portaluser)
+				{
+					cookie = new Cookie("fc.idToken.facilioportal", jwt);
+				}
 				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				cookie.setPath("/");
 				cookie.setHttpOnly(true);
