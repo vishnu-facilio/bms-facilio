@@ -91,11 +91,11 @@ public abstract class Template {
 		this.type = Type.TYPE_MAP.get(type);
 	}
 	
-	public final JSONObject getTemplate(Map<String, Object> placeHolders) throws Exception {
+	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
-		if (json != null && placeHolders != null && !placeHolders.isEmpty()) {
+		if (json != null && workflow != null) {
 			String jsonStr = json.toJSONString();
-			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), placeHolders);
+			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
 			jsonStr = StrSubstitutor.replace(jsonStr, params);
 			JSONParser parser = new JSONParser();
 			return (JSONObject) parser.parse(jsonStr);

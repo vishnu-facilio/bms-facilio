@@ -301,7 +301,9 @@ public class ExpressionContext {
 				exprResult = returnList;
 			}
 			else {
-				exprResult = props.get(0).get(RESULT_STRING);
+				// Temp check
+				String name = LookupSpecialTypeUtil.isSpecialType(moduleName) ? fieldName : RESULT_STRING; 
+				exprResult = props.get(0).get(name);
 			}
 		}
 		System.out.println("EXP -- "+toString()+" RESULT -- "+exprResult);
