@@ -61,6 +61,10 @@ public class DashboardUtil {
 	public static List<String> workOrderYaxisOmitFields = new ArrayList<String>();
 	public static List<String> workOrderGroupByOmitFields = new ArrayList<String>();
 	
+	public static List<String> workRequestXaxisOmitFields = new ArrayList<String>();
+	public static List<String> workRequestYaxisOmitFields = new ArrayList<String>();
+	public static List<String> workRequestGroupByOmitFields = new ArrayList<String>();
+	
 	static {
 		workOrderXaxisOmitFields.add("subject");
 		workOrderXaxisOmitFields.add("description");
@@ -99,10 +103,6 @@ public class DashboardUtil {
 		workOrderGroupByOmitFields.add("description");
 		workOrderGroupByOmitFields.add("dueDate");
 		workOrderGroupByOmitFields.add("serialNumber");
-		workOrderGroupByOmitFields.add("noOfNotes");
-		workOrderGroupByOmitFields.add("noOfAttachments");
-		workOrderGroupByOmitFields.add("noOfTasks");
-		workOrderGroupByOmitFields.add("noOfClosedTasks");
 		workOrderGroupByOmitFields.add("scheduledStart");
 		workOrderGroupByOmitFields.add("estimatedEnd");
 		workOrderGroupByOmitFields.add("createdTime");
@@ -110,6 +110,39 @@ public class DashboardUtil {
 		workOrderGroupByOmitFields.add("isWorkDurationChangeAllowed");
 		workOrderGroupByOmitFields.add("modifiedTime");
 		
+		workRequestXaxisOmitFields.add("subject");
+		workRequestXaxisOmitFields.add("description");
+		workRequestXaxisOmitFields.add("serialNumber");
+		workRequestXaxisOmitFields.add("noOfNotes");
+		workRequestXaxisOmitFields.add("noOfAttachments");
+		workRequestXaxisOmitFields.add("noOfTasks");
+		workRequestXaxisOmitFields.add("noOfClosedTasks");
+		
+		
+		workRequestYaxisOmitFields.add("subject");
+		workRequestYaxisOmitFields.add("description");
+		workRequestYaxisOmitFields.add("dueDate");
+		workRequestYaxisOmitFields.add("serialNumber");
+		workRequestYaxisOmitFields.add("scheduledStart");
+		workRequestYaxisOmitFields.add("estimatedEnd");
+		workRequestYaxisOmitFields.add("actualWorkStart");
+		workRequestYaxisOmitFields.add("actualWorkEnd");
+		workRequestYaxisOmitFields.add("requester");
+		workRequestYaxisOmitFields.add("createdTime");
+		workRequestYaxisOmitFields.add("assignedBy");
+		
+		
+		workRequestGroupByOmitFields.add("subject");
+		workRequestGroupByOmitFields.add("description");
+		workRequestGroupByOmitFields.add("dueDate");
+		workRequestGroupByOmitFields.add("serialNumber");
+		workRequestGroupByOmitFields.add("scheduledStart");
+		workRequestGroupByOmitFields.add("estimatedEnd");
+		workRequestGroupByOmitFields.add("actualWorkStart");
+		workRequestGroupByOmitFields.add("actualWorkEnd");
+		workRequestGroupByOmitFields.add("requester");
+		workRequestGroupByOmitFields.add("createdTime");
+		workRequestGroupByOmitFields.add("assignedBy");
 	}
 	
 	public static boolean deleteDashboard(Long dashboardId) throws SQLException {
@@ -1183,6 +1216,21 @@ public class DashboardUtil {
 					yAxisField.add(field);
 				}
 				if(!workOrderGroupByOmitFields.contains(field.getName())) {
+					groupField.add(field);
+				}
+			}
+			else if (moduleName.endsWith(ContextNames.WORK_ORDER_REQUEST)) {
+				
+				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
+					dateFilterField.add(field);
+				}
+				if(!workRequestXaxisOmitFields.contains(field.getName())) {
+					xAxisField.add(field);
+				}
+				if(!workRequestYaxisOmitFields.contains(field.getName())) {
+					yAxisField.add(field);
+				}
+				if(!workRequestGroupByOmitFields.contains(field.getName())) {
 					groupField.add(field);
 				}
 			}
