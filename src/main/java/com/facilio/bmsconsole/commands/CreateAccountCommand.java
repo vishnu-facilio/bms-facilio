@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -19,7 +17,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class CreateAccountCommand implements Command {
 

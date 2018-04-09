@@ -10,13 +10,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;

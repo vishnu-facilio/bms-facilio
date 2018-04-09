@@ -6,17 +6,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 
 public class LoginUtil {

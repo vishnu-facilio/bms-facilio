@@ -11,15 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
 
-import com.amazonaws.protocol.json.JsonOperationMetadata;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.fw.LRUCache;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
-import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;

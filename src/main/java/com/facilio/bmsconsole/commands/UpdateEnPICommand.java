@@ -4,7 +4,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -16,7 +15,6 @@ import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class UpdateEnPICommand implements Command {
