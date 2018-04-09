@@ -226,4 +226,16 @@ public class AssetsAPI {
 		
 	}
 	
+	public static AssetCategoryContext getCategoryForAsset(long categoryId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.beanClass(AssetCategoryContext.class)
+																		.andCondition(CriteriaAPI.getIdCondition(categoryId, modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY)));
+		List<AssetCategoryContext> assetList = selectBuilder.get();
+		return assetList.get(0);
+	}
+	
 }
