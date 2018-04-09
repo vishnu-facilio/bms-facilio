@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -90,6 +91,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrder(WorkOrderContext workorder)  {
 		try {
+		workorder.setSourceType(TicketContext.SourceType.WEB);
 		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());

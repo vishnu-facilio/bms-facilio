@@ -15,6 +15,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
@@ -100,6 +101,7 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			if(supportEmail.getAutoAssignGroup() != null) {
 				workOrderRequest.setAssignmentGroup(supportEmail.getAutoAssignGroup());
 			}
+			workOrderRequest.setSourceType(TicketContext.SourceType.EMAIL);
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			System.out.println("Added Workorder from Email Parser : " + bean.addWorkOrderRequest(workOrderRequest));

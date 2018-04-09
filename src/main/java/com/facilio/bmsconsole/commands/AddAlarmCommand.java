@@ -33,10 +33,6 @@ public class AddAlarmCommand implements Command {
 			alarm.setCreatedTime(System.currentTimeMillis());
 			alarm.setModifiedTime(alarm.getCreatedTime());
 			
-			if (alarm.getSourceTypeEnum() == null) {
-				alarm.setSourceType(TicketContext.SourceType.ALARM);
-			}
-			
 			if(alarm.getEntityId() == -1)
 			{
 				long entityId = AlarmAPI.addAlarmEntity();
@@ -56,10 +52,12 @@ public class AddAlarmCommand implements Command {
 			if (alarm instanceof ReadingAlarmContext) {
 				fields = bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 				moduleName = FacilioConstants.ContextNames.READING_ALARM;
+				alarm.setSourceType(TicketContext.SourceType.THRESHOLD_ALARM);
 			}
 			else {
 				fields = bean.getAllFields(FacilioConstants.ContextNames.ALARM);
 				moduleName = FacilioConstants.ContextNames.ALARM;
+				alarm.setSourceType(TicketContext.SourceType.ALARM);
 			}
 			
 			InsertRecordBuilder<AlarmContext> builder = new InsertRecordBuilder<AlarmContext>()

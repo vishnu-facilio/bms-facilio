@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -114,6 +115,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 			setWorkorderrequest(workOrderRequestString);
 		}
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+		workorderrequest.setSourceType(TicketContext.SourceType.WEB);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
