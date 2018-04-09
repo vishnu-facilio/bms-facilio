@@ -2482,6 +2482,15 @@ public class DashboardAction extends ActionSupport {
 				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
 				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
 				
+				if(widget.get("widgetName") != null) {
+					widgetContext.setWidgetName(widget.get("widgetName").toString());
+				}
+				if(widget.get("headerText") != null) {
+					widgetContext.setHeaderText(widget.get("headerText").toString());
+				}
+				if(widget.get("headerSubText") != null) {
+					widgetContext.setHeaderSubText(widget.get("headerSubText").toString());
+				}
 				this.dashboard.addDashboardWidget(widgetContext);
 			}
 		}
