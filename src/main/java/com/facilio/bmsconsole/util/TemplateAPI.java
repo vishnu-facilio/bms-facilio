@@ -377,6 +377,9 @@ public class TemplateAPI {
 			case JSON:
 				deleteJSONTemplate((JSONTemplate)template);
 				break;
+			case EMAIL:
+				deleteTemplateFile(((EMailTemplate)template).getBodyId());
+				break;
 			case WORKORDER:
 			case PM_WORKORDER:
 				WorkorderTemplate woTemplate = (WorkorderTemplate) template;
@@ -417,8 +420,12 @@ public class TemplateAPI {
 	}
 	
 	private static void deleteJSONTemplate(JSONTemplate template) throws Exception {
+		deleteTemplateFile(template.getContentId());
+	}
+	
+	private static void deleteTemplateFile(Long contentId) throws Exception {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		fs.deleteFile(template.getContentId());
+		fs.deleteFile(contentId);
 	}
 	
 	public static Template getTemplate(long orgId, String templateName, Template.Type type) throws Exception {
