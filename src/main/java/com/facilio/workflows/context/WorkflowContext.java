@@ -135,12 +135,18 @@ public class WorkflowContext {
 		
 		if(expressionContext.getExpressionString().split(VARIABLE_PLACE_HOLDER).length > 1) {
 			for(ParameterContext parameter :parameters) {
+				String val = null;
 				if (parameter.getValue() != null) {
-					String var = "${"+parameter.getName()+"}";
-					String varRegex = "\\$\\{"+parameter.getName()+"\\}";
-					if(expressionString.contains(var)) {
-						expressionString = expressionString.replaceAll(varRegex, parameter.getValue().toString());
-					}
+					val = parameter.getValue().toString();
+				}
+				else {
+					val = "";
+				}
+				
+				String var = "${"+parameter.getName()+"}";
+				String varRegex = "\\$\\{"+parameter.getName()+"\\}";
+				if(expressionString.contains(var)) {
+					expressionString = expressionString.replaceAll(varRegex, val);
 				}
 			}
 		}
