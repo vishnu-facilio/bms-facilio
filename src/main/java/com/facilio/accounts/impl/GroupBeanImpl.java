@@ -4,22 +4,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -213,9 +219,31 @@ public class GroupBeanImpl implements GroupBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+			Group group = FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+			populateGroupEmailAndPhone(group);
+			return group;
 		}
 		return null;
+	}
+	
+	private void populateGroupEmailAndPhone(Group group) throws Exception {
+		group.setMembers(AccountUtil.getGroupBean().getGroupMembers(group.getId()));
+		if (group.getMembers() != null && !group.getMembers().isEmpty()) {
+			StringJoiner emails = new StringJoiner(",");
+			StringJoiner phones = new StringJoiner(",");
+			for (GroupMember member : group.getMembers()) {
+				if (member.getEmail() != null && !member.getEmail().isEmpty()) {
+					emails.add(member.getEmail());
+				}
+				if (member.getPhone() != null && !member.getPhone().isEmpty()) {
+					phones.add(member.getPhone());
+				}
+			}
+			if (group.getEmail() == null || group.getEmail().isEmpty()) {
+				group.setEmail(emails.toString());
+			}
+			group.setPhone(phones.toString());
+		}
 	}
 	
 	@Override
@@ -231,7 +259,9 @@ public class GroupBeanImpl implements GroupBean {
 		if (props != null && !props.isEmpty()) {
 			List<Group> groups = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				groups.add(FieldUtil.getAsBeanFromMap(prop, Group.class));
+				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+				populateGroupEmailAndPhone(group);
+				groups.add(group);
 			}
 			return groups;
 		}
@@ -251,7 +281,9 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
-				groups.add(FieldUtil.getAsBeanFromMap(prop, Group.class));
+				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+				populateGroupEmailAndPhone(group);
+				groups.add(group);
 			}
 			return groups;
 		}
@@ -271,7 +303,9 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
-				groups.add(FieldUtil.getAsBeanFromMap(prop, Group.class));
+				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+				populateGroupEmailAndPhone(group);
+				groups.add(group);
 			}
 			return groups;
 		}
@@ -293,7 +327,9 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
-				groups.add(FieldUtil.getAsBeanFromMap(prop, Group.class));
+				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+				populateGroupEmailAndPhone(group);
+				groups.add(group);
 			}
 			return groups;
 		}
