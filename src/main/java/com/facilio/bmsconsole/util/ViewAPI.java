@@ -80,7 +80,7 @@ public class ViewAPI {
 					.select(FieldFactory.getViewSharingFields())
 					.table(ModuleFactory.getViewSharingModule().getTableName())
 					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-					.andCondition(CriteriaAPI.getCondition("VIEW_Sharing.VIEWID", "viewId", StringUtils.join(viewIds, ","), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition("View_Sharing.VIEWID", "viewId", StringUtils.join(viewIds, ","), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			
