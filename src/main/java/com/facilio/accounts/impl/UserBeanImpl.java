@@ -102,7 +102,6 @@ public class UserBeanImpl implements UserBean {
 		if(emailVerificationRequired) {
 			sendEmailRegistration(user);
 		}
-		addFacilioUser(user);
 		return userId;
 	}
 
@@ -173,6 +172,8 @@ public class UserBeanImpl implements UserBean {
 		long uid = getUid(user.getEmail());
 		if (uid == -1) {
 			uid = addUserEntry(user);
+			user.setUid(uid);
+			addFacilioUser(user);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
@@ -209,6 +210,8 @@ public class UserBeanImpl implements UserBean {
 		long uid = getUid(user.getEmail());
 		if (uid == -1) {
 			uid = addUserEntry(user, false);
+			user.setUid(uid);
+			addFacilioUser(user);
 			user.setDefaultOrg(true);
 		}
 		user.setUid(uid);
@@ -660,10 +663,10 @@ public class UserBeanImpl implements UserBean {
 				.innerJoin("PortalInfo")
 				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
 				.innerJoin("Users")
-				.on("faciliorequestors.EMAIL = Users.EMAIL")
+				.on("faciliorequestors.USERID = Users.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("faciliorequestors.EMAIL = ? AND faciliorequestors.PORTALID = ?", email, portalId);
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND USER_VERIFIED=1 AND faciliorequestors.PORTALID = ?", email, portalId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -823,7 +826,7 @@ public class UserBeanImpl implements UserBean {
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password, USERID) VALUES(?,?,?,?)");
+			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password, USERID) VALUES(?,?,?,?,?)");
 			pstmt.setLong(1, user.getPortalId());
 			pstmt.setString(2, user.getEmail());
 			pstmt.setString(3, user.getEmail());

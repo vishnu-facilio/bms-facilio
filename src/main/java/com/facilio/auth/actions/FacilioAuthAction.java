@@ -26,10 +26,29 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.fw.auth.LoginUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FacilioAuthAction extends ActionSupport {
 
@@ -104,7 +123,11 @@ public class FacilioAuthAction extends ActionSupport {
     }
 
     public String getEmailaddress() {
-        return emailaddress;
+        if(emailaddress != null) {
+            return emailaddress;
+        } else {
+            return getUsername();
+        }
     }
 
     public void setEmailaddress(String emailaddress) {
@@ -244,6 +267,9 @@ public class FacilioAuthAction extends ActionSupport {
                 HttpServletResponse response = ServletActionContext.getResponse();
 
                 Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+                if(portalUser) {
+                    cookie = new Cookie("fc.idToken.facilioportal", jwt);
+                }
                 cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
                 cookie.setPath("/");
                 cookie.setHttpOnly(true);
@@ -283,7 +309,7 @@ public class FacilioAuthAction extends ActionSupport {
                 String storedPass = rs.getString("password");
                 LOGGER.info("Stored : "+storedPass);
                 LOGGER.info("UserGiv: "+password);
-                if(storedPass.equalsIgnoreCase(password)) {
+                if(storedPass.equals(password)) {
                     passwordValid = true;
                 }
             }
@@ -319,7 +345,7 @@ public class FacilioAuthAction extends ActionSupport {
                 String storedPass = rs.getString("password");
                 LOGGER.info("Stored : "+storedPass);
                 LOGGER.info("UserGiv: "+password);
-                if(storedPass.equalsIgnoreCase(password)) {
+                if(storedPass.equals(password)) {
                     passwordValid = true;
                 }
             }
@@ -450,7 +476,7 @@ public class FacilioAuthAction extends ActionSupport {
 
 
     public String signupPortalUser() throws Exception	{
-        LOGGER.info("signupUser() : username :"+username +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
+        LOGGER.info("signupUser() : username :"+getUsername() +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
         return addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
     }
 
@@ -470,10 +496,11 @@ public class FacilioAuthAction extends ActionSupport {
     }
 
     public String changePortalPassword() {
-        boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), cryptWithMD5(password), portalId());
+        boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), getPassword(), portalId());
         if(verifyOldPassword) {
             try {
                 User user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
+                user.setPassword(getNewPassword());
                 AccountUtil.getUserBean().updateUser(user);
                 setJsonresponse("message", "Password changed successfully");
                 setJsonresponse("status", "success");
@@ -486,5 +513,23 @@ public class FacilioAuthAction extends ActionSupport {
         }
         setJsonresponse("status", "failure");
         return ERROR;
+    }
+
+    public String apiLogout() throws Exception {
+
+        HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletResponse response = ServletActionContext.getResponse();
+        HttpSession session = request.getSession();
+
+        session.invalidate();
+        if(portalId() > 0) {
+            LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
+        } else {
+            LoginUtil.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+        }
+
+        LoginUtil.eraseUserCookie(request, response, "fc.authtype", null);
+
+        return SUCCESS;
     }
 }
