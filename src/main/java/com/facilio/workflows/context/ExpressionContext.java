@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -180,69 +182,81 @@ public class ExpressionContext {
 		if(getConstant() != null) {
 			return getConstant();
 		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName); 
-		
-		selectBuilder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-				.andCriteria(criteria)
-				;
-		
-		if(modBean.getModule(moduleName).getExtendModule() != null) {
-			selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
-			.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
-		}
-		
-		if(fieldName != null && !isManualAggregateQuery()) {
-			List<FacilioField> selectFields = new ArrayList<>();
+		List<Map<String, Object>> props = null;
+		if (!LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName); 
 			
-			FacilioField select = modBean.getField(fieldName, moduleName);
-			select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
-			select.setExtendedModule(null);
-			select.setModule(null);
-			select.setName(RESULT_STRING);
+			selectBuilder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+					.andCriteria(criteria)
+					;
 			
-			if(aggregateString != null) {
-				ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
-				select = expAggregateOpp.getSelectField(select);
-				if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
-					selectBuilder.limit(1);
-				}
-				else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
-					String parentIdString = null;
-					Map<Integer, Condition> conditions = criteria.getConditions();
-					for(Integer key:conditions.keySet()) {
-						Condition condition = conditions.get(key);
-						if(condition.getFieldName().contains("parentId")) {
-							parentIdString = condition.getValue();
-						}
-					}
-					exprResult = ReadingsAPI.getLastReadingValue(Long.parseLong(parentIdString), select);
-					return exprResult;
-				}
+			if(modBean.getModule(moduleName).getExtendModule() != null) {
+				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
+				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
 			}
-			selectFields.add(select);
-			selectBuilder.select(selectFields);
+			
+			if(fieldName != null && !isManualAggregateQuery()) {
+				List<FacilioField> selectFields = new ArrayList<>();
+				
+				FacilioField select = modBean.getField(fieldName, moduleName);
+				select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
+				select.setExtendedModule(null);
+				select.setModule(null);
+				select.setName(RESULT_STRING);
+				
+				if(aggregateString != null) {
+					ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
+					select = expAggregateOpp.getSelectField(select);
+					if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
+						selectBuilder.limit(1);
+					}
+					else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
+						String parentIdString = null;
+						Map<Integer, Condition> conditions = criteria.getConditions();
+						for(Integer key:conditions.keySet()) {
+							Condition condition = conditions.get(key);
+							if(condition.getFieldName().contains("parentId")) {
+								parentIdString = condition.getValue();
+							}
+						}
+						exprResult = ReadingsAPI.getLastReadingValue(Long.parseLong(parentIdString), select);
+						return exprResult;
+					}
+				}
+				selectFields.add(select);
+				selectBuilder.select(selectFields);
+			}
+			else {
+				selectBuilder.select(modBean.getAllFields(moduleName));
+			}
+			
+			if(getOrderByFieldName() != null) {
+				FacilioField orderByField = modBean.getField(getOrderByFieldName(), moduleName);
+				String orderByString = orderByField.getColumnName();
+				if(getSortBy() != null) {
+					orderByString = orderByString +" "+getSortBy();
+				}
+				selectBuilder.orderBy(orderByString);
+			}
+			if(getLimit() != null) {
+				selectBuilder.limit(Integer.parseInt(getLimit()));
+			}
+			
+			props = selectBuilder.get();
 		}
 		else {
-			selectBuilder.select(modBean.getAllFields(moduleName));
-		}
-		
-		if(getOrderByFieldName() != null) {
-			FacilioField orderByField = modBean.getField(getOrderByFieldName(), moduleName);
-			String orderByString = orderByField.getColumnName();
-			if(getSortBy() != null) {
-				orderByString = orderByString +" "+getSortBy();
+			List records = LookupSpecialTypeUtil.getObjects(moduleName, criteria);
+			if (records != null) {
+				props = new ArrayList<>();
+				for (Object record : records) {
+					props.add(FieldUtil.getAsProperties(record));
+				}
 			}
-			selectBuilder.orderBy(orderByString);
 		}
-		if(getLimit() != null) {
-			selectBuilder.limit(Integer.parseInt(getLimit()));
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
 		System.out.println("selectBuilder -- "+selectBuilder);
 		System.out.println("selectBuilder result -- "+props);
 		if(props != null && !props.isEmpty()) {
