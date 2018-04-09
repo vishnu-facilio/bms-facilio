@@ -919,6 +919,19 @@ public class DashboardAction extends ActionSupport {
 			conditionList.add(condition);
 		}
 	}
+	public JSONObject reportFieldsJson;
+	public JSONObject getReportFieldsJson() {
+		return reportFieldsJson;
+	}
+	public void setReportFieldsJson(JSONObject reportFieldsJson) {
+		this.reportFieldsJson = reportFieldsJson;
+	}
+	public String getReportFields() throws Exception {
+		if(moduleName != null) {
+			reportFieldsJson = DashboardUtil.getReportFields(moduleName);
+		}
+		return SUCCESS;
+	}
 	
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId, ReportEnergyMeterContext energyMeterFilter) throws Exception {
 		JSONArray ticketData = null;

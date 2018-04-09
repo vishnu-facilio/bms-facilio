@@ -3574,6 +3574,11 @@
 				<param name="includeProperties">dashboardId</param>
 			</result>
 		</action>
+		<action name="getReportFields" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportFields">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportFields.*</param>
+			</result>
+		</action>
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>

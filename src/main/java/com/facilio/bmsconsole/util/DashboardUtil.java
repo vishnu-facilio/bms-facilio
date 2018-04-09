@@ -49,6 +49,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -56,6 +57,60 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
+	public static List<String> workOrderXaxisOmitFields = new ArrayList<String>();
+	public static List<String> workOrderYaxisOmitFields = new ArrayList<String>();
+	public static List<String> workOrderGroupByOmitFields = new ArrayList<String>();
+	
+	static {
+		workOrderXaxisOmitFields.add("subject");
+		workOrderXaxisOmitFields.add("description");
+		workOrderXaxisOmitFields.add("serialNumber");
+		workOrderXaxisOmitFields.add("noOfNotes");
+		workOrderXaxisOmitFields.add("noOfAttachments");
+		workOrderXaxisOmitFields.add("noOfTasks");
+		workOrderXaxisOmitFields.add("noOfClosedTasks");
+		workOrderXaxisOmitFields.add("actualWorkDuration");
+		workOrderXaxisOmitFields.add("estimatedWorkDuration");
+		workOrderXaxisOmitFields.add("resumedWorkStart");
+		workOrderXaxisOmitFields.add("isWorkDurationChangeAllowed");
+		workOrderXaxisOmitFields.add("modifiedTime");
+		workOrderXaxisOmitFields.add("resumedWorkStart");
+		
+		workOrderYaxisOmitFields.add("subject");
+		workOrderYaxisOmitFields.add("description");
+		workOrderYaxisOmitFields.add("dueDate");
+		workOrderYaxisOmitFields.add("serialNumber");
+		workOrderYaxisOmitFields.add("noOfNotes");
+		workOrderYaxisOmitFields.add("noOfAttachments");
+		workOrderYaxisOmitFields.add("noOfTasks");
+		workOrderYaxisOmitFields.add("noOfClosedTasks");
+		workOrderYaxisOmitFields.add("scheduledStart");
+		workOrderYaxisOmitFields.add("estimatedEnd");
+		workOrderYaxisOmitFields.add("requester");
+		workOrderYaxisOmitFields.add("createdTime");
+		workOrderYaxisOmitFields.add("resource");
+		workOrderYaxisOmitFields.add("resumedWorkStart");
+		workOrderYaxisOmitFields.add("isWorkDurationChangeAllowed");
+		workOrderYaxisOmitFields.add("assignedBy");
+		workOrderYaxisOmitFields.add("modifiedTime");
+		
+		
+		workOrderGroupByOmitFields.add("subject");
+		workOrderGroupByOmitFields.add("description");
+		workOrderGroupByOmitFields.add("dueDate");
+		workOrderGroupByOmitFields.add("serialNumber");
+		workOrderGroupByOmitFields.add("noOfNotes");
+		workOrderGroupByOmitFields.add("noOfAttachments");
+		workOrderGroupByOmitFields.add("noOfTasks");
+		workOrderGroupByOmitFields.add("noOfClosedTasks");
+		workOrderGroupByOmitFields.add("scheduledStart");
+		workOrderGroupByOmitFields.add("estimatedEnd");
+		workOrderGroupByOmitFields.add("createdTime");
+		workOrderGroupByOmitFields.add("resumedWorkStart");
+		workOrderGroupByOmitFields.add("isWorkDurationChangeAllowed");
+		workOrderGroupByOmitFields.add("modifiedTime");
+		
+	}
 	
 	public static boolean deleteDashboard(Long dashboardId) throws SQLException {
 		
@@ -1101,6 +1156,45 @@ public class DashboardUtil {
 		return false;
 	}
 	
+	public static JSONObject getReportFields(String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		JSONObject result = new JSONObject();
+		
+		List<FacilioField> dateFilterField = new ArrayList<FacilioField>();
+		List<FacilioField> xAxisField = new ArrayList<FacilioField>();
+		List<FacilioField> yAxisField = new ArrayList<FacilioField>();
+		List<FacilioField> groupField = new ArrayList<FacilioField>();
+		ArrayList<FacilioField> allFields = modBean.getAllFields(moduleName);
+		
+		
+		for(FacilioField field:allFields) {
+				
+			if(moduleName.equals(ContextNames.WORK_ORDER)) {
+				
+				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
+					dateFilterField.add(field);
+				}
+				if(!workOrderXaxisOmitFields.contains(field.getName())) {
+					xAxisField.add(field);
+				}
+				if(!workOrderYaxisOmitFields.contains(field.getName())) {
+					yAxisField.add(field);
+				}
+				if(!workOrderGroupByOmitFields.contains(field.getName())) {
+					groupField.add(field);
+				}
+			}
+		}
+		
+		result.put("dateFilterFields", dateFilterField);
+		result.put("xAxisFields", xAxisField);
+		result.put("yAxisFields", yAxisField);
+		result.put("groupByFields", groupField);
+		result.put("allFields", allFields);
+		return result;
+	}
 	
 	public static boolean populateBuildingEnergyReports(long buildingId, String buildingName) throws Exception {
 		
@@ -1326,6 +1420,9 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 		}
 		else {
 			dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
+			if(reportContext.getDateFilter().getValue() != null) {
+				dateCondition.setValue(reportContext.getDateFilter().getValue());
+			}
 		}
 		return dateCondition;
 	}
