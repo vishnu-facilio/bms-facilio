@@ -347,7 +347,7 @@ public class TemplateAPI {
 		}
 		
 		if (template != null && template.getWorkflowId() != -1) {
-			template.setWorkflow(WorkflowUtil.getWorkflowContext(template.getWorkflowId()));
+			template.setWorkflow(WorkflowUtil.getWorkflowContext(template.getWorkflowId(), true));
 		}
 		
 		return template;

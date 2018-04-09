@@ -63,6 +63,20 @@ public class GenericGetModuleDataListCommand implements Command {
 			builder.andCriteria(scopeCriteria);
 		}
 		
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			builder.offset(offset);
+			builder.limit(perPage);
+		}
+		
 		/*if(view != null) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
