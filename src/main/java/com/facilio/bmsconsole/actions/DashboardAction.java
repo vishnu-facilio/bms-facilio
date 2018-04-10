@@ -1070,7 +1070,7 @@ public class DashboardAction extends ActionSupport {
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
 
-		if ("WorkOrders".equals(module.getTableName())){
+		if ("WorkOrders".equals(module.getTableName())) {
 			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
 		}
 		

@@ -196,27 +196,29 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"actual", "{$place_holder$}"),
-		COUNT(1,"count","count({$place_holder$})"),
-		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')"),
-		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
-		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy"),
-		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')"),
-		FULLDATE(12,"fullDate","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy"),
-		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')"),
-		//QUARTER(14,"quarter"),
-		MONTH(15,"month","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')"),
-		WEEK(16,"week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')"),
-		WEEKDAY(17,"weekDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')"),
-		DAYSOFMONTH(18,"daysOfMonth","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy"),
-		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a"),
-		HOURSOFDAYONLY(20,"hoursOfDayOnly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a")
+		ACTUAL(0,"actual", "{$place_holder$}",false),
+		COUNT(1,"count","count({$place_holder$})",false),
+		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true),
+		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false),
+		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false),
+		FULLDATE(12,"daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy",true),
+		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')",false),
+		MONTH(15,"Monthly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')",true),
+		WEEK(16,"Week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')",false),
+		WEEKDAY(17,"Weekly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')",true),
+		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false),
+		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false),
+		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true)
 		;
 		
 		private Integer value;
 		private String stringValue;
 		private String expr;
 		private String format;
+		private boolean isPublic;
+		public boolean isPublic() {
+			return isPublic;
+		}
 		public Integer getValue() {
 			return value;
 		}
@@ -226,20 +228,18 @@ public class FormulaContext {
 		public String getFormat() {
 			return format;
 		}
-		DateAggregateOperator(Integer value,String stringValue) {
-			this.value = value;
-			this.stringValue = stringValue;
-		}
-		DateAggregateOperator(Integer value,String stringValue,String expr) {
+		DateAggregateOperator(Integer value,String stringValue,String expr,boolean isPublic) {
 			this.value = value;
 			this.stringValue = stringValue;
 			this.expr = expr;
+			this.isPublic = isPublic;
 		}
-		DateAggregateOperator(Integer value,String stringValue,String expr, String format) {
+		DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic) {
 			this.value = value;
 			this.stringValue = stringValue;
 			this.expr = expr;
 			this.format = format;
+			this.isPublic = isPublic;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			System.out.println("org timeZone -- "+DateTimeUtil.getDateTime().getOffset().toString());
