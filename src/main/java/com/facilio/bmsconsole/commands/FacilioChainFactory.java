@@ -297,7 +297,6 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_AGENT_NOTIFICATION_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

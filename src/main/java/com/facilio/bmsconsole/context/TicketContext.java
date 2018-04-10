@@ -376,12 +376,13 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	
 	public static enum SourceType {
 		
-		WEB(1, "Web"),
-		EMAIL(2, "E Mail"),
-		SMS(3, "SMS"),
+		WEB_ORDER(1, "Web Work Order"),
+		EMAIL_REQUEST(2, "E Mail Request"),
+		SMS_REQUEST(3, "SMS Request"),
 		ALARM(4, "Alarm"),
 		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance"),
-		THRESHOLD_ALARM(6, "Threshold Alarm")
+		THRESHOLD_ALARM(6, "Threshold Alarm"),
+		WEB_REQUEST(7, "Web Request")
 		;
 		
 		private int intVal;

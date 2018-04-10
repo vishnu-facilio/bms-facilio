@@ -22,7 +22,7 @@ public class AddTicketCommand implements Command {
 		if(ticket != null) {
 			if(ticket.getSourceType() == -1)
 			{
-				ticket.setSourceType(TicketContext.SourceType.WEB);
+				ticket.setSourceType(TicketContext.SourceType.WEB_ORDER);
 			}
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
