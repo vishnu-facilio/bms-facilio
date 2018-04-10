@@ -230,7 +230,7 @@ public class AssetAction extends ActionSupport {
 		return this.page;
 	}
 	
-	private int perPage = 40;
+	private int perPage = -1;
 	public void setPerPage(int perPage) {
 		this.perPage = perPage;
 	}
