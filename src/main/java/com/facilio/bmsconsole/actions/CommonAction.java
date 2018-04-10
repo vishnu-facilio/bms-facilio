@@ -1,4 +1,4 @@
-package com.facilio.billing.action;
+package com.facilio.bmsconsole.actions;
 
 import com.facilio.workflows.context.WorkflowContext;
 import com.opensymphony.xwork2.ActionSupport;
