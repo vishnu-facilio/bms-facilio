@@ -115,7 +115,7 @@ public class WorkOrderRequestAction extends ActionSupport {
 			setWorkorderrequest(workOrderRequestString);
 		}
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
-		workorderrequest.setSourceType(TicketContext.SourceType.WEB);
+		workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);

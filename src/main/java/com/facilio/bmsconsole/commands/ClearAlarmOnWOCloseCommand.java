@@ -27,32 +27,37 @@ public class ClearAlarmOnWOCloseCommand implements Command {
 		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(ActivityType.CLOSE_WORK_ORDER == eventType && workOrder != null) {
-			if(workOrder.getSourceType() == TicketContext.SourceType.ALARM.getIntVal()) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
-				SelectRecordsBuilder<AlarmContext> alarmBuilder = new SelectRecordsBuilder<AlarmContext>()
-																	.moduleName(FacilioConstants.ContextNames.ALARM)
-																	.table("Alarms")
-																	.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
-																	.beanClass(AlarmContext.class)
-																	.andCustomWhere(alarmModule.getTableName()+".ID = ?", workOrder.getId());
-				
-				List<AlarmContext> alarms = alarmBuilder.get();
-				if(alarms != null && !alarms.isEmpty()) {
-					AlarmContext alarm = alarms.get(0);
-					AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
-					if(alarm.getSeverity() == null || alarm.getSeverity().getId() != clearSeverity.getId()) {
-						AlarmContext updatedAlarm = new AlarmContext();
-						updatedAlarm.setSeverity(clearSeverity);
-						
-						//Following should be moved to scheduler
-						List<Long> ids = new ArrayList<>();
-						ids.add(alarm.getId());
-						
-						ModuleCRUDBean moduleCrudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
-						moduleCrudBean.updateAlarm(updatedAlarm, ids);
+			switch(workOrder.getSourceTypeEnum()) {
+				case ALARM:
+				case THRESHOLD_ALARM:
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
+					SelectRecordsBuilder<AlarmContext> alarmBuilder = new SelectRecordsBuilder<AlarmContext>()
+																		.moduleName(FacilioConstants.ContextNames.ALARM)
+																		.table("Alarms")
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM))
+																		.beanClass(AlarmContext.class)
+																		.andCustomWhere(alarmModule.getTableName()+".ID = ?", workOrder.getId());
+					
+					List<AlarmContext> alarms = alarmBuilder.get();
+					if(alarms != null && !alarms.isEmpty()) {
+						AlarmContext alarm = alarms.get(0);
+						AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+						if(alarm.getSeverity() == null || alarm.getSeverity().getId() != clearSeverity.getId()) {
+							AlarmContext updatedAlarm = new AlarmContext();
+							updatedAlarm.setSeverity(clearSeverity);
+							
+							//Following should be moved to scheduler
+							List<Long> ids = new ArrayList<>();
+							ids.add(alarm.getId());
+							
+							ModuleCRUDBean moduleCrudBean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+							moduleCrudBean.updateAlarm(updatedAlarm, ids);
+						}
 					}
-				}
+					break;
+				default:
+					break;
 			}
 		}
 		return false;

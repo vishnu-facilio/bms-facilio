@@ -91,7 +91,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrder(WorkOrderContext workorder)  {
 		try {
-		workorder.setSourceType(TicketContext.SourceType.WEB);
+		workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
