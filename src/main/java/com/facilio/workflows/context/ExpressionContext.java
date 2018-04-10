@@ -263,8 +263,10 @@ public class ExpressionContext {
 			
 			if(isManualAggregateQuery()) {
 				List<Map<String, Object>> passedData = new ArrayList<>();
-				
-				for(Map<String, Object> prop:props) {
+				Long ttimeCount = 0l;
+				for(int i = 0;i<props.size();i++) {
+					
+					Map<String, Object> prop = props.get(i);
 					boolean isPassedData = true;
 					if(aggregateCondition != null) {
 						for(Condition condition:aggregateCondition) {
@@ -274,11 +276,20 @@ public class ExpressionContext {
 						}
 					}
 					if(isPassedData) {
+						if(getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+							if(i < props.size()-1) {
+								Long ss = (Long)props.get(i+1).get("ttime") - (Long)prop.get("ttime");
+								ttimeCount = ttimeCount + ss;
+							}
+						}
 						passedData.add(prop);
 					}
 				}
-				if(getAggregateOpperator() != null) {
+				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
 					return getAggregateOpperator().getAggregateResult(passedData, fieldName);
+				}
+				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+					return ttimeCount;
 				}
 				else {
 					return passedData;

@@ -12,6 +12,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
@@ -177,7 +178,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
 				for(FacilioField field : selectFields) {
-					Object val = rs.getObject(field.getName());
+					Object val = null;
+					if (field.getDataTypeEnum() == FieldType.BOOLEAN) {
+						val = rs.getBoolean(field.getName());
+					}
+					else {
+						val = rs.getObject(field.getName());
+					}
 					if(val != null) {
 						record.put(field.getName(), val);
 					}

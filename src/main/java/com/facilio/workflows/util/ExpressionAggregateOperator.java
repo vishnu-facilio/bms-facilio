@@ -80,7 +80,9 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			return props.get(props.size()-1).get(fieldName);
 		}
-	};
+	},
+	COUNT_RUNNING_TIME(7,"countRunningTime","{$place_holder$}")
+	;
 	
 	private Integer value;
 	private String name;
