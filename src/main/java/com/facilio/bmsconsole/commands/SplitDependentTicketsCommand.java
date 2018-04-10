@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,8 @@ public class SplitDependentTicketsCommand implements Command {
 			switch (moduleName) {
 				case FacilioConstants.ContextNames.WORK_ORDER:
 						dependentIds = getRecords(recordIds, FacilioConstants.ContextNames.ALARM);
-						if (dependentIds != null) {
+						if (dependentIds != null && !dependentIds.isEmpty()) {
+							dependentIds = new HashSet<>(dependentIds);
 							dependentIds.addAll(getRecords(recordIds, FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
 						}
 						else {

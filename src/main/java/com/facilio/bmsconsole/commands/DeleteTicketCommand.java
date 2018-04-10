@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ public class DeleteTicketCommand implements Command {
 				rowsUpdated += deleteTickets(ticketModule, recordIds);
 			}
 			if (dependentIds != null && !dependentIds.isEmpty()) {
-				rowsUpdated += deleteTickets(module, recordIds);
+				rowsUpdated += deleteTickets(module, dependentIds);
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		}
@@ -63,7 +64,7 @@ public class DeleteTicketCommand implements Command {
 		return builder.get();
 	}
 	
-	private int deleteTickets(FacilioModule module, List<Long> recordIds) throws SQLException {
+	private int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws SQLException {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
