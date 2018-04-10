@@ -4,14 +4,13 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -27,20 +26,26 @@ public class GenericDeleteModuleDataCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-			String ids = StringUtils.join(recordIds, ",");
-			Condition idCondition = new Condition();
-			idCondition.setField(FieldFactory.getIdField(module));
-			idCondition.setOperator(NumberOperators.EQUALS);
-			idCondition.setValue(ids);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, getRecords(module, recordIds, fields));
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(idCondition);
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 		}
 		return false;
+	}
+	
+	private List getRecords(FacilioModule module, List<Long> recordIds, List<FacilioField> fields) throws Exception {
+		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+																				.select(fields)
+																				.module(module)
+																				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+																				.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
+																				;
+		return builder.get();
 	}
 	
 

@@ -115,6 +115,7 @@ public class FacilioConstants {
 		public static final String PARENT_ID_LIST = "parentIds";
 		
 		public static final String TICKET_ID = "ticketId";
+		public static final String DEPENDENT_TICKET_IDS = "dependentTicketIds";
 		
 		public static final String TICKET_STATUS = "ticketstatus";
 		public static final String TICKET_STATUS_LIST = "ticketstatuses";
