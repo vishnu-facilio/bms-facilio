@@ -73,7 +73,53 @@ public class DashboardUtil {
 	public static List<String> eventsYaxisOmitFields = new ArrayList<String>();
 	public static List<String> eventsGroupByOmitFields = new ArrayList<String>();
 	
+	public static List<String> energyDataXaxisOmitFields = new ArrayList<String>();
+	public static List<String> energyDataYaxisOmitFields = new ArrayList<String>();
+	public static List<String> energyDataGroupByOmitFields = new ArrayList<String>();
+	
 	static {
+		energyDataXaxisOmitFields.add("activePowerB");
+		energyDataXaxisOmitFields.add("activePowerR");
+		energyDataXaxisOmitFields.add("activePowerY");
+		energyDataXaxisOmitFields.add("apparentPowerB");
+		energyDataXaxisOmitFields.add("apparentPowerR");
+		energyDataXaxisOmitFields.add("apparentPowerY");
+		energyDataXaxisOmitFields.add("frequencyB");
+		energyDataXaxisOmitFields.add("frequencyR");
+		energyDataXaxisOmitFields.add("frequencyY");
+		energyDataXaxisOmitFields.add("lineCurrentB");
+		energyDataXaxisOmitFields.add("lineCurrentR");
+		energyDataXaxisOmitFields.add("lineCurrentY");
+		energyDataXaxisOmitFields.add("lineVoltageB");
+		energyDataXaxisOmitFields.add("lineVoltageR");
+		energyDataXaxisOmitFields.add("lineVoltageY");
+		energyDataXaxisOmitFields.add("phaseEnergyB");
+		energyDataXaxisOmitFields.add("phaseEnergyBDelta");
+		energyDataXaxisOmitFields.add("phaseEnergyR");
+		energyDataXaxisOmitFields.add("phaseEnergyRDelta");
+		energyDataXaxisOmitFields.add("phaseEnergyY");
+		energyDataXaxisOmitFields.add("phaseEnergyYDelta");
+		energyDataXaxisOmitFields.add("phaseVoltageB");
+		energyDataXaxisOmitFields.add("phaseVoltageR");
+		energyDataXaxisOmitFields.add("phaseVoltageY");
+		energyDataXaxisOmitFields.add("powerFactorB");
+		energyDataXaxisOmitFields.add("powerFactorR");
+		energyDataXaxisOmitFields.add("powerFactorY");
+		energyDataXaxisOmitFields.add("reactivePowerB");
+		energyDataXaxisOmitFields.add("reactivePowerR");
+		energyDataXaxisOmitFields.add("reactivePowerY");
+		energyDataXaxisOmitFields.add("totalEnergyConsumption");
+		energyDataXaxisOmitFields.add("totalEnergyConsumptionDelta");
+		
+		
+		energyDataYaxisOmitFields.add("ttime");
+		energyDataYaxisOmitFields.add("week");
+		energyDataYaxisOmitFields.add("date");
+		energyDataYaxisOmitFields.add("day");
+		energyDataYaxisOmitFields.add("hour");
+		energyDataYaxisOmitFields.add("month");
+		energyDataYaxisOmitFields.add("parentId");
+		
 		workOrderXaxisOmitFields.add("subject");
 		workOrderXaxisOmitFields.add("description");
 		workOrderXaxisOmitFields.add("serialNumber");
@@ -87,6 +133,36 @@ public class DashboardUtil {
 		workOrderXaxisOmitFields.add("isWorkDurationChangeAllowed");
 		workOrderXaxisOmitFields.add("modifiedTime");
 		workOrderXaxisOmitFields.add("resumedWorkStart");
+		
+		alarmsXaxisOmitFields.add("subject");
+		alarmsXaxisOmitFields.add("additionalInfoJsonStr");
+		alarmsXaxisOmitFields.add("description");
+		alarmsXaxisOmitFields.add("entityId");
+		alarmsXaxisOmitFields.add("node");
+		alarmsXaxisOmitFields.add("noOfAttachments");
+		alarmsXaxisOmitFields.add("noOfEvents");
+		alarmsXaxisOmitFields.add("noOfNotes");
+		alarmsXaxisOmitFields.add("noOfTasks");
+		alarmsXaxisOmitFields.add("previousSeverity");
+		alarmsXaxisOmitFields.add("serialNumber");
+//		alarmsXaxisOmitFields.add("subject");
+		
+		alarmsYaxisOmitFields.add("subject");
+		alarmsYaxisOmitFields.add("additionalInfoJsonStr");
+		alarmsYaxisOmitFields.add("description");
+		alarmsYaxisOmitFields.add("entityId");
+		alarmsYaxisOmitFields.add("node");
+		alarmsYaxisOmitFields.add("noOfAttachments");
+		alarmsYaxisOmitFields.add("noOfEvents");
+		alarmsYaxisOmitFields.add("noOfNotes");
+		alarmsYaxisOmitFields.add("noOfTasks");
+		alarmsYaxisOmitFields.add("previousSeverity");
+		alarmsYaxisOmitFields.add("serialNumber");
+		alarmsYaxisOmitFields.add("acknowledgedTime");
+		alarmsYaxisOmitFields.add("actualWorkEnd");
+		alarmsYaxisOmitFields.add("actualWorkStart");
+		alarmsYaxisOmitFields.add("scheduledStart");
+		
 		
 		workOrderYaxisOmitFields.add("subject");
 		workOrderYaxisOmitFields.add("description");
@@ -1239,6 +1315,34 @@ public class DashboardUtil {
 					yAxisField.add(field);
 				}
 				if(!workRequestGroupByOmitFields.contains(field.getName())) {
+					groupField.add(field);
+				}
+			}
+			else if (moduleName.endsWith(ContextNames.ALARM)) {
+				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
+					dateFilterField.add(field);
+				}
+				if(!alarmsXaxisOmitFields.contains(field.getName())) {
+					xAxisField.add(field);
+				}
+				if(!alarmsYaxisOmitFields.contains(field.getName())) {
+					yAxisField.add(field);
+				}
+				if(!alarmsGroupByOmitFields.contains(field.getName())) {
+					groupField.add(field);
+				}
+			}
+			else if (moduleName.endsWith(ContextNames.ENERGY_DATA_READING)) {
+				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
+					dateFilterField.add(field);
+				}
+				if(!energyDataXaxisOmitFields.contains(field.getName())) {
+					xAxisField.add(field);
+				}
+				if(!energyDataYaxisOmitFields.contains(field.getName())) {
+					yAxisField.add(field);
+				}
+				if(!energyDataGroupByOmitFields.contains(field.getName())) {
 					groupField.add(field);
 				}
 			}
