@@ -65,6 +65,14 @@ public class DashboardUtil {
 	public static List<String> workRequestYaxisOmitFields = new ArrayList<String>();
 	public static List<String> workRequestGroupByOmitFields = new ArrayList<String>();
 	
+	public static List<String> alarmsXaxisOmitFields = new ArrayList<String>();
+	public static List<String> alarmsYaxisOmitFields = new ArrayList<String>();
+	public static List<String> alarmsGroupByOmitFields = new ArrayList<String>();
+	
+	public static List<String> eventsXaxisOmitFields = new ArrayList<String>();
+	public static List<String> eventsYaxisOmitFields = new ArrayList<String>();
+	public static List<String> eventsGroupByOmitFields = new ArrayList<String>();
+	
 	static {
 		workOrderXaxisOmitFields.add("subject");
 		workOrderXaxisOmitFields.add("description");
