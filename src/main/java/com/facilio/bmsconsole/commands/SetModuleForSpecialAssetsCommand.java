@@ -16,27 +16,35 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 		// TODO Auto-generated method stub
 		
 		long categoryId = (long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
-		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-		String assetName = assetCategory.getName();
-		if(assetName.trim().equalsIgnoreCase("Energy Meter"))
-		{
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "energymeter");
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
-		}
-		else if(assetName.trim().equalsIgnoreCase("Chiller"))
-		{
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "chiller");
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
-		}
-		else if(assetName.trim().equalsIgnoreCase("AHU"))
-		{
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "ahu");
-			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
-		}
-		else
+		if (categoryId == 0 || categoryId == -1)
 		{
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+		}
+		else 
+		{
+			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
+			String assetName = assetCategory.getName();
+			if(assetName.trim().equalsIgnoreCase("Energy Meter"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "energymeter");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
+			}
+			else if(assetName.trim().equalsIgnoreCase("Chiller"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "chiller");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
+			}
+			else if(assetName.trim().equalsIgnoreCase("AHU"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "ahu");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
+			}
+			else
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+			}
 		}
 		return false;
 	}
