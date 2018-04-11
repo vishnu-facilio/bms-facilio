@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,9 +12,9 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 
 public class DeleteTicketCommand implements Command {
 
@@ -43,10 +41,10 @@ public class DeleteTicketCommand implements Command {
 			int rowsUpdated = 0;
 			if(recordIds != null && !recordIds.isEmpty()) {
 				FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-				rowsUpdated += deleteTickets(ticketModule, recordIds);
+				rowsUpdated += TicketAPI.deleteTickets(ticketModule, recordIds);
 			}
 			if (dependentIds != null && !dependentIds.isEmpty()) {
-				rowsUpdated += deleteTickets(module, dependentIds);
+				rowsUpdated += TicketAPI.deleteTickets(module, dependentIds);
 			}
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		}
@@ -63,14 +61,4 @@ public class DeleteTicketCommand implements Command {
 																				;
 		return builder.get();
 	}
-	
-	private int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws SQLException {
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-
-		return builder.delete();
-	}
-
 }

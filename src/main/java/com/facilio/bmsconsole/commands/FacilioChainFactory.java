@@ -13,7 +13,6 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
-import com.facilio.bmsconsole.commands.SetModuleForSpecialAssetsCommand;
 import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChainFactory {
@@ -373,6 +372,17 @@ public class FacilioChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GetWorkOrderRequestListCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getDeleteWorkOrderRequestChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}

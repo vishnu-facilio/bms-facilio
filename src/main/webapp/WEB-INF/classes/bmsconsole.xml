@@ -1973,6 +1973,14 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="deleteWorkOrderRequest">
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 
 		<action name="approve"
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="approveWorkOrderRequest">
