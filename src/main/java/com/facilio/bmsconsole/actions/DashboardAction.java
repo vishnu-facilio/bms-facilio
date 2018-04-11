@@ -1061,7 +1061,7 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
-		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
+		if(report.getY1Axis() != null || report.getY1AxisField() != null && (report.getY1AxisField().getModuleFieldId() != null || report.getY1AxisField().getFormulaFieldId() != null)) {
 			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
 			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
 			y1AxisField = reportY1AxisField.getField();

@@ -42,7 +42,11 @@ public class ReportDateFilterContext {
 	public void setFieldId(Long fieldId) {
 		this.fieldId = fieldId;
 	}
-	public FacilioField getField() {
+	public FacilioField getField() throws Exception {
+		if(field == null && fieldId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			this.field = modBean.getField(fieldId);
+		}
 		return field;
 	}
 	public void setField(FacilioField field) {
