@@ -761,6 +761,7 @@ public class FacilioChainFactory {
 	public static Chain getAddCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(new AddLocationCommand());
 		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddCampusCommand());
