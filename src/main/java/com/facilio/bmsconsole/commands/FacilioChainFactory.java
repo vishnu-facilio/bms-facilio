@@ -409,7 +409,10 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAlarmChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new DeleteAlarmCommand());
+		c.addCommand(new RemoveAlarmFromEventCommand());
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
