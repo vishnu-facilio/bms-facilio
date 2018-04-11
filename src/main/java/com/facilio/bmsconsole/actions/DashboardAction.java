@@ -824,7 +824,13 @@ public class DashboardAction extends ActionSupport {
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(reportContext.getModuleId());
+		FacilioModule module = null;
+		if(moduleName != null) {
+			module = modBean.getModule(moduleName);
+		}
+		else {
+			module = modBean.getModule(reportContext.getModuleId());
+		}
 		
 		if(reportSpaceFilterContext != null) {
 			reportContext.setReportSpaceFilterContext(reportSpaceFilterContext);
