@@ -1468,8 +1468,8 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 		}
 		else {
 			dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-			if(reportContext.getDateFilter().getVal() != null) {
-				dateCondition.setValue(reportContext.getDateFilter().getVal());
+			if(reportContext.getDateFilter().getValue() != null) {
+				dateCondition.setValue(reportContext.getDateFilter().getValue());
 			}
 		}
 		return dateCondition;

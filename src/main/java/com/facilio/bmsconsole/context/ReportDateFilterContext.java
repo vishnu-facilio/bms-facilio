@@ -13,7 +13,7 @@ public class ReportDateFilterContext {
 	private Long fieldId;
 	private FacilioField field;
 	private Integer operatorId;
-	private String val;
+	private String value;
 	
 	public Long getId() {
 		return id;
@@ -57,10 +57,10 @@ public class ReportDateFilterContext {
 	public void setOperatorId(Integer operatorId) {
 		this.operatorId = operatorId;
 	}
-	public String getVal() {
-		return val;
+	public String getValue() {
+		return value;
 	}
-	public void setVal(String val) {
-		this.val = val;
+	public void setValue(String value) {
+		this.value = value;
 	}
 }
