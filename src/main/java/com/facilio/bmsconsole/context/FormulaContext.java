@@ -138,26 +138,28 @@ public class FormulaContext {
 	
 	public enum NumberAggregateOperator implements AggregateOperator {
 		
-		COUNT(1,"count({$place_holder$})"),
-		AVERAGE(2,"avg({$place_holder$})"),
-		SUM(3,"sum({$place_holder$})"),
-		MIN(4,"min({$place_holder$})"),
-		MAX(5,"max({$place_holder$})");
+		COUNT(1,"Count","count({$place_holder$})"),
+		AVERAGE(2,"Average","avg({$place_holder$})"),
+		SUM(3,"Sum","sum({$place_holder$})"),
+		MIN(4,"Min","min({$place_holder$})"),
+		MAX(5,"Max","max({$place_holder$})");
 		
 		private Integer value;
 		private String stringValue;
+		private String expr;
 		public Integer getValue() {
 			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		NumberAggregateOperator(Integer value,String stringValue) {
+		NumberAggregateOperator(Integer value,String stringValue,String expr) {
 			this.value = value;
 			this.stringValue = stringValue;
+			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setDisplayName(this.name());
@@ -169,23 +171,26 @@ public class FormulaContext {
 	
 	public enum StringAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"{$place_holder$}"),
-		COUNT(1,"count({$place_holder$})");
+		ACTUAL(0,"Actual","{$place_holder$}"),
+		COUNT(1,"Count","count({$place_holder$})");
 		
 		private Integer value;
 		private String stringValue;
+		private String expr;
+		
 		public Integer getValue() {
 			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		StringAggregateOperator(Integer value,String stringValue) {
+		StringAggregateOperator(Integer value,String stringValue,String expr) {
 			this.value = value;
 			this.stringValue = stringValue;
+			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);
@@ -196,8 +201,8 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"actual", "{$place_holder$}",false),
-		COUNT(1,"count","count({$place_holder$})",false),
+		ACTUAL(0,"Actual", "{$place_holder$}",false),
+		COUNT(1,"Count","count({$place_holder$})",false),
 		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true),
 		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false),
 		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false),
@@ -278,7 +283,6 @@ public class FormulaContext {
 			this.stringValue = stringValue;
 			this.columnName = columnName;
 		}
-		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseSpaceModule = modBean.getModule("basespace");
@@ -294,7 +298,7 @@ public class FormulaContext {
 	
 	public enum EnergyPurposeAggregateOperator implements AggregateOperator {
 		
-		PURPOSE(24);
+		PURPOSE(24,"Purpose");
 		
 		private Integer value;
 		private String stringValue;
@@ -309,9 +313,9 @@ public class FormulaContext {
 		public String getcolumnName() {
 			return columnName;
 		}
-		EnergyPurposeAggregateOperator(Integer value) {
+		EnergyPurposeAggregateOperator(Integer value,String stringValue) {
 			this.value = value;
-//			this.stringValue = stringValue;
+			this.stringValue = stringValue;
 //			this.columnName = columnName;
 		}
 		
