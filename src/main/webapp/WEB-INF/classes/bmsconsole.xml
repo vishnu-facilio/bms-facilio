@@ -1379,6 +1379,7 @@
 		<action name="getspacespecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceSpecificReadings">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
 		</action>
