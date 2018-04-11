@@ -3590,6 +3590,11 @@
 				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*</param>
 			</result>
 		</action>
+		<action name="updateReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getCardData">
 			<result name="success" type="json">
 				<param name="includeProperties">^cardResult.*</param>

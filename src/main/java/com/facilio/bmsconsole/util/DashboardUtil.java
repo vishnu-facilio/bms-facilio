@@ -49,6 +49,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -1273,6 +1274,23 @@ public class DashboardUtil {
 		return false;
 	}
 	
+	public static void getFormulaFieldsForWorkflow() throws Exception {
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+		select.table(ModuleFactory.getReportFormulaField().getTableName());
+		select.andCustomWhere(ModuleFactory.getReportFormulaField()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
+		
+		select.innerJoin(ModuleFactory.getReportField().getTableName())
+		.on(ModuleFactory.getReportField().getTableName()+".FORMULA_FIELD_ID = "+ModuleFactory.getReportFormulaField().getTableName()+".ID");
+		
+		List<Map<String, Object>> props = select.get();
+		
+		for(Map<String, Object> prop:props) {
+			
+			ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class); 
+		}
+	}
+	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1623,5 +1641,88 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			return reportColumns;
 		}
 		return null;
+	}
+	public static ReportContext UpdateReport(ReportContext reportContext) throws Exception {
+		
+		ReportContext oldReport = getReportContext(reportContext.getId());
+		if (reportContext != null) {
+			
+			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			if(reportContext.getModuleId() == -1) {
+				FacilioModule module = modBean.getModule(reportContext.getModuleName());
+				reportContext.setModuleId(module.getModuleId());
+			}
+			else {
+				FacilioModule module = modBean.getModule(reportContext.getModuleId());
+				reportContext.setModuleName(module.getName());
+			}
+			
+			List<FacilioField> fields = FieldFactory.getReportFields();
+			
+			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
+			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
+				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
+			}
+			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
+				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
+			}
+			
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+			.table(ModuleFactory.getReport().getTableName())
+			.fields(fields);
+			
+			Map<String, Object> reportProp = FieldUtil.getAsProperties(reportContext);
+			update.update(reportProp);
+			
+
+			GenericInsertRecordBuilder insertBuilder;
+			if(reportContext.getCriteria() != null) {
+				if(oldReport.getReportCriteriaContexts() != null && oldReport.getReportCriteriaContexts().get(0) != null) {
+					
+					GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
+					delete.table(ModuleFactory.getReportCriteria().getTableName())
+					.andCustomWhere(ModuleFactory.getReportCriteria().getTableName()+".REPORT_ID = ?", oldReport.getId());
+					
+					delete.delete();
+					CriteriaAPI.deleteCriteria(oldReport.getReportCriteriaContexts().get(0).getCriteriaId());
+				}
+				
+				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
+				
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportCriteria().getTableName())
+						.fields(FieldFactory.getReportCriteriaFields());
+				
+				Map<String, Object> prop = new HashMap<String, Object>();
+				prop.put("reportId", reportContext.getId());
+				prop.put("criteriaId", criteriaId);
+				insertBuilder.addRecord(prop).save();
+			}
+			if(reportContext.getReportUserFilters() != null) {
+			}
+			if(reportContext.getReportThresholds() != null) {
+			}
+			if(reportContext.getDateFilter() != null) {
+				
+				GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
+				
+				delete.table(ModuleFactory.getReportDateFilter().getTableName())
+				.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", oldReport.getId());
+				delete.delete();
+				
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
+				prop.put("reportId", reportContext.getId());
+
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportDateFilter().getTableName())
+						.fields(FieldFactory.getReportDateFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
+		}
+		reportContext = getReportContext(reportContext.getId());
+		return reportContext;
 	}
 }

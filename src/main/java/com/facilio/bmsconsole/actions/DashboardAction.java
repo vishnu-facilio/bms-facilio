@@ -1252,7 +1252,10 @@ public class DashboardAction extends ActionSupport {
 		DashboardUtil.deleteReport(reportId);
 		return SUCCESS;
 	}
-	
+	public String updateReport() throws Exception {
+		reportContext = DashboardUtil.UpdateReport(reportContext);
+		return SUCCESS;
+	}
 	
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
