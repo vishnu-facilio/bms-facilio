@@ -1458,7 +1458,7 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 	
 }
 	
-	public static Condition getDateCondition(ReportContext reportContext, JSONArray dateFilter, FacilioModule module) {
+	public static Condition getDateCondition(ReportContext reportContext, JSONArray dateFilter, FacilioModule module) throws Exception {
 		Condition dateCondition = new Condition();
 		dateCondition.setField(reportContext.getDateFilter().getField());
 		
