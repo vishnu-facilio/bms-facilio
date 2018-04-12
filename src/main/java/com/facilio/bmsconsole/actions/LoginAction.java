@@ -644,6 +644,8 @@ public class LoginAction extends ActionSupport{
 		data.put("groups", groups);
 		data.put("roles", roles);
 		
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getOrgId()));
+		
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
