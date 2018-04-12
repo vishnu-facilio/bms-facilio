@@ -80,27 +80,27 @@ SET @WO_RESOURCE_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 INSERT INTO Report_Field (FIELD_LABEL,MODULE_FIELD_ID) VALUES ('wo_sourceType',${workorder_sourceType});
 SET @WO_SOURCE_TYPE_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'workorder avg completion date by mins',1,'(ACTUAL_WORK_END-ACTUAL_WORK_START)/1000/60');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'workorder avg completion date by mins',1,'(ACTUAL_WORK_END-ACTUAL_WORK_START)/1000/60');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('workorder avg completion date by mins',(SELECT LAST_INSERT_ID()));
 SET @WO_AVG_COMPLETION_TIME_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'workorder overdue status',1,'IF((DUE_DATE-ACTUAL_WORK_END) >= 0,''Ontime'',''Overdue'')');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'workorder overdue status',1,'IF((DUE_DATE-ACTUAL_WORK_END) >= 0,''Ontime'',''Overdue'')');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('workorder overdue status',(SELECT LAST_INSERT_ID()));
 SET @WO_OVER_DUE_STATUS_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'workorder type',1,'IF((Tickets.SOURCE_TYPE) = 5,''Planned'',''Unplanned'')');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'workorder type',1,'IF((Tickets.SOURCE_TYPE) = 5,''Planned'',''Unplanned'')');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('workorder type',(SELECT LAST_INSERT_ID()));
 SET @WO_TYPE_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'workorder assigened status',1,'if(ASSIGNED_TO_ID is null,''Unassigned'',''Assigned'')');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'workorder assigened status',1,'if(ASSIGNED_TO_ID is null,''Unassigned'',''Assigned'')');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('workorder assigened status',(SELECT LAST_INSERT_ID()));
 SET @WO_ASIGNED_STATUS_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'open workorder status',1,'IF((DUE_DATE-(UNIX_TIMESTAMP()*1000)) >= 0,''Intime'',''Overdue'')');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'open workorder status',1,'IF((DUE_DATE-(UNIX_TIMESTAMP()*1000)) >= 0,''Intime'',''Overdue'')');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('open workorder status',(SELECT LAST_INSERT_ID()));
 SET @WO_OPEN_STATUS_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Report_Formula_Field (ORGID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},'workorder avg completion date by hour',1,'(ACTUAL_WORK_END-ACTUAL_WORK_START)/1000/60/60');
+INSERT INTO Report_Formula_Field (ORGID,MODULEID,NAME,DATA_TYPE,FORMULA) VALUES (${orgId},${workOrderModuleId},'workorder avg completion date by hour',1,'(ACTUAL_WORK_END-ACTUAL_WORK_START)/1000/60/60');
 INSERT INTO Report_Field (FIELD_LABEL,FORMULA_FIELD_ID) VALUES ('workorder avg completion date by hour',(SELECT LAST_INSERT_ID()));
 SET @WO_AVG_COMPLETION_TIME_BY_HOUR_FF_REPORT_FIELD_ID = (SELECT LAST_INSERT_ID());
 
