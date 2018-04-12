@@ -2644,6 +2644,8 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReportFormulaField();
 
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
