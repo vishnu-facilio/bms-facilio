@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class CommonAction extends ActionSupport {
@@ -22,7 +23,10 @@ public class CommonAction extends ActionSupport {
 	}
 	
 	public String executeWorkflow() throws Exception {
-		result = workflow.executeWorkflow(); 
+		if (workflow.getWorkflowString() == null) {
+			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
+		}
+		result = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null);
 		return SUCCESS;
 	}
 }

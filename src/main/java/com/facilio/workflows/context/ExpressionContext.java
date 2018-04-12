@@ -37,6 +37,7 @@ public class ExpressionContext {
 	String orderByFieldName;
 	String sortBy;
 	String limit;
+	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
 	
 	public Map<Integer, Long> getConditionSeqVsBaselineId() {
@@ -76,6 +77,14 @@ public class ExpressionContext {
 
 	public void setLimit(String limit) {
 		this.limit = limit;
+	}
+	
+	public String getGroupBy() {
+		return groupBy;
+	}
+	
+	public void setGroupBy(String groupBy) {
+		this.groupBy = groupBy;
 	}
 	
 	public List<Condition> getAggregateCondition() {
@@ -208,7 +217,7 @@ public class ExpressionContext {
 				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
-				if(aggregateString != null) {
+				if(aggregateString != null && !aggregateString.isEmpty()) {
 					ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
 					select = expAggregateOpp.getSelectField(select);
 					if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
@@ -239,7 +248,7 @@ public class ExpressionContext {
 			
 			if(getOrderByFieldName() != null) {
 				FacilioField orderByField = modBean.getField(getOrderByFieldName(), moduleName);
-				String orderByString = orderByField.getColumnName();
+				String orderByString = orderByField != null ? orderByField.getColumnName() : getOrderByFieldName();
 				if(getSortBy() != null) {
 					orderByString = orderByString +" "+getSortBy();
 				}
@@ -248,6 +257,10 @@ public class ExpressionContext {
 			
 			if(getLimit() != null) {
 				selectBuilder.limit(Integer.parseInt(getLimit()));
+			}
+			if(getGroupBy() != null) {
+				FacilioField groupByField = modBean.getField(getGroupBy(), moduleName);
+				selectBuilder.groupBy(groupByField.getColumnName());
 			}
 			
 			props = selectBuilder.get();
