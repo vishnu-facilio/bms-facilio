@@ -1150,7 +1150,6 @@ public class DashboardUtil {
 						report.setReportEntityId(reportContext.getReportEntityId());
 					}
 				}
-				
 			}
 			else {
 				parentReportContext = getParentReportForEntitiyId(reportContext.getReportEntityId());
@@ -1274,21 +1273,24 @@ public class DashboardUtil {
 		return false;
 	}
 	
-	public static void getFormulaFieldsForWorkflow() throws Exception {
+	public static List<ReportFormulaFieldContext> getFormulaFields(String moduleName) throws Exception {
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 		select.table(ModuleFactory.getReportFormulaField().getTableName());
 		select.andCustomWhere(ModuleFactory.getReportFormulaField()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
-		
-		select.innerJoin(ModuleFactory.getReportField().getTableName())
-		.on(ModuleFactory.getReportField().getTableName()+".FORMULA_FIELD_ID = "+ModuleFactory.getReportFormulaField().getTableName()+".ID");
+		select.andCustomWhere(ModuleFactory.getReportFormulaField()+".MODULEID = ?", modBean.getModule(moduleName).getModuleId());
 		
 		List<Map<String, Object>> props = select.get();
-		
+		List<ReportFormulaFieldContext> result = null;
 		for(Map<String, Object> prop:props) {
-			
-			ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class); 
+			if(result == null) {
+				result = new ArrayList<>();
+			}
+			ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFormulaFieldContext.class);
+			result.add(reportFormulaFieldContext);
 		}
+		return result;
 	}
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
@@ -1297,72 +1299,76 @@ public class DashboardUtil {
 		
 		JSONObject result = new JSONObject();
 		
-		List<FacilioField> dateFilterField = new ArrayList<FacilioField>();
-		List<FacilioField> xAxisField = new ArrayList<FacilioField>();
-		List<FacilioField> yAxisField = new ArrayList<FacilioField>();
-		List<FacilioField> groupField = new ArrayList<FacilioField>();
+		List<ReportFieldContext> dateFilterField = new ArrayList<ReportFieldContext>();
+		List<ReportFieldContext> xAxisField = new ArrayList<ReportFieldContext>();
+		List<ReportFieldContext> yAxisField = new ArrayList<ReportFieldContext>();
+		List<ReportFieldContext> groupField = new ArrayList<ReportFieldContext>();
 		ArrayList<FacilioField> allFields = modBean.getAllFields(moduleName);
 		
-		
 		for(FacilioField field:allFields) {
-				
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
+			reportFieldContext.setFieldLabel(field.getDisplayName());
+			reportFieldContext.setModuleFieldId(field.getId());
+			reportFieldContext.setModuleField(field);
+			
+			if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
+				dateFilterField.add(reportFieldContext);
+			}
+			
 			if(moduleName.equals(ContextNames.WORK_ORDER)) {
-				
-				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
-					dateFilterField.add(field);
-				}
 				if(!workOrderXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(field);
+					xAxisField.add(reportFieldContext);
 				}
 				if(!workOrderYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(field);
+					yAxisField.add(reportFieldContext);
 				}
 				if(!workOrderGroupByOmitFields.contains(field.getName())) {
-					groupField.add(field);
+					groupField.add(reportFieldContext);
 				}
 			}
 			else if (moduleName.endsWith(ContextNames.WORK_ORDER_REQUEST)) {
 				
-				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
-					dateFilterField.add(field);
-				}
 				if(!workRequestXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(field);
+					xAxisField.add(reportFieldContext);
 				}
 				if(!workRequestYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(field);
+					yAxisField.add(reportFieldContext);
 				}
 				if(!workRequestGroupByOmitFields.contains(field.getName())) {
-					groupField.add(field);
+					groupField.add(reportFieldContext);
 				}
 			}
 			else if (moduleName.endsWith(ContextNames.ALARM)) {
-				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
-					dateFilterField.add(field);
-				}
 				if(!alarmsXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(field);
+					xAxisField.add(reportFieldContext);
 				}
 				if(!alarmsYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(field);
+					yAxisField.add(reportFieldContext);
 				}
 				if(!alarmsGroupByOmitFields.contains(field.getName())) {
-					groupField.add(field);
+					groupField.add(reportFieldContext);
 				}
 			}
 			else if (moduleName.endsWith(ContextNames.ENERGY_DATA_READING)) {
-				if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
-					dateFilterField.add(field);
-				}
 				if(!energyDataXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(field);
+					xAxisField.add(reportFieldContext);
 				}
 				if(!energyDataYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(field);
+					yAxisField.add(reportFieldContext);
 				}
 				if(!energyDataGroupByOmitFields.contains(field.getName())) {
-					groupField.add(field);
+					groupField.add(reportFieldContext);
 				}
+			}
+		}
+		List<ReportFormulaFieldContext> formulaFieldContexts = getFormulaFields(moduleName);
+		if(formulaFieldContexts != null) {
+			for(ReportFormulaFieldContext formulaFieldContext:formulaFieldContexts) {
+				ReportFieldContext reportFieldContext = new ReportFieldContext();
+				reportFieldContext.setFieldLabel(formulaFieldContext.getName());
+				reportFieldContext.setReportFormulaContext(formulaFieldContext);
+				reportFieldContext.setIsFormulaField(true);
+				yAxisField.add(reportFieldContext);
 			}
 		}
 		
