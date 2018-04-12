@@ -11,11 +11,11 @@ public interface UpdateBuilderIfc<E> extends WhereBuilderIfc<UpdateBuilderIfc<E>
 	
 	public int update(E value) throws Exception;
 	
-	public UpdateJoinBuilderIfc<E> innerJoin(String tableName);
+	public JoinBuilderIfc<? extends UpdateBuilderIfc<E>> innerJoin(String tableName);
 	
-	public UpdateJoinBuilderIfc<E> leftJoin(String tableName);
+	public JoinBuilderIfc<? extends UpdateBuilderIfc<E>> leftJoin(String tableName);
 	
-	public UpdateJoinBuilderIfc<E> rightJoin(String tableName);
+	public JoinBuilderIfc<? extends UpdateBuilderIfc<E>> rightJoin(String tableName);
 	
-	public UpdateJoinBuilderIfc<E> fullJoin(String tableName);
+	public JoinBuilderIfc<? extends UpdateBuilderIfc<E>> fullJoin(String tableName);
 }
