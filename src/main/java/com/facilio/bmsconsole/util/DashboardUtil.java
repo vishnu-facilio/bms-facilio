@@ -1277,9 +1277,10 @@ public class DashboardUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+		select.select(FieldFactory.getReportFormulaFieldFields());
 		select.table(ModuleFactory.getReportFormulaField().getTableName());
-		select.andCustomWhere(ModuleFactory.getReportFormulaField()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
-		select.andCustomWhere(ModuleFactory.getReportFormulaField()+".MODULEID = ?", modBean.getModule(moduleName).getModuleId());
+		select.andCustomWhere(ModuleFactory.getReportFormulaField().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
+		select.andCustomWhere(ModuleFactory.getReportFormulaField().getTableName()+".MODULEID = ?", modBean.getModule(moduleName).getModuleId());
 		
 		List<Map<String, Object>> props = select.get();
 		List<ReportFormulaFieldContext> result = null;
