@@ -45,7 +45,7 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
 		long categoryId=-1;
-		if(assetCategory!=null) {
+		if(assetCategory!=null || assetCategory.getId() != 0) {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);

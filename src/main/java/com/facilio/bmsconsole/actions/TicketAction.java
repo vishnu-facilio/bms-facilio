@@ -119,17 +119,6 @@ public class TicketAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String deleteTicket() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
-
-		Chain deleteTicketChain = FacilioChainFactory.getDeleteTicketChain();
-		deleteTicketChain.execute(context);
-
-		return SUCCESS;
-	}
-	
 	public String assignTicket() throws Exception {
 
 		FacilioContext context = new FacilioContext();

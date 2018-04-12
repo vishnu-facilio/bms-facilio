@@ -232,6 +232,9 @@ public class ExpressionContext {
 			}
 			else {
 				selectBuilder.select(modBean.getAllFields(moduleName));
+				if(getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+					selectBuilder.orderBy("TTIME");
+				}
 			}
 			
 			if(getOrderByFieldName() != null) {
@@ -242,6 +245,7 @@ public class ExpressionContext {
 				}
 				selectBuilder.orderBy(orderByString);
 			}
+			
 			if(getLimit() != null) {
 				selectBuilder.limit(Integer.parseInt(getLimit()));
 			}

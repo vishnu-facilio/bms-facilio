@@ -304,6 +304,24 @@ public class CommonCommandUtil {
 		return null;		
 	}
     
+    public static JSONObject getOrgInfo(long orgId) throws Exception {
+    	
+    	JSONObject result = new JSONObject();
+    	
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgInfoFields())
+				.table(AccountConstants.getOrgInfoModule().getTableName())
+				.andCustomWhere("ORGID = ?", orgId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				result.put((String) prop.get("name"), prop.get("value"));
+			}
+		}
+		return result;		
+	}
+    
     public static Map<String, List<ReadingContext>> getReadingMap(FacilioContext context) {
     	Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS_MAP);
     	if (readingMap == null) {

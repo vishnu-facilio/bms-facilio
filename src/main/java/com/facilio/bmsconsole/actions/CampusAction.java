@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewLayout;
@@ -61,8 +62,19 @@ public class CampusAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();
 		System.out.println("The campus is "+site);
-		context.put(FacilioConstants.ContextNames.SITE, site);
 		
+		LocationContext location = site.getLocation();
+		if(location != null)
+		{
+			location.setName(site.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			Chain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
+		System.out.println(">>>>>>>>>>>>> Site :"+site);
+		context.put(FacilioConstants.ContextNames.SITE, site);
 		Chain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
 		

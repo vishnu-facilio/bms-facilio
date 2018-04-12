@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -97,6 +98,18 @@ public class AlarmAction extends ActionSupport {
 	}
 	public void setId(List<Long> id) {
 		this.id = id;
+	}
+	
+	public String deleteAlarm() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();
+		deleteAlarm.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
 	}
 
 	private int rowsUpdated;

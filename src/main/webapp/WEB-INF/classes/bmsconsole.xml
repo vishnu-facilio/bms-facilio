@@ -1192,14 +1192,6 @@
 			</result>
 		</action>
 
-		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction"
-			method="deleteTicket">
-			<param name="permission">WORKORDER_DELETE</param>
-			<result name="success" type="json">
-				<param name="status">deleted</param>
-				<param name="includeProperties">ticketId</param>
-			</result>
-		</action>
 		<action name="assign" class="com.facilio.bmsconsole.actions.TicketAction"
 			method="assignTicket">
 			<param name="permission">WORKORDER_ASSIGN</param>
@@ -1387,6 +1379,7 @@
 		<action name="getspacespecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceSpecificReadings">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
 		</action>
@@ -1976,6 +1969,14 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
 			<param name="moduleName">workorderrequest</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="deleteWorkOrderRequest">
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>

@@ -106,6 +106,18 @@ public class WorkOrderRequestAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteWorkOrderRequest() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderRequestChain();
+		deleteWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
 	public String addWorkOrderRequest() throws Exception {
 		
 		System.out.println("######## attachedFile : "+attachedFiles);

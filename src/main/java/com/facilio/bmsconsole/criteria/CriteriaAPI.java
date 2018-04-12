@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.criteria;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +159,7 @@ public class CriteriaAPI {
 		return idCondition;
 	}
 	
-	public static Condition getIdCondition(List<Long> ids, FacilioModule module) {
+	public static Condition getIdCondition(Collection<Long> ids, FacilioModule module) {
 		String id = StringUtils.join(ids, ",");
 		Condition idCondition = new Condition();
 		idCondition.setField(FieldFactory.getIdField(module));
