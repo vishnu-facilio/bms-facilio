@@ -1373,10 +1373,21 @@ public class DashboardUtil {
 		}
 		
 		result.put("dateFilterFields", dateFilterField);
-		result.put("xAxisFields", xAxisField);
+		result.put("workOrderXAxisFields", xAxisField);
 		result.put("yAxisFields", yAxisField);
 		result.put("groupByFields", groupField);
 		result.put("allFields", allFields);
+		
+		allFields = modBean.getAllFields(ContextNames.ASSET);
+		xAxisField = new ArrayList<>();
+		for(FacilioField field:allFields) {
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
+			reportFieldContext.setFieldLabel(field.getDisplayName());
+			reportFieldContext.setModuleFieldId(field.getId());
+			
+			xAxisField.add(reportFieldContext);
+		}
+		result.put("assetXAxisFields", xAxisField);
 		return result;
 	}
 	
