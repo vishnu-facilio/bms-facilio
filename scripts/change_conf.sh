@@ -24,8 +24,8 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.in%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.in/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=http://localhost:8080,http://localhost:9090,https://facilio.in%g" $CONF_DIR/awsprops.properties
-
-
+    sed -i'' "s%accessKeyId=.*%accessKeyId=AKIAJ2LOBSPBSNIC4TGA%g" $CONF_DIR/awsprops.properties
+    sed -i'' "s%secretKeyId=.*%secretKeyId=6lafRgv9iS54tBU2QZB16jR13TekUJdaHcAvoYbE%g" $CONF_DIR/awsprops.properties
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
@@ -39,7 +39,6 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     sed -i'' "s%api.servername=.*%api.servername=api.facilio.ae%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%websocket.url=.*%websocket.url=wss://api.facilio.ae/websocket%g" $CONF_DIR/awsprops.properties
     sed -i'' "s%cors.allowed.origins=.*%cors.allowed.origins=https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com%g" $CONF_DIR/awsprops.properties
-
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
