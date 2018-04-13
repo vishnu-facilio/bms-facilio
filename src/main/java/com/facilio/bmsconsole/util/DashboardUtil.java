@@ -1299,7 +1299,7 @@ public class DashboardUtil {
 			if(result == null) {
 				result = new ArrayList<>();
 			}
-			ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFormulaFieldContext.class);
+			ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(prop, ReportFormulaFieldContext.class);
 			result.add(reportFormulaFieldContext);
 		}
 		return result;
