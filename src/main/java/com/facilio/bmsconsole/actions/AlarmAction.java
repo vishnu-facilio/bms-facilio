@@ -136,6 +136,7 @@ public class AlarmAction extends ActionSupport {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+ 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
  		
  		JSONObject sorting = new JSONObject();
  		if (getOrderBy() != null) {
@@ -296,6 +297,17 @@ public class AlarmAction extends ActionSupport {
 	
 	public int getPerPage() {
 		return this.perPage;
+	}
+	
+	private String criteriaIds;
+	public void setCriteriaIds(String criteriaIds)
+	{
+		this.criteriaIds = criteriaIds;
+	}
+	
+	public String getCriteriaIds()
+	{
+		return this.criteriaIds;
 	}
 
 	private HashMap<String, Object> notification;

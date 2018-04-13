@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -48,6 +49,15 @@ public class GetAlarmListCommand implements Command {
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 		if (searchCriteria != null) {
 			builder.andCriteria(searchCriteria);
+		}
+		
+		String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
+		if (criteriaIds != null) {
+			String[] ids = criteriaIds.split(",");
+			for(int i = 0; i < ids.length; i++) {
+				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
+				builder.andCriteria(criteria);
+			}
 		}
 		
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
