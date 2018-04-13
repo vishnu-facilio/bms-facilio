@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -42,10 +43,24 @@ public class UpdateDashboardCommand implements Command {
 			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			
 			JSONObject widgetMapping = new JSONObject();
+			
 			List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
+			
 			if (widgets != null && widgets.size() > 0)  {
 				for (int i = 0; i < widgets.size(); i++) {
-					widgetMapping.put(widgets.get(i).getId(), true);
+					DashboardWidgetContext widget = widgets.get(i);
+					widgetMapping.put(widget.getId(), true);
+					
+					if(widget.getId() <= 0) {
+						Chain addWidgetChain = FacilioChainFactory.getAddWidgetChain();
+
+						context.put(FacilioConstants.ContextNames.WIDGET, widget);
+						context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getType());
+						context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboard.getId());
+						addWidgetChain.execute(context);
+						
+						widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
+					}
 				}
 			}
 
