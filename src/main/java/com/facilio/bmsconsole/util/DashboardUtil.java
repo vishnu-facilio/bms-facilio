@@ -848,6 +848,8 @@ public class DashboardUtil {
 	
 	public static ReportContext getReportContext(Long reportId) throws Exception {
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		List<FacilioField> fields = FieldFactory.getReportFields();
 		fields.addAll(FieldFactory.getReportCriteriaFields());
 		
@@ -863,9 +865,28 @@ public class DashboardUtil {
 		if (props != null && !props.isEmpty()) {
 			ReportContext reportContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportContext.class);
 			
+			if(reportContext != null) {
+				reportContext.setModuleName(modBean.getModule(reportContext.getModuleId()).getName());
+				
+				ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
+				reportContext.setxAxisField(reportXAxisField);
+				
+				if(reportContext.getY1Axis() != null || reportContext.getY1AxisField() != null ) {
+					ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
+					reportContext.setY1AxisField(reportY1AxisField);
+				}
+				if(reportContext.getGroupBy() != null) {
+					ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupByField());
+					reportContext.setGroupByField(reportGroupByField);
+				}
+			}
+			
 			for(Map<String, Object> prop:props) {
 				if(prop.get("criteriaId") != null) {
 					ReportCriteriaContext reportCriteriaContext = FieldUtil.getAsBeanFromMap(prop, ReportCriteriaContext.class);
+					
+					Criteria criteria = CriteriaAPI.getCriteria(reportContext.getOrgId(), reportCriteriaContext.getCriteriaId());
+					reportContext.setCriteria(criteria);
 					reportContext.addReportCriteriaContext(reportCriteriaContext);
 				}
 			}
@@ -909,8 +930,6 @@ public class DashboardUtil {
 			List<Map<String, Object>> dateFilterProps = selectBuilder.get();
 			if (dateFilterProps != null && !dateFilterProps.isEmpty()) {
 				ReportDateFilterContext dateFilterContext = FieldUtil.getAsBeanFromMap(dateFilterProps.get(0), ReportDateFilterContext.class);
-				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField ff = modBean.getFieldFromDB(dateFilterContext.getFieldId());
 				dateFilterContext.setField(ff);
 				
