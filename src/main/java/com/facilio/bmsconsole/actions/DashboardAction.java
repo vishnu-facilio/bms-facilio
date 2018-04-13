@@ -1040,7 +1040,26 @@ public class DashboardAction extends ActionSupport {
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+				
+				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
+				
+				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
+					
+					FacilioModule baseSpaceModule = modBean.getModule("basespace");
+					
+					builder.innerJoin(baseSpaceModule.getTableName())
+					.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
+					
+					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
+						
+						report.getxAxisField().getField().setDisplayName("Building");
+						report.getxAxisField().getField().setName("building");
+					}
+				}
+			}
 		}
+		
 		if(report.getY1Axis() != null || report.getY1AxisField() != null) {
 			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
 			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
