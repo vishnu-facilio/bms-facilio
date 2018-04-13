@@ -997,6 +997,13 @@ public class DashboardAction extends ActionSupport {
 		report.setxAxisField(reportXAxisField);
 		FacilioField xAxisField = reportXAxisField.getField();
 		
+		if(!module.getName().equals(xAxisField.getModule().getName()) && !module.getName().equals(FacilioConstants.ContextNames.TICKET)) {
+			if(xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+				builder.innerJoin(xAxisField.getModule().getTableName())
+				.on(xAxisField.getModule().getTableName()+".ID = Tickets.RESOURCE_ID");
+			}
+		}
+		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 			FacilioField dummyField = new FacilioField();
@@ -1018,11 +1025,8 @@ public class DashboardAction extends ActionSupport {
 			if ((dateFilter != null || report.getDateFilter() != null) && xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
 				
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
-				if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) ) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
-					report.setChartType(ReportChartType.HEATMAP.getValue());
-				}
-				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
+				
+				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
@@ -1041,24 +1045,6 @@ public class DashboardAction extends ActionSupport {
 					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
-			}
-			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
-				
-				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
-				
-				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
-					
-					FacilioModule baseSpaceModule = modBean.getModule("basespace");
-					
-					builder.innerJoin(baseSpaceModule.getTableName())
-					.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
-					
-					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
-						
-						report.getxAxisField().getField().setDisplayName("Building");
-						report.getxAxisField().getField().setName("building");
-					}
-				}
 			}
 		}
 		if(report.getY1Axis() != null || report.getY1AxisField() != null && (report.getY1AxisField().getModuleFieldId() != null || report.getY1AxisField().getFormulaFieldId() != null)) {

@@ -92,6 +92,7 @@ public class WorkflowUtil {
 	static final String ORDER_BY_STRING =  "orderBy";
 	static final String SORT_STRING =  "sort";
 	static final String LIMIT_STRING =  "limit";
+	static final String GROUP_BY_STRING =  "groupBy";
 	static final String CONDITION_STRING =  "condition";
 	static final String CONDITIONS_STRING =  "conditions";
 	static final String PATTERN_STRING =  "pattern";
@@ -400,6 +401,11 @@ public class WorkflowUtil {
 						 limitElement.setTextContent(expressionContext.getLimit());
 						 expressionElement.appendChild(limitElement);
 					 }
+					 if(expressionContext.getGroupBy() != null) {
+						 Element groupByElement = doc.createElement(GROUP_BY_STRING);
+						 groupByElement.setTextContent(expressionContext.getGroupBy());
+						 expressionElement.appendChild(groupByElement);
+					 }
 				 }
 				 workflowElement.appendChild(expressionElement);
 			 }
@@ -554,6 +560,13 @@ public class WorkflowUtil {
                 	
                 	Element limit  = (Element) limitNode;
                 	expressionContext.setLimit(limit.getTextContent());
+                }
+                
+                NodeList groupByNodes = expression.getElementsByTagName(GROUP_BY_STRING);
+                Node groupByNode = groupByNodes.item(0);
+                if(groupByNode != null && groupByNode.getNodeType() == Node.ELEMENT_NODE) {
+	                	Element groupBy  = (Element) groupByNode;
+	                	expressionContext.setGroupBy(groupBy.getTextContent());
                 }
             }
             return expressionContext;

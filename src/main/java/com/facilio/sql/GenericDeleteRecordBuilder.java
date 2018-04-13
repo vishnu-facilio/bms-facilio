@@ -18,8 +18,6 @@ public class GenericDeleteRecordBuilder {
 		return this;
 	}
 	
-	
-	
 	public GenericDeleteRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
 		return this;
@@ -93,8 +91,10 @@ public class GenericDeleteRecordBuilder {
 	}
 	
 	private String constructDeleteStatement() {
-		StringBuilder sql = new StringBuilder("DELETE FROM ");
+		StringBuilder sql = new StringBuilder("DELETE ");
 		sql.append(tableName)
+			.append(" FROM ")
+			.append(tableName)
 			.append(" WHERE ")
 			.append(where.getWhereClause());
 		

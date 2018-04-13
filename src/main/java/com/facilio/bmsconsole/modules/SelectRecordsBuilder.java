@@ -17,8 +17,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
+import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
-import com.facilio.sql.SelectJoinBuilderIfc;
 import com.facilio.sql.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
@@ -413,7 +413,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return builder.toString();
 	}
 	
-	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements SelectJoinBuilderIfc<E> {
+	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<SelectRecordsBuilder<E>> {
 		private SelectRecordsBuilder<E> parentBuilder;
 		private GenericJoinBuilder joinBuilder;
 		

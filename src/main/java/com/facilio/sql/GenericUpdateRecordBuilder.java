@@ -213,7 +213,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		
 	}
 	
-	public static class GenericJoinBuilder implements UpdateJoinBuilderIfc<Map<String, Object>> {
+	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericUpdateRecordBuilder> {
 
 		private GenericUpdateRecordBuilder parentBuilder;
 		private GenericJoinBuilder(GenericUpdateRecordBuilder parentBuilder) {

@@ -269,7 +269,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return sql;
 	}
 	
-	public static class GenericJoinBuilder implements SelectJoinBuilderIfc<Map<String, Object>> {
+	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericSelectRecordBuilder> {
 
 		private GenericSelectRecordBuilder parentBuilder;
 		private GenericJoinBuilder(GenericSelectRecordBuilder parentBuilder) {

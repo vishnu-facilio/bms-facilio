@@ -10,13 +10,13 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	
 	public SelectBuilderIfc<E> table(String tableName);
 	
-	public SelectJoinBuilderIfc<E> innerJoin(String tableName);
+	public JoinBuilderIfc<? extends SelectBuilderIfc<E>> innerJoin(String tableName);
 	
-	public SelectJoinBuilderIfc<E> leftJoin(String tableName);
+	public JoinBuilderIfc<? extends SelectBuilderIfc<E>> leftJoin(String tableName);
 	
-	public SelectJoinBuilderIfc<E> rightJoin(String tableName);
+	public JoinBuilderIfc<? extends SelectBuilderIfc<E>> rightJoin(String tableName);
 	
-	public SelectJoinBuilderIfc<E> fullJoin(String tableName);
+	public JoinBuilderIfc<? extends SelectBuilderIfc<E>> fullJoin(String tableName);
 	
 	public SelectBuilderIfc<E> groupBy(String groupBy);
 	

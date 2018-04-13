@@ -13,8 +13,8 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
+import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.UpdateBuilderIfc;
-import com.facilio.sql.UpdateJoinBuilderIfc;
 import com.facilio.sql.WhereBuilder;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
@@ -232,7 +232,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 	}
 	
-	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateJoinBuilderIfc<E> {
+	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<UpdateRecordBuilder<E>> {
 		private UpdateRecordBuilder<E> parentBuilder;
 		private GenericJoinBuilder joinBuilder;
 		
