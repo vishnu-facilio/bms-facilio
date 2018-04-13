@@ -134,6 +134,7 @@ public class DashboardUtil {
 		workOrderXaxisOmitFields.add("isWorkDurationChangeAllowed");
 		workOrderXaxisOmitFields.add("modifiedTime");
 		workOrderXaxisOmitFields.add("resumedWorkStart");
+		workOrderXaxisOmitFields.add("resource");
 		
 		alarmsXaxisOmitFields.add("subject");
 		alarmsXaxisOmitFields.add("additionalInfoJsonStr");
@@ -1374,7 +1375,7 @@ public class DashboardUtil {
 		}
 		
 		result.put("dateFilterFields", dateFilterField);
-		result.put("workOrderXAxisFields", xAxisField);
+		result.put("moduleXAxisFields", xAxisField);
 		result.put("yAxisFields", yAxisField);
 		result.put("groupByFields", groupField);
 		result.put("allFields", allFields);
@@ -1385,10 +1386,23 @@ public class DashboardUtil {
 			ReportFieldContext reportFieldContext = new ReportFieldContext();
 			reportFieldContext.setFieldLabel(field.getDisplayName());
 			reportFieldContext.setModuleFieldId(field.getId());
+			reportFieldContext.setModuleField(field);
 			
 			xAxisField.add(reportFieldContext);
 		}
 		result.put("assetXAxisFields", xAxisField);
+		
+		ReportFieldContext reportFieldContext = new ReportFieldContext();
+		FacilioField resourceField = modBean.getField("resource", moduleName);
+		reportFieldContext.setFieldLabel("Space");
+		reportFieldContext.setModuleField(resourceField);
+		reportFieldContext.setModuleFieldId(resourceField.getId());
+		
+		xAxisField = new ArrayList<>();
+		
+		xAxisField.add(reportFieldContext);
+		
+		result.put("spaceXAxisFields", xAxisField);
 		return result;
 	}
 	
