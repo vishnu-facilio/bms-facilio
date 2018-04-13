@@ -325,8 +325,14 @@ public class DashboardAction extends ActionSupport {
 		this.userFilterValues = userFilterValues;
 	}
 	private ReportThreshold reportThreshold;
+	public JSONObject reportFieldLabelMap;
 	
-	
+	public JSONObject getReportFieldLabelMap() {
+		return reportFieldLabelMap;
+	}
+	public void setReportFieldLabelMap(JSONObject reportFieldLabelMap) {
+		this.reportFieldLabelMap = reportFieldLabelMap;
+	}
 	public String populateDefaultReports() throws Exception {
 		
 		System.out.println("From here");
@@ -1065,7 +1071,26 @@ public class DashboardAction extends ActionSupport {
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 			}
+			if (getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue())) || !report.getIsHighResolutionReport()) {
+				
+				xAxisField = xAggregateOpperator.getSelectField(xAxisField);
+				
+				if(xAggregateOpperator instanceof SpaceAggregateOperator) {
+					
+					FacilioModule baseSpaceModule = modBean.getModule("basespace");
+					
+					builder.innerJoin(baseSpaceModule.getTableName())
+					.on(baseSpaceModule.getTableName()+".ID=Tickets.RESOURCE_ID");
+					
+					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
+						
+						report.getxAxisField().getField().setDisplayName("Building");
+						report.getxAxisField().getField().setName("building");
+					}
+				}
+			}
 		}
+
 		if(report.getY1Axis() != null || report.getY1AxisField() != null && (report.getY1AxisField().getModuleFieldId() != null || report.getY1AxisField().getFormulaFieldId() != null)) {
 			reportY1AxisField = DashboardUtil.getReportField(report.getY1AxisField());
 			AggregateOperator y1AggregateOpperator = report.getY1AxisAggregateOpperator();
@@ -1077,8 +1102,13 @@ public class DashboardAction extends ActionSupport {
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
+		JSONObject reportFieldLabelMap = new JSONObject();
+		reportFieldLabelMap.put("label", xAxisField.getName());
+		reportFieldLabelMap.put("value", y1AxisField.getName());
+		
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
+		
 		report.setY1AxisField(reportY1AxisField);
 
 		if ("WorkOrders".equals(module.getTableName())) {
@@ -1099,12 +1129,14 @@ public class DashboardAction extends ActionSupport {
 				}
 			}
 		}
+		
 		String groupByString = "label";
 		
 		if(report.getGroupBy() != null) {
 			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(report.getGroupByField());
 			report.setGroupByField(reportGroupByField);
 			FacilioField groupByField = reportGroupByField.getField();
+			reportFieldLabelMap.put("groupBy", groupByField.getName());
 			groupByField.setName("groupBy");
 			fields.add(groupByField);
 			builder.groupBy("groupBy");
@@ -1250,6 +1282,7 @@ public class DashboardAction extends ActionSupport {
 			System.out.println("res -- "+res);
 			ticketData = res;
 		}
+		this.reportFieldLabelMap = reportFieldLabelMap; 
 		return ticketData;
 	}
 	
@@ -1406,6 +1439,11 @@ public class DashboardAction extends ActionSupport {
 			reportY1AxisField = new ReportFieldContext();
 			reportY1AxisField.setModuleField(y1AxisField);
 		}
+		
+		JSONObject reportFieldLabelMap = new JSONObject();
+		reportFieldLabelMap.put("label", xAxisField.getName());
+		reportFieldLabelMap.put("value", y1AxisField.getName());
+		
 		xAxisField.setName("label");
 		y1AxisField.setName("value");
 		report.setY1AxisField(reportY1AxisField);
@@ -1429,6 +1467,7 @@ public class DashboardAction extends ActionSupport {
 			ReportFieldContext reportGroupByField = DashboardUtil.getReportField(report.getGroupByField());
 			report.setGroupByField(reportGroupByField);
 			FacilioField groupByField = reportGroupByField.getField();
+			reportFieldLabelMap.put("groupBy", groupByField.getName());
 			groupByField.setName("groupBy");
 			
 			if(!groupByField.getModule().getName().equals(module.getName())) {
@@ -2070,6 +2109,7 @@ public class DashboardAction extends ActionSupport {
 			setReadingAlarms(alarmAction.getReadingAlarms());
 			
 		}
+		this.reportFieldLabelMap = reportFieldLabelMap;
 		return readingData;
 	}
 	
@@ -2491,6 +2531,8 @@ public class DashboardAction extends ActionSupport {
 				DashboardWidgetContext widgetContext = null;
 				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
 					widgetContext = new WidgetChartContext();
+					WidgetChartContext widgetChartContext1 = (WidgetChartContext) widgetContext;
+					widgetChartContext1.setReportId((Long)widget.get("reportId"));
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
@@ -2508,6 +2550,7 @@ public class DashboardAction extends ActionSupport {
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
 				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
 				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
+				widgetContext.setType(widgetType);
 				
 				if(widget.get("widgetName") != null) {
 					widgetContext.setWidgetName(widget.get("widgetName").toString());
