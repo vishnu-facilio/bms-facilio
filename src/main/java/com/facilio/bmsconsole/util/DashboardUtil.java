@@ -1392,17 +1392,19 @@ public class DashboardUtil {
 		}
 		result.put("assetXAxisFields", xAxisField);
 		
-		ReportFieldContext reportFieldContext = new ReportFieldContext();
-		FacilioField resourceField = modBean.getField("resource", moduleName);
-		reportFieldContext.setFieldLabel("Space");
-		reportFieldContext.setModuleField(resourceField);
-		reportFieldContext.setModuleFieldId(resourceField.getId());
-		
-		xAxisField = new ArrayList<>();
-		
-		xAxisField.add(reportFieldContext);
-		
-		result.put("spaceXAxisFields", xAxisField);
+		if(moduleName.equals(ContextNames.WORK_ORDER) || moduleName.equals(ContextNames.WORK_ORDER_REQUEST) || moduleName.equals(ContextNames.ALARM)) {
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
+			FacilioField resourceField = modBean.getField("resource", moduleName);
+			reportFieldContext.setFieldLabel("Space");
+			reportFieldContext.setModuleField(resourceField);
+			reportFieldContext.setModuleFieldId(resourceField.getId());
+			
+			xAxisField = new ArrayList<>();
+			
+			xAxisField.add(reportFieldContext);
+			
+			result.put("spaceXAxisFields", xAxisField);
+		}
 		return result;
 	}
 	
