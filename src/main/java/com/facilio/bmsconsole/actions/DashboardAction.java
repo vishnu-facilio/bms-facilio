@@ -1291,6 +1291,10 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	public String updateReport() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module =  modBean.getModule(moduleName);
+		reportContext.setModuleId(module.getModuleId());
+		
 		reportContext = DashboardUtil.UpdateReport(reportContext);
 		return SUCCESS;
 	}
