@@ -9,8 +9,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -50,10 +50,11 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(searchCriteria);
 		}
 		
-		JSONObject criteriaString = (JSONObject) context.get(FacilioConstants.ContextNames.CRITERIA_JSON);
-		if (criteriaString != null) {
-			Criteria criteria = FieldUtil.getAsBeanFromJson(criteriaString, Criteria.class);
-			if (criteria != null) {
+		String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
+		if (criteriaIds != null) {
+			String[] ids = criteriaIds.split(",");
+			for(int i = 0; i < ids.length; i++) {
+				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
 				selectBuilder.andCriteria(criteria);
 			}
 		}

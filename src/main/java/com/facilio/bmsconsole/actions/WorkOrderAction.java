@@ -523,6 +523,8 @@ public class WorkOrderAction extends ActionSupport {
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
 	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		}
+ 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
+ 		
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
  			searchObj.put("fields", "workorder.subject,workorder.description");
@@ -538,13 +540,6 @@ public class WorkOrderAction extends ActionSupport {
  		else {
  			sorting.put("orderBy", "createdTime");
  			sorting.put("orderType", "desc");
- 		}
- 		
- 		if(getCriteria() != null)
- 		{	
-	 		JSONParser parser = new JSONParser();
-	 		JSONObject json = (JSONObject) parser.parse(getCriteria());
-	 		context.put(FacilioConstants.ContextNames.CRITERIA_JSON, json);
  		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		
@@ -706,15 +701,15 @@ public class WorkOrderAction extends ActionSupport {
 		return this.perPage;
 	}
 	
-	private String criteria;
-	public void setCriteria(String criteria)
+	private String criteriaIds;
+	public void setCriteriaIds(String criteriaIds)
 	{
-		this.criteria = criteria;
+		this.criteriaIds = criteriaIds;
 	}
 	
-	public String getCriteria()
+	public String getCriteriaIds()
 	{
-		return this.criteria;
+		return this.criteriaIds;
 	}
 	
 	public String getActivitiesList() throws Exception {
