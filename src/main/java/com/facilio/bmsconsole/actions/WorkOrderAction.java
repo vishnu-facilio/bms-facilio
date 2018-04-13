@@ -539,6 +539,13 @@ public class WorkOrderAction extends ActionSupport {
  			sorting.put("orderBy", "createdTime");
  			sorting.put("orderType", "desc");
  		}
+ 		
+ 		if(getCriteria() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getCriteria());
+	 		context.put(FacilioConstants.ContextNames.CRITERIA_JSON, json);
+ 		}
  		context.put(FacilioConstants.ContextNames.SORTING, sorting);
  		
  		JSONObject pagination = new JSONObject();
@@ -697,6 +704,17 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public int getPerPage() {
 		return this.perPage;
+	}
+	
+	private String criteria;
+	public void setCriteria(String criteria)
+	{
+		this.criteria = criteria;
+	}
+	
+	public String getCriteria()
+	{
+		return this.criteria;
 	}
 	
 	public String getActivitiesList() throws Exception {
