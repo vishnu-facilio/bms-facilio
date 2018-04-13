@@ -48,18 +48,25 @@ public class UpdateDashboardCommand implements Command {
 			
 			if (widgets != null && widgets.size() > 0)  {
 				for (int i = 0; i < widgets.size(); i++) {
+					
 					DashboardWidgetContext widget = widgets.get(i);
+					System.out.println("22222 id -- "+widget.getId() +" "+ widget.getWidgetName() +" "+widget.getType());
 					widgetMapping.put(widget.getId(), true);
 					
 					if(widget.getId() <= 0) {
+						
+						System.out.println("111111 id -- "+widget.getId() +" "+ widget.getWidgetName() +" "+widget.getType() +" "+ dashboard.getId());
+						
 						Chain addWidgetChain = FacilioChainFactory.getAddWidgetChain();
 
+						widget.setDashboardId(dashboard.getId());
 						context.put(FacilioConstants.ContextNames.WIDGET, widget);
-						context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getType());
+						context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
 						context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboard.getId());
 						addWidgetChain.execute(context);
 						
 						widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
+						System.out.println(" ssss -- "+widget.getId());
 					}
 				}
 			}

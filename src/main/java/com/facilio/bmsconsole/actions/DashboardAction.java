@@ -2503,6 +2503,8 @@ public class DashboardAction extends ActionSupport {
 				DashboardWidgetContext widgetContext = null;
 				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
 					widgetContext = new WidgetChartContext();
+					WidgetChartContext widgetChartContext1 = (WidgetChartContext) widgetContext;
+					widgetChartContext1.setReportId((Long)widget.get("reportId"));
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
@@ -2520,6 +2522,7 @@ public class DashboardAction extends ActionSupport {
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
 				widgetContext.setxPosition(Integer.parseInt(widget.get("xPosition").toString()));
 				widgetContext.setyPosition(Integer.parseInt(widget.get("yPosition").toString()));
+				widgetContext.setType(widgetType);
 				
 				if(widget.get("widgetName") != null) {
 					widgetContext.setWidgetName(widget.get("widgetName").toString());
