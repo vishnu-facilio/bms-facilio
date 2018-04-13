@@ -1003,6 +1003,20 @@ public class DashboardAction extends ActionSupport {
 				.on(xAxisField.getModule().getTableName()+".ID = Tickets.RESOURCE_ID");
 			}
 		}
+		if(xAxisField.getName().equals("resource")) {
+			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				builder.innerJoin(modBean.getModule("basespace").getTableName())
+				.on(modBean.getModule("basespace").getTableName()+".SITE_ID = Tickets.RESOURCE_ID");
+			}
+			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+				builder.innerJoin(modBean.getModule("basespace").getTableName())
+				.on(modBean.getModule("basespace").getTableName()+".BUILDING_ID = Tickets.RESOURCE_ID");
+			}
+			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.FLOOR.getValue())) {
+				builder.innerJoin(modBean.getModule("basespace").getTableName())
+				.on(modBean.getModule("basespace").getTableName()+".FLOOR_ID = Tickets.RESOURCE_ID");
+			}
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		if(xAxisField.getDataTypeEnum().equals(FieldType.DATE_TIME)) {
