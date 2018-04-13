@@ -78,7 +78,17 @@ public class DashboardUtil {
 	public static List<String> energyDataYaxisOmitFields = new ArrayList<String>();
 	public static List<String> energyDataGroupByOmitFields = new ArrayList<String>();
 	
+	public static List<String> assetOmitFields = new ArrayList<String>();
+	
 	static {
+		
+		assetOmitFields.add("description");
+		assetOmitFields.add("parentAssetId");
+		assetOmitFields.add("serialNumber");
+		assetOmitFields.add("localId");
+		assetOmitFields.add("photoId");
+		assetOmitFields.add("resourceType");
+		
 		energyDataXaxisOmitFields.add("activePowerB");
 		energyDataXaxisOmitFields.add("activePowerR");
 		energyDataXaxisOmitFields.add("activePowerY");
@@ -1383,12 +1393,13 @@ public class DashboardUtil {
 		allFields = modBean.getAllFields(ContextNames.ASSET);
 		xAxisField = new ArrayList<>();
 		for(FacilioField field:allFields) {
-			ReportFieldContext reportFieldContext = new ReportFieldContext();
-			reportFieldContext.setFieldLabel(field.getDisplayName());
-			reportFieldContext.setModuleFieldId(field.getId());
-			reportFieldContext.setModuleField(field);
-			
-			xAxisField.add(reportFieldContext);
+			if(!assetOmitFields.contains(field.getName())) {
+				ReportFieldContext reportFieldContext = new ReportFieldContext();
+				reportFieldContext.setFieldLabel(field.getDisplayName());
+				reportFieldContext.setModuleFieldId(field.getId());
+				reportFieldContext.setModuleField(field);
+				xAxisField.add(reportFieldContext);
+			}
 		}
 		result.put("assetXAxisFields", xAxisField);
 		
