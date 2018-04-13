@@ -174,8 +174,6 @@ public class ModuleAction extends ActionSupport {
 		
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
-			
-			
 		}
 		
 		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
@@ -193,6 +191,8 @@ public class ModuleAction extends ActionSupport {
 		reportOperators.put("DateAggregateOperator", FormulaContext.DateAggregateOperator.values());
 		reportOperators.put("NumberAggregateOperator", FormulaContext.NumberAggregateOperator.values());
 		reportOperators.put("StringAggregateOperator", FormulaContext.StringAggregateOperator.values());
+		reportOperators.put("SpaceAggregateOperator", FormulaContext.SpaceAggregateOperator.values());
+		reportOperators.put("EnergyPurposeAggregateOperator", FormulaContext.EnergyPurposeAggregateOperator.values());
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
