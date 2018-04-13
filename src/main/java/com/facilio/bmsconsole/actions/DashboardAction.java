@@ -297,6 +297,11 @@ public class DashboardAction extends ActionSupport {
 	public ReportContext getReportContext() {
 		return reportContext;
 	}
+	public String getReport() throws Exception {
+		
+		reportContext = DashboardUtil.getReportContext(reportId);
+		return SUCCESS;
+	}
 	public void setReportContext(ReportContext reportContext) {
 		this.reportContext = reportContext;
 	}
