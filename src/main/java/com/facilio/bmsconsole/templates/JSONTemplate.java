@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.templates;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -25,9 +27,14 @@ public class JSONTemplate extends Template {
 	
 	@Override
 	public JSONObject getOriginalTemplate() {
-		JSONObject obj = new JSONObject();
-		obj.put("content", content);
-		return obj;
+		try {
+			JSONParser parser = new JSONParser();
+			return (JSONObject) parser.parse(content);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	
