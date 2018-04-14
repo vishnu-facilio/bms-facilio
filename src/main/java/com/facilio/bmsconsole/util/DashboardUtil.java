@@ -88,6 +88,7 @@ public class DashboardUtil {
 		assetOmitFields.add("localId");
 		assetOmitFields.add("photoId");
 		assetOmitFields.add("resourceType");
+		assetOmitFields.add("id");
 		
 		energyDataXaxisOmitFields.add("activePowerB");
 		energyDataXaxisOmitFields.add("activePowerR");
@@ -872,10 +873,15 @@ public class DashboardUtil {
 				
 				ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 				reportContext.setxAxisField(reportXAxisField);
-				
+				if(reportContext.getxAxisaggregateFunction() == null) {
+					reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+				}
 				if(reportContext.getY1Axis() != null || reportContext.getY1AxisField() != null ) {
 					ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
 					reportContext.setY1AxisField(reportY1AxisField);
+					if(reportContext.getY1AxisaggregateFunction() == null) {
+						reportContext.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+					}
 				}
 				if(reportContext.getGroupBy() != null) {
 					ReportFieldContext reportGroupByField = DashboardUtil.getReportField(reportContext.getGroupByField());
@@ -1195,8 +1201,14 @@ public class DashboardUtil {
 					.fields(fields);
 
 			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
+			if(reportContext.getxAxisaggregateFunction() == null) {
+				reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+			}
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
 				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
+				if(reportContext.getY1AxisaggregateFunction() == null) {
+					reportContext.setxAxisaggregateFunction(FormulaContext.NumberAggregateOperator.COUNT.getValue());
+				}
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
 				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
