@@ -1293,6 +1293,22 @@ public class DashboardUtil {
 						.fields(FieldFactory.getReportEnergyMeterFields());
 				
 				insertBuilder.addRecord(prop).save();
+				
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+						.fields(FieldFactory.getReportSpaceFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
+			}
+			if(reportContext.getReportSpaceFilterContext() != null) {
+				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
+				prop.put("reportId", reportContext.getId());
+				
+				insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
+						.fields(FieldFactory.getReportSpaceFilterFields());
+				
+				insertBuilder.addRecord(prop).save();
 			}
 			if(reportContext.getBaseLineId() != -1) {
 				
