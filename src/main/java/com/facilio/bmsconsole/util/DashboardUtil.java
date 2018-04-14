@@ -1655,7 +1655,24 @@ public class DashboardUtil {
 		
 		return true;
 	}
-public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
+	
+	public static ReportDateFilterContext getReportDateFilter(Long dateFilterId) throws Exception {
+		if(dateFilterId != null && dateFilterId > 0) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getReportDateFilterFields())
+					.table(ModuleFactory.getReportDateFilter().getTableName())
+					.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".ID = ?",dateFilterId);
+			
+			List<Map<String, Object>>  props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				ReportDateFilterContext reportDateFilterContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportDateFilterContext.class);
+				return reportDateFilterContext;
+			}
+		}
+		return null;
+	}
+	
+	public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("energydata");
@@ -1718,9 +1735,20 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			}
 		}
 		else {
-			dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-			if(reportContext.getDateFilter().getValue() != null) {
-				dateCondition.setValue(reportContext.getDateFilter().getValue());
+			if(reportContext.getDateFilter().getOperatorId() != null) {
+				dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
+				if(reportContext.getDateFilter().getValue() != null) {
+					dateCondition.setValue(reportContext.getDateFilter().getValue());
+				}
+			}
+			else if(reportContext.getDateFilter().getStartTime() != null && reportContext.getDateFilter().getEndTime() != null) {
+				dateCondition.setOperator(DateOperators.BETWEEN);
+				long fromValue = reportContext.getDateFilter().getStartTime();
+				long toValue = reportContext.getDateFilter().getEndTime();
+				if(module.getName().equals("energydata") && toValue > DateTimeUtil.getCurrenTime()) {
+					toValue = DateTimeUtil.getCurrenTime();
+				}
+				dateCondition.setValue(fromValue+","+toValue);
 			}
 		}
 		return dateCondition;

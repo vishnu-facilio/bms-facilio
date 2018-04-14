@@ -5,11 +5,26 @@ import org.json.simple.JSONObject;
 public class WidgetChartContext extends DashboardWidgetContext {
 
 	Long reportId;
+	Integer chartType;
+	
+	public Integer getChartType() {
+		return chartType;
+	}
+	public void setChartType(Integer chartType) {
+		this.chartType = chartType;
+	}
 	public Long getReportId() {
 		return reportId;
 	}
 	public void setReportId(Long reportId) {
 		this.reportId = reportId;
+	}
+	Long dateFilterId;
+	public Long getDateFilterId() {
+		return dateFilterId;
+	}
+	public void setDateFilterId(Long dateFilter) {
+		this.dateFilterId = dateFilter;
 	}
 	@Override
 	public JSONObject widgetJsonObject() {
@@ -45,6 +60,8 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		dataOptionsJson.put("dataurl", "/dashboard/getData?reportId="+getReportId());
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getReportId());
+		dataOptionsJson.put("chartType", chartType);
+		dataOptionsJson.put("dateFilter", dateFilterId);
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);

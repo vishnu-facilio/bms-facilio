@@ -267,6 +267,14 @@ public class DashboardAction extends ActionSupport {
 	public void setDateFilter(JSONArray dateFilter) {
 		this.dateFilter = dateFilter;
 	}
+	public Long dateFilterId;
+	
+	public Long getDateFilterId() {
+		return dateFilterId;
+	}
+	public void setDateFilterId(Long dateFilterId) {
+		this.dateFilterId = dateFilterId;
+	}
 	ReportSpaceFilterContext reportSpaceFilterContext;
 	
 	public ReportSpaceFilterContext getReportSpaceFilterContext() {
@@ -478,26 +486,56 @@ public class DashboardAction extends ActionSupport {
 	public String getSecChartType() {
 		return this.secChartType;
 	}
+	public boolean isReportUpdateFromDashboard;
+	
+	public boolean getIsReportUpdateFromDashboard() {
+		return isReportUpdateFromDashboard;
+	}
+	public void setIsReportUpdateFromDashboard(boolean isReportUpdateFromDashboard) {
+		this.isReportUpdateFromDashboard = isReportUpdateFromDashboard;
+	}
+	
+	public String updateDateFilter() throws Exception {
+		
+		return SUCCESS;
+	}
 	
 	public String updateChartType() throws Exception {
 		
 		if (reportId > 0) {
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(ModuleFactory.getReport().getTableName())
-					.fields(FieldFactory.getReportFields())
-					.andCustomWhere("ID = ?", reportId);
+			if(isReportUpdateFromDashboard && widgetId != null) {
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getWidgetChartModule().getTableName())
+						.fields(FieldFactory.getWidgetChartFields())
+						.andCustomWhere("ID = ?", widgetId);
 
-			Map<String, Object> props = new HashMap<String, Object>();
-			props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
-			if (secChartType != null) {
-				props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
+				Map<String, Object> props = new HashMap<String, Object>();
+				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
+				if (secChartType != null) {
+					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
+				}
+				
+				updateBuilder.update(props);
 			}
-			
-			updateBuilder.update(props);
+			else {
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getReport().getTableName())
+						.fields(FieldFactory.getReportFields())
+						.andCustomWhere("ID = ?", reportId);
+
+				Map<String, Object> props = new HashMap<String, Object>();
+				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
+				if (secChartType != null) {
+					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
+				}
+				
+				updateBuilder.update(props);
+			}
 		}
 		
 		return SUCCESS;
 	}
+	
 	
 	public String getRelatedAlarmsList() throws Exception {
 		if (reportContext == null) {
@@ -843,8 +881,20 @@ public class DashboardAction extends ActionSupport {
 		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
-			// generate preview report
 		}
+		
+		// chart setting overide for widget starts
+		if(chartType != null) {
+			reportContext.setChartType(Integer.parseInt(chartType));
+		}
+		
+		if(dateFilterId != null) {
+			ReportDateFilterContext reportDateFilter = DashboardUtil.getReportDateFilter(dateFilterId);
+			if(reportDateFilter != null) {
+				reportContext.setDateFilter(reportDateFilter);
+			}
+		}
+		// chart setting overide for widget ends
 		
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
 			getTabularData();

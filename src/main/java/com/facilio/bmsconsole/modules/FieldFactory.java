@@ -2177,6 +2177,20 @@ public class FieldFactory {
 		reportId.setColumnName("REPORT_ID");
 		reportId.setModule(module);
 		fields.add(reportId);
+		
+		FacilioField chartType = new FacilioField();
+		chartType.setName("chartType");
+		chartType.setDataType(FieldType.NUMBER);
+		chartType.setColumnName("CHART_TYPE");
+		chartType.setModule(module);
+		fields.add(chartType);
+		
+		FacilioField dateFilter = new FacilioField();
+		dateFilter.setName("dateFilterId");
+		dateFilter.setDataType(FieldType.NUMBER);
+		dateFilter.setColumnName("DATE_FILTER");
+		dateFilter.setModule(module);
+		fields.add(dateFilter);
 
 		return fields;
 	}
@@ -2556,6 +2570,20 @@ public class FieldFactory {
 		value.setColumnName("VAL");
 		value.setModule(module);
 		fields.add(value);
+		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.NUMBER);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.NUMBER);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
 		
 		return fields;
 	}
