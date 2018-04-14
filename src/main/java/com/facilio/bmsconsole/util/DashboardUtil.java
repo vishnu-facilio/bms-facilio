@@ -249,10 +249,12 @@ public class DashboardUtil {
 		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteRecordBuilder.delete();
 		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
 		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteRecordBuilder.delete();
 		
+		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getDashboardSharingModule().getTableName())
 		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteRecordBuilder.delete();
