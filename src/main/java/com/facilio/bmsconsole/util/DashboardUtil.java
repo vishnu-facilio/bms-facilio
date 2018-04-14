@@ -1424,31 +1424,57 @@ public class DashboardUtil {
 		result.put("groupByFields", groupField);
 		result.put("allFields", allFields);
 		
-		
-		allFields = modBean.getAllFields(ContextNames.ASSET);
-		xAxisField = new ArrayList<>();
-		for(FacilioField field:allFields) {
-			if(!assetOmitFields.contains(field.getName())) {
-				ReportFieldContext reportFieldContext = new ReportFieldContext();
-				reportFieldContext.setFieldLabel(field.getDisplayName());
-				reportFieldContext.setModuleFieldId(field.getId());
-				reportFieldContext.setModuleField(field);
-				xAxisField.add(reportFieldContext);
+		if(moduleName.endsWith(ContextNames.WORK_ORDER) || moduleName.endsWith(ContextNames.WORK_ORDER_REQUEST) || moduleName.endsWith(ContextNames.ALARM)) {
+			allFields = modBean.getAllFields(ContextNames.ASSET);
+			xAxisField = new ArrayList<>();
+			for(FacilioField field:allFields) {
+				if(!assetOmitFields.contains(field.getName())) {
+					ReportFieldContext reportFieldContext = new ReportFieldContext();
+					reportFieldContext.setFieldLabel(field.getDisplayName());
+					reportFieldContext.setModuleFieldId(field.getId());
+					reportFieldContext.setModuleField(field);
+					xAxisField.add(reportFieldContext);
+				}
 			}
+			result.put("assetXAxisFields", xAxisField);
+			
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
+			FacilioField resourceField = modBean.getField("resource", moduleName);
+			reportFieldContext.setFieldLabel("Space");
+			reportFieldContext.setModuleField(resourceField);
+			reportFieldContext.setModuleFieldId(resourceField.getId());
+			
+			xAxisField = new ArrayList<>();
+			
+			xAxisField.add(reportFieldContext);
+			
+			result.put("spaceXAxisFields", xAxisField);
 		}
-		result.put("assetXAxisFields", xAxisField);
-		
-		ReportFieldContext reportFieldContext = new ReportFieldContext();
-		FacilioField resourceField = modBean.getField("resource", moduleName);
-		reportFieldContext.setFieldLabel("Space");
-		reportFieldContext.setModuleField(resourceField);
-		reportFieldContext.setModuleFieldId(resourceField.getId());
-		
-		xAxisField = new ArrayList<>();
-		
-		xAxisField.add(reportFieldContext);
-		
-		result.put("spaceXAxisFields", xAxisField);
+		else if (moduleName.endsWith(ContextNames.ENERGY_DATA_READING)) {
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
+			FacilioField resourceField = modBean.getField("purposeSpace", "energymeter");
+			reportFieldContext.setFieldLabel("Space");
+			reportFieldContext.setModuleField(resourceField);
+			reportFieldContext.setModuleFieldId(resourceField.getId());
+			
+			xAxisField = new ArrayList<>();
+			
+			xAxisField.add(reportFieldContext);
+			
+			result.put("spaceXAxisFields", xAxisField);
+			
+			reportFieldContext = new ReportFieldContext();
+			resourceField = modBean.getField("purpose", "energymeter");
+			reportFieldContext.setFieldLabel("Purpose");
+			reportFieldContext.setModuleField(resourceField);
+			reportFieldContext.setModuleFieldId(resourceField.getId());
+			
+			xAxisField = new ArrayList<>();
+			
+			xAxisField.add(reportFieldContext);
+			
+			result.put("purposeXAxisFields", xAxisField);
+		}
 		
 		return result;
 	}
