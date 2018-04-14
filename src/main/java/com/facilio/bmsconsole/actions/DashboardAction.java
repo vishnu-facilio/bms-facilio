@@ -382,6 +382,23 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public JSONObject dashboardDisplayOrder;
+	public JSONObject getDashboardDisplayOrder() {
+		return dashboardDisplayOrder;
+	}
+	public void setDashboardDisplayOrder(JSONObject dashboardDisplayOrder) {
+		this.dashboardDisplayOrder = dashboardDisplayOrder;
+	}
+	public String updateDashboardOrder() throws Exception {
+		
+		if(dashboardDisplayOrder != null) {
+			DashboardUtil.UpdateDashboardDisplayOrder(dashboardDisplayOrder);
+			dashboards = DashboardUtil.getDashboardList(moduleName);
+			return SUCCESS;
+		}
+		return ERROR;
+	}
+	
 	private List<ReportContext> reports;
 	public List<ReportContext> getReports() {
 		return reports;

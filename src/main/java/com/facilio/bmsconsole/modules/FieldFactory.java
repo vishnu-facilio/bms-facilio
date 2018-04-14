@@ -2037,6 +2037,14 @@ public class FieldFactory {
 		dashboardUrl.setColumnName("DASHBOARD_URL");
 		dashboardUrl.setModule(module);
 		fields.add(dashboardUrl);
+		
+		FacilioField displayOrder = new FacilioField();
+		displayOrder.setName("displayOrder");
+		displayOrder.setDataType(FieldType.NUMBER);
+		displayOrder.setColumnName("DISPLAY_ORDER");
+		displayOrder.setModule(module);
+		
+		fields.add(displayOrder);
 
 		return fields;
 	}

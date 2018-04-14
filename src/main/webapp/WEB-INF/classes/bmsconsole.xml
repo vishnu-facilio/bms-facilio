@@ -3707,6 +3707,11 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
+		<action name="updateDashboardOrder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardOrder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
 			<param name="linkName">{1}</param>
 			<result name="success" type="json">

@@ -27,6 +27,14 @@ public class DashboardContext extends ModuleBaseWithCustomFields {
 	
 	private String linkName;
 	
+	private Integer displayOrder;
+	
+	public Integer getDisplayOrder() {
+		return displayOrder;
+	}
+	public void setDisplayOrder(Integer displayOrder) {
+		this.displayOrder = displayOrder;
+	}
 	public String getLinkName() {
 		if (linkName == null && dashboardName != null) {
 			linkName = dashboardName.replaceAll("[^\\p{IsAlphabetic}]+", "").toLowerCase();

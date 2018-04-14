@@ -1424,6 +1424,7 @@ public class DashboardUtil {
 		result.put("groupByFields", groupField);
 		result.put("allFields", allFields);
 		
+		
 		allFields = modBean.getAllFields(ContextNames.ASSET);
 		xAxisField = new ArrayList<>();
 		for(FacilioField field:allFields) {
@@ -1720,6 +1721,56 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 		}
 		return null;
 	}
+	public static void UpdateDashboardDisplayOrder(JSONObject dashboardDisplayOrder) throws Exception {
+		
+		for(Object key:dashboardDisplayOrder.keySet()) {
+			Long dashboardId = Long.parseLong( key.toString()); 
+			Integer order = Integer.parseInt(dashboardDisplayOrder.get(key).toString());
+			
+			Map<String,Object> value = new HashMap<>(); 
+			
+			value.put("displayOrder", order);
+			
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+			update.table(ModuleFactory.getDashboardModule().getTableName())
+			.fields(FieldFactory.getDashboardFields())
+			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboardId);
+			
+			update.update(value);
+		}
+	}
+	public static Integer getLastDashboardDisplayOrder(Long orgid,Long moduleId) throws Exception {
+		
+		if(orgid != null && moduleId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+			select.select(FieldFactory.getDashboardFields())
+			.table(ModuleFactory.getDashboardModule().getTableName())
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardModule()))
+			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".MODULEID = ?", moduleId)
+			.orderBy("DISPLAY_ORDER desc")
+			.limit(1);
+			
+			
+			List<Map<String, Object>> props = select.get();
+			
+			if(props != null && !props.isEmpty()) {
+				Object order = props.get(0).get("displayOrder");
+				if(order != null) {
+					return (Integer)order;
+				}
+				else {
+					return 1;
+				}
+			}
+			else {
+				return 1;
+			}
+		}
+		return null;
+	}
+	
 	public static ReportContext UpdateReport(ReportContext reportContext) throws Exception {
 		
 		ReportContext oldReport = getReportContext(reportContext.getId());
@@ -1789,7 +1840,7 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 				GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder();
 				
 				delete.table(ModuleFactory.getReportDateFilter().getTableName())
-				.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", oldReport.getId());
+				.andCustomWhere(ModuleFactory.getReportDateFilter().getTableName()+".REPORT_ID = ?", reportContext.getId());
 				delete.delete();
 				
 				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
