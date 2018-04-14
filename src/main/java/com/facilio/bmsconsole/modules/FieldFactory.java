@@ -21,6 +21,8 @@ public class FieldFactory {
 		fieldId.setModule(module);
 		fields.add(fieldId);
 		
+		fields.add(getOrgIdField(module));
+		
 		FacilioField specialType = new FacilioField();
 		specialType.setName("specialType");
 		specialType.setDataType(FieldType.STRING);
@@ -48,6 +50,8 @@ public class FieldFactory {
 		fieldId.setColumnName("FIELDID");
 		fieldId.setModule(module);
 		fields.add(fieldId);
+		
+		fields.add(getOrgIdField(module));
 		
 		FacilioField unit = new FacilioField();
 		unit.setName("unit");
