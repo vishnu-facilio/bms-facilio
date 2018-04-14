@@ -1736,7 +1736,9 @@ public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
 			
 			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 			.table(ModuleFactory.getReport().getTableName())
-			.fields(fields);
+			.fields(fields)
+			.andCustomWhere(ModuleFactory.getReport().getTableName()+".ID = ?", reportContext.getId());
+			
 			
 			Map<String, Object> reportProp = FieldUtil.getAsProperties(reportContext);
 			update.update(reportProp);
