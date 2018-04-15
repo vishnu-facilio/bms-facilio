@@ -1469,7 +1469,7 @@ public class DashboardAction extends ActionSupport {
 					if(xAggregateOpperator.equals(SpaceAggregateOperator.BUILDING)) {
 						
 						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
-						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = 1 and Name=\"Main\")");
+						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = "+AccountUtil.getCurrentOrg().getOrgId()+" and Name=\"Main\")");
 						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1 ");
 						
 						report.getxAxisField().getField().setDisplayName("Building");
@@ -1562,7 +1562,7 @@ public class DashboardAction extends ActionSupport {
 					if(report.getGroupByAggregateOpperator().equals(SpaceAggregateOperator.BUILDING)) {
 						
 						subBuilder.andCustomWhere(baseSpaceModule.getTableName()+".SPACE_TYPE = " + BaseSpaceContext.SpaceType.BUILDING.getIntVal());
-						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = 1 and Name=\"Main\")");
+						subBuilder.andCustomWhere("Energy_Meter.PURPOSE_ID = "+"(SELECT ID FROM bms.Energy_Meter_Purpose where ORGID = "+AccountUtil.getCurrentOrg().getOrgId()+" and Name=\"Main\")");
 						subBuilder.andCustomWhere("Energy_Meter.IS_ROOT = 1");
 						
 						report.getGroupByField().setFieldLabel("Building");
@@ -1588,9 +1588,6 @@ public class DashboardAction extends ActionSupport {
 			else {
 				builder.orderBy(report.getOrderBy());
 			}
-		}
-		else {
-			
 		}
 		
 		Condition dateCondition = null;
@@ -1683,6 +1680,13 @@ public class DashboardAction extends ActionSupport {
 					
 					purposeVsMeter1.put((long) prop.get("id"), (long) prop.get("purpose"));
 				}
+				if(isGroupBySpace) {
+					String buildingList = StringUtils.join(buildingVsMeter.values(),",");
+					System.out.println("buildingList -- "+buildingList);
+					buildingVsArea = ReportsUtil.getMapping(SpaceAPI.getBuildingArea(buildingList), "ID", "AREA");
+					System.out.println("buildingVsArea -- "+buildingVsArea);
+				}
+				
 				String meterIdStr = StringUtils.join(meterIds, ",");
 				buildingCondition = CriteriaAPI.getCondition("PARENT_METER_ID","parentId", meterIdStr, NumberOperators.EQUALS);
 			}
@@ -2085,7 +2089,7 @@ public class DashboardAction extends ActionSupport {
 	 					}
 	 					else if ("eui".equalsIgnoreCase(report.getY1AxisUnit())) {
 	 						Double d = (Double) thisMap.get("value");
-	 						
+	 						System.out.println("(Long) component.get -- "+(Long) component.get("label"));
 	 						Double buildingArea = buildingVsArea.get((Long) component.get("label"));
 	 						double eui = ReportsUtil.getEUI(d, buildingArea);
 	 						component.put("value", eui);
