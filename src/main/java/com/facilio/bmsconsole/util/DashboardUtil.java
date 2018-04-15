@@ -1294,6 +1294,9 @@ public class DashboardUtil {
 				
 				insertBuilder.addRecord(prop).save();
 				
+				prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
+				prop.put("reportId", reportContext.getId());
+				System.out.println("getReportSpaceFilterModule -- "+prop);
 				insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
 						.fields(FieldFactory.getReportSpaceFilterFields());
