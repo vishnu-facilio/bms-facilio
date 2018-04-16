@@ -757,7 +757,7 @@ public class DashboardAction extends ActionSupport {
 							paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
 						}
 					}
-					if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l) || widgetVsWorkflowContext.getId().equals(20l)  || widgetVsWorkflowContext.getId().equals(21l)  ){
+					if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l) || widgetVsWorkflowContext.getId().equals(20l)  || widgetVsWorkflowContext.getId().equals(21l) || widgetVsWorkflowContext.getId().equals(26l)  || widgetVsWorkflowContext.getId().equals(27l) ){
 						if(paramMap == null) {
 							paramMap = new HashMap<>();
 						}
