@@ -551,13 +551,20 @@ public class DashboardUtil {
 		return null;
 	}
 
-	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName) throws Exception {
+	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName, String moduleName) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
+		
+		if (moduleName != null && !"".equalsIgnoreCase(moduleName.trim())) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			selectBuilder.andCustomWhere("MODULE_ID = ?", module.getModuleId());
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

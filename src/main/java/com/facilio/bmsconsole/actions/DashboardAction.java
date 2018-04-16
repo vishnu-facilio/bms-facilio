@@ -2738,7 +2738,7 @@ public class DashboardAction extends ActionSupport {
 	}
 	
 	public String viewDashboard() throws Exception {
-		dashboard = DashboardUtil.getDashboardWithWidgets(linkName);
+		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
 		return SUCCESS;
 	}
