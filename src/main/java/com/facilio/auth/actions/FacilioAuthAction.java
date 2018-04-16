@@ -233,8 +233,8 @@ public class FacilioAuthAction extends ActionSupport {
 
         Chain c = FacilioChainFactory.getOrgSignupChain();
         c.execute(signupContext);
-
-        return validateLogin();
+        setJsonresponse("message", "success");
+        return SUCCESS;
     }
 
     public String validateLogin() {
@@ -492,7 +492,8 @@ public class FacilioAuthAction extends ActionSupport {
 
         AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
 
-        return validateLogin();
+        setJsonresponse("message", "success");
+        return SUCCESS;
     }
 
     public String changePortalPassword() {
