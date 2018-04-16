@@ -24,21 +24,26 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 		else 
 		{
 			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-			String assetName = assetCategory.getName();
-			if(assetName.trim().equalsIgnoreCase("Energy Meter"))
+			String assetCategoryName = assetCategory.getName();
+			if(assetCategoryName.trim().equalsIgnoreCase("Energy Meter"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, "energymeter");
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
 			}
-			else if(assetName.trim().equalsIgnoreCase("Chiller"))
+			else if(assetCategoryName.trim().equalsIgnoreCase("Chiller"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, "chiller");
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
 			}
-			else if(assetName.trim().equalsIgnoreCase("AHU"))
+			else if(assetCategoryName.trim().equalsIgnoreCase("AHU"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, "ahu");
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("FCU"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, "fcu");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "FCU");
 			}
 			else
 			{
