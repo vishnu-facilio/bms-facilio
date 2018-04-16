@@ -563,7 +563,7 @@ public class DashboardUtil {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			selectBuilder.andCustomWhere("MODULE_ID = ?", module.getModuleId());
+			selectBuilder.andCustomWhere("MODULEID = ?", module.getModuleId());
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
