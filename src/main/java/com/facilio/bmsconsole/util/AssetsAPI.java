@@ -11,11 +11,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -31,6 +35,32 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class AssetsAPI {
 	
 	private static Logger logger = Logger.getLogger(AssetsAPI.class.getName());
+	
+	public static List<Long> getAssetIdsFromBaseSpaceIds(List<Long> baseSpaceIds) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		FacilioField spaceField= FieldFactory.getAsMap(fields).get("spaceId");
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(CriteriaAPI.getCondition(spaceField, StringUtils.join(baseSpaceIds, ","), PickListOperators.IS))
+				.andCustomWhere("Resources.RESOURCE_TYPE = ?", ResourceContext.ResourceType.ASSET.getValue());
+		
+		List<BaseSpaceContext> assets = selectBuilder.get();
+		List<Long> assetIds = null; 
+		for(BaseSpaceContext asset :assets) {
+			if(assetIds == null) {
+				assetIds = new ArrayList<>();
+			}
+			assetIds.add(asset.getId());
+		}
+		return assetIds;
+	}
 	
 	public static long getOrgId(Long assetId) throws Exception
 	{

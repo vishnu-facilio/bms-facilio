@@ -76,6 +76,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -1262,6 +1263,30 @@ public class DashboardAction extends ActionSupport {
 		}
 		if(report.getCriteria() != null) {
 			builder.andCriteria(report.getCriteria());
+		}
+		if(report.getReportSpaceFilterContext() != null) {
+			if(report.getReportSpaceFilterContext().getBuildingId() != null) {
+				
+				List<Long> resourceList = new ArrayList<>();
+				
+				Long buildingId = report.getReportSpaceFilterContext().getBuildingId();
+				
+				List<Long> buildingList = new ArrayList<>();
+				buildingList.add(buildingId);
+				
+				List<BaseSpaceContext> baseSpaceContexts = SpaceAPI.getBaseSpaceWithChildren(buildingList);
+				for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
+					resourceList.add(baseSpaceContext.getId());
+				}
+				
+				List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
+				
+				resourceList.addAll(assets);
+				
+				Condition condition = CriteriaAPI.getCondition("RESOURCE_ID", "resourceId",  StringUtils.join(resourceList, ","), NumberOperators.EQUALS);
+				
+				builder.andCondition(condition);
+			}
 		}
 		
 		fields.add(y1AxisField);
