@@ -30,7 +30,7 @@ public class JSONTemplate extends Template {
 		try {
 			JSONParser parser = new JSONParser();
 			return (JSONObject) parser.parse(content);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
