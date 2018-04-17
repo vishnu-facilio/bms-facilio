@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -281,6 +282,26 @@ public class User {
 			Condition condition = new Condition();
 			condition.setColumnName("SPACE_ID");
 			condition.setFieldName("spaceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		if(moduleName.equals("site")) {
+			Condition condition = new Condition();
+			condition.setColumnName("Resources.ID");
+			condition.setFieldName("id");
+			condition.setOperator(PickListOperators.IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone")) {
+			Condition condition = new Condition();
+			condition.setColumnName("Resources.ID");
+			condition.setFieldName("id");
 			condition.setOperator(BuildingOperator.BUILDING_IS);
 			condition.setValue(StringUtils.join(accessibleSpace, ","));
 

@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -28,7 +30,11 @@ public class GetAllCampusCommand implements Command{
 				.select(fields)
 				.maxLevel(2)
 				.orderBy("ID");
-
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
+		}
 		List<SiteContext> campuses = builder.get();
 		context.put(FacilioConstants.ContextNames.SITE_LIST, campuses);
 		
