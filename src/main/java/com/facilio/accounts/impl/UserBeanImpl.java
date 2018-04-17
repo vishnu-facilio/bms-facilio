@@ -796,7 +796,7 @@ public class UserBeanImpl implements UserBean {
 
 		User orgUser = getPortalUser(user.getEmail(), user.getPortalId());
 		if (orgUser != null) {
-			return orgUser.getUid();
+			return orgUser.getOuid();
 		}
 
 		long uid = getPortalUid(user.getPortalId(), user.getEmail());

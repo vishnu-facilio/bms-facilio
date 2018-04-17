@@ -58,9 +58,11 @@ public class GetWorkOrderRequestListCommand implements Command {
 			builder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
-		if(permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+			if(permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
