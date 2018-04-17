@@ -24,9 +24,11 @@ public class AddDashboardCommand implements Command {
 		if(dashboard != null) {			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			Integer lastDisplayOrder = DashboardUtil.getLastDashboardDisplayOrder(dashboard.getOrgId(), dashboard.getModuleId());
+			// on add dashboard, we will set order as null so that it will go to the last in order
+//			Integer lastDisplayOrder = DashboardUtil.getLastDashboardDisplayOrder(dashboard.getOrgId(), dashboard.getModuleId());
+//			
+//			dashboard.setDisplayOrder(lastDisplayOrder + 1);
 			
-			dashboard.setDisplayOrder(lastDisplayOrder + 1);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getDashboardModule().getTableName())
 					.fields(fields);
