@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -32,6 +34,11 @@ public class GetAllFloorCommand implements Command{
 		
 		if (buildingId != null && buildingId > 0) {
 			builder.andCustomWhere("BaseSpace.BUILDING_ID = ?", buildingId);
+		}
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
 		}
 
 		List<FloorContext> floors = builder.get();

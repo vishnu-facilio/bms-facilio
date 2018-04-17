@@ -5,8 +5,10 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -37,7 +39,11 @@ public class GetAllBuildingCommand implements Command{
 		if (siteId != null && siteId > 0) {
 			builder.andCustomWhere("BaseSpace.SITE_ID = ?", siteId);
 		}
-		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
+		}
 		List<BuildingContext> buildings = builder.get();
 		context.put(FacilioConstants.ContextNames.BUILDING_LIST, buildings);
 		
