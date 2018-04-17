@@ -17,9 +17,13 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
+import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
+import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -277,7 +281,11 @@ public class FacilioConstants {
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
 		public static final String CHILLER = "chiller";
+		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";
+		public static final String CHILLER_SECONDARY_PUMP = "chillersecondarypump";
+		public static final String CHILLER_CONDENSER_PUMP = "chillercondenserpump";
 		public static final String AHU = "ahu";
+		public static final String FCU = "fcu";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
@@ -460,7 +468,11 @@ public class FacilioConstants {
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
+			classMap.put(CHILLER_PRIMARY_PUMP, ChillerPrimaryPumpContext.class);
+			classMap.put(CHILLER_CONDENSER_PUMP, ChillerCondenserPumpContext.class);
+			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(AHU, AHUContext.class);
+			classMap.put(FCU, FCUContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
