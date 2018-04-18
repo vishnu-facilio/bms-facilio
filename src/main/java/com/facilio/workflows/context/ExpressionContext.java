@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext {
 	
@@ -39,6 +40,26 @@ public class ExpressionContext {
 	String limit;
 	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
+	
+	boolean isCustomFunctionResultEvaluator;
+	WorkflowFunctionContext defaultFunctionContext;
+	
+	public WorkflowFunctionContext getDefaultFunctionContext() {
+		return defaultFunctionContext;
+	}
+
+	public void setDefaultFunctionContext(WorkflowFunctionContext defaultFunctionContext) {
+		this.defaultFunctionContext = defaultFunctionContext;
+	}
+
+	public boolean isCustomFunctionResultEvaluator() {
+		return isCustomFunctionResultEvaluator;
+	}
+
+	public void setIsCustomFunctionResultEvaluator(boolean isCustomFunctionResultEvaluator) {
+		this.isCustomFunctionResultEvaluator = isCustomFunctionResultEvaluator;
+	}
+	
 	
 	public Map<Integer, Long> getConditionSeqVsBaselineId() {
 		return conditionSeqVsBaselineId;
@@ -155,26 +176,12 @@ public class ExpressionContext {
 	public ExpressionAggregateOperator getAggregateOpperator() {
 		return ExpressionAggregateOperator.getExpressionAggregateOperator(getAggregateString());
 	}
-//	public FacilioField getFacilioField() throws Exception {
-//		if(this.facilioField == null) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			this.facilioField = modBean.getField(fieldName, moduleName);
-//		}
-//		return facilioField;
-//	}
 	public void setFacilioField(FacilioField facilioField) {
 		this.facilioField = facilioField;
 	}
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-//	public FacilioModule getModule() throws Exception {
-//		if(this.module == null) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			this.module = modBean.getModule(getModuleName());
-//		}
-//		return this.module;
-//	}
 	public void setAggregateString(String aggregateString) {
 		this.aggregateString = aggregateString;
 	}
@@ -185,9 +192,24 @@ public class ExpressionContext {
 		this.criteria = criteria;
 	}
 	
+	Map<String,Object> variableToExpresionMap;
+	
+	public Map<String, Object> getVariableToExpresionMap() {
+		return variableToExpresionMap;
+	}
+
+	public void setVariableToExpresionMap(Map<String, Object> variableToExpresionMap) {
+		this.variableToExpresionMap = variableToExpresionMap;
+	}
+
 	public Object executeExpression() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = null;
+		if(isCustomFunctionResultEvaluator) {
+			if(isCustomFunctionResultEvaluator) {
+				return WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
+			}
+		}
 		if(getConstant() != null) {
 			return getConstant();
 		}

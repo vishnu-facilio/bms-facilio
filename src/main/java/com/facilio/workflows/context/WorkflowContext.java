@@ -20,24 +20,6 @@ public class WorkflowContext {
 	List<ExpressionContext> expressions;
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
-	boolean isCustomFunctionResultEvaluator;
-	WorkflowFunctionContext defaultFunctionContext;
-	
-	public WorkflowFunctionContext getDefaultFunctionContext() {
-		return defaultFunctionContext;
-	}
-
-	public void setDefaultFunctionContext(WorkflowFunctionContext defaultFunctionContext) {
-		this.defaultFunctionContext = defaultFunctionContext;
-	}
-
-	public boolean isCustomFunctionResultEvaluator() {
-		return isCustomFunctionResultEvaluator;
-	}
-
-	public void setIsCustomFunctionResultEvaluator(boolean isCustomFunctionResultEvaluator) {
-		this.isCustomFunctionResultEvaluator = isCustomFunctionResultEvaluator;
-	}
 
 	public Map<String, Object> getVariableResultMap() {
 		return variableResultMap;
@@ -113,12 +95,16 @@ public class WorkflowContext {
 		Object result = null;
 		
 		Map<String,Object> variableToExpresionMap = new HashMap<String,Object>();
+		for(ParameterContext parameter:parameters) {
+			variableToExpresionMap.put(parameter.getName(), parameter.getValue());
+		}
 		if (expressions != null) {
 			for(int i=0; i<expressions.size(); i++) {
 				
 				ExpressionContext expressionContext = expressions.get(i);
 				
 				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
+				expressionContext.setVariableToExpresionMap(variableToExpresionMap);
 				
 				if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
 					return expressionContext.executeExpression();
@@ -140,12 +126,8 @@ public class WorkflowContext {
 		}
 		setVariableResultMap(variableToExpresionMap);
 		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
-		if(isCustomFunctionResultEvaluator) {
-			result =  WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
-		}
-		else {
-			result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
-		}
+		
+		result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
 		System.out.println("result --- "+result);
 		return result;
 	}

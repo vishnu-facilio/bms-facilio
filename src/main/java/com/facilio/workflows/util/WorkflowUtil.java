@@ -87,6 +87,7 @@ public class WorkflowUtil {
 	static final String EXPRESSION_STRING =  "expression";
 	static final String NAME_STRING =  "name";
 	static final String CONSTANT_STRING =  "constant";
+	static final String FUNCTION_STRING =  "function";
 	static final String MODULE_STRING =  "module";
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
@@ -480,13 +481,32 @@ public class WorkflowUtil {
             expressionContext.setName(expressionName);
             
             NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
+            NodeList functionNodes = expression.getElementsByTagName(FUNCTION_STRING);
             
+           
             if(valueNodes.getLength() > 0 ) {
             	Node valueNode =  valueNodes.item(0);
             	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
             		Element value = (Element) valueNode;
             		String valueString = value.getTextContent();
             		expressionContext.setConstant(valueString);
+            	}
+            }
+            else if (functionNodes.getLength() > 0) {
+            	Node valueNode =  functionNodes.item(0);
+            	if(valueNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) valueNode;
+            		String valueString = value.getTextContent();
+            		 Pattern condtionStringpattern = Pattern.compile(CUSTOM_FUNCTION_RESULT_EVALUATOR);
+             		Matcher matcher = condtionStringpattern.matcher(valueString);
+             		while (matcher.find()) {
+             			expressionContext.setIsCustomFunctionResultEvaluator(true);
+             			WorkflowFunctionContext defaultFunctionContext = new WorkflowFunctionContext();
+             			defaultFunctionContext.setNameSpace(matcher.group(1));
+             			defaultFunctionContext.setFunctionName(matcher.group(3));
+             			defaultFunctionContext.setParams(matcher.group(5));
+             			expressionContext.setDefaultFunctionContext(defaultFunctionContext);
+             		}
             	}
             }
             else {
@@ -672,16 +692,6 @@ public class WorkflowUtil {
         		Element result  = (Element) resultNode;
         		String resultString = result.getTextContent();
         		workflowContext.setResultEvaluator(resultString);
-        		Pattern condtionStringpattern = Pattern.compile(CUSTOM_FUNCTION_RESULT_EVALUATOR);
-        		Matcher matcher = condtionStringpattern.matcher(resultString);
-        		while (matcher.find()) {
-        			workflowContext.setIsCustomFunctionResultEvaluator(true);
-        			WorkflowFunctionContext defaultFunctionContext = new WorkflowFunctionContext();
-        			defaultFunctionContext.setNameSpace(matcher.group(1));
-        			defaultFunctionContext.setFunctionName(matcher.group(3));
-        			defaultFunctionContext.setParams(matcher.group(5));
-        			workflowContext.setDefaultFunctionContext(defaultFunctionContext);
-        		}
         	}
         }
         return workflowContext;
