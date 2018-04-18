@@ -17,6 +17,16 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 public class ReportContext extends ModuleBaseWithCustomFields {
 	
 	Long parentFolderId;
+	ReportFolderContext reportFolderContext;
+	public ReportFolderContext getReportFolderContext() {
+		return reportFolderContext;
+	}
+
+	public void setReportFolderContext(ReportFolderContext reportFolderContext) {
+		this.reportFolderContext = reportFolderContext;
+	}
+
+
 	String name;
 	String description;
 	Integer chartType;

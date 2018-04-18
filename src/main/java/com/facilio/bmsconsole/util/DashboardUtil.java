@@ -19,6 +19,8 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
@@ -50,6 +52,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -58,6 +61,8 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class DashboardUtil {
+	
+	public static final String ENERGY_METER_PURPOSE_MAIN = "Main";
 	public static List<String> workOrderXaxisOmitFields = new ArrayList<String>();
 	public static List<String> workOrderYaxisOmitFields = new ArrayList<String>();
 	public static List<String> workOrderGroupByOmitFields = new ArrayList<String>();
@@ -240,6 +245,24 @@ public class DashboardUtil {
 		workRequestGroupByOmitFields.add("requester");
 		workRequestGroupByOmitFields.add("createdTime");
 		workRequestGroupByOmitFields.add("assignedBy");
+	}
+	
+	public static List<EnergyMeterContext> getMainEnergyMeter(String spaceList) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		
+		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersOfPurpose(ENERGY_METER_PURPOSE_MAIN);
+		SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+				new SelectRecordsBuilder<EnergyMeterContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterContext.class)
+				.andCustomWhere("IS_ROOT= ?", true)
+				.andCustomWhere("PARENT_ASSET_ID IS NULL")
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",energyMeterPurpose.getId()+"",NumberOperators.EQUALS))
+				.maxLevel(0);
+		return selectBuilder.get();
 	}
 	
 	public static boolean deleteDashboard(Long dashboardId) throws SQLException {

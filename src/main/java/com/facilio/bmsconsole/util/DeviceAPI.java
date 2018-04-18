@@ -19,10 +19,12 @@ import com.facilio.bmsconsole.context.ControllerSettingsContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.FormulaContext.StringAggregateOperator;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -168,6 +170,23 @@ public class DeviceAPI
 				.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",purposeList,NumberOperators.EQUALS))
 				.maxLevel(0);
 		return selectBuilder.get();
+	}
+	
+	public static EnergyMeterPurposeContext getEnergyMetersOfPurpose(String purposeName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+
+		SelectRecordsBuilder<EnergyMeterPurposeContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterPurposeContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(module)
+				.beanClass(EnergyMeterPurposeContext.class)
+				.andCondition(CriteriaAPI.getCondition("NAME","NAME",purposeName,StringOperators.IS))
+				.maxLevel(0);
+		 List<EnergyMeterPurposeContext> props = selectBuilder.get();
+		 if(props != null && !props.isEmpty()) {
+			return props.get(0);
+		 }
+		 return null;
 	}
 
 	//floor/space/zone service/purpose meters when root is false..

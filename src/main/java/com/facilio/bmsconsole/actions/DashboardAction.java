@@ -378,8 +378,23 @@ public class DashboardAction extends ActionSupport {
 		
 		if ((reportContext.getParentFolderId() == null || reportContext.getParentFolderId() < 0) && reportContext.getReportEntityId() == null) {
 			// if report parent folder not exists, mapping to default folder 
-			ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
-			reportContext.setParentFolderId(defaultFolder.getId());
+			if(reportContext.getParentFolderId() == null && reportContext.getReportFolderContext() != null) {
+				if(reportContext.getReportFolderContext().getId() > 0 ) {
+					reportContext.setParentFolderId(reportContext.getReportFolderContext().getId());
+				}
+				else if (reportContext.getReportFolderContext().getName() != null) {
+					reportFolderContext = reportContext.getReportFolderContext();
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(moduleName);
+					reportFolderContext.setModuleId(module.getModuleId());
+					DashboardUtil.addReportFolder(reportFolderContext);
+					reportContext.setParentFolderId(reportFolderContext.getId());
+				}
+			}
+			if(reportContext.getParentFolderId() == null) {
+				ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
+				reportContext.setParentFolderId(defaultFolder.getId());
+			}
 		}
 		if(reportContext.getModuleId() == -1) {
 			reportContext.setModuleName(moduleName);
@@ -1077,11 +1092,13 @@ public class DashboardAction extends ActionSupport {
 		FacilioField xAxisField = reportXAxisField.getField();
 		
 		if(!module.getName().equals(xAxisField.getModule().getName()) && !module.getName().equals(FacilioConstants.ContextNames.TICKET)) {
-			if(xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+			if(xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
 				builder.innerJoin(xAxisField.getModule().getTableName())
 				.on(xAxisField.getModule().getTableName()+".ID = Tickets.RESOURCE_ID");
 			}
 		}
+		
+		
 		if(xAxisField.getName().equals("resource")) {
 			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
 				builder.innerJoin(modBean.getModule("basespace").getTableName())
@@ -1745,6 +1762,7 @@ public class DashboardAction extends ActionSupport {
 				if ("service".equalsIgnoreCase(report.getEnergyMeter().getGroupBy())) {
 					
 					List<EnergyMeterContext> meters = DeviceAPI.getRootServiceMeters(report.getReportSpaceFilterContext().getBuildingId()+"");
+					System.out.println("meters --- "+meters);
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
@@ -1830,6 +1848,7 @@ public class DashboardAction extends ActionSupport {
 				else {
 					// get Only Meter org purpose 'Main'
 					List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
+					//List<EnergyMeterContext> meters = DashboardUtil.getMainEnergyMeter(report.getReportSpaceFilterContext().getBuildingId()+"");
 					if (meters != null && meters.size() > 0) {
 						List<Long> meterIds = new ArrayList<Long>();
 						for (EnergyMeterContext meter : meters) {
