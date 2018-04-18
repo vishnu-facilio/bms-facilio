@@ -22,13 +22,24 @@ public class LoginUtil {
 		if(cognitoUser==null) {
 			return null;
 		}
-		User user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
+		
+		User user = null;
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String currentOrgDomain = LoginUtil.getUserCookie(request, "fc.currentOrg");
+		
+		if (currentOrgDomain != null) {
+			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
+		}
+		if (user == null) {
+			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
+		}
+		
 		Organization org = null;
 		
 		if (user == null) {
 			org = AccountUtil.getCurrentOrg();
 			if (org != null) {
-				HttpServletRequest request = ServletActionContext.getRequest();
 				Locale locale = request.getLocale();
 				if (locale == null) {
 					locale = Locale.US;

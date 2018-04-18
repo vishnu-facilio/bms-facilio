@@ -57,7 +57,9 @@ public interface UserBean {
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
-    User getFacilioUser(String email) throws Exception;
+    public User getFacilioUser(String email) throws Exception;
+    
+    public User getFacilioUser(String email, String orgDomain) throws Exception;
 
     public User getPortalUser(String email, long portalId) throws Exception;
 }

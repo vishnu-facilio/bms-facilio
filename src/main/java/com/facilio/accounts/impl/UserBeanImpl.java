@@ -647,6 +647,33 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
+	
+	@Override
+	public User getFacilioUser(String email, String orgDomain) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("faciliousers")
+				.on("Users.USERID = faciliousers.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.innerJoin("Organizations")
+				.on("ORG_Users.ORGID=Organizations.ORGID")
+				.andCustomWhere("faciliousers.email = ? AND ORG_Users.DELETED_TIME = -1 AND Organizations.DELETED_TIME = -1 AND Organizations.FACILIODOMAINNAME = ?", email, orgDomain);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+			return user;
+		}
+		return null;
+	}
 
 	public User getPortalUser(String email, long portalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
