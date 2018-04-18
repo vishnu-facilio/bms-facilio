@@ -2656,15 +2656,20 @@ public class DashboardAction extends ActionSupport {
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
 					widgetContext = new WidgetListViewContext();
+					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
+					WidgetListViewContext1.setViewName(widget.get("viewName").toString());
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
+					WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widgetContext;
+					widgetStaticContext.setStaticKey(widget.get("staticKey").toString());
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
 					widgetContext = new WidgetWebContext();
 				}
-				
-				widgetContext.setId((Long) widget.get("id"));
+				if( widget.get("id") != null) {
+					widgetContext.setId((Long) widget.get("id"));
+				}
 				widgetContext.setLayoutWidth(Integer.parseInt(widget.get("layoutWidth").toString()));
 				widgetContext.setLayoutHeight(Integer.parseInt(widget.get("layoutHeight").toString()));
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
