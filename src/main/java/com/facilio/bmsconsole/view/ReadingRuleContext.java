@@ -193,7 +193,8 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		AGGREGATION,
 		BASE_LINE,
 		FLAPPING,
-		ADVANCED
+		ADVANCED,
+		FUNCTION
 		;
 		
 		public int getValue() {
