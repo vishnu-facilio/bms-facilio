@@ -751,6 +751,7 @@ public class DashboardAction extends ActionSupport {
 		if(widgetId != null) {
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			
+			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
 			Map<String,Object> result = null;
 			if(dashboardWidgetContext.getWidgetVsWorkflowContexts() != null) {
 				
@@ -771,6 +772,12 @@ public class DashboardAction extends ActionSupport {
 						}
 						if(reportSpaceFilterContext.getBuildingId() != null) {
 							paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
+						}
+						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard")) {
+							BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
+							if(basespace != null) {
+								paramMap.put("parentId", basespace.getSiteId());
+							}
 						}
 					}
 					if (widgetVsWorkflowContext.getId().equals(5l) || widgetVsWorkflowContext.getId().equals(6l)  || widgetVsWorkflowContext.getId().equals(11l)  || widgetVsWorkflowContext.getId().equals(12l) || widgetVsWorkflowContext.getId().equals(20l)  || widgetVsWorkflowContext.getId().equals(21l) || widgetVsWorkflowContext.getId().equals(26l)  || widgetVsWorkflowContext.getId().equals(27l) ){

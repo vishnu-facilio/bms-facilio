@@ -263,7 +263,7 @@ public class ExpressionContext {
 			}
 			else {
 				selectBuilder.select(modBean.getAllFields(moduleName));
-				if(getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
 					selectBuilder.orderBy("TTIME");
 				}
 			}
