@@ -2658,7 +2658,7 @@ public class DashboardAction extends ActionSupport {
 					widgetContext = new WidgetListViewContext();
 					WidgetListViewContext WidgetListViewContext1 = (WidgetListViewContext) widgetContext;
 					WidgetListViewContext1.setViewName(widget.get("viewName").toString());
-					WidgetListViewContext1.setModuleName(widget.get("ModuleName").toString());
+					WidgetListViewContext1.setModuleName(widget.get("moduleName").toString());
 				}
 				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
 					widgetContext = new WidgetStaticContext();
