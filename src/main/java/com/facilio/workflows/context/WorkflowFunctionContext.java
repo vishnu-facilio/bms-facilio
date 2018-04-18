@@ -5,13 +5,13 @@ import java.util.List;
 
 public class WorkflowFunctionContext {
 
-	String nameSpace;
-	String FunctionName;
-	String params;
+	private String nameSpace;
+	private String functionName;
+	private String params;
 	
 	public List<String> getParamList() {
 		if(params != null && !params.equals("")) {
-			params.split(",");
+			params.split("\\s*,\\s*");
 			List<String> paramList = Arrays.asList(params);  
 			return paramList;
 		}
@@ -24,10 +24,10 @@ public class WorkflowFunctionContext {
 		this.nameSpace = nameSpace;
 	}
 	public String getFunctionName() {
-		return FunctionName;
+		return functionName;
 	}
 	public void setFunctionName(String functionName) {
-		FunctionName = functionName;
+		this.functionName = functionName;
 	}
 	public String getParams() {
 		return params;
