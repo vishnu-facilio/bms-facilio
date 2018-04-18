@@ -36,22 +36,27 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 			else if(assetCategoryName.trim().equalsIgnoreCase("Primary Pump"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_PRIMARY_PUMP);
-				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Primary_Pump");
 			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("Secondary Pump"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_SECONDARY_PUMP);
-				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Secondary_Pump");
 			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("Condenser Pump"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_CONDENSER_PUMP);
-				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Condenser_Pump");
 			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("AHU"))
 			{
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.AHU);
 				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
+			}
+			else if(assetCategoryName.trim().equalsIgnoreCase("Cooling Tower"))
+			{
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.COOLING_TOWER);
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Cooling_Tower");
 			}
 			else if(assetCategoryName.trim().equalsIgnoreCase("FCU"))
 			{

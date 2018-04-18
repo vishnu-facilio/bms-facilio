@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
@@ -285,6 +286,7 @@ public class FacilioConstants {
 		public static final String CHILLER_SECONDARY_PUMP = "chillersecondarypump";
 		public static final String CHILLER_CONDENSER_PUMP = "chillercondenserpump";
 		public static final String AHU = "ahu";
+		public static final String COOLING_TOWER = "coolingtower";
 		public static final String FCU = "fcu";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
@@ -472,6 +474,7 @@ public class FacilioConstants {
 			classMap.put(CHILLER_CONDENSER_PUMP, ChillerCondenserPumpContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(AHU, AHUContext.class);
+			classMap.put(COOLING_TOWER, CoolingTowerContext.class);
 			classMap.put(FCU, FCUContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
