@@ -39,6 +39,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -51,6 +52,7 @@ public class WorkflowUtil {
 	
 //	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)(\\,*)(\\d*)\\}\\s*)?([^`]*)`(.*))";
+	private static final String CUSTOM_FUNCTION_RESULT_EVALUATOR = "(.*?)(\\.)(.*?)(\\()(.*?)(\\))";
 	
 	
 	static {
@@ -670,8 +672,47 @@ public class WorkflowUtil {
         		Element result  = (Element) resultNode;
         		String resultString = result.getTextContent();
         		workflowContext.setResultEvaluator(resultString);
+        		Pattern condtionStringpattern = Pattern.compile(CUSTOM_FUNCTION_RESULT_EVALUATOR);
+        		Matcher matcher = condtionStringpattern.matcher(resultString);
+        		while (matcher.find()) {
+        			workflowContext.setIsCustomFunctionResultEvaluator(true);
+        			WorkflowFunctionContext defaultFunctionContext = new WorkflowFunctionContext();
+        			defaultFunctionContext.setNameSpace(matcher.group(1));
+        			defaultFunctionContext.setFunctionName(matcher.group(3));
+        			defaultFunctionContext.setParams(matcher.group(5));
+        			workflowContext.setDefaultFunctionContext(defaultFunctionContext);
+        		}
         	}
         }
         return workflowContext;
 	}
+	
+	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
+		
+		
+		if(workflowFunctionContext.getNameSpace().equals("default")) {
+				
+			FacilioDefaultFunction defaultFunctions = FacilioDefaultFunction.getFacilioDefaultFunction(workflowFunctionContext.getFunctionName());
+			
+			List<String> paramList = workflowFunctionContext.getParamList();
+			Object[] objects = null;
+
+			int objectIndex = 0;
+			if(paramList != null && !paramList.isEmpty()) {
+				
+				objects = new Object[paramList.size()];
+				
+				for(String param:paramList) {
+					Object obj = variableToExpresionMap.get(param);
+					objects[objectIndex++] = obj;
+				}
+			}
+			
+			return defaultFunctions.execute(objects);
+		}
+		
+		return null;
+		
+	}
+	
 }

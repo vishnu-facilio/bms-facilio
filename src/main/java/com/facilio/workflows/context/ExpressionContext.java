@@ -321,7 +321,7 @@ public class ExpressionContext {
 					exprResult = props;
 				}
 			}
-			else if(getAggregateString() == null) {
+			else if(getAggregateString() == null || getAggregateString().equals("")) {
 				List<Object> returnList = new ArrayList<>(); 
 				for(Map<String, Object> prop:props) {
 					returnList.add(prop.get(RESULT_STRING));

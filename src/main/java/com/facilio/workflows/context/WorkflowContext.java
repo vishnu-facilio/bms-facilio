@@ -20,7 +20,25 @@ public class WorkflowContext {
 	List<ExpressionContext> expressions;
 	Map<String,Object> variableResultMap;
 	String resultEvaluator;
+	boolean isCustomFunctionResultEvaluator;
+	WorkflowFunctionContext defaultFunctionContext;
 	
+	public WorkflowFunctionContext getDefaultFunctionContext() {
+		return defaultFunctionContext;
+	}
+
+	public void setDefaultFunctionContext(WorkflowFunctionContext defaultFunctionContext) {
+		this.defaultFunctionContext = defaultFunctionContext;
+	}
+
+	public boolean isCustomFunctionResultEvaluator() {
+		return isCustomFunctionResultEvaluator;
+	}
+
+	public void setIsCustomFunctionResultEvaluator(boolean isCustomFunctionResultEvaluator) {
+		this.isCustomFunctionResultEvaluator = isCustomFunctionResultEvaluator;
+	}
+
 	public Map<String, Object> getVariableResultMap() {
 		return variableResultMap;
 	}
@@ -108,8 +126,7 @@ public class WorkflowContext {
 				
 				Object res = expressionContext.executeExpression();
 				if(res != null) {
-					String subExpResult = res.toString();
-					variableToExpresionMap.put(expressionContext.getName(), subExpResult);
+					variableToExpresionMap.put(expressionContext.getName(), res);
 				}
 				else {
 					variableToExpresionMap.put(expressionContext.getName(), "0");
@@ -123,7 +140,12 @@ public class WorkflowContext {
 		}
 		setVariableResultMap(variableToExpresionMap);
 		System.out.println("variableToExpresionMap --- "+variableToExpresionMap+" \n\n"+"expString --- "+getResultEvaluator());
-		result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
+		if(isCustomFunctionResultEvaluator) {
+			result =  WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
+		}
+		else {
+			result =  evaluateExpression(getResultEvaluator(),variableToExpresionMap);
+		}
 		System.out.println("result --- "+result);
 		return result;
 	}
@@ -164,7 +186,10 @@ public class WorkflowContext {
 		}
 		Expression expression = new Expression(exp);
 		for(String key : variablesMap.keySet()) {
-			String value = (String) variablesMap.get(key);
+			String value = null;
+			if(variablesMap.get(key) != null) {
+				value = variablesMap.get(key).toString();
+			}
 			expression.with(""+key, value);
 		}
 		BigDecimal result = expression.eval();

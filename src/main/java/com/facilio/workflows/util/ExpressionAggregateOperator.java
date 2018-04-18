@@ -14,12 +14,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 			return props.get(0).get(fieldName);
 		}
 	},
-	COUNT(1,"count","count({$place_holder$})"){
+	COUNT(1,"count","count({$place_holder$})") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			return props.size();
 		}
 	},
-	AVERAGE(2,"avg","avg({$place_holder$})"){
+	AVERAGE(2,"avg","avg({$place_holder$})") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			double sum = 0;
 			for(Map<String, Object> prop:props) {
