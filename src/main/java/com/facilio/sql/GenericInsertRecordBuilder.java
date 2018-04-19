@@ -18,6 +18,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	private List<FacilioField> fields;
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
+	private String sql;
 	
 	@Override
 	public GenericInsertRecordBuilder table(String tableName) {
@@ -72,7 +73,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		ResultSet rs = null;
 		
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			String sql = constructInsertStatement();
+			sql = constructInsertStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
 			for(Map<String, Object> value : values) {
@@ -99,7 +100,12 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			//System.out.println("Added records with IDs : "+ids);
 		}
 		catch(SQLException | RuntimeException e) {
-			CommonCommandUtil.emailException("Insertion failed - ", e);
+			StringBuilder builder = new StringBuilder();
+			builder.append("SQL Statement : ")
+					.append(sql)
+					.append("\nProps : \n")
+					.append(values);
+			CommonCommandUtil.emailException("Insertion failed - ", e, builder.toString());
 			e.printStackTrace();
 			throw e;
 		}

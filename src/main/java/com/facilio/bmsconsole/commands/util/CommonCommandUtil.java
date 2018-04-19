@@ -201,8 +201,11 @@ public class CommonCommandUtil {
 		return null;	
 	}
 	
-	
 	public static void emailException(String msg, Throwable e) {
+		emailException(msg, e, null);
+	}
+	
+	public static void emailException(String msg, Throwable e, String info) {
 		try {
 			JSONObject json = new JSONObject();
 			
@@ -238,6 +241,11 @@ public class CommonCommandUtil {
 				.append(AwsUtil.getConfig("app.url"))
 				.append("\n\nTrace : \n--------\n")
 				.append(ExceptionUtils.getStackTrace(e));
+			
+			if (info != null && !info.isEmpty()) {
+				body.append(info);
+			}
+			
 			checkDB(e.getMessage(), body);
 			
 			json.put("message", body.toString());
