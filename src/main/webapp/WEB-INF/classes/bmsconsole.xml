@@ -3594,7 +3594,7 @@
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*</param>
 			</result>
 		</action>
 		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">

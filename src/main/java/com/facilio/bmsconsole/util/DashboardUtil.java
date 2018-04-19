@@ -340,28 +340,37 @@ public class DashboardUtil {
 	}
 	
 	public static JSONObject getStandardVariance(List<Map<String, Object>> props) {
-		Double min = null ,max = null,avg = null,sum = (double) 0;
-		for(Map<String, Object> prop:props) {
-			double value = (double) prop.get("value");
-			
-			sum = sum + value;
-			
-			if(min == null && max == null) {
-				min = value;
-				max = value;
+		
+		try {
+			Double min = null ,max = null,avg = null,sum = (double) 0;
+			for(Map<String, Object> prop:props) {
+				if(prop.get("value") != null) {
+					double value = Double.parseDouble(prop.get("value").toString());
+					
+					sum = sum + value;
+					
+					if(min == null && max == null) {
+						min = value;
+						max = value;
+					}
+					else {
+						min = min < value ? min : value;
+						max = max > value ? max : value;
+					}
+				}
 			}
-			else {
-				min = min < value ? min : value;
-				max = max > value ? max : value;
-			}
+			avg = sum / props.size();
+			JSONObject variance = new JSONObject();
+			variance.put("min", min);
+			variance.put("max", max);
+			variance.put("avg", avg);
+			variance.put("sum", sum);
+			return variance;
 		}
-		avg = sum / props.size();
-		JSONObject variance = new JSONObject();
-		variance.put("min", min);
-		variance.put("max", max);
-		variance.put("avg", avg);
-		variance.put("sum", sum);
-		return variance;
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
@@ -1397,6 +1406,7 @@ public class DashboardUtil {
 		List<ReportFieldContext> xAxisField = new ArrayList<ReportFieldContext>();
 		List<ReportFieldContext> yAxisField = new ArrayList<ReportFieldContext>();
 		List<ReportFieldContext> groupField = new ArrayList<ReportFieldContext>();
+		
 		ArrayList<FacilioField> allFields = modBean.getAllFields(moduleName);
 		
 		for(FacilioField field:allFields) {

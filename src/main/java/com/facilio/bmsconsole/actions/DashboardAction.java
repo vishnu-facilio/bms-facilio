@@ -899,7 +899,15 @@ public class DashboardAction extends ActionSupport {
 		}
 		return ERROR;
 	}
+	JSONObject variance;
 	
+	
+	public JSONObject getVariance() {
+		return variance;
+	}
+	public void setVariance(JSONObject variance) {
+		this.variance = variance;
+	}
 	public String getData() throws Exception {
 		
 		if (reportContext == null) {
@@ -1363,6 +1371,7 @@ public class DashboardAction extends ActionSupport {
 			ticketData = finalres;
 		}
 		else {
+			variance = DashboardUtil.getStandardVariance(rs);
 			JSONArray res = new JSONArray();
 			
 			for(int i=0;i<rs.size();i++) {
@@ -2087,6 +2096,7 @@ public class DashboardAction extends ActionSupport {
 			JSONArray res = new JSONArray();
 			
 			JSONObject purposeIndexMapping = new JSONObject();
+			variance = DashboardUtil.getStandardVariance(rs);
 			for(int i=0;i<rs.size();i++) {
 				boolean newPurpose = false;
 	 			Map<String, Object> thisMap = rs.get(i);
