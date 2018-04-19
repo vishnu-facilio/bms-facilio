@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.reports;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,10 +10,13 @@ import java.util.stream.Collectors;
 import org.json.simple.JSONArray;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.DashboardAction;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -26,22 +30,88 @@ public class ReportExportUtil {
 	
 	private static final String UNKNOWN = "Unknown"; 
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Map<String, Object> getDataInExportFormat(JSONArray reportData1, ReportContext reportContext, Long baseLineComparisionDiff) throws Exception {
 		
-		List<String> headers = new ArrayList<>();
-		Map<String, List<Long>> modVsIds = new HashMap<String, List<Long>>();
-		Map<String, FacilioField> headerFields = new HashMap<String, FacilioField>();
-		List<String> subLabels = new ArrayList();
-		boolean isGroup = false;
+		List<Map<String, Object>> reportDatas = new ArrayList<>();
 		
+		List<String> headers = new ArrayList<>();
+		Map<String, FacilioField> headerFields = new HashMap<String, FacilioField>();
 		List<Map<String, Object>> records = new ArrayList<>();
+		Map<String, List<Long>> modVsIds = new HashMap<String, List<Long>>();
+		
+		Map<String, Object> table = new HashMap<String, Object>();
+		table.put("headers", headers);
+		table.put("headerFields", headerFields);
+		table.put("records", records);
+		table.put("modVsIds", modVsIds);
 		
 		String xAxisLabel = reportContext.getxAxisLabel();
 		headers.add(xAxisLabel);
 		
 		FacilioField xAxisField = reportContext.getxAxisField().getField();
 		headerFields.put(xAxisLabel, xAxisField);
+		
+		if (reportContext.getReportChartType() != null && reportContext.getReportChartType() == ReportChartType.TIMESERIES) {
+			Map<String, Object> rdata = new HashMap<>();
+			rdata.put("reportData", reportData1);
+			rdata.put("reportContext", reportContext);
+			rdata.put("baseLineComparisionDiff", baseLineComparisionDiff);
+			rdata.put("title", reportContext.getY1AxisField().getFieldLabel());
+			reportDatas.add(rdata);
+			fetchMultiData(reportContext, reportDatas);
+			
+			Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
+			
+			for(int i = 0, size = reportDatas.size(); i < size; i++) {
+				Map<String, Object> datas = reportDatas.get(i);
+				JSONArray multiReportData1 = (JSONArray) datas.get("reportData");
+				ReportContext multiReportContext1 = (ReportContext) datas.get("reportContext");
+				Long multiBaseLineComparisionDiff1 = (Long) datas.get("baseLineComparisionDiff");
+				String header = (String) datas.get("title");
+				headers.add(header);
+				 
+				records = new ArrayList<>();
+				table.put("records", records);
+				 
+				setReportData(multiReportData1, multiReportContext1, multiBaseLineComparisionDiff1, table, false);
+				
+				for (int j = 0, len = records.size() ; j < len; j++ ) {
+					Map<String, Object> record = (Map<String, Object>) records.get(j);
+					String rowLabel = record.get(xAxisLabel).toString();
+					Map<String, Object> row;
+					if (!rows.containsKey(rowLabel)) {
+						rows.put(rowLabel, record);
+					}
+					
+					row = rows.get(rowLabel);
+					String y1AxisLabel = reportContext.getY1AxisLabel();
+					Object value = record.get(y1AxisLabel);
+					row.put(header, value);
+					row.put(y1AxisLabel, null);
+				}
+			}
+			
+			records = rows.values().stream()
+					.collect(Collectors.toList());
+			table.put("records", records);
+			
+		}
+		else {
+			setReportData(reportData1, reportContext, baseLineComparisionDiff, table, true);
+		}
+		
+		return table;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static void setReportData(JSONArray reportData1, ReportContext reportContext, Long baseLineComparisionDiff, Map<String, Object> table, boolean setHeader) throws Exception {
+		List<String> headers = (List<String>) table.get("headers");
+		Map<String, FacilioField> headerFields = (Map<String, FacilioField>) table.get("headerFields");
+		List<Map<String, Object>> records = (List<Map<String, Object>>) table.get("records");
+		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
+		
+		List<String> subLabels = new ArrayList();
+		boolean isGroup = false;
 		
 		List<Map<String, Object>> reportData = (List<Map<String, Object>>) reportData1.stream().filter(data -> ((Map) data).get("label") != null).collect(Collectors.toList());
 		
@@ -56,6 +126,8 @@ public class ReportExportUtil {
 				rowLabel = (Long)rowLabel + baseLineComparisionDiff;
 			}
 
+			String xAxisLabel = reportContext.getxAxisLabel();
+			FacilioField xAxisField = reportContext.getxAxisField().getField();
 			rowLabel = formatLabel(rowLabel, xAxisField, modVsIds, reportContext.getXAxisAggregateOpperator(), reportContext);
 			fields.put(xAxisLabel, rowLabel);
 			
@@ -85,7 +157,7 @@ public class ReportExportUtil {
 			}
 			else {
 				String y1AxisLabel = reportContext.getY1AxisLabel();
-				if (!headers.contains(y1AxisLabel)) {
+				if (setHeader && !headers.contains(y1AxisLabel)) {
 					headers.add(y1AxisLabel);
 				}
 				value = formatValue(value, valueFieldType, reportContext.getY1AxisAggregateOpperator(), reportContext);
@@ -114,7 +186,7 @@ public class ReportExportUtil {
 						        		subField = serviceField;
 						        }
 							}
-							if (!headers.contains(sublabel)) {
+							if (setHeader && !headers.contains(sublabel)) {
 								headers.add(sublabel);
 								headerFields.put(sublabel, subField);
 							}
@@ -127,14 +199,64 @@ public class ReportExportUtil {
 			}
 			
 		}
-		
-		Map<String, Object> table = new HashMap<String, Object>();
-		table.put("headers", headers);
-		table.put("headerFields", headerFields);
-		table.put("records", records);
-		table.put("modVsIds", modVsIds);
-		
-		return table;
+	}
+	
+	private static void fetchMultiData(ReportContext reportContext, List<Map<String, Object>> reportDatas) throws Exception {
+		if ((reportContext.getComparingReportContexts() != null && !reportContext.getComparingReportContexts().isEmpty()) || (reportContext.getBaseLineContexts() != null && !reportContext.getBaseLineContexts().isEmpty())) {
+			List<Map<String, Object>> reportParams = new ArrayList<>();
+			
+			if (reportContext.getBaseLineContexts() != null) {
+				for(BaseLineContext baseContext: reportContext.getBaseLineContexts()) {
+					Map<String, Object> params = new HashMap<>();
+					params.put("reportId", reportContext.getId());
+					params.put("baseLineId", baseContext.getId());
+					params.put("baseLineName", baseContext.getName());
+					reportParams.add(params);
+					
+					if (reportContext.getComparingReportContexts() != null) {
+						for(ReportContext compContext: reportContext.getComparingReportContexts()) {
+	                      if (compContext.getExcludeBaseline()) {
+	                        continue;
+	                      }
+	                      Map<String, Object> params2 = new HashMap<>();
+	                      params2.put("reportId", compContext.getId());
+	                      params2.put("baseLineId", baseContext.getId());
+	                      params2.put("baseLineName", baseContext.getName());
+	                      reportParams.add(params2);
+	                    }
+	                  }
+				}
+			}
+			if (reportContext.getComparingReportContexts() != null) {
+				for(ReportContext compContext: reportContext.getComparingReportContexts()) {
+					Map<String, Object> params = new HashMap<>();
+					params.put("reportId", compContext.getId());
+					reportParams.add(params);
+				}
+//				reportdIds.addAll(reportContext.getComparingReportContexts().stream().map(ReportContext::getId).collect(Collectors.toList()));
+			}
+			
+			for(int i = 0; i < reportParams.size(); i++) {
+				Map<String, Object> params = reportParams.get(i);
+				DashboardAction action = new DashboardAction();
+				action.setReportId((Long) params.get("reportId"));
+				if (params.containsKey("baseLineId")) {
+					action.setBaseLineId((long) params.get("baseLineId"));
+				}
+				action.getData();
+				
+				Map<String, Object> rdata = new HashMap<>();
+				rdata.put("reportData", action.getReportData());
+				rdata.put("reportContext", action.getReportContext());
+				rdata.put("baseLineComparisionDiff", action.getBaseLineComparisionDiff());
+				String title = action.getReportContext().getName();
+				if (params.containsKey("baseLineName")) {
+					title = (String) params.get("baseLineName");
+				}
+				rdata.put("title", title);
+				reportDatas.add(rdata);
+			}
+		}
 	}
 	
 	public static Map<String, Object> getTabularReportData (JSONArray reportData, ReportContext reportContext, List<ReportColumnContext> reportColumns) throws Exception {
@@ -169,7 +291,7 @@ public class ReportExportUtil {
 						field = column.getReport().getY1AxisField();
 						operator = column.getReport().getY1AxisAggregateOpperator();
 					}
-					Object value = formatValue(row.get(j), field.getField().getDataTypeEnum(), operator, null);
+					Object value = formatValue(row.get(j), field.getField().getDataTypeEnum(), operator, reportContext);
 					newRow.add(value);
 				}
 			}
@@ -184,7 +306,7 @@ public class ReportExportUtil {
 	}
 	
 	private static Object formatValue (Object value, FieldType dataType, AggregateOperator operator, ReportContext reportContext) {
-		if (dataType != null) {
+		if (dataType != null && value != null) {
 			switch (dataType) {
 				case DATE:
 				case DATE_TIME: {
@@ -264,6 +386,12 @@ public class ReportExportUtil {
 		}
 		
 		return label.toString();
+	}
+	
+	class ReportOptions {
+		private FieldType dataType;
+		private AggregateOperator operator;
+		private String unit;
 	}
 	
 }
