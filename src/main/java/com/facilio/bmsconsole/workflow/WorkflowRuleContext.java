@@ -142,7 +142,7 @@ public class WorkflowRuleContext {
 		}
 		return false;
 	}
-	public void setOnSuccess(Boolean onSuccess) {
+	public void setOnSuccess(boolean onSuccess) {
 		this.onSuccess = onSuccess;
 	}
 
