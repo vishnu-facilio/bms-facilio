@@ -131,14 +131,6 @@ public class DashboardAction extends ActionSupport {
 	public void setIsHeatMap(boolean isHeatMap) {
 		this.isHeatMap = isHeatMap;
 	}
-	public JSONObject resultVariance;
-	
-	public JSONObject getResultVariance() {
-		return resultVariance;
-	}
-	public void setResultVariance(JSONObject resultVariance) {
-		this.resultVariance = resultVariance;
-	}
 	public String xaxisLegent;
 	public String getXaxisLegent() {
 		return xaxisLegent;
@@ -1215,9 +1207,9 @@ public class DashboardAction extends ActionSupport {
 		
 		report.setY1AxisField(reportY1AxisField);
 
-		if ("WorkOrders".equals(module.getTableName())) {
-			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
-		}
+//		if ("WorkOrders".equals(module.getTableName())) {
+//			builder.leftJoin("PM_To_WO").on("WorkOrders.ID=WO_ID");
+//		}
 		
 		if(userFilterValues != null && report.getReportUserFilters() != null) {
 			for(ReportUserFilterContext userFilter : report.getReportUserFilters()) {
