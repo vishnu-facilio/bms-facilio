@@ -1093,6 +1093,13 @@ public class AccountConstants {
 		userType.setColumnName("USER_TYPE");
 		userType.setModule(module);
 		fields.add(userType);
+		
+		FacilioField deletedTime = new FacilioField();
+		deletedTime.setName("deletedTime");
+		deletedTime.setDataType(FieldType.NUMBER);
+		deletedTime.setColumnName("DELETED_TIME");
+		deletedTime.setModule(module);
+		fields.add(deletedTime);
 
 		return fields;
 	}

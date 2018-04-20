@@ -730,6 +730,14 @@ public class FieldFactory {
 		roleid.setColumnName("ROLE_ID");
 		roleid.setModule(module);
 		fields.add(roleid);
+		
+		FacilioField deletedTime = new FacilioField();
+		deletedTime.setName("deletedTime");
+		deletedTime.setDataType(FieldType.NUMBER);
+		deletedTime.setColumnName("DELETED_TIME");
+		deletedTime.setModule(module);
+		fields.add(deletedTime);
+
 
 		return fields;
 

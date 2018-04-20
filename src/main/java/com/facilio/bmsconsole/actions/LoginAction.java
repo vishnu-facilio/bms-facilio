@@ -420,7 +420,7 @@ public class LoginAction extends ActionSupport{
 			if(user.getPassword() == null) {
 				invitation.put("account_exists", false);
 			} else {
-				invitation.put("account_exists", true);
+				invitation.put("account_exists", true);	
 			}
 			invitation.put("userid", ouid);
 		}

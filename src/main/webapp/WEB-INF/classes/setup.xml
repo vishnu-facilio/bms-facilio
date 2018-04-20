@@ -176,7 +176,7 @@
 		<action name="deleteUser" class = "com.facilio.bmsconsole.actions.UserAction" method = "deleteUser">
 			<param name="moduleName">setup</param>
 			<param name= "permission">USER_MANAGEMENT</param>
-			<result name = "Success" type="json">
+			<result name = "success" type="json">
 				<param name ="includeProperties">userId</param>
 			</result>
 			<result name="error" type="json">

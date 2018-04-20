@@ -179,6 +179,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Command getDeleteUserCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteUserCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Command getAddUserMobileSettingCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new AddUserMobileSettingCommand());
