@@ -318,6 +318,7 @@ public class UserBeanImpl implements UserBean {
 			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setPassword(password);
+					user.setUserVerified(true);
 					updateUser(user);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -408,7 +409,7 @@ public class UserBeanImpl implements UserBean {
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
-				user = AccountUtil.getUserBean().getUser(user.getUid());
+				user = AccountUtil.getUserBean().getUser(user.getOuid());
 				user.setUserVerified(true);
 				user.setPassword(password);
 				updateUser(user);
