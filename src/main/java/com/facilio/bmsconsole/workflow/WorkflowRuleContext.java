@@ -124,6 +124,28 @@ public class WorkflowRuleContext {
 		this.actions = actions;
 	}
 
+	private long parentRuleId = -1;
+	public long getParentRuleId() {
+		return parentRuleId;
+	}
+	public void setParentRuleId(long parentRuleId) {
+		this.parentRuleId = parentRuleId;
+	}
+
+	private Boolean onSuccess;
+	public Boolean getOnSuccess() {
+		return onSuccess;
+	}
+	public boolean isOnSuccess() {
+		if (onSuccess != null) {
+			return onSuccess.booleanValue();
+		}
+		return false;
+	}
+	public void setOnSuccess(Boolean onSuccess) {
+		this.onSuccess = onSuccess;
+	}
+
 	private RuleType ruleType;
 	public int getRuleType() {
 		if(ruleType != null) {

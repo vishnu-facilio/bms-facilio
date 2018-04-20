@@ -474,6 +474,9 @@ public class FieldFactory {
 		ruleType.setColumnName("RULE_TYPE");
 		ruleType.setModule(module);
 		fields.add(ruleType);
+		
+		fields.add(getField("parentRuleId", "PARENT_RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("onSuccess", "ON_SUCCESS", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

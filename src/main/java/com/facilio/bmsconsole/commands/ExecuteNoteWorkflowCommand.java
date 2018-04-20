@@ -45,7 +45,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 				if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
-					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(eventType));
+					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(eventType), null);
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
 						TicketContext ticket = getParentTicket(note);

@@ -234,6 +234,14 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 	}
 	
 	public void andCriteria(Criteria newCriteria) {
+		appendCriteria(newCriteria, " and ");
+	}
+	
+	public void orCriteria(Criteria newCriteria) {
+		appendCriteria(newCriteria, " or ");
+	}
+	
+	private void appendCriteria(Criteria newCriteria, String operator) {
 		Map<Integer, Condition> newConditions = newCriteria.getConditions();
 		String newPattern = newCriteria.getPattern();
 		int sequence = 1;
@@ -244,23 +252,27 @@ public class Criteria extends ExpressionEvaluator<Predicate> {
 				finalPattern.append("(")
 							.append(pattern)
 							.append(")")
-							.append(" and ");
+							.append(operator)
+							.append("(");
+				
+				Matcher matcher = REG_EX.matcher(newPattern);
+				int i = 0;
+				while (matcher.find()) {
+					Condition condition = newConditions.get(Integer.parseInt(matcher.group(1)));
+					finalPattern.append(newPattern.substring(i, matcher.start()));
+					condition.setSequence(sequence);
+					conditions.put(sequence, condition);
+					finalPattern.append(sequence++);
+					i = matcher.end();
+				}
+				finalPattern.append(newPattern.substring(i, newPattern.length()))
+							.append(")");
+				setPattern(finalPattern.toString());
 			}
 			else {
-				conditions = new HashMap<>();
+				pattern = newPattern;
+				conditions = newConditions;
 			}
-			Matcher matcher = REG_EX.matcher(newPattern);
-			int i = 0;
-			while (matcher.find()) {
-				Condition condition = newConditions.get(Integer.parseInt(matcher.group(1)));
-				finalPattern.append(newPattern.substring(i, matcher.start()));
-				condition.setSequence(sequence);
-				conditions.put(sequence, condition);
-				finalPattern.append(sequence++);
-				i = matcher.end();
-			}
-			finalPattern.append(newPattern.substring(i, newPattern.length()));
-			setPattern(finalPattern.toString());
 		}
 	}
 	

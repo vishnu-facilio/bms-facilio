@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -231,7 +232,7 @@ public class WorkflowRuleAPI {
 		return getWorkFlowsFromMapList(builder.get(), false);
 	}
 	
-	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes, RuleType... ruleTypes) throws Exception {
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
@@ -243,15 +244,19 @@ public class WorkflowRuleAPI {
 				.orderBy("EXECUTION_ORDER");
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {
-			List<Integer> ids = new ArrayList<>();
+			StringJoiner ids = new StringJoiner(",");
 			for(RuleType type : ruleTypes) {
-				ids.add(type.getIntVal());
+				ids.add(String.valueOf(type.getIntVal()));
 			}
 			Condition ruleTypeCondition = new Condition();
 			ruleTypeCondition.setColumnName("RULE_TYPE");
 			ruleTypeCondition.setOperator(NumberOperators.EQUALS);
-			ruleTypeCondition.setValue(StringUtils.join(ids, ","));
+			ruleTypeCondition.setValue(ids.toString());
 			ruleBuilder.andCondition(ruleTypeCondition);
+		}
+		
+		if (criteria != null) {
+			ruleBuilder.andCriteria(criteria);
 		}
 		
 		StringBuilder activityTypeWhere = new StringBuilder();
