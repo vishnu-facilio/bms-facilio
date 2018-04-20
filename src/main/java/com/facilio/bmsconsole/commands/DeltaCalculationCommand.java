@@ -30,10 +30,13 @@ public class DeltaCalculationCommand implements Command {
 		if (historyReading != null && historyReading==true) {
 			return false;
 		}
+
 		Map<String, Map<String,Object>> lastReadingsMap = (Map<String, Map<String,Object>>) context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		if(lastReadingsMap==null || lastReadingsMap.isEmpty()) {
 			return false;
 		}
+		System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand####### lastReadingMap "+lastReadingsMap);
+
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
@@ -56,7 +59,11 @@ public class DeltaCalculationCommand implements Command {
 				}
 			}
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
+			System.err.println( Thread.currentThread().getName()+"Inside DeltaCommand#######  "+markedList);
+
 		}
+		System.err.println( Thread.currentThread().getName()+"Exiting DeltaCommand#######  ");
+
 		return false;
 	}
 
