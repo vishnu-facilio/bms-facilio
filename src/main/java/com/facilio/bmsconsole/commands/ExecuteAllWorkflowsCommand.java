@@ -16,6 +16,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -58,7 +59,14 @@ public class ExecuteAllWorkflowsCommand implements Command
 					List<ActivityType> activities = Collections.singletonList(activityType);
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long moduleId = modBean.getModule(moduleName).getModuleId();
-					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, null, ruleTypes);
+					
+					Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+					FacilioField parentRule = fields.get("parentRuleId");
+					FacilioField onSuccess = fields.get("onSuccess");
+					Criteria parentCriteria = new Criteria();
+					parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+					parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
+					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
 					while (workflowRules != null && !workflowRules.isEmpty()) {
 						Criteria childCriteria = executeWorkflows(workflowRules, moduleName, new LinkedList<>(entry.getValue()), (FacilioContext) context);
 						if (childCriteria == null) {

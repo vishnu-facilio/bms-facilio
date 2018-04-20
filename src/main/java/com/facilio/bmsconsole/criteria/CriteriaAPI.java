@@ -177,6 +177,13 @@ public class CriteriaAPI {
 		return idCondition;
 	}
 	
+	public static Condition getCondition( FacilioField field,Operator operator) {
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(operator);
+		return condition;
+	}
+	
 	public static Condition getCondition( FacilioField field,List<Long> values,Operator operator) {
 		String val = StringUtils.join(values, ",");
 		return getCondition(field, val, operator);
