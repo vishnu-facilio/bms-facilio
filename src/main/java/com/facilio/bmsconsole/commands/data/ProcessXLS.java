@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportBuildingAction;
 import com.facilio.bmsconsole.actions.ImportFloorAction;
@@ -45,6 +46,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ProcessXLS implements Command {
@@ -165,23 +167,24 @@ public class ProcessXLS implements Command {
 					Long buildingId = null;
 					Long floorId = null;
 					Long spaceId = null;
-					 
-					 List<SiteContext> sites = SpaceAPI.getAllSites();
-					 HashMap<String, Long> siteMap = new HashMap();
-					 for(SiteContext siteContext : sites)	
-					 {
-						 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
-					 }
-					 if(siteMap.containsKey(siteName.trim().toLowerCase()))
-					 {
-						siteId = siteMeta.getSiteId(siteName);
-					 }
-					 else
-					 {
-						 siteId = siteMeta.addSite(siteName);
-					 }
-					 if(siteId != null) {
-						 spaceId = siteId;
+					 if(siteName != null && !siteName.equals("")) {
+						 List<SiteContext> sites = SpaceAPI.getAllSites();
+						 HashMap<String, Long> siteMap = new HashMap();
+						 for(SiteContext siteContext : sites)	
+						 {
+							 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
+						 }
+						 if(siteMap.containsKey(siteName.trim().toLowerCase()))
+						 {
+							siteId = siteMeta.getSiteId(siteName);
+						 }
+						 else
+						 {
+							 siteId = siteMeta.addSite(siteName);
+						 }
+						 if(siteId != null) {
+							 spaceId = siteId;
+						 }
 					 }
 					 
 					 if(buildingName != null && !buildingName.equals("")) {
@@ -319,8 +322,13 @@ public class ProcessXLS implements Command {
 			System.out.println("getLookupProps -- "+lookupField.getColumnName() +" facilioField.getModule() - "+lookupField.getLookupModule().getTableName() +" with value -- "+value);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			ArrayList<FacilioField> fieldsList= bean.getAllFields(lookupField.getLookupModule().getName());
-			fieldsList.add(FieldFactory.getIdField());
+			ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
+			
+			fieldsList= (ArrayList<FacilioField>) bean.getAllFields(lookupField.getLookupModule().getName()).clone();
+			fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
+			fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));
+			fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
+			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fieldsList)
 					.table(lookupField.getLookupModule().getTableName())
@@ -334,20 +342,23 @@ public class ProcessXLS implements Command {
 				HashMap <String, Object> insertProps = new LinkedHashMap<String,Object>();
 				
 				insertProps.put("name", value);
+				insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
+				insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 				
-				ReadingContext reading = FieldUtil.getAsBeanFromMap(insertProps, ReadingContext.class);
+				GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+						.table(lookupField.getLookupModule().getTableName())
+						.fields(fieldsList);
 				
-				InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-						.moduleName(lookupField.getLookupModule().getName())
-						.fields(bean.getAllFields(lookupField.getLookupModule().getName()));
 				
-				Long id = readingBuilder.insert(reading);
+				insertRecordBuilder.addRecord(insertProps);
+				
+				insertRecordBuilder.save();
+				System.out.println("insertProps --- "+insertProps);
+				Long id = (Long) insertProps.get("id");
+				
 				if(id != null) {
 					System.out.println("inserted with ID --"+id);
-					Map<String, Object> propMap = new HashMap<>();
-					propMap.put("id", id);
-					propMap.put("name", value);
-					props.add(propMap);
+					props.add(insertProps);
 				}
 			}
 			return props;			
