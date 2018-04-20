@@ -359,7 +359,9 @@ public class DashboardUtil {
 					}
 				}
 			}
-			avg = sum / props.size();
+			if(sum > 0 && props.size() > 0) {
+				avg = sum / props.size();
+			}
 			JSONObject variance = new JSONObject();
 			variance.put("min", min);
 			variance.put("max", max);
