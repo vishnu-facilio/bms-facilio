@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -88,5 +89,18 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	}
 	public void setParent(Object parent) {
 		this.parent = parent;
+	}
+	
+	@Override
+	public String toString() {
+
+		if(getReadings()!=null) {
+			
+			Map<String, Object> localReadings=new HashMap<>(getReadings());
+			localReadings.put ("parent",parent);
+			localReadings.put ("ttime",ttime);
+			return getReadings().toString();
+		}
+		return null;
 	}
 } 

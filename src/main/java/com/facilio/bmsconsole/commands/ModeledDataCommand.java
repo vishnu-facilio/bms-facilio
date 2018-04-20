@@ -27,6 +27,8 @@ public class ModeledDataCommand implements Command {
 		Long timeStamp=(Long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
+		
+		System.err.println( Thread.currentThread().getName()+"Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
@@ -72,7 +74,9 @@ public class ModeledDataCommand implements Command {
 				readings.add(reading);
 			}
 		}
-		
+		System.err.println( Thread.currentThread().getName()+"Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+
+
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,true);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
