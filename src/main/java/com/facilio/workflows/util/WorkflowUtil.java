@@ -347,7 +347,7 @@ public class WorkflowUtil {
 					 valueElement.setTextContent(expressionContext.getConstant().toString());
 					 expressionElement.appendChild(valueElement);
 				 }
-				 if(expressionContext.getDefaultFunctionContext() != null) {
+				 else if(expressionContext.getDefaultFunctionContext() != null) {
 					 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
 					 Element valueElement = doc.createElement(FUNCTION_STRING);
 					 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
