@@ -47,7 +47,6 @@ public class ReportScheduler extends FacilioJob {
 				ReportContext reportContext = DashboardUtil.getReportContext(reportId);
 				context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
 				
-				// Needs to do for all report not exporting underlying data
 				DashboardAction action = new DashboardAction();
 				action.setReportContext(reportContext);
 				action.getData();
@@ -57,6 +56,8 @@ public class ReportScheduler extends FacilioJob {
 				}
 				else {
 					context.put(FacilioConstants.ContextNames.BASE_LINE, action.getBaseLineComparisionDiff());
+					context.put(FacilioConstants.ContextNames.FILTERS, action.getReportSpaceFilterContext());
+					context.put(FacilioConstants.ContextNames.DATE_FILTER, action.getDateFilter());
 				}
 				
 				FacilioModule module = ReportsUtil.getReportModule(reportContext);

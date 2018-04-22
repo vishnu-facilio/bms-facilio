@@ -3641,6 +3641,11 @@
 				<param name="includeProperties">fileUrl</param>
 			</result>
 		</action>
+		<action name="exportAnalytics" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportAnalyticsData">
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>

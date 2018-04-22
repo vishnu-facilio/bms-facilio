@@ -18,7 +18,9 @@ import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.ReportFieldContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -30,10 +32,25 @@ public class ReportExportUtil {
 	
 	private static final String UNKNOWN = "Unknown"; 
 
-	public static Map<String, Object> getDataInExportFormat(JSONArray reportData1, ReportContext reportContext, Long baseLineComparisionDiff) throws Exception {
-		
+	public static Map<String, Object> getDataInExportFormat(JSONArray reportData, ReportContext reportContext, Long baseLineComparisionDiff,ReportSpaceFilterContext reportSpaceFilterContext, JSONArray dateFilter) throws Exception {
 		List<Map<String, Object>> reportDatas = new ArrayList<>();
 		
+		Map<String, Object> rdata = new HashMap<>();
+		rdata.put("reportData", reportData);
+		rdata.put("reportContext", reportContext);
+		rdata.put("baseLineComparisionDiff", baseLineComparisionDiff);
+		rdata.put("title", reportContext.getY1AxisField().getFieldLabel());
+		reportDatas.add(rdata);
+		
+		boolean isMulti = reportContext.getReportChartType() != null && reportContext.getReportChartType() == ReportChartType.TIMESERIES;
+		if (isMulti) {
+			fetchMultiData(reportContext, reportDatas, reportSpaceFilterContext, dateFilter);
+		}
+		
+		return getExportData(reportDatas, isMulti);
+	}
+	
+	private static Map<String, Object> getExportData(List<Map<String, Object>> reportDatas, boolean isMulti) throws Exception {
 		List<String> headers = new ArrayList<>();
 		Map<String, FacilioField> headerFields = new HashMap<String, FacilioField>();
 		List<Map<String, Object>> records = new ArrayList<>();
@@ -45,35 +62,35 @@ public class ReportExportUtil {
 		table.put("records", records);
 		table.put("modVsIds", modVsIds);
 		
-		String xAxisLabel = reportContext.getxAxisLabel();
-		headers.add(xAxisLabel);
+		String xAxisLabel = null;
+		Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
 		
-		FacilioField xAxisField = reportContext.getxAxisField().getField();
-		headerFields.put(xAxisLabel, xAxisField);
-		
-		if (reportContext.getReportChartType() != null && reportContext.getReportChartType() == ReportChartType.TIMESERIES) {
-			Map<String, Object> rdata = new HashMap<>();
-			rdata.put("reportData", reportData1);
-			rdata.put("reportContext", reportContext);
-			rdata.put("baseLineComparisionDiff", baseLineComparisionDiff);
-			rdata.put("title", reportContext.getY1AxisField().getFieldLabel());
-			reportDatas.add(rdata);
-			fetchMultiData(reportContext, reportDatas);
+		for(Map<String, Object> data: reportDatas) {
+			JSONArray reportData = (JSONArray) data.get("reportData");
+			ReportContext reportContext = (ReportContext) data.get("reportContext");
+			Long baseLineComparisionDiff = null;
+			if (data.containsKey("baseLineComparisionDiff")) {
+				baseLineComparisionDiff = (Long) data.get("baseLineComparisionDiff");
+			}
 			
-			Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
+			if (xAxisLabel == null) {
+				xAxisLabel = reportContext.getxAxisLabel();
+				FacilioField xAxisField = reportContext.getxAxisField().getField();
+				headers.add(xAxisLabel);
+				headerFields.put(xAxisLabel, xAxisField);
+			}
+			else {
+				xAxisLabel = reportContext.getxAxisLabel();
+			}
 			
-			for(int i = 0, size = reportDatas.size(); i < size; i++) {
-				Map<String, Object> datas = reportDatas.get(i);
-				JSONArray multiReportData1 = (JSONArray) datas.get("reportData");
-				ReportContext multiReportContext1 = (ReportContext) datas.get("reportContext");
-				Long multiBaseLineComparisionDiff1 = (Long) datas.get("baseLineComparisionDiff");
-				String header = (String) datas.get("title");
+			if (isMulti) {
+				String header = (String) data.get("title");
 				headers.add(header);
 				 
 				records = new ArrayList<>();
 				table.put("records", records);
 				 
-				setReportData(multiReportData1, multiReportContext1, multiBaseLineComparisionDiff1, table, false);
+				setReportData(reportData, reportContext, baseLineComparisionDiff, table, false);
 				
 				for (int j = 0, len = records.size() ; j < len; j++ ) {
 					Map<String, Object> record = (Map<String, Object>) records.get(j);
@@ -86,18 +103,37 @@ public class ReportExportUtil {
 					row = rows.get(rowLabel);
 					String y1AxisLabel = reportContext.getY1AxisLabel();
 					Object value = record.get(y1AxisLabel);
+					if (!y1AxisLabel.equals(header)) {
+						row.remove(y1AxisLabel);
+					}
 					row.put(header, value);
-					row.put(y1AxisLabel, null);
 				}
 			}
-			
+			else {
+				setReportData(reportData, reportContext, baseLineComparisionDiff, table, true);
+			}
+		}
+		
+		if (isMulti) {
 			records = rows.values().stream()
 					.collect(Collectors.toList());
 			table.put("records", records);
-			
 		}
-		else {
-			setReportData(reportData1, reportContext, baseLineComparisionDiff, table, true);
+		
+		if (records != null && !records.isEmpty()) {
+			try {
+				records.sort((m1,m2) -> {
+					Long d1 = Long.parseLong(m1.get("rawLabel").toString());
+					Long d2 = Long.parseLong(m2.get("rawLabel").toString());
+					if(d1 == d2){
+				         return 0;
+				    }
+					return d1 < d2 ? -1 : 1;
+				});
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return table;
@@ -125,6 +161,7 @@ public class ReportExportUtil {
 			if (baseLineComparisionDiff != null && rowLabel instanceof Long) {
 				rowLabel = (Long)rowLabel + baseLineComparisionDiff;
 			}
+			fields.put("rawLabel", rowLabel);
 
 			String xAxisLabel = reportContext.getxAxisLabel();
 			FacilioField xAxisField = reportContext.getxAxisField().getField();
@@ -201,7 +238,7 @@ public class ReportExportUtil {
 		}
 	}
 	
-	private static void fetchMultiData(ReportContext reportContext, List<Map<String, Object>> reportDatas) throws Exception {
+	private static void fetchMultiData(ReportContext reportContext, List<Map<String, Object>> reportDatas, ReportSpaceFilterContext reportSpaceFilterContext, JSONArray dateFilter) throws Exception {
 		if ((reportContext.getComparingReportContexts() != null && !reportContext.getComparingReportContexts().isEmpty()) || (reportContext.getBaseLineContexts() != null && !reportContext.getBaseLineContexts().isEmpty())) {
 			List<Map<String, Object>> reportParams = new ArrayList<>();
 			
@@ -211,6 +248,11 @@ public class ReportExportUtil {
 					params.put("reportId", reportContext.getId());
 					params.put("baseLineId", baseContext.getId());
 					params.put("baseLineName", baseContext.getName());
+					if(reportSpaceFilterContext != null) {
+						ReportSpaceFilterContext spaceContext = new ReportSpaceFilterContext();
+						spaceContext.setBuildingId(reportSpaceFilterContext.getBuildingId());
+						params.put("reportSpaceFilterContext", spaceContext);
+					}
 					reportParams.add(params);
 					
 					if (reportContext.getComparingReportContexts() != null) {
@@ -243,6 +285,12 @@ public class ReportExportUtil {
 				if (params.containsKey("baseLineId")) {
 					action.setBaseLineId((long) params.get("baseLineId"));
 				}
+				if (params.containsKey("reportSpaceFilterContext")) {
+					action.setReportSpaceFilterContext((ReportSpaceFilterContext) params.get("reportSpaceFilterContext"));
+				}
+				if (dateFilter != null) {
+					action.setDateFilter(dateFilter);
+				}
 				action.getData();
 				
 				Map<String, Object> rdata = new HashMap<>();
@@ -259,6 +307,7 @@ public class ReportExportUtil {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getTabularReportData (JSONArray reportData, ReportContext reportContext, List<ReportColumnContext> reportColumns) throws Exception {
 		List<String> headers = new ArrayList<String>();
 		List<List<Object>> formattedData = new ArrayList<>();
@@ -273,7 +322,7 @@ public class ReportExportUtil {
 		}
 		
 		for (int i = 0, len = reportData.size() ; i < len; i++ ) {
-			List<Object> row = (ArrayList) reportData.get(i);
+			List<Object> row = (ArrayList<Object>) reportData.get(i);
 			List<Object> newRow = new ArrayList<>();
 			for (int j = 0, colCount = row.size(); j < colCount; j++) {
 				ReportColumnContext column = reportColumns.get(j);
@@ -305,6 +354,40 @@ public class ReportExportUtil {
 		return table;
 	}
 	
+	public static Map<String, Object> getAnalyticsData(List<Map<String, Object>> exportDataList, JSONArray dateFilter) throws Exception {
+		List<Map<String, Object>> reportDatas = new ArrayList<>();
+		FacilioModule module = null;
+		for(Map<String, Object> data: exportDataList) {
+			DashboardAction action = new DashboardAction();
+			action.setDateFilter(dateFilter);
+			action.setParentId((long) data.get("parentId"));
+			action.setReadingFieldId((long) data.get("readingFieldId"));
+			int xAggr = Integer.parseInt(data.get("xAggr").toString());
+			action.setxAggr(xAggr);
+			int yAggr = Integer.parseInt(data.get("yAggr").toString());
+			action.setyAggr(yAggr);
+			if (data.containsKey("baseLineId")) {
+				action.setBaseLineId((long) data.get("baseLineId"));
+			}
+			
+			action.getReadingReportData();
+			Map<String, Object> exportData = new HashMap<>();
+			exportData.put("reportData", action.getReportData());
+			exportData.put("reportContext", action.getReportContext());
+			exportData.put("baseLineComparisionDiff", action.getBaseLineComparisionDiff());
+			exportData.put("title", data.get("title"));
+			reportDatas.add(exportData);
+			
+			if (module == null) {
+				module = action.getReportModule();
+			}
+		}
+		
+		Map<String, Object> table = getExportData(reportDatas, true);
+		table.put("module", module);
+		return table;
+	}
+	
 	private static Object formatValue (Object value, FieldType dataType, AggregateOperator operator, ReportContext reportContext) {
 		if (dataType != null && value != null) {
 			switch (dataType) {
@@ -324,6 +407,10 @@ public class ReportExportUtil {
 					break;
 			}
 		}
+		else if (dataType == FieldType.DECIMAL || dataType == FieldType.NUMBER) {
+			value = 0;
+		}
+		
 		return value;
 	}
 	
@@ -386,12 +473,6 @@ public class ReportExportUtil {
 		}
 		
 		return label.toString();
-	}
-	
-	class ReportOptions {
-		private FieldType dataType;
-		private AggregateOperator operator;
-		private String unit;
 	}
 	
 }

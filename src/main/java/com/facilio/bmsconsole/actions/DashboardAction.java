@@ -2495,13 +2495,39 @@ public class DashboardAction extends ActionSupport {
 			}
 			else {
 				getData();
-				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff);
+				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
 				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
 //				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 			}
 		}
 		
 		return SUCCESS;
+	}
+	
+	public String exportAnalyticsData() throws Exception{
+		
+		FileFormat fileFormat = FileFormat.getFileFormat(type);
+		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
+			/*String url = ReportsUtil.getAnalyticsClientUrl(FacilioConstants.ContextNames.ENERGY_DATA_READING, fileFormat);
+			if(dateFilter != null && dateFilter.size() > 0) {
+				url += "?daterange=" + dateFilter.toJSONString();
+			}
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);*/
+		}
+		else {
+			Map<String,Object> table = ReportExportUtil.getAnalyticsData(exportDataList, dateFilter);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (FacilioModule) table.get("module"), table);
+		}
+		
+		return SUCCESS;
+	}
+	
+	private List<Map<String, Object>> exportDataList;
+	public List<Map<String, Object>> getExportDataList() {
+		return exportDataList;
+	}
+	public void setExportDataList(List<Map<String, Object>> exportDataList) {
+		this.exportDataList = exportDataList;
 	}
 	
 	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {
@@ -2526,56 +2552,6 @@ public class DashboardAction extends ActionSupport {
 		reportContext = DashboardUtil.getReportContext(reportId);
 		return ReportsUtil.getReportModule(reportContext);
 	}
-	
-	/*private List<Map<String, Object>> getRawData(FacilioModule module) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.andCustomWhere(module.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId());
-		
-		builder.select(fields);
-		if (module.getExtendModule() != null) {
-			builder.innerJoin(module.getExtendModule().getTableName())
-				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
-		}
-		Criteria criteria = null;
-		if (reportContext.getReportCriteriaContexts() != null) {
-			criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), reportContext.getReportCriteriaContexts().get(0).getCriteriaId());
-			builder.andCriteria(criteria);
-		}
-		if (reportContext.getDateFilter() != null) {
-			Condition dateCondition = new Condition();
-			dateCondition.setField(reportContext.getDateFilter().getField());
-			
-			if (this.dateFilter != null) {
-				if (this.dateFilter.split(",").length > 1) {
-					// between
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(this.dateFilter);
-				}
-				else {
-					dateCondition.setOperatorId(Integer.parseInt(this.dateFilter));
-				}
-			}
-			else {
-				if (reportContext.getDateFilter().getReportId() == 20) {
-					// between
-					dateCondition.setOperator(DateOperators.BETWEEN);
-					dateCondition.setValue(reportContext.getDateFilter().getVal());
-				}
-				else {
-					dateCondition.setOperatorId(reportContext.getDateFilter().getOperatorId());
-				}
-			}
-			builder.andCondition(dateCondition);
-		}
-		builder.limit(200); // 200 records max
-		
-		List<Map<String, Object>> rs = builder.get();
-		return rs;
-	}*/
 	
 	private Long buildingId;
 	
@@ -2873,6 +2849,8 @@ public class DashboardAction extends ActionSupport {
 		}
 		else {
 			context.put(FacilioConstants.ContextNames.BASE_LINE, baseLineComparisionDiff);
+			context.put(FacilioConstants.ContextNames.FILTERS, reportSpaceFilterContext);
+			context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
 		}
 		
 		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();

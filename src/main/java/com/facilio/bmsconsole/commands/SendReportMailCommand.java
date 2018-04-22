@@ -16,6 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
@@ -64,7 +65,9 @@ public class SendReportMailCommand implements Command {
 		}
 		else {
 			Long baseLineComparisionDiff = (Long) context.get(FacilioConstants.ContextNames.BASE_LINE);
-			table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff);
+			ReportSpaceFilterContext reportSpaceFilterContext = (ReportSpaceFilterContext) context.get(FacilioConstants.ContextNames.FILTERS);
+			JSONArray dateFilter = (JSONArray) context.get(FacilioConstants.ContextNames.DATE_FILTER);
+			table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
 		}
 		
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {

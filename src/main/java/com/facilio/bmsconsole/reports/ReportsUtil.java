@@ -485,4 +485,22 @@ public class ReportsUtil
 		}
 		return url.toString();
 	}
+	
+	public static String getAnalyticsClientUrl(String moduleName, FileFormat fileFormat) {
+		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			url.append("wo");
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
+			url.append("fa");
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+			url.append("em");
+		}
+		url.append("/analytics/consumption");
+		if(fileFormat == FileFormat.IMAGE) {
+			url.append("/show");
+		}
+		return url.toString();
+	}
 }
