@@ -3387,6 +3387,40 @@ public class FieldFactory {
 		return getField(name, colName, null, type);
 	}
 	
+	public static List<FacilioField> getAnamolySchedulerFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnamolyModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getField("energyDelta", "TOTAL_ENERGY_CONSUMPTION_DELTA", module, FieldType.NUMBER));
+		fields.add(getField("meterId", "PARENT_METER_ID", module, FieldType.NUMBER));
+		
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getAnamolyIDFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnamolyIDListModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getAnamolyIDInsertFields() {
+		FacilioModule module = ModuleFactory.getAnalyticsAnamolyIDListModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getField("meterId", "PARENT_METER_ID", module, FieldType.NUMBER));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+		
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		FacilioField columnFld = null;
 		switch (type) {

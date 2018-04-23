@@ -52,6 +52,7 @@ public class ModuleFactory {
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
 		moduleMap.put("businesshours", getBusinessHoursModule());
 		moduleMap.put("files", getFilesModule());
+		moduleMap.put("anamolyScheduler", getAnalyticsAnamolyModule());	
 		return moduleMap;
 	}
 			
@@ -895,4 +896,23 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("Widget_Vs_Workflow");
 		return dashboardSharing;
 	}
+
+	public static FacilioModule getAnalyticsAnamolyModule() {
+		FacilioModule analyticsAnamolyJob = new FacilioModule();
+		analyticsAnamolyJob.setName("anamolyScheduler");
+		analyticsAnamolyJob.setDisplayName("Analytics Scheduler");
+		analyticsAnamolyJob.setTableName("Energy_Data");
+		
+		return analyticsAnamolyJob;
+	}
+	
+	public static FacilioModule getAnalyticsAnamolyIDListModule() {
+		FacilioModule analyticsAnamolyIDListJob = new FacilioModule();
+		analyticsAnamolyIDListJob.setName("anamolyIDList");
+		analyticsAnamolyIDListJob.setDisplayName("Anamoly List");
+		analyticsAnamolyIDListJob.setTableName("Time_Series_Anamoly");
+		
+		return analyticsAnamolyIDListJob;
+	}
+	
 }

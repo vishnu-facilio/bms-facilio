@@ -413,6 +413,7 @@ public class FacilioConstants {
 		public static final String ENPI = "energyPerformanceIndicator";
 		public static final String ENPI_LIST = "energyPerformanceIndicatorList";
 		public static final String HISTORY_READINGS = "historyReadings";
+		public static final String ANALYTICS_ANAMOLY = "analyticsAnamoly";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
