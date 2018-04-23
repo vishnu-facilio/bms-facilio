@@ -61,6 +61,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.wms.endpoints.SessionManager;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -928,6 +930,30 @@ public class TemplateAPI {
 		}
 		return null;
 		
+	}
+	
+	public static WorkflowContext getWorkflow(Template template) throws Exception {
+		JSONArray placeHolders = getPlaceholders(template);
+		if (placeHolders != null && !placeHolders.isEmpty()) {
+			List<ParameterContext> params = new ArrayList<>();
+			List<ExpressionContext> expressions = new ArrayList<>();
+			for (int i = 0; i < placeHolders.size(); i++) {
+				String placeHolder = (String) placeHolders.get(i);
+				ParameterContext param = new ParameterContext();
+				param.setName(placeHolder);
+				param.setTypeString("String"); //By default string for now
+				params.add(param);
+				
+				ExpressionContext expression = new ExpressionContext();
+				expression.setConstant("${"+placeHolder+"}");
+				expressions.add(expression);
+			}
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setExpressions(expressions);
+			workflow.setParameters(params);
+			return workflow;
+		}
+		return null;
 	}
 	
 }
