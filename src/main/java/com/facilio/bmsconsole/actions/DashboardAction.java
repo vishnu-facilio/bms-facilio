@@ -2306,8 +2306,8 @@ public class DashboardAction extends ActionSupport {
 				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
 				
 				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange((long)timeRange.get(0), (long)timeRange.get(1)));
-				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
-				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length());
+				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(",")).trim();
+				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length()).trim();
 				
 				List<Long> baseLineTimeRange = new ArrayList<>();
 				baseLineTimeRange.add(Long.parseLong(baseLineStartValue));
