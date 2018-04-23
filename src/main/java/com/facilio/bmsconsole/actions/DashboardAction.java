@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -2513,7 +2511,7 @@ public class DashboardAction extends ActionSupport {
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
 			getData();
 			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
 		}
 		else {
 			/*FacilioContext context = new FacilioContext();
@@ -2534,7 +2532,7 @@ public class DashboardAction extends ActionSupport {
 			else {
 				getData();
 				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
-				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module, table);
+				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
 //				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 			}
 		}
@@ -2546,26 +2544,32 @@ public class DashboardAction extends ActionSupport {
 		
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			/*String url = ReportsUtil.getAnalyticsClientUrl(FacilioConstants.ContextNames.ENERGY_DATA_READING, fileFormat);
-			if(dateFilter != null && dateFilter.size() > 0) {
-				url += "?daterange=" + dateFilter.toJSONString();
-			}
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);*/
+			String url = ReportsUtil.getAnalyticsClientUrl(analyticsConfig, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 		}
 		else {
-			Map<String,Object> table = ReportExportUtil.getAnalyticsData(exportDataList, dateFilter);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (FacilioModule) table.get("module"), table);
+			analyticsConfig.put("dateFilter", dateFilter);
+			Map<String,Object> table = ReportExportUtil.getAnalyticsData(analyticsDataList, analyticsConfig);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table);
 		}
 		
 		return SUCCESS;
 	}
 	
-	private List<Map<String, Object>> exportDataList;
-	public List<Map<String, Object>> getExportDataList() {
-		return exportDataList;
+	private List<Map<String, Object>> analyticsDataList;
+	public List<Map<String, Object>> getAnalyticsDataList() {
+		return analyticsDataList;
 	}
-	public void setExportDataList(List<Map<String, Object>> exportDataList) {
-		this.exportDataList = exportDataList;
+	public void setAnalyticsDataList(List<Map<String, Object>> analyticsDataList) {
+		this.analyticsDataList = analyticsDataList;
+	}
+	
+	private Map<String, Object> analyticsConfig;
+	public Map<String, Object> getAnalyticsConfig() {
+		return analyticsConfig;
+	}
+	public void setAnalyticsConfig(Map<String, Object> analyticsConfig) {
+		this.analyticsConfig = analyticsConfig;
 	}
 	
 	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {
@@ -2868,28 +2872,34 @@ public class DashboardAction extends ActionSupport {
 	
 	public String sendReportMail() throws Exception {
 		
- 		FacilioModule module = getModule();
-		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-		/*context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
-		context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");*/
-		getData();
-		context.put(FacilioConstants.ContextNames.REPORT, reportData);
-		context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
-		
-		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
-		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		
-		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
-			context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
+		if (reportId != null) {
+			FacilioModule module = getModule();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+			getData();
+			
+			/*context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+			context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);*/
+			
+			context.put(FacilioConstants.ContextNames.REPORT, reportData);
+			context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
+			if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
+				context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.BASE_LINE, baseLineComparisionDiff);
+				context.put(FacilioConstants.ContextNames.FILTERS, reportSpaceFilterContext);
+			}
 		}
 		else {
-			context.put(FacilioConstants.ContextNames.BASE_LINE, baseLineComparisionDiff);
-			context.put(FacilioConstants.ContextNames.FILTERS, reportSpaceFilterContext);
-			context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
+			analyticsConfig.put("dateFilter", dateFilter);
+			context.put(FacilioConstants.ContextNames.REPORT_LIST, analyticsDataList);
+			context.put(FacilioConstants.ContextNames.CONFIG, analyticsConfig);
 		}
+		
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
 		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 		mailReportChain.execute(context);

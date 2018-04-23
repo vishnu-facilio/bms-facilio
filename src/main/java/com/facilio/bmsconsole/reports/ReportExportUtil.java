@@ -354,7 +354,16 @@ public class ReportExportUtil {
 		return table;
 	}
 	
-	public static Map<String, Object> getAnalyticsData(List<Map<String, Object>> exportDataList, JSONArray dateFilter) throws Exception {
+	public static Map<String, Object> getAnalyticsData(List<Map<String, Object>> exportDataList, Map<String, Object> analyticsConfig) throws Exception {
+		JSONArray dateFilter = null;
+		if (analyticsConfig.containsKey("dateFilter")) {
+			dateFilter = (JSONArray) analyticsConfig.get("dateFilter");
+		}
+		boolean excludeWeekends = false;
+		if(analyticsConfig.containsKey("excludeWeekends")) {
+			excludeWeekends = (boolean) analyticsConfig.get("excludeWeekends");
+		}
+		
 		List<Map<String, Object>> reportDatas = new ArrayList<>();
 		FacilioModule module = null;
 		for(Map<String, Object> data: exportDataList) {
@@ -369,6 +378,7 @@ public class ReportExportUtil {
 			if (data.containsKey("baseLineId")) {
 				action.setBaseLineId((long) data.get("baseLineId"));
 			}
+			action.setExcludeWeekends(excludeWeekends);
 			
 			action.getReadingReportData();
 			Map<String, Object> exportData = new HashMap<>();

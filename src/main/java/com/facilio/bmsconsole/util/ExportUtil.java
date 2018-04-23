@@ -40,13 +40,13 @@ public class ExportUtil {
 		return fileUrl;
 	}
 
-	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, Map<String,Object> table) throws Exception {
+	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, table);
+			fileUrl=ExportUtil.exportDataAsXLS(name, table);
 		}
 		else if(fileFormat == FileFormat.CSV){
-			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, table);
+			fileUrl=ExportUtil.exportDataAsCSV(name, table);
 		}
 		return fileUrl;
 	}
@@ -110,10 +110,10 @@ public class ExportUtil {
 		return fs.getPrivateUrl(fileId);
 	}
 	
-	public static String exportDataAsXLS(FacilioModule facilioModule, Map<String,Object> table) throws Exception 
+	public static String exportDataAsXLS(String name, Map<String,Object> table) throws Exception 
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
+		HSSFSheet sheet = workbook.createSheet(name);
 		HSSFRow rowhead = sheet.createRow((short) 0);
 		
 		List<String> headers = (ArrayList<String>) table.get("headers");
@@ -173,7 +173,7 @@ public class ExportUtil {
 			rowCount++;
 		}
 	
-		String fileName = facilioModule.getDisplayName() + ".xls";
+		String fileName = name + ".xls";
 		FileOutputStream fileOut = new FileOutputStream(fileName);
 		workbook.write(fileOut);
 		fileOut.close();
@@ -238,9 +238,9 @@ public class ExportUtil {
     }
 	
 	@SuppressWarnings("unchecked")
-	public static String exportDataAsCSV(FacilioModule facilioModule, Map<String,Object> table) throws Exception
+	public static String exportDataAsCSV(String name, Map<String,Object> table) throws Exception
     {
-		String fileName = facilioModule.getDisplayName() + ".csv";
+		String fileName = name + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
         	
         	StringBuilder str = new StringBuilder();
