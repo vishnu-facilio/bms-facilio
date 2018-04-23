@@ -437,6 +437,8 @@ public class FacilioConstants {
 		public static final String CDD_READING="cdd";
 		public static final String HDD_READING="hdd";
 		
+		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
