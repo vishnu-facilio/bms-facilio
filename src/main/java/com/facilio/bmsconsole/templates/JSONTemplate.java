@@ -27,12 +27,14 @@ public class JSONTemplate extends Template {
 	
 	@Override
 	public JSONObject getOriginalTemplate() {
-		try {
-			JSONParser parser = new JSONParser();
-			return (JSONObject) parser.parse(content);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (content != null) {
+			try {
+				JSONParser parser = new JSONParser();
+				return (JSONObject) parser.parse(content);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

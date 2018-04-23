@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.poi.ss.formula.functions.LinearRegressionFunction.FUNCTION;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -288,6 +289,7 @@ public enum ActionType {
 					range.setStartTime(range.getEndTime() - rule.getFlapInterval());
 					break;
 				case ADVANCED:
+				case FUNCTION:
 					range = new DateRange();
 					range.setStartTime(reading.getTtime());
 					break;
@@ -328,6 +330,9 @@ public enum ActionType {
 					break;
 				case ADVANCED:
 					appendAdvancedMsg(msgBuilder, rule, reading);
+					break;
+				case FUNCTION:
+					appendFunctionMsg(msgBuilder, rule, reading);
 					break;
 			}
 			
@@ -468,6 +473,25 @@ public enum ActionType {
 			appendUnit(msgBuilder, rule);
 			
 			msgBuilder.append(" when the complex condition set in '")
+						.append(rule.getName())
+						.append("'")
+						.append(" rule evaluated to true");
+		}
+		
+		private void appendFunctionMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
+			msgBuilder.append("recorded ")
+						.append(reading.getReading(rule.getReadingField().getName()));
+			appendUnit(msgBuilder, rule);
+			
+			String functionName = null;
+			if (rule.getWorkflow() != null) {
+				ExpressionContext expr = rule.getWorkflow().getExpressions().get(1);
+				functionName = expr.getDefaultFunctionContext().getFunctionName();
+			}
+			
+			msgBuilder.append(" when the function (")
+						.append(functionName)
+						.append(") set in '")
 						.append(rule.getName())
 						.append("'")
 						.append(" rule evaluated to true");
