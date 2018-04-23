@@ -2308,8 +2308,11 @@ public class DashboardAction extends ActionSupport {
 				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange((long)timeRange.get(0), (long)timeRange.get(1)));
 				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
 				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length());
-				timeRange.add(Long.parseLong(baseLineStartValue));
-				timeRange.add(Long.parseLong(baseLineEndValue));
+				
+				List<Long> baseLineTimeRange = new ArrayList<>();
+				baseLineTimeRange.add(Long.parseLong(baseLineStartValue));
+				baseLineTimeRange.add(Long.parseLong(baseLineEndValue));
+				timeRange = baseLineTimeRange;
 			}
 			
 			List<Long> deviceList = new ArrayList<>();
