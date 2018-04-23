@@ -765,7 +765,7 @@ public class DashboardAction extends ActionSupport {
 						if(reportSpaceFilterContext.getBuildingId() != null) {
 							paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
 						}
-						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard")) {
+						if(widgetStaticContext != null && widgetStaticContext.getStaticKey().equals("weathercard") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 							BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
 							if(basespace != null) {
 								paramMap.put("parentId", basespace.getSiteId());
