@@ -1420,6 +1420,16 @@ public class DashboardAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	private boolean excludeWeekends;
+	
+	public void setExcludeWeekends(boolean excludeWeekends) {
+		this.excludeWeekends = excludeWeekends;
+	}
+	
+	public boolean getExcludeWeekends() {
+		return this.excludeWeekends;
+	}
+	
 	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1963,6 +1973,12 @@ public class DashboardAction extends ActionSupport {
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
 		}
+		
+		if (excludeWeekends) {
+			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
+			builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 1 AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 7");
+		}
+		
 		List<Map<String, Object>> rs = builder.get();
 		System.out.println("builder --- "+reportContext.getId() +"   "+baseLineId);
 		System.out.println("builder --- "+builder);
