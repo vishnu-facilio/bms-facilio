@@ -14,8 +14,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 
 import com.facilio.accounts.dto.Organization;
@@ -43,6 +46,9 @@ public class DateTimeUtil
 	{
 		//TODO Locale related changes to be done..
 		//like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
+		if (AccountUtil.getCurrentOrg().getCountry() != null && !"".equalsIgnoreCase(AccountUtil.getCurrentOrg().getCountry().trim())) {
+			return new Locale("en", AccountUtil.getCurrentOrg().getCountry());
+		}
 		return Locale.US;
 	}
 	
@@ -607,6 +613,37 @@ public class DateTimeUtil
 		}catch(Exception e) {
 			return time;
 		}
+	}
+	
+	private static final List<String> sunWeekendDaysCountries = Arrays.asList(new String[]{"GQ", "IN", "TH", "UG"});
+	private static final List<String> fryWeekendDaysCountries = Arrays.asList(new String[]{"DJ", "IR"});
+	private static final List<String> frySunWeekendDaysCountries = Arrays.asList(new String[]{"BN"});
+	private static final List<String> thuFryWeekendDaysCountries = Arrays.asList(new String[]{"AF"});
+	private static final List<String> frySatWeekendDaysCountries = Arrays.asList(new String[]{"AE", "DZ", "BH", "BD", "EG", "IQ", "IL", "JO", "KW", "LY", "MV", "MR", "OM", "PS", "QA", "SA", "SD", "SY", "YE"});
+
+	public static int[] getWeekendDays(Locale locale) {
+		if (locale == null) {
+			locale = getLocale();
+		}
+		
+	    if (thuFryWeekendDaysCountries.contains(locale.getCountry())) {
+	        return new int[]{Calendar.THURSDAY, Calendar.FRIDAY};
+	    }
+	    else if (frySunWeekendDaysCountries.contains(locale.getCountry())) {
+	        return new int[]{Calendar.FRIDAY, Calendar.SUNDAY};
+	    }
+	    else if (fryWeekendDaysCountries.contains(locale.getCountry())) {
+	        return new int[]{Calendar.FRIDAY};
+	    }
+	    else if (sunWeekendDaysCountries.contains(locale.getCountry())) {
+	        return new int[]{Calendar.SUNDAY};
+	    }
+	    else if (frySatWeekendDaysCountries.contains(locale.getCountry())) {
+	        return new int[]{Calendar.FRIDAY, Calendar.SATURDAY};
+	    }
+	    else {
+	        return new int[]{Calendar.SATURDAY, Calendar.SUNDAY};
+	    }
 	}
 }
 

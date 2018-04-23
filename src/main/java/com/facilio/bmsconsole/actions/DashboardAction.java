@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1976,7 +1978,14 @@ public class DashboardAction extends ActionSupport {
 		
 		if (excludeWeekends) {
 			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
-			builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 1 AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> 7");
+			
+			int[] weekendDays = DateTimeUtil.getWeekendDays(null);
+			if (weekendDays.length == 1) {
+				builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ?", weekendDays[0]);
+			}
+			else {
+				builder.andCustomWhere("DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ? AND DAYOFWEEK(CONVERT_TZ(from_unixtime(floor(TTIME/1000)),@@session.time_zone,'" + timeZone + "')) <> ?", weekendDays[0], weekendDays[1]);
+			}
 		}
 		
 		List<Map<String, Object>> rs = builder.get();
