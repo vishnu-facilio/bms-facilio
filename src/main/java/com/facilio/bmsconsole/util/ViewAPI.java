@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
@@ -189,6 +190,26 @@ public class ViewAPI {
 			updateBuilder.update(prop);
 		}
 		
+	}
+	
+	public static void applyViewSharing(Long viewId, List<ViewSharingContext> viewSharingList) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getViewSharingModule().getTableName())
+				.andCustomWhere("VIEWID = ?", viewId);
+		deleteBuilder.delete();
+		
+		List<Map<String, Object>> viewSharingProps = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		for(ViewSharingContext viewSharing : viewSharingList) {
+			viewSharing.setOrgId(orgId);
+			viewSharingProps.add(FieldUtil.getAsProperties(viewSharing));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getViewSharingModule().getTableName())
+					.fields(FieldFactory.getViewSharingFields())
+					.addRecords(viewSharingProps);
+		insertBuilder.save();
 	}
 	
 	public static void customizeViewColumns(long viewId, List<ViewField> columns) throws Exception {

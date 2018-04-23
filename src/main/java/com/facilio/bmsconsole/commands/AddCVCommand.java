@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -43,6 +46,9 @@ public class AddCVCommand implements Command {
 			view.setDefault(false);
 			
 			long viewId = ViewAPI.addView(view, AccountUtil.getCurrentOrg().getOrgId());
+			
+			List<ViewSharingContext> viewSharingList = (List<ViewSharingContext>) context.get(FacilioConstants.ContextNames.VIEW_SHARING_LIST);
+			ViewAPI.applyViewSharing(viewId, viewSharingList);
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			view.setId(viewId);
 		}
