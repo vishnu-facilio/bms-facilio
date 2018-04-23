@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -49,6 +50,19 @@ public class GetWorkOrderRequestListCommand implements Command {
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 		if (searchCriteria != null) {
 			builder.andCriteria(searchCriteria);
+		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
+		}
+		
+		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+			if(permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);

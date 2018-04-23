@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -47,6 +49,15 @@ public class TicketAPI {
 	public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception 
 	{
 		return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
+	}
+	
+	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws SQLException {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+													.table(module.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+
+		return builder.delete();
 	}
 	
 	public static TicketStatusContext getStatus(String status) throws Exception
@@ -393,6 +404,7 @@ public class TicketAPI {
 					ticket.setResumedWorkStart(System.currentTimeMillis());
 				}
 				else {
+					assignTicketToCurrentUser(ticket, oldTicket);
 					ticket.setActualWorkStart(System.currentTimeMillis());
 				}
 			}
@@ -421,6 +433,29 @@ public class TicketAPI {
 			}
 		}
 		
+	}
+	
+	private static void assignTicketToCurrentUser(TicketContext ticket, TicketContext oldTicket) {
+		if (oldTicket.getAssignedTo() == null) {
+			User currentUser = AccountUtil.getCurrentUser();
+			ticket.setAssignedTo(currentUser);
+			ticket.setAssignedBy(currentUser);
+			if (oldTicket.getAssignmentGroup() != null) {
+				List<Long> ids = new ArrayList<Long>();
+				try {
+					List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+					if (myGroups != null && !myGroups.isEmpty()) {
+						ids = myGroups.stream().map(Group::getId).collect(Collectors.toList());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				if (!ids.contains(oldTicket.getAssignmentGroup().getId())) {
+					ticket.setAssignmentGroup(new Group());
+				}
+			}
+		}
 	}
 	
 public static Map<Long, TicketContext> getTickets(String ids) throws Exception {

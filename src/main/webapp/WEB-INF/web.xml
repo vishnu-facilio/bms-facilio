@@ -15,7 +15,10 @@
     <param-name>DOMAINNAME</param-name>
     <param-value>.facilstack.com</param-value>
 </context-param>
-    
+<context-param>
+    <param-name>SERVICEPORTAL_DOMAIN</param-name>
+    <param-value>facilioportal.com</param-value>
+</context-param>    
 <context-param>
     <param-name>M_DOMAINNAME</param-name>
     <param-value>.mfacilio.com</param-value>
@@ -28,10 +31,6 @@
 <filter>
   <filter-name>CorsFilter</filter-name>
   <filter-class>com.facilio.filters.FacilioCorsFilter</filter-class>
-  <init-param>
-    <param-name>cors.allowed.origins</param-name>
-    <param-value>http://localhost:8080,http://localhost:9090,https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com</param-value>
-  </init-param>
   <init-param>
     <param-name>cors.allowed.methods</param-name>
     <param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>

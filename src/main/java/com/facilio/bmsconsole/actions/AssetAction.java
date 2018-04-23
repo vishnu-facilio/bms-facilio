@@ -45,11 +45,10 @@ public class AssetAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
 		long categoryId=-1;
-		if(assetCategory!=null) {
+		if(assetCategory!=null || assetCategory.getId() != 0) {
 			categoryId=assetCategory.getId();
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
-		
 		Chain addAssetChain = FacilioChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
@@ -102,6 +101,11 @@ public class AssetAction extends ActionSupport {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+ 		
+ 		JSONObject pagination = new JSONObject();
+ 		pagination.put("page", getPage());
+ 		pagination.put("perPage", getPerPage());
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
@@ -209,11 +213,29 @@ public class AssetAction extends ActionSupport {
 		this.filters = filters;
 	}
 	
-	String search;
+	private String search;
 	public void setSearch(String search) {
 		this.search = search;
 	}
 	public String getSearch() {
 		return this.search;
+	}
+	
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	public int getPage() {
+		return this.page;
+	}
+	
+	private int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	
+	public int getPerPage() {
+		return this.perPage;
 	}
 }

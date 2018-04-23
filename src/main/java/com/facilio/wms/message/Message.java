@@ -14,9 +14,11 @@ public class Message
 	private String action;
 	private JSONObject content = new JSONObject();
 
+	public Message(MessageType type) {
+		this.messageType=type;
+	}
 	public Message() {
 	}
-
 	@Override
 	public String toString() 
 	{

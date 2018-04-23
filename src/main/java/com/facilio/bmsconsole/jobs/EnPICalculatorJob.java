@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import com.facilio.bmsconsole.context.EnergyPerformanceIndicatorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.EnergyPerformanceIndicatiorAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
@@ -35,27 +33,34 @@ public class EnPICalculatorJob extends FacilioJob {
 			List<Integer> types = getFrequencyTypesToBeFetched();
 			List<EnergyPerformanceIndicatorContext> enPIs = EnergyPerformanceIndicatiorAPI.getEnPIsOfType(types);
 			List<Long> calculatedFieldIds = new ArrayList<>();
-
-			long endTime = DateTimeUtil.getDayStartTime() - 1;
-			while (!enPIs.isEmpty()) {
-				Iterator<EnergyPerformanceIndicatorContext> it = enPIs.iterator();
-				while (it.hasNext()) {
-					EnergyPerformanceIndicatorContext enpi = it.next();
-					if(isCalculatable(enpi, calculatedFieldIds)) {
-						Map<String, Object> lastReading = ReadingsAPI.getLastReading(enpi.getSpaceId(), enpi.getReadingFieldId());
-						long startTime = (long) lastReading.get("ttime") + 1;
-						
-						ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime, endTime);
-						
-						FacilioContext context = new FacilioContext();
-						context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
-						context.put(FacilioConstants.ContextNames.READING, reading);
-						
-						Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
-						addReadingChain.execute(context);
-						
-						calculatedFieldIds.add(enpi.getReadingFieldId());
-						it.remove();
+			
+			if (enPIs != null && !enPIs.isEmpty()) {
+				long endTime = DateTimeUtil.getDayStartTime() - 1;
+				while (!enPIs.isEmpty()) {
+					Iterator<EnergyPerformanceIndicatorContext> it = enPIs.iterator();
+					while (it.hasNext()) {
+						EnergyPerformanceIndicatorContext enpi = it.next();
+						if(isCalculatable(enpi, calculatedFieldIds)) {
+							try {
+								Map<String, Object> lastReading = ReadingsAPI.getLastReading(enpi.getSpaceId(), enpi.getReadingFieldId());
+								long startTime = (long) lastReading.get("ttime") + 1;
+								
+								ReadingContext reading = EnergyPerformanceIndicatiorAPI.calculateENPI(enpi, startTime, endTime);
+								
+								FacilioContext context = new FacilioContext();
+								context.put(FacilioConstants.ContextNames.MODULE_NAME, enpi.getReadingField().getModule().getName());
+								context.put(FacilioConstants.ContextNames.READING, reading);
+								
+								Chain addReadingChain = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+								addReadingChain.execute(context);
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+								CommonCommandUtil.emailException("EnPI Calculation failed for : "+enpi.getId(), e);
+							}
+							calculatedFieldIds.add(enpi.getReadingFieldId());
+							it.remove();
+						}
 					}
 				}
 			}

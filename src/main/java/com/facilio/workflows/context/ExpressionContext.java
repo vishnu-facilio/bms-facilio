@@ -14,10 +14,13 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext {
 	
@@ -35,7 +38,28 @@ public class ExpressionContext {
 	String orderByFieldName;
 	String sortBy;
 	String limit;
+	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
+	
+	boolean isCustomFunctionResultEvaluator;
+	WorkflowFunctionContext defaultFunctionContext;
+	
+	public WorkflowFunctionContext getDefaultFunctionContext() {
+		return defaultFunctionContext;
+	}
+
+	public void setDefaultFunctionContext(WorkflowFunctionContext defaultFunctionContext) {
+		this.defaultFunctionContext = defaultFunctionContext;
+	}
+
+	public boolean isCustomFunctionResultEvaluator() {
+		return isCustomFunctionResultEvaluator;
+	}
+
+	public void setIsCustomFunctionResultEvaluator(boolean isCustomFunctionResultEvaluator) {
+		this.isCustomFunctionResultEvaluator = isCustomFunctionResultEvaluator;
+	}
+	
 	
 	public Map<Integer, Long> getConditionSeqVsBaselineId() {
 		return conditionSeqVsBaselineId;
@@ -74,6 +98,14 @@ public class ExpressionContext {
 
 	public void setLimit(String limit) {
 		this.limit = limit;
+	}
+	
+	public String getGroupBy() {
+		return groupBy;
+	}
+	
+	public void setGroupBy(String groupBy) {
+		this.groupBy = groupBy;
 	}
 	
 	public List<Condition> getAggregateCondition() {
@@ -144,26 +176,12 @@ public class ExpressionContext {
 	public ExpressionAggregateOperator getAggregateOpperator() {
 		return ExpressionAggregateOperator.getExpressionAggregateOperator(getAggregateString());
 	}
-//	public FacilioField getFacilioField() throws Exception {
-//		if(this.facilioField == null) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			this.facilioField = modBean.getField(fieldName, moduleName);
-//		}
-//		return facilioField;
-//	}
 	public void setFacilioField(FacilioField facilioField) {
 		this.facilioField = facilioField;
 	}
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
-//	public FacilioModule getModule() throws Exception {
-//		if(this.module == null) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			this.module = modBean.getModule(getModuleName());
-//		}
-//		return this.module;
-//	}
 	public void setAggregateString(String aggregateString) {
 		this.aggregateString = aggregateString;
 	}
@@ -174,83 +192,120 @@ public class ExpressionContext {
 		this.criteria = criteria;
 	}
 	
+	Map<String,Object> variableToExpresionMap;
+	
+	public Map<String, Object> getVariableToExpresionMap() {
+		return variableToExpresionMap;
+	}
+
+	public void setVariableToExpresionMap(Map<String, Object> variableToExpresionMap) {
+		this.variableToExpresionMap = variableToExpresionMap;
+	}
+
 	public Object executeExpression() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = null;
+		if(isCustomFunctionResultEvaluator) {
+			if(isCustomFunctionResultEvaluator) {
+				return WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
+			}
+		}
 		if(getConstant() != null) {
 			return getConstant();
 		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName); 
-		
-		selectBuilder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-				.andCriteria(criteria)
-				;
-		
-		if(modBean.getModule(moduleName).getExtendModule() != null) {
-			selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
-			.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
-		}
-		
-		if(fieldName != null && !isManualAggregateQuery()) {
-			List<FacilioField> selectFields = new ArrayList<>();
+		List<Map<String, Object>> props = null;
+		if (!LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName); 
 			
-			FacilioField select = modBean.getField(fieldName, moduleName);
-			select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
-			select.setExtendedModule(null);
-			select.setModule(null);
-			select.setName(RESULT_STRING);
+			selectBuilder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+					.andCriteria(criteria)
+					;
 			
-			if(aggregateString != null) {
-				ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
-				select = expAggregateOpp.getSelectField(select);
-				if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
-					selectBuilder.limit(1);
-				}
-				else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
-					String parentIdString = null;
-					Map<Integer, Condition> conditions = criteria.getConditions();
-					for(Integer key:conditions.keySet()) {
-						Condition condition = conditions.get(key);
-						if(condition.getFieldName().contains("parentId")) {
-							parentIdString = condition.getValue();
-						}
+			if(modBean.getModule(moduleName).getExtendModule() != null) {
+				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
+				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
+			}
+			
+			if(fieldName != null && !isManualAggregateQuery()) {
+				List<FacilioField> selectFields = new ArrayList<>();
+				
+				FacilioField select = modBean.getField(fieldName, moduleName);
+				select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
+				select.setExtendedModule(null);
+				select.setModule(null);
+				select.setName(RESULT_STRING);
+				
+				if(aggregateString != null && !aggregateString.isEmpty()) {
+					ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
+					select = expAggregateOpp.getSelectField(select);
+					if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
+						selectBuilder.limit(1);
 					}
-					exprResult = ReadingsAPI.getLastReadingValue(Long.parseLong(parentIdString), select);
-					return exprResult;
+					else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
+						String parentIdString = null;
+						Map<Integer, Condition> conditions = criteria.getConditions();
+						for(Integer key:conditions.keySet()) {
+							Condition condition = conditions.get(key);
+							if(condition.getFieldName().contains("parentId")) {
+								parentIdString = condition.getValue();
+							}
+						}
+						exprResult = ReadingsAPI.getLastReadingValue(Long.parseLong(parentIdString), select);
+						return exprResult;
+					}
+				}
+				selectFields.add(select);
+				selectBuilder.select(selectFields);
+			}
+			else {
+				selectBuilder.select(modBean.getAllFields(moduleName));
+				if(getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+					selectBuilder.orderBy("TTIME");
 				}
 			}
-			selectFields.add(select);
-			selectBuilder.select(selectFields);
+			
+			if(getOrderByFieldName() != null) {
+				FacilioField orderByField = modBean.getField(getOrderByFieldName(), moduleName);
+				String orderByString = orderByField != null ? orderByField.getColumnName() : getOrderByFieldName();
+				if(getSortBy() != null) {
+					orderByString = orderByString +" "+getSortBy();
+				}
+				selectBuilder.orderBy(orderByString);
+			}
+			
+			if(getLimit() != null) {
+				selectBuilder.limit(Integer.parseInt(getLimit()));
+			}
+			if(getGroupBy() != null) {
+				FacilioField groupByField = modBean.getField(getGroupBy(), moduleName);
+				selectBuilder.groupBy(groupByField.getColumnName());
+			}
+			
+			props = selectBuilder.get();
 		}
 		else {
-			selectBuilder.select(modBean.getAllFields(moduleName));
-		}
-		
-		if(getOrderByFieldName() != null) {
-			FacilioField orderByField = modBean.getField(getOrderByFieldName(), moduleName);
-			String orderByString = orderByField.getColumnName();
-			if(getSortBy() != null) {
-				orderByString = orderByString +" "+getSortBy();
+			List records = LookupSpecialTypeUtil.getObjects(moduleName, criteria);
+			if (records != null) {
+				props = new ArrayList<>();
+				for (Object record : records) {
+					props.add(FieldUtil.getAsProperties(record));
+				}
 			}
-			selectBuilder.orderBy(orderByString);
 		}
-		if(getLimit() != null) {
-			selectBuilder.limit(Integer.parseInt(getLimit()));
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
 		System.out.println("selectBuilder -- "+selectBuilder);
 		System.out.println("selectBuilder result -- "+props);
 		if(props != null && !props.isEmpty()) {
 			
 			if(isManualAggregateQuery()) {
 				List<Map<String, Object>> passedData = new ArrayList<>();
-				
-				for(Map<String, Object> prop:props) {
+				Long ttimeCount = 0l;
+				for(int i = 0;i<props.size();i++) {
+					
+					Map<String, Object> prop = props.get(i);
 					boolean isPassedData = true;
 					if(aggregateCondition != null) {
 						for(Condition condition:aggregateCondition) {
@@ -260,11 +315,20 @@ public class ExpressionContext {
 						}
 					}
 					if(isPassedData) {
+						if(getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+							if(i < props.size()-1) {
+								Long ss = (Long)props.get(i+1).get("ttime") - (Long)prop.get("ttime");
+								ttimeCount = ttimeCount + ss;
+							}
+						}
 						passedData.add(prop);
 					}
 				}
-				if(getAggregateOpperator() != null) {
+				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
 					return getAggregateOpperator().getAggregateResult(passedData, fieldName);
+				}
+				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+					return ttimeCount;
 				}
 				else {
 					return passedData;
@@ -279,7 +343,7 @@ public class ExpressionContext {
 					exprResult = props;
 				}
 			}
-			else if(getAggregateString() == null) {
+			else if(getAggregateString() == null || getAggregateString().equals("")) {
 				List<Object> returnList = new ArrayList<>(); 
 				for(Map<String, Object> prop:props) {
 					returnList.add(prop.get(RESULT_STRING));
@@ -287,7 +351,9 @@ public class ExpressionContext {
 				exprResult = returnList;
 			}
 			else {
-				exprResult = props.get(0).get(RESULT_STRING);
+				// Temp check
+				String name = LookupSpecialTypeUtil.isSpecialType(moduleName) ? fieldName : RESULT_STRING; 
+				exprResult = props.get(0).get(name);
 			}
 		}
 		System.out.println("EXP -- "+toString()+" RESULT -- "+exprResult);

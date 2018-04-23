@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -51,12 +52,12 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getCognitoId() {
+/*	public String getCognitoId() {
 		return cognitoId;
 	}
 	public void setCognitoId(String cognitoId) {
 		this.cognitoId = cognitoId;
-	}
+	}*/
 	public String getPassword() {
 		return password;
 	}
@@ -261,11 +262,46 @@ public class User {
 		if(getAccessibleSpace() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm"))
 		{
 			Condition condition = new Condition();
-			condition.setColumnName("RESOURCE_ID");
+			if (moduleName.equals("planned")) {
+				condition.setColumnName("Workorder_Template.RESOURCE_ID");
+			}
+			else {
+				condition.setColumnName("RESOURCE_ID");
+			}
 			condition.setFieldName("resourceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		if(moduleName.equals("asset")) {
+			Condition condition = new Condition();
+			condition.setColumnName("SPACE_ID");
+			condition.setFieldName("spaceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		if(moduleName.equals("site")) {
+			Condition condition = new Condition();
+			condition.setColumnName("Resources.ID");
+			condition.setFieldName("id");
+			condition.setOperator(PickListOperators.IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
+		}
+		if(moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space") || moduleName.equals("zone")) {
+			Condition condition = new Condition();
+			condition.setColumnName("Resources.ID");
+			condition.setFieldName("id");
 			condition.setOperator(BuildingOperator.BUILDING_IS);
 			condition.setValue(StringUtils.join(accessibleSpace, ","));
 

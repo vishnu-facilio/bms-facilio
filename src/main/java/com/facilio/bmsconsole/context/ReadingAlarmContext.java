@@ -1,6 +1,27 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.facilio.events.context.EventContext;
+
 public class ReadingAlarmContext extends AlarmContext {
+	
+	List<EventContext> relatedEvents;
+	
+	public List<EventContext> getRelatedEvents() {
+		return relatedEvents;
+	}
+	public void setRelatedEvents(List<EventContext> relatedEvents) {
+		this.relatedEvents = relatedEvents;
+	}
+	public void addrelatedEvent(EventContext relatedEvent) {
+		if(this.relatedEvents == null) {
+			this.relatedEvents = new ArrayList<>();
+		}
+		relatedEvents.add(relatedEvent);
+	}
+
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;

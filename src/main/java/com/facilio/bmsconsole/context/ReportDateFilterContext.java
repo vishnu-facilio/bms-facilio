@@ -13,8 +13,22 @@ public class ReportDateFilterContext {
 	private Long fieldId;
 	private FacilioField field;
 	private Integer operatorId;
-	private String val;
+	private String value;
+	private Long endTime;
+	private Long startTime;
 	
+	public Long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Long endTime) {
+		this.endTime = endTime;
+	}
+	public Long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -42,7 +56,11 @@ public class ReportDateFilterContext {
 	public void setFieldId(Long fieldId) {
 		this.fieldId = fieldId;
 	}
-	public FacilioField getField() {
+	public FacilioField getField() throws Exception {
+		if(field == null && fieldId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			this.field = modBean.getField(fieldId);
+		}
 		return field;
 	}
 	public void setField(FacilioField field) {
@@ -57,10 +75,10 @@ public class ReportDateFilterContext {
 	public void setOperatorId(Integer operatorId) {
 		this.operatorId = operatorId;
 	}
-	public String getVal() {
-		return val;
+	public String getValue() {
+		return value;
 	}
-	public void setVal(String val) {
-		this.val = val;
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

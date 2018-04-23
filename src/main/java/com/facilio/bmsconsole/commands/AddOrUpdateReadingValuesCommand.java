@@ -33,6 +33,8 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		if (updateLastReading == null) {
 			updateLastReading = true;
 		}
+		System.err.println( Thread.currentThread().getName()+"Inside AddorUpdateCommand#######  "+readingMap);
+
 		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -68,6 +70,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
 			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
+		
+		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
+
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
@@ -76,10 +81,14 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		if (isUpdateLastReading) {
 			ReadingsAPI.updateLastReading(fields,readings,lastReadingMap);
 		}
+		System.err.println( Thread.currentThread().getName()+"Exiting addReadings in  AddorUpdateCommand#######  ");
+
 	}
 	
 	private void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading,
 			Map<String, Map<String,Object>> lastReadingMap, boolean isUpdateLastReading) throws Exception {
+		System.err.println( Thread.currentThread().getName()+"Inside updateReadings in  AddorUpdateCommand#######  "+reading);
+
 		UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)
@@ -88,5 +97,8 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		if (isUpdateLastReading) {
 			ReadingsAPI.updateLastReading(fields,Collections.singletonList(reading),lastReadingMap);
 		}
+		
+		System.err.println( Thread.currentThread().getName()+"Exiting updateReadings in  AddorUpdateCommand#######  ");
+
 	}
 }

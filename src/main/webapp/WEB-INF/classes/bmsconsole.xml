@@ -52,7 +52,7 @@
 				<param name="includeProperties">response</param>
 			</result>
 		</action>
-		<action name="validateInviteLink" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
 			<result name="success" type="json">
@@ -66,14 +66,14 @@
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
-		<action name="validateRegistration" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="verifyEmail">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
 		</action>
-		<action name="fresetPassword" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="resetPassword">
 			<param name="auth">false</param>
 			<result name="success" type="json">
@@ -95,6 +95,12 @@
 		</action>
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="currentAccount">
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
+		<action name="switchaccount" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="switchCurrentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
@@ -216,7 +222,12 @@
 				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
 			</result>
 		</action>
-		
+		<action name="executeworkflow" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
 		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">
 			<param name="moduleName">alarm</param>
@@ -991,6 +1002,9 @@
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
+		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
+			<result name="success">/jsps/admin/showCache.jsp</result>
+		</action>
 	</package>
 
 	<package name="setup" namespace="/app/setup" extends="home">
@@ -1184,14 +1198,6 @@
 			</result>
 		</action>
 
-		<action name="delete" class="com.facilio.bmsconsole.actions.TicketAction"
-			method="deleteTicket">
-			<param name="permission">WORKORDER_DELETE</param>
-			<result name="success" type="json">
-				<param name="status">deleted</param>
-				<param name="includeProperties">ticketId</param>
-			</result>
-		</action>
 		<action name="assign" class="com.facilio.bmsconsole.actions.TicketAction"
 			method="assignTicket">
 			<param name="permission">WORKORDER_ASSIGN</param>
@@ -1379,6 +1385,7 @@
 		<action name="getspacespecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getSpaceSpecificReadings">
 			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
 		</action>
@@ -1405,7 +1412,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">SPACE_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="root">moduleMap</param>
+				<param name="includeProperties">moduleMap.*,moduleMap\[\d+\],moduleMap\[\d+\].*,spaces.*,spaces\[\d+\],spaces\[\d+\].*</param>
 			</result>
 		</action>
 		
@@ -1818,8 +1825,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="excludeProperties">pms\[\d+\].left,pms\[\d+\].right</param>
-				<param name="includeProperties">pms,pms\[\d+\],pms\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*</param>
+				<param name="includeProperties">pmJobs,pmJobs\[\d+\],pmJobs\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
 			</result>
 		</action>
 
@@ -1969,6 +1975,14 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="updateWorkOrderRequest">
 			<param name="moduleName">workorderrequest</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="deleteWorkOrderRequest">
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
@@ -3567,10 +3581,31 @@
 				<param name="includeProperties">^dashboardWidget.*</param>
 			</result>
 		</action>
+		<action name="deleteDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardId</param>
+			</result>
+		</action>
+		<action name="getReportFields" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportFields">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportFields.*</param>
+			</result>
+		</action>
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*</param>
+			</result>
+		</action>
+		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="updateReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
 			</result>
 		</action>
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getCardData">
@@ -3581,7 +3616,7 @@
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^reportData.*,^reportContext.*,^readingAlarms.*</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^readingAlarms.*</param>
 			</result>
 		</action>
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">
@@ -3602,6 +3637,11 @@
 			</result>
 		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportData">
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+		</action>
+		<action name="exportAnalytics" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportAnalyticsData">
 			<result name="success" type="json">
 				<param name="includeProperties">fileUrl</param>
 			</result>
@@ -3634,6 +3674,11 @@
 		</action>
 		
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
@@ -3671,6 +3716,11 @@
 		<action name="editScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="editScheduledReport">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="updateDashboardOrder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardOrder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards</param>
 			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">

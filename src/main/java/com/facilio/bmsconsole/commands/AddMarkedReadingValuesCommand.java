@@ -29,7 +29,7 @@ public class AddMarkedReadingValuesCommand implements Command {
 	}
 	
 	private void addMarkedreadings(List<MarkedReadingContext> markedList) throws Exception {
-
+		System.err.println( Thread.currentThread().getName()+"Inside addMarkedReadings in  MarkedCommand#######  "+markedList);
 		GenericInsertRecordBuilder insertBuilder=getMarkedReadingBuilder();
 		for (MarkedReadingContext markedReading: markedList) {
 
@@ -42,6 +42,8 @@ public class AddMarkedReadingValuesCommand implements Command {
 			insertBuilder.addRecord(record);
 		}
 		insertBuilder.save();
+		System.err.println( Thread.currentThread().getName()+"Exiting addMarkedReadings in  MarkedCommand#######  ");
+
 	}
 
 	private GenericInsertRecordBuilder  getMarkedReadingBuilder()  throws Exception{

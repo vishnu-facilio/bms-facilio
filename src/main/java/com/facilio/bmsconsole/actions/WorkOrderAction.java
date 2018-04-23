@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -90,6 +91,7 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public String addWorkOrder(WorkOrderContext workorder)  {
 		try {
+		workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.TICKET, workorder.getTicket());
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
@@ -327,7 +329,8 @@ public class WorkOrderAction extends ActionSupport {
 		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		
-		setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmMap((Map<Long,PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
+		setPmJobs((List<PMJobsContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
 		setPmTriggerMap((Map<Long, PMTriggerContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
 		setPmResourcesMap((Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
 		
@@ -371,6 +374,22 @@ public class WorkOrderAction extends ActionSupport {
 		this.pms = pms;
 	}
 	
+	private Map<Long, PreventiveMaintenance> pmMap;
+	public Map<Long, PreventiveMaintenance> getPmMap() {
+		return pmMap;
+	}
+	public void setPmMap(Map<Long, PreventiveMaintenance> pmMap) {
+		this.pmMap = pmMap;
+	}
+	
+	private List<PMJobsContext> pmJobs;
+	public List<PMJobsContext> getPmJobs() {
+		return pmJobs;
+	}
+	public void setPmJobs(List<PMJobsContext> pmJobs) {
+		this.pmJobs = pmJobs;
+	}
+
 	private Map<Long, PMTriggerContext> pmTriggerMap;
 	public Map<Long, PMTriggerContext> getPmTriggerMap() {
 		return pmTriggerMap;
@@ -504,6 +523,8 @@ public class WorkOrderAction extends ActionSupport {
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
 	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		}
+ 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
+ 		
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
  			searchObj.put("fields", "workorder.subject,workorder.description");
@@ -678,6 +699,17 @@ public class WorkOrderAction extends ActionSupport {
 	
 	public int getPerPage() {
 		return this.perPage;
+	}
+	
+	private String criteriaIds;
+	public void setCriteriaIds(String criteriaIds)
+	{
+		this.criteriaIds = criteriaIds;
+	}
+	
+	public String getCriteriaIds()
+	{
+		return this.criteriaIds;
 	}
 	
 	public String getActivitiesList() throws Exception {

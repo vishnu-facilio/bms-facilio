@@ -117,24 +117,59 @@ public class ExportUtil {
 		HSSFRow rowhead = sheet.createRow((short) 0);
 		
 		List<String> headers = (ArrayList<String>) table.get("headers");
+		Map<String, FacilioField> headerFields = new HashMap<>();
+	    	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
+	    	if (table.containsKey("modVsIds")) {
+	    		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
+	    		if (modVsIds != null) {
+	    			modVsData = getModuleData(modVsIds);
+	    		}
+	    		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
+	    	}
 		for(int i = 0, len = headers.size(); i < len; i++) {
-			rowhead.createCell((short) i).setCellValue(headers.get(i).toString());
+			String header = headers.get(i).toString();
+			if (i != 0 && headerFields.containsKey(header)) {
+				FacilioField field = headerFields.get(header);
+				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+					Object val = getFormattedValue(modVsData, field, header);
+	    				if(val!=null) {
+	    					header=(String) val;
+	    				}
+				}
+			}
+			rowhead.createCell((short) i).setCellValue(header);
 		}
 		
 		List<List> records = (ArrayList<List>) table.get("records");
 		int rowCount = 1;
 		for(int i = 0, len = records.size(); i < len; i++) {
 			HSSFRow row = sheet.createRow(rowCount);
-			List record = records.get(i);
-			for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
-				Object value = record.get(j);
-				if (value != null) {
-					row.createCell((short) j).setCellValue(value.toString());
-				}
-				else {
-					row.createCell((short) j).setCellValue("");
+			Object recordObj = records.get(i);
+			if (recordObj instanceof List) {
+				List<Object> record = (List<Object>) recordObj;
+				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+					Object value = record.get(j);
+					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
 				}
 			}
+			else if (recordObj instanceof Map) {
+				Map<String,Object> record = (Map<String,Object>) recordObj;
+				for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
+					String header = headers.get(j).toString();
+					Object value = record.containsKey(header) ? record.get(header) : "";
+					if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
+						FacilioField field = headerFields.get(header);
+	    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+	    						Object val = getFormattedValue(modVsData, field, value);
+	    	    	    				if(val!=null) {
+	    	    	    					value=val;
+	    	    	    				}
+	    					}
+					}
+					row.createCell((short) j).setCellValue(value.toString());
+	    			}
+			}
+			
 			rowCount++;
 		}
 	
@@ -202,6 +237,7 @@ public class ExportUtil {
 	    return fs.getPrivateUrl(fileId);
     }
 	
+	@SuppressWarnings("unchecked")
 	public static String exportDataAsCSV(FacilioModule facilioModule, Map<String,Object> table) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
@@ -209,27 +245,62 @@ public class ExportUtil {
         	
         	StringBuilder str = new StringBuilder();
         	List<String> headers = (ArrayList<String>) table.get("headers");
+        	Map<String, FacilioField> headerFields = new HashMap<>();
+        	Map<String, Map<Long,Object>> modVsData = new HashMap<>();
+        	if (table.containsKey("modVsIds")) {
+        		Map<String, List<Long>> modVsIds = (Map<String, List<Long>>) table.get("modVsIds");
+        		if (modVsIds != null) {
+        			modVsData = getModuleData(modVsIds);
+        		}
+        		headerFields = (HashMap<String, FacilioField>) table.get("headerFields");
+        	}
     		for(int i = 0, len = headers.size(); i < len; i++) {
-    			str.append(headers.get(i).toString());
+    			String header = headers.get(i).toString();
+    			if (i != 0 && headerFields.containsKey(header)) {
+    				FacilioField field = headerFields.get(header);
+    				if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+    					Object val = getFormattedValue(modVsData, field, header);
+        				if(val!=null) {
+        					header=(String) val;
+        				}
+    				}
+    			}
+    			str.append(header);
     			str.append(',');
     		}
         	writer.append(StringUtils.stripEnd(str.toString(), ","));
         	writer.append('\n');
         	
-        	List<List> records = (ArrayList<List>) table.get("records");
+        	List<Object> records = (ArrayList<Object>) table.get("records");
+       
     		for(int i = 0, len = records.size(); i < len; i++) {
     			str = new StringBuilder();
-    			List record = records.get(i);
-    			for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
-    				Object value = record.get(j);
-    				if (value != null) {
-	    				str.append(value.toString());
-    				}
-    				else {
-    					str.append("");
-    				}
-    				str.append(',');
+    			Object recordObj = records.get(i);
+    			if (recordObj instanceof List) {
+    				List<Object> record = (List<Object>) recordObj;
+    				for (int j = 0, rowLen = record.size(); j < rowLen; j++) {
+        				Object value = record.get(j);
+        				str.append(value != null ? value.toString() : "").append(',');
+        			}
     			}
+    			else if (recordObj instanceof Map) {
+    				Map<String,Object> record = (Map<String,Object>) recordObj;
+    				for(int j = 0, headerLen = headers.size(); j < headerLen; j++) {
+    					String header = headers.get(j).toString();
+    					Object value = record.containsKey(header) ? record.get(header) : "";
+    					if (j == 0 && modVsData != null && !modVsData.isEmpty() && headerFields.containsKey(header)) {
+    						FacilioField field = headerFields.get(header);
+    	    					if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+    	    						Object val = getFormattedValue(modVsData, field, value);
+	    	    	    				if(val!=null) {
+	    	    	    					value=val;
+	    	    	    				}
+    	    					}
+    					}
+    					str.append("\""+value+"\"").append(',');
+    	    			}
+    			}
+    			
     			writer.append(StringUtils.stripEnd(str.toString(), ","));
 	    		writer.append('\n');
     		}
@@ -255,8 +326,23 @@ public class ExportUtil {
 				moduleName= lookupField.getLookupModule().getName();
 			}
 			Map<Long,Object> idMap= modVsData.get(moduleName);
-			if(idMap!=null) {				
-				return idMap.get((long)((Map) value).get("id"));
+			if(idMap!=null) {
+				long val;
+				if (value instanceof Map) {
+					val = (long)((Map) value).get("id");
+				}
+				else if (value instanceof String){
+					try {
+						val = Long.parseLong(value.toString());
+					}
+					catch(NumberFormatException e) {
+						return value;
+					}
+				}
+				else {
+					val = (long) value;
+				}
+				return idMap.get(val);
 			}
 			
 			break;
@@ -316,7 +402,7 @@ public class ExportUtil {
 				
 				Map<Long,Object> idMap= LookupSpecialTypeUtil.getPickList(moduleName,ids);
 				if(idMap!=null) {
-				modVsData.put(moduleName,idMap);
+					modVsData.put(moduleName,idMap);
 				}
 			}
 			else {

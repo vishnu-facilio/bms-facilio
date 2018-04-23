@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.Inflater;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -413,15 +414,15 @@ public class LoginAction extends ActionSupport{
 			invitation.put("error", "link_expired");
 		}
 		else {
+			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			invitation.put("email", user.getEmail());
+			invitation.put("orgname", org.getName());
 			if(user.getPassword() == null) {
 				invitation.put("account_exists", false);
 			} else {
-				Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());				
-				invitation.put("account_exists", true);
-				invitation.put("orgname", org.getName());
+				invitation.put("account_exists", true);	
 			}
-            
+			invitation.put("userid", ouid);
 		}
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
 		
@@ -442,7 +443,8 @@ public class LoginAction extends ActionSupport{
 			invitation.put("error", "link_expired");
 		}
 		else {
-			boolean acceptStatus = AccountUtil.getUserBean().acceptInvite(ouid, null);
+			boolean acceptStatus = true;//AccountUtil.getUserBean().acceptInvite(ouid, null);
+			invitation.put("userid", ouid);
 			if (acceptStatus) {
 				user.setUserVerified(true);
 				AccountUtil.getUserBean().updateUser(user);
@@ -511,7 +513,7 @@ public class LoginAction extends ActionSupport{
 		} else {
 			User user = AccountUtil.getUserBean().getUser(getEmailaddress());
 			if(user != null) {
-				AccountUtil.getUserBean().sendResetPassword(user);
+				AccountUtil.getUserBean().sendResetPasswordLink(user);
 				invitation.put("status", "success");
 			} else {
 				invitation.put("status", "failed");
@@ -637,11 +639,15 @@ public class LoginAction extends ActionSupport{
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 		
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("groups", groups);
 		data.put("roles", roles);
+		data.put("orgs", orgs);
+		
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getOrgId()));
 		
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
@@ -674,6 +680,26 @@ public class LoginAction extends ActionSupport{
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		
+		return SUCCESS;
+	}
+	
+	private String switchOrgDomain;
+	
+	public String getSwitchOrgDomain() {
+		return switchOrgDomain;
+	}
+	public void setSwitchOrgDomain(String switchOrgDomain) {
+		this.switchOrgDomain = switchOrgDomain;
+	}
+	
+	public String switchCurrentAccount() throws Exception {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		
+		Cookie cookie = new Cookie("fc.currentOrg", getSwitchOrgDomain());
+		cookie.setMaxAge(60 * 60 * 24 * 365 * 10); // Make the cookie 10 year
+		cookie.setPath("/");
+		cookie.setHttpOnly(true);
+		response.addCookie(cookie);
 		return SUCCESS;
 	}
 	

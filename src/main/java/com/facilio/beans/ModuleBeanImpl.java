@@ -406,7 +406,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
+															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		ArrayList<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;

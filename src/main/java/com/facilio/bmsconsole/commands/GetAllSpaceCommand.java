@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -45,6 +47,11 @@ public class GetAllSpaceCommand implements Command{
 		
 		if (categoryId != null && categoryId > 0) {
 			builder.andCustomWhere("Space.SPACE_CATEGORY_ID = ?", categoryId);
+		}
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if(scopeCriteria != null)
+		{
+			builder.andCriteria(scopeCriteria);
 		}
 
 		List<SpaceContext> spaces = builder.get();

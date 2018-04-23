@@ -5,7 +5,6 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
@@ -46,7 +45,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 	
 	private SMSTemplate addTemplate(String phone) throws Exception {
 		SMSTemplate smsTemplate = new SMSTemplate();
-		JSONObject alarmSmsJson = DefaultTemplates.ALARM_CREATION_SMS.getOriginalTemplate();
+		JSONObject alarmSmsJson = TemplateAPI.getDefaultTemplate(6).getOriginalTemplate(); //Default template id of ALARM_CREATION_SMS is 6
 		
 		smsTemplate.setName("New Alarm Raised");
 		smsTemplate.setType(Template.Type.SMS);

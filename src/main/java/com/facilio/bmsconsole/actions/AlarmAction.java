@@ -28,9 +28,10 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.DefaultTemplates;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -98,6 +99,18 @@ public class AlarmAction extends ActionSupport {
 	public void setId(List<Long> id) {
 		this.id = id;
 	}
+	
+	public String deleteAlarm() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();
+		deleteAlarm.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
 
 	private int rowsUpdated;
 	public int getRowsUpdated() {
@@ -123,6 +136,7 @@ public class AlarmAction extends ActionSupport {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+ 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
  		
  		JSONObject sorting = new JSONObject();
  		if (getOrderBy() != null) {
@@ -284,6 +298,17 @@ public class AlarmAction extends ActionSupport {
 	public int getPerPage() {
 		return this.perPage;
 	}
+	
+	private String criteriaIds;
+	public void setCriteriaIds(String criteriaIds)
+	{
+		this.criteriaIds = criteriaIds;
+	}
+	
+	public String getCriteriaIds()
+	{
+		return this.criteriaIds;
+	}
 
 	private HashMap<String, Object> notification;
 
@@ -324,7 +349,7 @@ public class AlarmAction extends ActionSupport {
 				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 				
 				placeHolders.put("follower.email", value);
-				JSONObject mailJson = DefaultTemplates.ALARM_CREATION_EMAIL.getTemplate(placeHolders);
+				JSONObject mailJson = TemplateAPI.getDefaultTemplate(5).getTemplate(placeHolders); //Default template id of ALARM_CREATION_EMAIL is 5
 				
 				if(message != null && !message.isEmpty()) {
 					String body = (String) mailJson.get("message");

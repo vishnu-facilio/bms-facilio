@@ -32,7 +32,7 @@ public class ReportInfo {
 		return reportId;
 	}
 	public void setReportId(long reportId) {
-		this.reportId = id;
+		this.reportId = reportId;
 	}
 	
 	private FileFormat fileFormat;

@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -33,16 +30,6 @@ public class SMSTemplate extends Template {
 	}
 	public void setMessage(String message) {
 		this.message = message;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		JSONObject obj = new JSONObject();
-		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("message", StrSubstitutor.replace(message, placeHolders));
-		return obj;
 	}
 	
 	@Override

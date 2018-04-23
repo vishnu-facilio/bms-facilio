@@ -4,12 +4,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public abstract class Template implements ActionTemplate {
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+
+public abstract class Template {
 
 	private long id;
 	public long getId() {
@@ -35,8 +39,23 @@ public abstract class Template implements ActionTemplate {
 		this.name = name;
 	}
 	
-	private JSONArray placeholder;
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
 	
+	private WorkflowContext workflow;
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+
+	private JSONArray placeholder;
 	public JSONArray getPlaceholder() {
 		return placeholder;
 	}
@@ -72,13 +91,22 @@ public abstract class Template implements ActionTemplate {
 		this.type = Type.TYPE_MAP.get(type);
 	}
 	
-	@Override
-	public abstract JSONObject getTemplate(Map<String, Object> placeHolders);
+	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
+		JSONObject json = getOriginalTemplate();
+		if (json != null && workflow != null) {
+			String jsonStr = json.toJSONString();
+			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
+			jsonStr = StrSubstitutor.replace(jsonStr, params);
+			JSONParser parser = new JSONParser();
+			return (JSONObject) parser.parse(jsonStr);
+		}
+		return json;
+	}
 	
-	@Override
-	public abstract JSONObject getOriginalTemplate();
+	public abstract JSONObject getOriginalTemplate() throws Exception;
 	
 	public static enum Type {
+		DEFAULT(0),
 		EMAIL(1),
 		SMS(2),
 		JSON(3),

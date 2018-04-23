@@ -14,12 +14,12 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 			return props.get(0).get(fieldName);
 		}
 	},
-	COUNT(1,"count","count({$place_holder$})"){
+	COUNT(1,"count","count({$place_holder$})") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			return props.size();
 		}
 	},
-	AVERAGE(2,"avg","avg({$place_holder$})"){
+	AVERAGE(2,"avg","avg({$place_holder$})") {
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			double sum = 0;
 			for(Map<String, Object> prop:props) {
@@ -80,7 +80,9 @@ public enum ExpressionAggregateOperator implements ExpressionAggregateInterface 
 		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
 			return props.get(props.size()-1).get(fieldName);
 		}
-	};
+	},
+	COUNT_RUNNING_TIME(7,"countRunningTime","{$place_holder$}")
+	;
 	
 	private Integer value;
 	private String name;

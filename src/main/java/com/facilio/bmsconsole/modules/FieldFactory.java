@@ -21,6 +21,8 @@ public class FieldFactory {
 		fieldId.setModule(module);
 		fields.add(fieldId);
 		
+		fields.add(getOrgIdField(module));
+		
 		FacilioField specialType = new FacilioField();
 		specialType.setName("specialType");
 		specialType.setDataType(FieldType.STRING);
@@ -48,6 +50,8 @@ public class FieldFactory {
 		fieldId.setColumnName("FIELDID");
 		fieldId.setModule(module);
 		fields.add(fieldId);
+		
+		fields.add(getOrgIdField(module));
 		
 		FacilioField unit = new FacilioField();
 		unit.setName("unit");
@@ -470,6 +474,9 @@ public class FieldFactory {
 		ruleType.setColumnName("RULE_TYPE");
 		ruleType.setModule(module);
 		fields.add(ruleType);
+		
+		fields.add(getField("parentRuleId", "PARENT_RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("onSuccess", "ON_SUCCESS", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -520,6 +527,17 @@ public class FieldFactory {
 		fields.add(getField("minFlapValue", "MIN_FLAP_VAL", module, FieldType.NUMBER));
 		fields.add(getField("maxFlapValue", "MAX_FLAP_VAL", module, FieldType.NUMBER));
 		fields.add(getField("flapFrequency", "FLAP_FREQUENCY", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static List<FacilioField> getSLARuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getSLARuleModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
@@ -712,6 +730,14 @@ public class FieldFactory {
 		roleid.setColumnName("ROLE_ID");
 		roleid.setModule(module);
 		fields.add(roleid);
+		
+		FacilioField deletedTime = new FacilioField();
+		deletedTime.setName("deletedTime");
+		deletedTime.setDataType(FieldType.NUMBER);
+		deletedTime.setColumnName("DELETED_TIME");
+		deletedTime.setModule(module);
+		fields.add(deletedTime);
+
 
 		return fields;
 
@@ -879,6 +905,14 @@ public class FieldFactory {
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 		fields.add(statusField);
 		
+		LookupField groupField = (LookupField) getField("assignmentGroup", "ASSIGNMENT_GROUP_ID", module, FieldType.LOOKUP);
+		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
+		fields.add(groupField);
+		
+		LookupField userField = (LookupField) getField("assignedTo", "ASSIGNED_TO_ID", module, FieldType.LOOKUP);
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(userField);
+		
 		return fields;
 	}
 
@@ -977,6 +1011,8 @@ public class FieldFactory {
 		placeholder.setColumnName("PLACEHOLDER");
 		placeholder.setModule(module);
 		fields.add(placeholder);
+		
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
@@ -1163,28 +1199,6 @@ public class FieldFactory {
 		excelFileId.setModule(module);
 		fields.add(excelFileId);
 
-		return fields;
-	}
-	
-	public static List<FacilioField> getTemplatePlaceholder() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getTemplatePlaceholder();
-		
-		FacilioField templateId = new FacilioField();
-		templateId.setName("templateId");
-		templateId.setDataType(FieldType.NUMBER);
-		templateId.setColumnName("TEMPLATE_ID");
-		templateId.setModule(module);
-		fields.add(templateId);
-		
-		FacilioField placeholder = new FacilioField();
-		placeholder.setName("placeholder");
-		placeholder.setDataType(FieldType.STRING);
-		placeholder.setDisplayName("Placeholder");
-		placeholder.setColumnName("PLACEHOLDER");
-		placeholder.setModule(module);
-		fields.add(placeholder);
-		
 		return fields;
 	}
 	
@@ -2038,6 +2052,14 @@ public class FieldFactory {
 		dashboardUrl.setColumnName("DASHBOARD_URL");
 		dashboardUrl.setModule(module);
 		fields.add(dashboardUrl);
+		
+		FacilioField displayOrder = new FacilioField();
+		displayOrder.setName("displayOrder");
+		displayOrder.setDataType(FieldType.NUMBER);
+		displayOrder.setColumnName("DISPLAY_ORDER");
+		displayOrder.setModule(module);
+		
+		fields.add(displayOrder);
 
 		return fields;
 	}
@@ -2170,6 +2192,20 @@ public class FieldFactory {
 		reportId.setColumnName("REPORT_ID");
 		reportId.setModule(module);
 		fields.add(reportId);
+		
+		FacilioField chartType = new FacilioField();
+		chartType.setName("chartType");
+		chartType.setDataType(FieldType.NUMBER);
+		chartType.setColumnName("CHART_TYPE");
+		chartType.setModule(module);
+		fields.add(chartType);
+		
+		FacilioField dateFilter = new FacilioField();
+		dateFilter.setName("dateFilterId");
+		dateFilter.setDataType(FieldType.NUMBER);
+		dateFilter.setColumnName("DATE_FILTER");
+		dateFilter.setModule(module);
+		fields.add(dateFilter);
 
 		return fields;
 	}
@@ -2550,6 +2586,20 @@ public class FieldFactory {
 		value.setModule(module);
 		fields.add(value);
 		
+		FacilioField startTime = new FacilioField();
+		startTime.setName("startTime");
+		startTime.setDataType(FieldType.NUMBER);
+		startTime.setColumnName("START_TIME");
+		startTime.setModule(module);
+		fields.add(startTime);
+		
+		FacilioField endTime = new FacilioField();
+		endTime.setName("endTime");
+		endTime.setDataType(FieldType.NUMBER);
+		endTime.setColumnName("END_TIME");
+		endTime.setModule(module);
+		fields.add(endTime);
+		
 		return fields;
 	}
 	public static List<FacilioField> getReportEnergyMeterFields() {
@@ -2645,6 +2695,8 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReportFormulaField();
 
 		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getModuleIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -3274,6 +3326,7 @@ public class FieldFactory {
 		
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+//		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		fields.add(getField("basedOn", "BASED_ON", module, FieldType.STRING));
 		
 		return fields;
@@ -3375,6 +3428,21 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
+		fields.add(getField("orgUserId", "ORG_USERID", module, FieldType.NUMBER));
+		fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+		fields.add(getField("sharingType", "SHARING_TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getViewSharingFields() {
+		FacilioModule module = ModuleFactory.getViewSharingModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("viewId", "VIEWID", module, FieldType.NUMBER));
 		fields.add(getField("orgUserId", "ORG_USERID", module, FieldType.NUMBER));
 		fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));

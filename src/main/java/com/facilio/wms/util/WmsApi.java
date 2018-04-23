@@ -35,6 +35,8 @@ public class WmsApi
 		}
 	}
 	
+	
+	
 	public static String getWebsocketEndpoint(long uid) {
 		return WEBSOCKET_URL + "/" + uid;
 	}
@@ -45,6 +47,14 @@ public class WmsApi
 		toList.add(to);
 		sendMessage(toList, event);
 	}
+	
+	public static void broadCastMessage( Message message) throws IOException, EncodeException
+	{
+		
+		SessionManager.getInstance().broadcast(message);
+		System.out.println("Broad cast done..");
+	}
+	
 	
 	public static void sendEvent(List<Long> recipients, WmsEvent event) throws IOException, EncodeException
 	{

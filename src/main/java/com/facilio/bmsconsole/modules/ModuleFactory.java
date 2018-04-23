@@ -153,6 +153,16 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 	
+	public static FacilioModule getSLARuleModule() {
+		FacilioModule slarule = new FacilioModule();
+		slarule.setName("slarule");
+		slarule.setDisplayName("SLA Rule");
+		slarule.setTableName("SLA_Rule");
+		slarule.setExtendModule(getWorkflowRuleModule());
+		
+		return slarule;
+	}
+	
 	public static FacilioModule getWorkflowRuleActionModule() {
 		FacilioModule workflowRuleModule = new FacilioModule();
 		workflowRuleModule.setName("workflowruleaction");
@@ -304,16 +314,7 @@ public class ModuleFactory {
 		return excelTemplatesModule;
 	}
 	
-	public static FacilioModule getTemplatePlaceholder() {
-		FacilioModule templatePlaceholder = new FacilioModule();
-		templatePlaceholder.setName("templatePlaceholder");
-		templatePlaceholder.setDisplayName("Template Placeholder");
-		templatePlaceholder.setTableName("Template_placeholder");
-		return templatePlaceholder;
-		
-	}
-	
-		public static FacilioModule getTenantModule() {
+	public static FacilioModule getTenantModule() {
 		FacilioModule tenantModule = new FacilioModule();
 		tenantModule.setName("tenant");
 		tenantModule.setDisplayName("Tenant");
@@ -887,6 +888,14 @@ public class ModuleFactory {
 		dashboardSharing.setDisplayName("Dashboard Sharing");
 		dashboardSharing.setTableName("Dashboard_Sharing");
 		return dashboardSharing;
+	}
+	
+	public static FacilioModule getViewSharingModule() {
+		FacilioModule viewSharing = new FacilioModule();
+		viewSharing.setName("viewSharing");
+		viewSharing.setDisplayName("View Sharing");
+		viewSharing.setTableName("View_Sharing");
+		return viewSharing;
 	}
 	
 	public static FacilioModule getWidgetVsWorkflowModule() {

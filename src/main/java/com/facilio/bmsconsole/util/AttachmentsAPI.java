@@ -31,8 +31,8 @@ public class AttachmentsAPI {
 	public static final List<AttachmentContext> getAttachments(String moduleName, long parentId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioField> fields = modBean.getAllFields(moduleName);
-		fields.addAll(FieldFactory.getFileFields());
+		List<FacilioField> fields = FieldFactory.getFileFields();
+		fields.addAll(modBean.getAllFields(moduleName));
 		
 		Condition idCondition = new Condition();
 		idCondition.setField(modBean.getField("parentId", moduleName));
@@ -53,8 +53,8 @@ public class AttachmentsAPI {
 	public static final List<AttachmentContext> getAttachments(String moduleName, List<Long> attachmentIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<FacilioField> fields = modBean.getAllFields(moduleName);
-		fields.addAll(FieldFactory.getFileFields());
+		List<FacilioField> fields = FieldFactory.getFileFields();
+		fields.addAll(modBean.getAllFields(moduleName));
 		
 		Condition idCondition = new Condition();
 		idCondition.setField(FieldFactory.getIdField(module));

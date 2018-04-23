@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -105,15 +106,28 @@ public class WorkOrderRequestAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String deleteWorkOrderRequest() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		
+		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderRequestChain();
+		deleteWorkOrder.execute(context);
+		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		return SUCCESS;
+	}
+	
 	public String addWorkOrderRequest() throws Exception {
 		
 		System.out.println("######## attachedFile : "+attachedFiles);
 		System.out.println("######## attachedFilesFileName : "+attachedFilesFileName);
-		System.out.println("######## workorderrequest : "+workorder_request);
-		if (workorder_request != null) {
-			setWorkorderrequest(workorder_request);
+		System.out.println("######## workorderrequest : "+workOrderRequestString);
+		if (workOrderRequestString != null) {
+			setWorkorderrequest(workOrderRequestString);
 		}
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.OPEN);
+		workorderrequest.setSourceType(TicketContext.SourceType.WEB_REQUEST);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorderrequest.getRequester());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
@@ -188,15 +202,14 @@ public class WorkOrderRequestAction extends ActionSupport {
 	public void setWorkorderrequest(String workorder_request) {
 		this.workorderrequest = convert(workorder_request);
 	}
-
-	private String workorder_request;
-	public String getWorkorder_request() {
-		return workorder_request;
-	}
-	public void setWorkorder_request(String workorder_request) {
-		this.workorder_request = workorder_request;
-	}
+	private String workOrderRequestString;
 	
+	public String getWorkOrderRequestString() {
+		return workOrderRequestString;
+	}
+	public void setWorkOrderRequestString(String workOrderRequestString) {
+		this.workOrderRequestString = workOrderRequestString;
+	}
 	public WorkOrderRequestContext convert(String workOrderReqStr)
 	{
 		WorkOrderRequestContext wo = null;

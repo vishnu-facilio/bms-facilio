@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -34,6 +35,26 @@ public class GetPreventiveMaintenanceCommand implements Command {
 			}
 			else if(viewCriteria != null){
 				criteria.andCriteria(viewCriteria);
+			}
+		}
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
+		if(scopeCriteria != null) {
+			if (criteria == null) {
+				criteria = scopeCriteria;
+			}
+			else {
+				criteria.andCriteria(scopeCriteria);
+			}
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
+		if(permissionCriteria != null) {
+			if (criteria == null) {
+				criteria = scopeCriteria;
+			}
+			else {
+				criteria.andCriteria(permissionCriteria);
 			}
 		}
 		

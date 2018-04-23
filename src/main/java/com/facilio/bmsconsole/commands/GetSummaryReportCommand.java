@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -35,6 +36,16 @@ public class GetSummaryReportCommand implements Command {
 				.select(fields)
 				.table(dataTableName)
 				.andCondition(orgCondition);
+		
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		if (scopeCriteria != null) {
+			builder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+		if (permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
+		}
 		
 		if(customWhere !=null && !customWhere.isEmpty()) {
 			builder.andCustomWhere(customWhere);

@@ -2,8 +2,6 @@ package com.facilio.accounts.dto;
 
 import java.util.List;
 
-import com.facilio.accounts.util.AccountUtil;
-
 public class Group {
 	
 	private long groupId = -1;
@@ -90,7 +88,20 @@ public class Group {
 	public void setParent(long parent) {
 		this.parent = parent;
 	}
-	public List<GroupMember> getMembers() throws Exception {
-		return AccountUtil.getGroupBean().getGroupMembers(groupId);
+	
+	private String phone;
+	public String getPhone() {
+		return phone;
 	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	
+	private List<GroupMember> members;
+	public List<GroupMember> getMembers() {
+		return members;
+	}
+	public void setMembers(List<GroupMember> members) {
+		this.members = members;
+	} 
 }

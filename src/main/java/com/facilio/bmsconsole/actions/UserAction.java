@@ -112,6 +112,20 @@ public class UserAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String deleteUser() throws Exception {
+		System.out.println("### Delete user :"+user.getEmail());
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.USER, user);
+		Map params = ActionContext.getContext().getParameters();
+		
+		System.out.println("User object is "+params+"\n"+ user);
+		Command deleteUser = FacilioChainFactory.getDeleteUserCommand();
+		deleteUser.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private Map<Long, String> roles;
 	public Map<Long, String> getRoles() {
 		return roles;

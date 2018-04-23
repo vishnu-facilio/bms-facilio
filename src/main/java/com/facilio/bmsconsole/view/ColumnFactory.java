@@ -20,7 +20,7 @@ public class ColumnFactory {
 		columnMap.put("workorder-open", getDefaultViewColumns());
 		columnMap.put("workorder-overdue", getDefaultViewColumns());
 		columnMap.put("workorder-duetoday", getDefaultViewColumns());
-		columnMap.put("workorder-myopen", getDefaultViewColumns());
+		columnMap.put("workorder-myopen", getMyWorkorderColumns());
 		columnMap.put("workorder-myteamopen", getDefaultViewColumns());
 		columnMap.put("workorder-unassigned", getDefaultViewColumns());
 		columnMap.put("workorder-closed", getDefaultViewColumns());
@@ -64,6 +64,20 @@ public class ColumnFactory {
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("noOfNotes", "Comments"));
+		columns.add(new ViewField("noOfTasks", "Tasks"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getMyWorkorderColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));

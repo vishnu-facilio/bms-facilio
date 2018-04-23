@@ -1,8 +1,31 @@
 package com.facilio.bmsconsole.view;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	private long startValue = -1;
@@ -170,7 +193,8 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		AGGREGATION,
 		BASE_LINE,
 		FLAPPING,
-		ADVANCED
+		ADVANCED,
+		FUNCTION
 		;
 		
 		public int getValue() {
@@ -183,5 +207,178 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 			return null;
 		}
+	}
+	
+	@Override
+	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		boolean criteriaFlag = super.evaluateCriteria(moduleName, record, placeHolders, context);
+		if (criteriaFlag) {
+			updateLastValueForReadingRule((ReadingContext) record);
+		}
+		return criteriaFlag;
+	}
+	
+	private void updateLastValueForReadingRule(ReadingContext record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		Criteria criteria = getCriteria();
+		if (criteria != null) {
+			Condition condition = criteria.getConditions().get(1);
+			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
+			WorkflowRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
+		}
+	}
+	
+	@Override
+	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		ReadingContext reading = (ReadingContext) record;
+		if (resourceId != reading.getParentId()) {
+			return false;
+		}
+		Object currentReadingObj = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), reading.getReading(readingField.getName()));
+		if (currentReadingObj == null) {
+			return false;
+		}
+		switch (thresholdType) {
+			case FLAPPING:
+				boolean singleFlap = false;
+				Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
+				Map<String, Object> lastValMap = lastReadingMap.get(reading.getParentId()+"_"+readingField.getName());
+				Object lastReading = FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValMap.get("value"));
+				if (currentReadingObj instanceof Number) {
+					double diff = calculateDiff(currentReadingObj, reading, (Number) lastReading);
+					double flapRange = Math.abs(maxFlapValue - minFlapValue);
+					singleFlap = diff >= flapRange;
+				}
+				else if (currentReadingObj instanceof Boolean) {
+					singleFlap = currentReadingObj != (Boolean) lastReading;
+				}
+				return singleFlap && isFlappedNTimes(reading);
+			default:
+				break;
+		}
+		return true;
+	}
+	
+	private double calculateDiff(Object currentReadingObj, ReadingContext record, Number lastReading) throws Exception {
+		double diff = -1;
+		if (lastReading == null) {
+			return 0;
+		}
+		if (currentReadingObj instanceof Double) {
+			double lastVal =  (double)lastReading;
+			if (lastVal == -1) {
+				return 0;
+			}
+			diff = Math.abs((double) currentReadingObj - lastVal);
+		}
+		else if (currentReadingObj instanceof Long) {
+			long lastVal = (long) lastReading;
+			if (lastVal == -1) {
+				return 0;
+			}
+			diff = Math.abs((int) currentReadingObj - lastVal);
+		}
+		else {
+			throw new IllegalArgumentException("Flapping is supported only for Number/ Decimal data types");
+		}
+		return diff;
+	}
+	
+	private boolean isFlappedNTimes(ReadingContext record) throws Exception {
+		boolean flapThreshold = false;
+		List<Long> flapsToBeDeleted = new ArrayList<>();
+		List<Map<String, Object>> flaps = getFlaps(getId());
+		int flapCount = 0;
+		if (flaps != null && !flaps.isEmpty()) {
+			flapCount = flaps.size();
+			for(Map<String, Object> flap : flaps) {
+				if (record.getTtime() - (long) flap.get("flapTime") > flapInterval) {
+					flapsToBeDeleted.add((Long) flap.get("id"));
+					flapCount--;
+				}
+			}
+		}
+		flapCount++;
+		flapThreshold = flapCount == flapFrequency;
+		if (flapThreshold) {
+			//Reset prev flaps
+			flapsToBeDeleted.clear();
+			for(Map<String, Object> flap : flaps) {
+				flapsToBeDeleted.add((Long) flap.get("id"));
+			}
+			flapCount = 0;
+		}
+		else {
+			addFlap(getId(), record.getTtime());
+		}
+		updateFlapCount(getId(), flapCount);
+		deleteOldFlaps(flapsToBeDeleted);
+		return flapThreshold;
+	}
+	
+	private List<Map<String, Object>> getFlaps(long ruleId) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
+		FacilioField ruleIdField = FieldFactory.getAsMap(fields).get("ruleId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.orderBy("flapTime")
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS));
+		
+		return selectBuilder.get();
+	}
+	
+	private long addFlap(long ruleId, long flapTime) throws Exception {
+		Map<String, Object> newFlap = new HashMap<>();
+		newFlap.put("ruleId", ruleId);
+		newFlap.put("flapTime", flapTime);
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.fields(FieldFactory.getReadingRuleFlapsFields())
+														.table(ModuleFactory.getReadingRuleFlapsModule().getTableName());
+		
+		return insertBuilder.insert(newFlap);
+	}
+	
+	private void updateFlapCount(long ruleId, int flapCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		ReadingRuleContext rule = new ReadingRuleContext();
+		rule.setFlapCount(flapCount);
+		
+		FacilioModule module = ModuleFactory.getReadingRuleModule();
+		List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
+		
+		updateBuilder.update(FieldUtil.getAsProperties(rule));
+	}
+	
+	private void deleteOldFlaps(List<Long> flapsToBeDeleted) throws SQLException {
+		// TODO Auto-generated method stub
+		if (!flapsToBeDeleted.isEmpty()) {
+			FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+															.table(module.getTableName())
+															.andCondition(CriteriaAPI.getIdCondition(flapsToBeDeleted, module))
+															;
+			deleteBuilder.delete();
+		}
+	}
+	
+	@Override
+	public Map<String, Object> getPlaceHolders(String moduleName, Object record, Map<String, Object> rulePlaceHolders, FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		Map<String, Object> recordPlaceHolders = super.getPlaceHolders(moduleName, record, rulePlaceHolders, context);
+		Map<String, Map<String,Object>> lastReadingMap =(Map<String, Map<String,Object>>)context.get(FacilioConstants.ContextNames.LAST_READINGS);
+		Map<String, Object> lastValue = lastReadingMap.get(((ReadingContext)record).getParentId()+"_"+readingField.getName());
+		if (lastValue != null) {
+			recordPlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField.getDataTypeEnum(), lastValue.get("value")));
+		}
+		return recordPlaceHolders;
 	}
 }

@@ -578,6 +578,25 @@ public static long getSitesCount() throws Exception {
 		return null;
 	}
 	
+	public static Map<Long, BaseSpaceContext> getBaseSpaceMap(List<Long> idList) throws Exception
+	{
+		if(idList == null || idList.isEmpty()) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(idList, module));
+		return selectBuilder.getAsMap();
+	
+		
+	}
+	
 	public static List<BaseSpaceContext> getBaseSpaces(String idList) throws Exception
 	{
 		if(idList == null || idList.isEmpty()) {

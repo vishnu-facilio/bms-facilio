@@ -19,7 +19,7 @@ public class CustomizeViewCommand implements Command{
 			for(FacilioView view : views) {
 				if(view.getId() == -1) {
 					String viewName = view.getName();
-					long viewId = ViewAPI.checkAndAddView(viewName, moduleName);
+					long viewId = ViewAPI.checkAndAddView(viewName, moduleName, null);
 					view.setId(viewId);
 				}
 			}

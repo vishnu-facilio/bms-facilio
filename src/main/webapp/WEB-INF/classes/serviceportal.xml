@@ -37,7 +37,7 @@
         <result>/service/index.jsp</result>
     </action>
   
-        <action name="apisignup" class="com.facilio.integration.actions.Home"
+        <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
         method="signupPortalUser">
                 <result name="success" type="json">
                         <param name="includeProperties">jsonresponse.*</param>
@@ -47,14 +47,14 @@
 				</result>
         </action>
   
-    <action name="login" class="com.facilio.integration.actions.Home" method="validatelogin">
+    <action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
 		<result name="samllogin">/service/samllogin.jsp</result>
 		<result >/service/login.jsp</result>
 		<result name="error">/service/login.jsp</result>
 		</action>
 	
-	<action name="faciliosubmit" class="com.facilio.integration.actions.Home"
-		method="validatelogin">
+	<action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction"
+		method="validateLogin">
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
@@ -64,13 +64,21 @@
 
 	</action>
 
-        <action name="changePassword" class="com.facilio.integration.actions.Home"
+        <action name="changePassword" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="changePortalPassword">
             <result name="success" type="json">
                 <param name="includeProperties">jsonresponse.*</param>
             </result>
             <result name="error" type="json">
                 <param name="includeProperties">jsonresponse.*</param>
+            </result>
+        </action>
+
+        <action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
+                method="resetPassword">
+            <param name="auth">false</param>
+            <result name="success" type="json">
+                <param name="includeProperties">invitation.*</param>
             </result>
         </action>
 
@@ -94,16 +102,13 @@
 			</result>
 		</action>
 
-		<action name="myrequests"
-				class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<param name="viewName">all</param>
+		<action name="myrequests" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction" method="workOrderRequestList">
+			<param name="viewName">myrequests</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workOrderRequests,workOrderRequests\[\d+\],workOrderRequests\[\d+\].*</param>
 			</result>
 		</action>
-        <action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
+        <action name="logout" class="com.facilio.auth.actions.FacilioAuthAction"
                 method="apiLogout">
             <result name="success" type="json">
                 <param name="includeProperties">^account.*</param>

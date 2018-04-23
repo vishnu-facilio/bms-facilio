@@ -100,10 +100,13 @@ public class AwsUtil
 	
 	private static final String AWS_PROPERTY_FILE = "conf/awsprops.properties";
 	
-	public static final String AWS_ACCESS_KEY_ID = "accessKeyId";
-	public static final String AWS_SECRET_KEY_ID = "secretKeyId";
+	private static final String AWS_ACCESS_KEY_ID = "accessKeyId";
+	private static final String AWS_SECRET_KEY_ID = "secretKeyId";
+
+	private static final String NEW_AWS_ACCESS_KEY_ID = "new.accessKeyId";
+	private static final String NEW_AWS_SECRET_KEY_ID = "new.secretKeyId";
 	
-	public static final String AWS_IOT_SERVICE_NAME = "iotdata";
+	private static final String AWS_IOT_SERVICE_NAME = "iotdata";
 	public static final String AWS_IOT_DYNAMODB_TABLE_NAME = "IotData";
 
 	private static final String KINESIS_PARTITION_KEY = "${clientid()}";
@@ -125,8 +128,11 @@ public class AwsUtil
 	private static final Object LOCK = new Object();
 	
 	private static final String SERVERNAME = getConfig("servername");
+	private static AWSCredentials newBasicCredentials = null;
+	private static AWSCredentialsProvider newCredentialsProvider = null;
 
-    public static String getConfig(String name) 
+
+	public static String getConfig(String name)
     {
         Properties prop = new Properties();
         URL resource = AwsUtil.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
@@ -318,30 +324,36 @@ public class AwsUtil
 		if(AwsUtil.getConfig("app.url").contains("localhost")) {
 			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 		}
-		
-		Destination destination = new Destination().withToAddresses(new String[] { (String) mailJson.get("to") });
-        Content subjectContent = new Content().withData((String) mailJson.get("subject"));
-        Content bodyContent = new Content().withData((String) mailJson.get("message"));
-        Body body = new Body().withText(bodyContent);
 
-        Message message = new Message().withSubject(subjectContent).withBody(body);
+		String toAddress = (String)mailJson.get("to");
+		boolean sendEmail = true;
+		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
+			if(toAddress == null || ( ! toAddress.contains("facilio.com"))){
+				sendEmail = false;
+			}
+		}
+		if(sendEmail) {
+			Destination destination = new Destination().withToAddresses(new String[]{toAddress});
+			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
+			Content bodyContent = new Content().withData((String) mailJson.get("message"));
+			Body body = new Body().withText(bodyContent);
 
-        try
-        {
-	        SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
-	                .withDestination(destination).withMessage(message);
-	        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-	        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-	                .withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-	        client.sendEmail(request);
-	        System.out.println("Email sent!");
-	    } 
-        catch (Exception ex) 
-        {
-            System.out.println("The email was not sent.");
-            System.out.println("Error message: " + ex.getMessage());
-            throw ex;
-        }
+			Message message = new Message().withSubject(subjectContent).withBody(body);
+
+			try {
+				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
+						.withDestination(destination).withMessage(message);
+				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+						.withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+				client.sendEmail(request);
+				System.out.println("Email sent!");
+			} catch (Exception ex) {
+				System.out.println("The email was not sent.");
+				System.out.println("Error message: " + ex.getMessage());
+				throw ex;
+			}
+		}
 	}
 	
 	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception 
@@ -350,31 +362,37 @@ public class AwsUtil
 			sendEmail(mailJson);
 			return;
 		}
+		String toAddress = (String)mailJson.get("to");
+		boolean sendEmail = true;
+		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
+			if(toAddress == null || ( ! toAddress.contains("facilio.com"))){
+				sendEmail = false;
+			}
+		}
 
-        try
-        {
-	        	if(AwsUtil.getConfig("app.url").contains("localhost")) {
-	    			mailJson.put("subject", "Local - "+mailJson.get("subject"));
-	    		}
-        	
-        		MimeMessage message = getEmailMessage(mailJson, files);
-        		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        		message.writeTo(outputStream);
-        		RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-        		SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
-        		
-	        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
-	        AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-	                .withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-	        client.sendRawEmail(request);
-	        System.out.println("Email sent!");
-	    } 
-        catch (Exception ex) 
-        {
-            System.out.println("The email was not sent.");
-            System.out.println("Error message: " + ex.getMessage());
-            throw ex;
-        }
+		if(sendEmail) {
+			try {
+				if (AwsUtil.getConfig("app.url").contains("localhost")) {
+					mailJson.put("subject", "Local - " + mailJson.get("subject"));
+				}
+
+				MimeMessage message = getEmailMessage(mailJson, files);
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				message.writeTo(outputStream);
+				RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+				SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
+
+				BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsUtil.getConfig("accessKeyId"), AwsUtil.getConfig("secretKeyId"));
+				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+						.withRegion(Regions.US_WEST_2).withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+				client.sendRawEmail(request);
+				System.out.println("Email sent!");
+			} catch (Exception ex) {
+				System.out.println("The email was not sent.");
+				System.out.println("Error message: " + ex.getMessage());
+				throw ex;
+			}
+		}
 	}
 
 	private static AWSCredentials getBasicAwsCredentials() {
@@ -397,6 +415,28 @@ public class AwsUtil
 			}
 		}
 		return credentialsProvider;
+	}
+
+	private static AWSCredentials getNewBasicAwsCredentials() {
+		if(newBasicCredentials == null) {
+			synchronized (LOCK) {
+				if (newBasicCredentials == null) {
+					newBasicCredentials = new BasicAWSCredentials(AwsUtil.getConfig(NEW_AWS_ACCESS_KEY_ID), AwsUtil.getConfig(NEW_AWS_SECRET_KEY_ID));
+				}
+			}
+		}
+		return newBasicCredentials;
+	}
+
+	public static AWSCredentialsProvider getNewAWSCredentialsProvider() {
+		if(newCredentialsProvider == null){
+			synchronized (LOCK) {
+				if(newCredentialsProvider == null){
+					newCredentialsProvider = new AWSStaticCredentialsProvider(getBasicAwsCredentials());
+				}
+			}
+		}
+		return newCredentialsProvider;
 	}
 
 	public static String getRegion() {

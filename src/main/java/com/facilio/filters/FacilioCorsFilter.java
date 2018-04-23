@@ -1,5 +1,7 @@
 package com.facilio.filters;
 
+import com.facilio.aws.util.AwsUtil;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +45,11 @@ public class FacilioCorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        initialize(ORIGINS, filterConfig.getInitParameter("cors.allowed.origins"));
+        String originValues = AwsUtil.getConfig("cors.allowed.origins");
+        if(originValues == null) {
+            originValues = "https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com";
+        }
+        initialize(ORIGINS, originValues);
         initialize(METHODS, filterConfig.getInitParameter("cors.allowed.methods"));
         initialize(ALLOWED_HEADERS, filterConfig.getInitParameter("cors.allowed.headers"));
         initialize(EXPOSED_HEADERS, filterConfig.getInitParameter("cors.exposed.headers"));

@@ -1,9 +1,15 @@
 package com.facilio.bmsconsole.workflow;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleContext {
 	
@@ -118,6 +124,28 @@ public class WorkflowRuleContext {
 		this.actions = actions;
 	}
 
+	private long parentRuleId = -1;
+	public long getParentRuleId() {
+		return parentRuleId;
+	}
+	public void setParentRuleId(long parentRuleId) {
+		this.parentRuleId = parentRuleId;
+	}
+
+	private Boolean onSuccess;
+	public Boolean getOnSuccess() {
+		return onSuccess;
+	}
+	public boolean isOnSuccess() {
+		if (onSuccess != null) {
+			return onSuccess.booleanValue();
+		}
+		return false;
+	}
+	public void setOnSuccess(boolean onSuccess) {
+		this.onSuccess = onSuccess;
+	}
+
 	private RuleType ruleType;
 	public int getRuleType() {
 		if(ruleType != null) {
@@ -133,6 +161,33 @@ public class WorkflowRuleContext {
 	}
 	public RuleType getRuleTypeEnum() {
 		return ruleType;
+	}
+	
+	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		return true;
+	}
+	
+	public boolean evaluateCriteria (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		boolean criteriaFlag = true;
+		if(criteria != null) {
+			criteriaFlag = criteria.computePredicate(placeHolders).evaluate(record);
+		}
+		return criteriaFlag;
+	}
+	
+	public boolean evaluateWorkflowExpression (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		boolean workflowFlag = true;
+		if (workflow != null && workflow.isBooleanReturnWorkflow()) {
+			double result = (double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), placeHolders);
+			workflowFlag = result == 1;
+		}
+		return workflowFlag;
+	}
+	
+	public Map<String, Object> getPlaceHolders(String moduleName, Object record, Map<String, Object> rulePlaceHolders, FacilioContext context) throws Exception {
+		Map<String, Object> recordPlaceHolders = new HashMap<>(rulePlaceHolders);
+		CommonCommandUtil.appendModuleNameInKey(moduleName, moduleName, FieldUtil.getAsProperties(record), recordPlaceHolders);
+		return recordPlaceHolders;
 	}
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
@@ -109,7 +110,7 @@ public class LookupSpecialTypeUtil {
 			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			FacilioField field=FieldFactory.getField("groupId", "GROUPID", FieldType.NUMBER);
+			FacilioField field=FieldFactory.getField("groupId", "GROUPID",getModule(specialType), FieldType.NUMBER);
 			criteria.addAndCondition(CriteriaAPI.getCondition(field,idList, NumberOperators.EQUALS));
 		}
 		else {
@@ -273,11 +274,10 @@ public class LookupSpecialTypeUtil {
 	
 	public static FacilioModule getModule(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return ModuleFactory.getOrgUserModule();
+			return AccountConstants.getOrgUserModule();
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-//			return null; //Group fields are yet to be moved to FieldFactory
-			return null; //Groups are yet to be handled
+			return AccountConstants.getGroupModule();
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return ModuleFactory.getBusinessHoursModule();
@@ -296,12 +296,12 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<FacilioField> getAllFields(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<FacilioField> fields = FieldFactory.getUserFields();
-			fields.addAll(FieldFactory.getOrgUserFields());
+			List<FacilioField> fields = AccountConstants.getUserFields();
+			fields.addAll(AccountConstants.getOrgUserFields());
 			return fields;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			return null; //Group fields are yet to be moved to FieldFactory
+			return AccountConstants.getGroupFields();
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
 			return FieldFactory.getBusinessHoursFields();

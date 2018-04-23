@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -41,22 +38,6 @@ public class PushNotificationTemplate extends Template{
 	}
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		JSONObject obj = new JSONObject();
-		JSONObject data = new JSONObject();
-		obj.put("to", getTo(StrSubstitutor.replace(to, placeHolders)));
-		obj.put("body", StrSubstitutor.replace(body, placeHolders));
-		obj.put("URL", StrSubstitutor.replace(url, placeHolders));
-		obj.put("title", StrSubstitutor.replace(title, placeHolders));
-		obj.put("content_available", true);
-		obj.put("priority", "high");
-		obj.put("sound", "default");
-		data.put("data", obj);
-		return data;
 	}
 	
 	@Override

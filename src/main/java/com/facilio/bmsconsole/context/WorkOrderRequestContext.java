@@ -85,7 +85,7 @@ public class WorkOrderRequestContext extends TicketContext {
 	public static enum WORUrgency {
 		EMERGENCY(1, "Emergency"),
 		URGENT(2, "Urgent"),
-		NOTURGENT(3, "Noturgent");
+		NOTURGENT(3, "Not Urgent");
 		
 		private int intVal;
 		private String strVal;
@@ -110,6 +110,9 @@ public class WorkOrderRequestContext extends TicketContext {
 				typeMap.put(type.getIntVal(), type);
 			}
 			return typeMap;
+		}
+		public static WORUrgency getWORUrgency(Integer intval) {
+			return urgencyMap.get(intval);
 		}
 		public Map<Integer, WORUrgency> getAllTypes() {
 			return urgencyMap;

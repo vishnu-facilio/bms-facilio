@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.facilio.serviceportal.actions.PortalAuthInterceptor;
+
 public class PortalInfoContext  {
 	
 	private long portalId = -1;
@@ -16,9 +18,9 @@ public class PortalInfoContext  {
 	private String customDomain;
 	private ArrayList whiteListed_domains;
 	private boolean saml_enabled = true;
-	private String login_url = "http://orgdomainname.facilstack.com/idplogin";
-	private String logout_url = "http://orgdomainname.facilstack.com/idplogout";
-	private String password_url = "http://orgdomainname.facilstack.com/idppassword";
+	private String login_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogin";
+	private String logout_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idplogout";
+	private String password_url = "http://orgdomainname."+PortalAuthInterceptor.PORTALDOMAIN+"/idppassword";
 	private long publicKey = -1;
 	private File publicKeyFile;
 	private String algorithm  = null;

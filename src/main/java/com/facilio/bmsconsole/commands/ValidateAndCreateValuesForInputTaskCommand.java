@@ -6,17 +6,17 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.amazonaws.services.kms.model.UnsupportedOperationException;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -34,7 +34,19 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 			if(recordIds != null && recordIds.size() == 1) {
 				TaskContext completeRecord = getTask(recordIds.get(0));
 				if(completeRecord != null) {
-					checkParentTicketStatus(completeRecord.getParentTicketId());
+					if(task.getStatus() != null && task.getStatus().getId() != -1) {
+						TicketStatusContext status = TicketAPI.getStatus("Closed");
+						if(status.getId() == task.getStatus().getId()) {
+							if (completeRecord.getInputTypeEnum() != InputType.NONE && (completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) {
+								throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
+							}
+							
+							List<AttachmentContext> attachments = TicketAPI.getRelatedAttachments(recordIds.get(0));
+							if(completeRecord.isAttachmentRequired() && (attachments == null || attachments.isEmpty())) {
+								throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+							}
+						}
+					}
 					if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
 						if(task.getInputTime() == -1) {
 							task.setInputTime(System.currentTimeMillis());
@@ -104,42 +116,6 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 		return null;
 	}
 	
-	private void checkParentTicketStatus(Long parentId) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		FacilioModule module = modBean.getModule(taskModule.getExtendModule().getModuleId());
-		List<FacilioField> ticketFields = FieldFactory.getTicketFields(module);
-		
-		SelectRecordsBuilder<? extends TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
-				.select(ticketFields)
-				.module(module)
-				.beanClass(TicketContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(parentId, module))
-				.maxLevel(1);
-		
-		List<? extends TicketContext> tickets = builder.get();
-		if(tickets != null && !tickets.isEmpty()) {
-			TicketContext ticket = tickets.get(0);
-			
-			TicketStatusContext statusObj = ticket.getStatus();
-			if ("Closed".equalsIgnoreCase(statusObj.getStatus())|| "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-				throw new IllegalArgumentException("Task cannot be updated for completed tickets");
-			}
-			
-			if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
-				TicketContext newTicket = new TicketContext();
-				newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
-				TicketAPI.updateTicketStatus(newTicket, ticket, false);
-				
-				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-															.module(module)
-															.fields(ticketFields)
-															.andCondition(CriteriaAPI.getIdCondition(parentId, module));
-				
-				updateBuilder.update(newTicket);
-			}
-		}
-	}
+	
 	
 }

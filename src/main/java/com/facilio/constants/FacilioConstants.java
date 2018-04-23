@@ -17,9 +17,14 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
+import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
+import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -87,7 +92,6 @@ public class FacilioConstants {
 	public static class ContextNames {
 		
 		public static final String SIGNUP_INFO = "signupinfo";
-		public static final String CURRENT_RECORD = "currentRecord";
 		public static final String RECORD = "record";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
@@ -116,6 +120,7 @@ public class FacilioConstants {
 		public static final String PARENT_ID_LIST = "parentIds";
 		
 		public static final String TICKET_ID = "ticketId";
+		public static final String DEPENDENT_TICKET_IDS = "dependentTicketIds";
 		
 		public static final String TICKET_STATUS = "ticketstatus";
 		public static final String TICKET_STATUS_LIST = "ticketstatuses";
@@ -182,7 +187,8 @@ public class FacilioConstants {
 		public static final String READING_NAME = "readingName";
 		public static final String MODULE = "module";
 		public static final String MODULE_LIST = "modules";
-		public static final String MODULE_MAP = "modulemap";
+		public static final String MODULE_MAP = "modulemap";	
+		public static final String SPACES = "spaces";
 		public static final String CATEGORY_READING_PARENT_MODULE = "categoryReadingParentModule";
 		public static final String PARENT_CATEGORY_ID = "parentCategoryId";
 		public static final String PARENT_CATEGORY_IDS = "parentCategoryIds";
@@ -276,7 +282,12 @@ public class FacilioConstants {
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
 		public static final String CHILLER = "chiller";
+		public static final String CHILLER_PRIMARY_PUMP = "chillerprimarypump";
+		public static final String CHILLER_SECONDARY_PUMP = "chillersecondarypump";
+		public static final String CHILLER_CONDENSER_PUMP = "chillercondenserpump";
 		public static final String AHU = "ahu";
+		public static final String COOLING_TOWER = "coolingtower";
+		public static final String FCU = "fcu";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
@@ -343,6 +354,7 @@ public class FacilioConstants {
 		public static final String PM_ID = "pmid";
 		public static final String PREVENTIVE_MAINTENANCE_STATUS = "preventivemaintenanceStatus";
 		public static final String PREVENTIVE_MAINTENANCE_LIST = "preventivemaintenances";
+		public static final String PREVENTIVE_MAINTENANCE_JOBS_LIST = "preventivemaintenancejobs";
 		public static final String PREVENTIVE_MAINTENANCE_TRIGGERS_LIST = "preventivemaintenancetriggerss";
 		public static final String PREVENTIVE_MAINTENANCE_RESOURCES = "preventivemaintenanceresources";
 		public static final String INSERT_LEVEL = "insertLevel";
@@ -360,8 +372,10 @@ public class FacilioConstants {
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String NEW_CV = "newCV";
+		public static final String VIEW_SHARING_LIST = "viewSharingList";
 		public static final String FILTERS = "filters";
 		public static final String FILTER_CONDITIONS = "filterConditions";
+		public static final String CRITERIA_IDS = "criteria";
 		public static final String FILTER_CRITERIA = "filterCriteria";
 		public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
 		public static final String SEARCH = "search";
@@ -372,7 +386,6 @@ public class FacilioConstants {
 		public static final String LIMIT_VALUE = "limitValue";
 		public static final String WORKFLOW_UPDATE="workflowUpdate";
 		public static final String WORKFLOW_RULE="workflowRule";
-		public static final String CURRENT_WORKFLOW_RULE="currentWorkflowRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
 		public static final String READING_RULE_LIST ="readingRules";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
@@ -459,7 +472,12 @@ public class FacilioConstants {
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
+			classMap.put(CHILLER_PRIMARY_PUMP, ChillerPrimaryPumpContext.class);
+			classMap.put(CHILLER_CONDENSER_PUMP, ChillerCondenserPumpContext.class);
+			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(AHU, AHUContext.class);
+			classMap.put(COOLING_TOWER, CoolingTowerContext.class);
+			classMap.put(FCU, FCUContext.class);
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
@@ -482,7 +500,9 @@ public class FacilioConstants {
 	
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
+		public static final String LOGGED_IN_USER_GROUP = "${LOGGED_USER_GROUP}";
 		public static final long LOGGED_IN_USER_ID = -99;
+		public static final long LOGGED_IN_USER_GROUP_ID = -100;
 	}
 	
 	public static class Workflow {
@@ -506,6 +526,7 @@ public class FacilioConstants {
 	public static class WorkOrderRquest{
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String CREATED_TIME = "createdTime";
+		public static final String URGENCY = "urgency";
 	}
 	public static class Job{
 		public static final String NEXT_EXECUTION_TIME = "NEXT_EXECUTION_TIME";

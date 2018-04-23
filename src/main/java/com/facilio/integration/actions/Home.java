@@ -18,6 +18,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -204,6 +206,10 @@ state = PORTAL-yogendrababu
 				HttpServletResponse response = ServletActionContext.getResponse();
 
 				Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+				if(portaluser)
+				{
+					cookie = new Cookie("fc.idToken.facilioportal", jwt);
+				}
 				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				cookie.setPath("/");
 				cookie.setHttpOnly(true);
@@ -344,10 +350,32 @@ Pragma: no-cache
 
 		JSONObject invitation = new LoginAction().acceptUserInvite(inviteToken);
 		if((Boolean) invitation.get("accepted") && emailaddress != null) {
-			User user = AccountUtil.getUserBean().getUser(emailaddress);
+			Long userid = (Long)invitation.get("userid");
+			User user = AccountUtil.getUserBean().getUser(userid);
 			if(user.getPassword() == null && password != null) {
 				user.setPassword(cryptWithMD5(password));
 				AccountUtil.getUserBean().updateUser(user);
+				
+				
+				Connection conn =FacilioConnectionPool.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement("INSERT INTO faciliousers(username,email,password,USERID) VALUES(?,?,?,?)");
+				try {
+					pstmt.setString(1, emailaddress);
+					pstmt.setString(2, emailaddress);
+					pstmt.setString(3, cryptWithMD5(password));
+					pstmt.setLong(4, userid);
+
+					pstmt.executeUpdate();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				finally
+				{
+					pstmt.close();
+					conn.close();
+				}
+				
 			}
             return SUCCESS;
 		} else {
@@ -367,7 +395,14 @@ Pragma: no-cache
 			pstmt.setString(3, emailaddress);
 			pstmt.setString(4, password);
 			pstmt.executeUpdate();
-
+			
+			User user = new User();
+			user.setName(username);
+			user.setEmail(emailaddress);
+			
+			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+			userBean.addRequester(AccountUtil.getCurrentOrg().getId(), user);
+			
 		} catch (MySQLIntegrityConstraintViolationException e){
 			setJsonresponse("message", "Username exists for this portal");
 			return ERROR;

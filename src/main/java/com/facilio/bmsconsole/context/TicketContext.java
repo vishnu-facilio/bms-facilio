@@ -9,6 +9,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -148,6 +149,12 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setDueDate(long dueDate) {
 		this.dueDate = dueDate;
+	}
+	public String getDueDateString() {
+		if(dueDate != -1) {
+			return DateTimeUtil.getZonedDateTime(dueDate).format(FacilioConstants.READABLE_DATE_FORMAT);
+		}
+		return null;
 	}
 	
 	private long duration = -1; //In Seconds
@@ -376,12 +383,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	
 	public static enum SourceType {
 		
-		WEB(1, "Web"),
-		EMAIL(2, "E Mail"),
-		SMS(3, "SMS"),
+		WEB_ORDER(1, "Web Work Order"),
+		EMAIL_REQUEST(2, "E Mail Request"),
+		SMS_REQUEST(3, "SMS Request"),
 		ALARM(4, "Alarm"),
 		PREVENTIVE_MAINTENANCE(5, "Preventive Maintenance"),
-		THRESHOLD_ALARM(6, "Threshold Alarm")
+		THRESHOLD_ALARM(6, "Threshold Alarm"),
+		WEB_REQUEST(7, "Web Request"),
+		TASK(8, "Task")
 		;
 		
 		private int intVal;

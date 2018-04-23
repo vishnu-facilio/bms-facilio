@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActionContext;
 import com.facilio.bmsconsole.workflow.ActionType;
 import com.facilio.bmsconsole.workflow.ActivityType;
@@ -175,42 +176,18 @@ public class WorkflowRuleAction extends ActionSupport {
 		return null;
 	}
 	
-//	public Criteria getSLACriteria() throws Exception
-//	{
-//		Criteria obj = new Criteria();
-//		//obj.setPattern("1");
-//		
-//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//		
-//		FacilioField assignmentgroup = modBean.getField("assignmentGroup", FacilioConstants.ContextNames.WORK_ORDER);	
-//		Condition condition1 = new Condition();
-//		condition1.setField(assignmentgroup);		
-//		condition1.setValue("1,2");
-//		condition1.setOperatorId(36);
-//		obj.addAndCondition(condition1);
-//		
-//		FacilioField space = modBean.getField("resource", FacilioConstants.ContextNames.WORK_ORDER);		
-//		Condition condition2 = new Condition();
-//		condition2.setField(space);		
-//		condition2.setValue("1,2");
-//		condition2.setOperatorId(36);
-//		obj.addAndCondition(condition2);
-//		
-//		FacilioField category = modBean.getField("category", FacilioConstants.ContextNames.WORK_ORDER);		
-//		Condition condition3 = new Condition();
-//		condition3.setField(space);		
-//		condition3.setValue("1");
-//		condition3.setOperatorId(36);
-//		obj.addAndCondition(condition3);
-//		
-//		return obj;
-//	}
-	
+	private SLARuleContext slaRule;
+	public SLARuleContext getSlaRule() {
+		return slaRule;
+	}
+	public void setSlaRule(SLARuleContext slaRule) {
+		this.slaRule = slaRule;
+	}
 
 	public String addSLARule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
-		rule.setRuleType(RuleType.SLA_RULE);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		slaRule.setRuleType(RuleType.SLA_RULE);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(true));
 		Chain addRule = FacilioChainFactory.getAddWorkflowRuleChain();
 		addRule.execute(facilioContext);
@@ -219,8 +196,8 @@ public class WorkflowRuleAction extends ActionSupport {
 	
 	public String updateSLARule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
-		rule.setRuleType(RuleType.SLA_RULE);
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		slaRule.setRuleType(RuleType.SLA_RULE);
+		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaRule);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION, constructSLAAction(false));
 		Chain updateRule = FacilioChainFactory.updateWorkflowRuleChain();
 		updateRule.execute(facilioContext);
@@ -231,7 +208,7 @@ public class WorkflowRuleAction extends ActionSupport {
 		if (slaTemplate != null) {
 			ActionContext slaAction = new ActionContext();
 			slaAction.setActionType(ActionType.SLA_ACTION);
-			slaTemplate.setName(rule.getName()+"_SLATemplate");
+			slaTemplate.setName(slaRule.getName()+"_SLATemplate");
 			slaAction.setTemplate(slaTemplate);
 			List<ActionContext> slaActions = Collections.singletonList(slaAction);
 			return slaActions;

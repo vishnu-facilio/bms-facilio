@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
+
 public class PMJobsContext {
 	private long id = -1;
 	public long getId() {
@@ -33,6 +35,14 @@ public class PMJobsContext {
 		this.templateId = templateId;
 	}
 	
+	private WorkorderTemplate template;
+	public WorkorderTemplate getTemplate() {
+		return template;
+	}
+	public void setTemplate(WorkorderTemplate template) {
+		this.template = template;
+	}
+
 	private boolean projected;
 	public boolean isProjected() {
 		return projected;

@@ -138,26 +138,28 @@ public class FormulaContext {
 	
 	public enum NumberAggregateOperator implements AggregateOperator {
 		
-		COUNT(1,"count({$place_holder$})"),
-		AVERAGE(2,"avg({$place_holder$})"),
-		SUM(3,"sum({$place_holder$})"),
-		MIN(4,"min({$place_holder$})"),
-		MAX(5,"max({$place_holder$})");
+		COUNT(1,"Count","count({$place_holder$})"),
+		AVERAGE(2,"Average","avg({$place_holder$})"),
+		SUM(3,"Sum","sum({$place_holder$})"),
+		MIN(4,"Min","min({$place_holder$})"),
+		MAX(5,"Max","max({$place_holder$})");
 		
 		private Integer value;
 		private String stringValue;
+		private String expr;
 		public Integer getValue() {
 			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		NumberAggregateOperator(Integer value,String stringValue) {
+		NumberAggregateOperator(Integer value,String stringValue,String expr) {
 			this.value = value;
 			this.stringValue = stringValue;
+			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setDisplayName(this.name());
@@ -169,23 +171,26 @@ public class FormulaContext {
 	
 	public enum StringAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"{$place_holder$}"),
-		COUNT(1,"count({$place_holder$})");
+		ACTUAL(0,"Actual","{$place_holder$}"),
+		COUNT(1,"Count","count({$place_holder$})");
 		
 		private Integer value;
 		private String stringValue;
+		private String expr;
+		
 		public Integer getValue() {
 			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		StringAggregateOperator(Integer value,String stringValue) {
+		StringAggregateOperator(Integer value,String stringValue,String expr) {
 			this.value = value;
 			this.stringValue = stringValue;
+			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =stringValue.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
 			
 			FacilioField selectField = new FacilioField();
 			selectField.setColumnName(selectFieldString);
@@ -196,40 +201,50 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		ACTUAL(0,"actual", "{$place_holder$}"),
-		COUNT(1,"count","count({$place_holder$})"),
-		YEAR(8,"year","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')"),
-		//QUARTERANDYEAR(9,"quarterAndYear",7889229000l),
-		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')"),
-		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')"),
-		FULLDATE(12,"fullDate","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')"),
-		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')"),
-		//QUARTER(14,"quarter"),
-		MONTH(15,"month","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')"),
-		WEEK(16,"week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')"),
-		WEEKDAY(17,"weekDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')"),
-		DAYSOFMONTH(18,"daysOfMonth","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')"),
-		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')"),
-		HOURSOFDAYONLY(20,"hoursOfDayOnly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')")
+		ACTUAL(0,"Actual", "{$place_holder$}",false),
+		COUNT(1,"Count","count({$place_holder$})",false),
+		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true),
+		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false),
+		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false),
+		FULLDATE(12,"daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy",true),
+		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')",false),
+		MONTH(15,"Monthly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')",true),
+		WEEK(16,"Week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')",false),
+		WEEKDAY(17,"Weekly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')",true),
+		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false),
+		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false),
+		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true)
 		;
 		
 		private Integer value;
 		private String stringValue;
 		private String expr;
+		private String format;
+		private boolean isPublic;
+		public boolean isPublic() {
+			return isPublic;
+		}
 		public Integer getValue() {
 			return value;
 		}
 		public String getStringValue() {
 			return stringValue;
 		}
-		DateAggregateOperator(Integer value,String stringValue) {
-			this.value = value;
-			this.stringValue = stringValue;
+		public String getFormat() {
+			return format;
 		}
-		DateAggregateOperator(Integer value,String stringValue,String expr) {
+		DateAggregateOperator(Integer value,String stringValue,String expr,boolean isPublic) {
 			this.value = value;
 			this.stringValue = stringValue;
 			this.expr = expr;
+			this.isPublic = isPublic;
+		}
+		DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic) {
+			this.value = value;
+			this.stringValue = stringValue;
+			this.expr = expr;
+			this.format = format;
+			this.isPublic = isPublic;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			System.out.println("org timeZone -- "+DateTimeUtil.getDateTime().getOffset().toString());
@@ -268,7 +283,6 @@ public class FormulaContext {
 			this.stringValue = stringValue;
 			this.columnName = columnName;
 		}
-		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseSpaceModule = modBean.getModule("basespace");
@@ -284,7 +298,7 @@ public class FormulaContext {
 	
 	public enum EnergyPurposeAggregateOperator implements AggregateOperator {
 		
-		PURPOSE(24);
+		PURPOSE(24,"Purpose");
 		
 		private Integer value;
 		private String stringValue;
@@ -299,9 +313,9 @@ public class FormulaContext {
 		public String getcolumnName() {
 			return columnName;
 		}
-		EnergyPurposeAggregateOperator(Integer value) {
+		EnergyPurposeAggregateOperator(Integer value,String stringValue) {
 			this.value = value;
-//			this.stringValue = stringValue;
+			this.stringValue = stringValue;
 //			this.columnName = columnName;
 		}
 		

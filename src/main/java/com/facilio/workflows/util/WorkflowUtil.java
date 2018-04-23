@@ -39,6 +39,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -51,6 +52,7 @@ public class WorkflowUtil {
 	
 //	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)\\}\\s*)?([^`]*)`(.*))";
 	private static final String CONDITION_FORMATTER = "((.*?)`(baseLine\\{(\\d+)(\\,*)(\\d*)\\}\\s*)?([^`]*)`(.*))";
+	private static final String CUSTOM_FUNCTION_RESULT_EVALUATOR = "(.*?)(\\.)(.*?)(\\()(.*?)(\\))";
 	
 	
 	static {
@@ -85,6 +87,7 @@ public class WorkflowUtil {
 	static final String EXPRESSION_STRING =  "expression";
 	static final String NAME_STRING =  "name";
 	static final String CONSTANT_STRING =  "constant";
+	static final String FUNCTION_STRING =  "function";
 	static final String MODULE_STRING =  "module";
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
@@ -92,6 +95,7 @@ public class WorkflowUtil {
 	static final String ORDER_BY_STRING =  "orderBy";
 	static final String SORT_STRING =  "sort";
 	static final String LIMIT_STRING =  "limit";
+	static final String GROUP_BY_STRING =  "groupBy";
 	static final String CONDITION_STRING =  "condition";
 	static final String CONDITIONS_STRING =  "conditions";
 	static final String PATTERN_STRING =  "pattern";
@@ -255,6 +259,7 @@ public class WorkflowUtil {
 	
 	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
 		
+		System.out.println("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
 		 WorkflowContext workflowContext = getWorkflowContext(workflowId);
 		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap);
 	}
@@ -283,6 +288,10 @@ public class WorkflowUtil {
 	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {
 		
 		FieldType type =  parameterContext.getType();
+		
+		if (value == null) {
+			return true;
+		}
 		
 		switch(type) {
 			case STRING : 
@@ -336,6 +345,12 @@ public class WorkflowUtil {
 				 if(expressionContext.getConstant() != null) {
 					 Element valueElement = doc.createElement(CONSTANT_STRING);
 					 valueElement.setTextContent(expressionContext.getConstant().toString());
+					 expressionElement.appendChild(valueElement);
+				 }
+				 else if(expressionContext.getDefaultFunctionContext() != null) {
+					 WorkflowFunctionContext function = expressionContext.getDefaultFunctionContext();
+					 Element valueElement = doc.createElement(FUNCTION_STRING);
+					 valueElement.setTextContent(function.getNameSpace()+"."+function.getFunctionName()+"("+function.getParams()+")");
 					 expressionElement.appendChild(valueElement);
 				 }
 				 else {
@@ -394,6 +409,11 @@ public class WorkflowUtil {
 						 Element limitElement = doc.createElement(LIMIT_STRING);
 						 limitElement.setTextContent(expressionContext.getLimit());
 						 expressionElement.appendChild(limitElement);
+					 }
+					 if(expressionContext.getGroupBy() != null) {
+						 Element groupByElement = doc.createElement(GROUP_BY_STRING);
+						 groupByElement.setTextContent(expressionContext.getGroupBy());
+						 expressionElement.appendChild(groupByElement);
 					 }
 				 }
 				 workflowElement.appendChild(expressionElement);
@@ -467,13 +487,32 @@ public class WorkflowUtil {
             expressionContext.setName(expressionName);
             
             NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
+            NodeList functionNodes = expression.getElementsByTagName(FUNCTION_STRING);
             
+           
             if(valueNodes.getLength() > 0 ) {
             	Node valueNode =  valueNodes.item(0);
             	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
             		Element value = (Element) valueNode;
             		String valueString = value.getTextContent();
             		expressionContext.setConstant(valueString);
+            	}
+            }
+            else if (functionNodes.getLength() > 0) {
+            	Node valueNode =  functionNodes.item(0);
+            	if(valueNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) valueNode;
+            		String valueString = value.getTextContent();
+            		 Pattern condtionStringpattern = Pattern.compile(CUSTOM_FUNCTION_RESULT_EVALUATOR);
+             		Matcher matcher = condtionStringpattern.matcher(valueString);
+             		while (matcher.find()) {
+             			expressionContext.setIsCustomFunctionResultEvaluator(true);
+             			WorkflowFunctionContext defaultFunctionContext = new WorkflowFunctionContext();
+             			defaultFunctionContext.setNameSpace(matcher.group(1));
+             			defaultFunctionContext.setFunctionName(matcher.group(3));
+             			defaultFunctionContext.setParams(matcher.group(5));
+             			expressionContext.setDefaultFunctionContext(defaultFunctionContext);
+             		}
             	}
             }
             else {
@@ -549,6 +588,13 @@ public class WorkflowUtil {
                 	
                 	Element limit  = (Element) limitNode;
                 	expressionContext.setLimit(limit.getTextContent());
+                }
+                
+                NodeList groupByNodes = expression.getElementsByTagName(GROUP_BY_STRING);
+                Node groupByNode = groupByNodes.item(0);
+                if(groupByNode != null && groupByNode.getNodeType() == Node.ELEMENT_NODE) {
+	                	Element groupBy  = (Element) groupByNode;
+	                	expressionContext.setGroupBy(groupBy.getTextContent());
                 }
             }
             return expressionContext;
@@ -656,4 +702,33 @@ public class WorkflowUtil {
         }
         return workflowContext;
 	}
+	
+	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
+		
+		
+		if(workflowFunctionContext.getNameSpace().equals("default")) {
+				
+			FacilioDefaultFunction defaultFunctions = FacilioDefaultFunction.getFacilioDefaultFunction(workflowFunctionContext.getFunctionName());
+			
+			List<String> paramList = workflowFunctionContext.getParamList();
+			Object[] objects = null;
+
+			int objectIndex = 0;
+			if(paramList != null && !paramList.isEmpty()) {
+				
+				objects = new Object[paramList.size()];
+				
+				for(String param:paramList) {
+					Object obj = variableToExpresionMap.get(param);
+					objects[objectIndex++] = obj;
+				}
+			}
+			
+			return defaultFunctions.execute(objects);
+		}
+		
+		return null;
+		
+	}
+	
 }

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -22,6 +23,11 @@ public class AddDashboardCommand implements Command {
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboard != null) {			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
+			
+			// on add dashboard, we will set order as null so that it will go to the last in order
+//			Integer lastDisplayOrder = DashboardUtil.getLastDashboardDisplayOrder(dashboard.getOrgId(), dashboard.getModuleId());
+//			
+//			dashboard.setDisplayOrder(lastDisplayOrder + 1);
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getDashboardModule().getTableName())

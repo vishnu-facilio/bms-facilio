@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-public class ReportFormulaFieldContext {
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-	Long id;
+public class ReportFormulaFieldContext extends ModuleBaseWithCustomFields {
+
 	String name;
 	Integer dataType;
 	String formula;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}

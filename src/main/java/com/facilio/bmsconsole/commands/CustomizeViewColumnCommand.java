@@ -20,17 +20,17 @@ public class CustomizeViewColumnCommand implements Command {
 				String viewName = (String)context.get(FacilioConstants.ContextNames.CV_NAME);
 				String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 				if (viewName != null && !viewName.isEmpty()) {
-					viewId = ViewAPI.checkAndAddView(viewName, moduleName);
+					viewId = ViewAPI.checkAndAddView(viewName, moduleName, columns);
 				} else {
 					throw new IllegalArgumentException("viewId or viewName,moduleName is required");
 				}
 			}
-			
-			if(viewId != -1) {
+			else {
 				ViewAPI.customizeViewColumns(viewId, columns);
-				List<ViewField> savedColumns = ViewAPI.getViewColumns(viewId);
-				context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, savedColumns);
 			}
+			
+			List<ViewField> savedColumns = ViewAPI.getViewColumns(viewId);
+			context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, savedColumns);
 		}
 		
 		return false;

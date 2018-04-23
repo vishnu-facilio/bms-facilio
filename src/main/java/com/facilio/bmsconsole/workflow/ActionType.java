@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.poi.ss.formula.functions.LinearRegressionFunction.FUNCTION;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -48,7 +49,6 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Workflow;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.leed.context.PMTriggerContext;
@@ -59,7 +59,7 @@ import com.facilio.workflows.context.WorkflowContext;
 public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -83,7 +83,7 @@ public enum ActionType {
 	SMS_NOTIFICATION(2)
 	{
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -106,7 +106,7 @@ public enum ActionType {
 	},
 	BULK_EMAIL_NOTIFICATION(3) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -145,7 +145,7 @@ public enum ActionType {
 	BULK_SMS_NOTIFICATION(4) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -184,7 +184,7 @@ public enum ActionType {
 	WEB_NOTIFICATION(5) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			if(obj != null) {
 				try {
@@ -214,7 +214,7 @@ public enum ActionType {
 	},
 	ADD_ALARM(6){
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 //			System.out.println(">>>>>>>>>>>>>>> jsonobject : "+obj.toJSONString());
 			if(obj != null) {
 				try {
@@ -227,9 +227,8 @@ public enum ActionType {
 					}
 					obj.put("alarmType", 5);
 					
-					WorkflowRuleContext currentRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.CURRENT_WORKFLOW_RULE);
 					if (currentRule instanceof ReadingRuleContext) {
-						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) context.get(FacilioConstants.ContextNames.CURRENT_RECORD));
+						addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) currentRecord);
 					}
 					
 					FacilioContext addEventContext = new FacilioContext();
@@ -290,6 +289,7 @@ public enum ActionType {
 					range.setStartTime(range.getEndTime() - rule.getFlapInterval());
 					break;
 				case ADVANCED:
+				case FUNCTION:
 					range = new DateRange();
 					range.setStartTime(reading.getTtime());
 					break;
@@ -330,6 +330,9 @@ public enum ActionType {
 					break;
 				case ADVANCED:
 					appendAdvancedMsg(msgBuilder, rule, reading);
+					break;
+				case FUNCTION:
+					appendFunctionMsg(msgBuilder, rule, reading);
 					break;
 			}
 			
@@ -475,6 +478,25 @@ public enum ActionType {
 						.append(" rule evaluated to true");
 		}
 		
+		private void appendFunctionMsg (StringBuilder msgBuilder, ReadingRuleContext rule, ReadingContext reading) {
+			msgBuilder.append("recorded ")
+						.append(reading.getReading(rule.getReadingField().getName()));
+			appendUnit(msgBuilder, rule);
+			
+			String functionName = null;
+			if (rule.getWorkflow() != null) {
+				ExpressionContext expr = rule.getWorkflow().getExpressions().get(1);
+				functionName = expr.getDefaultFunctionContext().getFunctionName();
+			}
+			
+			msgBuilder.append(" when the function (")
+						.append(functionName)
+						.append(") set in '")
+						.append(rule.getName())
+						.append("'")
+						.append(" rule evaluated to true");
+		}
+		
 		private void appendUnit(StringBuilder msgBuilder, ReadingRuleContext rule) {
 			if (rule.getReadingField() instanceof NumberField && ((NumberField)rule.getReadingField()).getUnit() != null) {
 				msgBuilder.append(((NumberField)rule.getReadingField()).getUnit());
@@ -492,7 +514,7 @@ public enum ActionType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				if (obj != null) {
@@ -508,7 +530,7 @@ public enum ActionType {
 									obj.put("to", mobileInstanceId);
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type","application/json");
-									headers.put("Authorization","key=AAAA7I5dN-o:APA91bE70uJ4z21h9jh3A3TfExeHmtsESVYR0W79qbgcW8iyJZ1hKFzTkqV9xXJU-KPqpO1TstbqufHBp8tTCJRjiRAHP2ghNN49T6W0e13pYvtLd_qfPn_dhiKkTpE_BrpVg0WrxxVG");
+									headers.put("Authorization","key=AAAAMZz7GzM:APA91bGGZjl_YGNfo9OfEP5kgFiBp3Z0dHq_oa0yHLjgoogHXdPqDWwF2Z1IHYq6T9poGCS-JOwdMEIBqRPxExfemOlJmjOAcdfVlD7qT0IGjLr5gReqwefjBjmPg0Re1O7o0_gC0mYx");
 									
 									String url = "https://fcm.googleapis.com/fcm/send";
 									
@@ -569,7 +591,7 @@ public enum ActionType {
 	},
 	EXECUTE_PM(8) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				long ruleId = (long) obj.get("rule.id");
@@ -607,7 +629,7 @@ public enum ActionType {
 	ASSIGNMENT_ACTION(9) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context) {
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			// TODO Auto-generated method stub
 			long assignedToUserId = -1, assignGroupId = -1;
 			
@@ -654,14 +676,19 @@ public enum ActionType {
 	},
 	SLA_ACTION(10) {
 		@Override
-		public void performAction(JSONObject obj, Context context) {
-			
-			JSONArray slaPolicyJson = (JSONArray)obj.get("slaPolicyJson");
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) {
 			
 			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			if (workOrder.getPriority() == null) {
+				return;
+			}
+			if (workOrder.getDueDate() != -1) {
+				return;
+			}
 			long workorderpriority = workOrder.getPriority().getId();
 			Long duration = null ;
 			
+			JSONArray slaPolicyJson = (JSONArray)obj.get("slaPolicyJson");
 			Iterator iter = slaPolicyJson.iterator();
 			while(iter.hasNext())
 			{
@@ -715,7 +742,7 @@ public enum ActionType {
 		return val;
 	}
 	
-	abstract public void performAction(JSONObject obj, Context context);
+	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord);
 	
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -736,6 +763,6 @@ public enum ActionType {
 		JSONObject json = new JSONObject();
 		json.put("to", "+919840425388");
 		json.put("message", "hello world");
-		t.performAction(json, null);
+		t.performAction(json, null, null, null);
 	}
 }

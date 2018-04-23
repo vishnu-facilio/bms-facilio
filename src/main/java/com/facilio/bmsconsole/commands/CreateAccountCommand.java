@@ -26,10 +26,10 @@ public class CreateAccountCommand implements Command {
 		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 		
 		System.out.println("This is the map :- "+signupInfo);
+
 		try {
 			String name = (String) signupInfo.get("name");
 			String email = (String) signupInfo.get("email");
-			String cognitoId = (String) signupInfo.get("cognitoId");
 			String phone = (String) signupInfo.get("phone");
 			String companyName = (String) signupInfo.get("companyname");
 			String orgDomain = (String) signupInfo.get("domainname");
@@ -65,7 +65,6 @@ public class CreateAccountCommand implements Command {
 			User user = new User();
 			user.setName(name);
 			user.setEmail(email);
-			user.setCognitoId(cognitoId);
 			user.setUserVerified(false);
 			user.setTimezone(timezone);
 			user.setLanguage(locale.getLanguage());
@@ -86,10 +85,6 @@ public class CreateAccountCommand implements Command {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		finally{
-			// it will get closed after chain completion
-			//con.close();
 		}
 		return false;
 	}

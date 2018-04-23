@@ -95,7 +95,7 @@ public class Role {
 		if(getPermissions() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
 		{	
 			for (Permissions perm : permissions) {
 				if (perm.getModuleName().equals(moduleName)) {
@@ -120,7 +120,12 @@ public class Role {
 								case DELETE_OWN:
 								case UPDATE_OWN: {
 									Condition userCondition = new Condition();
-									userCondition.setColumnName("ASSIGNED_TO_ID");
+									if (moduleName.equals("planned")) {
+										userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
+									}
+									else {
+										userCondition.setColumnName("ASSIGNED_TO_ID");
+									}
 									userCondition.setFieldName("assignedToid");
 									userCondition.setOperator(PickListOperators.IS);
 									userCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
@@ -143,9 +148,14 @@ public class Role {
 									for(Group group : groups) {
 										groupIds.add(group.getId());
 									}
-									Condition groupCondition = CriteriaAPI.getCondition("ASSIGNMENT_GROUP_ID", "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
-									
-									Condition userCondition = CriteriaAPI.getCondition("ASSIGNED_TO_ID", "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+									String groupColName = "ASSIGNMENT_GROUP_ID";
+									String colName = "ASSIGNED_TO_ID";
+									if (moduleName.equals("planned")) {
+										groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
+										colName = "Workorder_Template.ASSIGNED_TO_ID";
+									}
+									Condition groupCondition = CriteriaAPI.getCondition(groupColName, "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
+									Condition userCondition = CriteriaAPI.getCondition(colName, "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
 									
 									criteria = new Criteria();
 									criteria.addOrCondition(groupCondition);

@@ -89,12 +89,14 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	
 	}
 
+	public static String PORTALDOMAIN = "facilstack.com";
 	private String intercept0(){
         HttpServletRequest request = ServletActionContext.getRequest();
 		CognitoUtil.CognitoUser cognitoUser = null;
 		Account currentAccount = null;
+		System.out.println("Getting portal auth info");
 		try {
-			cognitoUser = AuthenticationUtil.getCognitoUser(request);
+			cognitoUser = AuthenticationUtil.getCognitoUser(request,true);
 			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(currentAccount);
@@ -108,7 +110,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 				  String orgdomain = (String)customdomains.get(domainName);
 				  if(orgdomain!=null)
 				  {
-					  domainName = "https://"+orgdomain+".facilstack.com";
+					  domainName = "https://"+orgdomain+"."+PORTALDOMAIN;
 				  }
 				}
 				if(domainName != null) {
@@ -141,6 +143,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							AccountUtil.cleanCurrentAccount();
 							AccountUtil.setCurrentAccount(currentAccount);
 						}
+					}
+					else
+					{
+						System.out.println("Match failed ......");
 					}
 				}
 			}

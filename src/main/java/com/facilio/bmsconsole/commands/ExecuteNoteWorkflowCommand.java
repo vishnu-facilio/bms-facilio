@@ -21,7 +21,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.templates.ActionTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.ActionContext;
@@ -45,7 +45,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 				if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
-					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(eventType));
+					List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, Collections.singletonList(eventType), null);
 					if(workflowRules != null && workflowRules.size() > 0) {
 						WorkflowRuleContext workflowRule = workflowRules.get(0);
 						TicketContext ticket = getParentTicket(note);
@@ -59,10 +59,10 @@ public class ExecuteNoteWorkflowCommand implements Command {
 								CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 								for(ActionContext action : actions)
 								{
-									ActionTemplate template = action.getTemplate();
+									Template template = action.getTemplate();
 									if(template != null) {
 										JSONObject actionObj = template.getTemplate(placeHolders);
-										action.getActionType().performAction(actionObj, context);
+										action.getActionType().performAction(actionObj, context, workflowRule, ticket);
 									}
 								}
 							}

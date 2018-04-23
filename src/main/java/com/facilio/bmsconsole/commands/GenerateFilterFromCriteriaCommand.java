@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -33,6 +37,7 @@ public class GenerateFilterFromCriteriaCommand implements Command{
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void setFilters(Criteria criteria, JSONObject filters) throws Exception {
 		Map<Integer, Condition> conditions = criteria.getConditions();
 		for(Map.Entry<Integer, Condition> entry : conditions.entrySet()) {
@@ -49,8 +54,17 @@ public class GenerateFilterFromCriteriaCommand implements Command{
 				for(String val : values) {
 					if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
 						val = String.valueOf(AccountUtil.getCurrentUser().getId());
+						((JSONArray) value).add(val);
 					}
-					((JSONArray) value).add(val);
+					else if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+						List<Long> ids = getLoggedInUserGroupIds();
+						for(Long id: ids) {
+							((JSONArray) value).add(id);
+						}
+					}
+					else {
+						((JSONArray) value).add(val);
+					}
 				}
 			}
 			else if(condition.getOperatorId() == LookupOperator.LOOKUP.getOperatorId()) {
@@ -78,6 +92,19 @@ public class GenerateFilterFromCriteriaCommand implements Command{
 				filters.put(fieldName, filter);
 			}
 		}
+	}
+	
+	private static List<Long> getLoggedInUserGroupIds () {
+		List<Long> objs = new ArrayList<Long>();
+		try {
+			List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
+			if (myGroups != null && !myGroups.isEmpty()) {
+				objs = myGroups.stream().map(Group::getId).collect(Collectors.toList());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return objs;
 	}
 
 }

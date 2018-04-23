@@ -47,19 +47,23 @@ public class ReportScheduler extends FacilioJob {
 				ReportContext reportContext = DashboardUtil.getReportContext(reportId);
 				context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
 				
-				// Needs to do for all report not exporting underlying data
+				DashboardAction action = new DashboardAction();
+				action.setReportContext(reportContext);
+				action.getData();
+				context.put(FacilioConstants.ContextNames.REPORT, action.getReportData());
 				if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
-					DashboardAction action = new DashboardAction();
-					action.setReportContext(reportContext);
-					action.getData();
-					context.put(FacilioConstants.ContextNames.REPORT, action.getReportData());
 					context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, action.getReportColumns());
+				}
+				else {
+					context.put(FacilioConstants.ContextNames.BASE_LINE, action.getBaseLineComparisionDiff());
+					context.put(FacilioConstants.ContextNames.FILTERS, action.getReportSpaceFilterContext());
+					context.put(FacilioConstants.ContextNames.DATE_FILTER, action.getDateFilter());
 				}
 				
 				FacilioModule module = ReportsUtil.getReportModule(reportContext);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-				context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
-				context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
+//				context.put(FacilioConstants.ContextNames.CV_NAME, reportId.toString());
+//				context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
 				context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
 								
 				Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();

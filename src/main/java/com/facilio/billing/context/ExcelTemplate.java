@@ -1,7 +1,6 @@
 package com.facilio.billing.context;
 
 import java.io.File;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.JSONObject;
@@ -12,12 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ExcelTemplate extends Template{
 
-	@Override
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	@Override
 	public JSONObject getOriginalTemplate() {
 		

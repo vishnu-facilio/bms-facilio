@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +23,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.view.ReadingRuleContext;
+import com.facilio.bmsconsole.view.SLARuleContext;
 import com.facilio.bmsconsole.workflow.ActivityType;
 import com.facilio.bmsconsole.workflow.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.WorkflowRuleContext;
@@ -55,6 +57,9 @@ public class WorkflowRuleAPI {
 			case READING_RULE:
 			case PM_READING_RULE:
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
+				break;
+			case SLA_RULE:
+				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
 			default:
 				break;
@@ -227,7 +232,7 @@ public class WorkflowRuleAPI {
 		return getWorkFlowsFromMapList(builder.get(), false);
 	}
 	
-	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes, RuleType... ruleTypes) throws Exception {
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
@@ -239,15 +244,19 @@ public class WorkflowRuleAPI {
 				.orderBy("EXECUTION_ORDER");
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {
-			List<Integer> ids = new ArrayList<>();
+			StringJoiner ids = new StringJoiner(",");
 			for(RuleType type : ruleTypes) {
-				ids.add(type.getIntVal());
+				ids.add(String.valueOf(type.getIntVal()));
 			}
 			Condition ruleTypeCondition = new Condition();
 			ruleTypeCondition.setColumnName("RULE_TYPE");
 			ruleTypeCondition.setOperator(NumberOperators.EQUALS);
-			ruleTypeCondition.setValue(StringUtils.join(ids, ","));
+			ruleTypeCondition.setValue(ids.toString());
 			ruleBuilder.andCondition(ruleTypeCondition);
+		}
+		
+		if (criteria != null) {
+			ruleBuilder.andCriteria(criteria);
 		}
 		
 		StringBuilder activityTypeWhere = new StringBuilder();
@@ -282,6 +291,36 @@ public class WorkflowRuleAPI {
 		if(newRule.getWorkflow() != null && oldRule.getWorkflowId() != -1) {
 			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
 		}
+	}
+	
+	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {
+		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
+		updateWorkflowRuleChildIds(rule);
+		updateSLARule(rule, rule.getId());
+		deleteChildIdsForWorkflow(oldRule, rule);
+		
+		if (rule.getName() == null) {
+			rule.setName(oldRule.getName());
+		}
+		return rule;
+	}
+	
+	public static int updateSLARule(SLARuleContext slaRule, long ruleId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getSLARuleFields());
+		
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule slaRuleModule = ModuleFactory.getSLARuleModule();
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+														.fields(fields)
+														.table(slaRuleModule.getTableName())
+														.innerJoin(workflowModule.getTableName())
+														.on(slaRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
+														.andCondition(CriteriaAPI.getIdCondition(ruleId, slaRuleModule));
+		
+		return updateBuilder.update(FieldUtil.getAsProperties(slaRule));
 	}
 	
 	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule) throws Exception {
@@ -340,6 +379,9 @@ public class WorkflowRuleAPI {
 				case PM_READING_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
+				case SLA_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -376,6 +418,11 @@ public class WorkflowRuleAPI {
 						workflow = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 						((ReadingRuleContext)workflow).setResource(ResourceAPI.getResource(((ReadingRuleContext)workflow).getResourceId()));
 						((ReadingRuleContext)workflow).setReadingField(modBean.getField(((ReadingRuleContext)workflow).getReadingFieldId()));
+						break;
+					case SLA_RULE:
+						prop.putAll(typeWiseExtendedProps.get(ruleType).get((Long) prop.get("id")));
+						workflow = FieldUtil.getAsBeanFromMap(prop, SLARuleContext.class);
+						((SLARuleContext)workflow).setResource(ResourceAPI.getResource(((SLARuleContext)workflow).getResourceId()));
 						break;
 					default:
 						workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

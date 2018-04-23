@@ -105,14 +105,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getDeleteTicketChain() {
-		Chain c = new ChainBase();
-		c.addCommand(SetTableNamesCommand.getForTicket());
-		c.addCommand(new DeleteTicketCommand());
-		addCleanUpCommand(c);
-		return c;
-	}
-	
 	public static Chain getAssignTicketChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForTicket());
@@ -183,6 +175,13 @@ public class FacilioChainFactory {
 	public static Command getUpdateUserCommand() {
 		Chain c = new ChainBase();
 		c.addCommand(new UpdateUserCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Command getDeleteUserCommand() {
+		Chain c = new ChainBase();
+		c.addCommand(new DeleteUserCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -293,10 +292,10 @@ public class FacilioChainFactory {
 	public static Chain getDeleteWorkOrderChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_AGENT_NOTIFICATION_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -384,6 +383,17 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeleteWorkOrderRequestChain() {
+		Chain c = new TransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getUpdateWorkOrderRequestChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
@@ -416,7 +426,10 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAlarmChain() {
 		Chain c = new TransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
-		c.addCommand(new DeleteAlarmCommand());
+		c.addCommand(new RemoveAlarmFromEventCommand());
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		addCleanUpCommand(c);
 		return c;
@@ -492,6 +505,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenerateSortingQueryCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new getRelatedEvents());
 		addCleanUpCommand(c);
 		return c;
 	}
@@ -754,6 +768,7 @@ public class FacilioChainFactory {
 	public static Chain getAddCampusChain() {
 		Chain c = new ChainBase();
 		c.addCommand(new ValidateCampusFieldsCommand());
+		c.addCommand(new AddLocationCommand());
 		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddCampusCommand());
@@ -1032,7 +1047,8 @@ public class FacilioChainFactory {
 	
 	public static Chain getAddAssetChain() {
 		Chain c = new TransactionChain();
-		c.addCommand(SetTableNamesCommand.getForAsset());
+		//c.addCommand(SetTableNamesCommand.getForAsset());
+		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
