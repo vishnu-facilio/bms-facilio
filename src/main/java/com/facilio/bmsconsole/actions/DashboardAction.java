@@ -1993,7 +1993,7 @@ public class DashboardAction extends ActionSupport {
 		System.out.println("builder --- "+builder);
 //		System.out.println("rs1 -- "+rs);
 		
-		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter);
+		Map<String, Double> violatedReadings = getViolatedReadings(report, dateFilter, baseLineId);
 		
 		if(report.getGroupBy() != null) {
 			
@@ -2279,7 +2279,7 @@ public class DashboardAction extends ActionSupport {
 		this.readingAlarms = readingAlarms;
 	}
 	
-	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter) throws Exception {
+	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter, Long baseLineId) throws Exception {
 		
 		Map<String, Double> violatedReadings = new HashMap<>();
 		
@@ -2300,6 +2300,19 @@ public class DashboardAction extends ActionSupport {
 			}
 			else if (reportContext.getDateFilter() != null) {
 				timeRange.add(Long.parseLong(reportContext.getDateFilter().getOperatorId().toString()));
+			}
+			
+			if (baseLineId != -1) {
+				BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(baseLineId);
+				
+				Condition condition = baseLineContext.getBaseLineCondition(reportContext.getDateFilter().getField(), new DateRange((long)timeRange.get(0), (long)timeRange.get(1)));
+				String baseLineStartValue = condition.getValue().substring(0,condition.getValue().indexOf(","));
+				String baseLineEndValue = condition.getValue().substring(condition.getValue().indexOf(",")+1, condition.getValue().length());
+				
+				List<Long> baseLineTimeRange = new ArrayList<>();
+				baseLineTimeRange.add(Long.parseLong(baseLineStartValue));
+				baseLineTimeRange.add(Long.parseLong(baseLineEndValue));
+				timeRange = baseLineTimeRange;
 			}
 			
 			List<Long> deviceList = new ArrayList<>();
