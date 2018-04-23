@@ -272,7 +272,7 @@ public class UserAction extends ActionSupport {
 	}
 	
 	private String mobileInstanceId;
-	public Strixxxxxng getMobileInstanceId() {
+	public String getMobileInstanceId() {
 		return mobileInstanceId;
 	}
 	public void setMobileInstanceId(String mobileInstanceId) {
