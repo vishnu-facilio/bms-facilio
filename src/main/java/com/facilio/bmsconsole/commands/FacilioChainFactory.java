@@ -831,6 +831,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getUpdateBuildingChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateBuildingCommand());
+		addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	public static Chain getBuildingDetailsChain() {
 		Chain c = new ChainBase();
 		c.addCommand(SetTableNamesCommand.getForBuilding());
