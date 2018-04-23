@@ -2481,6 +2481,15 @@
 			</result>
 		</action>
 
+		<action name="update" class="com.facilio.bmsconsole.actions.BuildingAction"
+			method="updateBuilding">
+			<param name="moduleName">space</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">buildingId</param>
+			</result>
+		</action>
+		
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="reportCards">
 			<param name="moduleName">space</param>
@@ -2496,7 +2505,7 @@
 			<param name="permission">READ</param>
 			<param name="buildingId">{1}</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^record.*</param>
+				<param name="includeProperties">building.*</param>
 			</result>
 		</action>
 	</package>

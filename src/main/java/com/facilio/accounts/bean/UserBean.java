@@ -31,8 +31,10 @@ public interface UserBean {
 	
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
-	public boolean deleteUser(long ouid) throws Exception;
+	public void removeUserMobileSetting(String mobileInstanceId) throws Exception;
 	
+	public boolean deleteUser(long ouid) throws Exception;
+
 	public boolean disableUser(long ouid) throws Exception;
 	
 	public boolean enableUser(long ouid) throws Exception;

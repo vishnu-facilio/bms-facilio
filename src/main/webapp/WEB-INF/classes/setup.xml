@@ -233,6 +233,18 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="removeMobileSetting">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^userMobileSetting.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
 		<action name="addgroup" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
 			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param>
