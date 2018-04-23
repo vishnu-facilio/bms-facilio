@@ -34,7 +34,6 @@ public class EventTransformCommand implements Command {
 					}
 				}
 				event.setInternalState(EventInternalState.TRANSFORMED);
-				event.getMessageKey();
 				context.put(EventConstants.EventContextNames.EVENT, event);
 			}
 		}

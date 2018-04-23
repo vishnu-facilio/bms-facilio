@@ -45,6 +45,8 @@ public class EventAPI {
 		JSONObject content = template.getTemplate(eventProp);
 		eventProp.putAll(FieldUtil.getAsProperties(content));
 		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
+		event.setMessageKey(null);
+		event.getMessageKey();
 		return event;
 	}
 
@@ -66,7 +68,7 @@ public class EventAPI {
 	    	{
 	    		event.setNode(value);
 	    	}
-	    	else if(key.equalsIgnoreCase("message"))
+	    	else if(key.equalsIgnoreCase("message") || key.equalsIgnoreCase("eventMessage"))
 	    	{
 	    		event.setEventMessage(value);
 	    	}

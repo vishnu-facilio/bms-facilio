@@ -106,17 +106,11 @@ public class WorkflowContext {
 				expressionContext = fillParamterAndParseExpressionContext(expressionContext);
 				expressionContext.setVariableToExpresionMap(variableToExpresionMap);
 				
-				if(i==0 && getResultEvaluator() == null && isSingleExpression()) {
-					return expressionContext.executeExpression();
-				}
-				
 				Object res = expressionContext.executeExpression();
-				if(res != null) {
-					variableToExpresionMap.put(expressionContext.getName(), res);
+				if(res == null) {
+					res = "0";
 				}
-				else {
-					variableToExpresionMap.put(expressionContext.getName(), "0");
-				}
+				variableToExpresionMap.put(expressionContext.getName(), res);
 				
 				ParameterContext parameterContext = new ParameterContext();
 				parameterContext.setName(expressionContext.getName());

@@ -945,6 +945,7 @@ public class TemplateAPI {
 				params.add(param);
 				
 				ExpressionContext expression = new ExpressionContext();
+				expression.setName(placeHolder);
 				expression.setConstant("${"+placeHolder+"}");
 				expressions.add(expression);
 			}

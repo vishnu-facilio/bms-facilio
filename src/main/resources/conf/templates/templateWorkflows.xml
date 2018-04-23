@@ -98,7 +98,6 @@
 			<parameter name="org.superAdmin.email" type="String" />
 			<parameter name="alarm.description" type="String" />
 			<parameter name="alarm.url" type="String" />
-			<parameter name="alarm.status" type="String" />
 			<parameter name="alarm.subject" type="String" />
 			<expression name="org.domain">
 				<constant>${org.domain}</constant>
@@ -111,6 +110,9 @@
 			</expression>
 			<expression name="alarm.url">
 				<constant>${alarm.url}</constant>
+			</expression>
+			<expression name="alarm.subject">
+				<constant>${alarm.subject}</constant>
 			</expression>
 		</workflow>
 	</template>
