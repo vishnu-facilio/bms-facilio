@@ -260,6 +260,24 @@ public class UserAction extends ActionSupport {
 				
 		return SUCCESS;
 	}
+	public String removeMobileSetting() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.USER_MOBILE_SETTING, mobileInstanceId);
+
+		Command addUserMobileSettingCommand = FacilioChainFactory.getDeleteUserMobileSettingCommand();
+		addUserMobileSettingCommand.execute(context);
+				
+		return SUCCESS;
+	}
+	
+	private String mobileInstanceId;
+	public Strixxxxxng getMobileInstanceId() {
+		return mobileInstanceId;
+	}
+	public void setMobileInstanceId(String mobileInstanceId) {
+		this.mobileInstanceId = mobileInstanceId;
+	}
 
 	public String changeStatus() throws Exception {
 		
