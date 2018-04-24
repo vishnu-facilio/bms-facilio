@@ -92,9 +92,11 @@ public class UserBeanImpl implements UserBean {
 
 	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
 
+		List<FacilioField> fields = AccountConstants.getUserFields();
+		fields.add(AccountConstants.getUserPasswordField());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getUserModule().getTableName())
-				.fields(AccountConstants.getUserFields());
+				.fields(fields);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
@@ -143,10 +145,11 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	private boolean updateUserEntry(User user) throws Exception {
-		
+		List<FacilioField> fields = AccountConstants.getUserFields();
+		fields.add(AccountConstants.getUserPasswordField());
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getUserModule().getTableName())
-				.fields(AccountConstants.getUserFields())
+				.fields(fields)
 				.andCustomWhere("USERID = ?", user.getUid());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
@@ -336,7 +339,7 @@ public class UserBeanImpl implements UserBean {
 		User user = getUserFromToken(token);
 		if(user != null){
 			try {
-				user = getUser(user.getOuid());
+				user = getUserWithPassword(user.getOuid());
 			} catch (Exception e) {
 				user = null;
 			}
@@ -614,6 +617,29 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 
+	public User getUserWithPassword(long ouid) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(AccountConstants.getUserPasswordField());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  FieldUtil.getAsBeanFromMap(props.get(0), User.class);
+			user.setAccessibleSpace(getAccessibleSpaceList(ouid));
+			return user;
+		}
+		return null;
+	}
+
 	@Override
 	public User getUser(String email) throws Exception {
 		
@@ -652,7 +678,7 @@ public class UserBeanImpl implements UserBean {
 				.on("Users.USERID = faciliousers.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("faciliousers.email = ? AND DELETED_TIME = -1 and ISDEFAULT = ?", email, true);
+				.andCustomWhere("faciliousers.email = ? AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, true);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -708,7 +734,7 @@ public class UserBeanImpl implements UserBean {
 				.on("faciliorequestors.USERID = Users.USERID")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCustomWhere("faciliorequestors.EMAIL = ? AND USER_VERIFIED=1 AND faciliorequestors.PORTALID = ?", email, portalId);
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND DELETED_TIME=-1 AND USER_VERIFIED=1 AND faciliorequestors.PORTALID = ?", email, portalId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

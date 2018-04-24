@@ -422,7 +422,7 @@ public class FacilioAuthAction extends ActionSupport {
 
     public String changePassword() throws Exception {
         User user = AccountUtil.getCurrentUser();
-        boolean verifyOldPassword = verifyPassword(user.getEmail(), user.getPassword());
+        boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
         if(verifyOldPassword) {
             user.setPassword(getNewPassword());
             AccountUtil.getUserBean().updateUser(user);

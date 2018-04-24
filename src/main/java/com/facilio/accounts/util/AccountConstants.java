@@ -841,6 +841,15 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static FacilioField getUserPasswordField() {
+		FacilioField password = new FacilioField();
+		password.setName("password");
+		password.setDataType(FieldType.STRING);
+		password.setColumnName("PASSWORD");
+		password.setModule(getUserModule());
+		return password;
+	}
+
 	public static List<FacilioField> getUserFields() {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -865,13 +874,6 @@ public class AccountConstants {
 		cognitoId.setColumnName("COGNITO_ID");
 		cognitoId.setModule(module);
 		fields.add(cognitoId);*/
-		
-		FacilioField password = new FacilioField();
-		password.setName("password");
-		password.setDataType(FieldType.STRING);
-		password.setColumnName("PASSWORD");
-		password.setModule(module);
-		fields.add(password);
 
 		FacilioField userVerified = new FacilioField();
 		userVerified.setName("userVerified");
