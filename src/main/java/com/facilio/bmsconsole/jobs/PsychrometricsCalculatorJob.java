@@ -67,7 +67,7 @@ public class PsychrometricsCalculatorJob extends FacilioJob {
 
 			Long siteId=site.getId();
 			List<Map<String,Object>> weatherReadings=siteVsReadings.get(siteId);
-			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumudity(weatherReadings.get(0));
+			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherReadings.get(0));
 			ReadingContext cReading= getReading(siteId, "wetBulbTemperature", wetBulbTemperature);
 			addReading(moduleVsReading,FacilioConstants.ContextNames.WET_BULB_TEMPERATURE, cReading);
 		}

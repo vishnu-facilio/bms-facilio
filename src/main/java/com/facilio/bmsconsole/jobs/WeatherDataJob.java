@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.PsychrometricUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
@@ -34,6 +35,8 @@ public class WeatherDataJob extends FacilioJob {
 			}
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
 			List<ReadingContext> readings= new ArrayList<ReadingContext>();
+			
+			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
 			for(SiteContext site:sites) {
 				
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
@@ -46,6 +49,12 @@ public class WeatherDataJob extends FacilioJob {
 					 continue;
 				 }
 				readings.add(reading);
+				
+				ReadingContext psychrometricReading = getPsychrometricReading(siteId, weatherData);
+				if(psychrometricReading == null) {
+					continue;
+				}
+				psychrometricReadings.add(psychrometricReading);
 			}
 			
 			FacilioContext context = new FacilioContext();
@@ -54,15 +63,45 @@ public class WeatherDataJob extends FacilioJob {
 			Chain addReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
 			
+			try {
+				context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PSYCHROMETRIC_READING);
+				context.put(FacilioConstants.ContextNames.READINGS, psychrometricReadings);
+				Chain addPsychrometricReading = FacilioChainFactory.getAddOrUpdateReadingValuesChain();
+				addPsychrometricReading.execute(context);
+			}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+			}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
+	private ReadingContext getPsychrometricReading(long siteId, Map<String,Object> weatherData) {
+		
+		ReadingContext reading= new ReadingContext();
+		reading.setParentId(siteId);
+		try {
+			Long time=(Long)weatherData.get("time");
+			long ttime=System.currentTimeMillis();
+			if(time!=null) {
+				ttime=time*1000;
+			}
+			reading.setTtime(ttime);
+			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherData);
+			Double dewPointTemperature = PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(weatherData);
+			
+			reading.addReading("wetBulbTemperature", wetBulbTemperature);
+			reading.addReading("dewPointTemperature", dewPointTemperature);
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return reading;
+	}
 	
-
-
 	private ReadingContext getReading(long siteId,Map<String,Object> currentWeather) {
 		
 		

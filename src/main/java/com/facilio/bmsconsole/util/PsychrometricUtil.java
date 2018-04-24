@@ -1,15 +1,43 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PsychrometricUtil {
 	
 	private static double ZERO_CELSIUS = 273.15;            // Zero ºC expressed in K
+
+	public static Double getKelvinFromCelsius(Double celsius) {
+		
+		return celsius + ZERO_CELSIUS;
+	}
 	
-	public static Double getWetBulbTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
+	public static void main(String[] args) {
+		Map<String,Object> weatherReading = new HashMap<String, Object>();
+		weatherReading.put("apparentTemperature", 30.89);
+		weatherReading.put("humidity", 0.36);
+		weatherReading.put("pressure", 100845.00);
+		Double wbt = getWetBulbTemperatureFromRelativeHumidity(weatherReading);
+		System.out.println("WBT::::" +wbt);
+		
+		Double dp = getDewPointTemperatureFromRelativeHumudity(weatherReading);
+		System.out.println("dp::::" +dp);
+	}
+	
+	public static Double getDewPointTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
 		
 		Double dryBulbTemperature = (Double) weatherReading.get("apparentTemperature");
-		Double pressure = (Double) weatherReading.get("pressure");
+		Double pressure = (Double) weatherReading.get("pressure") * 100;
+		Double relativeHumidity = (Double) weatherReading.get("humidity");
+		
+		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
+		return getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
+	}
+	
+	public static Double getWetBulbTemperatureFromRelativeHumidity(Map<String,Object> weatherReading) {
+		
+		Double dryBulbTemperature = (Double) weatherReading.get("apparentTemperature");
+		Double pressure = (Double) weatherReading.get("pressure") * 100;
 		Double relativeHumidity = (Double) weatherReading.get("humidity");
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
@@ -130,10 +158,5 @@ public class PsychrometricUtil {
 		    return new Double(0);             // TDryBulb is out of range [-100, 200]
 		}
 		return Math.exp(lnPws);
-	}
-
-	public static Double getKelvinFromCelsius(Double celsius) {
-		
-		return celsius + ZERO_CELSIUS;
 	}
 }
