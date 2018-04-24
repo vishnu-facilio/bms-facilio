@@ -1468,16 +1468,16 @@ public class DashboardUtil {
 			}
 		}
 		List<ReportFormulaFieldContext> formulaFieldContexts = getFormulaFields(moduleName);
-//		if(formulaFieldContexts != null) {
-//			for(ReportFormulaFieldContext formulaFieldContext:formulaFieldContexts) {
-//				
-//				ReportFieldContext reportFieldContext = new ReportFieldContext();
-//				reportFieldContext.setFieldLabel(formulaFieldContext.getName());
-//				reportFieldContext.setReportFormulaContext(formulaFieldContext);
-//				reportFieldContext.setIsFormulaField(true);
-//				yAxisField.add(reportFieldContext);
-//			}
-//		}
+		if(formulaFieldContexts != null) {
+			for(ReportFormulaFieldContext formulaFieldContext:formulaFieldContexts) {
+				
+				ReportFieldContext reportFieldContext = new ReportFieldContext();
+				reportFieldContext.setFieldLabel(formulaFieldContext.getName());
+				reportFieldContext.setReportFormulaContext(formulaFieldContext);
+				reportFieldContext.setIsFormulaField(true);
+				yAxisField.add(reportFieldContext);
+			}
+		}
 		
 		result.put("dateFilterFields", dateFilterField);
 		result.put("moduleXAxisFields", xAxisField);

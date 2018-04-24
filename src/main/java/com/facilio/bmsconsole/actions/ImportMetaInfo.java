@@ -122,6 +122,10 @@ public class ImportMetaInfo
 	public void setModule(FacilioModule module) {
 		this.module = module;
 	}
+	public void setModule(String moduleName) throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		this.module = bean.getModule(moduleName);
+	}
 	private FacilioModule module;
 	
 	
@@ -187,7 +191,7 @@ public class ImportMetaInfo
 	
 	private static boolean isRemovableField(String name) {
 
-		switch (name){
+		switch (name){ 
 
 		case "parentId":
 		case "date":
@@ -250,12 +254,6 @@ public class ImportMetaInfo
 			fieldMap.put(key, values);
 		}
 		return fieldMap;
-	}
-	
-	public static void main(String args[])
-	{
-		//Module m = Module.Energy;
-		//System.out.println("value is "+ m.getValue());
 	}
 	
 }

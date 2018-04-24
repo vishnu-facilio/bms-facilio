@@ -7,9 +7,11 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -41,11 +43,17 @@ public class GetBuildingCommand implements Command {
 					.maxLevel(1)
 					.andCustomWhere(module.getTableName()+".ID = ?", buildingId)
 					.orderBy("ID");
-
+			
 			List<BuildingContext> buildings = builder.get();	
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
 				System.out.println("############ building :"+building);
+				LocationContext location=building.getLocation();
+				if(location!=null)
+				{
+					location=SpaceAPI.getLocationSpace(building.getLocation().getId());
+					building.setLocation(location);
+				}
 				context.put(FacilioConstants.ContextNames.BUILDING, building);
 			}
 			

@@ -3297,6 +3297,11 @@
 		</action> </package -->
 
 	<package name="importmodule" namespace="/app/import" extends="home">
+		<action name="importPasteData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importPasteData">
+			<result name="success" type="json">
+				<param name="includeProperties">^rawStringType.*</param>
+			</result>
+		</action>
 		<action name="showformupload" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="showformupload">
 			<result name="success">/jsps/import/showfileupload.jsp</result>
@@ -3319,6 +3324,16 @@
 	</package>
 	<package name="importapi" namespace="/api/import" extends="home">
 
+		<action name="importPasteData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importPasteData">
+			<result name="success" type="json">
+				<param name="includeProperties">^parsedData.*</param>
+			</result>
+		</action>
+		<action name="importParsedData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importParsedData">
+			<result name="success" type="json">
+				<param name="includeProperties">^parsedData.*</param>
+			</result>
+		</action>
 		<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="getAssets">
 				<param name="moduleName">setup</param>

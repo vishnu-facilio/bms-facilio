@@ -841,6 +841,15 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static FacilioField getUserPasswordField() {
+		FacilioField password = new FacilioField();
+		password.setName("password");
+		password.setDataType(FieldType.STRING);
+		password.setColumnName("PASSWORD");
+		password.setModule(getUserModule());
+		return password;
+	}
+
 	public static List<FacilioField> getUserFields() {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -865,13 +874,6 @@ public class AccountConstants {
 		cognitoId.setColumnName("COGNITO_ID");
 		cognitoId.setModule(module);
 		fields.add(cognitoId);*/
-		
-		FacilioField password = new FacilioField();
-		password.setName("password");
-		password.setDataType(FieldType.STRING);
-		password.setColumnName("PASSWORD");
-		password.setModule(module);
-		fields.add(password);
 
 		FacilioField userVerified = new FacilioField();
 		userVerified.setName("userVerified");
@@ -1093,17 +1095,19 @@ public class AccountConstants {
 		userType.setColumnName("USER_TYPE");
 		userType.setModule(module);
 		fields.add(userType);
-		
+	
+		return fields;
+	}
+	
+	public static FacilioField getOrgUserDeletedTimeField() {
 		FacilioField deletedTime = new FacilioField();
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(module);
-		fields.add(deletedTime);
-
-		return fields;
+		deletedTime.setModule(getOrgUserModule());
+		return deletedTime;
 	}
-
+	
 	public static List<FacilioField> getGroupFields() {
 		FacilioModule module = getGroupModule();
 		List<FacilioField> fields = new ArrayList<>();
